@@ -1,0 +1,79 @@
+--!nocheck
+
+local RepS = game:GetService("ReplicatedStorage")
+local RS = game:GetService("RunService")
+
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
+local TypeWriter = {}
+TypeWriter.__index = TypeWriter
+
+
+function TypeWriter.new()
+	local self = setmetatable({}, TypeWriter)
+
+	self.Stopped = false
+	self.Running = false
+
+	self.OnTyperFinished = Signal.new()
+	self.OnUTFUpdated = Signal.new()
+
+	return self
+end
+
+
+--[[
+	Queue a task to type text
+]]
+function TypeWriter:TypeText(text: string)
+	self:Stop()
+
+	self.Stopped = false
+	self.Running = true
+
+	text = string.gsub(text, "<br%s*/>", "\n")
+	text = string.gsub(text, "<[^<>]->", "")
+
+	local index = 0
+	for first, last in utf8.graphemes(text) do
+		index += 1
+
+		self.OnUTFUpdated:Fire(index)
+		task.wait(0.01)
+	end
+
+
+	self.Running = false
+	self.OnTyperFinished:Fire()
+end
+
+
+function TypeWriter:Stop()
+	self.Paused = false
+	self.Stopped = true
+
+	while self.Running do
+		RS.Heartbeat:Wait()
+	end
+end
+
+
+
+function TypeWriter:IsTyping()
+	return self.Running
+end
+
+
+function TypeWriter:Destroy()
+	self.Paused = false
+	self.Stopped = true
+
+	self.OnTyperFinished:Destroy()
+	self.OnUTFUpdated:Destroy()
+
+	while self.Running do
+		RS.Heartbeat:Wait()
+	end
+end
+
+return TypeWriter

@@ -1,0 +1,67 @@
+{
+    "name": "Critical-Fantasy_Rojo",
+    "servePort": 34874,
+    "tree": {
+        "$className": "DataModel",
+
+        "ReplicatedFirst": {
+            "$className": "ReplicatedFirst",
+            "$ignoreUnknownInstances": true,
+
+            "Preload_Haruka": {
+                "$path": "src/Preload.client.luau"
+            }
+        },
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "$ignoreUnknownInstances": true,
+
+            "HarukaShared": {
+                "$className": "Folder",
+                "$path": "src/shared",
+                "$ignoreUnknownInstances": true
+            },
+            "VERSION": {
+                "$path": "src/VERSION.luau"
+            }
+        },
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "$ignoreUnknownInstances": true,
+
+            "HarukaServer": {
+                "$className": "Folder",
+                "$path": "src/server"
+            },
+            "DS_VERSION": {
+                "$path": "src/DS_VERSION.luau"
+            }
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "$ignoreUnknownInstances": true,
+
+            "StarterCharacterScripts": {
+                "$className": "StarterCharacterScripts",
+                "$ignoreUnknownInstances": true,
+
+                "HarukaChar": {
+                    "$className": "Folder",
+                    "$path": "src/character"
+                }
+            },
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "$ignoreUnknownInstances": true,
+
+                "HarukaClient": {
+                    "$className": "Folder",
+                    "$path": "src/client"
+                },
+                "RbxCharacterSounds": {
+                    "$path": "src/RbxCharacterSounds.client.luau"
+                }
+            }
+        }
+    }
+}
