@@ -18,6 +18,10 @@ local function initPlayer(player: Player)
         player:Kick("This server is invalid. Rejoin can fix it.")
         return
     end
+    if player.AccountAge < 2 then
+        player:Kick("You must be at least 2 days old in Roblox Platform to play!")
+        return
+    end
 
     local playerObj = PlayerLib.new(player)
     if playerObj then

@@ -67,6 +67,9 @@ function ClientWorldLib:_DoDefaultEventTracker()
         if sound.Name == "ResetSound" then
             for _, music: Sound in SoundService:GetDescendants() do
                 if music:IsA("Sound") then
+                    if music:IsDescendantOf(SoundService.Environment) then continue end
+                    if music:IsDescendantOf(SoundService.FS_SFXs) then continue end
+
                     music:Stop()
                 end
             end

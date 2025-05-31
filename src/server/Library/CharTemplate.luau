@@ -5,7 +5,7 @@ local charStats = {
     AreaIn = "None",
 
     --- default stats
-    MinDMG = 5,
+    MinDMG = 8,
     MinDMGEx = 0,
     MinDMGExPower = 1,
     MaxDMG = 15,

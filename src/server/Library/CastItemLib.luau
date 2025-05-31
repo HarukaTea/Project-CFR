@@ -260,7 +260,54 @@ CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {
 end
 
 
---// Passives
+CastItemLib.Agility = function(player: Player, char: Model, extraInfo: {
+    CostManaFunc: () -> nil,
+}) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "Agility",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
+
+    StatusLib:NormalBoostForEntity("Speed", char, {
+        Power = 0.5,
+        Duration = 6
+    })
+end
+
+
+CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: {
+    CostManaFunc: () -> nil,
+}) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "ExtraJump",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    Events.PlaySound.Fire(player, SoundService.SFXs.EXP)
+
+
+    local linearVelocity = Instance.new("LinearVelocity")
+    linearVelocity.Name = "ExtraUpBV"
+    linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+    linearVelocity.ForceLimitsEnabled = false
+    linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 50 * 2
+    linearVelocity.Parent = char.PrimaryPart
+    Debris:AddItem(linearVelocity, 0.05)
+end
 
 
 

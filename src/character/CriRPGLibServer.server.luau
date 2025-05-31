@@ -43,6 +43,9 @@ Add(Players.PlayerRemoving:Connect(function(player: Player)
 		CriRPGLib:Destroy()
 	end
 end))
+Add(script.Destroying:Connect(function()
+    CriRPGLib:Destroy()
+end))
 
 
 
@@ -227,7 +230,7 @@ function CriRPGLib:_ListenOrbTracker()
     local orbResContainer = ReplicatedStorage.Packages.ClassAttacks :: Folder
 
     local orbSymbolContainer = Instance.new("Folder")
-    orbSymbolContainer.Name = "OrbSymbols_"..plr.Name
+    orbSymbolContainer.Name = "OrbSymbols_"..char:GetAttribute("HarukaUniqueId")
     orbSymbolContainer.Parent = ServerStorage.OrbSymbolContainer
     Add(orbSymbolContainer)
 
@@ -339,7 +342,7 @@ end
 
 function CriRPGLib:_ListenSkillProjectileTracker()
     local projectileContainer = Instance.new("Folder")
-    projectileContainer.Name = "SkillProjectiles_"..plr.Name
+    projectileContainer.Name = "SkillProjectiles_"..char:GetAttribute("HarukaUniqueId")
     projectileContainer.Parent = ServerStorage.SkillProjectileContainer
     Add(projectileContainer)
 
@@ -921,7 +924,7 @@ end
 
 function CriRPGLib:_ListenPassiveAutoEquipTracker()
     Add(plr.Items.ChildAdded:Connect(function(item: IntConstrainedValue)
-        local itemInfo = ItemLib:GetItemInfo(item.Value)
+        local itemInfo = ItemLib:GetItemInfo(item.Name)
         if not itemInfo then return end
 
         if itemInfo.Type == "Passive" then

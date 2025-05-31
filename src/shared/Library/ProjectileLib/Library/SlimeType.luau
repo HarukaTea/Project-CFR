@@ -141,6 +141,8 @@ return function (self)
         end
         if not noSound then projectile:FindFirstChildWhichIsA("Sound", true):Play() end
 
+        projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 0.7, 0))
+
 
         Promise.delay(8):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 
@@ -174,19 +176,19 @@ return function (self)
 
         Promise.delay(0.3):andThen(function()
             TS:Create(projectile.BlastCenter, blastInfo, {
-                Size = projectile.BlastCenter.Size - Vector3.yAxis * 18,
+                Size = projectile.BlastCenter.Size - Vector3.yAxis * 22,
             }):Play()
             TS:Create(projectile.Blast1, blastInfo, {
-                Size = projectile.Blast1.Size - Vector3.yAxis * 7
+                Size = projectile.Blast1.Size - Vector3.yAxis * 11
             }):Play()
             TS:Create(projectile.Blast2, blastInfo, {
-                Size = projectile.Blast2.Size - Vector3.yAxis * 7
+                Size = projectile.Blast2.Size - Vector3.yAxis * 15
             }):Play()
             TS:Create(projectile.Blast3, blastInfo, {
-                Size = projectile.Blast3.Size - Vector3.yAxis * 7
+                Size = projectile.Blast3.Size - Vector3.yAxis * 11
             }):Play()
             TS:Create(projectile.Blast4, blastInfo, {
-                Size = projectile.Blast4.Size - Vector3.yAxis * 9
+                Size = projectile.Blast4.Size - Vector3.yAxis * 15
             }):Play()
 
         end):catch(function() end)

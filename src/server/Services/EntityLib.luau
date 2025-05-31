@@ -64,6 +64,7 @@ entityStorageContainer.Parent = game:GetService("TestService")
 
 
 --// Init once
+local enemyDiedSignal = Signal.new()
 local enterCombatSignal = Signal.new()
 local destroyEntityObjSignal = Signal.new()
 
@@ -104,7 +105,7 @@ Players.PlayerRemoving:Connect(function(player)
         end)
     end
 end)
-ServerBindables.EnemyDied:Connect(function(locator: BasePart)
+enemyDiedSignal:Connect(function(locator: BasePart)
     locator = locator:Clone()
 
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
@@ -216,7 +217,7 @@ function EntityLib:Destroy(noRespawn: boolean?)
         end
     end
     if not noRespawn then
-        ServerBindables.EnemyDied:Fire(self.Locator:Clone())
+        enemyDiedSignal:Fire(self.Locator:Clone())
     end
     if self.EntityObj then
         self.EntityObj:Destroy()
@@ -282,16 +283,20 @@ function EntityLib:_SpawnModel()
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
 	humanoid.BreakJointsOnDeath = false
-	humanoid.RequiresNeck = false
 	humanoid.UseJumpPower = true
-	humanoid.AutoJumpEnabled = false
 	humanoid.Parent = model
 
-	humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
-	humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-	humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-	humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
+
+    local enumState = {
+        Enum.HumanoidStateType.StrafingNoPhysics,
+        Enum.HumanoidStateType.RunningNoPhysics,
+        Enum.HumanoidStateType.Climbing,
+        Enum.HumanoidStateType.Seated,
+        Enum.HumanoidStateType.Swimming
+    }
+    for _, state: Enum.HumanoidStateType in enumState do
+        humanoid:SetStateEnabled(state, false)
+    end
 
 
     local locatorSymbol = Instance.new("ObjectValue")
@@ -350,25 +355,29 @@ function EntityLib:_SpawnFellows()
         self.IsLeader = true
 
         for _, symbol: IntValue in locator.Party:GetChildren() do
-            local teamLocator = ReplicatedStorage.Packages.Unloads.EnemyLocator:Clone() :: BasePart
-
+            local teamLocator = HarukaLib:CreateMockPart()
             teamLocator.Name = symbol.Name
-            teamLocator:SetAttribute("Level", symbol.Value)
-            teamLocator:SetAttribute("NoRespawn", true)
-            teamLocator.Transparency = 1
 
+            teamLocator.Size = Vector3.new(5, 2, 5)
             teamLocator.Position = ServerLib:FindGroundByRay(locator.Position + Vector3.new(
                 math.random(-12, 12), 0,
                 math.random(-12, 12)
             )) + Vector3.yAxis * teamLocator.Size.Y / 2
+
+            teamLocator:SetAttribute("Level", symbol.Value)
+            teamLocator:AddTag("EnemyLocatorEntity")
+            teamLocator:SetAttribute("NoRespawn", true)
+
 
             local teamSymbol = Instance.new("ObjectValue")
             teamSymbol.Name = "PartyLeader"
             teamSymbol.Value = self.Entity
             teamSymbol.Parent = teamLocator
 
-            teamLocator:AddTag("EnemyLocatorEntity")
-            teamLocator.Parent = workspace.Enemies
+
+            Promise.delay(1):andThen(function()
+                teamLocator.Parent = workspace.Enemies
+            end)
         end
     end
     if locator:FindFirstChild("PartyLeader") then
@@ -427,17 +436,20 @@ function EntityLib:_ListenStatsTracker()
         local healthExBuff = entity:GetAttribute("MaxHealthExPower") :: number
         local targeting = entity:GetAttribute("TotalTargeting") :: number
 
+        local isBoss = entity:GetAttribute("IsBoss") :: boolean
+
 
         local finalHealth = FormulaBook.EnemyHealthCurveCal({
-            BaseHealth = entity:GetAttribute("BaseMaxHealth"),
             Level = entity:GetAttribute("Level"),
-            IsBoss = entity:GetAttribute("IsBoss"),
+            IsBoss = isBoss,
             EnvironmentBonus = entity:GetAttribute("EnvironmentBonus"),
         })
 
-        targeting = math.max(targeting, 1)
-        finalHealth *= targeting
+        if isBoss then
+            targeting = math.max(targeting, 1)
 
+            finalHealth *= targeting
+        end
 
         entity.Humanoid.MaxHealth = math.ceil(finalHealth * healthExBuff + healthBuff)
 
@@ -449,7 +461,6 @@ function EntityLib:_ListenStatsTracker()
         end
     end
     self.Add(HarukaLib:Hydrate(entity, {
-        ["Attr-BaseMaxHealth"] = _updateHealth,
         ["Attr-MaxHealthEx"] = _updateHealth,
         ["Attr-MaxHealthExPower"] = _updateHealth,
         ["Attr-TotalTargeting"] = _updateHealth,

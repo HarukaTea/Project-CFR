@@ -85,7 +85,7 @@ UniversalEntity.InitAttackTasks = function(_, self: table, resolveObj: () -> ())
 
         resolveObj()
     end):catch(function(err)
-        if RunService:IsStudio() then warn(tostring(err)) end
+        warn(tostring(err))
     end))
 
 

@@ -34,6 +34,8 @@ return {
             FogStart = 59
         },
         ClockTime = 2,
+
+        RainLevel = 5
     },
 
     InitusBay = {
@@ -47,6 +49,8 @@ return {
 
         LightingInfo = defaultLighting,
         ClockTime = 14,
+
+        RainLevel = 0,
     },
 
     CorruptedCavern = {
@@ -73,6 +77,8 @@ return {
 
         LightingInfo = defaultLighting,
         ClockTime = 14,
+
+        RainLevel = 0,
     },
 
     EursidaLake = {
@@ -86,6 +92,8 @@ return {
 
         LightingInfo = defaultLighting,
         ClockTime = 14,
+
+        RainLevel = 0,
     },
 
     EursidaRiver = {
@@ -99,6 +107,8 @@ return {
 
         LightingInfo = defaultLighting,
         ClockTime = 14,
+
+        RainLevel = 0,
     },
 
     Highlands = {
@@ -112,6 +122,8 @@ return {
 
         LightingInfo = defaultLighting,
         ClockTime = 12,
+
+        RainLevel = 0,
     },
 
     VenatorVillage = {
@@ -125,6 +137,8 @@ return {
 
         LightingInfo = defaultLighting,
         ClockTime = 12,
+
+        RainLevel = 0,
     },
 
 
@@ -144,5 +158,7 @@ return {
 
         LightingInfo = {},
         ClockTime = 0,
+
+        RainLevel = 0,
     }
 }

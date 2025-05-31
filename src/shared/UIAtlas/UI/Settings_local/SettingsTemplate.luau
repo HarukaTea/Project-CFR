@@ -35,6 +35,18 @@ local template = {
 				Increasement = 0.1,
 
 				ValChanged = Signal.new()
+			},
+			FootstepVolume = {
+				OptionTitle = "Footstep Volume",
+				Type = "Slider",
+				LayoutOrder = 2,
+
+				Min = 0,
+				Max = 2,
+				DefaultValue = 0.9,
+				Increasement = 0.1,
+
+				ValChanged = Signal.new()
 			}
 		}
     },
@@ -68,6 +80,13 @@ local template = {
 				LayoutOrder = 1,
 
 				DefaultValue = false
+			},
+			Trees = {
+				OptionTitle = "Trees",
+				Type = "Switcher",
+				LayoutOrder = 2,
+
+				DefaultValue = true,
 			},
 			GlobalShadows = {
 				OptionTitle = "Shadows",

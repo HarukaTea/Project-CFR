@@ -5,6 +5,7 @@ local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
 
@@ -234,22 +235,18 @@ function CharLib:_ListenAnimateTracker()
 
     local ANIMS = self.ANIMS
 	Add(humanoid.Running:Connect(function()
-		if humanoid.MoveDirection.Magnitude > 0 then
-            if char:GetAttribute("IsInCombat") then
-                local class = plr:GetAttribute("Class") :: string
+        local class = plr:GetAttribute("Class") :: string
+        local isInCombat = char:GetAttribute("IsInCombat") :: boolean
 
+
+		if humanoid.MoveDirection.Magnitude > 0 then
+            if isInCombat then
                 _playAnim(CLASS_ANIMS[class].Run, 0.1)
             else
                 _playAnim(ANIMS.Run, 0.1)
             end
 		else
-            if char:GetAttribute("IsInCombat") then
-                local class = plr:GetAttribute("Class") :: string
-
-                _playAnim(CLASS_ANIMS[class].Idle, 0.1)
-            else
-                _playAnim(ANIMS.Idle, 0.1)
-            end
+            _playAnim(ANIMS.Idle, 0.1)
 		end
 	end))
 	Add(humanoid.Climbing:Connect(function(vel)
@@ -260,13 +257,7 @@ function CharLib:_ListenAnimateTracker()
 		end
 	end))
 	Add(humanoid.Jumping:Connect(function()
-        if char:GetAttribute("IsInCombat") then
-            local class = plr:GetAttribute("Class") :: string
-
-            _playAnim(CLASS_ANIMS[class].Jump, 0.1)
-        else
-            _playAnim(ANIMS.Jump, 0.1)
-        end
+        _playAnim(ANIMS.Jump, 0.1)
 	end))
 	Add(humanoid.FreeFalling:Connect(function()
         _playAnim(ANIMS.Fall, 0.1)
@@ -300,6 +291,47 @@ function CharLib:_ListenAnimateTracker()
             _playAnim(ANIMS[emote], 0.1)
         end
     end))
+end
+
+
+function CharLib:_ListenFootstepTracker()
+    local humanoid = char.Humanoid :: Humanoid
+
+    local isWalking = false
+    local lastMaterialStanding = nil
+
+
+    Add(humanoid.Running:Connect(function(speed: number)
+        if speed > humanoid.WalkSpeed / 2 then
+            isWalking = true
+        else
+            isWalking = false
+        end
+    end))
+    Add(RunService.Heartbeat:Connect(function()
+        if isWalking then
+            local materialStanding = humanoid.FloorMaterial.Name
+
+            if materialStanding ~= lastMaterialStanding and lastMaterialStanding ~= nil then
+                SoundService.FS_SFXs[lastMaterialStanding].Playing = false
+            end
+
+            local materialSFX = SoundService.FS_SFXs[materialStanding] :: Sound
+            materialSFX.PlaybackSpeed = 16 / 12
+            materialSFX.Playing = true
+
+            lastMaterialStanding = materialStanding
+        else
+            for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
+                sound.Playing = false
+            end
+        end
+    end))
+    Add(function()
+        for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
+            sound.Playing = false
+        end
+    end)
 end
 
 

@@ -127,6 +127,8 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
         r6Char.Animate:Destroy()
         r6Char.PrimaryPart = r6Char.Humanoid.RootPart
 
+        r6Char:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
+
         local alignMoverAtt = Instance.new("Attachment")
         alignMoverAtt.Name = "AlignMoverAttachment"
         alignMoverAtt.Parent = r6Char.PrimaryPart
@@ -138,8 +140,6 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
 
         local enumState = {
             Enum.HumanoidStateType.StrafingNoPhysics,
-            Enum.HumanoidStateType.Ragdoll,
-            Enum.HumanoidStateType.Flying,
             Enum.HumanoidStateType.Swimming,
             Enum.HumanoidStateType.RunningNoPhysics,
         }
@@ -403,12 +403,23 @@ function GlobalCriRPGLib:_ListenPlayerDMGTracker()
         if orbUniqueId == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib:IsCharValid(char) then
+            Events.CreateNotify.Fire(plr, "[Error] Invalid Character")
+            return
+        end
 
-        local orbList = ServerStorage.OrbSymbolContainer:FindFirstChild("OrbSymbols_"..char.Name) :: Folder?
+        local orbList = ServerStorage.OrbSymbolContainer:FindFirstChild("OrbSymbols_"..char:GetAttribute("HarukaUniqueId")) :: Folder?
 
-        if not orbList then return end
-        if not orbList:FindFirstChild(orbUniqueId) then return end
+        if not orbList then
+            Events.CreateNotify.Fire(plr, "[Error] Invalid Orb List")
+            warn("Invalid orb list")
+            return
+        end
+        if not orbList:FindFirstChild(orbUniqueId) then
+            Events.CreateNotify.Fire(plr, "[Error] Invalid Orb Identity")
+            warn("Invalid orb identity")
+            return
+        end
 
         local symbol = orbList[orbUniqueId] :: CFrameValue
         if symbol:GetAttribute("Owner") ~= char.Name then return end
@@ -450,6 +461,9 @@ function GlobalCriRPGLib:_ListenPlayerDMGTracker()
             check = false
 
             if tostring(reason) == "Distance" then Events.CreateNotify.Fire(plr, "You are too far away from orb!") end
+            if tostring(reason) == "ClassId" then
+                warn("Invalid ClassId for orb")
+            end
         end)
         if not check then return end
 
@@ -472,7 +486,7 @@ function GlobalCriRPGLib:_ListenPlayerDMGTracker()
             ClassAttackLib[thatOrbStyle](plr)
 
         end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
+            warn(tostring(err))
         end)
     end)
 end
@@ -612,7 +626,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
                 badStatus = true
             end
         end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
+            warn(tostring(err))
         end)
         if badStatus then
             if RunService:IsStudio() then
@@ -687,7 +701,7 @@ function GlobalCriRPGLib:_ListenCastClassUltRequestsTracker()
                 ClassAttackLib[class.."_Ult"](plr)
 
             end):catch(function(err)
-                if RunService:IsStudio() then warn(tostring(err)) end
+                warn(tostring(err))
             end)
         end
     end)
@@ -759,7 +773,7 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
         end
 
 
-        local whiteList = { "Passive", "Accessory", "Active", "Consumable", "Weapon" }
+        local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
         if not table.find(whiteList, itemInfo.Type) then
             Events.CreateNotify.Fire(plr, "You can't equip this item! Invalid Item Type")
             return
@@ -1123,7 +1137,7 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
         if not ServerLib:IsCharValid(char) then return end
         if not ServerLib:IsCharValid(data.EnemyEntity) then return end
 
-        local projectileList = ServerStorage.SkillProjectileContainer:FindFirstChild("SkillProjectiles_"..char.Name) :: Folder?
+        local projectileList = ServerStorage.SkillProjectileContainer:FindFirstChild("SkillProjectiles_"..char:GetAttribute("HarukaUniqueId")) :: Folder?
 
         if not projectileList then return end
         if not projectileList:FindFirstChild(projectileId) then return end
@@ -1150,7 +1164,7 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
 
 
         ClassAttackLib:_DealDamageToEnemy(char, data.EnemyEntity, {
-            DMG = ClassAttackLib:_CalDMG(style, char, true, {
+            DMG = ClassAttackLib:_CalDMG(style, char, {
                 ForceMaxDMG = true
             })
         })

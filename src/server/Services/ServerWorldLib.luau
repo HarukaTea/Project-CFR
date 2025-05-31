@@ -83,9 +83,15 @@ function ServerWorldLib:_DoTrees()
     pathModifier.PassThrough = false
 
 
+    local treeContainer = Instance.new("Folder")
+    treeContainer.Name = "TreeContainer"
+    treeContainer.Parent = workspace
+
+
     for _, tree: Model in workspace:GetDescendants() do
         if tree:IsA("Model") and string.find(string.lower(tree.Name), "tree") then
             tree:AddTag("TreeEntity")
+            tree.Parent = treeContainer
 
             for _, part: BasePart in tree:GetDescendants() do
                 if HarukaLib:IsBasePartType(part) and part.Material == Enum.Material.Grass then
@@ -220,6 +226,13 @@ end
 
 
 function ServerWorldLib:_DoInitSoundGroups()
+    for _, material in Enum.Material:GetEnumItems() do
+        if not ReplicatedStorage.Packages.Audio.FS_SFXs:FindFirstChild(material.Name) then
+            local airReplacement = ReplicatedStorage.Packages.Audio.FS_SFXs.Air:Clone()
+            airReplacement.Name = material.Name
+            airReplacement.Parent = ReplicatedStorage.Packages.Audio.FS_SFXs
+        end
+    end
     for _, sGroup: SoundGroup in ReplicatedStorage.Packages.Audio:GetChildren() do
         if sGroup:IsA("SoundGroup") then
             sGroup.Parent = SoundService
@@ -262,25 +275,19 @@ function ServerWorldLib:_DoMarketNPCOptimizeInit()
         if npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid") then
             HarukaLib:SetCollisionGroup(npc, "NoCollision")
 
-            local enumState = {
-                Enum.HumanoidStateType.FallingDown,
-                Enum.HumanoidStateType.Climbing,
-                Enum.HumanoidStateType.StrafingNoPhysics,
-                Enum.HumanoidStateType.Ragdoll,
-                Enum.HumanoidStateType.GettingUp,
-                Enum.HumanoidStateType.Flying,
-                Enum.HumanoidStateType.Seated,
-                Enum.HumanoidStateType.Physics,
-                Enum.HumanoidStateType.Jumping,
-                Enum.HumanoidStateType.Landed,
-                Enum.HumanoidStateType.PlatformStanding,
-                Enum.HumanoidStateType.Swimming,
-                Enum.HumanoidStateType.Freefall,
-                Enum.HumanoidStateType.RunningNoPhysics,
-            }
-            for _, state: Enum.HumanoidStateType in enumState do
-                npc.Humanoid:SetStateEnabled(state, false)
+
+            if not npc.Humanoid:FindFirstChildOfClass("Animator") then
+                local animator = Instance.new("Animator")
+                animator.Parent = npc.Humanoid
             end
+
+
+            local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims.DefaultIdle) :: AnimationTrack
+
+            animTrack.Looped = true
+            animTrack.Priority = Enum.AnimationPriority.Idle
+
+            animTrack:Play()
         end
     end
     for _, product: Instance in workspace.MapComponents.Markets:GetDescendants() do
@@ -305,29 +312,6 @@ function ServerWorldLib:_DoInitNPCs()
         if npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid") then
             npc:AddTag("NPCEntity")
             npc.PrimaryPart = npc.Humanoid.RootPart
-            npc.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-
-
-            local enumState = {
-                --Enum.HumanoidStateType.FallingDown,
-                Enum.HumanoidStateType.Climbing,
-                Enum.HumanoidStateType.StrafingNoPhysics,
-                Enum.HumanoidStateType.Ragdoll,
-                --Enum.HumanoidStateType.GettingUp,
-                Enum.HumanoidStateType.Flying,
-                Enum.HumanoidStateType.Seated,
-                Enum.HumanoidStateType.Physics,
-                Enum.HumanoidStateType.Jumping,
-                --Enum.HumanoidStateType.Landed,
-                --Enum.HumanoidStateType.PlatformStanding,
-                Enum.HumanoidStateType.Swimming,
-                --Enum.HumanoidStateType.Freefall,
-                Enum.HumanoidStateType.RunningNoPhysics,
-            }
-            for _, state: Enum.HumanoidStateType in enumState do
-                npc.Humanoid:SetStateEnabled(state, false)
-            end
-
 
             if npc.Humanoid:FindFirstChildOfClass("Animator") then
                 local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
@@ -372,6 +356,11 @@ end
 
 
 function ServerWorldLib:_DoFlowerBushCastShadowInit()
+    local flowerContainer = Instance.new("Folder")
+    flowerContainer.Name = "FlowerContainer"
+    flowerContainer.Parent = workspace
+
+
     local whiteList = { "Flower", "Grass", "Bush" }
     for _, child: Instance in workspace.Maps:GetDescendants() do
         if child:IsA("Model") then
@@ -394,6 +383,7 @@ function ServerWorldLib:_DoFlowerBushCastShadowInit()
 
             child:AddTag("FlowerEntity")
             child:AddTag("RaycastIgnoreEntity")
+            child.Parent = flowerContainer
 
             for _, meshPart: MeshPart in child:GetDescendants() do
                 if HarukaLib:IsBasePartType(meshPart) then

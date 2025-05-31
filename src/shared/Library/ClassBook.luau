@@ -18,7 +18,7 @@ return {
 
         BaseStats = {
             MaxHealth = 80,
-            OrbBounce = 200
+            OrbBounce = 222
         }
 	},
 
@@ -61,7 +61,7 @@ return {
 
 
         BaseStats = {
-            MaxMana = 300
+            MaxMana = 300,
         }
     },
 
@@ -84,13 +84,14 @@ return {
 
 
         BaseStats = {
-            MaxDMG = 30
+            MaxDMG = 30,
+            SpeedCombat = 37
         }
     },
 
     Rise = {
-        Icon = "rbxassetid://12190535870",
-        Color = Color3.fromHex('#ffffff'),
+        Icon = "rbxassetid://120613067089872",
+        Color = Color3.fromHex('#34ace0'),
 		Type = "DMG",
 
         Desc = "",

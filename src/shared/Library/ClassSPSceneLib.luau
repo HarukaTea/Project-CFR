@@ -24,7 +24,8 @@ local function _tweenValue(start: number, duration: number, endTime: number, obj
 	local numVal = Instance.new('NumberValue')
 	numVal.Value = start
 
-	TweenService:Create(numVal, TweenInfo.new(duration), {Value = endTime}):Play()
+
+    HarukaLib:CreateTween(numVal, TweenInfo.new(duration), {Value = endTime}):Play()
 	Debris:AddItem(numVal, duration)
 
 	if obj then

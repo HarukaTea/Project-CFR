@@ -235,7 +235,7 @@ return function (scope: Fusion.Scope, props: {
                                 TextColor3 = Components.BLACK_COLOR,
 
                                 Text = `Req Lv.{itemSymbol:GetAttribute("Level")}`,
-                                Visible = itemSymbol:GetAttribute("Level") > 1,
+                                Visible = itemSymbol:GetAttribute("Level") > 1 and info.Type ~= "Material",
 
                                 [Children] = {
                                     Components.RoundUICorner(scope),

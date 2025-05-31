@@ -12,7 +12,6 @@ local ServerBindables = {
     PlayerGotHit = Signal.new(),
     PlayerCombatEnded = Signal.new(),
     EnemyGotHit = Signal.new(),
-    EnemyDied = Signal.new(),
 
 
     PlayerTargetingListChanged = Signal.new(),

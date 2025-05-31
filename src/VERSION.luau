@@ -1,1 +1,1 @@
-return "CFantasy_PT2_Patch5_0528"
+return "CFantasy_PART2.5_0531"

@@ -16,7 +16,6 @@ local ClassSPSceneLib = require(RepS.HarukaShared.Library.ClassSPSceneLib)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local LocationBook = require(RepS.HarukaShared.Library.LocationBook)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
@@ -125,7 +124,7 @@ function CriRPGLib:_ListenCombatTracker()
             if isInCombat then return end
             isInCombat = true
 
-
+            _destroyCombatBorder()
             Bindables.CreateCenterNotify:Fire("COMBAT START!", true)
 
             local border = RepS.Packages.Unloads.CombatBorder:Clone() :: Model
@@ -237,7 +236,9 @@ function CriRPGLib:_ListenAreaTracker()
                 local targetSoundCB = musicLib.Combat[LocationBook[location].CombatMusic] :: Sound
 
                 if overworldMusic.SoundId ~= targetSoundOW.SoundId then
-                    TweenService:Create(overworldMusic, TweenInfo.new(0.3), { Volume = 0 }):Play()
+                    HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.twiceHalf, {
+                        Volume = 0
+                    }):Play()
 
                     wait(0.3)
                     overworldMusic.SoundId = targetSoundOW.SoundId
@@ -245,7 +246,10 @@ function CriRPGLib:_ListenAreaTracker()
                     if combatMusic.Playing then return end
 
                     overworldMusic:Play()
-                    TweenService:Create(overworldMusic, TweenInfo.new(0.5), { Volume = LocationBook[location].MusicVolume }):Play()
+
+                    HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.half, {
+                        Volume = LocationBook[location].MusicVolume
+                    }):Play()
                 end
                 if combatMusic.SoundId ~= targetSoundCB.SoundId then
                     combatMusic.SoundId = targetSoundCB.SoundId
@@ -265,6 +269,10 @@ function CriRPGLib:_ListenAreaTracker()
             HarukaLib:CreateTween(workspace.Terrain.Clouds, AssetBook.TweenInfos.one, {
                 Color = _calculateColor(LocationBook[location].ClockTime)
             }):Play()
+
+
+            --- apply rain
+            Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel)
         end
 
         wait(1.5)
@@ -379,7 +387,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
                     char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
                 end
 
-                local bounceWeight = 31.599
+                local bounceWeight = 37
                 local bounceBuff = char:GetAttribute("OrbBounce") / 100
 
                 bounceWeight *= bounceBuff

@@ -1,6 +1,7 @@
 --!nocheck
 
 local Debris = game:GetService("Debris")
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
@@ -56,6 +57,26 @@ StatusLib.RestoreManaPercentage = function(_, char: Model, percentage: number) :
     return StatusLib:RestoreMana(char, math.ceil(char:GetAttribute("MaxMana") * percentage / 100))
 end
 
+
+
+StatusLib.CreateCustomEffect = function(_, eff: string, char: Model, props: {
+    Duration: number,
+})
+    if not ServerLib:IsCharValid(char) then return end
+
+    local effectSymbol = Instance.new("StringValue")
+    effectSymbol.Name = "EffectSymbol"
+    effectSymbol.Value = eff.."Boost"
+
+    effectSymbol:SetAttribute("Ex", 0)
+    effectSymbol:SetAttribute("ExPower", 1)
+    effectSymbol:SetAttribute("EndClock", DateTime.now().UnixTimestamp + props.Duration)
+
+    effectSymbol:SetAttribute("TaskUniqueId", HttpService:GenerateGUID(false))
+
+    effectSymbol.Parent = char.EffectList
+    Debris:AddItem(effectSymbol, props.Duration)
+end
 
 
 

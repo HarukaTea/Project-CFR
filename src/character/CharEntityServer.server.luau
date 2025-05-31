@@ -27,6 +27,9 @@ Add(Players.PlayerRemoving:Connect(function(player: Player)
 		CharLib:Destroy()
 	end
 end))
+Add(script.Destroying:Connect(function()
+    CharLib:Destroy()
+end))
 
 
 function CharLib:Init()

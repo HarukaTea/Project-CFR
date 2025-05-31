@@ -29,6 +29,9 @@ Add(Players.PlayerRemoving:Connect(function(player: Player)
 		ClassMechanicLib:Destroy()
 	end
 end))
+Add(script.Destroying:Connect(function()
+    ClassMechanicLib:Destroy()
+end))
 
 
 
@@ -105,8 +108,10 @@ end
 ClassMechanicLib._CLASS_Reverberation = function(self)
     ClassAdd(ServerBindables.PlayerTargetingListChanged:Connect(function(charId: string, entity: Model)
         if char.Name ~= charId then return end
+        if entity:GetAttribute("ReverResonateNum_"..plr.UserId) then return end
 
-        local resonateNum = math.random(1, 9)
+        local notOdd = { 2, 4, 6, 8 }
+        local resonateNum = notOdd[math.random(1, #notOdd)]
         entity:SetAttribute("ReverResonateNum_"..plr.UserId, resonateNum)
 
         Events.CLASS_RollNewResonateNumForEnemy.Fire(plr, {
@@ -126,7 +131,7 @@ ClassMechanicLib._CLASS_Flow = function(self)
     }))
 
 
-    ClassAdd(HarukaLib.Clock(0.45, function()
+    ClassAdd(HarukaLib.Clock(0.55, function()
         if char:GetAttribute("FlowHeat") > 0 then
             HarukaLib:AddAttr(char, "FlowHeat", -1)
         end

@@ -358,7 +358,8 @@ function PlayerLib:_SaveData()
                 Amount = amount,
                 UniqueId = uniqueId,
                 Level = level,
-                ItemStat = item:GetAttribute("ItemStat")
+                ItemStat = item:GetAttribute("ItemStat"),
+                IsV2ItemStat = true
             }
         end
     end
@@ -436,6 +437,11 @@ function PlayerLib:_ValidateSaveData(data: table)
 
         if not itemInfo.ItemStat then
             data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
+            data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = true
+        end
+        if not itemInfo.IsV2ItemStat then
+            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
+            data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = true
         end
         if not itemInfo.Level then
             data.ItemsSQL[itemInfo.UniqueId].Level = trueItemInfo.Level
@@ -508,7 +514,7 @@ function PlayerLib:_ValidateSaveData(data: table)
             continue
         end
 
-        local whiteList = { "Passive", "Accessory", "Active", "Consumable", "Weapon" }
+        local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
         if not table.find(whiteList, ItemLib:GetItemInfo(itemObj.ItemId).Type) then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
@@ -536,6 +542,7 @@ function PlayerLib:_ValidateSaveData(data: table)
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
             Level = 1,
+            IsV2ItemStat = true,
             ItemStat = ServerLib:GiveRandomStatForItem(weaponId[class] or "WoodenSword")
         }
     end

@@ -32,5 +32,10 @@ return {
     HealthBoost = {
         Icon = "rbxassetid://73706423714397",
         Color = Color3.fromHex('#7bed9f'),
+    },
+
+    ReverberationBoost = {
+        Icon = "rbxassetid://120613067089872",
+        Color = Color3.fromHex('#34ace0'),
     }
 }

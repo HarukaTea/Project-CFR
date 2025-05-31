@@ -88,10 +88,16 @@ Promise.try(function()
 
             if not entityObj.IsReady then continue end
             if not ClientLib:IsCharValid(entityObj.Entity) then continue end
-            if entityObj.Entity:GetAttribute("IsInCombat") then continue end
+
+            local entity = entityObj.Entity
+
+            if entity:GetAttribute("IsInCombat") then continue end
+            if entity:GetAttribute("IsDead") then continue end
+            if entity:GetAttribute("EnteringCombat") then continue end
+            if entity:GetAttribute("IsBoss") then continue end
 
             pcall(function()
-                local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
+                local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
                 if distance < 18 and distance > 0 and entityObj.HasModel then
                     encounterCD = true
                     task.delay(2, function()
@@ -99,7 +105,7 @@ Promise.try(function()
                     end)
 
                     Events.RequestToStartCombat.Fire({
-                        Entity = entityObj.Entity
+                        Entity = entity
                     })
                 end
             end)

@@ -148,7 +148,7 @@ do
     local scope = Fusion.scoped()
     local UI: ScreenGui = nil
 
-    local LoadingTextVal = Fusion.Value(scope, "SAILING TO INITUS BAY...")
+    local LoadingTextVal = Fusion.Value(scope, "Sailing to Initus Bay...")
     local isAlreadyLoaded = false
 
     UI = LoadView(scope, {
@@ -160,15 +160,20 @@ do
         end
     })
 
-    task.delay(5, function()
+    task.delay(8, function()
         if isAlreadyLoaded then return end
 
-        LoadingTextVal:set("DATASTORE IS LOADING SLOWLY, IT WILL TAKE LONGER THAN USUAL...")
+        LoadingTextVal:set("Datastore is taking longer than expected...")
     end)
-    task.delay(15, function()
+    task.delay(23, function()
         if isAlreadyLoaded then return end
 
-        LoadingTextVal:set("DATASTORE FAILED TO LOAD!")
+        LoadingTextVal:set("Datastore is taking too long to load...")
+    end)
+    task.delay(33, function()
+        if isAlreadyLoaded then return end
+
+        LoadingTextVal:set("Datastore loaded time out!")
 
         plr:Kick("We're sorry, but datastore took too long to load. Maybe try again later?")
     end)
@@ -179,7 +184,7 @@ do
     isAlreadyLoaded = true
 
 
-    LoadingTextVal:set("LOADING PLAYER DATA...")
+    LoadingTextVal:set("Loading Data...")
 
     repeat wait() until plr.Character
     repeat wait() until plr.Character.PrimaryPart

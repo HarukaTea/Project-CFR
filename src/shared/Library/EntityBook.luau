@@ -17,7 +17,8 @@ return {
         Drops = {
             BeeStinger = 60,
             HealthyApple = 35,
-            GoldenApple = 5
+            GoldenApple = 10,
+            EarthBow = 10
         }
     },
     QueenBee = {
@@ -41,8 +42,7 @@ return {
             BeeStinger = 80,
             HealthyApple = 10,
             GoldenApple = 5,
-            HoneyArmor = 7,
-            DivineBlade = 15
+            HoneyArmor = 8,
         }
     },
 
@@ -64,7 +64,8 @@ return {
             SlimeGel = 40,
             SlimeCore = 30,
             HealthyApple = 20,
-            GoldenApple = 10
+            GoldenApple = 10,
+            DivineBlade = 10
         }
     },
     WheatSlime = {
@@ -84,7 +85,8 @@ return {
             SlimeGel = 40,
             SlimeCore = 30,
             HealthyApple = 20,
-            GoldenApple = 10
+            GoldenApple = 10,
+            DivineBlade = 12
         }
     },
     CrimsonSlime = {
@@ -109,7 +111,6 @@ return {
             HealthyApple = 10,
             GoldenApple = 5,
             CrimsonSlimeFang = 7,
-            EarthBow = 15
         }
     },
 
@@ -123,14 +124,15 @@ return {
         BaseSpeed = 20,
         BaseJumpPower = 50,
         BaseHealth = 87,
-        EnvironmentBonus = 1,
+        EnvironmentBonus = 0.8,
 
         Species = "Fox",
 
         Drops = {
             SpikyFur = 60,
             SpikyQuills = 30,
-            HealthyApple = 10
+            HealthyApple = 10,
+            ForestStaff = 10
         }
     },
     SpikeWolf = {
@@ -149,7 +151,8 @@ return {
         Drops = {
             SpikyFur = 60,
             SpikyQuills = 30,
-            HealthyApple = 10
+            HealthyApple = 10,
+            ForestStaff = 12
         }
     },
     HardmodeWolf = {
@@ -174,7 +177,6 @@ return {
             HealthyApple = 10,
             GoldenApple = 5,
             BlackWolfNecklace = 7,
-            ForestStaff = 15,
         }
     },
 

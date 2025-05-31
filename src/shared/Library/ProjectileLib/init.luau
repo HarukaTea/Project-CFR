@@ -34,7 +34,10 @@ local function _incomingCylinderAtt(projectileBase: BasePart)
     eff.Parent = projectileBase
     Debris:AddItem(eff, 1)
 
-    TweenService:Create(eff, AssetBook.TweenInfos.half, { Size = Vector3.new(0.01, 100, 0.01), Transparency = 1 }):Play()
+
+    HarukaLib:CreateTween(eff, AssetBook.TweenInfos.half, {
+        Size = Vector3.new(0.01, 100, 0.01), Transparency = 1
+    }):Play()
 end
 local function _rotateAttentionPoint(projectileBase: BasePart, container: Folder, props: {
     ShouldDetail: boolean,
@@ -52,10 +55,11 @@ local function _rotateAttentionPoint(projectileBase: BasePart, container: Folder
 
     if props.ShouldDetail then _incomingCylinderAtt(projectileBase) end
 
-    TweenService:Create(surfaceGui.Exclamation, TweenInfo.new(8.15), { Rotation = rotation }):Play()
+
+    HarukaLib:CreateTween(surfaceGui.Exclamation, AssetBook.TweenInfos.fifteen, { Rotation = rotation }):Play()
 
     Promise.delay(0.5):andThen(function()
-        TweenService:Create(surfaceGui.Exclamation, AssetBook.TweenInfos.half, { ImageTransparency = 1 }):Play()
+        HarukaLib:CreateTween(surfaceGui.Exclamation, AssetBook.TweenInfos.half, { ImageTransparency = 1 }):Play()
 
     end):catch(function() end)
 end

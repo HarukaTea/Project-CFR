@@ -15,8 +15,8 @@ ClassOrbSpawnAlgoLib.Burst = function(spawnCallback: (orbName: string) -> nil)
     spawnCallback("BurstOrb")
 
     local result, _, _ = HarukaLib:RollLoot({
-        Arrow = 33,
-        None = 77
+        Arrow = 50,
+        None = 50
     })
 
     if result == "Arrow" then
@@ -26,6 +26,17 @@ end
 
 ClassOrbSpawnAlgoLib.Reverberation = function(spawnCallback: (orbName: string) -> nil)
     spawnCallback("ReverberationOrb")
+
+
+    local result, _, _ = HarukaLib:RollLoot({
+        Echo = 25,
+        None = 100 - 25
+    })
+
+
+    if result == "Echo" then
+        spawnCallback("EchoOrb")
+    end
 end
 
 ClassOrbSpawnAlgoLib.Flow = function(spawnCallback: (orbName: string) -> nil)

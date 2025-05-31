@@ -24,7 +24,7 @@ local formulas = {
             return math.floor(135 * props.Level)
 
         elseif props.Level > 170 then
-            return math.floor(200 * props.Level)
+            return math.floor(188 * props.Level)
         end
     end,
 
@@ -34,7 +34,7 @@ local formulas = {
     EnemyEXPCurveCal = function(props: {
         Level: number
     })
-        return math.floor(25 * props.Level)
+        return math.floor(30 * props.Level)
     end,
 
 
@@ -80,7 +80,7 @@ local formulas = {
         BaseDMG: number,
         DMGPoints: number
     })
-        return math.ceil(props.BaseDMG + props.BaseDMG * (props.DMGPoints * 35 / 100))
+        return math.ceil(props.BaseDMG + props.BaseDMG * (props.DMGPoints * 42 / 100))
     end,
 
 
@@ -88,7 +88,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        return math.floor(props.BaseMagic + props.BaseMagic * (props.MagicPoints * 40 / 100))
+        return math.floor(props.BaseMagic + props.BaseMagic * (props.MagicPoints * 50 / 100))
     end,
 
 
@@ -110,14 +110,14 @@ local formulas = {
         BaseCritChance: number,
         DexPoints: number
     })
-        return math.floor(props.BaseCritChance + math.min(70, math.floor(props.DexPoints * 1.1)))
+        return math.floor(props.BaseCritChance + math.min(60, math.floor(props.DexPoints * 0.8)))
     end,
 
     PlayerDodgeChanceCurveCal = function(props: {
         BaseDodgeChance: number,
         DexPoints: number
     })
-        return math.floor(props.BaseDodgeChance + math.min(25, math.floor(props.DexPoints / 2.75)))
+        return math.floor(props.BaseDodgeChance + math.min(20, math.floor(props.DexPoints / 2.75)))
     end,
 
 
@@ -128,7 +128,6 @@ local formulas = {
         Stat: string,
         Val: number
     })
-        --// TODO: new upgrade curve
         local stat = props.Stat
         local level = props.Level
         local val = props.Val
