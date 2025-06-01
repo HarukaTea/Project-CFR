@@ -7,9 +7,14 @@ if not game.Loaded then
     game.Loaded:Wait()
 end
 
-repeat task.wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
-repeat task.wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 999)
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+local wait = task.wait
+
+
+
+repeat wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
+repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 999)
+repeat wait() until ReplicatedStorage.HarukaShared.Shared:WaitForChild("Promise", 999)
+repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 

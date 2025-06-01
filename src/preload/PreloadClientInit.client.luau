@@ -16,6 +16,9 @@ end
 
 function PreloadClientWorldLib:_DoMapComponentTracker()
     local function _handleWindmill(windmill: Model)
+        repeat wait() until windmill and windmill.PrimaryPart
+
+        wait()
         task.defer(function()
             while wait(0.01) do
                 windmill.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
@@ -23,6 +26,9 @@ function PreloadClientWorldLib:_DoMapComponentTracker()
         end)
     end
     local function _handleGalleon(galleon: Model)
+        repeat wait() until galleon and galleon.PrimaryPart
+
+        wait()
         task.defer(function()
             while wait(0.01) do
                 for _ = 1, 50 do

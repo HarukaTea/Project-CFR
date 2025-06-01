@@ -17,8 +17,7 @@ return {
 
 
         BaseStats = {
-            MaxHealth = 80,
-            OrbBounce = 222
+            OrbBounce = 210
         }
 	},
 
@@ -39,8 +38,7 @@ return {
 
 
         BaseStats = {
-            MaxHealth = 110,
-            MinDMG = 10,
+            MaxClassUltProgress = 70
         }
     },
 
@@ -84,8 +82,8 @@ return {
 
 
         BaseStats = {
-            MaxDMG = 30,
-            SpeedCombat = 37
+            MaxDMG = 25,
+            SpeedCombat = 40
         }
     },
 

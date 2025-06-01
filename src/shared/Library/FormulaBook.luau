@@ -45,7 +45,7 @@ local formulas = {
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
-        local f = 89 * props.Level * 1.5 ^ 1.15 - 50
+        local f = 115 * props.Level * 1.599 ^ 1.1599 - 50
 
         return math.ceil(f * props.EnvironmentBonus)
     end,
@@ -55,7 +55,7 @@ local formulas = {
         Level: number,
         EnvironmentBonus: number?
     })
-        local f = 3 * props.Level
+        local f = 3.5 * props.Level
 
         return math.ceil(f)
     end,
@@ -80,7 +80,10 @@ local formulas = {
         BaseDMG: number,
         DMGPoints: number
     })
-        return math.ceil(props.BaseDMG + props.BaseDMG * (props.DMGPoints * 42 / 100))
+        local extra = 1 + ((props.DMGPoints * 42) / 100)
+
+
+        return math.ceil(props.BaseDMG * extra)
     end,
 
 
@@ -88,7 +91,9 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        return math.floor(props.BaseMagic + props.BaseMagic * (props.MagicPoints * 50 / 100))
+        local extra = 1 + ((props.MagicPoints * 60) / 100)
+
+        return math.ceil(props.BaseMagic * extra)
     end,
 
 

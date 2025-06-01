@@ -1,1 +1,1 @@
-return "CFT_LuminaUpdate_0601"
+return "CF_STELLAUPDATE_0601_Patch1"

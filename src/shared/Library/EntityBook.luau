@@ -43,6 +43,7 @@ return {
             HealthyApple = 10,
             GoldenApple = 5,
             HoneyArmor = 8,
+            QueenBeeBow = 1
         }
     },
 
@@ -86,7 +87,7 @@ return {
             SlimeCore = 30,
             HealthyApple = 20,
             GoldenApple = 10,
-            DivineBlade = 12
+            DivineBlade = 10
         }
     },
     CrimsonSlime = {
@@ -152,7 +153,7 @@ return {
             SpikyFur = 60,
             SpikyQuills = 30,
             HealthyApple = 10,
-            ForestStaff = 12
+            ForestStaff = 10
         }
     },
     HardmodeWolf = {
@@ -177,6 +178,7 @@ return {
             HealthyApple = 10,
             GoldenApple = 5,
             BlackWolfNecklace = 7,
+            WolfKingSword = 1
         }
     },
 

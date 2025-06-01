@@ -68,7 +68,7 @@ local enemyDiedSignal = Signal.new()
 local enterCombatSignal = Signal.new()
 local destroyEntityObjSignal = Signal.new()
 
-enterCombatSignal:Connect(function(entity: Model, target: Model, isLeaderForced: boolean?)
+enterCombatSignal:Connect(function(entity: Model, target: Model)
     if not ServerLib:IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
@@ -82,7 +82,7 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, isLeaderForced:
 
     for _, entityObj in allEntityPool do
         if entityObj.Entity == entity then
-            entityObj:_EnterCombat(target, isLeaderForced)
+            entityObj:_EnterCombat(target)
             break
         end
     end
@@ -199,8 +199,6 @@ function EntityLib:Init()
             end
         end
     end))
-
-    self:_SpawnFellows()
 
     Promise.delay(1):andThen(function()
         self.Entity:SetAttribute("IsReady", true)
@@ -348,51 +346,6 @@ function EntityLib:_SpawnModel()
     allEntityPool[uniqueId] = self
 end
 
-
-
-function EntityLib:_SpawnFellows()
-    local locator = self.Locator :: BasePart
-
-
-    if locator:FindFirstChild("Party") then
-        self.IsLeader = true
-
-        for _, symbol: IntValue in locator.Party:GetChildren() do
-            local teamLocator = HarukaLib:CreateMockPart()
-            teamLocator.Name = symbol.Name
-
-            teamLocator.Size = Vector3.new(5, 2, 5)
-            teamLocator.Position = ServerLib:FindGroundByRayForOrb(locator.Position + Vector3.new(
-                math.random(-12, 12), 0,
-                math.random(-12, 12)
-            )) + Vector3.yAxis * teamLocator.Size.Y / 2
-
-            teamLocator:SetAttribute("Level", symbol.Value)
-            teamLocator:AddTag("EnemyLocatorEntity")
-            teamLocator:SetAttribute("NoRespawn", true)
-
-
-            local teamSymbol = Instance.new("ObjectValue")
-            teamSymbol.Name = "PartyLeader"
-            teamSymbol.Value = self.Entity
-            teamSymbol.Parent = teamLocator
-
-
-            Promise.delay(0.1599):andThen(function()
-                teamLocator.Parent = workspace.Enemies
-            end)
-        end
-    end
-    if locator:FindFirstChild("PartyLeader") then
-        self.HasLeader = true
-
-
-        local memberSymbol = Instance.new("ObjectValue")
-        memberSymbol.Name = "PartyMember_"..self.Entity.Name
-        memberSymbol.Value = self.Entity
-        memberSymbol.Parent = locator.PartyLeader.Value.PartyMembers
-    end
-end
 
 
 function EntityLib:_ListenStatsTracker()
@@ -725,13 +678,7 @@ function EntityLib:_ErrorAndRespawn(step: number)
 end
 
 
-function EntityLib:_EnterCombat(target: Model, isLeaderForced: boolean?)
-    if self.HasLeader and not isLeaderForced then
-        enterCombatSignal:Fire(self.Locator.PartyLeader.Value, target)
-        return
-    end
-
-
+function EntityLib:_EnterCombat(target: Model)
     if self.IsInCombat then return end
     self.IsInCombat = true
 
@@ -765,13 +712,6 @@ function EntityLib:_EnterCombat(target: Model, isLeaderForced: boolean?)
     --// ready to fight
     local nearbyCount = 0
     local function _nearbyEnemyEnterCombat()
-        if self.IsLeader then
-            for _, entitySymbol: ObjectValue in entity.PartyMembers:GetChildren() do
-                enterCombatSignal:Fire(entitySymbol.Value, target, true)
-                nearbyCount += 1
-            end
-        end
-
         for _, entityObj: table in allEntityPool do
             if nearbyCount >= 5 then break end
 

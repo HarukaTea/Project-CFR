@@ -23,7 +23,7 @@ if #Players:GetPlayers() > Players.MaxPlayers then
     return
 end
 if workspace:GetAttribute("Haruka_ServerLocked") then
-    plr:Kick("This server is invalid. Rejoin can fix it.")
+    plr:Kick("This server is invalid/locked. Rejoin can fix it.")
     return
 end
 
@@ -91,12 +91,16 @@ do
         game.Loaded:Wait()
     end
 
-    repeat task.wait() until RepS:WaitForChild("HarukaShared", 999)
-    repeat task.wait() until RepS.HarukaShared:WaitForChild("Shared", 999)
-    repeat task.wait() until RepS.HarukaShared:WaitForChild("UIAtlas", 999)
-    repeat task.wait() until RepS.HarukaShared.UIAtlas:WaitForChild("Components", 999)
-    repeat task.wait() until RepS.HarukaShared.UIAtlas.Components:WaitForChild("LoadView", 999)
-    repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+    --// replicated first service sometimes wont load
+    repeat wait() until RepS:WaitForChild("HarukaShared", 999)
+    repeat wait() until RepS.HarukaShared:WaitForChild("Shared", 999)
+    repeat wait() until RepS.HarukaShared:WaitForChild("UIAtlas", 999)
+    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("Components", 999)
+    repeat wait() until RepS.HarukaShared.UIAtlas.Components:WaitForChild("LoadView", 999)
+    repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Fusion", 999)
+    repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
+    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
+    repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
     --// Load view
@@ -171,6 +175,21 @@ do
             CancelText = "NO",
 
             ConfirmUniqueId = "ConfirmMobileVersion"
+        }):Wait()
+
+        if result == "NO" then
+            plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
+            return
+        end
+    end
+    if HarukaLib:GetDevice() == "Console" then
+        wait(1.5)
+        local result = Components:CreateConfirmPrompt(scope, {
+            Hint = "When using <yellow>console devices</font>, <red>you must use mouse and keyboard to play</font>. Do you still wish to continue?",
+            ConfirmText = "YES",
+            CancelText = "NO",
+
+            ConfirmUniqueId = "ConfirmConsoleVersion"
         }):Wait()
 
         if result == "NO" then

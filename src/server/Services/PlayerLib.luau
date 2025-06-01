@@ -357,6 +357,7 @@ end
 
 function PlayerLib:_SaveData()
     if not self.Profile then return end
+    if not self.Slot then return end
     if self.Player:GetAttribute("Haruka_DataLocked") then return end
 
     local profileAttrs = self.Profile.Data[self.Slot].Attrs :: table
@@ -544,6 +545,36 @@ function PlayerLib:_ValidateSaveData(data: table)
             end
         end
 
+        local trueItemInfo = ItemLib:GetItemInfo(itemInfo.ItemId)
+        if not trueItemInfo then
+            data.EquippingItemsSQL[thatSlot] = nil
+            continue
+        end
+
+
+        --// check type
+        if string.find(thatSlot, "Weapon") then
+            if trueItemInfo.Type ~= "Weapon" then
+                data.EquippingItemsSQL[thatSlot] = nil
+                continue
+            end
+        end
+        if string.find(thatSlot, "Accessory") then
+            if trueItemInfo.Type ~= "Accessory" then
+                data.EquippingItemsSQL[thatSlot] = nil
+                continue
+            end
+        end
+        if string.find(thatSlot, "Active") then
+            local whiteList = { "Active", "Consumable" }
+            if not table.find(whiteList, trueItemInfo.Type) then
+                data.EquippingItemsSQL[thatSlot] = nil
+                continue
+            end
+        end
+
+
+
         --// check if item exists and level is enough
         local itemObj = data.ItemsSQL[itemInfo.UniqueId]
         if itemObj == nil then
@@ -558,6 +589,7 @@ function PlayerLib:_ValidateSaveData(data: table)
         end
         if data.Level < itemObj.Level then
             data.EquippingItemsSQL[thatSlot] = nil
+            continue
         end
     end
 

@@ -5,6 +5,14 @@ local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
 
 
+local wait = task.wait
+
+
+repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Library", 999)
+repeat wait() until ReplicatedStorage.HarukaShared.Library:WaitForChild("AssetBook", 999)
+repeat wait() until ReplicatedStorage.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
+
+
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 

@@ -927,22 +927,25 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         if data.ItemUniqueId == nil then return end
         if sellAmount == nil then return end
 
+        --// cant sell more than 999 items at once
         if sellAmount > 999 then
             Events.CreateNotify.Fire(plr, "You can't sell more than 999 items at once!")
             return
         end
 
 
+        --// cant sell items in combat
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
+            Events.CreateNotify.Fire(plr, "You can't sell items in combat!")
             return
         end
         --// TODO: distance checks
 
 
+        --// cant sell items obtained from chests / nil
         local itemInfo = ItemLib:GetItemInfo(item)
         if not itemInfo then return end
 
@@ -951,8 +954,6 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
             Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
             return
         end
-
-
         local foundInChest = false
         for _, chest in CollectionService:GetTagged("ChestEntity") do
             if chest.Name == itemInfo.ItemId then
@@ -966,11 +967,22 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         end
 
 
+        --// cant sell items that is not existed
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
         if itemSymbol == nil then return end
 
+        itemSymbol = nil
+        for _, symbol: IntConstrainedValue in items:GetChildren() do
+            if symbol:GetAttribute("HarukaUniqueId") == data.ItemUniqueId then
+                itemSymbol = symbol
+                break
+            end
+        end
+        if not itemSymbol then return end
 
+
+        --// cant sell equipped item
         local equipping: StringValue = nil
         for _, symbol: StringValue in plr.EquippingItems:GetChildren() do
             if symbol:GetAttribute("HarukaUniqueId") == data.ItemUniqueId then
@@ -1008,16 +1020,18 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
         local item = data.ItemId
 
+        --// cant not sell nil items
         local itemInfo = ItemLib:GetItemInfo(item)
         if not itemInfo then return end
 
 
+        --// cant sell passive items
         if itemInfo.Type == "Passive" then
             Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
             return
         end
 
-
+        --// cant sell items in combat
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end
 
@@ -1028,6 +1042,21 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         --// TODO: distance checks
 
 
+        --// cant sell items obtained from chests / nil
+        local foundInChest = false
+        for _, chest in CollectionService:GetTagged("ChestEntity") do
+            if chest.Name == itemInfo.ItemId then
+                foundInChest = true
+                break
+            end
+        end
+        if foundInChest then
+            Events.CreateNotify.Fire(plr, "You cannot sell items obtained from Overworld Chests!")
+            return
+        end
+
+
+        --// cant sell items that is not existed
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
         if itemSymbol == nil then return end

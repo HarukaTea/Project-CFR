@@ -645,7 +645,7 @@
         "Recipe": ""
     },
     {
-        "ItemId": "MagicianHat",
+        "ItemId": "MagicianHat2",
         "Name": "Magician's Hat",
         "Type": "Accessory",
         "Tier": "3",
@@ -656,7 +656,7 @@
         "Icon": "14429547149",
         "Price": "750",
         "ExtraInfo": "",
-        "Tags": "Magic",
+        "Tags": "Magic,NoRandom",
         "Recipe": ""
     },
     {
@@ -687,6 +687,21 @@
         "Price": "100",
         "ExtraInfo": "",
         "Tags": "CritBuild",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "TankBuster",
+        "Name": "Tank Buster",
+        "Type": "Material",
+        "Tier": "5",
+        "Level": "1",
+        "Desc": "Cursed one",
+        "Stat": "",
+        "StatInfo": "",
+        "Icon": "4820548150",
+        "Price": "50",
+        "ExtraInfo": "",
+        "Tags": "Sad",
         "Recipe": ""
     }
 ]
