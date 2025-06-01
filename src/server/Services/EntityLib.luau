@@ -72,6 +72,7 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, isLeaderForced:
     if not ServerLib:IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
+    if not entity:GetAttribute("IsReady") then return end
 
 
     if not ServerLib:IsCharValid(target) then return end
@@ -106,8 +107,6 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 enemyDiedSignal:Connect(function(locator: BasePart)
-    locator = locator:Clone()
-
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
     countdown.Transparency = 1
     countdown.CFrame = locator.CFrame
@@ -202,6 +201,10 @@ function EntityLib:Init()
     end))
 
     self:_SpawnFellows()
+
+    Promise.delay(1):andThen(function()
+        self.Entity:SetAttribute("IsReady", true)
+    end)
 end
 
 
@@ -359,7 +362,7 @@ function EntityLib:_SpawnFellows()
             teamLocator.Name = symbol.Name
 
             teamLocator.Size = Vector3.new(5, 2, 5)
-            teamLocator.Position = ServerLib:FindGroundByRay(locator.Position + Vector3.new(
+            teamLocator.Position = ServerLib:FindGroundByRayForOrb(locator.Position + Vector3.new(
                 math.random(-12, 12), 0,
                 math.random(-12, 12)
             )) + Vector3.yAxis * teamLocator.Size.Y / 2
@@ -375,7 +378,7 @@ function EntityLib:_SpawnFellows()
             teamSymbol.Parent = teamLocator
 
 
-            Promise.delay(1):andThen(function()
+            Promise.delay(0.1599):andThen(function()
                 teamLocator.Parent = workspace.Enemies
             end)
         end
@@ -627,11 +630,11 @@ function EntityLib:_RoamTask()
 
                 local isValid = false
                 local repeatTimes = 0
-                local rPos = ServerLib:FindGroundByRay(randomScatterPos)
+                local rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
                 while repeatTimes <= 15 do
                     if isValid then break end
 
-                    rPos = ServerLib:FindGroundByRay(randomScatterPos)
+                    rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
 
                     isValid = path:IsPathValid(rPos)
                     repeatTimes += 1
@@ -683,7 +686,7 @@ function EntityLib:_RoamTask()
                     end
                 end
 
-                if nearestChar then
+                if nearestChar and ServerLib:IsCharValid(nearestChar) then
                     local targetPos = nearestChar.PrimaryPart.Position :: Vector3
                     if (targetPos - locator.CFrame.Position).Magnitude > 70 then
                         path:Run(locator.CFrame.Position)
@@ -748,7 +751,7 @@ function EntityLib:_EnterCombat(target: Model, isLeaderForced: boolean?)
     if not combatLocation then
         hasPosVal = false
 
-        combatLocation = CFrame.new(ServerLib:FindGroundByRay(target.PrimaryPart.Position))
+        combatLocation = CFrame.new(ServerLib:FindGroundByRayForOrb(target.PrimaryPart.Position))
         target:SetAttribute("CombatLocation_Encounter", combatLocation)
 
         self.CombatTriggerer = target.Name
@@ -878,7 +881,7 @@ function EntityLib:_EnterCombat(target: Model, isLeaderForced: boolean?)
 
 
     --// finally!
-    local rLocation = ServerLib:FindGroundByRay(combatLocation.Position
+    local rLocation = ServerLib:FindGroundByRayForOrb(combatLocation.Position
         + Vector3.new(math.random(-15, 15), 0, math.random(-15, 15)))
 
     entity:PivotTo(CFrame.new(rLocation) * CFrame.new(0, self.BoundingSize.Y / 2, 0) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0))

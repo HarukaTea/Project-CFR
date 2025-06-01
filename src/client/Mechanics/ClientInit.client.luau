@@ -3,7 +3,6 @@ repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
@@ -32,7 +31,7 @@ function ClientWorldLib:Init()
     for funcId: string, func: (self) -> nil in ClientWorldLib do
         if typeof(func) == "function" then
             if string.find(funcId, "_Listen") or string.find(funcId, "_Do") then
-                Promise.try(func, self)
+                func(self)
             end
         end
     end
@@ -119,45 +118,6 @@ function ClientWorldLib:_DoPromptHandlerTracker()
         prompt.Enabled = true
     end)
 end
-
-
-
-function ClientWorldLib:_DoMapComponentTracker()
-    local function _handleWindmill(windmill: Model)
-        if not windmill.Name == "Wings" then return end
-
-        Promise.try(function()
-            while windmill and windmill.PrimaryPart do
-                wait(0.01)
-                windmill:PivotTo(windmill.PrimaryPart.CFrame * CFrame.Angles(math.rad(-1.5), 0, 0))
-            end
-        end):catch(function() end)
-    end
-    local function _handleGalleon(galleon: Model)
-        Promise.try(function()
-            while galleon and galleon.PrimaryPart do
-                wait(0.03)
-                for _ = 1, 50 do
-                    galleon:PivotTo(galleon.PrimaryPart.CFrame + Vector3.yAxis * 0.04)
-                    wait(0.015)
-                end
-                for _ = 1, 50 do
-                    galleon:PivotTo(galleon.PrimaryPart.CFrame - Vector3.yAxis * 0.04)
-                    wait(0.015)
-                end
-            end
-        end):catch(function() end)
-    end
-    for _, wings: Model in CollectionService:GetTagged("WindmillWings") do
-        _handleWindmill(wings)
-    end
-    for _, galleon: Model in CollectionService:GetTagged("SkyGalleon") do
-        _handleGalleon(galleon)
-    end
-    CollectionService:GetInstanceAddedSignal("WindmillWings"):Connect(_handleWindmill)
-    CollectionService:GetInstanceAddedSignal("SkyGalleon"):Connect(_handleGalleon)
-end
-
 
 
 

@@ -8,8 +8,10 @@
             "$className": "ReplicatedFirst",
             "$ignoreUnknownInstances": true,
 
-            "Preload_Haruka": {
-                "$path": "src/Preload.client.luau"
+            "HarukaPreload": {
+                "$className": "Folder",
+                "$path": "src/preload",
+                "$ignoreUnknownInstances": true
             }
         },
         "ReplicatedStorage": {

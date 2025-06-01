@@ -15,7 +15,7 @@ return function (scope: Fusion.Scope, props: {
 })
     return Components.HarukaScreenGui(scope, {
         Name = "LoadScreen",
-        DisplayOrder = UIPriorityBook.Highest,
+        DisplayOrder = UIPriorityBook.Highest - 2,
         Parent = Players.LocalPlayer.PlayerGui,
 
     }, {

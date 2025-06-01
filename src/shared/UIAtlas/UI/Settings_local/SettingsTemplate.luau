@@ -47,6 +47,18 @@ local template = {
 				Increasement = 0.1,
 
 				ValChanged = Signal.new()
+			},
+			AmbientVolume = {
+				OptionTitle = "Ambient Volume",
+				Type = "Slider",
+				LayoutOrder = 2,
+
+				Min = 0,
+				Max = 2,
+				DefaultValue = 0.9,
+				Increasement = 0.1,
+
+				ValChanged = Signal.new()
 			}
 		}
     },

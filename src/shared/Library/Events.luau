@@ -119,6 +119,12 @@ if not RunService:IsRunning() then
 	local noop = function() end
 	return table.freeze({
 		SendEvents = noop,
+		RequestToChooseWhichSlotToPlay = table.freeze({
+			Fire = noop
+		}),
+		RequestToEraseSaveFile = table.freeze({
+			Fire = noop
+		}),
 		ApplyFoundStatusToEnemy = table.freeze({
 			On = noop
 		}),
@@ -1027,24 +1033,64 @@ table.freeze(polling_queues_unreliable)
 
 local returns = {
 	SendEvents = SendEvents,
+	RequestToChooseWhichSlotToPlay = {
+		Fire = function(Value: ({
+			["SlotId"]: ((string)?),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			if Value["SlotId"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_29 = #Value["SlotId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
+				alloc(len_29)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_29)
+			end
+		end,
+	},
+	RequestToEraseSaveFile = {
+		Fire = function(Value: ({
+			["SlotChosen"]: ((string)?),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			if Value["SlotChosen"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_30 = #Value["SlotChosen"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
+				alloc(len_30)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotChosen"], len_30)
+			end
+		end,
+	},
 	RequestToEndNPCChat = {
 		Fire = function(Value: ({
 			["NPCId"]: ((string)?),
 			["SeriesId"]: ((string)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			if Value["NPCId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_29 = #Value["NPCId"]
+				local len_31 = #Value["NPCId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
-				alloc(len_29)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["NPCId"], len_29)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
+				alloc(len_31)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["NPCId"], len_31)
 			end
 			if Value["SeriesId"] == nil then
 				alloc(1)
@@ -1052,11 +1098,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_30 = #Value["SeriesId"]
+				local len_32 = #Value["SeriesId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
-				alloc(len_30)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SeriesId"], len_30)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
+				alloc(len_32)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SeriesId"], len_32)
 			end
 		end,
 	},
@@ -1065,18 +1111,18 @@ local returns = {
 			["OrbUniqueId"]: ((string)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
 			if Value["OrbUniqueId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_31 = #Value["OrbUniqueId"]
+				local len_33 = #Value["OrbUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
-				alloc(len_31)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["OrbUniqueId"], len_31)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
+				alloc(len_33)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["OrbUniqueId"], len_33)
 			end
 		end,
 	},
@@ -1087,18 +1133,18 @@ local returns = {
 			["DoTStatus"]: ((string)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			if Value["ProjectileUniqueId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_32 = #Value["ProjectileUniqueId"]
+				local len_34 = #Value["ProjectileUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
-				alloc(len_32)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_32)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
+				alloc(len_34)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_34)
 			end
 			if Value["IsPierce"] == nil then
 				alloc(1)
@@ -1115,11 +1161,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_33 = #Value["DoTStatus"]
+				local len_35 = #Value["DoTStatus"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
-				alloc(len_33)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["DoTStatus"], len_33)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
+				alloc(len_35)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["DoTStatus"], len_35)
 			end
 		end,
 	},
@@ -1128,25 +1174,25 @@ local returns = {
 			["SlotId"]: ((string)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
 			if Value["SlotId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_34 = #Value["SlotId"]
+				local len_36 = #Value["SlotId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
-				alloc(len_34)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_34)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
+				alloc(len_36)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_36)
 			end
 		end,
 	},
 	RequestToCastClassUlt = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
 		end,
 	},
 	RequestToPickupItemDrops = {
@@ -1154,40 +1200,7 @@ local returns = {
 			["ItemUniqueId"]: ((string)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			if Value["ItemUniqueId"] == nil then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			else
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_35 = #Value["ItemUniqueId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
-				alloc(len_35)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_35)
-			end
-		end,
-	},
-	RequestToEquipItem = {
-		Fire = function(Value: ({
-			["ItemId"]: ((string)?),
-			["ItemUniqueId"]: ((string)?),
-		}))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 6)
-			if Value["ItemId"] == nil then
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			else
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_36 = #Value["ItemId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
-				alloc(len_36)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_36)
-			end
+			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
 			if Value["ItemUniqueId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -1202,6 +1215,39 @@ local returns = {
 			end
 		end,
 	},
+	RequestToEquipItem = {
+		Fire = function(Value: ({
+			["ItemId"]: ((string)?),
+			["ItemUniqueId"]: ((string)?),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			if Value["ItemId"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_38 = #Value["ItemId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
+				alloc(len_38)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_38)
+			end
+			if Value["ItemUniqueId"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_39 = #Value["ItemUniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
+				alloc(len_39)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_39)
+			end
+		end,
+	},
 	RequestToPurchaseItem = {
 		Fire = function(Value: ({
 			["ProductId"]: ((string)?),
@@ -1209,18 +1255,18 @@ local returns = {
 			["PurchaseAmount"]: ((number)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
 			if Value["ProductId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_38 = #Value["ProductId"]
+				local len_40 = #Value["ProductId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
-				alloc(len_38)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductId"], len_38)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
+				alloc(len_40)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductId"], len_40)
 			end
 			if Value["ProductUniqueId"] == nil then
 				alloc(1)
@@ -1228,11 +1274,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_39 = #Value["ProductUniqueId"]
+				local len_41 = #Value["ProductUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
-				alloc(len_39)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductUniqueId"], len_39)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
+				alloc(len_41)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductUniqueId"], len_41)
 			end
 			if Value["PurchaseAmount"] == nil then
 				alloc(1)
@@ -1252,18 +1298,18 @@ local returns = {
 			["SellAmount"]: ((number)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
 			if Value["ItemId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_40 = #Value["ItemId"]
+				local len_42 = #Value["ItemId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
-				alloc(len_40)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_40)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
+				alloc(len_42)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_42)
 			end
 			if Value["ItemUniqueId"] == nil then
 				alloc(1)
@@ -1271,11 +1317,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_41 = #Value["ItemUniqueId"]
+				local len_43 = #Value["ItemUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
-				alloc(len_41)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_41)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
+				alloc(len_43)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_43)
 			end
 			if Value["SellAmount"] == nil then
 				alloc(1)
@@ -1294,18 +1340,18 @@ local returns = {
 			["PointAmount"]: ((number)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
 			if Value["PointId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_42 = #Value["PointId"]
+				local len_44 = #Value["PointId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
-				alloc(len_42)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["PointId"], len_42)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
+				alloc(len_44)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["PointId"], len_44)
 			end
 			if Value["PointAmount"] == nil then
 				alloc(1)
@@ -1324,18 +1370,18 @@ local returns = {
 			["EnemyEntity"]: ((Model)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
 			if Value["ProjectileUniqueId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_43 = #Value["ProjectileUniqueId"]
+				local len_45 = #Value["ProjectileUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
-				alloc(len_43)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_43)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
+				alloc(len_45)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_45)
 			end
 			if Value["EnemyEntity"] == nil then
 				alloc(1)
@@ -1353,7 +1399,7 @@ local returns = {
 			["Entity"]: ((Model)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
 			if Value["Entity"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -1368,7 +1414,7 @@ local returns = {
 	RequestToResetPoint = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
 		end,
 	},
 	RequestToSellAllItems = {
@@ -1376,31 +1422,31 @@ local returns = {
 			["ItemId"]: ((string)?),
 		}))
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
 			if Value["ItemId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_44 = #Value["ItemId"]
+				local len_46 = #Value["ItemId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
-				alloc(len_44)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_44)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
+				alloc(len_46)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_46)
 			end
 		end,
 	},
 	RequestToForceReset = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
 		end,
 	},
 	RequestToRejoinGame = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
 		end,
 	},
 	ApplyFoundStatusToEnemy = {

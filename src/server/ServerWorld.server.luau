@@ -11,6 +11,9 @@ local SSS = game:GetService("ServerScriptService")
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
+local nowClock = os.clock()
+
+
 do
     if RunService:IsClient() then
         warn("Invalid runtime environment happened")
@@ -42,8 +45,10 @@ end
 do
     require(SSS.HarukaServer.Services.ServerWorldLib):Init()
     require(SSS.HarukaServer.Shared.GlobalTimer)
-    require(SSS.HarukaServer.Services.GlobalCriRPGLib)
+    require(SSS.HarukaServer.Services.GlobalCriRPGLib):Init()
     require(SSS.HarukaServer.Services.GlobalQuestFuncLib):Init()
+    require(RepS.HarukaShared.Shared.Maid):Init()
+    require(SSS.HarukaServer.Shared.ProfileService)
 end
 
 
@@ -87,5 +92,5 @@ end
 
 
 
-print("[ServerPreloadLib] HarukaServer Inited")
+print(`[ServerPreloadLib] HarukaServer Inited, Spent {string.format("%.2f", os.clock() - nowClock)} seconds`)
 workspace:SetAttribute("Haruka_ServerInited", true)

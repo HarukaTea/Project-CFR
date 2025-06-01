@@ -29,7 +29,7 @@ function ServerWorldLib:Init()
 
     for funcId: string, func: (self) -> nil in ServerWorldLib do
         if string.find(funcId, "_Do") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 
@@ -123,7 +123,6 @@ function ServerWorldLib:_DoMapOptimization()
             if part:HasTag("ZoneEntity") then continue end
 
             part.EnableFluidForces = false
-            part.Anchored = true
             part.CanTouch = false
             part.Massless = true
             part.Locked = true
@@ -206,15 +205,22 @@ end
 
 
 function ServerWorldLib:_DoTerrainTag()
+    local terrainFolders = {}
+
+    for _, folder: Folder in workspace.Maps:GetDescendants() do
+        if folder:IsA("Folder") and folder.Name == "Terrain" then
+            table.insert(terrainFolders, folder)
+        end
+    end
+
+
     for _, part: BasePart in workspace.Maps:GetDescendants() do
         if HarukaLib:IsBasePartType(part) then
             local isInTerrainFolder = false
-            for _, folder: Folder in workspace.Maps:GetChildren() do
-                if folder:FindFirstChild("Terrain") then
-                    if part:IsDescendantOf(folder.Terrain) then
-                        isInTerrainFolder = true
-                        break
-                    end
+            for _, folder: Folder in terrainFolders do
+                if part:IsDescendantOf(folder) then
+                    isInTerrainFolder = true
+                    break
                 end
             end
             if isInTerrainFolder then
@@ -255,7 +261,7 @@ function ServerWorldLib:_DoInitCollision()
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.EncounterBorder, CollisionBook.Group.Hitbox)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyModels, CollisionBook.Group.EnemyBodyPart)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyAttacks, CollisionBook.Group.EnemyProjectile)
-    HarukaLib:SetCollisionGroup(ServerStorage.Packages.ClassWeapons, CollisionBook.Group.NoCollision)
+    HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.ClassWeapons, CollisionBook.Group.NoCollision)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.ClassAttacks, CollisionBook.Group.Hitbox)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.SkillProjectiles, CollisionBook.Group.NoCollision)
 

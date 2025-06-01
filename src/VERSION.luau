@@ -1,1 +1,1 @@
-return "CFantasy_PART2.5_0531"
+return "CFT_LuminaUpdate_0601"

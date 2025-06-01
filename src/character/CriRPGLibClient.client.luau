@@ -9,7 +9,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
-local TweenService = game:GetService("TweenService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassSPSceneLib = require(RepS.HarukaShared.Library.ClassSPSceneLib)
@@ -74,7 +73,7 @@ end
 function CriRPGLib:Init()
     for funcId: string, func: (self) -> nil in CriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 
@@ -655,3 +654,6 @@ end
 
 
 CriRPGLib:Init()
+
+
+char:SetAttribute("Haruka_CriRPGClientInited", true)

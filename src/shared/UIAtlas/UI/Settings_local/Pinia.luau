@@ -89,6 +89,9 @@ return function (self: table)
     self.INFO.Sounds.Includes.FootstepVolume.ValChanged:Connect(function(val)
         SoundService.FS_SFXs.Volume = val
     end)
+    self.INFO.Sounds.Includes.AmbientVolume.ValChanged:Connect(function(val)
+        SoundService.Environment.Volume = val
+    end)
 
 
     self.INFO.Interface.Includes.UIScale.ValChanged:Connect(function(val: number)

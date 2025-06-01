@@ -94,11 +94,12 @@ Promise.try(function()
             if entity:GetAttribute("IsInCombat") then continue end
             if entity:GetAttribute("IsDead") then continue end
             if entity:GetAttribute("EnteringCombat") then continue end
-            if entity:GetAttribute("IsBoss") then continue end
+            if not entity:GetAttribute("IsReady") then continue end
+
 
             pcall(function()
                 local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
-                if distance < 18 and distance > 0 and entityObj.HasModel then
+                if distance < 18 and distance > 0 then
                     encounterCD = true
                     task.delay(2, function()
                         encounterCD = false

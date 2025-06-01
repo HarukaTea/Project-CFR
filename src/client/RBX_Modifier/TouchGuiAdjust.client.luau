@@ -1,7 +1,5 @@
 --!nocheck
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
-
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RepS = game:GetService("ReplicatedStorage")

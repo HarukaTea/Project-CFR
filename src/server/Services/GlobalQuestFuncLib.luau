@@ -5,7 +5,6 @@ local SSS = game:GetService("ServerScriptService")
 
 
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaQuest = require(SSS.HarukaServer.Shared.HarukaQuest)
 
 
@@ -17,7 +16,7 @@ local GlobalQuestFuncLib = {}
 function GlobalQuestFuncLib:Init()
     for funcId: string, func: (self) -> nil in GlobalQuestFuncLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 end

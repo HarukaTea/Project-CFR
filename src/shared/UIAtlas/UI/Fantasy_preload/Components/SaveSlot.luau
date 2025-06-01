@@ -1,0 +1,624 @@
+--!nocheck
+
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+local RepS = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local Events = require(RepS.HarukaShared.Library.Events)
+local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
+local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
+local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
+local LocationBook = require(RepS.HarukaShared.Library.LocationBook)
+
+local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
+local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
+local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
+
+local Children = Fusion.Children
+
+local wait = task.wait
+
+local function _reconcileProps(default: table, props: table)
+	for prop: string, val: any in props do
+		if prop == Fusion.Children and default[Fusion.Children] then
+			table.insert(default[Fusion.Children], val)
+			continue
+		end
+
+		default[prop] = val
+	end
+end
+local function Label(scope: Fusion.Scope, props: { [string]: any }, emptyVal: Fusion.Value)
+    local default = {
+        AnchorPoint = Vector2.new(0.5, 0),
+        TextXAlignment = Enum.TextXAlignment.Left,
+
+        Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+            return not use(emptyVal)
+        end)
+    }
+    _reconcileProps(default, props or {})
+
+    return Components.TextLabel(scope, default)
+end
+local function weldWeapon(weapon: Model, char: Model)
+	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
+	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
+
+	if not motor6D then warn("No Motor6D found on weapon") return end
+	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
+
+	weldTarget = char:FindFirstChild(weldTarget)
+	if not weldTarget then warn("Cannot weld weapon, target not found") return end
+
+
+	motor6D.Part0 = weldTarget
+	weapon.Parent = char
+end
+
+
+
+return function (scope: Fusion.Scope, props: {
+    SlotId: number,
+    CharacterModel: Fusion.Value,
+
+    SaveSlotClickedSignal: RBXScriptSignal,
+    SaveSlotBackSignal: RBXScriptSignal,
+    ReadyToTeleportSignal: RBXScriptSignal,
+
+    FriendListClickedSignal: RBXScriptSignal,
+    ServerListClickedSignal: RBXScriptSignal,
+
+    IsUIShown: Fusion.Value
+})
+
+    local POS = {
+        0.23, 0.5, 0.77
+    }
+    local function Value(val: any) : Fusion.Value
+        return Fusion.Value(scope, val)
+    end
+    local isSelecting = Value(false)
+    local isEmpty = Value(true)
+    local isVisible = Value(true)
+    local posX = Value(POS[props.SlotId])
+    local isLocked = Value(false)
+
+
+    if props.SlotId == 3 then
+        table.insert(scope, HarukaLib:Hydrate(Players.LocalPlayer.ProfileContainer, {
+            ["Attr_Slot3_IsLocked"] = function(state: boolean)
+                isLocked:set(state)
+            end
+        }))
+    end
+
+
+    table.insert(scope, props.SaveSlotClickedSignal:Connect(function(index: number)
+        isVisible:set(false)
+        posX:set(POS[props.SlotId])
+
+        if index == props.SlotId then
+            isVisible:set(true)
+            posX:set(0.2)
+        end
+    end))
+    table.insert(scope, props.SaveSlotBackSignal:Connect(function()
+        isVisible:set(true)
+        posX:set(POS[props.SlotId])
+    end))
+
+
+    return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+        if use(isLocked) then
+            local price = Fusion.Value(scope, 159)
+
+            table.insert(scope, task.spawn(function()
+                local info = MarketplaceService:GetProductInfo(1094827969, Enum.InfoType.GamePass)
+
+                price:set(info.PriceInRobux)
+            end))
+
+
+            return Components.Frame(scope, {
+                Name = "Slot"..props.SlotId,
+                Size = UDim2.fromScale(0.23, 7),
+                BackgroundTransparency = 0,
+
+                Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                    return UDim2.fromScale(use(posX), 0.5)
+                end), AssetBook.TweenInfos.half),
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(isVisible)
+                end),
+
+                [Children] = {
+                    Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
+
+                    Components.UIStroke(scope, {
+                        Thickness = 3,
+                        Color = Color3.new(),
+                    }),
+
+
+                    Components.HoverImageButton(scope, {
+                        [Fusion.OnEvent("MouseEnter")] = function()
+                            isSelecting:set(true)
+                        end,
+                        [Fusion.OnEvent("MouseLeave")] = function()
+                            isSelecting:set(false)
+                        end,
+
+                        [Children] = {
+                            Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
+
+                            Components.UIStroke(scope, {
+                                Thickness = 3,
+
+                                Enabled = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                                    return use(isSelecting)
+                                end),
+                            }),
+                        }
+                    }),
+
+                    FrameBorderTex(scope, {
+                        BorderType = "Outer",
+                        Size = UDim2.fromScale(0.07, 0.07)
+                    }),
+                    CAPatternTex(scope, {}),
+
+
+                    Label(scope, {
+                        Name = "FileId",
+                        Position = UDim2.fromScale(0.5, 0.02),
+                        Size = UDim2.fromScale(0.86, 0.1),
+                        Text = "File #"..props.SlotId,
+                    }, false),
+
+
+                    Components.IconImageLabel(scope, {
+                        AnchorPoint = Vector2.new(0.5, 0),
+                        Position = UDim2.fromScale(0.5, 0.3),
+                        Size = UDim2.fromScale(0.3, 0.3),
+                        SizeConstraint = Enum.SizeConstraint.RelativeXX,
+                        BackgroundTransparency = 1,
+
+                        Image = "rbxassetid://131056780670643",
+                        ImageTransparency = 0.7
+                    }),
+
+                    Components.TextButton(scope, {
+                        Name = "PurchaseBtn",
+                        AnchorPoint = Vector2.new(0.5, 0),
+                        Position = UDim2.fromScale(0.5, 0.6),
+                        Size = UDim2.fromScale(0.4, 0.08),
+                        BackgroundColor3 = Color3.fromRGB(123, 237, 159),
+                        BackgroundTransparency = 0,
+                        TextColor3 = Color3.new(),
+
+                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return `{utf8.char(0xE002)} {use(price)}`
+                        end),
+
+                        [Fusion.OnEvent("MouseButton1Click")] = function()
+                            MarketplaceService:PromptGamePassPurchase(Players.LocalPlayer, 1094827969)
+                        end,
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+
+                            Fusion.New(scope, "UIPadding")({
+                                PaddingBottom = UDim.new(0.1, 0),
+                                PaddingTop = UDim.new(0.1, 0)
+                            })
+                        }
+                    })
+                }
+            })
+        else
+            local playerClass = Value("Burst")
+            local playerLevel = Value(1)
+            local playerLastJoined = Value(DateTime.now():ToIsoDate())
+            local playerPlayTime = Value(0)
+            local playerLastSeen = Value("InitusBay")
+
+
+            HarukaLib:Hydrate(Players.LocalPlayer.ProfileContainer, {
+                ["Attr_Slot"..props.SlotId.."_PlayTime"] = function(val: number)
+                    playerPlayTime:set(val)
+                    isEmpty:set(val <= 0)
+                end,
+                ["Attr_Slot"..props.SlotId.."_Class"] = function(val: string)
+                    playerClass:set(val)
+                end,
+                ["Attr_Slot"..props.SlotId.."_Level"] = function(val: number)
+                    playerLevel:set(val)
+                end,
+                ["Attr_Slot"..props.SlotId.."_LastJoinedDateTime"] = function(val: string)
+                    playerLastJoined:set(val)
+                end,
+                ["Attr_Slot"..props.SlotId.."_LastSeen"] = function(val: string)
+                    playerLastSeen:set(val)
+                end
+            })
+
+            return Components.Frame(scope, {
+                Name = "Slot"..props.SlotId,
+                Size = UDim2.fromScale(0.23, 7),
+                BackgroundTransparency = 0,
+
+                Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                    return UDim2.fromScale(use(posX), 0.5)
+                end), AssetBook.TweenInfos.half),
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(isVisible)
+                end),
+
+                [Children] = {
+                    Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
+
+                    Components.UIStroke(scope, {
+                        Thickness = 3,
+                        Color = Color3.new(),
+                    }),
+
+
+                    Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                        if use(posX) == 0.2 then
+                            return {
+                                ExecuteButton(scope, {
+                                    AnchorPoint = Vector2.new(0, 0),
+                                    Position = UDim2.fromScale(0, 1.06),
+                                    Size = UDim2.fromScale(0.48, 0.095),
+                                    ButtonText = "BACK",
+                                    ButtonClickFunc = function()
+                                        props.SaveSlotBackSignal:Fire()
+                                    end,
+                                    ButtonType = "Cancel"
+                                }),
+                                ExecuteButton(scope, {
+                                    AnchorPoint = Vector2.new(1, 0),
+                                    Position = UDim2.fromScale(1, 1.06),
+                                    Size = UDim2.fromScale(0.48, 0.095),
+                                    ButtonText = "PLAY",
+                                    ButtonClickFunc = function()
+                                        props.ReadyToTeleportSignal:Fire()
+
+                                        Bindables.CreateCircularFade:Fire(2)
+
+                                        wait(0.5)
+                                        Events.RequestToChooseWhichSlotToPlay.Fire({
+                                            SlotId = "Slot"..props.SlotId
+                                        })
+                                    end,
+                                    ButtonType = "Confirm"
+                                })
+                            }
+                        else
+                            return nil
+                        end
+                    end),
+
+
+                    Components.HoverImageButton(scope, {
+                        [Fusion.OnEvent("MouseEnter")] = function()
+                            isSelecting:set(true)
+                        end,
+                        [Fusion.OnEvent("MouseLeave")] = function()
+                            isSelecting:set(false)
+                        end,
+
+
+                        [Fusion.OnEvent("MouseButton1Click")] = function()
+                            props.SaveSlotClickedSignal:Fire(props.SlotId)
+                        end,
+
+
+                        [Children] = {
+                            Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
+
+                            Components.UIStroke(scope, {
+                                Thickness = 3,
+
+                                Enabled = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                                    return use(isSelecting)
+                                end),
+                            }),
+                        }
+                    }),
+
+                    FrameBorderTex(scope, {
+                        BorderType = "Outer",
+                        Size = UDim2.fromScale(0.07, 0.07)
+                    }),
+                    CAPatternTex(scope, {}),
+
+
+                    Label(scope, {
+                        Name = "FileId",
+                        Position = UDim2.fromScale(0.5, 0.02),
+                        Size = UDim2.fromScale(0.86, 0.1),
+                        Text = "File #"..props.SlotId,
+                    }, false),
+
+
+                    Components.IconImageLabel(scope, {
+                        Name = "Class",
+                        Position = UDim2.fromScale(0.83, 0.02),
+                        Size = UDim2.fromScale(0.1, 0.1),
+
+                        Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local classId = use(playerClass) :: string
+
+                            if not ClassBook[classId] then return AssetBook.ExtraIcons.Unknown end
+                            return ClassBook[classId].Icon
+                        end),
+                        ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local classId = use(playerClass) :: string
+
+                            if not ClassBook[classId] then return Color3.new(1, 1, 1) end
+                            return ClassBook[classId].Color
+                        end),
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                            return not use(isEmpty)
+                        end)
+                    }),
+
+
+
+                    Label(scope, {
+                        Name = "Level",
+                        Position = UDim2.fromScale(0.5, 0.13),
+                        Size = UDim2.fromScale(0.86, 0.06),
+
+                        Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                            return `Lv.{use(playerLevel)}`
+                        end),
+                        TextColor3 = Color3.fromHex('#ffeaa7'),
+
+                    }, isEmpty),
+                    Label(scope, {
+                        Name = "PlayTime",
+                        Position = UDim2.fromScale(0.5, 0.13),
+                        Size = UDim2.fromScale(0.86, 0.06),
+                        TextXAlignment = Enum.TextXAlignment.Right,
+
+                        Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                            local playTime = use(playerPlayTime) :: number
+
+                            local convertedTime = playTime / 3600
+                            local isHour = true
+
+                            if convertedTime < 1 then
+                                isHour = false
+                                convertedTime = playTime / 60
+                            end
+
+                            if isHour then
+                                return `{string.format("%.1f", convertedTime)} Hours`
+                            else
+                                return `{string.format("%.0f", convertedTime)} Minutes`
+                            end
+                        end),
+
+                        TextColor3 = Color3.fromHex('#ffeaa7'),
+                    }, isEmpty),
+
+
+                    Fusion.Computed(scope, function(use: Fusion.Scope, scope: Fusion.Scope)
+                        if use(props.CharacterModel) == nil then
+                            return nil
+                        elseif use(props.CharacterModel) and use(props.CharacterModel).ClassName == "Model" and not use(isEmpty) then
+                            local charModel = use(props.CharacterModel) :: Model
+
+
+                            local camera = Instance.new("Camera")
+                            camera.Name = "CharacterPreviewCamera_"..props.SlotId
+                            camera.CameraType = Enum.CameraType.Scriptable
+
+                            table.insert(scope, camera)
+
+
+                            local vpFrame = Components.ViewportFrame(scope, {
+                                Name = "CharacterPreview",
+                                AnchorPoint = Vector2.new(0.5, 0),
+                                Position = UDim2.fromScale(0.5, 0.22),
+                                Size = UDim2.fromScale(0.87, 0.6),
+
+                                Ambient = Color3.fromRGB(159, 159, 159),
+                                LightColor = Color3.fromRGB(159, 159, 159),
+
+                                CurrentCamera = camera,
+
+                                [Children] = {
+                                    Fusion.New(scope, "WorldModel")({
+                                        Name = "WorldModel_Preview"
+                                    })
+                                }
+                            })
+                            camera.Parent = vpFrame
+
+
+                            table.insert(scope, task.spawn(function()
+                                --- weld weapons to character
+                                local charClone = charModel:Clone() :: Model
+                                charClone.Parent = vpFrame:FindFirstChildOfClass("WorldModel")
+
+                                local class = use(playerClass) :: string
+
+                                local targetFolder = RepS.Packages.ClassWeapons[class]:FindFirstChild("Overworld", true)
+                                for _, weapon: Model in charClone:GetChildren() do
+                                    if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
+                                end
+                                for _, weapon: Model in targetFolder:GetChildren() do
+                                    weapon = weapon:Clone()
+                                    weapon:AddTag("ClassWeapon")
+
+                                    weldWeapon(weapon, charClone)
+                                end
+
+                                repeat wait() until vpFrame.Parent
+
+                                --- play animation
+                                local anim: Animation = RepS.Packages.Anims.CharAnims.Idle1
+                                local animTrack = charClone.Humanoid.Animator:LoadAnimation(anim)
+
+                                animTrack:Play()
+
+                                table.insert(scope, charClone)
+                                table.insert(scope, RunService.RenderStepped:Connect(function()
+                                    if not Fusion.peek(props.IsUIShown) then return end
+
+                                    camera.CFrame = CFrame.new(charClone.PrimaryPart.Position +
+                                        charClone.PrimaryPart.CFrame.LookVector * 5, charClone.PrimaryPart.Position)
+                                end))
+                            end))
+
+                            return vpFrame
+                        end
+                    end),
+
+
+                    Label(scope, {
+                        Name = "LastJoined",
+                        Position = UDim2.fromScale(0.5, 0.84),
+                        Size = UDim2.fromScale(0.86, 0.06),
+                        AutoLocalize = false,
+
+                        Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                            return `{use(playerLastJoined)}`
+                        end),
+                        TextTransparency = 0.5,
+                        TextXAlignment = Enum.TextXAlignment.Center,
+                    }, isEmpty),
+                    Label(scope, {
+                        Name = "LastSeen",
+                        Position = UDim2.fromScale(0.5, 0.9),
+                        Size = UDim2.fromScale(0.86, 0.06),
+                        RichText = true,
+
+                        Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                            local seen = use(playerLastSeen) :: string
+
+                            if not LocationBook[seen] then
+                                warn(`Lack of location Info for {seen}`)
+                                return "Last Seen at: UNKNOWN"
+                            end
+
+                            return `Last Seen at: <u>{LocationBook[seen].Name}</u>`
+                        end),
+
+                        TextColor3 = Color3.fromHex('#81ecec'),
+                    }, isEmpty),
+
+
+
+                    Components.TextLabel(scope, {
+                        Name = "Empty",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(1, 0.1),
+
+                        Text = "EMPTY",
+                        TextColor3 = Color3.fromRGB(159, 159, 159),
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                            return use(isEmpty)
+                        end)
+                    }),
+
+
+                    Components.Frame(scope, {
+                        Name = "FileSelections",
+                        AnchorPoint = Vector2.new(0, 0.5),
+                        Size = UDim2.fromScale(0.15, 1),
+                        Position = UDim2.fromScale(-0.2, 0.5),
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(posX) == 0.2
+                        end),
+
+                        [Children] = {
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.01, 0),
+                                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                                VerticalAlignment = Enum.VerticalAlignment.Bottom,
+                            }),
+
+
+                            Fusion.ForPairs(scope, {}, function(_, scope: Fusion.Scope, index: number, id: string)
+                                local thatIsSelecting = Fusion.Value(scope, false)
+
+                                return index, Components.Frame(scope, {
+                                    Name = "FileSelection_"..id,
+                                    SizeConstraint = Enum.SizeConstraint.RelativeXX,
+
+                                    [Children] = {
+                                        IconShadeTex(scope, {
+                                            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                                return use(thatIsSelecting)
+                                            end)
+                                        }),
+
+                                        Components.HoverImageButton(scope, {
+                                            [Fusion.OnEvent("MouseEnter")] = function()
+                                                thatIsSelecting:set(true)
+                                            end,
+                                            [Fusion.OnEvent("MouseLeave")] = function()
+                                                thatIsSelecting:set(false)
+                                            end,
+
+
+                                            [Fusion.OnEvent("MouseButton1Click")] = function()
+                                                if id == "Erase" then
+                                                    local result = Components:CreateConfirmPrompt(scope, {
+                                                        Hint = "Are you sure you wish to erase this save file?",
+                                                        ConfirmText = "YES",
+                                                        CancelText = "NO",
+
+                                                        ConfirmUniqueId = "ConfirmSaveErase1"
+                                                    }):Wait()
+
+                                                    if result == "NO" then return end
+
+                                                    local result = Components:CreateConfirmPrompt(scope, {
+                                                        Hint = "Are you <red>ABSOLUTELY</font> sure you wish to erase this save file?",
+                                                        ConfirmText = "YES",
+                                                        CancelText = "NO",
+
+                                                        ConfirmUniqueId = "ConfirmSaveErase2"
+                                                    }):Wait()
+
+                                                    if result == "NO" then return end
+
+                                                    Events.RequestToEraseSaveFile.Fire({
+                                                        SlotChosen = "Slot"..props.SlotId
+                                                    })
+                                                end
+                                            end
+                                        }),
+
+                                        Components.IconImageLabel(scope, {
+                                            Image = "rbxassetid://81951014936836",
+                                            ImageColor3 = Color3.fromHex('#ff6b81')
+                                        })
+                                    }
+                                })
+                            end)
+                        }
+                    })
+                }
+            })
+        end
+    end)
+end

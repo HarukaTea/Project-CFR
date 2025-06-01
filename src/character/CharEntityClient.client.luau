@@ -24,8 +24,7 @@ local Add, Empty = HarukaLib.Bin()
 
 local wait = task.wait
 
-repeat wait() until char:GetAttribute("Haruka_CharServerInited")
-repeat wait() until char:GetAttribute("_CharDataInited")
+repeat wait() until char:HasTag("PlayerCharEntity")
 
 
 local CharLib = {}
@@ -33,7 +32,7 @@ local CharLib = {}
 function CharLib:Init()
     for funcId: string, func: (self) -> nil in CharLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 
@@ -97,12 +96,10 @@ end
 function CharLib:_InitUI()
     self.UIAdd, self.UIEmpty = HarukaLib.Bin()
 
-    repeat wait() until char:GetAttribute("_CharDataInited")
-
-
     for _, module: ModuleScript in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
 		if string.find(module.Name, ".spec") then warn(module.Name) continue end
         if string.find(module.Name, "_local") then continue end
+        if string.find(module.Name, "_preload") then continue end
 
 
         Promise.try(function()

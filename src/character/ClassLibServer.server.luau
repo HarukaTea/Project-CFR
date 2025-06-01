@@ -5,11 +5,9 @@ local SSS = game:GetService("ServerScriptService")
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
 local ClassMechanicLib = {}
-
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -38,7 +36,7 @@ end))
 function ClassMechanicLib:Init()
     for funcId: string, func: (self) -> nil in ClassMechanicLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 end

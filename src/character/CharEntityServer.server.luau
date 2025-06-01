@@ -1,6 +1,5 @@
 
 local CollectionService = game:GetService("CollectionService")
-local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -10,9 +9,7 @@ local CharLib = {}
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
@@ -37,7 +34,7 @@ function CharLib:Init()
 
     for funcId: string, func: (self) -> nil in CharLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 

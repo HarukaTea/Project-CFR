@@ -12,7 +12,6 @@ local CriRPGLib = {}
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
 
 local ClassBook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
@@ -20,7 +19,6 @@ local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
-local GlobalTimer = require(ServerScriptService.HarukaServer.Shared.GlobalTimer)
 
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
@@ -73,11 +71,15 @@ function CriRPGLib:Init()
 
     for funcId: string, func: (self) -> nil in CriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 
     self:_AutoEquipItems()
+
+
+    char:SetAttribute("_CharDataInited", true)
+    char:AddTag("PlayerCharEntity")
 end
 
 
@@ -93,7 +95,7 @@ end
 
 function CriRPGLib:_SpawnToLastLocation()
     local lastLocation = plr:GetAttribute("LastSeen") :: string
-    local map = workspace.Maps:FindFirstChild(lastLocation) :: Folder
+    local map = workspace.Maps:FindFirstChild(lastLocation, true) :: Folder
 
     local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
 
@@ -128,9 +130,6 @@ function CriRPGLib:_InitAttrs()
 
         char:SetAttribute(attr, val)
     end
-
-    char:SetAttribute("_CharDataInited", true)
-    char:AddTag("PlayerCharEntity")
 end
 
 
@@ -199,12 +198,12 @@ function CriRPGLib:_ListenClassTracker()
         local targetFolder = if combatState then "Combat" else "Overworld"
         local weaponId = plr.EquippingItems.Weapon1.Value :: string
 
-        if not ServerStorage.Packages.ClassWeapons:FindFirstChild(class) then return end
-        if not ServerStorage.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
-        if not ServerStorage.Packages.ClassWeapons[class][weaponId]:FindFirstChild(targetFolder) then return end
+        if not ReplicatedStorage.Packages.ClassWeapons:FindFirstChild(class) then return end
+        if not ReplicatedStorage.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
+        if not ReplicatedStorage.Packages.ClassWeapons[class][weaponId]:FindFirstChild(targetFolder) then return end
 
 
-		for _, weapon: Model in ServerStorage.Packages.ClassWeapons[class][weaponId][targetFolder]:GetChildren() do
+		for _, weapon: Model in ReplicatedStorage.Packages.ClassWeapons[class][weaponId][targetFolder]:GetChildren() do
 			weapon = weapon:Clone()
 			weapon:AddTag("ClassWeapon")
 
@@ -976,10 +975,5 @@ Add(ServerBindables.PlayerCombatEnded:Connect(function(charId: string)
 		cooldown.Value = true
 		cooldown.Parent = char
 		Debris:AddItem(cooldown, 1)
-
-
-		for _, effectSymbol: StringValue in char.EffectList:GetChildren() do
-			GlobalTimer:CancelTaskImmediately(effectSymbol:GetAttribute("TaskUniqueId"))
-		end
 	end
 end))

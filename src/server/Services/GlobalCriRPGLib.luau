@@ -19,7 +19,6 @@ local CastItemLib = require(SSS.HarukaServer.Library.CastItemLib)
 local DialogueBook = require(RepS.HarukaShared.Library.DialogueBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
-local EntityLib = require(SSS.HarukaServer.Services.EntityLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
@@ -37,7 +36,7 @@ local wait = task.wait
 function GlobalCriRPGLib:Init()
     for funcId: string, func: (self) -> nil in GlobalCriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            Promise.try(func, self)
+            func(self)
         end
     end
 end
@@ -948,6 +947,12 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         if not itemInfo then return end
 
 
+        if itemInfo.Type == "Passive" then
+            Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
+            return
+        end
+
+
         local foundInChest = false
         for _, chest in CollectionService:GetTagged("ChestEntity") do
             if chest.Name == itemInfo.ItemId then
@@ -973,8 +978,8 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
                 break
             end
         end
-        if equipping == "Weapon1" then
-            Events.CreateNotify.Fire(plr, "You can't sell your equipped weapon!")
+        if equipping then
+            Events.CreateNotify.Fire(plr, "You can't sell your equipped item!")
             return
         end
 
@@ -987,10 +992,6 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         itemSymbol.Value -= sellAmount
         if itemSymbol.Value <= 0 then
             itemSymbol:Destroy()
-
-            if equipping then
-                equipping:Destroy()
-            end
         end
 
 
@@ -1009,6 +1010,12 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
         local itemInfo = ItemLib:GetItemInfo(item)
         if not itemInfo then return end
+
+
+        if itemInfo.Type == "Passive" then
+            Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
+            return
+        end
 
 
         local char = plr.Character
@@ -1171,8 +1178,4 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
     end)
 end
 
-
-GlobalCriRPGLib:Init()
-
-
-return true
+return GlobalCriRPGLib

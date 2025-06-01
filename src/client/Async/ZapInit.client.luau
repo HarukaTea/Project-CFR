@@ -1,8 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
-
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 
 

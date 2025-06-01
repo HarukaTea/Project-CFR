@@ -13,6 +13,7 @@ PlayerLib.__index = PlayerLib
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
+local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ProfileService = require(ServerScriptService.HarukaServer.Shared.ProfileService)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
@@ -35,71 +36,32 @@ local profileStoreMain = ProfileService.GetProfileStore(
 
 local totalPlayersJoined = 0
 
+local allPlayerObjPool = {}
+
 
 --// Init once
 Players.PlayerRemoving:Connect(function(player)
     player:SetAttribute("IsLeaving", true)
 
-    local playerObj = PlayerLib:GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
+    local playerObj = allPlayerObjPool[player:GetAttribute("HarukaUniqueId")]
     if playerObj then
         playerObj:Destroy()
     end
 end)
+Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
+    local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
+    if not playerObj then
+        plr:Kick("Failed to find player object, please report this to the developer!")
+        return
+    end
 
-local allPlayerObjPool = {}
-
-
-
-function PlayerLib.new(player: Player)
-    if player:GetAttribute("HarukaUniqueId") then return end
-
-    local self = setmetatable({}, PlayerLib)
-
-    self.Player = player
-    self.UniqueId = HttpService:GenerateGUID(false)
-
-    self.Player:SetAttribute("HarukaUniqueId", self.UniqueId)
-
-    self.Add, self.Empty = HarukaLib.Bin()
-
-    return self
-end
-
-
-
-function PlayerLib:Init()
-    local plr = self.Player :: Player
+    local self = playerObj
 
 
     --// Load in datastore
     Promise.new(function(resolve, reject)
-		local profile = profileStoreMain:LoadProfileAsync("Player_"..plr.UserId)
-
-        if not profile then reject("Profile is nil") return end
-
-        profile:Reconcile()
-		profile:AddUserId(plr.UserId)
-
-		profile:ListenToRelease(function()
-			plr:Kick("Data was loaded on another roblox server, please try again later?")
-		end)
-
-        self.Add(function()
-            profile:Release()
-        end)
-
-		if not plr:IsDescendantOf(Players) then
-			profile:Release()
-			return
-		end
-
-        self.Profile = profile
-
-        local joinData = self.Player:GetJoinData().TeleportData
-        local slotChosen = "Slot1"
-        if joinData and joinData.SlotChosen then
-            slotChosen = joinData.SlotChosen
-        end
+        local slotChosen = netData.SlotId or "Slot1"
+        local profile = self.Profile
 
 
         --// start to load in
@@ -220,8 +182,8 @@ function PlayerLib:Init()
             local rank = plr:GetRankInGroup(16912246)
             local isDev = (rank >= 124)
             local isTester = (rank >= 2)
-            local isCC = (rank == 3)
-            local isTranslator = (rank == 4)
+            local isCC = (rank >= 3)
+            local isTranslator = (rank >= 4)
 
             local function _createSymbol(role: string)
                 local bool = Instance.new("BoolValue")
@@ -238,11 +200,15 @@ function PlayerLib:Init()
             if isDev then
                 _createSymbol("Developer")
             end
-            if isTranslator then
+            if isTranslator and not isDev and not isCC then
                 _createSymbol("Translator")
             end
-            if isCC then
+            if isCC and not isDev then
                 _createSymbol("ContentCreator")
+            end
+
+            if plr.UserId == 304008764 then
+                _createSymbol("Translator")
             end
         end)
 
@@ -266,13 +232,96 @@ function PlayerLib:Init()
             HarukaLib:AddAttr(plr, "PlayTime", 15)
         end))
 
-        allPlayerObjPool[self.UniqueId] = self
-
         ServerBindables.RToSpawnChar:Fire(plr)
 
         self:_ListenStatLimitTracker()
 
+        resolve()
 
+	end):timeout(30):catch(function(err)
+        if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
+            plr:Kick("Your data failed to load, reason: Timed out, please try again later?")
+        else
+            plr:Kick("Your data failed to load, reason: Internal, please contact us in community!")
+            warn(tostring(err))
+        end
+    end)
+end)
+
+
+
+function PlayerLib.new(player: Player)
+    if player:GetAttribute("HarukaUniqueId") then return end
+
+    local self = setmetatable({}, PlayerLib)
+
+    self.Player = player
+    self.UniqueId = HttpService:GenerateGUID(false)
+
+    self.Player:SetAttribute("HarukaUniqueId", self.UniqueId)
+
+    self.Add, self.Empty = HarukaLib.Bin()
+
+
+    allPlayerObjPool[self.UniqueId] = self
+
+    return self
+end
+
+
+
+function PlayerLib:Init()
+    local plr = self.Player :: Player
+
+
+    --// Load in datastore
+    Promise.new(function(resolve, reject)
+		local profile = profileStoreMain:LoadProfileAsync("Player_"..plr.UserId)
+
+        if not profile then reject("Profile is nil") return end
+
+        profile:Reconcile()
+		profile:AddUserId(plr.UserId)
+
+		profile:ListenToRelease(function()
+			plr:Kick("Data was loaded on another roblox server, please try again later?")
+		end)
+
+        self.Add(function()
+            profile:Release()
+        end)
+
+		if not plr:IsDescendantOf(Players) then
+			profile:Release()
+			return
+		end
+
+        self.Profile = profile
+
+
+        local profileContainer = Instance.new("Folder")
+        profileContainer.Name = "ProfileContainer"
+        profileContainer.Parent = plr
+
+
+        local whiteList = {}
+        for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
+            if typeof(val) == "table" then
+                continue
+            end
+            table.insert(whiteList, attr)
+        end
+        for i = 1, 3 do
+            local data = profile.Data["Slot"..i].Attrs :: table
+
+            for attr: string, val: any in data do
+                if not table.find(whiteList, attr) then continue end
+
+                profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
+            end
+        end
+
+        plr:SetAttribute("_PlayerProfileInited", true)
         resolve()
 
 	end):timeout(30):catch(function(err)
@@ -292,18 +341,6 @@ function PlayerLib:Destroy()
     self:_Remove()
 
     self.Empty()
-end
-
-
-
-function PlayerLib:GetPlayerObjByUniqueId(uniqueId: string)
-    if uniqueId == nil then return nil end
-
-    return allPlayerObjPool[uniqueId]
-end
-
-function PlayerLib:GetPlayerObjPool()
-    return allPlayerObjPool
 end
 
 

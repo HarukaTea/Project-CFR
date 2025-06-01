@@ -1,7 +1,5 @@
 --!nocheck
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
-
 local TextChatService = game:GetService("TextChatService")
 local RepS = game:GetService("ReplicatedStorage")
 
