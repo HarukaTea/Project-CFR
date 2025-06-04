@@ -181,4 +181,16 @@ StatusLib.DMGBoost = function(_, char: Model, props: {
 end
 
 
+
+StatusLib.Burn = function(_, char: Model, info: {
+    Target: Model,
+    Type: string,
+    Creator: string,
+    Power: number,
+    Duration: number,
+})
+
+end
+
+
 return StatusLib

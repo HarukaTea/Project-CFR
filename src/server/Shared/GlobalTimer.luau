@@ -32,10 +32,20 @@ end
 
 
 
-GlobalTimer.CancelTaskImmediately = function(_, uniqueId: string)
+GlobalTimer.DoTaskImmediately = function(_, uniqueId: string)
     if promises[uniqueId] then
         promises[uniqueId].Promise:cancel()
         pcall(promises[uniqueId].Callback)
+
+        promises[uniqueId] = nil
+    end
+end
+
+
+GlobalTimer.CancelTaskImmediately = function(_, uniqueId: string)
+    if promises[uniqueId] then
+        promises[uniqueId].Promise:cancel()
+        promises[uniqueId] = nil
     end
 end
 

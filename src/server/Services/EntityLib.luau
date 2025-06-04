@@ -21,6 +21,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaPathCreator = require(ServerScriptService.HarukaServer.Shared.HarukaPathCreator)
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
+local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
@@ -28,6 +29,7 @@ local EntityStatLimitTemplate = require(ServerScriptService.HarukaServer.Library
 
 
 local allEntityPool = {}
+local allLocatorPool = {}
 
 local wait = task.wait
 
@@ -106,11 +108,16 @@ Players.PlayerRemoving:Connect(function(player)
         end)
     end
 end)
-enemyDiedSignal:Connect(function(locator: BasePart)
+enemyDiedSignal:Connect(function(info: {
+    Name: string,
+    Location: CFrame,
+    Level: number
+})
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
     countdown.Transparency = 1
-    countdown.CFrame = locator.CFrame
+    countdown.CFrame = info.Location
     countdown.Parent = workspace
+    Maid:AddItem(countdown, 12)
 
     Promise.try(function()
         for i = 12, 1, -1 do
@@ -122,10 +129,17 @@ enemyDiedSignal:Connect(function(locator: BasePart)
     end):catch(function() end)
 
     Promise.delay(12):andThen(function()
+        local locator = HarukaLib:CreateMockPart()
+        locator.Name = info.Name
+
+        locator.Size = Vector3.new(5, 2, 5)
+        locator.CFrame = info.Location
+
+        locator:AddTag("EnemyLocatorEntity")
+        locator:SetAttribute("Level", info.Level)
+
         locator.Parent = workspace.Enemies
     end)
-
-    Debris:AddItem(countdown, 12)
 end)
 Events.RequestToStartCombat.SetCallback(function(plr: Player, data)
     local entity = data.Entity
@@ -155,9 +169,18 @@ end)
 
 
 function EntityLib.new(locator: BasePart)
+    if locator:GetAttribute("HarukaUniqueId") then return end
+
+
     local self = setmetatable({}, EntityLib)
 
     self.Locator = locator
+    self.LocatorUniqueId = HttpService:GenerateGUID(false)
+
+    locator:SetAttribute("HarukaUniqueId", self.LocatorUniqueId)
+
+
+    allLocatorPool[self.LocatorUniqueId] = self
 
     self.WholeAdd, self.WholeEmpty = HarukaLib.Bin()
     self.RoamAdd, self.RoamEmpty = HarukaLib.Bin()
@@ -211,6 +234,7 @@ function EntityLib:Destroy(noRespawn: boolean?)
 
     self.Destroyed = true
     allEntityPool[self.UniqueId] = nil
+    allLocatorPool[self.LocatorUniqueId] = nil
 
     if self.Locator then
         if self.Locator:GetAttribute("NoRespawn") then
@@ -218,7 +242,11 @@ function EntityLib:Destroy(noRespawn: boolean?)
         end
     end
     if not noRespawn then
-        enemyDiedSignal:Fire(self.Locator:Clone())
+        enemyDiedSignal:Fire({
+            Name = self.Locator.Name,
+            Level = self.Locator:GetAttribute("Level"),
+            Location = self.Locator.CFrame
+        })
     end
     if self.EntityObj then
         self.EntityObj:Destroy()

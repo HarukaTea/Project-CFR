@@ -11,6 +11,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
+local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 
 local wait = task.wait
@@ -168,7 +169,7 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
     projectileSymbol:SetAttribute("Level", entity:GetAttribute("Level"))
     projectileSymbol.Parent = ServerStorage.ProjectileSymbolContainer
 
-    Debris:AddItem(projectileSymbol, 15.99 * 2)
+    Maid:AddItem(projectileSymbol, 15.99 * 2)
 end
 
 

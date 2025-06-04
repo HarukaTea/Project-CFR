@@ -66,21 +66,6 @@ return {
         ClockTime = 0,
     },
 
-    Credits = {
-        Name = "Past History",
-        Desc = "",
-
-        Music = "Step!",
-        MusicVolume = 0.6,
-        CombatMusic = "Conquesting",
-        CombatMusicVolume = 0.5,
-
-        LightingInfo = defaultLighting,
-        ClockTime = 14,
-
-        RainLevel = 0,
-    },
-
     EursidaLake = {
         Name = "Eursida Lake",
         Desc = "",

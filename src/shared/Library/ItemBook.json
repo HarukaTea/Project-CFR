@@ -21,7 +21,7 @@
         "Tier": "2",
         "Level": "3",
         "Desc": "A golden one, lucky you!",
-        "Stat": "Recover <green>15%</font> of your max health, and give you <yellow>1.5x</font> attack buff for a short amount of time",
+        "Stat": "Recover <green>15%</font> of your max health, and give you <yellow>0.5x</font> attack buff for a short amount of time",
         "StatInfo": "",
         "Icon": "2970814988",
         "Price": "60",
@@ -630,7 +630,7 @@
         "Recipe": ""
     },
     {
-        "ItemId": "ArcaneSpellbook",
+        "ItemId": "ArcaneSpellbook2",
         "Name": "Arcane Spellbook",
         "Type": "Accessory",
         "Tier": "3",
@@ -641,7 +641,7 @@
         "Icon": "17286830798",
         "Price": "750",
         "ExtraInfo": "",
-        "Tags": "Magic",
+        "Tags": "Chest,NoRandom",
         "Recipe": ""
     },
     {
@@ -656,11 +656,11 @@
         "Icon": "14429547149",
         "Price": "750",
         "ExtraInfo": "",
-        "Tags": "Magic,NoRandom",
+        "Tags": "Chest,NoRandom",
         "Recipe": ""
     },
     {
-        "ItemId": "EnchantedBlade",
+        "ItemId": "EnchantedBlade2",
         "Name": "Enchanted Blade",
         "Type": "Accessory",
         "Tier": "3",
@@ -671,11 +671,11 @@
         "Icon": "4820519895",
         "Price": "750",
         "ExtraInfo": "",
-        "Tags": "Hybrid",
+        "Tags": "Chest,NoRandom",
         "Recipe": ""
     },
     {
-        "ItemId": "SharpenerRock",
+        "ItemId": "SharpenerRock2",
         "Name": "Sharpener's Rock",
         "Type": "Accessory",
         "Tier": "1",
@@ -686,7 +686,7 @@
         "Icon": "2965825317",
         "Price": "100",
         "ExtraInfo": "",
-        "Tags": "CritBuild",
+        "Tags": "Chest,NoRandom",
         "Recipe": ""
     },
     {
@@ -695,13 +695,13 @@
         "Type": "Material",
         "Tier": "5",
         "Level": "1",
-        "Desc": "Cursed one",
-        "Stat": "",
+        "Desc": "A heavy-duty weapon designed with one purpose: to punch through the thickest armor. Its rounds are slow but devastating, leaving destruction in their wake",
+        "Stat": "It deals no damage in fantasy world",
         "StatInfo": "",
         "Icon": "4820548150",
         "Price": "50",
         "ExtraInfo": "",
-        "Tags": "Sad",
+        "Tags": "Joke",
         "Recipe": ""
     }
 ]

@@ -9,6 +9,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
+local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 local ClientLib = {}
 
@@ -192,11 +193,11 @@ function ClientLib:TrackEffectListToUI(props: {
 			symbol:SetAttribute("Ex", effectObj:GetAttribute("Ex"))
 
 			symbol.Parent = effectListContainer
-			Debris:AddItem(symbol, endClock - nowClock)
+			Maid:AddItem(symbol, endClock - nowClock)
 
 			local effectUI = EffectSlot(props.Scope, symbol)
 			effectUI.Parent = props.GuiContainer.EffectList
-			Debris:AddItem(effectUI, endClock - nowClock)
+			Maid:AddItem(effectUI, endClock - nowClock)
 
 
 			local effectUISymbol = Instance.new("ObjectValue")

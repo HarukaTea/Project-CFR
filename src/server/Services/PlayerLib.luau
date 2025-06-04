@@ -194,17 +194,17 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             if isPremium then
                 _createSymbol("Premium")
             end
-            if isTester and not isDev and not isCC and not isTranslator then
-                _createSymbol("Tester")
-            end
             if isDev then
                 _createSymbol("Developer")
             end
-            if isTranslator and not isDev and not isCC then
+            if isTranslator and not isDev then
                 _createSymbol("Translator")
             end
-            if isCC and not isDev then
+            if isCC and not isDev and not isTranslator then
                 _createSymbol("ContentCreator")
+            end
+            if isTester and not isDev and not isCC and not isTranslator then
+                _createSymbol("Tester")
             end
 
             if plr.UserId == 304008764 then

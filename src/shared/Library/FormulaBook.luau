@@ -23,8 +23,11 @@ local formulas = {
         elseif props.Level > 100 and props.Level <= 170 then
             return math.floor(135 * props.Level)
 
-        elseif props.Level > 170 then
+        elseif props.Level > 170 and props.Level <= 180 then
             return math.floor(188 * props.Level)
+
+        elseif props.Level > 180 then
+            return math.floor(233 * props.Level)
         end
     end,
 

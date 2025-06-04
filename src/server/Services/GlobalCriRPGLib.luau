@@ -1055,6 +1055,25 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
             return
         end
 
+        --// found in statue
+        if itemInfo.TagsDesync.Statue then
+            if item == "Crescendo" then
+                local amount = 0
+                for _, itemSymbol: IntConstrainedValue in plr.Items:GetChildren() do
+                    if itemSymbol.Name == "Crescendo" then
+                        amount += 1
+                    end
+                end
+                if amount == 1 then
+                    Events.CreateNotify.Fire(plr, "You can't sell your weapons obtained from Statues!")
+                    return
+                end
+            else
+                Events.CreateNotify.Fire(plr, "You can't sell your weapons obtained from Statues!")
+                return
+            end
+        end
+
 
         --// cant sell items that is not existed
         local items = plr.Items :: Folder
