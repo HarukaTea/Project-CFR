@@ -1055,21 +1055,21 @@ local returns = {
 	},
 	RequestToEraseSaveFile = {
 		Fire = function(Value: ({
-			["SlotChosen"]: ((string)?),
+			["SlotId"]: ((string)?),
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			if Value["SlotChosen"] == nil then
+			if Value["SlotId"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_30 = #Value["SlotChosen"]
+				local len_30 = #Value["SlotId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
 				alloc(len_30)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotChosen"], len_30)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_30)
 			end
 		end,
 	},

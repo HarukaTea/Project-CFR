@@ -1,8 +1,5 @@
 
 
-repeat task.wait() until workspace:GetAttribute("Haruka_CharClientInited")
-
-
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Debris = game:GetService("Debris")
@@ -21,6 +18,9 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 local player = Players.LocalPlayer
 local char = script:FindFirstAncestorOfClass("Model")
+
+
+repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
 local EntityLib = {}
@@ -70,7 +70,6 @@ Promise.try(function()
                 local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
                 if distance < 159 and distance > 0 and not entityObj.HasModel then
                     entityObj:_MakeModel()
-                    entityObj:_EnterWorldFX()
                 elseif distance >= 189 and entityObj.HasModel then
                     entityObj:_DestroyModel()
                 end
@@ -83,9 +82,10 @@ Promise.try(function()
     while wait(0.5) do
         if encounterCD then continue end
 
-        for _, entityObj in allEntityPool do
-            if encounterCD then break end
+        local nearestEnemy = nil
+        local nearestDist = 999
 
+        for _, entityObj in allEntityPool do
             if not entityObj.IsReady then continue end
             if not ClientLib:IsCharValid(entityObj.Entity) then continue end
 
@@ -99,17 +99,24 @@ Promise.try(function()
 
             pcall(function()
                 local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
-                if distance < 18 and distance > 0 then
-                    encounterCD = true
-                    task.delay(2, function()
-                        encounterCD = false
-                    end)
-
-                    Events.RequestToStartCombat.Fire({
-                        Entity = entity
-                    })
+                if distance > 0 then
+                    if distance < nearestDist then
+                        nearestEnemy = entity
+                        nearestDist = distance
+                    end
                 end
             end)
+        end
+
+        if nearestDist > 0 and nearestDist < 18 then
+            encounterCD = true
+            task.delay(2, function()
+                encounterCD = false
+            end)
+
+            Events.RequestToStartCombat.Fire({
+                Entity = nearestEnemy
+            })
         end
     end
 end)
@@ -165,7 +172,6 @@ function EntityLib.new(enemy: Model)
             self:_DestroyModel()
         else
             self:_MakeModel()
-            self:_EnterWorldFX()
         end
     end))
     self.Add(function()
@@ -187,7 +193,6 @@ function EntityLib:Init()
     local distance = player:DistanceFromCharacter(self.Entity.PrimaryPart.Position)
     if distance < 166 and distance > 0 then
         self:_MakeModel()
-        self:_EnterWorldFX()
     end
 
     self.IsReady = true
@@ -268,8 +273,6 @@ end
 function EntityLib:_MakeModel()
 	if self.HasModel then return end
 
-    self.HasModel = true
-
     local entity = self.Entity :: Model
     if not ClientLib:IsModelValid(entity) then return end
 
@@ -306,6 +309,10 @@ function EntityLib:_MakeModel()
     entity.PrimaryPart.Anchored = false
 
     HarukaLib:SetCollisionGroup(entity, "EnemyBodyPart")
+
+    self.Anims.Idle:Play()
+
+    self.HasModel = true
 
     return model
 end
@@ -370,7 +377,6 @@ function EntityLib:_ListenAttributeTracker()
 
             self:_DestroyModel()
             self:_MakeModel()
-            self:_EnterWorldFX()
         end,
         ["Attr-IsDead"] = function(state: boolean)
             if not state then return end
@@ -398,6 +404,8 @@ function EntityLib:_ListenAttributeTracker()
             end
 
             task.delay(1, function()
+                if not ClientLib:IsModelValid(entity) then return end
+
                 local deathEffect = ReplicatedStorage.Packages.Effects.DefeatedEffect:Clone() :: BasePart
                 deathEffect.CFrame = entity.PrimaryPart.CFrame
                 deathEffect.Parent = workspace
@@ -409,16 +417,6 @@ function EntityLib:_ListenAttributeTracker()
         end
     }))
 end
-
-
-
-function EntityLib:_EnterWorldFX()
-    local entity = self.Entity :: Model
-    if not ClientLib:IsCharValid(entity) then return end
-
-    self.Anims.Idle:Play()
-end
-
 
 
 

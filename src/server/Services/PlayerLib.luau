@@ -39,6 +39,15 @@ local totalPlayersJoined = 0
 local allPlayerObjPool = {}
 
 
+local attrWhiteList = {}
+for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
+    if typeof(val) == "table" then
+        continue
+    end
+    table.insert(attrWhiteList, attr)
+end
+
+
 --// Init once
 Players.PlayerRemoving:Connect(function(player)
     player:SetAttribute("IsLeaving", true)
@@ -84,16 +93,8 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         profile.Data[slot].Attrs = validatedData
 
         --// load validated data
-        local whiteList = {}
-        for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
-            if typeof(val) == "table" then
-                continue
-            end
-
-            table.insert(whiteList, attr)
-        end
         for attr: string, val: any in validatedData do
-            if not table.find(whiteList, attr) then continue end
+            if not table.find(attrWhiteList, attr) then continue end
 
             plr:SetAttribute(attr, val)
         end
@@ -247,6 +248,42 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end
     end)
 end)
+Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
+    if data.SlotId == nil then return end
+
+
+    Events.CreateFSNotify.Fire(plr, "Erasing your save file...", 3)
+
+
+    local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
+    if not playerObj then
+        warn("[Data Erase] Player object not found when trying to erase save file.")
+
+        Events.CreateNotify.Fire(plr, "[ERROR] Player object not found, when trying to erase save file.")
+        return
+    end
+    if not playerObj.Profile then
+        warn("[Data Erase] Profile not found when trying to erase save file.")
+
+        Events.CreateNotify.Fire(plr, "[ERROR] Profile not found, when trying to erase save file.")
+        return
+    end
+
+
+    for attr: string, value: any in table.clone(PlayerTemplate).Slot1.Attrs do
+        playerObj.Profile.Data[data.SlotId].Attrs[attr] = value
+    end
+
+    local profileContainer = plr.ProfileContainer :: Folder
+    for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
+        if not table.find(attrWhiteList, attr) then continue end
+
+        profileContainer:SetAttribute(data.SlotId.."_"..attr, val)
+    end
+
+
+    Events.CreateFSNotify.Fire(plr, "Save file erased!", 2)
+end)
 
 
 
@@ -303,19 +340,11 @@ function PlayerLib:Init()
         profileContainer.Name = "ProfileContainer"
         profileContainer.Parent = plr
 
-
-        local whiteList = {}
-        for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
-            if typeof(val) == "table" then
-                continue
-            end
-            table.insert(whiteList, attr)
-        end
         for i = 1, 3 do
             local data = profile.Data["Slot"..i].Attrs :: table
 
             for attr: string, val: any in data do
-                if not table.find(whiteList, attr) then continue end
+                if not table.find(attrWhiteList, attr) then continue end
 
                 profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
             end
@@ -349,8 +378,12 @@ end
 
 
 function PlayerLib:_Remove()
-    self:_SaveData()
-    self:_RemoveChestAcquire()
+    Promise.try(function()
+        self:_SaveData()
+    end)
+    Promise.try(function()
+        self:_RemoveChestAcquire()
+    end)
 end
 
 

@@ -208,35 +208,45 @@ do
     workspace:SetAttribute("Haruka_CompletedPreload", true)
 
 
-    --// init ambient
-    SoundService.Musics.Titlescreen:Play()
+    if workspace:GetAttribute("NoRequiresTitlescreen") then
+        local Events = require(RepS.HarukaShared.Library.Events)
 
-    Lighting:SetAttribute("RainLevel", 6)
-    Lighting.Ambient = Color3.fromRGB(122, 122, 122)
-    Lighting.Brightness = 10
-    Lighting.ColorShift_Bottom = Color3.fromRGB(18, 18, 18)
-    Lighting.ColorShift_Top = Color3.fromRGB(0, 0, 68)
-    Lighting.OutdoorAmbient = Color3.fromRGB(75, 75, 75)
-    Lighting.ClockTime = 0
-    Lighting.GeographicLatitude = 255
+        Events.RequestToChooseWhichSlotToPlay.Fire({
+            SlotId = "Slot1"
+        })
+    else
+        --// init ambient
+        SoundService.Musics.Titlescreen:Play()
 
-    local atmosphere = Instance.new("Atmosphere")
-    atmosphere.Name = "TitlescreenAtmosphere"
-    atmosphere.Color = Color3.fromRGB(116, 125, 140)
-    atmosphere.Decay = Color3.fromRGB(87, 96, 111)
-    atmosphere.Glare = 0
-    atmosphere.Haze = 3
-    atmosphere.Density = 0.4
-    atmosphere.Parent = Lighting
+        Lighting:SetAttribute("RainLevel", 6)
+        Lighting.Ambient = Color3.fromRGB(122, 122, 122)
+        Lighting.Brightness = 10
+        Lighting.ColorShift_Bottom = Color3.fromRGB(18, 18, 18)
+        Lighting.ColorShift_Top = Color3.fromRGB(0, 0, 68)
+        Lighting.OutdoorAmbient = Color3.fromRGB(75, 75, 75)
+        Lighting.ClockTime = 0
+        Lighting.GeographicLatitude = 255
 
-    if Lighting:FindFirstChildOfClass("Sky") then
-        Lighting:FindFirstChildOfClass("Sky"):Destroy()
+        local atmosphere = Instance.new("Atmosphere")
+        atmosphere.Name = "TitlescreenAtmosphere"
+        atmosphere.Color = Color3.fromRGB(116, 125, 140)
+        atmosphere.Decay = Color3.fromRGB(87, 96, 111)
+        atmosphere.Glare = 0
+        atmosphere.Haze = 3
+        atmosphere.Density = 0.4
+        atmosphere.Parent = Lighting
+
+        if Lighting:FindFirstChildOfClass("Sky") then
+            Lighting:FindFirstChildOfClass("Sky"):Destroy()
+        end
+        RepS.Packages.Unloads._TitlescreenSkybox:Clone().Parent = Lighting
+
+        if workspace.Terrain:FindFirstChildOfClass("Clouds") then
+            workspace.Terrain.Clouds.Color = Color3.fromRGB(31, 31, 31)
+        end
     end
-    RepS.Packages.Unloads._TitlescreenSkybox:Clone().Parent = Lighting
 
-    if workspace.Terrain:FindFirstChildOfClass("Clouds") then
-        workspace.Terrain.Clouds.Color = Color3.fromRGB(31, 31, 31)
-    end
+
 
 
     repeat wait() until plr.Character
@@ -257,10 +267,12 @@ do
         if workspace.Terrain:FindFirstChildOfClass("Clouds") then
             workspace.Terrain.Clouds.Color = Color3.fromRGB(255, 255, 255)
         end
-
-        atmosphere:Destroy()
-        Lighting._TitlescreenSkybox:Destroy()
-
+        if Lighting:FindFirstChild("TitlescreenAtmosphere") then
+            Lighting.TitlescreenAtmosphere:Destroy()
+        end
+        if Lighting:FindFirstChild("_TitlescreenSkybox") then
+            Lighting._TitlescreenSkybox:Destroy()
+        end
         RepS.Packages.Unloads._WorldSkybox:Clone().Parent = Lighting
 
 

@@ -342,4 +342,4 @@ CharLib:Init()
 
 
 
-workspace:SetAttribute("Haruka_CharClientInited", true)
+char:SetAttribute("Haruka_CharClientInited", true)

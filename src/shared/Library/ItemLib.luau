@@ -99,12 +99,12 @@ ItemLib.GetItemInfo = function(_, itemId: string) : {
     StatInfo: string,
     Icon: string,
     Price: number,
-    ExtraInfo: string,
+    ExtraStatInfo: string,
     Recipe: string,
     Tags: string,
 
     StatInfoDesync: { [string]: any },
-    ExtraInfoDesync: { [string]: any },
+    ExtraStatInfoDesync: { [string]: any },
     RecipeDesync: { [string]: any },
     TagsDesync: { string },
 }
@@ -139,19 +139,19 @@ end
 for index: number, itemInfo: table in ItemBook do
     itemInfo = table.clone(itemInfo)
 
-    itemInfo.ExtraInfoDesync = {}
+    itemInfo.ExtraStatInfoDesync = {}
     itemInfo.StatInfoDesync = {}
     itemInfo.RecipeDesync = {}
     itemInfo.TagsDesync = {}
 
     --// desync extra info
-    if itemInfo.ExtraInfo ~= "" then
-        local extraInfo = itemInfo.ExtraInfo
+    if itemInfo.ExtraStatInfo ~= "" then
+        local extraInfo = itemInfo.ExtraStatInfo
 
         extraInfo = string.gsub(extraInfo, " ", "")
         local attrsExtra = string.split(extraInfo, ",")
 
-        itemInfo.ExtraInfoDesync = ItemLib:DesyncItemStat("Extra", attrsExtra)
+        itemInfo.ExtraStatInfoDesync = ItemLib:DesyncItemStat("Extra", attrsExtra)
     end
 
     --// desync stat info

@@ -568,7 +568,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
             return
         end
 
-        local realCD = tonumber(itemInfo.ExtraInfoDesync.CD)
+        local realCD = tonumber(itemInfo.ExtraStatInfoDesync.CD)
         if not realCD then
             warn("Invalid CD for item")
 
@@ -589,10 +589,10 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
                 equippingInfo:Destroy()
             end
         end
-        if itemInfo.ExtraInfoDesync.Mana then
+        if itemInfo.ExtraStatInfoDesync.Mana then
             local curMana = char:GetAttribute("Mana") :: number
 
-            if curMana < itemInfo.ExtraInfoDesync.Mana then
+            if curMana < itemInfo.ExtraStatInfoDesync.Mana then
                 Events.CreateNotify.Fire(plr, "You do not have enough Mana to cast this skill!")
                 Events.RequestToCastItem_Response.Fire(plr, {
                     SlotId = slotId,
@@ -617,7 +617,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
         Promise.try(function()
             local statusCode = CastItemLib[itemInfo.ItemId](plr, char, {
                 CostManaFunc = function()
-                    HarukaLib:AddAttr(char, "Mana", -itemInfo.ExtraInfoDesync.Mana)
+                    HarukaLib:AddAttr(char, "Mana", -itemInfo.ExtraStatInfoDesync.Mana)
                 end
             }) :: number?
 

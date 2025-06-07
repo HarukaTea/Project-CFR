@@ -42,8 +42,8 @@ return {
             BeeStinger = 80,
             HealthyApple = 10,
             GoldenApple = 5,
-            HoneyArmor = 8,
-            QueenBeeBow = 1
+            HoneyArmor = 10,
+            QueenBeeBow = 5
         }
     },
 
@@ -177,8 +177,8 @@ return {
             BlackFur = 80,
             HealthyApple = 10,
             GoldenApple = 5,
-            BlackWolfNecklace = 7,
-            WolfKingSword = 1
+            BlackWolfNecklace = 10,
+            WolfKingSword = 5
         }
     },
 

@@ -15,7 +15,7 @@ local function initPlayer(player: Player)
         return
     end
     if workspace:GetAttribute("Haruka_ServerLocked") then
-        player:Kick("This server is invalid. Rejoin can fix it.")
+        player:Kick("This server is invalid/locked. Rejoin can fix it.")
         return
     end
     if player.AccountAge < 2 then

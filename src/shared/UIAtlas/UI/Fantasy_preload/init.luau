@@ -15,6 +15,10 @@ local Children = Fusion.Children
 local wait = task.wait
 
 return function (plr: Player)
+    if workspace:GetAttribute("NoRequiresTitlescreen") then return nil end
+
+
+
     repeat wait() until workspace:WaitForChild("MapComponents", 999)
     repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
     repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CharPreviewLocator", 999)

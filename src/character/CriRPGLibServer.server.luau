@@ -272,7 +272,7 @@ function CriRPGLib:_ListenOrbTracker()
             symbol:SetAttribute("Owner", char.Name)
 
             symbol.Parent = orbSymbolContainer
-            Maid:AddItem(symbol, orbFadeTime)
+            Maid:AddItem(symbol, orbFadeTime + 0.5)
 
 
             Events.PlaceOrb.Fire(plr, {

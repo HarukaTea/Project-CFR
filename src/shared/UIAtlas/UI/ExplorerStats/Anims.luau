@@ -236,6 +236,12 @@ return function (UI: ScreenGui, self: table)
 
     ---// track class: reverberation mechanic
     table.insert(scope, Events.CLASS_RollNewResonateNumForPlayer.On(function(data)
+        if not self.UI then return end
+        if not self.UI:FindFirstChild("Center") then return end
+        if not self.UI.Center:FindFirstChild("GlobalClassAbilityDiv") then return end
+        if not self.UI.Center.GlobalClassAbilityDiv:FindFirstChild("ReverberationStyle") then return end
+
+
         local ReverberationPKSlot = RevPKSlot(scope, {
             Num = data.ResonateNum
         })

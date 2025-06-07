@@ -401,8 +401,10 @@ ClassSPSceneLib.FlowAyakaUlt = function(char: Model, projectileUniqueId: string)
                         flowIce.Hit.Smoke:Emit(80)
 
                         val.Changed:Connect(function(newVal: number)
-                            flowIce.Attachment.Main.Size = NumberSequence.new({flowIce.Attachment.Main.Size.Keypoints[1], NumberSequenceKeypoint.new(1, newVal)})
-                            flowIce.Attachment.Wind.Size = NumberSequence.new({flowIce.Attachment.Main.Size.Keypoints[1], NumberSequenceKeypoint.new(1, (newVal * 1.35))})
+                            pcall(function()
+                                flowIce.Attachment.Main.Size = NumberSequence.new({flowIce.Attachment.Main.Size.Keypoints[1], NumberSequenceKeypoint.new(1, newVal)})
+                                flowIce.Attachment.Wind.Size = NumberSequence.new({flowIce.Attachment.Main.Size.Keypoints[1], NumberSequenceKeypoint.new(1, (newVal * 1.35))})
+                            end)
                         end)
 
                         wait(0.35)

@@ -1,5 +1,3 @@
-repeat task.wait() until workspace:GetAttribute("Haruka_CharClientInited")
-
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -25,6 +23,7 @@ local Maid = require(RepS.HarukaShared.Shared.Maid)
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
 
+repeat task.wait() until char:GetAttribute("Haruka_CharClientInited")
 
 local Add, Empty = HarukaLib.Bin()
 

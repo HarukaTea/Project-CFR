@@ -36,6 +36,8 @@ function TypeWriter:TypeText(text: string)
 
 	local index = 0
 	for first, last in utf8.graphemes(text) do
+		if self.Stopped then break end
+
 		index += 1
 
 		self.OnUTFUpdated:Fire(index)

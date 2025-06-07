@@ -11,7 +11,6 @@ local SoundService = game:GetService("SoundService")
 local ServerWorldLib = {}
 
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local CollisionBook = require(ServerScriptService.HarukaServer.Library.CollisionBook)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
@@ -32,17 +31,6 @@ function ServerWorldLib:Init()
             func(self)
         end
     end
-
-
-    Promise.delay(60 * 60 * 6):andThen(function()
-        workspace:SetAttribute("Haruka_ServerLocked", true)
-
-        warn("Server has run for 6 hours!")
-
-        for _, plr: Player in Players:GetPlayers() do
-            plr:Kick("This server has run for 6 hours!")
-        end
-    end)
 end
 
 

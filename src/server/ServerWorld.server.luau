@@ -16,15 +16,13 @@ local nowClock = os.clock()
 
 do
     if RunService:IsClient() then
-        warn("Invalid runtime environment happened")
-
-        print("Locking the server...")
+        warn("Invalid runtime environment")
 
         workspace:SetAttribute("Haruka_ServerLocked", true)
 
 
         for _, plr: Player in Players:GetPlayers() do
-            plr:Kick("This server is invalid. Rejoin can fix it.")
+            plr:Kick("This server is invalid/locked. Rejoin can fix it.")
         end
         return
     end

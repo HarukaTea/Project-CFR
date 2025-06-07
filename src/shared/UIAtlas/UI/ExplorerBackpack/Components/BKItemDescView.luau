@@ -354,7 +354,7 @@ return function (scope: Fusion.Scope, props: {
                     }),
 
 
-                    Fusion.ForPairs(scope, info.ExtraInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
+                    Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
                             Attr = attr,
                             Val = val

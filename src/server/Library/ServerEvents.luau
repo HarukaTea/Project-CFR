@@ -457,9 +457,9 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			value = {}
 			if buffer.readu8(incoming_buff, read(1)) == 1 then
 				local len_2 = buffer.readu16(incoming_buff, read(2))
-				value["SlotChosen"] = buffer.readstring(incoming_buff, read(len_2), len_2)
+				value["SlotId"] = buffer.readstring(incoming_buff, read(len_2), len_2)
 			else
-				value["SlotChosen"] = nil
+				value["SlotId"] = nil
 			end
 			if reliable_events[1] then
 				task.spawn(reliable_events[1], player, value)
@@ -4138,7 +4138,7 @@ local returns = {
 	},
 	RequestToEraseSaveFile = {
 		SetCallback = function(Callback: (Player: Player, Value: ({
-			["SlotChosen"]: ((string)?),
+			["SlotId"]: ((string)?),
 		})) -> ()): () -> ()
 			reliable_events[1] = Callback
 			return function()
