@@ -15,6 +15,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
+local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
 
 local wait = task.wait
 
@@ -429,6 +430,7 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
     ServerBindables.EnemyGotHit:Fire(targeting, char, {
         DMG = dmgProps.DMG,
     })
+
 
     Promise.try(function()
         local player = Players:GetPlayerFromCharacter(char)

@@ -20,6 +20,8 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
 local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
+local PerkBook = require(ReplicatedStorage.HarukaShared.Library.PerkBook)
+local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLib)
 
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
@@ -499,11 +501,11 @@ function CriRPGLib:_ListenStatsTracker()
         local minDMGExBuff = char:GetAttribute("MinDMGExPower") :: number
 
         baseMinDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = baseMinDMG,
+            BaseDMG = math.ceil(baseMinDMG * minDMGExBuff + minDMGBuff),
             DMGPoints = plr:GetAttribute("STRPoints")
         })
 
-        char:SetAttribute("MinDMG", math.ceil(baseMinDMG * minDMGExBuff + minDMGBuff))
+        char:SetAttribute("MinDMG", baseMinDMG)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMinDMG"] = _updateMinDMG,
@@ -521,11 +523,13 @@ function CriRPGLib:_ListenStatsTracker()
         local maxDMGExBuff = char:GetAttribute("MaxDMGExPower") :: number
 
         baseMaxDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = baseMaxDMG,
-            DMGPoints = plr:GetAttribute("STRPoints")
+            BaseDMG = math.ceil(baseMaxDMG * maxDMGExBuff + maxDMGBuff),
+            DMGPoints = plr:GetAttribute("STRPoints"),
+
+            ATKType = "Max"
         })
 
-        char:SetAttribute("MaxDMG", math.ceil(baseMaxDMG * maxDMGExBuff + maxDMGBuff))
+        char:SetAttribute("MaxDMG", baseMaxDMG)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMaxDMG"] = _updateMaxDMG,
@@ -544,11 +548,11 @@ function CriRPGLib:_ListenStatsTracker()
 
 
         baseMagic = FormulaBook.PlayerMagicCurveCal({
-            BaseMagic = baseMagic,
+            BaseMagic = math.ceil(baseMagic * magicExBuff + magicBuff),
             MagicPoints = plr:GetAttribute("INTPoints")
         })
 
-        char:SetAttribute("Magic", math.ceil(baseMagic * magicExBuff + magicBuff))
+        char:SetAttribute("Magic", baseMagic)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMagic"] = _updateMagic,
@@ -581,7 +585,6 @@ function CriRPGLib:_ListenStatsTracker()
         end
     end
     Add(HarukaLib:Hydrate(char, {
-        ["Attr-BaseMaxHealth"] = _updateHealth,
         ["Attr-MaxHealthEx"] = _updateHealth,
         ["Attr-MaxHealthExPower"] = _updateHealth,
     }))
@@ -749,7 +752,7 @@ function CriRPGLib:_ListenStatsTracker()
     --// track rest stats
     local blackList = {
         "BaseMagic", "BaseMinDMG", "BaseMaxDMG", "BaseSpeed", "BaseSpeedCombat",
-        "BaseJumpPower", "BaseMaxHealth", "BaseMaxShield", "BaseMaxMana",
+        "BaseJumpPower", "BaseMaxShield", "BaseMaxMana",
         "BaseCriChance", "BaseDodgeChance"
     }
     for stat: string, _ in table.clone(CharTemplate) do
@@ -931,6 +934,60 @@ function CriRPGLib:_ListenPassiveAutoEquipTracker()
             ServerLib:EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
         end
     end))
+end
+
+
+function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
+    local perkContainer = Instance.new("Folder")
+    perkContainer.Name = "Perks"
+    perkContainer.Parent = char
+    Add(perkContainer)
+
+    local points = { "STR", "INT", "VIT", "DEX" }
+    for _, pointId: string in points do
+        local folder = Instance.new("Folder")
+        folder.Name = pointId
+        folder.Parent = perkContainer
+    end
+
+
+    local function _listenToPerk(id: string, point: number)
+        local passed = {}
+        for _, perkInfo in PerkBook[id] do
+            if point >= perkInfo.Req then
+                table.insert(passed, perkInfo.Id)
+            end
+        end
+        for _, perk: BoolValue in perkContainer[id]:GetChildren() do
+            if not table.find(passed, perk.Name) then
+                if PerkLib[perk.Name] then
+                    PerkLib[perk.Name](char, -1)
+                end
+                perk:Destroy()
+            end
+        end
+        for _, perkId: string in passed do
+            if perkContainer[id]:FindFirstChild(perkId) then continue end
+
+            local perk = Instance.new("BoolValue")
+            perk.Name = perkId
+            perk.Value = true
+            perk.Parent = perkContainer[id]
+
+            if PerkLib[perk.Name] then
+                PerkLib[perk.Name](char, 1)
+            end
+        end
+    end
+
+
+    Add(HarukaLib:Hydrate(plr, {
+        ["Attr-STRPoints"] = function(point: number)
+            if point == nil then return end
+
+            _listenToPerk("STR", point)
+        end
+    }))
 end
 
 

@@ -8,7 +8,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
 
 
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
@@ -113,12 +112,6 @@ return function (scope: Fusion.Scope, props: {
             })
         }
     })
-
-
-    local AGL = HarukaListLayout.new(barDiv.UIListLayout)
-    AGL:Enable()
-
-    table.insert(scope, AGL)
 
 
     return { folder, barDiv }

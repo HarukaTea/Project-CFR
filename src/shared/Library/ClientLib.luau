@@ -6,7 +6,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local Maid = require(RepS.HarukaShared.Shared.Maid)
@@ -160,11 +159,6 @@ function ClientLib:TrackEffectListToUI(props: {
 })
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 
-	local effectListAGLObj = HarukaListLayout.new(props.GuiContainer.EffectList:FindFirstChildOfClass("UIListLayout"))
-	effectListAGLObj:Enable()
-
-	table.insert(props.Scope, effectListAGLObj)
-
 
 	local effectListContainer = Instance.new("Folder")
 	effectListContainer.Name = "EffectListSymbols"
@@ -231,6 +225,8 @@ function ClientLib:TrackEffectListToUI(props: {
 			end
 		end
 	end)
+
+	return effectListEnemy
 end
 
 

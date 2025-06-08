@@ -82,8 +82,9 @@ return {
 
 
         BaseStats = {
-            MaxDMG = 25,
-            SpeedCombat = 40
+            SpeedCombat = 40,
+            OrbSpawnTime = 2,
+            OrbSpawnTimesAtStart = 4
         }
     },
 

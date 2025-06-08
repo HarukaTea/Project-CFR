@@ -36,26 +36,29 @@ end)
 
 
 --// freecam
-local freecamCommand = Instance.new("TextChatCommand")
-freecamCommand.Name = "HarukaFreecamCommand"
-freecamCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
-freecamCommand.PrimaryAlias = "/freecam"
-freecamCommand.SecondaryAlias = "!freecam"
-freecamCommand.AutocompleteVisible = true
-freecamCommand.Enabled = true
+if workspace:GetAttribute("AllowFreecam") then
+    local freecamCommand = Instance.new("TextChatCommand")
+    freecamCommand.Name = "HarukaFreecamCommand"
+    freecamCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
+    freecamCommand.PrimaryAlias = "/freecam"
+    freecamCommand.SecondaryAlias = "!freecam"
+    freecamCommand.AutocompleteVisible = true
+    freecamCommand.Enabled = true
 
-freecamCommand.Triggered:Connect(function(textSource: TextSource)
-    if textSource.UserId == plr.UserId then
-        Bindables.CreateNotify:Fire("Initializing Freecam...")
-        Bindables.CreateNotify:Fire("You can exit Freecam mode by pressing the Esc key.")
+    freecamCommand.Triggered:Connect(function(textSource: TextSource)
+        if textSource.UserId == plr.UserId then
+            Bindables.CreateNotify:Fire("Initializing Freecam...")
+            Bindables.CreateNotify:Fire("You can exit Freecam mode by pressing the Esc key.")
 
-        wait(2)
-        Freecam.Toggle(true)
-    end
-end)
-GuiService.MenuOpened:Connect(function()
-    Freecam.Toggle(false)
-end)
+            wait(2)
+            Freecam.Toggle(true)
+        end
+    end)
+    GuiService.MenuOpened:Connect(function()
+        Freecam.Toggle(false)
+    end)
+end
+
 
 
 wait(5)

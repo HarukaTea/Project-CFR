@@ -6,18 +6,14 @@ return {
         Icon = "rbxassetid://86944111865792",
 
         Tier = 1,
-        BaseDMG = 5,
         BaseSpeed = 15,
         BaseJumpPower = 0,
-        BaseHealth = 80,
         EnvironmentBonus = 0.8,
 
         Species = "Bee",
 
         Drops = {
             BeeStinger = 60,
-            HealthyApple = 35,
-            GoldenApple = 10,
             EarthBow = 10
         }
     },
@@ -26,10 +22,8 @@ return {
         Icon = "rbxassetid://138540677700873",
 
         Tier = 8,
-        BaseDMG = 12,
         BaseSpeed = 0,
         BaseJumpPower = 0,
-        BaseHealth = 200,
         EnvironmentBonus = 2,
 
         BadgeId = 2491246281240652,
@@ -40,8 +34,6 @@ return {
 
         Drops = {
             BeeStinger = 80,
-            HealthyApple = 10,
-            GoldenApple = 5,
             HoneyArmor = 10,
             QueenBeeBow = 5
         }
@@ -53,10 +45,8 @@ return {
         Icon = "rbxassetid://127989665826507",
 
         Tier = 1,
-        BaseDMG = 5,
         BaseSpeed = 10,
-        BaseHealth = 88,
-        BaseJumpPower = 50,
+        BaseJumpPower = 0,
         EnvironmentBonus = 0.7,
 
         Species = "Slime",
@@ -64,8 +54,6 @@ return {
         Drops = {
             SlimeGel = 40,
             SlimeCore = 30,
-            HealthyApple = 20,
-            GoldenApple = 10,
             DivineBlade = 10
         }
     },
@@ -74,10 +62,8 @@ return {
         Icon = "rbxassetid://95488531429137",
 
         Tier = 2,
-        BaseDMG = 8,
         BaseSpeed = 10,
-        BaseHealth = 80,
-        BaseJumpPower = 50,
+        BaseJumpPower = 0,
         EnvironmentBonus = 0.8,
 
         Species = "Slime",
@@ -85,8 +71,91 @@ return {
         Drops = {
             SlimeGel = 40,
             SlimeCore = 30,
-            HealthyApple = 20,
-            GoldenApple = 10,
+            DivineBlade = 10
+        }
+    },
+    IceSlime = {
+        Name = "Ice Slime",
+        Icon = "rbxassetid://127989665826507",
+
+        Tier = 3,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 0.9,
+
+        Species = "Slime",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
+            DivineBlade = 10
+        }
+    },
+    SandSlime = {
+        Name = "Sand Slime",
+        Icon = "rbxassetid://16483665012",
+
+        Tier = 2,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 0.8,
+
+        Species = "Slime",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
+            DivineBlade = 10
+        }
+    },
+    BlueSlime = {
+        Name = "Blue Slime",
+        Icon = "rbxassetid://16483649460",
+
+        Tier = 2,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 0.9,
+
+        Species = "Slime",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
+            DivineBlade = 10
+        }
+    },
+    LapisSlime = {
+        Name = "Lapis Slime",
+        Icon = "rbxassetid://16483649287",
+
+        Tier = 3,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 1,
+
+        Species = "Slime",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
+            DivineBlade = 10
+        }
+    },
+    PurpleSlime = {
+        Name = "Purple Slime",
+        Icon = "rbxassetid://18859513334",
+
+        Tier = 4,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 1.1,
+
+        Species = "Slime",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
             DivineBlade = 10
         }
     },
@@ -95,10 +164,8 @@ return {
         Icon = "rbxassetid://17543155439",
 
         Tier = 6,
-        BaseDMG = 12,
         BaseSpeed = 0,
         BaseJumpPower = 0,
-        BaseHealth = 166,
         EnvironmentBonus = 2,
 
         BadgeId = 4040961258983736,
@@ -109,8 +176,6 @@ return {
 
         Drops = {
             CrimsonSlimeCore = 80,
-            HealthyApple = 10,
-            GoldenApple = 5,
             CrimsonSlimeFang = 7,
         }
     },
@@ -121,10 +186,8 @@ return {
         Icon = "rbxassetid://83984279260426",
 
         Tier = 1,
-        BaseDMG = 6,
         BaseSpeed = 20,
-        BaseJumpPower = 50,
-        BaseHealth = 87,
+        BaseJumpPower = 0,
         EnvironmentBonus = 0.8,
 
         Species = "Fox",
@@ -132,7 +195,6 @@ return {
         Drops = {
             SpikyFur = 60,
             SpikyQuills = 30,
-            HealthyApple = 10,
             ForestStaff = 10
         }
     },
@@ -141,10 +203,8 @@ return {
         Icon = "rbxassetid://84531227101465",
 
         Tier = 2,
-        BaseDMG = 9,
         BaseSpeed = 25,
-        BaseJumpPower = 50,
-        BaseHealth = 100,
+        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Fox",
@@ -152,7 +212,57 @@ return {
         Drops = {
             SpikyFur = 60,
             SpikyQuills = 30,
-            HealthyApple = 10,
+            ForestStaff = 10
+        }
+    },
+    ThornWolf = {
+        Name = "Thorn Wolf",
+        Icon = "rbxassetid://84531227101465",
+
+        Tier = 2,
+        BaseSpeed = 25,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 1.2,
+
+        Species = "Fox",
+
+        Drops = {
+            SpikyFur = 60,
+            SpikyQuills = 30,
+            ForestStaff = 10
+        }
+    },
+    NeedleWolf = {
+        Name = "Needle Wolf",
+        Icon = "rbxassetid://84531227101465",
+
+        Tier = 3,
+        BaseSpeed = 25,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 1.5,
+
+        Species = "Fox",
+
+        Drops = {
+            SpikyFur = 60,
+            SpikyQuills = 30,
+            ForestStaff = 10
+        }
+    },
+    IceWolf = {
+        Name = "Ice Wolf",
+        Icon = "rbxassetid://18857836675",
+
+        Tier = 4,
+        BaseSpeed = 25,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 1.5,
+
+        Species = "Fox",
+
+        Drops = {
+            SpikyFur = 60,
+            SpikyQuills = 30,
             ForestStaff = 10
         }
     },
@@ -161,10 +271,8 @@ return {
         Icon = "rbxassetid://90390582857611",
 
         Tier = 7,
-        BaseDMG = 12,
         BaseSpeed = 0,
         BaseJumpPower = 0,
-        BaseHealth = 177,
         EnvironmentBonus = 2,
 
         BadgeId = 467703311828658,
@@ -175,8 +283,6 @@ return {
 
         Drops = {
             BlackFur = 80,
-            HealthyApple = 10,
-            GoldenApple = 5,
             BlackWolfNecklace = 10,
             WolfKingSword = 5
         }
@@ -190,10 +296,8 @@ return {
     --     Icon = "rbxassetid://105149911325359",
 
     --     Tier = 10,
-    --     BaseDMG = 33,
     --     BaseSpeed = 0,
     --     BaseJumpPower = 0,
-    --     BaseHealth = 155,
     --     EnvironmentBonus = 1.5,
 
     --     IsBoss = true,

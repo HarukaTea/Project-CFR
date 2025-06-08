@@ -5,12 +5,12 @@ local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 
 local Children = Fusion.Children
@@ -31,8 +31,6 @@ return function(scope: Fusion.Scope, props: {
         return Fusion.Value(scope, val)
     end
     local level = Value(1)
-    local effectList = Value({})
-
 
     table.insert(scope, HarukaLib:Hydrate(targeting, {
         ["Attr-Level"] = function(val: number)
@@ -144,10 +142,13 @@ return function(scope: Fusion.Scope, props: {
             }),
         }
     })
+
+
+    local effectList = FusionComponents.useFolder(scope, targeting:WaitForChild("EffectList"))
     local bar2 = Components.Frame(scope, {
         Name = "Targeting_"..uniqueId.."_EffectList",
         AnchorPoint = Vector2.new(1, 0),
-        Size = UDim2.fromScale(1, 0.35),
+        Size = UDim2.fromScale(1, 0.55),
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return not HarukaLib.TableUtils().IsEmpty(use(effectList))
@@ -160,7 +161,7 @@ return function(scope: Fusion.Scope, props: {
                 [Children] = {
                     Components.UIListLayout(scope, {
                         FillDirection = Enum.FillDirection.Horizontal,
-                        Padding = UDim.new(0.02, 0),
+                        Padding = UDim.new(0.005, 0),
                         HorizontalAlignment = Enum.HorizontalAlignment.Right,
                         VerticalAlignment = Enum.VerticalAlignment.Center,
                     }),

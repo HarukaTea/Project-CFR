@@ -96,6 +96,13 @@ local charStats = {
     Drawback = 100, --- percentage
     DrawbackEx = 0,
     DrawbackExPower = 1,
+    Luck = 0, --- percentage
+    LuckEx = 0,
+    LuckExPower = 1,
+
+    FullHealthEnemyDMGBonus = 0, --- percentage
+    FullHealthEnemyDMGBonusEx = 0,
+    FullHealthEnemyDMGBonusExPower = 1,
 
 
 

@@ -62,6 +62,31 @@ function ServerWorldLib:_DoCreateEssentialFolders()
     local skillProjectileContainer = Instance.new("Folder")
     skillProjectileContainer.Name = "SkillProjectileContainer"
     skillProjectileContainer.Parent = ServerStorage
+
+    local craftingProductContainer = Instance.new("Folder")
+    craftingProductContainer.Name = "CraftingProductContainer"
+    craftingProductContainer.Parent = workspace
+end
+
+
+function ServerWorldLib:_DoCreateCraftingProductEntities()
+    for _, product in ItemLib:GetAllItems() do
+        local info = ItemLib:GetItemInfo(product)
+
+        if HarukaLib.TableUtils().IsEmpty(info.RecipeDesync) then continue end
+
+        local productVal = Instance.new("IntConstrainedValue")
+        productVal.Name = info.ItemId
+        productVal.Value = 1
+
+        productVal:AddTag("CraftingProductEntity")
+
+        productVal:SetAttribute("ItemStat", ServerLib:GiveRandomStatForItem(info.ItemId))
+        productVal:SetAttribute("Level", info.Level)
+        productVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
+
+        productVal.Parent = workspace.CraftingProductContainer
+    end
 end
 
 

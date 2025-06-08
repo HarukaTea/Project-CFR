@@ -3,7 +3,7 @@ local LOG_E = 2.71828
 
 local formulas = {
     ENEMY_MAX_LEVEL = 950,
-    PLAYER_MAX_LEVEL = 180,
+    PLAYER_MAX_LEVEL = 185,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_MAX_DEX_POINTS = 50,
 
@@ -81,9 +81,16 @@ local formulas = {
 
     PlayerDMGCurveCal = function(props: {
         BaseDMG: number,
-        DMGPoints: number
+        DMGPoints: number,
+
+        ATKType: string
     })
-        local extra = 1 + ((props.DMGPoints * 42) / 100)
+
+        local baseFactor = 1.1
+        if props.ATKType == "Max" then
+            baseFactor = 1.2
+        end
+        local extra = 1 + ((props.DMGPoints * baseFactor) / 100)
 
 
         return math.ceil(props.BaseDMG * extra)
@@ -94,7 +101,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 60) / 100)
+        local extra = 1 + ((props.MagicPoints * 1.4) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,

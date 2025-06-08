@@ -15,6 +15,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
 local UniversalEntity = require(script.Parent.Parent.UniversalEntity)
+local FoxUniversal = require(script.Parent.FoxUniversal)
 
 
 local wait = task.wait
@@ -73,66 +74,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _spikeShot(target: Model)
         _lookAt(target)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            Entity = entity,
-            AnimId = "SpikeShot"
-        })
-
-        local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = entity.PrimaryPart.CFrame
-
-        projectilePos = CFrame.lookAt(projectilePos.Position, target.PrimaryPart.Position)
-
-        local r = math.random(1, 2)
-
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-            ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = "FoxMove"..r,
-            ProjectileCF = projectilePos,
-            ProjectileOwner = entity,
-        })
-
-        UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
+        FoxUniversal.SpikeShot(entity, target)
     end
     local function _spikeRain(target: Model)
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            Entity = entity,
-            AnimId = "SpikeRain"
-        })
-
-
-        local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
-
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-            ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = "FoxMove3",
-            ProjectileCF = CFrame.new(projectilePos),
-            ProjectileOwner = entity
-        })
-
-        UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
-
-
-        Promise.delay(0.5):andThen(function()
-            for i = 1, math.random(5, 6) do
-                RunService.Heartbeat:Wait()
-                wait()
-
-                local random = Vector3.new(math.random(-15, 15), 0, math.random(-15, 15))
-                if i == 1 then
-                    random = Vector3.zero
-                end
-                local post = ServerLib:FindGroundByRay(projectilePos + random)
-
-                Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-                    ProjectileUniqueId = projectileUniqueId,
-                    ProjectileId = "FoxSpike2",
-                    ProjectileCF = CFrame.new(post),
-                    ProjectileOwner = entity
-                })
-            end
-        end):catch(function() end)
+        FoxUniversal.SpikeRain(entity, target)
     end
     local function _wolfBite(target: Model)
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {

@@ -65,6 +65,62 @@ entityStorageContainer.Name = "EntityStorage"
 entityStorageContainer.Parent = game:GetService("TestService")
 
 
+for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
+    allLocatorPool[locator.Name] = {
+        Name = locator.Name,
+        Location = locator.Position,
+        Level = locator:GetAttribute("Level")
+    }
+end
+--// sometimes mobs wont respawn due to signal traffic
+Promise.try(function()
+    while wait(30) do
+        local notPassed = {}
+
+        for name: string, info: table in allLocatorPool do
+            local check = false
+
+            for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
+                if locator.Position:FuzzyEq(info.Location) then
+                    check = true
+                    break
+                end
+            end
+
+            if not check then
+                notPassed[name] = info
+            end
+        end
+
+        Promise.delay(15):andThen(function()
+            for _, info: table in notPassed do
+                local check = false
+
+                for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
+                    if locator.Position:FuzzyEq(info.Location) then
+                        check = true
+                        break
+                    end
+                end
+
+                if not check then
+                    local locator = HarukaLib:CreateMockPart()
+                    locator.Name = info.Name
+
+                    locator.Size = Vector3.new(5, 2, 5)
+                    locator.CFrame = CFrame.new(info.Location)
+
+                    locator:AddTag("EnemyLocatorEntity")
+                    locator:SetAttribute("Level", info.Level)
+
+                    locator.Parent = workspace.Enemies
+                end
+            end
+        end)
+    end
+end)
+
+
 --// Init once
 local enemyDiedSignal = Signal.new()
 local enterCombatSignal = Signal.new()
@@ -113,6 +169,20 @@ enemyDiedSignal:Connect(function(info: {
     Location: CFrame,
     Level: number
 })
+    Promise.delay(12):andThen(function()
+        local locator = HarukaLib:CreateMockPart()
+        locator.Name = info.Name
+
+        locator.Size = Vector3.new(5, 2, 5)
+        locator.CFrame = info.Location
+
+        locator:AddTag("EnemyLocatorEntity")
+        locator:SetAttribute("Level", info.Level)
+
+        locator.Parent = workspace.Enemies
+    end)
+
+
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
     countdown.Transparency = 1
     countdown.CFrame = info.Location
@@ -127,19 +197,6 @@ enemyDiedSignal:Connect(function(info: {
             wait(1)
         end
     end):catch(function() end)
-
-    Promise.delay(12):andThen(function()
-        local locator = HarukaLib:CreateMockPart()
-        locator.Name = info.Name
-
-        locator.Size = Vector3.new(5, 2, 5)
-        locator.CFrame = info.Location
-
-        locator:AddTag("EnemyLocatorEntity")
-        locator:SetAttribute("Level", info.Level)
-
-        locator.Parent = workspace.Enemies
-    end)
 end)
 Events.RequestToStartCombat.SetCallback(function(plr: Player, data)
     local entity = data.Entity
@@ -166,10 +223,33 @@ end)
 
 
 
+local function _changeNameRandomlyForSlimes(locator: BasePart)
+    if not string.find(locator.Name, "Slime") then return end
+    if locator.Name == "PurpleSlime" then return end
+    if locator.Name == "CrimsonSlime" then return end
+
+    local newNameList = { "GreenSlime", "WheatSlime", "SandSlime", "BlueSlime", "LapisSlime", "IceSlime" }
+
+    locator.Name = newNameList[math.random(1, #newNameList)]
+end
+local function _changeNameRandomlyForWolves(locator: BasePart)
+    if not string.find(locator.Name, "Wolf") then return end
+    if locator.Name == "HardmodeWolf" then return end
+
+    local newNameList = { "SpikeWolf", "ThornWolf", "NeedleWolf" }
+
+    locator.Name = newNameList[math.random(1, #newNameList)]
+end
+
+
+
 
 
 function EntityLib.new(locator: BasePart)
     if locator:GetAttribute("HarukaUniqueId") then return end
+
+    _changeNameRandomlyForSlimes(locator)
+    _changeNameRandomlyForWolves(locator)
 
 
     local self = setmetatable({}, EntityLib)
@@ -179,8 +259,6 @@ function EntityLib.new(locator: BasePart)
 
     locator:SetAttribute("HarukaUniqueId", self.LocatorUniqueId)
 
-
-    allLocatorPool[self.LocatorUniqueId] = self
 
     self.WholeAdd, self.WholeEmpty = HarukaLib.Bin()
     self.RoamAdd, self.RoamEmpty = HarukaLib.Bin()
@@ -234,7 +312,6 @@ function EntityLib:Destroy(noRespawn: boolean?)
 
     self.Destroyed = true
     allEntityPool[self.UniqueId] = nil
-    allLocatorPool[self.LocatorUniqueId] = nil
 
     if self.Locator then
         if self.Locator:GetAttribute("NoRespawn") then
@@ -402,8 +479,6 @@ function EntityLib:_ListenStatsTracker()
     entity:SetAttribute("Level", self.Locator:GetAttribute("Level"))
     entity:SetAttribute("Tier", entityInfo.Tier)
     entity:SetAttribute("SpawnClock", DateTime.now().UnixTimestamp)
-    entity:SetAttribute("BaseMaxHealth", entityInfo.BaseHealth)
-    entity:SetAttribute("BaseDMG", entityInfo.BaseDMG)
     entity:SetAttribute("IsBoss", entityInfo.IsBoss)
 
     entity:SetAttribute("CombatStartClock", DateTime.now().UnixTimestamp)
@@ -1036,6 +1111,9 @@ function EntityLib:_CombatEnd()
     local function _giveLoot(drops: table, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
+
+        drops.HealthyApple = 30
+        drops.GoldenApple = 10
 
         local result, _, _ = HarukaLib:RollLoot(drops)
 

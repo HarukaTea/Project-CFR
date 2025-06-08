@@ -233,7 +233,7 @@
         "Desc": "Gelatinous orb is the very heart of a slime. It pulses with a weak, residual energy, hinting at the creature's simple, yet persistent, life force",
         "Stat": "",
         "StatInfo": "",
-        "Icon": "99670306374099",
+        "Icon": "18857821468",
         "Price": "20",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
@@ -416,8 +416,8 @@
         "Icon": "125884784184041",
         "Price": "300",
         "ExtraStatInfo": "",
-        "Tags": "BossDrop",
-        "Recipe": ""
+        "Tags": "Crafting,EnemyDrop",
+        "Recipe": "IronOre(15),SlimeGel(15)"
     },
     {
         "ItemId": "EarthBow",
@@ -431,8 +431,8 @@
         "Icon": "72428885228018",
         "Price": "300",
         "ExtraStatInfo": "",
-        "Tags": "BossDrop",
-        "Recipe": ""
+        "Tags": "Crafting,EnemyDrop",
+        "Recipe": "IronOre(15),SpikyFur(15)"
     },
     {
         "ItemId": "Crescendo",
@@ -461,8 +461,8 @@
         "Icon": "83039749804938",
         "Price": "300",
         "ExtraStatInfo": "",
-        "Tags": "BossDrop",
-        "Recipe": ""
+        "Tags": "Crafting,EnemyDrop",
+        "Recipe": "IronOre(15),BeeStinger(15)"
     },
     {
         "ItemId": "HoneyArmor",
@@ -616,14 +616,14 @@
     },
     {
         "ItemId": "ExtraJump",
-        "Name": "Extra Jump",
+        "Name": "Jump Boost",
         "Type": "Active",
         "Tier": "2",
         "Level": "5",
         "Desc": "A minor enchantment that subtly lightens your steps. With this, you can defy gravity for just a moment longer, reaching new heights.",
         "Stat": "Boosts you up!",
         "StatInfo": "",
-        "Icon": "4821548100",
+        "Icon": "86296829353500",
         "Price": "100",
         "ExtraStatInfo": "CD(5)",
         "Tags": "Exploration",
@@ -683,7 +683,7 @@
         "Desc": "A rock used for sharpening your weapons",
         "Stat": "",
         "StatInfo": "CriChanceEx(3),CriDMGEx(5)",
-        "Icon": "2965825317",
+        "Icon": "90444679141129",
         "Price": "100",
         "ExtraStatInfo": "",
         "Tags": "Chest,NoRandom",
@@ -727,7 +727,7 @@
         "Level": "25",
         "Desc": "Despite being simply a magical lantern, you can feel the magic emanating from it being pulled by an unseen force―deep within the <red> Corrupted Cavern <red>",
         "Stat": "Emits <blue> bright <blue> light surrounding you.",
-        "StatInfo": "CanLight",
+        "StatInfo": "CanLight,LuckEx(15)",
         "Icon": "?",
         "Price": "1000",
         "ExtraStatInfo": "",

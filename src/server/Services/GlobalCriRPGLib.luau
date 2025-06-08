@@ -246,6 +246,9 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
                 Products = products
             })
 
+        elseif prompt.Name == "Crafting" then
+            Events.OpenCraftingUI.Fire(plr)
+
 
         elseif prompt.Name == "Class" then
             local statue = prompt:FindFirstAncestorOfClass("Model")
@@ -1223,6 +1226,68 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
                 ForceMaxDMG = true
             })
         })
+    end)
+end
+
+
+function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
+    Events.RequestToCraftItem.SetCallback(function(plr: Player, data)
+        local item, itemUniqueId = data.ItemId, data.ItemUniqueId
+        if item == nil then return end
+        if itemUniqueId == nil then return end
+
+        local char = plr.Character
+        if not ServerLib:IsCharValid(char) then return end
+
+        if char:GetAttribute("IsInCombat") then
+            Events.CreateNotify.Fire(plr, "You can't craft items in combat!")
+            return
+        end
+
+        local itemInfo = ItemLib:GetItemInfo(item)
+        if not itemInfo then
+            Events.CreateNotify.Fire(plr, "[Error] Invalid Item Id")
+            return
+        end
+        if HarukaLib.TableUtils().IsEmpty(itemInfo.RecipeDesync) then
+            Events.CreateNotify.Fire(plr, "This item cannot be crafted!")
+            return
+        end
+
+
+        local materialCheck = true
+        for material: string, amount: number in itemInfo.RecipeDesync do
+            local itemSymbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
+            if not itemSymbol then
+                materialCheck = false
+                break
+            end
+            if itemSymbol.Value < amount then
+                materialCheck = false
+                break
+            end
+        end
+        if not materialCheck then
+            Events.CreateNotify.Fire(plr, "You don't have enough materials to craft this item!")
+            return
+        end
+
+
+        for material: string, amount: number in itemInfo.RecipeDesync do
+            local symbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
+
+            symbol.Value -= amount
+
+            if symbol.Value <= 0 then
+                symbol:Destroy()
+            end
+        end
+
+        Events.PlaySound.Fire(plr, SoundService.SFXs.AnvilUse)
+        Events.CreateNotify.Fire(plr, "Craft successful! Welcome back!")
+
+
+        ServerLib:GiveItemDrop(plr, item, 1)
     end)
 end
 

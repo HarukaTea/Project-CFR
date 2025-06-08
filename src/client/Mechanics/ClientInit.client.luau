@@ -531,6 +531,7 @@ function ClientWorldLib:_ListenItemDisplayTracker()
                     child.Color = ColorSequence.new(color)
                 end
             end
+            itemSphere.A0.Beam.Color = ColorSequence.new(color)
             itemSphere.A1.PointLight.Color = color
             itemSphere.Parent = itemDisplayContainer
         end

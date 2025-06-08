@@ -304,7 +304,7 @@ CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: {
     linearVelocity.Name = "ExtraUpBV"
     linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
     linearVelocity.ForceLimitsEnabled = false
-    linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 50 * 2
+    linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 50 * 2 + Vector3.yAxis * math.abs(char.PrimaryPart.AssemblyLinearVelocity.Y)
     linearVelocity.Parent = char.PrimaryPart
     Debris:AddItem(linearVelocity, 0.05)
 end

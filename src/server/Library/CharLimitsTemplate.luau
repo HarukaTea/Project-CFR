@@ -53,4 +53,9 @@ return {
     WardingMax = 500,
     DrawbackMin = 0,
     DrawbackMax = 500,
+    LuckMin = 0,
+    LuckMax = 500,
+
+    FullHealthEnemyDMGBonusMin = 0,
+    FullHealthEnemyDMGBonusMax = 500,
 }

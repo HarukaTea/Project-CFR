@@ -1,0 +1,452 @@
+--!nocheck
+
+local HttpService = game:GetService("HttpService")
+local RepS = game:GetService("ReplicatedStorage")
+
+local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
+local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
+local Events = require(RepS.HarukaShared.Library.Events)
+local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+
+local BKItemDescView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemDescView)
+local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemFilterView)
+
+local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
+local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+
+local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
+local BKOptionBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKOptionBtn)
+
+local CraftItemMatSlot = require(script.Components.CraftItemMatSlot)
+local BKItemSlot = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemSlot)
+
+
+local Children = Fusion.Children
+
+return function (plr: Player)
+    local self = {}
+
+    self.plr = plr
+    self.char = plr.Character
+    self.scope = Fusion.scoped()
+
+    local scope = self.scope :: Fusion.Scope
+
+
+    require(script.Pinia)(self)
+
+
+    local UI; UI = Components.HarukaScreenGui(scope, {
+        Name = "ExplorerCrafting",
+        DisplayOrder = UIPriorityBook.Z3,
+        Parent = plr.PlayerGui,
+
+        Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            return use(self.IsUIShown)
+        end),
+
+        [Children] = {
+            Components.Frame(scope, {
+                Name = "CenterLeft",
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.03, 0.52),
+                Size = UDim2.fromScale(0.65, 0.66),
+                ClipsDescendants = true,
+
+                [Children] = {
+                    Components.ScrollingFrame(scope, {
+                        Name = "Backpack",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(0.97, 0.95),
+                        ScrollingDirection = Enum.ScrollingDirection.Y,
+                        ClipsDescendants = false,
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.CurrentCategory) == "Crafting"
+                        end),
+
+                        [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
+
+                        [Children] = {
+                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope, index: number, itemSymbol: IntConstrainedValue)
+                                if not use(self.IsUIShown) then return nil end
+
+
+                                local info = ItemLib:GetItemInfo(itemSymbol.Name)
+                                if not info then return nil end
+
+                                local isVisible = false
+                                local isVisibleFactor2 = false
+                                isVisible = true
+
+
+                                local state = use(self.FilterTierList[info.Tier])
+                                isVisibleFactor2 = state
+
+
+                                local isVisibleFactor3 = false
+                                local text = use(self.FilterItemText)
+                                local textWithoutSpaces = string.gsub(text, " ", "")
+
+                                if textWithoutSpaces == "" then
+                                    isVisibleFactor3 = true
+                                else
+                                    if string.find(string.lower(info.Name), string.lower(textWithoutSpaces)) then
+                                        isVisibleFactor3 = true
+                                    else
+                                        isVisibleFactor3 = false
+                                    end
+                                end
+
+
+                                if isVisible and isVisibleFactor2 and isVisibleFactor3 then
+                                    return index, BKItemSlot(scope, {
+                                        ItemSymbol = itemSymbol,
+                                        EquippingItems = self.EquippingItems,
+
+                                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                        CurrentSelectedItem = self.CurrentSelectedItem,
+                                    })
+                                else
+                                    return index, nil
+                                end
+                            end)
+                        }
+                    }, {
+                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local size = use(self.ItemListAbsSize) :: Vector2
+                            local x = size.X * 0.125 * 0.86
+                            local y = size.X * 0.135 * 0.86
+
+                            return UDim2.fromOffset(x, y)
+                        end),
+                        CellPadding = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local size = use(self.ItemListAbsSize) :: Vector2
+                            local x = size.X * 0.015
+                            local y = size.X * 0.023
+
+                            return UDim2.fromOffset(x, y)
+                        end),
+
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        SortOrder = Enum.SortOrder.Name
+                    })
+                }
+            })
+        }
+
+    }, {
+        FullProps = {
+            BackgroundTransparency = 0.3,
+            ZIndex = 0,
+        },
+
+        TopProps = {
+            Position = UDim2.fromScale(0.5, 0.02),
+
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "Categories",
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        Fusion.ForPairs(scope, { "Crafting", "Gemstone" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                            return index, BKCategoryBtn(scope, {
+                                Category = category,
+                                Index = index,
+
+                                CurrentSelectedItem = self.CurrentSelectedItem,
+                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                CurrentCategory = self.CurrentCategory,
+                                CurrentItemLimit = Fusion.Value(scope, 100),
+                            })
+                        end)
+                    }
+                }),
+
+
+                CloseTab(scope, {
+                    ViewShownValue = self.IsUIShown
+                }),
+
+                Components.Frame(scope, {
+                    Name = "FakeTopBG",
+                    BackgroundTransparency = 0.1,
+                    Size = UDim2.fromScale(2, 1.8),
+                    ZIndex = 0,
+                })
+            }
+        },
+
+        CenterProps = {
+            ZIndex = 2,
+
+            [Children] = {
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    return BKItemDescView(scope, {
+                        Item = use(self.CurrentSelectedItem),
+                        ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+
+                        IsCrafting = true
+                    })
+                end),
+
+                Components.Frame(scope, {
+                    Name = "FilterOptions",
+                    AnchorPoint = Vector2.new(1, 0.5),
+                    BackgroundTransparency = 0,
+                    Size = UDim2.fromScale(0.28, 7),
+
+                    Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        local itemInfo = ItemLib:GetItemInfo(use(self.CurrentSelectedItem))
+                        if itemInfo == nil then
+                            return UDim2.fromScale(0.98, 0.8)
+                        end
+
+                        return UDim2.fromScale(0.67, 0.8)
+                    end),
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.FilterViewShown)
+                    end),
+
+                    [Children] = {
+                        Components.UICorner(scope, { CornerRadius = UDim.new(0.015, 0) }),
+
+                        Components.UIStroke(scope, {
+                            Thickness = 6,
+                            Color = Color3.new()
+                        }),
+
+                        BKItemFilterView(scope, {
+                            FilterTierList = self.FilterTierList,
+                            FilterItemText = self.FilterItemText
+                        })
+                    }
+                }),
+
+                Components.TextLabel(scope, {
+                    Name = "WIPTitle",
+                    Text = "GEMSTONE FEATURE COMING SOON IN PT3!",
+                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+                    Size = UDim2.fromScale(1, 0.6),
+                    TextTransparency = 0.7,
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.CurrentCategory) == "Gemstone"
+                    end)
+                })
+            }
+        },
+
+        BottomProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "LSideBtns",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.3),
+                    Size = UDim2.fromScale(0.96, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        BKOptionBtn(scope, {
+                            Option = "Filter",
+                            Index = 1
+                        }, self),
+                    }
+                }),
+
+
+                Components.Frame(scope, {
+                    Name = "RSideBtns",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.1),
+                    Size = UDim2.fromScale(0.96, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.01, 0),
+                        }),
+
+
+                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local item = use(self.CurrentSelectedItem) :: string
+                            local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
+
+                            local itemInfo = ItemLib:GetItemInfo(item)
+                            if itemInfo == nil then
+                                return nil
+                            end
+
+
+                            return ExecuteButton(scope, {
+                                Size = UDim2.fromScale(0.15, 0.7),
+                                ButtonText = "Craft",
+                                ButtonType = "Confirm",
+                                ButtonClickFunc = function()
+                                    local result = Components:CreateConfirmPrompt(scope, {
+                                        Hint = "Are you sure you wish to craft this item?",
+                                        ConfirmText = "Craft",
+                                        CancelText = "Cancel",
+                                        ConfirmUniqueId = "ConfirmCrafting"..HttpService:GenerateGUID(false)
+                                    }):Wait()
+
+                                    if result == "YES" then
+                                        Events.RequestToCraftItem.Fire({
+                                            ItemId = item,
+                                            ItemUniqueId = itemUniqueId,
+                                        })
+                                    end
+                                end
+                            })
+                        end),
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "FilterModeStatus",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.1),
+
+                    [Children] = {
+                        Components.TextLabel(scope, {
+                            Name = "FilterModeHint",
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            Position = UDim2.fromScale(0.2, 0.5),
+                            AutomaticSize = Enum.AutomaticSize.X,
+                            Text = "FILTER MODE: ON",
+                            BackgroundTransparency = 0,
+                            BackgroundColor3 = Components.WHITE_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
+                            Size = UDim2.fromScale(0, 0.56),
+
+
+                            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                local check = false
+                                for _, tierStatus: Fusion.Value in self.FilterTierList do
+                                    if use(tierStatus) == false then
+                                        check = true
+                                        break
+                                    end
+                                end
+                                if use(self.FilterItemText) ~= "" then check = true end
+
+                                return check
+                            end),
+
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.UIPadding(scope, {
+                                    PaddingLeft = UDim.new(0, 9),
+                                    PaddingRight = UDim.new(0, 9)
+                                })
+                            }
+                        })
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "CraftingMaterials",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -1.5),
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        local isVisible = use(self.CurrentCategory) == "Crafting"
+                        local currentItem = use(self.CurrentSelectedItem) :: string
+
+                        currentItem = currentItem or ""
+
+                        return isVisible and currentItem ~= ""
+                    end),
+
+                    [Children] = {
+                        Components.Frame(scope, {
+                            Name = "Title",
+                            AnchorPoint = Vector2.zero,
+                            Position = UDim2.fromScale(0.5, -1),
+                            Size = UDim2.fromScale(0.48, 1),
+                            ClipsDescendants = true,
+
+                            [Children] = {
+                                Components.UIListLayout(scope, {
+                                    FillDirection = Enum.FillDirection.Horizontal,
+                                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                                }),
+
+                                Components.TextLabel(scope, {
+                                    Name = "Title",
+                                    AutomaticSize = Enum.AutomaticSize.X,
+                                    Size = UDim2.fromScale(0, 0.6),
+                                    Text = "MATERIALS",
+                                    TextTransparency = 0.5,
+
+                                    [Children] = {
+                                        Components.UIPadding(scope, {
+                                            PaddingRight = UDim.new(0, 12)
+                                        })
+                                    }
+                                }),
+                                Components.Frame(scope, {
+                                    Name = "Bar",
+                                    Size = UDim2.fromScale(1, 0.07),
+                                    BackgroundTransparency = 0.8,
+                                    BackgroundColor3 = Components.WHITE_COLOR,
+                                    LayoutOrder = 2,
+                                })
+                            }
+                        }),
+                        Components.Frame(scope, {
+                            Name = "Materials",
+                            AnchorPoint = Vector2.zero,
+                            Position = UDim2.fromScale(0.5, 0),
+
+                            [Children] = {
+                                Components.UIListLayout(scope, {
+                                    Padding = UDim.new(0.004, 0),
+                                    FillDirection = Enum.FillDirection.Horizontal,
+                                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                                }),
+
+                                Fusion.ForPairs(scope, self.CraftingMaterials, function(_, scope: Fusion.Scope, itemId: string, amount: number)
+                                    return itemId, CraftItemMatSlot(scope, {
+                                        ItemId = itemId,
+                                        Amount = amount
+                                    })
+                                end)
+                            }
+                        })
+                    }
+                })
+            }
+        }
+    })
+    self.UI = UI
+
+
+    require(script.Anims)(UI, self)
+
+
+    return function ()
+        Fusion.doCleanup(scope)
+
+
+    end
+end

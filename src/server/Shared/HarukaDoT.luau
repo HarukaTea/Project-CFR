@@ -63,7 +63,7 @@ function HarukaDoT:Activate()
     self.EffectSymbol = effectSymbol
 
 
-    local effectParticle = ReplicatedStorage.Packages.Effects.StatusEffects:FindFirstChild(self.Type, true) :: ParticleEmitter
+    local effectParticle = ReplicatedStorage.Packages.Effects.Status:FindFirstChild(self.Type, true) :: ParticleEmitter
     if effectParticle then
         effectParticle = effectParticle:Clone()
 

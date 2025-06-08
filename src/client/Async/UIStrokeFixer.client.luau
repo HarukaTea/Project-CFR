@@ -91,7 +91,7 @@ local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal",
 
     elseif belongTo == "Normal" then
         finalThickness = info.Thickness * _calScreenRatio() * scale
-        finalThickness = math.clamp(finalThickness, 0, 6)
+        finalThickness = math.clamp(finalThickness, 0, 999)
     end
 
     stroke.Thickness = finalThickness

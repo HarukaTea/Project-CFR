@@ -15,6 +15,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
 local UniversalEntity = require(script.Parent.Parent.UniversalEntity)
+local SlimeUniversal = require(script.Parent.SlimeUniversal)
 
 
 local wait = task.wait
@@ -67,79 +68,12 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _slimeShot(target: Model)
         _lookAt(target)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            Entity = entity,
-            AnimId = "SlimeBlast"
-        })
-
-        local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
-
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-            ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = "SlimeMove1_1",
-            ProjectileCF = CFrame.new(projectilePos),
-            ProjectileOwner = entity
-        })
-
-        UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
+        SlimeUniversal.SlimeShot(entity, target)
     end
     local function _slimeWave(target: Model)
         _lookAt(target)
 
-        local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("SlimeMove2", true):Clone() :: Model
-        local post = ServerLib:FindGroundByRay(entity.PrimaryPart.Position)
-
-        projectileSupport:PivotTo(CFrame.new(post, post + entity.PrimaryPart.CFrame.LookVector))
-
-
-        local hasProjectiles = 5
-        for i = 1, hasProjectiles do
-            for _, child: BasePart in projectileSupport:GetDescendants() do
-                if child.Name ~= "Position"..i then continue end
-
-                if (child.Position - entity:GetAttribute("CombatLocation").Position).Magnitude > 15.99 * 3 then
-                    child:Destroy()
-                    hasProjectiles -= 1
-                    continue
-                end
-
-                Promise.delay(0.1 * i):andThen(function()
-                    local projectileUniqueId = HttpService:GenerateGUID(false)..child.Name
-                    local projectilePos = child.CFrame
-
-                    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-                        ProjectileUniqueId = projectileUniqueId,
-                        ProjectileId = "SlimeMove2_2",
-                        ProjectileCF = projectilePos,
-                        ProjectileOwner = entity
-                    })
-
-                    UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
-
-                end):catch(function(err)
-                    if RunService:IsStudio() then warn(tostring(err)) end
-                end)
-            end
-        end
-
-
-        Promise.delay(0.5):andThen(function()
-            for _, child: BasePart in projectileSupport:GetDescendants() do
-                if child.Name ~= "Position"..hasProjectiles then continue end
-
-                local postR = ServerLib:FindGroundByRay(child.Position, { projectileSupport })
-
-                HarukaLib:Tween(entity, AssetBook.TweenInfos.twiceHalfOne, {
-                    Pivot = CFrame.new(postR) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0)
-                })
-            end
-
-        end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
-        end)
-
-        Debris:AddItem(projectileSupport, 10)
+        SlimeUniversal.SlimeWave(entity, target)
     end
 
 

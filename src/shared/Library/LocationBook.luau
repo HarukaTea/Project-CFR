@@ -17,8 +17,8 @@ return {
         Name = "Primis Field",
         Desc = "",
 
-        Music = "MapleStory_1",
-        MusicVolume = 0.5,
+        Music = "Fareland",
+        MusicVolume = 1.7,
         CombatMusic = "Conquesting",
         CombatMusicVolume = 0.7,
 
@@ -42,8 +42,8 @@ return {
         Name = "Initus Bay",
         Desc = "",
 
-        Music = "StepInEDITH",
-        MusicVolume = 0.5,
+        Music = "Fareland",
+        MusicVolume = 1.7,
         CombatMusic = "KeterLibrary",
         CombatMusicVolume = 1,
 
@@ -57,8 +57,8 @@ return {
         Name = "Corrupted Cavern",
         Desc = "",
 
-        Music = "MapleStory_2",
-        MusicVolume = 0.5,
+        Music = "Nest",
+        MusicVolume = 0.6,
         CombatMusic = "KeterLibrary",
         CombatMusicVolume = 1,
 
@@ -72,7 +72,7 @@ return {
 
         Music = "Fareland",
         MusicVolume = 1.7,
-        CombatMusic = "Magic!",
+        CombatMusic = "ComplexDreams",
         CombatMusicVolume = 0.5,
 
         LightingInfo = defaultLighting,
@@ -87,7 +87,7 @@ return {
 
         Music = "Fareland",
         MusicVolume = 1.7,
-        CombatMusic = "Magic!",
+        CombatMusic = "ComplexDreams",
         CombatMusicVolume = 0.5,
 
         LightingInfo = defaultLighting,
@@ -96,11 +96,26 @@ return {
         RainLevel = 0,
     },
 
+    ThyrsusWoods = {
+        Name = "Thyrsus Woods",
+        Desc = "",
+
+        Music = "Fareland",
+        MusicVolume = 1.7,
+        CombatMusic = "ComplexDreams",
+        CombatMusicVolume = 0.5,
+
+        LightingInfo = defaultLighting,
+        ClockTime = 0,
+
+        RainLevel = 0,
+    },
+
     Highlands = {
         Name = "Highlands",
         Desc = "",
 
-        Music = "FF_BiaoLi",
+        Music = "StepInEDITH",
         MusicVolume = 0.5,
         CombatMusic = "CantoBattleB1",
         CombatMusicVolume = 0.5,
@@ -124,6 +139,31 @@ return {
         ClockTime = 12,
 
         RainLevel = 0,
+    },
+
+    CrystalDoor = {
+        Name = "???",
+        Desc = "This door seals the mouth of a vast, shadow drenched cave...",
+
+        Music = "QuietAndFalling",
+        MusicVolume = 0.5,
+        CombatMusic = "ComplexDreams",
+        CombatMusicVolume = 0.7,
+
+        LightingInfo = {
+            Ambient = Color3.fromRGB(106, 106, 106),
+            Brightness = 1.8,
+            EnvironmentDiffuseScale = 0,
+            EnvironmentSpecularScale = 0,
+            OutdoorAmbient = Color3.fromRGB(177, 177, 177),
+            ExposureCompensation = 0.15,
+            FogColor = Color3.fromRGB(218, 206, 255),
+            FogEnd = 1599,
+            FogStart = 59
+        },
+        ClockTime = 2,
+
+        RainLevel = 1
     },
 
 

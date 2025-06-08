@@ -8,7 +8,6 @@ local TS = game:GetService("TweenService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -29,19 +28,6 @@ local wait = task.wait
 return function (UI: ScreenGui, self: table)
     local scope = self.scope :: Fusion.Scope
     local bottom = UI.Bottom :: Frame
-
-
-    --// item drops AGL
-    local itemDropAGLObj = HarukaListLayout.new(UI.Center.ItemDropsDiv.ItemDrops.UIListLayout)
-    table.insert(scope, itemDropAGLObj)
-
-    itemDropAGLObj:Enable()
-
-    --// casting bar AGL
-    local castingBarAGLObj = HarukaListLayout.new(bottom.CastTimeBars.UIListLayout)
-    castingBarAGLObj:Enable()
-
-    table.insert(scope, castingBarAGLObj)
 
 
     --// cd anim

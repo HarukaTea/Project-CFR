@@ -63,8 +63,14 @@ return function (self)
 
         end):catch(function() end)
     end
+    ProjectileLib.GreenSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.WheatSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.CrimsonSlimeMove1_1 = ProjectileLib.SlimeMove1_1
+    ProjectileLib.IceSlimeMove1_1 = ProjectileLib.SlimeMove1_1
+    ProjectileLib.BlueSlimeMove1_1 = ProjectileLib.SlimeMove1_1
+    ProjectileLib.LapisSlimeMove1_1 = ProjectileLib.SlimeMove1_1
+    ProjectileLib.SandSlimeMove1_1 = ProjectileLib.SlimeMove1_1
+    ProjectileLib.PurpleSlimeMove1_1 = ProjectileLib.SlimeMove1_1
 
 
 
@@ -93,9 +99,15 @@ return function (self)
 
         end):catch(function() end)
     end
+    ProjectileLib.GreenSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.WheatSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.CrimsonSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.BeeMove3_2 = ProjectileLib.SlimeMove2_2
+    ProjectileLib.BlueSlimeMove2_2 = ProjectileLib.SlimeMove2_2
+    ProjectileLib.LapisSlimeMove2_2 = ProjectileLib.SlimeMove2_2
+    ProjectileLib.SandSlimeMove2_2 = ProjectileLib.SlimeMove2_2
+    ProjectileLib.PurpleSlimeMove2_2 = ProjectileLib.SlimeMove2_2
+    ProjectileLib.IceSlimeMove2_2 = ProjectileLib.SlimeMove2_2
 
 
 
@@ -116,6 +128,7 @@ return function (self)
 
         end):catch(function() end)
     end
+    ProjectileLib.PurpleSlimeMove4 = ProjectileLib.CrimsonSlimeMove4
 
 
 
@@ -195,6 +208,11 @@ return function (self)
     end
     ProjectileLib.WheatSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.CrimsonSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.BlueSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.LapisSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.SandSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.PurpleSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.IceSlimeBlast = ProjectileLib.SlimeBlast
 
 
 
@@ -230,4 +248,5 @@ return function (self)
         end):catch(function()
         end)
     end
+    ProjectileLib.PurpleSlimeBomb = ProjectileLib.CrimsonSlimeBomb
 end

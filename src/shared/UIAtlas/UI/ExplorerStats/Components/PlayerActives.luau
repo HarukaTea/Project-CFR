@@ -3,13 +3,13 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local Events = require(RepS.HarukaShared.Library.Events)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ActiveSlot = require(script.Parent.ActiveSlot)
+local AbilitySlot = require(script.Parent.AbilitySlot)
 
 local Children = Fusion.Children
 
@@ -253,7 +253,6 @@ return function(scope: Fusion.Scope, props: {
                                 }
                             }),
 
-
                             ActiveSlot(scope, {
                                 Index = 1,
                                 ActiveInfo = self.ActiveList[1]
@@ -267,6 +266,11 @@ return function(scope: Fusion.Scope, props: {
                             ActiveSlot(scope, {
                                 Index = 3,
                                 ActiveInfo = self.ActiveList[3]
+                            }, self),
+
+
+                            AbilitySlot(scope, {
+                                ActiveInfo = self.CharAbilityList[1]
                             }, self)
                         }
                     })

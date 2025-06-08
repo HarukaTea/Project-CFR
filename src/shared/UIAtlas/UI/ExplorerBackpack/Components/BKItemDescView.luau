@@ -18,7 +18,8 @@ return function (scope: Fusion.Scope, props: {
     ItemUniqueId: string,
 
     Items: table?,
-    IsMarket: boolean?
+    IsMarket: boolean?,
+    IsCrafting: boolean?,
 })
 
     local absDescFrameSize = Fusion.Value(scope, Vector2.zero)
@@ -29,15 +30,22 @@ return function (scope: Fusion.Scope, props: {
 
 
     local itemSymbol: IntConstrainedValue = nil
-    if not props.IsMarket then
-        for _, symbol: IntConstrainedValue in props.Items do
+    if props.IsMarket then
+        for _, symbol: Instance in CollectionService:GetTagged("MarketProductEntity") do
+            if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
+                itemSymbol = symbol
+                break
+            end
+        end
+    elseif props.IsCrafting then
+        for _, symbol: IntConstrainedValue in CollectionService:GetTagged("CraftingProductEntity") do
             if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
                 itemSymbol = symbol
                 break
             end
         end
     else
-        for _, symbol: Instance in CollectionService:GetTagged("MarketProductEntity") do
+        for _, symbol: IntConstrainedValue in props.Items do
             if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
                 itemSymbol = symbol
                 break

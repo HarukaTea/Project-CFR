@@ -74,7 +74,9 @@ AssetBook.ItemEffectIcons = {
 
 	Focus = "rbxassetid://132943384940547",
 	Combo = "rbxassetid://91123652494859",
-	Stack = ""
+	Stack = "rbxassetid://85379466166048",
+
+	Luck = "rbxassetid://109492434580670"
 }
 AssetBook.ItemEffectIcons.Mana = AssetBook.ItemEffectIcons.MaxMana
 
@@ -94,18 +96,21 @@ AssetBook.ItemEffectNames = {
 	MagicEx = "Magic",
 	MaxHealthEx = "Health",
 	IntensityEx = "Intensity",
+	LuckEx = "Luck",
 }
 AssetBook.ItemEffectIsPercentage = {
 	CriChanceEx = true,
 	CriDMGEx = true,
 	IntensityEx = true,
+	LuckEx = true,
 }
 
 
 AssetBook.PromptIcons = {
 	Default = "rbxassetid://13124035950",
 	Market = "rbxassetid://118291405899454",
-	Chest = "rbxassetid://89067747729088"
+	Chest = "rbxassetid://89067747729088",
+	Crafting = "rbxassetid://117468861815122",
 }
 AssetBook.PromptIcons.Chat = AssetBook.PromptIcons.Default
 

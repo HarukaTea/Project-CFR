@@ -1,5 +1,6 @@
 
 return {
+    --// Boosts
     JumpPowerBoost = {
         Icon = "rbxassetid://4821548100",
         Color = Color3.new(1, 1, 1)
@@ -37,5 +38,14 @@ return {
     ReverberationBoost = {
         Icon = "rbxassetid://120613067089872",
         Color = Color3.fromHex('#34ace0'),
+    },
+
+
+
+    --// Debuffs
+    BurnDebuff = {
+        Icon = "rbxassetid://12218488404",
+        Color = Color3.fromRGB(255, 0, 0),
     }
+
 }

@@ -105,7 +105,7 @@ return function (self: table)
     skillCDContainer.Parent = game:GetService("ServerStorage")
     table.insert(scope, skillCDContainer)
 
-    --|| track active skills
+    --// track active skills
     self.ActiveList = {
         {
             --Cooldown = Value("0"),
@@ -141,8 +141,31 @@ return function (self: table)
         order += 1
     end
 
+    self.CharAbilityList = {
+        {
+            Id = "Ability1",
+            Cooldown = Value("0"),
+            CDRotation = Value(0),
 
-    -- || track passive skills
+            CastCD = false,
+            DisplayOrder = 1,
+            KeyDisplay = "R"
+        }
+    }
+    for index, slot in self.CharAbilityList do
+        local cdSymbol = Instance.new("NumberValue")
+        cdSymbol.Name = "AbilityCDSymbol_"..tostring(index)
+        cdSymbol.Parent = skillCDContainer
+
+        local realCD = Instance.new("NumberValue")
+        realCD.Name = "RealCD"
+        realCD.Parent = cdSymbol
+
+        slot.CDSymbol = cdSymbol
+    end
+
+
+    --// track passive skills
     self.PassiveList = {
         {}, {}, {}
     }
@@ -196,9 +219,11 @@ return function (self: table)
     --// track input
     self.RequestToCastClassUlt = Signal.new()
     self.RequestToCastItem = Signal.new()
+    self.RequestToDash = Signal.new()
 
     table.insert(scope, self.RequestToCastClassUlt)
     table.insert(scope, self.RequestToCastItem)
+    table.insert(scope, self.RequestToDash)
 
 
     local function _normalCancelCD(info: table)
@@ -273,6 +298,27 @@ return function (self: table)
         end)
         Events.RequestToCastClassUlt.Fire()
     end)
+
+
+
+    local function _createCooldownAnim(cdTime: nuamber, info: table)
+        local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+
+        local cdSymbol = info.CDSymbol :: NumberValue
+        cdSymbol.Value = 1
+        local realCDSymbol = cdSymbol.RealCD :: NumberValue
+        realCDSymbol.Value = cdTime
+
+        HarukaLib:CreateTween(cdSymbol, tween, { Value = 0 }):Play()
+        HarukaLib:CreateTween(realCDSymbol, tween, { Value = 0 }):Play()
+
+        Promise.delay(cdTime):andThen(function()
+            info.CastCD = false
+
+            Bindables.CDEndTimeReached:Fire(info.Id)
+            tween = nil
+        end):catch(function() end)
+    end
     table.insert(scope, Events.RequestToCastItem_Response.On(function(data)
         local slotId = data.SlotId
         local cdTime = data.CooldownTime
@@ -294,23 +340,48 @@ return function (self: table)
         end
 
 
-        local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-
-        local cdSymbol = info.CDSymbol :: NumberValue
-        cdSymbol.Value = 1
-        local realCDSymbol = cdSymbol.RealCD :: NumberValue
-        realCDSymbol.Value = cdTime
-
-        HarukaLib:CreateTween(cdSymbol, tween, { Value = 0 }):Play()
-        HarukaLib:CreateTween(realCDSymbol, tween, { Value = 0 }):Play()
-
-        Promise.delay(cdTime):andThen(function()
-            info.CastCD = false
-
-            Bindables.CDEndTimeReached:Fire(info.Id)
-            tween = nil
-        end):catch(function() end)
+        _createCooldownAnim(cdTime, info)
     end))
+    self.RequestToDash:Connect(function()
+        local info = self.CharAbilityList[1]
+
+        if info.CastCD then
+            return
+        end
+        info.CastCD = true
+
+        _createCooldownAnim(5, info)
+
+
+        local linearVelo = Instance.new("LinearVelocity")
+        linearVelo.Name = "Dash"
+        linearVelo.Attachment0 = self.char.PrimaryPart.AlignMoverAttachment
+        linearVelo.ForceLimitsEnabled = false
+        linearVelo.VectorVelocity = self.char.PrimaryPart.CFrame.LookVector * 100 + Vector3.yAxis * 6
+        linearVelo.Parent = self.char.PrimaryPart
+        Debris:AddItem(linearVelo, 0.12)
+
+
+        for _, part: BasePart in self.char:GetChildren() do
+            if HarukaLib:IsBasePartType(part) then
+                local clone = part:Clone()
+                clone.Transparency = 0.2
+                clone.Anchored = true
+                clone.Color = Color3.fromRGB(255, 255, 255)
+                clone.Material = Enum.Material.Neon
+                clone.CFrame = part.CFrame
+                clone.Parent = workspace.Terrain
+
+                clone:ClearAllChildren()
+
+                Debris:AddItem(clone, 0.5)
+
+                HarukaLib:CreateTween(clone, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+                    Transparency = 1
+                }):Play()
+            end
+        end
+    end)
 
 
 
@@ -343,6 +414,9 @@ return function (self: table)
 
         elseif inputObj.KeyCode == Enum.KeyCode.Three then
             self.RequestToCastItem:Fire(3)
+
+        elseif inputObj.KeyCode == Enum.KeyCode.R then
+            self.RequestToDash:Fire()
         end
     end))
 
@@ -457,6 +531,18 @@ return function (self: table)
         table.insert(scope, HarukaLib:Hydrate(slot.CDSymbol.RealCD, {
             ["Prop-Value"] = function(val: number)
                 _updateCD("ActiveList", val, index)
+            end
+        }))
+    end
+    for index, slot in self.CharAbilityList do
+        table.insert(scope, HarukaLib:Hydrate(slot.CDSymbol, {
+            ["Prop-Value"] = function(val: number)
+                _updateRotation("CharAbilityList", val, index)
+            end
+        }))
+        table.insert(scope, HarukaLib:Hydrate(slot.CDSymbol.RealCD, {
+            ["Prop-Value"] = function(val: number)
+                _updateCD("CharAbilityList", val, index)
             end
         }))
     end

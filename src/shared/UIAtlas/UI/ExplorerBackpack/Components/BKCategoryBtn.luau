@@ -30,7 +30,15 @@ return function(scope: Fusion.Scope, props: {
 
 
         Market = "rbxassetid://118291405899454",
-        Sell = "rbxassetid://18421784947"
+        Sell = "rbxassetid://18421784947",
+
+        STR = "rbxassetid://112396684316741",
+        DEX = "rbxassetid://123194426967050",
+        INT = "rbxassetid://81020560446846",
+        VIT = "rbxassetid://106075217220023",
+
+        Crafting = "rbxassetid://117468861815122",
+        Gemstone = "rbxassetid://139698715468743"
     }
     local DEFAULT_COLOR = Color3.fromRGB(211, 188, 142)
     local COLORS = {
@@ -42,7 +50,15 @@ return function(scope: Fusion.Scope, props: {
         Misc = DEFAULT_COLOR,
 
         Market = Color3.fromRGB(211, 217, 238),
-        Sell = Color3.fromRGB(242, 170, 78)
+        Sell = Color3.fromRGB(242, 170, 78),
+
+        STR = DEFAULT_COLOR,
+        DEX = DEFAULT_COLOR,
+        INT = DEFAULT_COLOR,
+        VIT = DEFAULT_COLOR,
+
+        Crafting = Color3.fromRGB(255, 255, 255),
+        Gemstone = DEFAULT_COLOR
     }
 
     local isSelecting = Fusion.Value(scope, false)
