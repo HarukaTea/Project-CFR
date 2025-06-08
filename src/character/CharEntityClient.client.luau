@@ -1,7 +1,6 @@
 repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
 
-local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -13,9 +12,6 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-
-local Freecam = require(ReplicatedStorage.HarukaShared.Library.Freecam)
-
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
@@ -39,13 +35,11 @@ function CharLib:Init()
 
     Add(char.Humanoid.HealthChanged:Connect(function(health: number)
         if health <= 0 then
-            pcall(function()
-				char.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-			end)
-			pcall(self._TriggerRagdoll, self)
-
             self:__Destroy()
             self:Destroy()
+            self:_TriggerRagdoll()
+
+            char.Humanoid.Health = -1
         end
     end))
     Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
@@ -56,10 +50,12 @@ function CharLib:Init()
                 return
             end
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+                self:__Destroy()
                 self:Destroy()
                 return
             end
         else
+            self:__Destroy()
             self:Destroy()
         end
     end))
@@ -85,10 +81,8 @@ function CharLib:__Init()
     Lighting.ColorShift_Top = Color3.fromRGB(220, 255, 255)
 
     local camera = workspace.CurrentCamera
-    if camera then
-        if camera:FindFirstChild("DeathBlur") then
-            camera.DeathBlur:Destroy()
-        end
+    if camera:FindFirstChild("DeathBlur") then
+        camera.DeathBlur:Destroy()
     end
 end
 
@@ -125,8 +119,6 @@ function CharLib:__Destroy()
     Bindables.PlaySound:Fire(ReplicatedStorage.Packages.Unloads.ResetSound)
     Bindables.PlaySound:Fire(SoundService.SFXs.Death)
 
-    pcall(Freecam.Toggle, false)
-
 
     local deathBlur = Instance.new("BlurEffect")
     deathBlur.Name = "DeathBlur"
@@ -135,6 +127,13 @@ function CharLib:__Destroy()
 
     Lighting.ColorShift_Bottom = Color3.new(1, 0, 0)
     Lighting.ColorShift_Top = Color3.new(1, 0, 0)
+
+
+    if workspace:GetAttribute("AllowFreecam") then
+        local Freecam = require(ReplicatedStorage.HarukaShared.Library.Freecam)
+
+        Freecam.Toggle(false)
+    end
 end
 
 
@@ -148,22 +147,22 @@ function CharLib:_ListenAnimateTracker()
 
     self.Animator = animator
 
-    self.Anims = {}
+    self.ClassAttackAnims = {}
     for _, anim: Animation in animationsClass:GetDescendants() do
         if string.find(anim.Name, "Attack") and anim:IsA("Animation") then
-            self.Anims[anim.Name] = animator:LoadAnimation(anim)
+            self.ClassAttackAnims[anim.Name] = animator:LoadAnimation(anim)
         end
     end
-    self.Anims.MagicCasted1 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted1", true))
-    self.Anims.MagicCasted2 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted2", true))
-    for _, anim: AnimationTrack in self.Anims do
+    self.ClassAttackAnims.MagicCasted1 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted1", true))
+    self.ClassAttackAnims.MagicCasted2 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted2", true))
+    for _, anim: AnimationTrack in self.ClassAttackAnims do
         anim.Looped = false
         anim.Priority = Enum.AnimationPriority.Action2
     end
-    Add(self.Anims)
+    Add(self.ClassAttackAnims)
 
 
-    self.ANIMS = {
+    self.CharAnims = {
         Idle = animator:LoadAnimation(animationsChar.Idle1),
         Fall = animator:LoadAnimation(animationsChar.Fall),
         Jump = animator:LoadAnimation(animationsChar.Jump),
@@ -179,16 +178,16 @@ function CharLib:_ListenAnimateTracker()
         wave = animator:LoadAnimation(animationsChar.wave),
         laugh = animator:LoadAnimation(animationsChar.laugh),
     }
-    Add(self.ANIMS)
-    for animId: string, anim: AnimationTrack in self.ANIMS do
+    Add(self.CharAnims)
+    for animId: string, anim: AnimationTrack in self.CharAnims do
         if string.find(animId, "dance") then
             anim.Looped = true
         end
     end
-    self.ANIMS.cheer.Looped = false
-    self.ANIMS.point.Looped = false
-    self.ANIMS.wave.Looped = false
-    self.ANIMS.laugh.Looped = false
+    self.CharAnims.cheer.Looped = false
+    self.CharAnims.point.Looped = false
+    self.CharAnims.wave.Looped = false
+    self.CharAnims.laugh.Looped = false
 
 
     local CLASS_ANIMS = {}
@@ -218,9 +217,9 @@ function CharLib:_ListenAnimateTracker()
 	    end
     end
     local function playAnim(anim: string)
-        if not self.Anims[anim] then warn(`Can't found animation: {anim} !`) return end
+        if not self.ClassAttackAnims[anim] then warn(`Can't found animation: {anim} !`) return end
 
-        self.Anims[anim]:Play()
+        self.ClassAttackAnims[anim]:Play()
     end
     Add(Bindables.PlayAnimation:Connect(playAnim))
     Add(Events.PlayAnimation.On(function(data)
@@ -230,7 +229,7 @@ function CharLib:_ListenAnimateTracker()
 
 
 
-    local ANIMS = self.ANIMS
+    local charAnims = self.CharAnims
 	Add(humanoid.Running:Connect(function()
         local class = plr:GetAttribute("Class") :: string
         local isInCombat = char:GetAttribute("IsInCombat") :: boolean
@@ -240,31 +239,31 @@ function CharLib:_ListenAnimateTracker()
             if isInCombat then
                 _playAnim(CLASS_ANIMS[class].Run, 0.1)
             else
-                _playAnim(ANIMS.Run, 0.1)
+                _playAnim(charAnims.Run, 0.1)
             end
 		else
-            _playAnim(ANIMS.Idle, 0.1)
+            _playAnim(charAnims.Idle, 0.1)
 		end
 	end))
 	Add(humanoid.Climbing:Connect(function(vel)
 		if vel ~= 0 then
-			_playAnim(ANIMS.Climb, 0.1)
+			_playAnim(charAnims.Climb, 0.1)
 		else
-			ANIMS.Climb:AdjustSpeed(0)
+			charAnims.Climb:AdjustSpeed(0)
 		end
 	end))
 	Add(humanoid.Jumping:Connect(function()
-        _playAnim(ANIMS.Jump, 0.1)
+        _playAnim(charAnims.Jump, 0.1)
 	end))
 	Add(humanoid.FreeFalling:Connect(function()
-        _playAnim(ANIMS.Fall, 0.1)
+        _playAnim(charAnims.Fall, 0.1)
 	end))
 	Add(humanoid.Seated:Connect(function()
-		_playAnim(ANIMS.Sit, 0.1)
+		_playAnim(charAnims.Sit, 0.1)
 	end))
 
 
-	_playAnim(ANIMS.Idle, 0.1)
+	_playAnim(charAnims.Idle, 0.1)
 
 
 
@@ -284,8 +283,8 @@ function CharLib:_ListenAnimateTracker()
 
         local whiteList = { "dance1", "dance2", "dance3", "cheer", "point", "wave", "laugh" }
 
-        if (ANIMS.Idle.IsPlaying and table.find(whiteList, emote)) then
-            _playAnim(ANIMS[emote], 0.1)
+        if (charAnims.Idle.IsPlaying and table.find(whiteList, emote)) then
+            _playAnim(charAnims[emote], 0.1)
         end
     end))
 end
@@ -305,6 +304,8 @@ function CharLib:_ListenFootstepTracker()
             isWalking = false
         end
     end))
+
+    local lastMaterialSFX = nil
     Add(RunService.Heartbeat:Connect(function()
         if isWalking then
             local materialStanding = humanoid.FloorMaterial.Name
@@ -317,10 +318,12 @@ function CharLib:_ListenFootstepTracker()
             materialSFX.PlaybackSpeed = 16 / 12
             materialSFX.Playing = true
 
+            lastMaterialSFX = materialSFX
             lastMaterialStanding = materialStanding
         else
-            for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
-                sound.Playing = false
+            if lastMaterialSFX then
+                lastMaterialSFX.Playing = false
+                lastMaterialSFX = nil
             end
         end
     end))

@@ -16,7 +16,9 @@ return function (UI: ScreenGui, self: table)
     table.insert(scope, HarukaLib:Hydrate(UI, {
         ["Prop-Enabled"] = function(newState: boolean)
             if newState then
-                HarukaLib:UITween(UI, "In")
+                HarukaLib:UITween(UI.Top, "In")
+                HarukaLib:UITween(UI.Bottom, "In")
+                HarukaLib:UITween(UI.Full, "In")
             end
         end
     }))

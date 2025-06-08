@@ -385,7 +385,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
                     char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
                 end
 
-                local bounceWeight = 37
+                local bounceWeight = 42
                 local bounceBuff = char:GetAttribute("OrbBounce") / 100
 
                 bounceWeight *= bounceBuff
@@ -393,6 +393,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
                 local linearVelocity = Instance.new("LinearVelocity")
                 linearVelocity.Name = "OrbBV"
                 linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+                linearVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
                 linearVelocity.ForceLimitsEnabled = false
                 linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * bounceWeight
                 linearVelocity.Parent = char.PrimaryPart

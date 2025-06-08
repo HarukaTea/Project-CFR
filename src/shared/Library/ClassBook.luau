@@ -82,9 +82,7 @@ return {
 
 
         BaseStats = {
-            SpeedCombat = 40,
-            OrbSpawnTime = 2,
-            OrbSpawnTimesAtStart = 4
+            SpeedCombat = 40
         }
     },
 

@@ -171,8 +171,6 @@ end
 
 
 function CriRPGLib:_ListenLightTracker()
-
-
     local light = Instance.new("PointLight")
     light.Range = 32
     light.Brightness = 3
@@ -411,9 +409,6 @@ function CriRPGLib:_ListenPlayerLevelTracker()
                 HarukaLib:AddAttr(plr, "PerkPoints", FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
 
                 Events.PlaySound.Fire(plr, SoundService.SFXs.LevelUp)
-                Events.LevelUpVFX.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
-                    Target = char
-                })
 
                 ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
             end
@@ -433,9 +428,6 @@ end
 
 
 function CriRPGLib:_ListenStatsTracker()
-
-    local plr = plr :: Player
-
     --- class base
     local function _updateClassBase(class: string)
         if not class then return end
@@ -501,11 +493,11 @@ function CriRPGLib:_ListenStatsTracker()
         local minDMGExBuff = char:GetAttribute("MinDMGExPower") :: number
 
         baseMinDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = math.ceil(baseMinDMG * minDMGExBuff + minDMGBuff),
+            BaseDMG = baseMinDMG,
             DMGPoints = plr:GetAttribute("STRPoints")
         })
 
-        char:SetAttribute("MinDMG", baseMinDMG)
+        char:SetAttribute("MinDMG", math.ceil(baseMinDMG * minDMGExBuff + minDMGBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMinDMG"] = _updateMinDMG,
@@ -523,13 +515,13 @@ function CriRPGLib:_ListenStatsTracker()
         local maxDMGExBuff = char:GetAttribute("MaxDMGExPower") :: number
 
         baseMaxDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = math.ceil(baseMaxDMG * maxDMGExBuff + maxDMGBuff),
+            BaseDMG = baseMaxDMG,
             DMGPoints = plr:GetAttribute("STRPoints"),
 
             ATKType = "Max"
         })
 
-        char:SetAttribute("MaxDMG", baseMaxDMG)
+        char:SetAttribute("MaxDMG", math.ceil(baseMaxDMG * maxDMGExBuff + maxDMGBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMaxDMG"] = _updateMaxDMG,
@@ -548,11 +540,11 @@ function CriRPGLib:_ListenStatsTracker()
 
 
         baseMagic = FormulaBook.PlayerMagicCurveCal({
-            BaseMagic = math.ceil(baseMagic * magicExBuff + magicBuff),
+            BaseMagic = baseMagic,
             MagicPoints = plr:GetAttribute("INTPoints")
         })
 
-        char:SetAttribute("Magic", baseMagic)
+        char:SetAttribute("Magic", math.ceil(baseMagic * magicExBuff + magicBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMagic"] = _updateMagic,

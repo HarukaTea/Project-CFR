@@ -24,7 +24,9 @@ function PlayerLib:_InitUI()
         if string.find(module.Name, ".spec") then warn(module.Name) continue end
         if not string.find(module.Name, "_local") then continue end
 
-        Promise.try(require(module), player)
+        Promise.try(require(module), player):catch(function(err)
+            warn(tostring(err))
+        end)
     end
 end
 

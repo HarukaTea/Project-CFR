@@ -36,13 +36,3 @@ bubbleChat.VerticalStudsOffset = 2
 bubbleChat.MaxDistance = 159
 
 channelTab.Enabled = false
-
-
-repeat task.wait() until TextChatService:WaitForChild("TextChatCommands")
-
-local commands = TextChatService.TextChatCommands
-
-commands.RBXEmoteCommand.Enabled = false
-commands.RBXEmoteCommand.AutocompleteVisible = false
-commands.RBXTeamCommand.Enabled = false
-commands.RBXTeamCommand.AutocompleteVisible = false

@@ -14,7 +14,7 @@ if UIS.TouchEnabled then
     touchGui.DisplayOrder = UIPriorityBook.MobileRBLXCoreGui
     touchGui.IgnoreGuiInset = true
 
-    local jumpButton = touchGui:WaitForChild("TouchControlFrame", 999):WaitForChild("JumpButton") :: ImageButton
+    local jumpButton = touchGui:WaitForChild("TouchControlFrame", 999):WaitForChild("JumpButton", 999) :: ImageButton
 
     task.wait()
     jumpButton.AnchorPoint = Vector2.one

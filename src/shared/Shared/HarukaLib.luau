@@ -896,25 +896,37 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 		if not obj.Parent then continue end
 
 		if obj:IsA("Frame") then
+			if not obj.Visible then continue end
+
 			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
 
 		elseif obj:IsA("TextLabel") or obj:IsA("TextButton") then
+			if not obj.Visible then continue end
+
 			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
 			_tweenGoal(obj, "TextTransparency", tweenProps)
 			_tweenGoal(obj, "TextStrokeTransparency", tweenProps)
 
 		elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+			if not obj.Visible then continue end
+
 			_tweenGoal(obj, "ImageTransparency", tweenProps)
 			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
 
 		elseif obj:IsA("ScrollingFrame") then
+			if not obj.Visible then continue end
+
 			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
 			_tweenGoal(obj, "ScrollBarImageTransparency", tweenProps)
 
 		elseif obj:IsA("CanvasGroup") then
+			if not obj.Visible then continue end
+
 			_tweenGoal(obj, "GroupTransparency", tweenProps)
 
 		elseif obj:IsA("UIStroke") then
+			if not obj.Enabled then continue end
+
 			_tweenGoal(obj, "Transparency", tweenProps)
 		else
 			continue

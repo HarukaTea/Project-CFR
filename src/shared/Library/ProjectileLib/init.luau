@@ -69,11 +69,15 @@ local function _fadeAwayAndDestroy(obj: Instance)
     if obj:GetAttribute("HitboxEntity") then return end
 
     if HarukaLib:IsBasePartType(obj) then
-        TS:Create(obj, AssetBook.TweenInfos.half, { Transparency = 1 }):Play()
+        HarukaLib:CreateTween(obj, AssetBook.TweenInfos.half, {
+            Transparency = 1
+        }):Play()
     else
         for _, child: Instance in obj:GetDescendants() do
             if HarukaLib:IsBasePartType(child) then
-                TS:Create(child, AssetBook.TweenInfos.half, { Transparency = 1 }):Play()
+                HarukaLib:CreateTween(child, AssetBook.TweenInfos.half, {
+                    Transparency = 1
+                }):Play()
             end
         end
     end

@@ -1,5 +1,7 @@
 --!nocheck
 
+if game:GetService("RunService"):IsServer() then return end
+
 local pi    = math.pi
 local abs   = math.abs
 local clamp = math.clamp
@@ -18,7 +20,7 @@ local Workspace = game:GetService("Workspace")
 
 local guiContainer = Instance.new("Folder")
 guiContainer.Name = "GuiContainer"
-guiContainer.Parent = game:GetService("TestService")
+guiContainer.Parent = game:GetService("ServerStorage")
 
 
 local LocalPlayer = Players.LocalPlayer

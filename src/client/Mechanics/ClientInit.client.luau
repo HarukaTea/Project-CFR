@@ -107,24 +107,17 @@ end
 
 
 
-function ClientWorldLib:_DoPromptHandlerTracker()
-    Bindables.ChangePromptState:Connect(function(prompt: ProximityPrompt)
-        local blacklist = { "Chest" }
-        prompt.Enabled = false
-
-        if table.find(blacklist, prompt.Name) then return end
-
-        wait(0.5)
-        prompt.Enabled = true
-    end)
-end
-
-
-
 function ClientWorldLib:_DoOpenChestsThatAlreadyOpened()
     for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
+        local prompt = chest:FindFirstChildWhichIsA("ProximityPrompt", true)
+        if not prompt then continue end
+
+        prompt.Enabled = false
+
         local itemInfo = ItemLib:GetItemInfo(chest.Name)
         if itemInfo == nil then continue end
+
+        prompt.Enabled = true
 
         local blackList = { "Consumable" }
         if table.find(blackList, itemInfo.Type) then continue end
@@ -133,7 +126,7 @@ function ClientWorldLib:_DoOpenChestsThatAlreadyOpened()
 
         if items:FindFirstChild(itemInfo.ItemId) then
             chest.Top:PivotTo(chest.Top.PrimaryPart.CFrame * CFrame.Angles(math.rad(50), 0, 0))
-            chest:FindFirstChildWhichIsA("ProximityPrompt", true).Enabled = false
+            prompt.Enabled = false
         end
     end
 end
@@ -142,10 +135,21 @@ end
 
 function ClientWorldLib:_ListenBorderTracker()
     local function _updateBorder(border: Model)
+        if not border:IsDescendantOf(workspace) then return end
+
         Promise.new(function(resolve)
             repeat wait() until border and border.PrimaryPart
             repeat wait() until border:FindFirstChild("Border")
             repeat wait() until border.Border:FindFirstChild("Owner")
+
+            local distance = plr:DistanceFromCharacter(border.PrimaryPart.Position)
+            if distance <= 0 or distance > 486 then
+                wait()
+                border:Destroy()
+
+                resolve()
+                return
+            end
 
             local innerBorder = border.Border
 
@@ -275,7 +279,11 @@ end
 
 function ClientWorldLib:_ListenDMGNumberTracker()
     local function _spawnDMGNumber(entity: Model, text: string, color: Color3)
-        if not ClientLib:IsCharValid(entity) then return end
+        if not ClientLib:IsModelValid(entity) then return end
+        if not entity:IsDescendantOf(workspace) then return end
+
+        local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
+        if distance <= 0 or distance > 486 then return end
 
         local pos = entity.PrimaryPart.Position
         local random = Random.new()
@@ -320,9 +328,7 @@ function ClientWorldLib:_ListenDMGNumberTracker()
 
             random = nil
 
-        end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
-        end)
+        end):catch(function() end)
     end
     Events.ShowDMGNumber.On(function(data)
         _spawnDMGNumber(data.DMGTarget, data.DMGNumber, data.DMGColor)
@@ -332,8 +338,11 @@ end
 
 function ClientWorldLib:_ListenTextTracker()
     local function _spawnText(entity: Model, text: string, color: Color3)
-        if not ClientLib:IsCharValid(entity) then return end
+        if not ClientLib:IsModelValid(entity) then return end
+        if not entity:IsDescendantOf(workspace) then return end
 
+        local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
+        if distance <= 0 or distance > 486 then return end
 
         local pos = entity.PrimaryPart.Position
         local random = Random.new()
@@ -374,9 +383,7 @@ function ClientWorldLib:_ListenTextTracker()
 
             random = nil
 
-        end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
-        end)
+        end):catch(function() end)
     end
     Events.ShowText.On(function(data)
         _spawnText(data.Target, data.Text, data.TextColor)
@@ -387,7 +394,11 @@ end
 
 function ClientWorldLib:_ListenHitStatusTracker()
     local function _onHit(entity: Model)
-        if not ClientLib:IsCharValid(entity) then return end
+        if not ClientLib:IsModelValid(entity) then return end
+        if not entity:IsDescendantOf(workspace) then return end
+
+        local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
+        if distance <= 0 or distance > 486 then return end
 
 
         Promise.try(function()
@@ -417,54 +428,10 @@ function ClientWorldLib:_ListenHitStatusTracker()
                 Size = UDim2.fromScale(25, 25)
             }):Play()
 
-        end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
-        end)
+        end):catch(function() end)
     end
     Events.PlayHitStatusVFX.On(function(data)
         _onHit(data.Target)
-    end)
-end
-
-
-function ClientWorldLib:_ListenLevelUpTracker()
-    local function _onLevelUp(entity: Model)
-        if not ClientLib:IsCharValid(entity) then return end
-
-
-        Promise.try(function()
-            local hitHighlight = ReplicatedStorage.Packages.Effects.LevelUpHighlight:Clone() :: Highlight
-            hitHighlight.Adornee = entity
-            hitHighlight.Parent = entity
-
-            Debris:AddItem(hitHighlight, 1)
-
-            HarukaLib:CreateTween(hitHighlight, AssetBook.TweenInfos.one, {
-                FillTransparency = 1,
-                OutlineTransparency = 1
-            }):Play()
-
-
-            local hitEff = ReplicatedStorage.Packages.Effects.LevelUpEffect.BillboardGui:Clone() :: BillboardGui
-            hitEff.Adornee = entity.PrimaryPart
-            hitEff.LevelUp.Rotation = math.random(1, 360)
-            hitEff.Parent = entity
-            Debris:AddItem(hitEff, 2)
-
-            HarukaLib:CreateTween(hitEff.LevelUp, AssetBook.TweenInfos.half, {
-                ImageTransparency = 1
-            }):Play()
-
-            HarukaLib:CreateTween(hitEff, AssetBook.TweenInfos.half, {
-                Size = UDim2.fromScale(25, 25)
-            }):Play()
-
-        end):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
-        end)
-    end
-    Events.LevelUpVFX.On(function(data)
-        _onLevelUp(data.Target)
     end)
 end
 
@@ -604,7 +571,7 @@ end
 function ClientWorldLib:_ListenChestOpenVFXTracker()
     Events.OpenChestClientTween.On(function(data)
         local chest = data.Chest :: Model
-        if chest == nil then return end
+        if not ClientLib:IsModelValid(chest) then return end
 
         SoundService.SFXs.ChestDrop:Play()
 
@@ -616,64 +583,6 @@ function ClientWorldLib:_ListenChestOpenVFXTracker()
     end)
 end
 
-
-
-function ClientWorldLib:_ListenClassChangeTracker()
-    Events.ChangeClassVFX.On(function(data)
-        if not ClientLib:IsCharValid(plr.Character) then return end
-
-        local hit = plr.Character.PrimaryPart :: BasePart
-
-        local classStatues = CollectionService:GetTagged("StatueEntity")
-        local classStatue: Model = nil
-        for _, thatStatue: Model in classStatues do
-            if thatStatue.Name == data.ClassId then
-                classStatue = thatStatue
-                break
-            end
-        end
-        if classStatue == nil then return end
-
-
-        local sphere = ReplicatedStorage.Packages.Effects.ClassChange:Clone() :: BasePart
-        sphere.CFrame = CFrame.new(classStatue.Orb.Position)
-        sphere.Parent = workspace
-        Debris:AddItem(sphere, 5)
-
-
-        Promise.try(function()
-            local angles = {
-                CFrame.new(math.random(10, 20), 0, 0),
-                CFrame.new(math.random(-20, -10), 0, 0),
-                CFrame.new(0, math.random(5, 10), 0)
-            }
-            local start = sphere.CFrame
-            local mid1 = (start:Lerp(hit.CFrame, 0.3) * angles[math.random(#angles)]).Position
-            local mid2 = (start:Lerp(hit.CFrame, 0.6) * angles[math.random(#angles)]).Position
-            local elapsed = 0
-
-
-            while true do
-                elapsed += RunService.RenderStepped:Wait() * 1.5
-
-                local curvePos = Bezier.CubicBezier(elapsed, start.Position, mid1, mid2, hit.Position)
-
-                if elapsed >= 1 then
-                    sphere.Transparency = 1
-
-                    HarukaLib:CreateTween(sphere.Trail, AssetBook.TweenInfos.one, { Lifetime = 0 }):Play()
-
-                    Debris:AddItem(sphere, 1)
-                    break
-                else
-                    sphere.Position = curvePos
-                end
-            end
-        end):catch(function()
-            sphere.Transparency = 1
-        end)
-    end)
-end
 
 
 ClientWorldLib:Init()

@@ -66,8 +66,8 @@ return function (self)
 
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
 
-        TS:Create(projectile.Fang1.Part, AssetBook.TweenInfos.half, { Transparency = 0 }):Play()
-        TS:Create(projectile.Fang2.Part, AssetBook.TweenInfos.half, { Transparency = 0 }):Play()
+        HarukaLib:CreateTween(projectile.Fang1.Part, AssetBook.TweenInfos.half, { Transparency = 0 }):Play()
+        HarukaLib:CreateTween(projectile.Fang2.Part, AssetBook.TweenInfos.half, { Transparency = 0 }):Play()
 
         Promise.delay(0.5):andThen(function()
             HarukaLib:Tween(projectile.Fang1, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang1.Base.CFrame * CFrame.new(0, 0, -6) })
@@ -89,10 +89,9 @@ return function (self)
 
     ProjectileLib.FoxSpike1 = function(projectile: Model, container: Folder)
         projectile:AddTag("DMGEntity")
-
         projectile.Base.CFrame *= CFrame.new(0, 0, -80)
 
-        TS:Create(projectile.Part, AssetBook.TweenInfos.oneHalf, {
+        HarukaLib:CreateTween(projectile.Part, AssetBook.TweenInfos.oneHalf, {
             Position = projectile.Base.Position
         }):Play()
 

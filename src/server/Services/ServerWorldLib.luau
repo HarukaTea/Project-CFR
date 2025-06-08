@@ -300,8 +300,8 @@ function ServerWorldLib:_DoMarketNPCOptimizeInit()
                 animator.Parent = npc.Humanoid
             end
 
-
-            local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims.DefaultIdle) :: AnimationTrack
+            local npcAnim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
+            local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[npcAnim]) :: AnimationTrack
 
             animTrack.Looped = true
             animTrack.Priority = Enum.AnimationPriority.Idle

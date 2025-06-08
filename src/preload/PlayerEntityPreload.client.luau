@@ -28,22 +28,24 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local player = Players.LocalPlayer
 
 
-local PlayerLib = {}
+local PreloadPlayerLib = {}
 
 
-function PlayerLib:Init()
+function PreloadPlayerLib:Init()
     self:_InitUI()
 end
 
 
-function PlayerLib:_InitUI()
+function PreloadPlayerLib:_InitUI()
     for _, module in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
         if string.find(module.Name, ".spec") then warn(module.Name) continue end
         if not string.find(module.Name, "_preload") then continue end
 
-        Promise.try(require(module), player)
+        Promise.try(require(module), player):catch(function(err)
+            warn(tostring(err))
+        end)
     end
 end
 
 
-PlayerLib:Init()
+PreloadPlayerLib:Init()

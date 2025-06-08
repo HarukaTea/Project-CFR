@@ -8,7 +8,6 @@ local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -128,7 +127,15 @@ return function (self: table)
 
 		SoundService.SFXs.ChatNext:Play()
 
-		Bindables.ChangePromptState:Fire(thatPrompt)
+		thatPrompt.Enabled = false
+		wait(0.5)
+		if thatPrompt.Name == "Chest" then
+			local chest = thatPrompt:FindFirstAncestorOfClass("Model")
+			if not chest then return end
+
+			if chest:GetAttribute(self.plr.Name) then return end
+		end
+		thatPrompt.Enabled = true
 	end))
 	table.insert(scope, PPS.PromptHidden:Connect(function(prompt: ProximityPrompt)
 		if prompt.Enabled then return end

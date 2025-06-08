@@ -23,6 +23,11 @@ local char = script:FindFirstAncestorOfClass("Model")
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
+local entityStorage = Instance.new("Folder")
+entityStorage.Name = "EntitiesAFK"
+entityStorage.Parent = game:GetService("ServerStorage")
+
+
 local EntityLib = {}
 EntityLib.__index = EntityLib
 
@@ -64,14 +69,14 @@ Promise.try(function()
     while wait(0.5) do
         for _, entityObj in allEntityPool do
             if not entityObj.IsReady then continue end
-            if not ClientLib:IsCharValid(entityObj.Entity) then continue end
+            if not ClientLib:IsModelValid(entityObj.Entity) then continue end
 
             pcall(function()
                 local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
-                if distance < 159 and distance > 0 and not entityObj.HasModel then
-                    entityObj:_MakeModel()
+                if distance < 159 and distance > 0 then
+                    entityObj.Entity.Parent = workspace.Entities
                 elseif distance >= 189 and entityObj.HasModel then
-                    entityObj:_DestroyModel()
+                    entityObj.Entity.Parent = entityStorage
                 end
             end)
         end
@@ -97,15 +102,13 @@ Promise.try(function()
             if not entity:GetAttribute("IsReady") then continue end
 
 
-            pcall(function()
-                local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
-                if distance > 0 then
-                    if distance < nearestDist then
-                        nearestEnemy = entity
-                        nearestDist = distance
-                    end
+            local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+            if distance > 0 then
+                if distance <= nearestDist then
+                    nearestEnemy = entity
+                    nearestDist = distance
                 end
-            end)
+            end
         end
 
         if nearestDist > 0 and nearestDist < 18 then
@@ -163,17 +166,6 @@ function EntityLib.new(enemy: Model)
             self:Destroy()
         end
     end))
-    self.Add(self.Entity:GetPropertyChangedSignal("Parent"):Connect(function()
-        local newParent = self.Entity
-        if not newParent then return end
-        if not newParent.Parent then return end
-
-        if not newParent.Parent:IsDescendantOf(workspace) then
-            self:_DestroyModel()
-        else
-            self:_MakeModel()
-        end
-    end))
     self.Add(function()
         self:_DestroyModel()
     end)
@@ -189,11 +181,7 @@ end
 function EntityLib:Init()
     self:_ListenAttributeTracker()
     self:_LoadAnims()
-
-    local distance = player:DistanceFromCharacter(self.Entity.PrimaryPart.Position)
-    if distance < 166 and distance > 0 then
-        self:_MakeModel()
-    end
+    self:_MakeModel()
 
     self.IsReady = true
 end
@@ -391,7 +379,6 @@ function EntityLib:_ListenAttributeTracker()
 
                 if HarukaLib:IsBasePartType(child) then
                     child.Transparency = 0.4
-                    child.Anchored = true
                     child.Color = Color3.new(1, 1, 1)
 
                     HarukaLib:CreateTween(child, AssetBook.TweenInfos.one, {

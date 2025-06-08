@@ -356,10 +356,11 @@ return function (self: table)
         local linearVelo = Instance.new("LinearVelocity")
         linearVelo.Name = "Dash"
         linearVelo.Attachment0 = self.char.PrimaryPart.AlignMoverAttachment
-        linearVelo.ForceLimitsEnabled = false
-        linearVelo.VectorVelocity = self.char.PrimaryPart.CFrame.LookVector * 100 + Vector3.yAxis * 6
+        linearVelo.RelativeTo = Enum.ActuatorRelativeTo.Attachment0
+        linearVelo.MaxForce = 1500 * self.char.PrimaryPart.AssemblyMass
+        linearVelo.VectorVelocity = Vector3.new(0, 0, -100)
         linearVelo.Parent = self.char.PrimaryPart
-        Debris:AddItem(linearVelo, 0.12)
+        Debris:AddItem(linearVelo, 0.2)
 
 
         for _, part: BasePart in self.char:GetChildren() do

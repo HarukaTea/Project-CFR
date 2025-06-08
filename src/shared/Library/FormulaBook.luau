@@ -86,9 +86,9 @@ local formulas = {
         ATKType: string
     })
 
-        local baseFactor = 1.1
+        local baseFactor = 37
         if props.ATKType == "Max" then
-            baseFactor = 1.2
+            baseFactor = 42
         end
         local extra = 1 + ((props.DMGPoints * baseFactor) / 100)
 
@@ -101,7 +101,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 1.4) / 100)
+        local extra = 1 + ((props.MagicPoints * 63) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,

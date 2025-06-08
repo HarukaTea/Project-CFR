@@ -22,6 +22,4 @@ return {
     CreateCircularFade = Signal.new(),
 
     ConfirmPromptChosen = Signal.new(),
-
-    ChangePromptState = Signal.new(),
 }

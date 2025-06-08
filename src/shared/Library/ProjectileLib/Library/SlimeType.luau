@@ -133,11 +133,11 @@ return function (self)
 
 
     ProjectileLib.SlimeSpin = function(projectile: Model, container: Folder)
-        TS:Create(projectile.Blast1, AssetBook.TweenInfos.twiceHalf, {
+        HarukaLib:CreateTween(projectile.Blast1, AssetBook.TweenInfos.twiceHalf, {
             Size = Vector3.new(16, 16, 16),
             Transparency = 1
         }):Play()
-        TS:Create(projectile.Blast2, AssetBook.TweenInfos.twiceHalf, {
+        HarukaLib:CreateTween(projectile.Blast2, AssetBook.TweenInfos.twiceHalf, {
             Size = Vector3.new(22, 26, 26),
             Transparency = 1
         }):Play()
@@ -161,46 +161,46 @@ return function (self)
 
         local blastInfo = TweenInfo.new(0.3)
 
-        TS:Create(projectile.BlastCenter, blastInfo, {
-            Size = projectile.BlastCenter.Size + Vector3.yAxis * 23,
+        HarukaLib:CreateTween(projectile.BlastCenter, blastInfo, {
+            Size = projectile.BlastCenter.Size + Vector3.yAxis * 22,
         }):Play()
-        TS:Create(projectile.Blast1, blastInfo, {
-            Size = projectile.Blast1.Size + Vector3.yAxis * 12
+        HarukaLib:CreateTween(projectile.Blast1, blastInfo, {
+            Size = projectile.Blast1.Size + Vector3.yAxis * 11
         }):Play()
-        TS:Create(projectile.Blast2, blastInfo, {
-            Size = projectile.Blast2.Size + Vector3.yAxis * 16
+        HarukaLib:CreateTween(projectile.Blast2, blastInfo, {
+            Size = projectile.Blast2.Size + Vector3.yAxis * 15
         }):Play()
-        TS:Create(projectile.Blast3, blastInfo, {
-            Size = projectile.Blast3.Size + Vector3.yAxis * 12
+        HarukaLib:CreateTween(projectile.Blast3, blastInfo, {
+            Size = projectile.Blast3.Size + Vector3.yAxis * 11
         }):Play()
-        TS:Create(projectile.Blast4, blastInfo, {
-            Size = projectile.Blast4.Size + Vector3.yAxis * 16
+        HarukaLib:CreateTween(projectile.Blast4, blastInfo, {
+            Size = projectile.Blast4.Size + Vector3.yAxis * 15
         }):Play()
+
 
         local fadeInfo = TweenInfo.new(0.45)
-
         for _, part: BasePart in projectile:GetChildren() do
             if string.find(part.Name, "Blast") then
-                TS:Create(part, fadeInfo, {
+                HarukaLib:CreateTween(part, fadeInfo, {
                     Transparency = 1
                 }):Play()
             end
         end
 
         Promise.delay(0.3):andThen(function()
-            TS:Create(projectile.BlastCenter, blastInfo, {
+            HarukaLib:CreateTween(projectile.BlastCenter, blastInfo, {
                 Size = projectile.BlastCenter.Size - Vector3.yAxis * 22,
             }):Play()
-            TS:Create(projectile.Blast1, blastInfo, {
+            HarukaLib:CreateTween(projectile.Blast1, blastInfo, {
                 Size = projectile.Blast1.Size - Vector3.yAxis * 11
             }):Play()
-            TS:Create(projectile.Blast2, blastInfo, {
+            HarukaLib:CreateTween(projectile.Blast2, blastInfo, {
                 Size = projectile.Blast2.Size - Vector3.yAxis * 15
             }):Play()
-            TS:Create(projectile.Blast3, blastInfo, {
+            HarukaLib:CreateTween(projectile.Blast3, blastInfo, {
                 Size = projectile.Blast3.Size - Vector3.yAxis * 11
             }):Play()
-            TS:Create(projectile.Blast4, blastInfo, {
+            HarukaLib:CreateTween(projectile.Blast4, blastInfo, {
                 Size = projectile.Blast4.Size - Vector3.yAxis * 15
             }):Play()
 
@@ -231,22 +231,16 @@ return function (self)
             projectile:AddTag("DMGEntity")
             projectile:AddTag("PierceEntity")
 
-            TS:Create(projectile.Bomb1, AssetBook.TweenInfos.twiceHalf, {
+            HarukaLib:CreateTween(projectile.Bomb1, AssetBook.TweenInfos.half, {
                 Size = projectile.Bomb1.Size + Vector3.one * 10,
+                Transparency = 1
             }):Play()
-            TS:Create(projectile.Bomb2, AssetBook.TweenInfos.twiceHalf, {
+            HarukaLib:CreateTween(projectile.Bomb2, AssetBook.TweenInfos.half, {
                 Size = projectile.Bomb2.Size + Vector3.one * 15.99,
-            }):Play()
-
-            TS:Create(projectile.Bomb1, AssetBook.TweenInfos.half, {
-                Transparency = 1
-            }):Play()
-            TS:Create(projectile.Bomb2, AssetBook.TweenInfos.half, {
                 Transparency = 1
             }):Play()
 
-        end):catch(function()
-        end)
+        end):catch(function() end)
     end
     ProjectileLib.PurpleSlimeBomb = ProjectileLib.CrimsonSlimeBomb
 end

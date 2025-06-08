@@ -60,12 +60,10 @@ end
 function CharLib:_ListenCharDestroyTracker()
 	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
-			pcall(self._TriggerRagdoll, self)
-			pcall(function()
-				char.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-			end)
-
 			self:Destroy()
+			self:_TriggerRagdoll()
+
+			char.Humanoid.Health = -1
 		end
 	end))
 	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
@@ -96,7 +94,6 @@ end
 
 
 function CharLib:_TriggerRagdoll()
-	local char = char :: Model
 	local humanoid = char.Humanoid :: Humanoid
 
 	local attachmentCFrames = {

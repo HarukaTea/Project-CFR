@@ -3,9 +3,11 @@
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
+local CollectionService = game:GetService("CollectionService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local WindLines = require(RepS.HarukaShared.Shared.Ambient.WindLines)
+local WindShake = require(RepS.HarukaShared.Shared.Ambient.WindShake)
 
 local v3New = Vector3.new
 
@@ -22,4 +24,30 @@ do
         LifeTime = 1.5,
         SpawnRate = 8,
     })
+
+    WindShake:SetDefaultSettings({
+        WindSpeed = 15.99,
+        WindDirection = WIND_VECTOR,
+        WindPower = 1.599
+    })
+    WindShake:Init({
+        MatchWorkspaceWind = true
+    })
+
+
+    local function _updateTree(child: Model)
+        if not child:IsA("Model") then return end
+
+        for _, treePart: BasePart in child:GetDescendants() do
+            if not treePart:IsA("BasePart") then continue end
+
+            if treePart.Material == Enum.Material.Grass then
+                WindShake:AddObjectShake(treePart)
+            end
+        end
+    end
+    for _, tree: Model in CollectionService:GetTagged("TreeEntity") do
+        _updateTree(tree)
+    end
+    CollectionService:GetInstanceAddedSignal("TreeEntity"):Connect(_updateTree)
 end

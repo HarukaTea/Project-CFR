@@ -1,9 +1,6 @@
 --!nocheck
 
 local Players = game:GetService("Players")
-local RepS = game:GetService("ReplicatedStorage")
-
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local plr = Players.LocalPlayer
 local plrGui = plr.PlayerGui
@@ -112,4 +109,6 @@ local function _updateSize()
 		end
 	end
 end
-HarukaLib.Clock(0.15, _updateSize)
+while task.wait(0.15) do
+	_updateSize()
+end

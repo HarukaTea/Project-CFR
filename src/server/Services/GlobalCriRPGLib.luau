@@ -255,10 +255,6 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
             local items = plr.Items :: Folder
             if not items:FindFirstChild(statue.Weapon.Value) then
-                Events.ChangeClassVFX.Fire(plr, {
-                    ClassId = statue.Name
-                })
-
                 ServerLib:GiveItemDrop(plr, statue.Weapon.Value, 1)
             else
                 Events.CreateNotify.Fire(plr, " You've already received the Goddess's blessing!")

@@ -60,10 +60,6 @@ local entityContainer = Instance.new("Folder")
 entityContainer.Name = "Entities"
 entityContainer.Parent = workspace
 
-local entityStorageContainer = Instance.new("Folder")
-entityStorageContainer.Name = "EntityStorage"
-entityStorageContainer.Parent = game:GetService("TestService")
-
 
 for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
     allLocatorPool[locator.Name] = {
@@ -78,32 +74,16 @@ Promise.try(function()
         local notPassed = {}
 
         for name: string, info: table in allLocatorPool do
-            local check = false
-
-            for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
-                if locator.Position:FuzzyEq(info.Location) then
-                    check = true
-                    break
-                end
-            end
-
-            if not check then
+            if not workspace.Enemies:FindFirstChild(name, true) then
                 notPassed[name] = info
             end
         end
+        if HarukaLib.TableUtils().IsEmpty(notPassed) then continue end
+
 
         Promise.delay(15):andThen(function()
             for _, info: table in notPassed do
-                local check = false
-
-                for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
-                    if locator.Position:FuzzyEq(info.Location) then
-                        check = true
-                        break
-                    end
-                end
-
-                if not check then
+                if not workspace.Enemies:FindFirstChild(info.Name, true) then
                     local locator = HarukaLib:CreateMockPart()
                     locator.Name = info.Name
 
@@ -181,6 +161,13 @@ enemyDiedSignal:Connect(function(info: {
 
         locator.Parent = workspace.Enemies
     end)
+
+
+    local symbol = Instance.new("BoolValue")
+    symbol.Name = info.Name
+    symbol.Value = true
+    symbol.Parent = workspace.Enemies
+    Debris:AddItem(symbol, 13)
 
 
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart

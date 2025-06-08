@@ -1,6 +1,6 @@
 --!nocheck
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -10,9 +10,6 @@ local TextChatService = game:GetService("TextChatService")
 
 local Events = require(RepS.HarukaShared.Library.Events)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
-local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMD)
-
-local Freecam = require(RepS.HarukaShared.Library.Freecam)
 
 local plr = Players.LocalPlayer
 
@@ -37,6 +34,9 @@ end)
 
 --// freecam
 if workspace:GetAttribute("AllowFreecam") then
+    local Freecam = require(RepS.HarukaShared.Library.Freecam)
+
+
     local freecamCommand = Instance.new("TextChatCommand")
     freecamCommand.Name = "HarukaFreecamCommand"
     freecamCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
@@ -62,12 +62,11 @@ end
 
 
 wait(5)
-
-repeat wait() until plr:GetAttribute("Rank")
-if plr:GetAttribute("Rank") < 2 then
+if (plr:GetAttribute("Rank") or 0) < 2 then
     return
 end
 
+local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMD)
 
 local harukaCMDObj = HarukaCMD.new()
 harukaCMDObj:Init()
