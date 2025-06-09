@@ -122,6 +122,12 @@ AssetBook.PreloadAssets = {
 	}
 }
 
+AssetBook.EnemyVariants = {
+	SlimePart1 = { "GreenSlime", "WheatSlime", "SandSlime", "BlueSlime", "LapisSlime" },
+	SlimePart2 = { "PurpleSlime", "EvolvedGreenSlime" },
+	WolfPart1 = { "SpikeWolf", "ThornWolf", "NeedleWolf" }
+}
+
 
 
 return AssetBook

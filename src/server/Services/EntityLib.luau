@@ -13,6 +13,7 @@ local EntityLib = {}
 EntityLib.__index = EntityLib
 
 
+local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -162,23 +163,15 @@ ServerBindables.PlayerDied:Connect(function(charId: string)
 end)
 
 
+local function _enemyVariant(locator: BasePart)
+    if locator:GetAttribute("NoRandomName") then return end
 
-local function _changeNameRandomlyForSlimes(locator: BasePart)
-    if not string.find(locator.Name, "Slime") then return end
-    if locator.Name == "PurpleSlime" then return end
-    if locator.Name == "CrimsonSlime" then return end
-
-    local newNameList = { "GreenSlime", "WheatSlime", "SandSlime", "BlueSlime", "LapisSlime", "IceSlime" }
-
-    locator.Name = newNameList[math.random(1, #newNameList)]
-end
-local function _changeNameRandomlyForWolves(locator: BasePart)
-    if not string.find(locator.Name, "Wolf") then return end
-    if locator.Name == "HardmodeWolf" then return end
-
-    local newNameList = { "SpikeWolf", "ThornWolf", "NeedleWolf" }
-
-    locator.Name = newNameList[math.random(1, #newNameList)]
+    for _, variantTable in AssetBook.EnemyVariants do
+        if table.find(variantTable, locator.Name) then
+            locator.Name = variantTable[math.random(1, #variantTable)]
+            break
+        end
+    end
 end
 
 
@@ -188,8 +181,7 @@ end
 function EntityLib.new(locator: BasePart)
     if locator:GetAttribute("HarukaUniqueId") then return end
 
-    _changeNameRandomlyForSlimes(locator)
-    _changeNameRandomlyForWolves(locator)
+    _enemyVariant(locator)
 
 
     local self = setmetatable({}, EntityLib)
@@ -907,7 +899,6 @@ function EntityLib:_EnterCombat(target: Model)
         for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
             if nearbyChar.Name == target.Name then continue end
             if not ServerLib:IsCharValid(nearbyChar) then continue end
-            if nearbyCharCount >= 5 then break end
 
             if nearbyChar:GetAttribute("IsInCombat") then continue end
             if nearbyChar:FindFirstChild("CombatCooldown") then continue end
@@ -917,6 +908,8 @@ function EntityLib:_EnterCombat(target: Model)
         end
     else
         --// got pulled by combat starter enemy
+        nearbyCharCount = 0
+
         for _, thatEntityObj in allEntityPool do
             if thatEntityObj.UniqueId == self.UniqueId then continue end
             if not thatEntityObj.IsInCombat then continue end

@@ -15,7 +15,7 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
 
-local testerRank = if game.PlaceId == 88043509623826 or game.PlaceId == 17737750873 then 2 else 127
+local testerRank = if game.PlaceId == 88043509623826 or game.PlaceId == 17737750873 or game.PlaceId == 78011578174285 then 2 else 127
 
 local wait = task.wait
 
@@ -454,6 +454,7 @@ local commands = {
 
             locator:AddTag("EnemyLocatorEntity")
             locator:SetAttribute("NoRespawn", true)
+            locator:SetAttribute("NoRandomName", true)
             locator:SetAttribute("Level", props.Args[2])
 
             locator.Parent = workspace.Enemies

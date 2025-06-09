@@ -167,6 +167,12 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
     projectileSymbol.Value = projectilePos
     projectileSymbol:SetAttribute("Damage", entity:GetAttribute("DMG"))
     projectileSymbol:SetAttribute("Level", entity:GetAttribute("Level"))
+
+    local owner = Instance.new("ObjectValue")
+    owner.Name = "Owner"
+    owner.Value = entity
+    owner.Parent = projectileSymbol
+
     projectileSymbol.Parent = ServerStorage.ProjectileSymbolContainer
 
     Maid:AddItem(projectileSymbol, 15.99 * 2)

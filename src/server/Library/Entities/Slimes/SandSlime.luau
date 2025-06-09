@@ -1,2 +1,2 @@
 
-return require(script.Parent.WheatSlime)
+return require(script.Parent.GreenSlime)

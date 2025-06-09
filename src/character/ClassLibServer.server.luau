@@ -39,6 +39,24 @@ function ClassMechanicLib:Init()
             func(self)
         end
     end
+
+
+    Add(char.Humanoid.HealthChanged:Connect(function(health: number)
+		if health <= 0 then
+			self:Destroy()
+		end
+	end))
+	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+		local newParent = char
+        if newParent then
+            if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+                self:Destroy()
+                return
+            end
+        else
+            self:Destroy()
+        end
+	end))
 end
 
 function ClassMechanicLib:Destroy()

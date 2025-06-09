@@ -19,8 +19,6 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Add, Empty = HarukaLib.Bin()
 
 
-local wait = task.wait
-
 local PreloadSceneLib = {}
 
 function PreloadSceneLib:_LoadPreloadAssets()
@@ -60,9 +58,13 @@ end
 
 function PreloadSceneLib:_LoadScreenMouseFollower()
     task.spawn(function()
+        if workspace:GetAttribute("NoRequiresTitlescreen") then return end
+
+
         repeat wait() until workspace:WaitForChild("MapComponents", 999)
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
+
 
         local locator = workspace.MapComponents.Titlescreen.CameraLocator :: BasePart
 
@@ -74,6 +76,10 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
 
         camera.CameraType = Enum.CameraType.Scriptable
         camera.CameraSubject = locator
+        camera.CFrame = locator.CFrame
+
+
+        repeat task.wait() until workspace:GetAttribute("Haruka_PreloadCompleted")
 
         local mouse = Players.LocalPlayer:GetMouse()
         Add(mouse.Move:Connect(function()

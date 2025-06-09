@@ -159,6 +159,42 @@ return {
             DivineBlade = 10
         }
     },
+    EvolvedGreenSlime = {
+        Name = "Evolved Slime",
+        Icon = "rbxassetid://127989665826507",
+
+        Tier = 5,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 1.3,
+
+        Species = "Slime",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
+            DivineBlade = 10
+        }
+    },
+    KingSlime = {
+        Name = "King Slime",
+        Icon = "rbxassetid://127989665826507",
+
+        Tier = 6,
+        BaseSpeed = 10,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 2,
+
+        Species = "Slime",
+        IsBoss = true,
+        Tag = "The King",
+
+        Drops = {
+            SlimeGel = 40,
+            SlimeCore = 30,
+            DivineBlade = 10
+        }
+    },
     CrimsonSlime = {
         Name = "Crimson Slime",
         Icon = "rbxassetid://17543155439",

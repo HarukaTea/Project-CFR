@@ -1,11 +1,11 @@
 
-
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
+local SS = game:GetService("ServerStorage")
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
@@ -15,6 +15,8 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
+local Add, Empty = HarukaLib.Bin()
+
 
 local player = Players.LocalPlayer
 local char = script:FindFirstAncestorOfClass("Model")
@@ -23,9 +25,42 @@ local char = script:FindFirstAncestorOfClass("Model")
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
-local entityStorage = Instance.new("Folder")
-entityStorage.Name = "EntitiesAFK"
-entityStorage.Parent = game:GetService("ServerStorage")
+local entityStorage = nil
+
+if not SS:FindFirstChild("EntitiesAFK") then
+    entityStorage = Instance.new("Folder")
+    entityStorage.Name = "EntitiesAFK"
+    entityStorage.Parent = SS
+else
+    entityStorage = SS:FindFirstChild("EntitiesAFK")
+end
+
+
+
+Add(Players.PlayerRemoving:Connect(function(plr: Player)
+	if player == plr then
+		Empty()
+	end
+end))
+Add(script.Destroying:Connect(function()
+    Empty()
+end))
+Add(char.Humanoid.HealthChanged:Connect(function(health: number)
+    if health <= 0 then
+        Empty()
+    end
+end))
+Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+    local newParent = char
+    if newParent then
+        if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+            Empty()
+            return
+        end
+    else
+        Empty()
+    end
+end))
 
 
 local EntityLib = {}
@@ -38,12 +73,16 @@ local wait = task.wait
 local allEntityPool = {}
 
 
-Events.ApplyFoundStatusToEnemy.On(function(data)
+Add(Events.ApplyFoundStatusToEnemy.On(function(data)
     local entity = data.Enemy
     if not ClientLib:IsCharValid(entity) then return end
 
+    local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+    if distance <= 0 or distance >= 155 then return end
+
     local encountered = ReplicatedStorage.Packages.Effects.Encountered.BillboardGui:Clone() :: BillboardGui
     encountered.Adornee = entity.PrimaryPart
+    encountered.Size = UDim2.fromScale(4, 4)
     encountered.Parent = entity
     Debris:AddItem(encountered, 1.15)
 
@@ -51,8 +90,26 @@ Events.ApplyFoundStatusToEnemy.On(function(data)
     HarukaLib:CreateTween(encountered.TextButton, AssetBook.TweenInfos.one, {
         TextTransparency = 1, TextStrokeTransparency = 1
     }):Play()
-end)
-Events.PlayAnimForEnemy.On(function(data)
+    HarukaLib:CreateTween(encountered, AssetBook.TweenInfos.half, {
+        Size = UDim2.fromScale(1.5, 1.5)
+    }):Play()
+
+
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    highlight.Parent = entity
+    Debris:AddItem(highlight, 1.15)
+
+
+    HarukaLib:CreateTween(highlight, AssetBook.TweenInfos.one, {
+        FillTransparency = 1,
+        OutlineTransparency = 1
+    }):Play()
+end))
+Add(Events.PlayAnimForEnemy.On(function(data)
     if not ClientLib:IsCharValid(data.Entity) then return end
 
 
@@ -64,8 +121,20 @@ Events.PlayAnimForEnemy.On(function(data)
             break
         end
     end
-end)
-Promise.try(function()
+end))
+Add(Events.ApplyHighlightForEntity.On(function(data)
+    if not ClientLib:IsModelValid(data.Entity) then return end
+
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = data.Entity
+    Debris:AddItem(highlight, data.Duration)
+
+    HarukaLib:CreateTween(highlight, TweenInfo.new(data.Duration), {
+        FillTransparency = 1,
+        OutlineTransparency = 1
+    }):Play()
+end))
+local storagePromise = Promise.try(function()
     while wait(0.5) do
         for _, entityObj in allEntityPool do
             if not entityObj.IsReady then continue end
@@ -73,16 +142,16 @@ Promise.try(function()
 
             pcall(function()
                 local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
-                if distance < 159 and distance > 0 then
+                if distance < 189 and distance > 0 then
                     entityObj.Entity.Parent = workspace.Entities
-                elseif distance >= 189 and entityObj.HasModel then
+                elseif distance >= 200 and entityObj.HasModel then
                     entityObj.Entity.Parent = entityStorage
                 end
             end)
         end
     end
 end)
-Promise.try(function()
+local encounterPromise = Promise.try(function()
     local encounterCD = false
     while wait(0.5) do
         if encounterCD then continue end
@@ -124,7 +193,7 @@ Promise.try(function()
         end
     end
 end)
-Promise.try(function()
+local bossTrackingPromise = Promise.try(function()
     while wait(1.2) do
         for _, entity: Model in CollectionService:GetTagged("BossEnemyEntity") do
             if entity.Parent ~= workspace.Entities then continue end
@@ -155,6 +224,16 @@ Promise.try(function()
         end
     end
 end)
+Add(function()
+    storagePromise:cancel()
+    encounterPromise:cancel()
+    bossTrackingPromise:cancel()
+end)
+Add(function()
+    for _, entityObj in allEntityPool do
+        pcall(entityObj.Destroy, entityObj)
+    end
+end)
 
 
 
@@ -165,8 +244,11 @@ function EntityLib.new(enemy: Model)
 
     local self = setmetatable({}, EntityLib)
 
+    repeat wait() until enemy:WaitForChild("Locator", 999)
+    repeat wait() until enemy.Locator.Value
+
 	self.Entity = enemy
-    self.Locator = enemy:WaitForChild("Locator").Value :: BasePart
+    self.Locator = enemy.Locator.Value :: BasePart
 
     self.UniqueId = enemy:GetAttribute("HarukaUniqueId")
 	self.SourceModel = ReplicatedStorage.Packages.EnemyModels:FindFirstChild(enemy.Name, true)
@@ -422,17 +504,18 @@ function EntityLib:_ListenAttributeTracker()
                 end
             end
 
-            task.delay(1, function()
-                if not ClientLib:IsModelValid(entity) then return end
+            local location = entity.PrimaryPart.CFrame
 
+            Promise.delay(1):andThen(function()
                 local deathEffect = ReplicatedStorage.Packages.Effects.DefeatedEffect:Clone() :: BasePart
-                deathEffect.CFrame = entity.PrimaryPart.CFrame
+                deathEffect.CFrame = location
                 deathEffect.Parent = workspace
 
                 Debris:AddItem(deathEffect, 2)
 
                 ClientLib:PlayWorldSound(SoundService.SFXs.EnemyCorpsed, deathEffect.Position)
-            end)
+
+            end):catch(function() end)
         end
     }))
 end

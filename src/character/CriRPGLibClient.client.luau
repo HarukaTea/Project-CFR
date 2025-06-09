@@ -33,6 +33,16 @@ local CriRPGLib = {}
 
 local wait = task.wait
 
+
+Add(Players.PlayerRemoving:Connect(function(player: Player)
+	if player == plr then
+		CriRPGLib:Destroy()
+	end
+end))
+Add(script.Destroying:Connect(function()
+    CriRPGLib:Destroy()
+end))
+
 --// Helper functions
 
 local function _fadeOrb(orb: Model)
@@ -78,17 +88,13 @@ function CriRPGLib:Init()
 
 
     Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-        if health <= 0 then
-            self:Destroy()
-        end
-    end))
-    Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-        local newParent = char
+		if health <= 0 then
+			self:Destroy()
+		end
+	end))
+	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+		local newParent = char
         if newParent then
-            if newParent.PrimaryPart == nil and newParent:FindFirstChild("Humanoid") then
-                newParent.Humanoid.Health = -1
-                return
-            end
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
                 self:Destroy()
                 return
@@ -96,7 +102,7 @@ function CriRPGLib:Init()
         else
             self:Destroy()
         end
-    end))
+	end))
 end
 
 
@@ -264,10 +270,12 @@ function CriRPGLib:_ListenAreaTracker()
             HarukaLib:CreateTween(Lighting, AssetBook.TweenInfos.one, {
                 ClockTime = LocationBook[location].ClockTime
             }):Play()
-            HarukaLib:CreateTween(workspace.Terrain.Clouds, AssetBook.TweenInfos.one, {
-                Color = _calculateColor(LocationBook[location].ClockTime)
-            }):Play()
 
+            if workspace.Terrain:FindFirstChild("Clouds") then
+                HarukaLib:CreateTween(workspace.Terrain.Clouds, AssetBook.TweenInfos.one, {
+                    Color = _calculateColor(LocationBook[location].ClockTime)
+                }):Play()
+            end
 
             --- apply rain
             Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel)
@@ -385,7 +393,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
                     char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
                 end
 
-                local bounceWeight = 42
+                local bounceWeight = 36
                 local bounceBuff = char:GetAttribute("OrbBounce") / 100
 
                 bounceWeight *= bounceBuff
@@ -395,7 +403,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
                 linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
                 linearVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
                 linearVelocity.ForceLimitsEnabled = false
-                linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * bounceWeight
+                linearVelocity.VectorVelocity = char.Humanoid.MoveDirection * 10 + Vector3.yAxis * bounceWeight
                 linearVelocity.Parent = char.PrimaryPart
                 Debris:AddItem(linearVelocity, 0.05)
 
@@ -478,7 +486,7 @@ function CriRPGLib:_ListenProjectileSpawnTracker()
             return
         end
         projectile = projectile:Clone() :: Model
-        Maid:AddItem(projectile, 15.99)
+        Maid:AddItem(projectile, 10)
 
 
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)
@@ -544,7 +552,7 @@ function CriRPGLib:_ListenUniProjectileSpawnTracker()
             return
         end
         projectile = projectile:Clone() :: Model
-        Maid:AddItem(projectile, 15.99)
+        Maid:AddItem(projectile, 5)
 
 
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)
@@ -620,7 +628,13 @@ function CriRPGLib:_ListenCombatStateTreesTracker()
             for _, part: BasePart in tree:GetDescendants() do
                 if HarukaLib:IsBasePartType(part) then
                     part.LocalTransparencyModifier = 0
-                    if part.Material ~= Enum.Material.Grass then
+
+                    local material = part.Material
+                    local oriMaterial = part:GetAttribute("OriMaterial")
+
+                    material = oriMaterial or material
+
+                    if material ~= Enum.Material.Grass then
                         part.CanCollide = true
                     end
                 end

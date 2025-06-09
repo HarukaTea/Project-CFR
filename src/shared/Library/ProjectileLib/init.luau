@@ -8,6 +8,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
+local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 local ProjectileLib = {}
 
@@ -66,7 +67,9 @@ end
 local function _fadeAwayAndDestroy(obj: Instance)
     Debris:AddItem(obj, 1)
 
-    if obj:GetAttribute("HitboxEntity") then return end
+    obj:RemoveTag("PierceEntity")
+    obj:RemoveTag("DMGEntity")
+
 
     if HarukaLib:IsBasePartType(obj) then
         HarukaLib:CreateTween(obj, AssetBook.TweenInfos.half, {
@@ -78,12 +81,35 @@ local function _fadeAwayAndDestroy(obj: Instance)
                 HarukaLib:CreateTween(child, AssetBook.TweenInfos.half, {
                     Transparency = 1
                 }):Play()
+
+                child:RemoveTag("PierceEntity")
+                child:RemoveTag("DMGEntity")
             end
         end
     end
 end
+local function _spawnProjectile(
+    projectile: Model,
+    container: Folder,
+    duration: number,
+    callback: (projectile: Model) -> nil
+)
+    local sProjectile = projectile.Projectile.Value:Clone() :: Model
+    sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
+
+    projectile.Owner:Clone().Parent = sProjectile
+
+    callback(sProjectile)
+
+    sProjectile.Parent = container
+
+    Maid:AddItem(sProjectile, duration)
+
+    ProjectileLib[sProjectile.Name](sProjectile, container)
+end
 ProjectileLib._fadeAwayAndDestroy = _fadeAwayAndDestroy
 ProjectileLib._rotateAttentionPoint = _rotateAttentionPoint
+ProjectileLib._spawnProjectile = _spawnProjectile
 
 
 

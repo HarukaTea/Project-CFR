@@ -25,6 +25,20 @@ repeat wait() until char:HasTag("PlayerCharEntity")
 
 local CharLib = {}
 
+
+Add(Players.PlayerRemoving:Connect(function(player: Player)
+	if player == plr then
+		CharLib:__Destroy()
+        CharLib:Destroy()
+	end
+end))
+Add(script.Destroying:Connect(function()
+    CharLib:__Destroy()
+    CharLib:Destroy()
+end))
+
+
+
 function CharLib:Init()
     for funcId: string, func: (self) -> nil in CharLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
@@ -77,9 +91,6 @@ end
 function CharLib:__Init()
     SoundService.Musics.Overworld:Play()
 
-    Lighting.ColorShift_Bottom = Color3.fromRGB(220, 255, 255)
-    Lighting.ColorShift_Top = Color3.fromRGB(220, 255, 255)
-
     local camera = workspace.CurrentCamera
     if camera:FindFirstChild("DeathBlur") then
         camera.DeathBlur:Destroy()
@@ -124,10 +135,6 @@ function CharLib:__Destroy()
     deathBlur.Name = "DeathBlur"
     deathBlur.Size = 15.99
     deathBlur.Parent = workspace.CurrentCamera
-
-    Lighting.ColorShift_Bottom = Color3.new(1, 0, 0)
-    Lighting.ColorShift_Top = Color3.new(1, 0, 0)
-
 
     if workspace:GetAttribute("AllowFreecam") then
         local Freecam = require(ReplicatedStorage.HarukaShared.Library.Freecam)

@@ -20,13 +20,13 @@ do
 
     WindLines:Init({
         Direction = WIND_VECTOR,
-        Speed = 15.99,
+        Speed = 10,
         LifeTime = 1.5,
         SpawnRate = 8,
     })
 
     WindShake:SetDefaultSettings({
-        WindSpeed = 15.99,
+        WindSpeed = 10,
         WindDirection = WIND_VECTOR,
         WindPower = 1
     })

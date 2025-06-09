@@ -75,12 +75,18 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             RunService.Stepped:Wait()
         end
 
-        SlimeUniversal.SlimeBarrage(entity)
+        SlimeUniversal.SlimeSpin(entity)
     end
     local function _slimeWave(target: Model)
         _lookAt(target)
 
         SlimeUniversal.SlimeWave(entity, target)
+    end
+    local function _slimeDive1(target: Model)
+        SlimeUniversal.SlimeDive1(entity, target)
+    end
+    local function _slimeDive2(target: Model)
+        SlimeUniversal.SlimeDive2(entity, target)
     end
 
 
@@ -102,6 +108,15 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             _slimeBarrage()
             wait(0.55)
         end
+    end)
+    table.insert(self.AttackFuncs, function(target: Model)
+        if not _checkIsTargetOrEntityValid(target) then return end
+
+        _slimeDive1(target)
+        wait(1 + math.random(5) / 10)
+        _slimeDive2(target)
+
+        wait(0.5)
     end)
 
     --// combo attack functions

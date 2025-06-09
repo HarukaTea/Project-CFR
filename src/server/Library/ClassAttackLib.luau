@@ -426,6 +426,12 @@ end
 function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgProps: {
     DMG: number,
 })
+    if not ServerLib:IsCharValid(targeting) then return end
+
+    if targeting:FindFirstChild("AttackImmune") then
+        dmgProps.DMG = 0
+    end
+
     targeting.Humanoid:TakeDamage(dmgProps.DMG)
     ServerBindables.EnemyGotHit:Fire(targeting, char, {
         DMG = dmgProps.DMG,

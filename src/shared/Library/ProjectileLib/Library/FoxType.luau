@@ -19,24 +19,15 @@ return function (self)
     local ProjectileLib = self
 
     ProjectileLib.FoxMove1 = function(projectile: Model, container: Folder)
-        Promise.delay(0.5):andThen(function()
-            for _, child: BasePart in projectile:GetChildren() do
-                if child.Name == "Position" then
-                    local sProjectile = projectile.Projectile.Value:Clone() :: Model
+        wait(0.5)
+        for _, child: BasePart in projectile:GetChildren() do
+            if child.Name == "Position" then
+                ProjectileLib._spawnProjectile(projectile, container, 3, function(sProjectile: Model)
                     sProjectile:PivotTo(child.CFrame)
-
-                    sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
-
-                    sProjectile.Parent = container
-
-                    Maid:AddItem(sProjectile, 3)
-
-                    ProjectileLib.FoxSpike1(sProjectile, container)
-                end
+                end)
             end
-            projectile:FindFirstChildWhichIsA("Sound", true):Play()
-
-        end):catch(function() end)
+        end
+        projectile:FindFirstChildWhichIsA("Sound", true):Play()
     end
     ProjectileLib.FoxMove2 = ProjectileLib.FoxMove1
     ProjectileLib.HardmodeWolfMove1 = ProjectileLib.FoxMove1

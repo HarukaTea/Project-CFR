@@ -1,5 +1,6 @@
 --!nocheck
 
+local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local TS = TweenService
@@ -50,27 +51,18 @@ return function (self)
 
 
         Promise.delay(0.9):andThen(function()
-            local sProjectile = projectile.Projectile.Value:Clone() :: Model
-            sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
-
-            sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
-
-            sProjectile.Parent = container
-
-            Maid:AddItem(sProjectile, 10)
-
-            ProjectileLib.SlimeBlast(sProjectile, container)
+            ProjectileLib._spawnProjectile(projectile, container, 10, function(sProjectile: Model)
+                sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
+            end)
 
         end):catch(function() end)
     end
     ProjectileLib.GreenSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.WheatSlimeMove1_1 = ProjectileLib.SlimeMove1_1
-    ProjectileLib.CrimsonSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.IceSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.BlueSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.LapisSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.SandSlimeMove1_1 = ProjectileLib.SlimeMove1_1
-    ProjectileLib.PurpleSlimeMove1_1 = ProjectileLib.SlimeMove1_1
 
 
 
@@ -81,32 +73,23 @@ return function (self)
             Size = "Small"
         }):catch(function() end)
 
+        wait(0.5)
+        if projectile:FindFirstChildWhichIsA("Sound", true) then
+            projectile:FindFirstChildWhichIsA("Sound", true):Play()
+        end
 
-        Promise.delay(0.5):andThen(function()
-            local postR = ClientLib:FindGroundByRay(projectile.PrimaryPart.Position, { projectile })
+        local postR = ClientLib:FindGroundByRay(projectile.PrimaryPart.Position)
 
-            local sProjectile = projectile.Projectile.Value:Clone()
+        ProjectileLib._spawnProjectile(projectile, container, 10, function(sProjectile: Model)
             sProjectile:PivotTo(CFrame.new(postR) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
-            sProjectile:SetAttribute("NoSound", true)
-
-            sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
-
-            sProjectile.Parent = container
-
-            Maid:AddItem(sProjectile, 10)
-
-            ProjectileLib.SlimeBlast(sProjectile, container)
-
-        end):catch(function() end)
+        end)
     end
     ProjectileLib.GreenSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.WheatSlimeMove2_2 = ProjectileLib.SlimeMove2_2
-    ProjectileLib.CrimsonSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.BeeMove3_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.BlueSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.LapisSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.SandSlimeMove2_2 = ProjectileLib.SlimeMove2_2
-    ProjectileLib.PurpleSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.IceSlimeMove2_2 = ProjectileLib.SlimeMove2_2
 
 
@@ -114,21 +97,51 @@ return function (self)
     ProjectileLib.CrimsonSlimeMove4 = function(projectile: Model, container: Folder)
         ProjectileLib.SlimeMove1_1(projectile, container)
 
-        Promise.delay(0.9):andThen(function()
-            local sProjectile = projectile.Projectile2.Value:Clone() :: Model
+        wait(0.9)
+        local sProjectile = projectile.Projectile2.Value:Clone() :: Model
 
-            sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
-            sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
+        sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
+        sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
 
-            sProjectile.Parent = container
+        projectile.Owner:Clone().Parent = sProjectile
+        sProjectile.Parent = container
 
-            Maid:AddItem(sProjectile, 10)
+        Maid:AddItem(sProjectile, 10)
 
-            ProjectileLib.CrimsonSlimeBomb(sProjectile, container)
-
-        end):catch(function() end)
+        ProjectileLib.CrimsonSlimeBomb(sProjectile, container)
     end
     ProjectileLib.PurpleSlimeMove4 = ProjectileLib.CrimsonSlimeMove4
+    ProjectileLib.EvolvedGreenSlimeMove4 = ProjectileLib.CrimsonSlimeMove4
+    ProjectileLib.KingSlimeMove4 = ProjectileLib.CrimsonSlimeMove4
+
+
+
+    ProjectileLib.PurpleSlimeMove3 = function(projectile: Model, container: Folder)
+        Promise.try(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
+            ShouldDetail = true,
+            Size = "Big"
+        }):catch(function() end)
+
+        wait(0.5)
+        for i = 1, 2 do
+            for _, part: BasePart in projectile:GetDescendants() do
+                if part.Name == "Position"..i then
+                    local pos = ClientLib:FindGroundByRay(part.Position)
+
+                    ProjectileLib._spawnProjectile(projectile, container, 10, function(sProjectile: Model)
+                        sProjectile:PivotTo(CFrame.new(pos, pos + part.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
+                    end)
+                end
+            end
+            wait(0.1)
+        end
+    end
+    ProjectileLib.IceSlimeMove3 = ProjectileLib.PurpleSlimeMove3
+    ProjectileLib.WheatSlimeMove3 = ProjectileLib.PurpleSlimeMove3
+    ProjectileLib.LapisSlimeMove3 = ProjectileLib.PurpleSlimeMove3
+    ProjectileLib.EvolvedGreenSlimeMove3 = ProjectileLib.PurpleSlimeMove3
+    ProjectileLib.KingSlimeMove3 = ProjectileLib.PurpleSlimeMove3
+    ProjectileLib.CrimsonSlimeMove3 = ProjectileLib.PurpleSlimeMove3
 
 
 
@@ -144,6 +157,42 @@ return function (self)
     end
 
 
+    ProjectileLib.PurpleSlimeMove5 = function(projectile: Model, container: Folder)
+        for i = 1, 10 do
+            for _, part: BasePart in projectile:GetDescendants() do
+                if part.Name == "Position"..i then
+                    Promise.try(ProjectileLib._rotateAttentionPoint, part, container, {
+                        ShouldDetail = true,
+                        Size = "Small"
+                    }):catch(function() end)
+                end
+            end
+            wait(0.1)
+        end
+
+        wait(0.5)
+        for i = 1, 10 do
+            for _, part: BasePart in projectile:GetDescendants() do
+                if part.Name == "Position"..i then
+                    local pos = ClientLib:FindGroundByRay(part.Position)
+
+                    ProjectileLib._spawnProjectile(projectile, container, 10, function(sProjectile: Model)
+                        sProjectile:PivotTo(CFrame.new(pos, pos + part.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
+                    end)
+                end
+            end
+            wait(0.1)
+        end
+    end
+    ProjectileLib.PurpleSlimeMove6 = ProjectileLib.PurpleSlimeMove5
+    ProjectileLib.EvolvedGreenSlimeMove5 = ProjectileLib.PurpleSlimeMove5
+    ProjectileLib.KingSlimeMove5 = ProjectileLib.PurpleSlimeMove5
+    ProjectileLib.CrimsonSlimeMove5 = ProjectileLib.PurpleSlimeMove5
+    ProjectileLib.EvolvedGreenSlimeMove6 = ProjectileLib.PurpleSlimeMove5
+    ProjectileLib.KingSlimeMove6 = ProjectileLib.PurpleSlimeMove5
+    ProjectileLib.CrimsonSlimeMove6 = ProjectileLib.PurpleSlimeMove5
+
+
 
     ProjectileLib.SlimeBlast = function(projectile: Model, container: Folder)
         projectile:AddTag("DMGEntity")
@@ -153,9 +202,6 @@ return function (self)
             noSound = true
         end
         if not noSound then projectile:FindFirstChildWhichIsA("Sound", true):Play() end
-
-        projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 0.7, 0))
-
 
         Promise.delay(8):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 
@@ -213,34 +259,58 @@ return function (self)
     ProjectileLib.SandSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.PurpleSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.IceSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.EvolvedGreenSlimeBlast = ProjectileLib.SlimeBlast
+    ProjectileLib.KingSlimeBlast = ProjectileLib.SlimeBlast
 
 
 
     ProjectileLib.CrimsonSlimeBomb = function(projectile: Model, container: Folder)
+        Debris:AddItem(projectile, 5)
+
         Promise.delay(1):andThen(function()
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
 
             projectile.Bomb1.Transparency = 0
             projectile.Bomb2.Transparency = 0
+            projectile.Bomb1.CanTouch = true
+            projectile.Bomb2.CanTouch = true
 
-            Maid:AddItem(projectile.Blob, 0)
-            Maid:AddItem(projectile.Core, 0)
-            Maid:AddItem(projectile.Bomb1, 0.3)
-            Maid:AddItem(projectile.Bomb2, 0.3)
+            projectile.Blob:Destroy()
+            projectile.Core:Destroy()
+
+            Maid:AddItem(projectile.Bomb1, 0.8)
+            Maid:AddItem(projectile.Bomb2, 0.8)
 
             projectile:AddTag("DMGEntity")
             projectile:AddTag("PierceEntity")
 
             HarukaLib:CreateTween(projectile.Bomb1, AssetBook.TweenInfos.half, {
-                Size = projectile.Bomb1.Size + Vector3.one * 10,
+                Size = projectile.Bomb1.Size + Vector3.one * 16,
                 Transparency = 1
             }):Play()
             HarukaLib:CreateTween(projectile.Bomb2, AssetBook.TweenInfos.half, {
-                Size = projectile.Bomb2.Size + Vector3.one * 15.99,
+                Size = projectile.Bomb2.Size + Vector3.one * 25,
                 Transparency = 1
             }):Play()
 
         end):catch(function() end)
     end
     ProjectileLib.PurpleSlimeBomb = ProjectileLib.CrimsonSlimeBomb
+    ProjectileLib.EvolvedGreenSlimeBomb = ProjectileLib.CrimsonSlimeBomb
+    ProjectileLib.KingSlimeBomb = ProjectileLib.CrimsonSlimeBomb
+
+
+    ProjectileLib.PurpleSlimeSpike = function(projectile: Model, container: Folder)
+        projectile:AddTag("DMGEntity")
+        projectile.Spike:AddTag("DMGEntity")
+        projectile.Spike:AddTag("PierceEntity")
+
+        HarukaLib:Tween(projectile.Spike, AssetBook.TweenInfos.half, {
+            Pivot = projectile.Spike.PrimaryPart.CFrame * CFrame.new(0, 11, 0)
+        })
+        Promise.delay(5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+    end
+    ProjectileLib.EvolvedGreenSlimeSpike = ProjectileLib.PurpleSlimeSpike
+    ProjectileLib.KingSlimeSpike = ProjectileLib.PurpleSlimeSpike
+    ProjectileLib.CrimsonSlimeSpike = ProjectileLib.PurpleSlimeSpike
 end

@@ -82,7 +82,7 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
         for _, child: BasePart in projectileSupport:GetDescendants() do
             if child.Name ~= "Position"..hasProjectiles then continue end
 
-            local postR = ServerLib:FindGroundByRay(child.Position, { projectileSupport })
+            local postR = ServerLib:FindGroundByRay(child.Position)
 
             HarukaLib:Tween(entity, AssetBook.TweenInfos.twiceHalfOne, {
                 Pivot = CFrame.new(postR) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0)
@@ -121,7 +121,7 @@ SlimeUniversal.SlimeBarrageShot = function(entity: Model, target: Model)
 end
 
 
-SlimeUniversal.SlimeBarrage = function(entity: Model)
+SlimeUniversal.SlimeSpin = function(entity: Model)
     wait(0.35)
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
@@ -130,7 +130,7 @@ SlimeUniversal.SlimeBarrage = function(entity: Model)
     Events.SpawnUniATKs.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         ProjectileUniqueId = HttpService:GenerateGUID(false),
         ProjectileId = "SlimeSpin",
-        ProjectileCF = CFrame.new(Vector3.one * 1599),
+        ProjectileCF = entity.PrimaryPart.CFrame,
         ProjectileOwner = entity
     })
 end
@@ -151,7 +151,7 @@ SlimeUniversal.SlimeBomb = function(entity: Model)
     Events.SpawnUniATKs.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         ProjectileUniqueId = HttpService:GenerateGUID(false),
         ProjectileId = "SlimeSpin",
-        ProjectileCF = CFrame.new(Vector3.one * 1599),
+        ProjectileCF = entity.PrimaryPart.CFrame,
         ProjectileOwner = entity
     })
 
@@ -166,6 +166,82 @@ SlimeUniversal.SlimeBomb = function(entity: Model)
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 end
 
+
+
+SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
+    local projectileUniqueId = HttpService:GenerateGUID(false)
+    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+
+    local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
+
+
+    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        ProjectileUniqueId = projectileUniqueId,
+        ProjectileId = entity.Name.."Move3",
+        ProjectileCF = realProjectilePos,
+        ProjectileOwner = entity
+    })
+
+    UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
+
+
+    local immuneTag = Instance.new("BoolValue")
+    immuneTag.Name = "AttackImmune"
+    immuneTag.Parent = entity
+    Debris:AddItem(immuneTag, 1.5)
+
+
+    Events.ApplyHighlightForEntity.FireList(UniversalEntity:GetTargets(entity), {
+        Entity = entity,
+        Duration = 4
+    })
+
+
+    local diveDown = realProjectilePos * CFrame.new(0, -8, 0)
+
+    wait(0.5)
+    entity.PrimaryPart.Anchored = true
+
+    HarukaLib:Tween(entity, AssetBook.TweenInfos.half, {
+        Pivot = diveDown
+    })
+end
+
+
+
+SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
+    local projectileUniqueId = HttpService:GenerateGUID(false)
+    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+
+    local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
+
+
+    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        ProjectileUniqueId = projectileUniqueId,
+        ProjectileId = entity.Name.."Move3",
+        ProjectileCF = realProjectilePos,
+        ProjectileOwner = entity
+    })
+
+    UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
+
+    local diveDown = realProjectilePos * CFrame.new(0, -8, 0)
+
+    entity.PrimaryPart.Anchored = true
+
+    HarukaLib:Tween(entity, AssetBook.TweenInfos.half, {
+        Pivot = diveDown
+    })
+
+    local diveUp = realProjectilePos * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0)
+
+    wait(0.5)
+    entity.PrimaryPart.Anchored = false
+
+    HarukaLib:Tween(entity, AssetBook.TweenInfos.half, {
+        Pivot = diveUp
+    })
+end
 
 
 

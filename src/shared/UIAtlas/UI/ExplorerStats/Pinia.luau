@@ -267,7 +267,7 @@ return function (self: table)
 
             local inCDCheck = false
             for _, cdSymbol: BoolValue in CollectionService:GetTagged("ItemCDSymbol") do
-                if cdSymbol.Name == plr.Name and cdSymbol:GetAttribute("ItemId") == itemInfo.ItemId then
+                if cdSymbol.Name == plr.UserId and cdSymbol:GetAttribute("ItemId") == itemInfo.ItemId then
                     inCDCheck = true
                     break
                 end
@@ -356,9 +356,9 @@ return function (self: table)
         local linearVelo = Instance.new("LinearVelocity")
         linearVelo.Name = "Dash"
         linearVelo.Attachment0 = self.char.PrimaryPart.AlignMoverAttachment
-        linearVelo.RelativeTo = Enum.ActuatorRelativeTo.Attachment0
+        linearVelo.RelativeTo = Enum.ActuatorRelativeTo.World
         linearVelo.MaxForce = 1500 * self.char.PrimaryPart.AssemblyMass
-        linearVelo.VectorVelocity = Vector3.new(0, 0, -100)
+        linearVelo.VectorVelocity = self.char.Humanoid.MoveDirection * 100
         linearVelo.Parent = self.char.PrimaryPart
         Debris:AddItem(linearVelo, 0.2)
 

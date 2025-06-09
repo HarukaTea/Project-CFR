@@ -478,7 +478,7 @@ end
 
 function PlayerLib:_RemoveChestAcquire()
     for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
-        chest:SetAttribute(self.Player.Name, nil)
+        chest:SetAttribute("Receiver_"..self.Player.Name, nil)
     end
 end
 

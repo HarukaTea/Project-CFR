@@ -3,11 +3,11 @@ local LOG_E = 2.71828
 
 local formulas = {
     ENEMY_MAX_LEVEL = 950,
-    PLAYER_MAX_LEVEL = 180,
+    PLAYER_MAX_LEVEL = 185,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_MAX_DEX_POINTS = 50,
 
-    EXPEvent = 1,
+    EXPEvent = 3,
 
 
     PlayerLevelCurveCal = function(props: {

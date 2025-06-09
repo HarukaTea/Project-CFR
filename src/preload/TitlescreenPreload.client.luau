@@ -125,12 +125,19 @@ do
         end
     })
 
+    if not workspace:GetAttribute("NoRequiresTitlescreen") then
+        repeat wait() until RepS:WaitForChild("Packages", 999)
+        repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
 
-    repeat wait() until RepS:WaitForChild("Packages", 999)
-    repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
+        wait(1)
+        RepS.Packages.Titlescreen.Parent = workspace.MapComponents
+    else
+        local folder = Instance.new("Folder")
+        folder.Name = "Titlescreen"
+        folder.Parent = workspace.MapComponents
+    end
 
-    wait(1)
-    RepS.Packages.Titlescreen.Parent = workspace.MapComponents
+
 
     task.delay(8, function()
         if isAlreadyLoaded then return end
@@ -277,7 +284,7 @@ do
 
         Lighting:SetAttribute("RainLevel", 0)
 
-        if workspace.Terrain:FindFirstChildOfClass("Clouds") then
+        if workspace.Terrain:FindFirstChild("Clouds") then
             workspace.Terrain.Clouds.Color = Color3.fromRGB(255, 255, 255)
         end
         if Lighting:FindFirstChild("TitlescreenAtmosphere") then

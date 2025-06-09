@@ -14,6 +14,8 @@ local ComplexVFXLib = {}
 ComplexVFXLib.Healing = function(part: BasePart)
     local adornee = part.Parent :: Model
 
+    if not adornee:IsA("Model") then return end
+
     local conn; conn = RunService.RenderStepped:Connect(function()
         if not ClientLib:IsModelValid(adornee) then conn:Disconnect() return end
 

@@ -26,16 +26,9 @@ return function (self)
 
 
         Promise.delay(0.5):andThen(function()
-            local sProjectile = projectile.Projectile.Value:Clone() :: Model
-            sProjectile:PivotTo(projectile.PrimaryPart.CFrame)
-
-            sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
-
-            sProjectile.Parent = container
-
-            Maid:AddItem(sProjectile, 6)
-
-            ProjectileLib.BeeSpike1(sProjectile, container)
+            ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
+                sProjectile:PivotTo(projectile.PrimaryPart.CFrame)
+            end)
 
         end):catch(function() end)
     end
@@ -50,20 +43,10 @@ return function (self)
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
         end
 
-        Bindables.ClientTween:Fire({
-            Objs = { projectile },
-            Goal = { Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, 11, 0) },
-            TweenInfo = "half",
-            UseHarukaTween = true
+        HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, {
+            Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, 11, 0)
         })
 
-        Promise.delay(5):andThen(function()
-            Bindables.ClientTween:Fire({
-                Objs = { projectile },
-                Goal = { Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, -11, 0) },
-                TweenInfo = "one",
-                UseHarukaTween = true
-            })
-        end):catch(function() end)
+        Promise.delay(5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
     end
 end

@@ -152,9 +152,6 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
             if not HarukaLib:IsBasePartType(part) then continue end
             if part == r6Char.PrimaryPart then continue end
 
-            part.CanCollide = false
-            part.CanTouch = false
-            part.CanQuery = false
             part.EnableFluidForces = false
             part.Material = Enum.Material.SmoothPlastic
         end
@@ -219,12 +216,12 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
                 Events.CreateNotify.Fire(plr, "[Error] Invalid Chest")
                 return
             end
-            if chest:GetAttribute(plr.Name) then
+            if chest:GetAttribute("Receiver_"..plr.Name) then
                 Events.CreateNotify.Fire(plr, "You have already opened this treasure chest!")
                 return
             end
 
-            chest:SetAttribute(plr.Name, true)
+            chest:SetAttribute("Receiver_"..plr.Name, true)
 
             Events.OpenChestClientTween.Fire(plr, {
                 Chest = chest
@@ -339,6 +336,9 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
         local symbol = projectileList[projectileUniqueId]
         local projectileDMG = symbol:GetAttribute("Damage") :: number
 
+        local owner = symbol.Owner.Value :: Model
+        if not ServerLib:IsCharValid(owner) then return end
+
 
         Promise.new(function(resolve)
             local result, _, _ = HarukaLib:RollLoot({
@@ -387,6 +387,11 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
                 end
             end
         else
+            if data.IsPierce then
+                ServerLib:ShowText(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
+            end
+
+
             char.Humanoid:TakeDamage(projectileDMG)
 
             Events.PlayGotHitScreenFX.Fire(plr)
@@ -554,7 +559,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
 
         local inCDCheck = false
         for _, cdSymbol: BoolValue in CollectionService:GetTagged("ItemCDSymbol") do
-            if cdSymbol.Name == plr.Name and cdSymbol:GetAttribute("ItemId") == itemInfo.ItemId then
+            if cdSymbol.Name == plr.UserId and cdSymbol:GetAttribute("ItemId") == itemInfo.ItemId then
                 inCDCheck = true
                 break
             end
@@ -642,7 +647,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
 
         local itemCDSymbol = Instance.new("BoolValue")
         itemCDSymbol.Value = true
-        itemCDSymbol.Name = plr.Name
+        itemCDSymbol.Name = plr.UserId
         itemCDSymbol:SetAttribute("ItemId", itemInfo.ItemId)
         itemCDSymbol:AddTag("ItemCDSymbol")
         itemCDSymbol.Parent = ServerStorage.ItemCDSymbolContainer
