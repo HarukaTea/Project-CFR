@@ -215,7 +215,7 @@ return function(plr: Player)
 
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, { "Backpack", "Character", "Guild", "PerkTree", "Settings" }, function(_, scope: Fusion.Scope, index: number, slot: string)
+                        Fusion.ForPairs(scope, { "Backpack", "Character", "Guild", "Settings" }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,
                                 Index = index

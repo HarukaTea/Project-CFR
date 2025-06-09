@@ -131,6 +131,11 @@ end
 
 
 function ServerWorldLib:_DoMapOptimization()
+    for _, pathLink: PackageLink in ReplicatedStorage:GetDescendants() do
+        if pathLink:IsA("PackageLink") then
+            pathLink:Destroy()
+        end
+    end
     for _, part: BasePart in workspace:GetDescendants() do
         if HarukaLib:IsBasePartType(part) then
             if part:HasTag("ZoneEntity") then continue end
@@ -139,6 +144,35 @@ function ServerWorldLib:_DoMapOptimization()
             part.CanTouch = false
             part.Massless = true
             part.Locked = true
+        end
+    end
+
+
+    local function _optimize(container: Instance)
+        for _, part: BasePart in container:GetDescendants() do
+            if HarukaLib:IsBasePartType(part) then
+                part.EnableFluidForces = false
+            end
+        end
+        for _, part: Model in container:GetDescendants() do
+            if part:IsA("Model") then
+                if #part:GetChildren() <= 0 then
+                    part:Destroy()
+                end
+            end
+        end
+    end
+    _optimize(workspace)
+    _optimize(ReplicatedStorage)
+
+    if workspace.MapComponents:FindFirstChild("Titlescreen") then
+        for _, part: BasePart in workspace.MapComponents.Titlescreen:GetDescendants() do
+            if HarukaLib:IsBasePartType(part) then
+                part.CanTouch = false
+                part.CanQuery = false
+                part.CastShadow = false
+                part.CollisionGroup = "NoCollision"
+            end
         end
     end
 end
@@ -161,21 +195,6 @@ function ServerWorldLib:_DoPlayerBorderInit()
     end
     for _, border: Model in CollectionService:GetTagged("EncounterBorder") do
         _updateBorder(border)
-    end
-end
-
-
-function ServerWorldLib:_DoMobAttacksInit()
-    for _, mobAttack: Model in ReplicatedStorage.Packages.EnemyAttacks:GetDescendants() do
-        if mobAttack:IsA("Model") then
-            for _, child: Instance in mobAttack:GetDescendants() do
-                if HarukaLib:IsBasePartType(child) then
-                    child.CanCollide = false
-                    child.CanQuery = false
-                    child.CanTouch = true
-                end
-            end
-        end
     end
 end
 

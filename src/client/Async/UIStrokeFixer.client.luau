@@ -38,35 +38,6 @@ local function _getInstancePosition(instance: Instance): Vector3
 
 	return Vector3.zero
 end
-
---// Private functions
-
-local function _strokeAdded(added: Instance)
-	if added:IsA("UIStroke") and not added:GetAttribute("AlreadyTransformed") and not added:GetAttribute("IgnoreDPI") then
-		if added:FindFirstAncestorOfClass("BillboardGui") then
-			billboardUIStrokes[added] = {
-				Thickness = added.Thickness,
-				UIScale = added:FindFirstAncestorOfClass("UIScale")
-			}
-		else
-			normalUIStrokes[added] = {
-				Thickness = added.Thickness,
-				UIScale = added:FindFirstAncestorOfClass("UIScale")
-			}
-		end
-
-		added:SetAttribute("AlreadyTransformed", true)
-	end
-end
-
---// Init
-
-for _, child: Instance in plrGui:GetDescendants() do
-	_strokeAdded(child)
-end
-plrGui.DescendantAdded:Connect(_strokeAdded)
-
-
 local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal", info: {
 	Thickness: number,
 	UIScale: UIScale?
@@ -109,6 +80,33 @@ local function _updateSize()
 		end
 	end
 end
-while task.wait(0.15) do
-	_updateSize()
+local function _strokeAdded(added: Instance)
+	if added:IsA("UIStroke") and not added:GetAttribute("AlreadyTransformed") and not added:GetAttribute("IgnoreDPI") then
+		if added:FindFirstAncestorOfClass("BillboardGui") then
+			billboardUIStrokes[added] = {
+				Thickness = added.Thickness,
+				UIScale = added:FindFirstAncestorOfClass("UIScale")
+			}
+
+			_updateStroke(added, "Billboard", billboardUIStrokes[added])
+		else
+			normalUIStrokes[added] = {
+				Thickness = added.Thickness,
+				UIScale = added:FindFirstAncestorOfClass("UIScale")
+			}
+
+			_updateStroke(added, "Normal", normalUIStrokes[added])
+		end
+
+		added:SetAttribute("AlreadyTransformed", true)
+	end
 end
+
+
+--// Init
+
+for _, child: Instance in plrGui:GetDescendants() do
+	_strokeAdded(child)
+end
+plrGui.DescendantAdded:Connect(_strokeAdded)
+workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(_updateSize)

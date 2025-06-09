@@ -128,12 +128,14 @@ return function (self: table)
 		SoundService.SFXs.ChatNext:Play()
 
 		thatPrompt.Enabled = false
-		wait(0.5)
 		if thatPrompt.Name == "Chest" then
+			wait(1.5)
 			local chest = thatPrompt:FindFirstAncestorOfClass("Model")
 			if not chest then return end
 
 			if chest:GetAttribute(self.plr.Name) then return end
+		else
+			wait(0.5)
 		end
 		thatPrompt.Enabled = true
 	end))

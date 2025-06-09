@@ -977,7 +977,8 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
         ["Attr-STRPoints"] = function(point: number)
             if point == nil then return end
 
-            _listenToPerk("STR", point)
+            --// TODO: perks
+            --_listenToPerk("STR", point)
         end
     }))
 end

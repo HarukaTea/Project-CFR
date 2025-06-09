@@ -3,9 +3,11 @@ local LOG_E = 2.71828
 
 local formulas = {
     ENEMY_MAX_LEVEL = 950,
-    PLAYER_MAX_LEVEL = 185,
+    PLAYER_MAX_LEVEL = 180,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_MAX_DEX_POINTS = 50,
+
+    EXPEvent = 1,
 
 
     PlayerLevelCurveCal = function(props: {
@@ -58,7 +60,10 @@ local formulas = {
         Level: number,
         EnvironmentBonus: number?
     })
-        local f = 3.5 * props.Level
+        props.EnvironmentBonus = props.EnvironmentBonus or 1
+        props.EnvironmentBonus = math.min(1.35, props.EnvironmentBonus)
+
+        local f = 3.5 * props.Level * props.EnvironmentBonus
 
         return math.ceil(f)
     end,
@@ -86,7 +91,7 @@ local formulas = {
         ATKType: string
     })
 
-        local baseFactor = 37
+        local baseFactor = 38
         if props.ATKType == "Max" then
             baseFactor = 42
         end
@@ -159,6 +164,10 @@ local formulas = {
     end
 
 }
+
+if formulas.EXPEvent > 1 then
+    print("[Notice] EXP Event Is Enabled")
+end
 
 
 return formulas

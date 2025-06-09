@@ -389,7 +389,7 @@ return function (self: table)
     local keyCodes = {
         B = "Backpack",
         C = "CharSelfView",
-        Z = "PerkTree",
+        --Z = "PerkTree",
         N = "Settings",
         X = "Guild",
         V = "Store"

@@ -1,6 +1,6 @@
 --!nocheck
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
 local RepS = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
@@ -34,7 +34,7 @@ local function adjustRain(rainLevel: number)
 	Particles:SetRainCastParticleRate(rainLevel * 15)
 
     HarukaLib:CreateTween(rainSound, AssetBook.TweenInfos.half, {
-        Volume = math.clamp(rainLevel * 0.25, 0, 1.15)
+        Volume = math.clamp(rainLevel * 0.15, 0, 1)
     }):Play()
 end
 

@@ -29,7 +29,6 @@ local EntityStatLimitTemplate = require(ServerScriptService.HarukaServer.Library
 
 
 local allEntityPool = {}
-local allLocatorPool = {}
 
 local wait = task.wait
 
@@ -60,45 +59,6 @@ local entityContainer = Instance.new("Folder")
 entityContainer.Name = "Entities"
 entityContainer.Parent = workspace
 
-
-for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
-    allLocatorPool[locator.Name] = {
-        Name = locator.Name,
-        Location = locator.Position,
-        Level = locator:GetAttribute("Level")
-    }
-end
---// sometimes mobs wont respawn due to signal traffic
-Promise.try(function()
-    while wait(30) do
-        local notPassed = {}
-
-        for name: string, info: table in allLocatorPool do
-            if not workspace.Enemies:FindFirstChild(name, true) then
-                notPassed[name] = info
-            end
-        end
-        if HarukaLib.TableUtils().IsEmpty(notPassed) then continue end
-
-
-        Promise.delay(15):andThen(function()
-            for _, info: table in notPassed do
-                if not workspace.Enemies:FindFirstChild(info.Name, true) then
-                    local locator = HarukaLib:CreateMockPart()
-                    locator.Name = info.Name
-
-                    locator.Size = Vector3.new(5, 2, 5)
-                    locator.CFrame = CFrame.new(info.Location)
-
-                    locator:AddTag("EnemyLocatorEntity")
-                    locator:SetAttribute("Level", info.Level)
-
-                    locator.Parent = workspace.Enemies
-                end
-            end
-        end)
-    end
-end)
 
 
 --// Init once
@@ -161,13 +121,6 @@ enemyDiedSignal:Connect(function(info: {
 
         locator.Parent = workspace.Enemies
     end)
-
-
-    local symbol = Instance.new("BoolValue")
-    symbol.Name = info.Name
-    symbol.Value = true
-    symbol.Parent = workspace.Enemies
-    Debris:AddItem(symbol, 13)
 
 
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
@@ -476,6 +429,10 @@ function EntityLib:_ListenStatsTracker()
     local tier = self.Locator:GetAttribute("Tier") or entityInfo.Tier
     entity:SetAttribute("Tier", tier)
 
+    if entityInfo.IsBoss then
+        entity:AddTag("BossEnemyEntity")
+    end
+
 
     local function _updateHealth()
         local healthBuff = entity:GetAttribute("MaxHealthEx") :: number
@@ -607,15 +564,9 @@ function EntityLib:_RoamTask()
             DangerZone = math.huge
         }
 
-
-        local canJump = false
-        if entity.Humanoid.JumpPower <= 0 then
-            canJump = false
-        end
-
         path = HarukaPathCreator.new(entity, {
             Costs = costs,
-            AgentCanJump = canJump,
+            AgentCanJump = false,
             AgentCanClimb = false,
             PathSettings = {
                 SupportPartialPath = true
@@ -623,7 +574,7 @@ function EntityLib:_RoamTask()
         })
         pathForDetecting = HarukaPathCreator.new(entity, {
             Costs = costs,
-            AgentCanJump = canJump,
+            AgentCanJump = false,
             AgentCanClimb = false,
             PathSettings = {
                 SupportPartialPath = false
@@ -644,7 +595,7 @@ function EntityLib:_RoamTask()
             path:Destroy()
         end)
         self.RoamAdd(function()
-            path:Stop()
+            pathForDetecting:Stop()
             pathForDetecting:Destroy()
         end)
     end
@@ -657,7 +608,9 @@ function EntityLib:_RoamTask()
 
         local AREA_MAG = 15.99
 
-        while wait(1.5 + math.random(10) / 10) do
+        local waitTime = 1.5 + Random.new():NextNumber() * Random.new():NextInteger(1, 2)
+
+        while wait(waitTime) do
             if not ServerLib:IsCharValid(entity) then break end
             if entity:GetAttribute("IsInCombat") then break end
 
@@ -708,7 +661,7 @@ function EntityLib:_RoamTask()
             Promise.new(function(resolve)
                 local curPos = entity.PrimaryPart.Position :: Vector3
 
-                local nearestChars = _getCharsByRadius(curPos, 60)
+                local nearestChars = _getCharsByRadius(curPos, 88)
                 local nearestChar = nil
                 local nearestDist = 999
 
@@ -721,7 +674,7 @@ function EntityLib:_RoamTask()
 
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
-                    if mag > 0 and mag < nearestDist then
+                    if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
                         if pathForDetecting:IsPathValid(char.PrimaryPart.Position) then
                             nearestDist = mag
                             nearestChar = char
@@ -731,7 +684,7 @@ function EntityLib:_RoamTask()
 
                 if nearestChar and ServerLib:IsCharValid(nearestChar) then
                     local targetPos = nearestChar.PrimaryPart.Position :: Vector3
-                    if (targetPos - locator.CFrame.Position).Magnitude > 70 then
+                    if (targetPos - locator.CFrame.Position).Magnitude > 95 then
                         path:Run(locator.CFrame.Position)
                         resolve()
                         return
@@ -746,10 +699,12 @@ function EntityLib:_RoamTask()
                         ServerLib:PlayWorldSound(SoundService.SFXs.Found, curPos)
                     end
                     self.NearestChar = nearestChar
+                    entity:SetAttribute("NearestChar", nearestChar.Name)
 
                     path:Run(targetPos)
                 else
                     self.NearestChar = nil
+                    entity:SetAttribute("NearestChar", nil)
                 end
 
                 resolve()
@@ -788,7 +743,7 @@ function EntityLib:_EnterCombat(target: Model)
     if not combatLocation then
         hasPosVal = false
 
-        combatLocation = CFrame.new(ServerLib:FindGroundByRayForOrb(target.PrimaryPart.Position))
+        combatLocation = CFrame.new(ServerLib:FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
         target:SetAttribute("CombatLocation_Encounter", combatLocation)
 
         self.CombatTriggerer = target.Name

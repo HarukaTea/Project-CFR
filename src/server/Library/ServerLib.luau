@@ -32,6 +32,24 @@ ServerLib.FindGroundByRayForOrb = function(_, givenPos: Vector3)
 	return ClientLib:FindGroundByRayForOrb(givenPos)
 end
 
+
+function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
+	local rParams = RaycastParams.new()
+	rParams.RespectCanCollide = false
+	rParams.IgnoreWater = true
+	rParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+	rParams.FilterType = Enum.RaycastFilterType.Include
+
+
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 15, -Vector3.yAxis * (159 + 15), rParams)
+
+	rParams = nil --// I assume it needs to be destroyed
+	if rayResult then return rayResult.Position end
+
+	return givenPos
+end
+
+
 ServerLib.IsModelValid = function(_, model: Model)
 	return ClientLib:IsModelValid(model)
 end
@@ -86,7 +104,7 @@ end
 
 function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
-	local MAGNITUDE = 33
+	local MAGNITUDE = 28
 
 	local random = Random.new()
 
@@ -107,7 +125,7 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 		resolve(pos)
 
 	end):andThen(function(pos: Vector3)
-		orbLocation = CFrame.new(pos) * CFrame.new(0, 11.15, 1.5)
+		orbLocation = CFrame.new(pos) * CFrame.new(0, 11.15, 0)
 
 	end):catch(function(err)
 		warn(tostring(err))
@@ -282,6 +300,12 @@ end
 
 
 function ServerLib:GiveEXPRewards(plr: Player, exp: number)
+	exp = exp or 0
+	if exp <= 0 then return end
+
+
+	exp *= FormulaBook.EXPEvent
+
 	Promise.delay(1.5):andThen(function()
 		HarukaLib:AddAttr(plr, "EXP", exp)
 

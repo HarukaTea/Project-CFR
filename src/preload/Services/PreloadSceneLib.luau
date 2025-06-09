@@ -71,28 +71,25 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
         local maxXRotation, maxYRotation = 5, 5
         local rad, clock, noise, random = math.rad, os.clock, math.noise, math.random
         local xSeed, ySeed, zSeed = random(10 ^ 3, 10 ^ 4), random(10 ^ 3, 10 ^ 4), random(10 ^ 3, 10 ^ 4)
-        local roughness = 1
+
+        camera.CameraType = Enum.CameraType.Scriptable
+        camera.CameraSubject = locator
 
         local mouse = Players.LocalPlayer:GetMouse()
         Add(mouse.Move:Connect(function()
             XFloat = -0.5 + mouse.X / camera.ViewportSize.X
             YFloat = -0.5 + mouse.Y / camera.ViewportSize.Y
         end))
-
-
         Add(RunService.RenderStepped:Connect(function()
-            local x = noise(xSeed, clock() % 1000 * 0.5) * roughness
-            local y = noise(ySeed, clock() % 1000 * 0.5) * roughness
-            local z = noise(zSeed, clock() % 1000 * 0.5) * roughness
+            local x = noise(xSeed, clock() % 1000 * 0.5)
+            local y = noise(ySeed, clock() % 1000 * 0.5)
+            local z = noise(zSeed, clock() % 1000 * 0.5)
 
             local dynamicMouseCF = CFrame.fromOrientation(
-                math.rad(maxYRotation * -YFloat)
-                ,math.rad(maxXRotation * -XFloat)
+                rad(maxYRotation * -YFloat)
+                ,rad(maxXRotation * -XFloat)
                 ,0
             )
-
-            camera.CameraType = Enum.CameraType.Scriptable
-            camera.CameraSubject = locator
             camera.CFrame = locator.CFrame * dynamicMouseCF.Rotation * CFrame.Angles(rad(x),rad(y),rad(z)).Rotation
         end))
     end)

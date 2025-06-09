@@ -86,6 +86,7 @@ Promise.try(function()
     local encounterCD = false
     while wait(0.5) do
         if encounterCD then continue end
+        if char:FindFirstChild("CombatCooldown") then continue end
 
         local nearestEnemy = nil
         local nearestDist = 999
@@ -120,6 +121,37 @@ Promise.try(function()
             Events.RequestToStartCombat.Fire({
                 Entity = nearestEnemy
             })
+        end
+    end
+end)
+Promise.try(function()
+    while wait(1.2) do
+        for _, entity: Model in CollectionService:GetTagged("BossEnemyEntity") do
+            if entity.Parent ~= workspace.Entities then continue end
+            if not entity:IsA("Model") then continue end
+            if not entity:GetAttribute("HarukaUniqueId") then continue end
+            if not allEntityPool[entity:GetAttribute("HarukaUniqueId")] then continue end
+
+            if not entity:GetAttribute("IsReady") then continue end
+            if entity:GetAttribute("IsDead") then continue end
+            if entity:GetAttribute("EnteringCombat") then continue end
+            if entity:GetAttribute("IsInCombat") then continue end
+            if entity:GetAttribute("NoRotate") then continue end
+            if entity:GetAttribute("NearestChar") then continue end
+
+            Promise.try(function()
+                wait(math.random(5) / 10)
+                local rotating = math.random(5, 20)
+                local direction = math.random(-2, 2)
+
+                for _ = 1, rotating do
+                    if not ClientLib:IsModelValid(entity) then break end
+                    if entity:GetAttribute("NearestChar") then break end
+
+                    entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
+                    wait(0.01)
+                end
+            end)
         end
     end
 end)

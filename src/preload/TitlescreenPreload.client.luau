@@ -7,6 +7,7 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local SG = game:GetService("StarterGui")
 local RepS = game:GetService("ReplicatedStorage")
+local SS = game:GetService("ServerStorage")
 
 local plr = Players.LocalPlayer
 
@@ -124,6 +125,13 @@ do
         end
     })
 
+
+    repeat wait() until RepS:WaitForChild("Packages", 999)
+    repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
+
+    wait(1)
+    RepS.Packages.Titlescreen.Parent = workspace.MapComponents
+
     task.delay(8, function()
         if isAlreadyLoaded then return end
 
@@ -215,6 +223,8 @@ do
             SlotId = "Slot1"
         })
     else
+        workspace.Maps.Parent = SS
+
         --// init ambient
         SoundService.Musics.Titlescreen:Play()
 
@@ -254,6 +264,9 @@ do
     repeat wait() until plr.Character:GetAttribute("_CharDataInited")
 
     pcall(function()
+        if SS:FindFirstChild("Maps") then
+            SS.Maps.Parent = workspace
+        end
         Lighting.Ambient = Color3.fromRGB(159, 159, 159)
         Lighting.Brightness = 1.599
         Lighting.ColorShift_Bottom = Color3.fromRGB(220, 255, 255)

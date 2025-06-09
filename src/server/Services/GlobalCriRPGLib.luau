@@ -175,13 +175,14 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
     ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, plr: Player)
         local adornee = prompt.Parent :: BasePart
 
+        if plr == nil then return end
         if not adornee:IsA("BasePart") then
             warn("Invalid adornee for proximity prompt")
             return
         end
 
         local distance = plr:DistanceFromCharacter(adornee.Position)
-        if distance > prompt.MaxActivationDistance + 1.599 or distance < 0 then return end
+        if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
 
 
         if plr:FindFirstChild("PromptTriggerCD") then return end

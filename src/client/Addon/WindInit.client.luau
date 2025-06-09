@@ -1,6 +1,6 @@
 --!nocheck
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
 
 local CollectionService = game:GetService("CollectionService")
@@ -28,11 +28,9 @@ do
     WindShake:SetDefaultSettings({
         WindSpeed = 15.99,
         WindDirection = WIND_VECTOR,
-        WindPower = 1.599
+        WindPower = 1
     })
-    WindShake:Init({
-        MatchWorkspaceWind = true
-    })
+    WindShake:Init()
 
 
     local function _updateTree(child: Model)

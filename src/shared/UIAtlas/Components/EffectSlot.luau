@@ -63,7 +63,7 @@ return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
                     local power = effect:GetAttribute("Power") :: number?
 
                     if power ~= 0 then
-                        return `{power}x`
+                        return `{power + 1}x`
                     end
                     if ex then
                         if ex <= 0 then

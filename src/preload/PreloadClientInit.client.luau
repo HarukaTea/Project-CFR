@@ -1,7 +1,7 @@
 
 local CollectionService = game:GetService("CollectionService")
 
-repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 repeat task.wait() until workspace:FindFirstChild("Maps", 999)
 
 local wait = task.wait
