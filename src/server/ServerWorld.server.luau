@@ -46,7 +46,7 @@ do
     require(SSS.HarukaServer.Services.GlobalCriRPGLib):Init()
     require(SSS.HarukaServer.Services.GlobalQuestFuncLib):Init()
     require(RepS.HarukaShared.Shared.Maid):Init()
-    require(SSS.HarukaServer.Shared.ProfileService)
+    require(SSS.HarukaServer.Shared.ProfileStore)
 end
 
 

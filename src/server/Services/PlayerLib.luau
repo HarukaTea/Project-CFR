@@ -2,7 +2,6 @@ local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
@@ -15,7 +14,7 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local ProfileService = require(ServerScriptService.HarukaServer.Shared.ProfileService)
+local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
@@ -29,7 +28,7 @@ local EXTRA_TEMPLATE = require(ServerScriptService.HarukaServer.Library.PlayerEx
 local PlayerLimitsTemplate = require(ServerScriptService.HarukaServer.Library.PlayerLimitsTemplate)
 
 
-local profileStoreMain = ProfileService.GetProfileStore(
+local profileStoreMain = ProfileStore.New(
     require(ServerScriptService.DS_VERSION),
     PlayerTemplate
 )
@@ -313,23 +312,27 @@ function PlayerLib:Init()
 
     --// Load in datastore
     Promise.new(function(resolve, reject)
-		local profile = profileStoreMain:LoadProfileAsync("Player_"..plr.UserId)
+		local profile = profileStoreMain:StartSessionAsync("Player_"..plr.UserId, {
+            Cancel = function()
+                return plr.Parent ~= Players
+            end
+        })
 
         if not profile then reject("Profile is nil") return end
 
         profile:Reconcile()
 		profile:AddUserId(plr.UserId)
 
-		profile:ListenToRelease(function()
-			plr:Kick("Data was loaded on another roblox server, please try again later?")
+		profile.OnSessionEnd:Connect(function()
+			plr:Kick("Profile session end, Data was loaded on another roblox server, please try again later?")
 		end)
 
         self.Add(function()
-            profile:Release()
+            profile:EndSession()
         end)
 
-		if not plr:IsDescendantOf(Players) then
-			profile:Release()
+		if plr.Parent ~= Players then
+			profile:EndSession()
 			return
 		end
 

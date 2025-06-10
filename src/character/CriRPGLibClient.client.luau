@@ -669,6 +669,31 @@ function CriRPGLib:_ListenCombatStateTreesTracker()
 end
 
 
+function CriRPGLib:_ListenSpellExtraJumpOnlyTracker()
+    Add(Events.Spell_ExtraJumpSupport.On(function()
+        SoundService.SFXs.EXP:Play()
+
+        local vel = char.PrimaryPart.AssemblyLinearVelocity
+        vel = vel.Y
+        if vel > 0 then
+            vel = 0
+        end
+
+        vel = math.abs(vel)
+        char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+
+
+        local linearVelocity = Instance.new("LinearVelocity")
+        linearVelocity.Name = "ExtraUpBV"
+        linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+        linearVelocity.ForceLimitsEnabled = false
+        linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 80 + Vector3.yAxis * math.abs(vel)
+        linearVelocity.Parent = char.PrimaryPart
+        Debris:AddItem(linearVelocity, 0.05)
+    end))
+end
+
+
 CriRPGLib:Init()
 
 

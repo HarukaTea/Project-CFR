@@ -429,7 +429,10 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
     if not ServerLib:IsCharValid(targeting) then return end
 
     if targeting:FindFirstChild("AttackImmune") then
-        dmgProps.DMG = 0
+        dmgProps.DMG /= 2
+        dmgProps.DMG = math.ceil(dmgProps.DMG)
+
+        ServerLib:ShowText(targeting, "ATTACK IMMUNE!", Color3.fromHex('#ffffff'))
     end
 
     targeting.Humanoid:TakeDamage(dmgProps.DMG)

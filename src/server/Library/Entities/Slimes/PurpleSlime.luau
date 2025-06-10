@@ -100,33 +100,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
-    local function _slimeMassivePurge(target: Model)
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            Entity = entity,
-            AnimId = "SlimeSpin"
-        })
-        Events.SpawnUniATKs.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            ProjectileUniqueId = HttpService:GenerateGUID(false),
-            ProjectileId = "SlimeSpin",
-            ProjectileCF = entity.PrimaryPart.CFrame,
-            ProjectileOwner = entity
-        })
 
-        local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position)
-
-        projectilePos = CFrame.new(projectilePos) * CFrame.Angles(0, math.rad(math.random(360)), 0)
-
-
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-            ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = entity.Name.."Move6",
-            ProjectileCF = projectilePos,
-            ProjectileOwner = entity
-        })
-
-        UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
-    end
 
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
@@ -161,14 +135,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
             _slimeBomb()
             wait(0.3)
-        end
-    end)
-    table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
-        if comboR == 2 and math.random(1, 2) == 2 then
-            if not _checkIsTargetOrEntityValid(target) then return end
-
-            _slimeMassivePurge(target)
-            wait(1)
         end
     end)
 
