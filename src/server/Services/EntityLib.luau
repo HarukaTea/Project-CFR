@@ -239,11 +239,13 @@ function EntityLib:Init()
 end
 
 
-function EntityLib:Destroy(noRespawn: boolean?)
+function EntityLib:Destroy()
     if self.Destroyed then return end
 
     self.Destroyed = true
     allEntityPool[self.UniqueId] = nil
+
+    local noRespawn = false
 
     if self.Locator then
         if self.Locator:GetAttribute("NoRespawn") then
@@ -653,7 +655,7 @@ function EntityLib:_RoamTask()
             Promise.new(function(resolve)
                 local curPos = entity.PrimaryPart.Position :: Vector3
 
-                local nearestChars = _getCharsByRadius(curPos, 88)
+                local nearestChars = _getCharsByRadius(curPos, 70)
                 local nearestChar = nil
                 local nearestDist = 999
 
@@ -676,7 +678,7 @@ function EntityLib:_RoamTask()
 
                 if nearestChar and ServerLib:IsCharValid(nearestChar) then
                     local targetPos = nearestChar.PrimaryPart.Position :: Vector3
-                    if (targetPos - locator.CFrame.Position).Magnitude > 95 then
+                    if (targetPos - locator.CFrame.Position).Magnitude > 80 then
                         path:Run(locator.CFrame.Position)
                         resolve()
                         return
@@ -738,10 +740,10 @@ function EntityLib:_EnterCombat(target: Model)
         combatLocation = CFrame.new(ServerLib:FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
         target:SetAttribute("CombatLocation_Encounter", combatLocation)
 
-        self.CombatTriggerer = target.Name
+        self.CombatTriggererUniqueId = target:GetAttribute("HarukaUniqueId")
     end
 
-    self.CombatStarter = target.Name
+    self.CombatStarterUniqueId = target:GetAttribute("HarukaUniqueId")
 
     entity:SetAttribute("CombatLocation", combatLocation)
 
@@ -801,10 +803,10 @@ function EntityLib:_EnterCombat(target: Model)
             for _, thatEntityObj in allEntityPool do --- force late enemies to wait
                 if thatEntityObj.UniqueId == self.UniqueId then continue end
                 if not thatEntityObj.IsInCombat then continue end
-                if not thatEntityObj.CombatTriggerer then continue end
+                if not thatEntityObj.CombatTriggererUniqueId then continue end
                 if thatEntityObj.IsDead then continue end
 
-                if thatEntityObj.CombatTriggerer == target.Name then
+                if thatEntityObj.CombatTriggererUniqueId == target:GetAttribute("HarukaUniqueId") then
                     repeat wait() until thatEntityObj.EnteringCombat_Ready
                     break
                 end
@@ -830,6 +832,16 @@ function EntityLib:_EnterCombat(target: Model)
     --- check again!
     if not ServerLib:IsCharValid(target) then self:_ErrorAndRespawn(1) return end
 
+    target = nil
+
+    for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
+        if char:GetAttribute("HarukaUniqueId") == self.CombatStarterUniqueId then
+            target = char
+            break
+        end
+    end
+    if not ServerLib:IsCharValid(target) then self:_ErrorAndRespawn(2) return end
+
 
     --// we will check starter enemy
     if hasPosVal then
@@ -837,10 +849,10 @@ function EntityLib:_EnterCombat(target: Model)
             for _, thatEntityObj in allEntityPool do
                 if thatEntityObj.UniqueId == self.UniqueId then continue end
                 if not thatEntityObj.IsInCombat then continue end
-                if not thatEntityObj.CombatTriggerer then continue end
+                if not thatEntityObj.CombatTriggererUniqueId then continue end
                 if thatEntityObj.IsDead then continue end
 
-                if thatEntityObj.CombatTriggerer == target.Name then
+                if thatEntityObj.CombatTriggererUniqueId == target:GetAttribute("HarukaUniqueId") then
                     resolve(ServerLib:IsCharValid(thatEntityObj.Entity))
                     break
                 end
@@ -853,6 +865,8 @@ function EntityLib:_EnterCombat(target: Model)
 
         end):catch(function(err)
             warn(tostring(err))
+
+            self:_ErrorAndRespawn(0)
         end)
     end
 
@@ -913,10 +927,10 @@ function EntityLib:_EnterCombat(target: Model)
         for _, thatEntityObj in allEntityPool do
             if thatEntityObj.UniqueId == self.UniqueId then continue end
             if not thatEntityObj.IsInCombat then continue end
-            if not thatEntityObj.CombatTriggerer then continue end
+            if not thatEntityObj.CombatTriggererUniqueId then continue end
             if thatEntityObj.IsDead then continue end
 
-            if thatEntityObj.CombatTriggerer == target.Name then
+            if thatEntityObj.CombatTriggererUniqueId == target:GetAttribute("HarukaUniqueId") then
                 for _, thatEntitySymbol: ObjectValue in thatEntityObj.Entity.TargetingList:GetChildren() do
                     if not ServerLib:IsCharValid(thatEntitySymbol.Value) then continue end
 
@@ -986,32 +1000,20 @@ function EntityLib:_CombatEnd()
     local entity = self.Entity :: Model
 
     if not ServerLib:IsModelValid(entity) then self:_ErrorAndRespawn(4) return end
-    if not entity:FindFirstChild("TargetingList") then self:_ErrorAndRespawn(5) return end
-
-    local targetingList = self.Entity.TargetingList:GetChildren() :: { ObjectValue }
 
 
-
-     --- search for nearby entities, if there are any, will have to wait for them to die
+    --- search for nearby entities, if there are any, will have to wait for them to die
     local foundTeamUpEnemies = false
     for _, thatEntityObj: table in allEntityPool do
         if thatEntityObj.UniqueId == self.UniqueId then continue end
         if not thatEntityObj.IsInCombat then continue end
-        if not thatEntityObj.CombatStarter then continue end
+        if not thatEntityObj.CombatStarterUniqueId then continue end
         if thatEntityObj.IsDead then continue end
 
-        if thatEntityObj.CombatStarter == self.CombatStarter then
+        if thatEntityObj.CombatStarterUniqueId == self.CombatStarterUniqueId then
             foundTeamUpEnemies = true
 
-            local alreadyAdded = false
-            local teamUpEnemies = thatEntityObj.Entity.TeamUpEnemies:GetChildren() :: { ObjectValue }
-
-            for _, teamUpEntitySymbol in teamUpEnemies do
-                if teamUpEntitySymbol.Name == self.UniqueId then
-                    alreadyAdded = true
-                    break
-                end
-            end
+            local alreadyAdded = thatEntityObj.Entity.TeamUpEnemies:FindFirstChild(self.UniqueId) ~= nil
             if not alreadyAdded then
                 local teamUpEntitySymbol = Instance.new("ObjectValue")
                 teamUpEntitySymbol.Name = self.UniqueId
@@ -1034,6 +1036,11 @@ function EntityLib:_CombatEnd()
 
         destroyEntityObjSignal:Fire(self.UniqueId)
     end
+
+
+    if not entity:FindFirstChild("TargetingList") then self:_ErrorAndRespawn(5) return end
+
+    local targetingList = self.Entity.TargetingList:GetChildren() :: { ObjectValue }
 
 
     --// check if entity is dead, if no, then means player failed

@@ -186,8 +186,6 @@ return {
         EnvironmentBonus = 2,
 
         Species = "Slime",
-        IsBoss = true,
-        Tag = "The King",
 
         Drops = {
             SlimeGel = 40,

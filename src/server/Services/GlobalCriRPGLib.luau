@@ -153,6 +153,7 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
             if part == r6Char.PrimaryPart then continue end
 
             part.EnableFluidForces = false
+            part.CanCollide = false
             part.Material = Enum.Material.SmoothPlastic
         end
 
@@ -246,6 +247,17 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
         elseif prompt.Name == "Crafting" then
             Events.OpenCraftingUI.Fire(plr)
+
+
+        elseif prompt.Name == "Dungeon" then
+            local destination = prompt:GetAttribute("Destination") :: string
+
+            local map = workspace.Maps:FindFirstChild(destination, true)
+            if not map then return end
+            if not ServerLib:IsCharValid(plr.Character) then return end
+
+
+            plr.Character:PivotTo(map.Locators.TeleporterIn.CFrame)
 
 
         elseif prompt.Name == "Class" then

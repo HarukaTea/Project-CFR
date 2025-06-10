@@ -75,15 +75,19 @@ local function _fadeAwayAndDestroy(obj: Instance)
         HarukaLib:CreateTween(obj, AssetBook.TweenInfos.half, {
             Transparency = 1
         }):Play()
+
+        obj.CanTouch = false
     else
         for _, child: Instance in obj:GetDescendants() do
+            child:RemoveTag("PierceEntity")
+            child:RemoveTag("DMGEntity")
+
             if HarukaLib:IsBasePartType(child) then
                 HarukaLib:CreateTween(child, AssetBook.TweenInfos.half, {
                     Transparency = 1
                 }):Play()
 
-                child:RemoveTag("PierceEntity")
-                child:RemoveTag("DMGEntity")
+                child.CanTouch = false
             end
         end
     end

@@ -79,7 +79,7 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
         camera.CFrame = locator.CFrame
 
 
-        repeat task.wait() until workspace:GetAttribute("Haruka_PreloadCompleted")
+        repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
         local mouse = Players.LocalPlayer:GetMouse()
         Add(mouse.Move:Connect(function()

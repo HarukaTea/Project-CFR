@@ -143,20 +143,14 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             if not _checkIsTargetOrEntityValid(target) then break end
 
             _slimeBomb()
-            wait(0.4)
+            wait(0.5)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
         if not _checkIsTargetOrEntityValid(target) then return end
 
         _slimePurge(target)
-        wait(0.5)
-    end)
-    table.insert(self.AttackFuncs, function(target: Model)
-        if not _checkIsTargetOrEntityValid(target) then return end
-
-        _slimeMassivePurge(target)
-        wait(0.5)
+        wait(0.7)
     end)
 
 
@@ -167,6 +161,14 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
             _slimeBomb()
             wait(0.3)
+        end
+    end)
+    table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
+        if comboR == 2 and math.random(1, 2) == 2 then
+            if not _checkIsTargetOrEntityValid(target) then return end
+
+            _slimeMassivePurge(target)
+            wait(1)
         end
     end)
 

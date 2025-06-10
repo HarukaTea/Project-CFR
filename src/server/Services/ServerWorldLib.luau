@@ -506,6 +506,7 @@ function ServerWorldLib:_DoTrusses()
         if truss.ClassName == "TrussPart" then
             truss:AddTag("TrussEntity")
             truss.CanCollide = false
+            truss.CanTouch = true
         end
     end
 end

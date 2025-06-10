@@ -375,10 +375,9 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             local humanoid = char.Humanoid :: Humanoid
 
 
-            Promise.delay(0.25):andThen(function()
+            task.delay(0.25, function()
                 humanoid.AutoRotate = true
-            end):catch(function() end)
-
+            end)
             pcall(_fadeOrb, orb)
 
 
@@ -388,9 +387,12 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
 
             if not orb:GetAttribute("DontBounce") then
                 humanoid.Jump = true
-                if char.PrimaryPart:FindFirstChild("OrbBV") then
-                    char.PrimaryPart.OrbBV:Destroy()
-                    char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+
+                for _, child: Instance in char.PrimaryPart:GetChildren() do
+                    if child:IsA("LinearVelocity") or child:IsA("BodyVelocity") then
+                        child:Destroy()
+                        char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+                    end
                 end
 
                 local bounceWeight = 36

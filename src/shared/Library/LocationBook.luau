@@ -105,10 +105,20 @@ return {
         CombatMusic = "ComplexDreams",
         CombatMusicVolume = 0.5,
 
-        LightingInfo = defaultLighting,
+		LightingInfo = {
+			Ambient = Color3.fromRGB(115, 115, 115),
+			Brightness = 1.5,
+			EnvironmentDiffuseScale = 0,
+			EnvironmentSpecularScale = 0,
+			OutdoorAmbient = Color3.fromRGB(177, 177, 177),
+			ExposureCompensation = 0.15,
+			FogColor = Color3.fromRGB(13, 127, 98),
+			FogEnd = 400,
+			FogStart = 100
+		},
         ClockTime = 0,
 
-        RainLevel = 0,
+        RainLevel = 0.7,
     },
 
     Highlands = {
@@ -147,7 +157,7 @@ return {
 
         Music = "QuietAndFalling",
         MusicVolume = 0.5,
-        CombatMusic = "ComplexDreams",
+         CombatMusic = "ComplexDreams",
         CombatMusicVolume = 0.7,
 
         LightingInfo = {
