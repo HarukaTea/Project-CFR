@@ -2,6 +2,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -10,6 +11,7 @@ local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
     StatList: { [string]: number },
+    BaseStatList: { [string]: number },
 })
     return Components.ScrollingFrame(scope, {
         Name = "CharStatsPanel",
@@ -26,10 +28,24 @@ return function (scope: Fusion.Scope, props: {
                 Id: string,
                 Val: Fusion.Value
             })
+
+                local correspondingBaseStat = nil
+                for _, baseStatInfo: table in props.BaseStatList do
+                    if baseStatInfo.Id == val.Id then
+                        correspondingBaseStat = baseStatInfo
+                        break
+                    end
+                end
+                if not correspondingBaseStat then
+                    warn("Unable to find corresponding base stat for stat: "..val.Id)
+                    return index, nil
+                end
+
+
                 return index, Components.Frame(scope, {
                     Name = "BBB_"..val.Id,
                     BackgroundColor3 = Color3.fromRGB(),
-                    BackgroundTransparency = if index % 2 == 0 then 0.1 else 0.6,
+                    BackgroundTransparency = if index % 2 == 0 then 0.1 else 0.65,
                     Size = UDim2.fromScale(1, 0.1),
                     LayoutOrder = index,
 
@@ -38,7 +54,7 @@ return function (scope: Fusion.Scope, props: {
 
                         Components.TextLabel(scope, {
                             Name = "Title",
-                            Position = UDim2.fromScale(0.02, 0),
+                            Position = UDim2.fromScale(0.08, 0),
                             Size = UDim2.fromScale(0.3, 1),
                             Text = val.Id,
                             TextXAlignment = Enum.TextXAlignment.Left,
@@ -64,6 +80,8 @@ return function (scope: Fusion.Scope, props: {
                                 local shouldUsePercent = false
                                 if val.Id == "CRIT DMG" then
                                     shouldUsePercent = true
+                                elseif val.Id == "LUCK" then
+                                    shouldUsePercent = true
                                 elseif string.find(val.Id, "CHANCE") then
                                     shouldUsePercent = true
                                 end
@@ -74,6 +92,22 @@ return function (scope: Fusion.Scope, props: {
                                     return use(val.Val)..(if shouldUsePercent then "%" else "")
                                 end
                             end),
+                            TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                if val.Id == "ATK" then
+                                    if use(val.Val[1]) > use(correspondingBaseStat.Val[1]) then
+                                        return Color3.fromRGB(0, 255, 255)
+                                    else
+                                        return Color3.fromHex('#ffffff')
+                                    end
+                                else
+                                    if use(val.Val) > use(correspondingBaseStat.Val) then
+                                        return Color3.fromRGB(0, 255, 255)
+                                    else
+                                        return Color3.fromHex('#ffffff')
+                                    end
+                                end
+                            end),
+
 
                             [Children] = {
                                 Components.UIPadding(scope, {
@@ -83,6 +117,15 @@ return function (scope: Fusion.Scope, props: {
                                     PaddingRight = UDim.new(0, 0)
                                 })
                             }
+                        }),
+
+                        Components.IconImageLabel(scope, {
+                            Position = UDim2.fromScale(0.02, 0.5),
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            Size = UDim2.fromScale(0.8, 0.8),
+
+                            Image = AssetBook.CharStatIcons[val.Id] or AssetBook.ExtraIcons.Unknown,
+                            ImageColor3 = AssetBook.CharStatIconColors[val.Id] or Color3.fromRGB(255, 255, 255),
                         })
                     }
                 })

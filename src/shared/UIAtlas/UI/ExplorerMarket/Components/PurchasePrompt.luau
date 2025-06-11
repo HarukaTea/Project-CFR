@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -47,12 +48,7 @@ return function(scope: Fusion.Scope, props: {
         end
         if itemSymbol == nil then return nil end
 
-
-        table.insert(scope, HarukaLib:Hydrate(itemSymbol, {
-            ["Prop-Value"] = function(val: number)
-                itemAmount:set(val)
-            end
-        }))
+        itemAmount:set(itemSymbol.Value)
 
     elseif props.Action == "Purchase" then
         local amount = 0
@@ -68,22 +64,39 @@ return function(scope: Fusion.Scope, props: {
         return nil
     end
     local absTextSize = Value(Vector2.zero)
-    local amount = Value(1)
-    local realAmount = Value(1)
 
+    local inputTextbox = Components.TextBox(scope, {
+        Name = "AmountInput",
+        BackgroundColor3 = Color3.new(),
+        BackgroundTransparency = 0,
+        Size = UDim2.fromScale(0.5, 1),
+        LayoutOrder = 2,
+        PlaceholderText = "1",
 
-    --// players may, input strange numbers lol
-    Fusion.Observer(scope, amount):onBind(function()
-        local curAmount = tonumber(Fusion.peek(amount))
+        [Children] = {
+            Components.RoundUICorner(scope),
+            Components.UIPadding(scope, {})
+        }
+    })
+    local amount = ClientLib:TrackInputTextbox({
+        Scope = scope,
+        TextBox = inputTextbox,
 
-        if curAmount == nil then curAmount = 1 end
-        if curAmount ~= curAmount then curAmount = 1 end
+        Callback = function(amount: Fusion.Value)
+            local function _setColor(color: Color3)
+                inputTextbox.TextColor3 = color
+            end
+            local curAmount = tonumber(Fusion.peek(amount))
 
-        curAmount = math.floor(curAmount)
-        curAmount = math.clamp(curAmount, 1, 99)
+            if curAmount == nil then _setColor(Color3.fromHex('#ff6b81')) return end
+            if curAmount ~= curAmount then _setColor(Color3.fromHex('#ff6b81')) return end
 
-        realAmount:set(curAmount)
-    end)
+            if curAmount < 1 then _setColor(Color3.fromHex('#ff6b81')) return end
+            if curAmount > 99 then _setColor(Color3.fromHex('#ff6b81')) return end
+
+            _setColor(Color3.fromRGB(255, 255, 255))
+        end
+    })
 
 
     return Components.Frame(scope, {
@@ -226,7 +239,7 @@ return function(scope: Fusion.Scope, props: {
                                     Components.TextButton(scope, {
                                         Name = "DecreaseBtn",
                                         AutoButtonColor = true,
-                                        BackgroundColor3 = Components.WHITE_COLOR,
+                                        BackgroundColor3 = Color3.fromRGB(255, 118, 117),
                                         TextColor3 = Components.BLACK_COLOR,
                                         SizeConstraint = Enum.SizeConstraint.RelativeYY,
                                         FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
@@ -234,13 +247,12 @@ return function(scope: Fusion.Scope, props: {
                                         LayoutOrder = 1,
 
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
-                                            local curAmount = Fusion.peek(realAmount)
+                                            local curAmount = Fusion.peek(amount)
 
                                             local nextAmount = curAmount - 1
                                             nextAmount = math.clamp(nextAmount, 1, 99)
 
                                             amount:set(nextAmount)
-                                            realAmount:set(nextAmount)
                                         end,
 
                                         [Children] = {
@@ -248,44 +260,12 @@ return function(scope: Fusion.Scope, props: {
                                         }
                                     }),
 
-
-                                    Components.TextBox(scope, {
-                                        Name = "AmountInput",
-                                        BackgroundColor3 = Color3.new(),
-                                        BackgroundTransparency = 0,
-                                        Size = UDim2.fromScale(0.5, 1),
-                                        LayoutOrder = 2,
-                                        PlaceholderText = "???",
-
-                                        [Fusion.Out("Text")] = amount,
-
-                                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            return use(amount)
-                                        end),
-                                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            local curAmount = tonumber(use(amount))
-
-                                            if curAmount == nil then return Color3.fromHex('#ff6b81') end
-                                            if curAmount ~= curAmount then return Color3.fromHex('#ff6b81') end
-
-                                            if curAmount < 1 then return Color3.fromHex('#ff6b81') end
-                                            if curAmount > 99 then return Color3.fromHex('#ff6b81') end
-
-                                            return Components.WHITE_COLOR
-                                        end),
-
-                                        [Children] = {
-                                            Components.RoundUICorner(scope),
-                                            Components.UIPadding(scope, {})
-                                        }
-                                    }),
-
-
+                                    inputTextbox,
 
                                     Components.TextButton(scope, {
                                         Name = "IncreaseBtn",
                                         AutoButtonColor = true,
-                                        BackgroundColor3 = Components.WHITE_COLOR,
+                                        BackgroundColor3 = Color3.fromRGB(123, 237, 159),
                                         TextColor3 = Components.BLACK_COLOR,
                                         SizeConstraint = Enum.SizeConstraint.RelativeYY,
                                         FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
@@ -293,13 +273,12 @@ return function(scope: Fusion.Scope, props: {
                                         LayoutOrder = 3,
 
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
-                                            local curAmount = Fusion.peek(realAmount)
+                                            local curAmount = Fusion.peek(amount)
 
                                             local nextAmount = curAmount + 1
                                             nextAmount = math.clamp(nextAmount, 1, 99)
 
                                             amount:set(nextAmount)
-                                            realAmount:set(nextAmount)
                                         end,
 
                                         [Children] = {
@@ -393,11 +372,11 @@ return function(scope: Fusion.Scope, props: {
                                         LayoutOrder = 3,
 
                                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            local typedAmount = use(realAmount) :: number
+                                            local typedAmount = use(amount) :: number
 
                                             typedAmount = math.clamp(typedAmount, 1, 99)
 
-                                            return `{HarukaLib:CommaifyNumber(use(info).Price * typedAmount)} ({typedAmount})`
+                                            return `{HarukaLib:CommaifyNumber(use(info).Price * typedAmount)}`
                                         end),
                                     }),
                                 }
@@ -434,7 +413,7 @@ return function(scope: Fusion.Scope, props: {
                                 ButtonClickFunc = function()
                                     props.IsPurchasing:set(false)
 
-                                    local curAmount = Fusion.peek(realAmount)
+                                    local curAmount = Fusion.peek(amount)
 
                                     Events.RequestToPurchaseItem.Fire({
                                         ProductId = Fusion.peek(props.ProductId),
@@ -452,7 +431,7 @@ return function(scope: Fusion.Scope, props: {
                                 ButtonClickFunc = function()
                                     props.IsPurchasing:set(false)
 
-                                    local curAmount = Fusion.peek(realAmount)
+                                    local curAmount = Fusion.peek(amount)
 
                                     Events.RequestToSellItem.Fire({
                                         ItemId = Fusion.peek(props.ProductId),

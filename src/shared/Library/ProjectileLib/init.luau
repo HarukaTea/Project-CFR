@@ -44,7 +44,6 @@ local function _rotateAttentionPoint(projectileBase: BasePart, container: Folder
     ShouldDetail: boolean,
     Size: "Big" | "Small" | "SuperBig"
 })
-    wait()
     local rotation = if math.random(1, 2) == 1 then 5000 else -5000
 
     local exclamationPart = RepS.Packages.EnemyAttacks:FindFirstChild("Exclamation_"..props.Size, true):Clone() :: Model
@@ -59,10 +58,10 @@ local function _rotateAttentionPoint(projectileBase: BasePart, container: Folder
 
     HarukaLib:CreateTween(surfaceGui.Exclamation, AssetBook.TweenInfos.fifteen, { Rotation = rotation }):Play()
 
-    Promise.delay(0.5):andThen(function()
+    pcall(function()
+        wait(0.5)
         HarukaLib:CreateTween(surfaceGui.Exclamation, AssetBook.TweenInfos.half, { ImageTransparency = 1 }):Play()
-
-    end):catch(function() end)
+    end)
 end
 local function _fadeAwayAndDestroy(obj: Instance)
     Debris:AddItem(obj, 1)

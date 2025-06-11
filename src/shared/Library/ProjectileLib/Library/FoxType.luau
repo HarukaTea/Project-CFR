@@ -41,10 +41,10 @@ return function (self)
 
 
     ProjectileLib.FoxMove3 = function(projectile: Model, container: Folder)
-        Promise.try(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
+        pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = false,
             Size = "Big"
-        }):catch(function() end)
+        })
     end
     ProjectileLib.HardmodeWolfMove3 = ProjectileLib.FoxMove3
 

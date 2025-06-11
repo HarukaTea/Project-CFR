@@ -18,6 +18,7 @@ return function(scope: Fusion.Scope, props: {
 
     CurrentSelectedItemUniqueId: Fusion.Value,
     CurrentSelectedItem: Fusion.Value,
+    CurrentSortOrderList: { Fusion.Value }
 })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(scope, val)
@@ -35,6 +36,7 @@ return function(scope: Fusion.Scope, props: {
 
     local amount = Value(1)
     local level = Value(1)
+    local isNew = Value(false)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
 
 
@@ -44,6 +46,9 @@ return function(scope: Fusion.Scope, props: {
         end,
         ["Attr-Level"] = function(val: number)
             level:set(val)
+        end,
+        ["Attr-IsNew"] = function(val: boolean)
+            isNew:set(val)
         end
     }))
 
@@ -63,6 +68,7 @@ return function(scope: Fusion.Scope, props: {
     end)
 
 
+
     return Components.Frame(scope, {
         Name = props.ItemSymbol.Name,
         BackgroundTransparency = 0,
@@ -70,6 +76,47 @@ return function(scope: Fusion.Scope, props: {
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(isVisible) and use(isVisibleFactor2) and use(isVisibleFactor3)
+        end),
+
+        LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            local AZSort = use(props.CurrentSortOrderList[1])
+            local ZASort = use(props.CurrentSortOrderList[2])
+
+            local T1Sort = use(props.CurrentSortOrderList[3])
+            local T5Sort = use(props.CurrentSortOrderList[4])
+
+            if AZSort or ZASort then
+                local firstChar = string.sub(info.Name, 1, 1)
+                local charCode = string.byte(firstChar)
+
+                if string.match(firstChar, "%a") then
+                    local baseCode
+                    if charCode >= 65 and charCode <= 90 then
+                        baseCode = 65
+                    elseif charCode >= 97 and charCode <= 122 then
+                        baseCode = 97
+                    else
+                        return 0
+                    end
+
+                    if AZSort then
+                        return charCode - baseCode + 1
+                    elseif ZASort then
+                        return 27 - (charCode - baseCode)
+                    end
+                else
+                    return 0
+                end
+
+            elseif T1Sort or T5Sort then
+                if T1Sort then
+                    return info.Tier
+                elseif T5Sort then
+                    return 6 - info.Tier
+                end
+            end
+
+            return 1
         end),
 
 
@@ -106,6 +153,8 @@ return function(scope: Fusion.Scope, props: {
 
                     props.CurrentSelectedItemUniqueId:set(uniqueId)
                     props.CurrentSelectedItem:set(props.ItemSymbol.Name)
+
+                    props.ItemSymbol:SetAttribute("IsNew", false)
                 end
             }),
 
@@ -149,7 +198,7 @@ return function(scope: Fusion.Scope, props: {
                 TextColor3 = Components.BLACK_COLOR,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    local stackableList = { "Accessory", "Weapon" }
+                    local stackableList = { "Accessory", "Weapon", "Active", "Passive" }
 
                     if table.find(stackableList, info.Type) then
                         return `Lv.{use(level)}`
@@ -176,6 +225,27 @@ return function(scope: Fusion.Scope, props: {
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isEquipping)
+                end),
+
+                [Children] = {
+                    Components.RoundUICorner(scope)
+                }
+            }),
+
+            Components.TextLabel(scope, {
+                Name = "IsNew",
+                AnchorPoint = Vector2.zero,
+                Position = UDim2.fromScale(-0.1, -0.1),
+                Size = UDim2.fromScale(0.25, 0.25),
+                SizeConstraint = Enum.SizeConstraint.RelativeXX,
+                BackgroundTransparency = 0,
+                BackgroundColor3 = Color3.fromRGB(195, 0, 0),
+
+                Text = "!",
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.ExtraBold),
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(isNew)
                 end),
 
                 [Children] = {

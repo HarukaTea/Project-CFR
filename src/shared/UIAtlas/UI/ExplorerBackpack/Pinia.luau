@@ -15,7 +15,7 @@ return function (self: table)
     local scope = self.scope :: Fusion.Scope
 
 
-    self.IsBackpackShown = Value(false)
+    self.IsUIShown = Value(false)
 
     self.FilterViewShown = Value(false)
     self.FilterTierList = {
@@ -26,8 +26,16 @@ return function (self: table)
         table.insert(self.FilterTierList, Value(true))
     end
 
+    self.SortMethodList = {
+
+    }
+    for _ = 1, 4 do
+        table.insert(self.SortMethodList, Value(false))
+    end
+    self.SortMethodList[1]:set(true)
+
+
     self.AvailableItems = Value(Vector2.zero)
-    self.ItemShownSlotsLimit = Value(100)
 
     self.CurrentSelectedItem = Value("")
     self.CurrentSelectedItemUniqueId = Value("")
@@ -61,8 +69,8 @@ return function (self: table)
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
             if newPanel == nil then return end
 
-            self.ItemShownSlotsLimit:set(100)
-            self.IsBackpackShown:set(newPanel == "Backpack")
+            self.FilterViewShown:set(false)
+            self.IsUIShown:set(newPanel == "Backpack")
         end
     }))
 
@@ -74,7 +82,7 @@ return function (self: table)
         Parent = workspace.CurrentCamera,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(self.IsBackpackShown)
+            return use(self.IsUIShown)
         end)
     })
 end

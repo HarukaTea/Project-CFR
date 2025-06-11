@@ -72,7 +72,7 @@ return function (self: table)
 
 
     self.IsMenuShown = Value(false)
-    self.IsBackpackShown = Value(false)
+    self.IsUIShown = Value(false)
     self.IsUIShown = Value(true)
 
     self.PassiveBGAbsContentSize = Value(Vector2.zero)
@@ -95,6 +95,16 @@ return function (self: table)
             if newPanel == nil then return end
 
             self.IsUIShown:set(newPanel == "None")
+        end
+    }))
+
+    self.IsUIShown2 = Value(true)
+
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-HideUIFactor"] = function(state: boolean)
+            state = state or false
+
+            self.IsUIShown2:set(not state)
         end
     }))
 
@@ -312,12 +322,12 @@ return function (self: table)
         HarukaLib:CreateTween(cdSymbol, tween, { Value = 0 }):Play()
         HarukaLib:CreateTween(realCDSymbol, tween, { Value = 0 }):Play()
 
-        Promise.delay(cdTime):andThen(function()
+        task.delay(cdTime, function()
             info.CastCD = false
 
             Bindables.CDEndTimeReached:Fire(info.Id)
             tween = nil
-        end):catch(function() end)
+        end)
     end
     table.insert(scope, Events.RequestToCastItem_Response.On(function(data)
         local slotId = data.SlotId
@@ -389,7 +399,7 @@ return function (self: table)
     local keyCodes = {
         B = "Backpack",
         C = "CharSelfView",
-        --Z = "PerkTree",
+        Z = "PerkTree",
         N = "Settings",
         X = "Guild",
         V = "Store"

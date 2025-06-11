@@ -6,6 +6,7 @@ local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
@@ -22,6 +23,30 @@ return function(scope: Fusion.Scope, props: {
 
     PointList: { [string]: Fusion.Value },
 })
+
+    local inputTextbox = Components.TextBox(scope, {
+        Name = "AmountInput",
+        BackgroundColor3 = Color3.new(),
+        BackgroundTransparency = 0,
+        Size = UDim2.fromScale(0.2, 1),
+        LayoutOrder = 2,
+        PlaceholderText = "1",
+        FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+
+        [Children] = {
+            Components.RoundUICorner(scope),
+            Components.UIPadding(scope, {})
+        }
+    })
+    local amount = ClientLib:TrackInputTextbox({
+        Scope = scope,
+        TextBox = inputTextbox,
+
+        Callback = function()
+
+        end
+    })
+
     return Components.Frame(scope, {
         Name = "CharStatsView",
         AnchorPoint = Vector2.new(1, 0.5),
@@ -170,26 +195,87 @@ return function(scope: Fusion.Scope, props: {
                         end)
                     }),
 
-                    Components.TextButton(scope, {
-                        Name = "Reset",
-                        AnchorPoint = Vector2.new(1, 0.5),
-                        Position = UDim2.fromScale(0.95, 0.5),
-                        Size = UDim2.fromScale(0.25, 0.8),
-                        BackgroundTransparency = 0,
-                        BackgroundColor3 = Color3.fromRGB(255, 118, 117),
-                        Text = "RESET",
-                        TextColor3 = Color3.fromRGB(),
-
-
-                        [Fusion.OnEvent("MouseButton1Click")] = function()
-                            Events.RequestToResetPoint.Fire()
-                        end,
-
+                    Components.Frame(scope, {
+                        Name = "Buttons",
 
                         [Children] = {
-                            Components.RoundUICorner(scope),
+                            Components.UIListLayout(scope, {
+                                FillDirection = Enum.FillDirection.Horizontal,
+                                Padding = UDim.new(0.04, 0),
+                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                                VerticalAlignment = Enum.VerticalAlignment.Center,
+                            }),
+
+
+                            Components.TextButton(scope, {
+                                Name = "Reset",
+                                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                                BackgroundTransparency = 0,
+                                LayoutOrder = 233,
+                                BackgroundColor3 = Color3.fromRGB(255, 118, 117),
+                                Text = "R",
+                                TextColor3 = Color3.fromRGB(),
+
+                                [Fusion.OnEvent("MouseButton1Click")] = function()
+                                    Events.RequestToResetPoint.Fire()
+                                end,
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope),
+                                }
+                            }),
+
+                            Components.TextButton(scope, {
+                                Name = "IncreasePoint",
+                                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                                BackgroundTransparency = 0,
+                                LayoutOrder = 3,
+                                BackgroundColor3 = Color3.fromRGB(123, 237, 159),
+                                Text = "+",
+                                FontFace = Font.fromName("Ubuntu", Enum.FontWeight.Bold),
+                                TextColor3 = Color3.fromRGB(),
+
+                                [Fusion.OnEvent("MouseButton1Click")] = function()
+                                    local curAmount = Fusion.peek(amount)
+
+                                    local nextAmount = curAmount + 1
+                                    nextAmount = math.clamp(nextAmount, 1, 99)
+
+                                    amount:set(nextAmount)
+                                end,
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope),
+                                }
+                            }),
+
+                            Components.TextButton(scope, {
+                                Name = "DecreasePoint",
+                                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                                BackgroundTransparency = 0,
+                                LayoutOrder = 1,
+                                BackgroundColor3 = Color3.fromRGB(123, 237, 159),
+                                Text = "-",
+                                FontFace = Font.fromName("Ubuntu", Enum.FontWeight.Bold),
+                                TextColor3 = Color3.fromRGB(),
+
+                                [Fusion.OnEvent("MouseButton1Click")] = function()
+                                    local curAmount = Fusion.peek(amount)
+
+                                    local nextAmount = curAmount - 1
+                                    nextAmount = math.clamp(nextAmount, 1, 99)
+
+                                    amount:set(nextAmount)
+                                end,
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope),
+                                }
+                            }),
+
+                            inputTextbox
                         }
-                    })
+                    }),
                 }
             }),
 
@@ -313,7 +399,7 @@ return function(scope: Fusion.Scope, props: {
 
                                         Events.RequestToAddPoint.Fire({
                                             PointId = point,
-                                            PointAmount = 1
+                                            PointAmount = Fusion.peek(amount)
                                         })
                                     end,
 
@@ -345,7 +431,7 @@ return function(scope: Fusion.Scope, props: {
 
                                         Events.RequestToAddPoint.Fire({
                                             PointId = point,
-                                            PointAmount = -1
+                                            PointAmount = -Fusion.peek(amount)
                                         })
                                     end,
 

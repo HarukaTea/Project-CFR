@@ -38,13 +38,39 @@ return function (self: table)
             }
         },
     }
+    self.BaseStats = {
+        {
+            Id = "ATK",
+            Val = {
+                Value(5), Value(10)
+            }
+        },
+        {
+            Id = "HP",
+            Val = Value(100)
+        },
+        {
+            Id = "SPD",
+            Val = Value(40)
+        },
+        {
+            Id = "JMP",
+            Val = Value(50)
+        },
+    }
 
     local statsList = {
         "MAGIC", "MANA", "HP", "SHIELD", "SPD", "JMP",
-        "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE"
+        "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE", "LUCK"
     }
+    local baseStatsList = {}
     for _, stat: string in statsList do
         table.insert(self.Stats, {
+            Id = stat,
+            Val = Value(0),
+        })
+        table.insert(baseStatsList, stat)
+        table.insert(self.BaseStats, {
             Id = stat,
             Val = Value(0),
         })
@@ -53,6 +79,14 @@ return function (self: table)
 
     local function _setVal(stat: string, val: number)
         for _, s in self.Stats do
+            if s.Id == stat then
+                s.Val:set(val)
+                break
+            end
+        end
+    end
+    local function _setBaseVal(stat: string, val: number)
+        for _, s in self.BaseStats do
             if s.Id == stat then
                 s.Val:set(val)
                 break
@@ -138,6 +172,51 @@ return function (self: table)
         end,
         ["Attr-BurnChance"] = function(val: number)
             _setVal("BURN CHANCE", val)
+        end,
+        ["Attr-Luck"] = function(val: number)
+            _setVal("LUCK", val)
+        end
+    }))
+    table.insert(scope, HarukaLib:Hydrate(self.char, {
+        ["Attr-BaseMinDMG"] = function(val: number)
+            for _, s in self.BaseStats do
+                if s.Id == "ATK" then
+                    s.Val[1]:set(val)
+                    break
+                end
+            end
+        end,
+        ["Attr-BaseMaxDMG"] = function(val: number)
+            for _, s in self.BaseStats do
+                if s.Id == "ATK" then
+                    s.Val[2]:set(val)
+                    break
+                end
+            end
+        end,
+        ["Attr-BaseMagic"] = function(val: number)
+            _setBaseVal("MAGIC", val)
+        end,
+        ["Attr-BaseMaxMana"] = function(val: number)
+            _setBaseVal("MANA", val)
+        end,
+        ["Attr-BaseMaxShield"] = function(val: number)
+            _setBaseVal("SHIELD", val)
+        end,
+        ["Attr-BaseCriChance"] = function(val: number)
+            _setBaseVal("CRIT CHANCE", val)
+        end,
+        ["Attr-BaseCriDMG"] = function(val: number)
+            _setBaseVal("CRIT DMG", val)
+        end,
+        ["Attr-BaseDodgeChance"] = function(val: number)
+            _setBaseVal("DODGE CHANCE", val)
+        end,
+        ["Attr-BaseBurnChance"] = function(val: number)
+            _setBaseVal("BURN CHANCE", val)
+        end,
+        ["Attr-BaseLuck"] = function(val: number)
+            _setBaseVal("LUCK", val)
         end
     }))
 

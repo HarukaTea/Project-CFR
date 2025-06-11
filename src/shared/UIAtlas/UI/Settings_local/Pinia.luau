@@ -12,12 +12,20 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 
+--// TODO: rain effect toggle, wind effect toggle
+--// TODO: make setttings saveable
+
 return function (self: table)
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end
 
     workspace:SetAttribute("UIScaleFactor", 1)
+    workspace:SetAttribute("HideUIFactor", false)
+    workspace:SetAttribute("EntityRenderDistance", 159)
+
+    workspace:SetAttribute("RainEffectEnabled", true)
+    workspace:SetAttribute("WindEffectEnabled", true)
 
     self.PanelSelected = Value("Graphics")
     self.IsSettingsShown = Value(false)
@@ -105,6 +113,11 @@ return function (self: table)
     end)
 
 
+    self.INFO.Graphics.Includes.EntityRenderDistance.ValChanged:Connect(function(val: number)
+        workspace:SetAttribute("EntityRenderDistance", val)
+    end)
+
+
 
     --// track graphics
     local LDMObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.LowDetailMode)
@@ -189,5 +202,30 @@ return function (self: table)
         local state = Fusion.peek(self.SwitcherVals.Graphics.GlobalShadows)
 
         Lighting.GlobalShadows = state
+    end)
+
+
+    --// track hide ui
+    local hideUIObserver = Fusion.Observer(scope, self.SwitcherVals.Interface.HideUI)
+    hideUIObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Interface.HideUI)
+
+        workspace:SetAttribute("HideUIFactor", state)
+    end)
+
+
+    --// track wind & rain
+    local windObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.WindEffect)
+    windObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Graphics.WindEffect)
+
+        workspace:SetAttribute("WindEffectEnabled", state)
+    end)
+
+    local rainObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.RainEffect)
+    rainObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Graphics.RainEffect)
+
+        workspace:SetAttribute("RainEffectEnabled", state)
     end)
 end

@@ -242,6 +242,9 @@ if not RunService:IsRunning() then
 		ApplyHighlightForEntity = table.freeze({
 			On = noop
 		}),
+		RequestToSaveSettings = table.freeze({
+			Fire = noop
+		}),
 		Spell_ExtraJumpSupport = table.freeze({
 			On = noop
 		}),
@@ -1488,16 +1491,45 @@ local returns = {
 			end
 		end,
 	},
+	RequestToSaveSettings = {
+		Fire = function(Value: ({
+			["SettingId"]: ((string)?),
+			["SettingValue"]: ((unknown)),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			if Value["SettingId"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_48 = #Value["SettingId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
+				alloc(len_48)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SettingId"], len_48)
+			end
+			if Value["SettingValue"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				table.insert(outgoing_inst, Value["SettingValue"])
+			end
+		end,
+	},
 	RequestToForceReset = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
 		end,
 	},
 	RequestToRejoinGame = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 19)
 		end,
 	},
 	ApplyFoundStatusToEnemy = {

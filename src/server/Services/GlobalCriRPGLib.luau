@@ -918,7 +918,19 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
             Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
             return
         end
-        --// TODO: distance checks
+
+        local distanceCheck = false
+        for _, market: Model in CollectionService:GetTagged("MarketEntity") do
+            local distance = plr:DistanceFromCharacter(market.WorldPivot.Position)
+            if distance > 0 and distance <= 45 then
+                distanceCheck = true
+                break
+            end
+        end
+        if not distanceCheck then
+            Events.CreateNotify.Fire(plr, "You are too far from the Market!")
+            return
+        end
 
 
         local itemInfo = ItemLib:GetItemInfo(product)
@@ -959,7 +971,20 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
             Events.CreateNotify.Fire(plr, "You can't sell items in combat!")
             return
         end
-        --// TODO: distance checks
+
+
+        local distanceCheck = false
+        for _, market: Model in CollectionService:GetTagged("MarketEntity") do
+            local distance = plr:DistanceFromCharacter(market.WorldPivot.Position)
+            if distance > 0 and distance <= 45 then
+                distanceCheck = true
+                break
+            end
+        end
+        if not distanceCheck then
+            Events.CreateNotify.Fire(plr, "You are too far from the Market!")
+            return
+        end
 
 
         --// cant sell items obtained from chests / nil
@@ -1056,7 +1081,20 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
             Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
             return
         end
-        --// TODO: distance checks
+
+
+        local distanceCheck = false
+        for _, market: Model in CollectionService:GetTagged("MarketEntity") do
+            local distance = plr:DistanceFromCharacter(market.WorldPivot.Position)
+            if distance > 0 and distance <= 45 then
+                distanceCheck = true
+                break
+            end
+        end
+        if not distanceCheck then
+            Events.CreateNotify.Fire(plr, "You are too far from the Market!")
+            return
+        end
 
 
         --// cant sell items obtained from chests / nil
@@ -1263,7 +1301,7 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
             Events.CreateNotify.Fire(plr, "[Error] Invalid Item Id")
             return
         end
-        if HarukaLib.TableUtils().IsEmpty(itemInfo.RecipeDesync) then
+        if HarukaLib.TableUtils.IsEmpty(itemInfo.RecipeDesync) then
             Events.CreateNotify.Fire(plr, "This item cannot be crafted!")
             return
         end

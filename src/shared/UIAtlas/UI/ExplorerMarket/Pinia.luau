@@ -30,7 +30,6 @@ return function (self: table)
     self.CurrentPurchaseAction = Value("Purchase")
 
     self.AvailableItems = Value(Vector2.zero)
-    self.ItemShownSlotsLimit = Value(100)
 
     self.IsPurchasing = Value(false)
 
@@ -42,6 +41,16 @@ return function (self: table)
     for _ = 1, 5 do
         table.insert(self.FilterTierList, Value(true))
     end
+
+
+    self.SortMethodList = {
+
+    }
+    for _ = 1, 4 do
+        table.insert(self.SortMethodList, Value(false))
+    end
+    self.SortMethodList[1]:set(true)
+
 
     self.Currency = {
         Gold = Value(0),
@@ -75,8 +84,8 @@ return function (self: table)
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
             if newPanel == nil then return end
 
-            self.ItemShownSlotsLimit:set(100)
             self.IsUIShown:set(newPanel == "Market")
+            self.FilterViewShown:set(false)
         end
     }))
     table.insert(scope, Events.OpenMarketUI.On(function(data)

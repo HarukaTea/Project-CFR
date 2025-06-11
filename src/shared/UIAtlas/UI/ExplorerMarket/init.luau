@@ -83,7 +83,6 @@ return function (plr: Player)
                         }
                     }, {
                         Padding = UDim.new(0, 10),
-                        SortOrder = Enum.SortOrder.Name,
                     }),
                 }
             }),
@@ -163,6 +162,7 @@ return function (plr: Player)
 
                                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                         CurrentSelectedItem = self.CurrentSelectedItem,
+                                        CurrentSortOrderList = self.SortMethodList,
                                     })
                                 else
                                     return index, nil
@@ -230,40 +230,6 @@ return function (plr: Player)
                             return nil
                         end
                     end),
-
-                    Components.Frame(scope, {
-                        Name = "FilterOptions",
-                        AnchorPoint = Vector2.new(1, 0.5),
-                        BackgroundTransparency = 0,
-                        Size = UDim2.fromScale(0.28, 7),
-
-                        Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local itemInfo = ItemLib:GetItemInfo(use(self.CurrentSelectedItem))
-                            if itemInfo == nil then
-                                return UDim2.fromScale(0.98, 0.8)
-                            end
-
-                            return UDim2.fromScale(0.67, 0.8)
-                        end),
-
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return use(self.FilterViewShown)
-                        end),
-
-                        [Children] = {
-                            Components.UICorner(scope, { CornerRadius = UDim.new(0.015, 0) }),
-
-                            Components.UIStroke(scope, {
-                                Thickness = 6,
-                                Color = Color3.new()
-                            }),
-
-                            BKItemFilterView(scope, {
-                                FilterTierList = self.FilterTierList,
-                                FilterItemText = self.FilterItemText
-                            })
-                        }
-                    })
                 }
             }),
 
@@ -277,6 +243,68 @@ return function (plr: Player)
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(self.IsPurchasing)
                 end),
+            }),
+
+            Components.HarukaFrame(scope, {
+                Name = "Top2",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.02),
+                ZIndex = 10,
+
+                [Children] = {
+                    CloseTab(scope, {
+                        ViewShownValue = self.IsUIShown
+                    }),
+                }
+            }),
+
+
+            Components.Frame(scope, {
+                Name = "Right",
+                AnchorPoint = Vector2.new(1, 0),
+                Position = UDim2.fromScale(1, 0),
+                Size = UDim2.fromScale(0.3, 1),
+                ZIndex = 3,
+
+                [Children] = {
+                    Components.Frame(scope, {
+                        Name = "FilterOptions",
+                        ZIndex = 10,
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.FilterViewShown)
+                        end),
+
+                        [Children] = {
+                            Components.Frame(scope, {
+                                Name = "Shadows",
+                                AnchorPoint = Vector2.new(0, 0),
+                                Position = UDim2.fromScale(-1, 0),
+                                BackgroundColor3 = Color3.fromRGB(),
+                                BackgroundTransparency = 0,
+
+                                [Children] = {
+                                    Components.UIGradient(scope, {
+                                        Transparency = NumberSequence.new(1, 0.5)
+                                    })
+                                }
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "Inner",
+                                ZIndex = 2,
+
+                                [Children] = {
+                                    BKItemFilterView(scope, {
+                                        FilterTierList = self.FilterTierList,
+                                        FilterItemText = self.FilterItemText,
+                                        SortMethodList = self.SortMethodList
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
             })
         }
 
@@ -388,32 +416,8 @@ return function (plr: Player)
                                 CurrentSelectedItem = self.CurrentSelectedItem,
                                 CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                 CurrentCategory = self.CurrentItemCategory,
-                                CurrentItemLimit = self.ItemShownSlotsLimit
                             })
                         end),
-
-                        Components.TextButton(scope, {
-                            Name = "LoadMore",
-                            AnchorPoint = Vector2.new(1, 0.5),
-                            BackgroundColor3 = Color3.fromRGB(123, 237, 159),
-                            BackgroundTransparency = 0,
-                            LayoutOrder = 999,
-                            Size = UDim2.fromScale(0.11, 0.55),
-                            Text = "SHOW MORE",
-                            TextColor3 = Color3.fromRGB(),
-
-                            [Fusion.OnEvent("MouseButton1Click")] = function()
-                                local limit = Fusion.peek(self.ItemShownSlotsLimit) :: number
-
-                                limit += 100
-                                self.ItemShownSlotsLimit:set(limit)
-                            end,
-
-                            [Children] = {
-                                Components.RoundUICorner(scope),
-                                Components.UIPadding(scope, {})
-                            }
-                        })
                     }
                 }),
 
@@ -486,7 +490,6 @@ return function (plr: Player)
                                 CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                 CurrentSelectedItem = self.CurrentSelectedItem,
                                 CurrentCategory = self.CurrentCategory,
-                                CurrentItemLimit = self.ItemShownSlotsLimit
                             })
                         end)
                     }
@@ -513,10 +516,6 @@ return function (plr: Player)
                             })
                         end)
                     }
-                }),
-
-                CloseTab(scope, {
-                    ViewShownValue = self.IsUIShown
                 }),
 
                 Components.Frame(scope, {

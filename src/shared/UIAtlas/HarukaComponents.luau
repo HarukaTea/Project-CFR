@@ -8,11 +8,15 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
+
 local HarukaComponents = {}
 
 
 local WHITE_COLOR = Color3.fromRGB(236, 229, 216)
 local BLACK_COLOR = Color3.fromRGB(28, 28, 37)
+
+local DESIGN_VP_SIZE = Vector2.new(1172, 471.2)
 
 HarukaComponents.BLACK_COLOR = BLACK_COLOR
 HarukaComponents.WHITE_COLOR = WHITE_COLOR
@@ -125,13 +129,28 @@ end
 function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: table, listProps: table) : ScrollingFrame
 	local absSize = Fusion.Value(scope, Vector2.zero)
 	local absContentSize = Fusion.Value(scope, Vector2.zero)
+	local VPSize = FusionComponents.useViewportSize(scope)
 
 	listProps = listProps or {
-		Padding = UDim.new()
+		Padding = UDim.new(0, 0),
 	}
 
 	if listProps.Padding ~= nil then --- UIListLayout
 		listProps[Fusion.Out("AbsoluteContentSize")] = absContentSize
+		listProps.FillDirection = listProps.FillDirection or Enum.FillDirection.Vertical
+
+		local originalPadding = listProps.Padding
+		local fillDirection = listProps.FillDirection.Name or "Vertical"
+
+		listProps.Padding = Fusion.Computed(scope, function(use: Fusion.Use, _)
+			if fillDirection == "Vertical" then
+				local Y = use(VPSize).Y
+				return UDim.new(0, Y / (DESIGN_VP_SIZE.Y / originalPadding.Offset))
+			elseif fillDirection == "Horizontal" then
+				local X = use(VPSize).X
+				return UDim.new(0, X / (DESIGN_VP_SIZE.X / originalPadding.Offset))
+			end
+		end)
 
 		table.insert(props[Fusion.Children], 1, HarukaComponents.UIListLayout(scope, listProps))
 

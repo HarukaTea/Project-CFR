@@ -50,8 +50,8 @@ return function (plr: Player)
             Components.Frame(scope, {
                 Name = "CenterLeft",
                 AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromScale(0.03, 0.52),
-                Size = UDim2.fromScale(0.65, 0.66),
+                Position = UDim2.fromScale(0.03, 0.421),
+                Size = UDim2.fromScale(0.6, 0.462),
                 ClipsDescendants = true,
 
                 [Children] = {
@@ -108,6 +108,7 @@ return function (plr: Player)
 
                                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                         CurrentSelectedItem = self.CurrentSelectedItem,
+                                        CurrentSortOrderList = self.SortMethodList,
                                     })
                                 else
                                     return index, nil
@@ -131,7 +132,68 @@ return function (plr: Player)
                         end),
 
                         FillDirection = Enum.FillDirection.Horizontal,
-                        SortOrder = Enum.SortOrder.Name
+                    })
+                }
+            }),
+
+            Components.HarukaFrame(scope, {
+                Name = "Top2",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.02),
+                ZIndex = 10,
+
+                [Children] = {
+                    CloseTab(scope, {
+                        ViewShownValue = self.IsUIShown
+                    }),
+                }
+            }),
+
+
+            Components.Frame(scope, {
+                Name = "Right",
+                AnchorPoint = Vector2.new(1, 0),
+                Position = UDim2.fromScale(1, 0),
+                Size = UDim2.fromScale(0.3, 1),
+                ZIndex = 3,
+
+                [Children] = {
+                    Components.Frame(scope, {
+                        Name = "FilterOptions",
+                        ZIndex = 10,
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.FilterViewShown)
+                        end),
+
+                        [Children] = {
+                            Components.Frame(scope, {
+                                Name = "Shadows",
+                                AnchorPoint = Vector2.new(0, 0),
+                                Position = UDim2.fromScale(-1, 0),
+                                BackgroundColor3 = Color3.fromRGB(),
+                                BackgroundTransparency = 0,
+
+                                [Children] = {
+                                    Components.UIGradient(scope, {
+                                        Transparency = NumberSequence.new(1, 0.5)
+                                    })
+                                }
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "Inner",
+                                ZIndex = 2,
+
+                                [Children] = {
+                                    BKItemFilterView(scope, {
+                                        FilterTierList = self.FilterTierList,
+                                        FilterItemText = self.FilterItemText,
+                                        SortMethodList = self.SortMethodList
+                                    })
+                                }
+                            })
+                        }
                     })
                 }
             })
@@ -173,10 +235,6 @@ return function (plr: Player)
                 }),
 
 
-                CloseTab(scope, {
-                    ViewShownValue = self.IsUIShown
-                }),
-
                 Components.Frame(scope, {
                     Name = "FakeTopBG",
                     BackgroundTransparency = 0.1,
@@ -199,39 +257,6 @@ return function (plr: Player)
                     })
                 end),
 
-                Components.Frame(scope, {
-                    Name = "FilterOptions",
-                    AnchorPoint = Vector2.new(1, 0.5),
-                    BackgroundTransparency = 0,
-                    Size = UDim2.fromScale(0.28, 7),
-
-                    Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        local itemInfo = ItemLib:GetItemInfo(use(self.CurrentSelectedItem))
-                        if itemInfo == nil then
-                            return UDim2.fromScale(0.98, 0.8)
-                        end
-
-                        return UDim2.fromScale(0.67, 0.8)
-                    end),
-
-                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.FilterViewShown)
-                    end),
-
-                    [Children] = {
-                        Components.UICorner(scope, { CornerRadius = UDim.new(0.015, 0) }),
-
-                        Components.UIStroke(scope, {
-                            Thickness = 6,
-                            Color = Color3.new()
-                        }),
-
-                        BKItemFilterView(scope, {
-                            FilterTierList = self.FilterTierList,
-                            FilterItemText = self.FilterItemText
-                        })
-                    }
-                }),
 
                 Components.TextLabel(scope, {
                     Name = "WIPTitle",
@@ -381,7 +406,7 @@ return function (plr: Player)
                         Components.Frame(scope, {
                             Name = "Title",
                             AnchorPoint = Vector2.zero,
-                            Position = UDim2.fromScale(0.5, -1),
+                            Position = UDim2.fromScale(0.3, -1),
                             Size = UDim2.fromScale(0.48, 1),
                             ClipsDescendants = true,
 
@@ -406,7 +431,7 @@ return function (plr: Player)
                                 }),
                                 Components.Frame(scope, {
                                     Name = "Bar",
-                                    Size = UDim2.fromScale(1, 0.07),
+                                    Size = UDim2.fromScale(0.5, 0.07),
                                     BackgroundTransparency = 0.8,
                                     BackgroundColor3 = Components.WHITE_COLOR,
                                     LayoutOrder = 2,
@@ -416,7 +441,8 @@ return function (plr: Player)
                         Components.Frame(scope, {
                             Name = "Materials",
                             AnchorPoint = Vector2.zero,
-                            Position = UDim2.fromScale(0.5, 0),
+                            Position = UDim2.fromScale(0.3, 0),
+                            ZIndex = 2,
 
                             [Children] = {
                                 Components.UIListLayout(scope, {

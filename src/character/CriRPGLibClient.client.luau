@@ -506,9 +506,10 @@ function CriRPGLib:_ListenProjectileSpawnTracker()
     end))
     Add(CollectionService:GetInstanceAddedSignal("EnemyProjectile"):Connect(function(projectile: Model)
         if ProjectileLib[projectile.Name] then
-            Promise.try(ProjectileLib[projectile.Name], projectile, projectileContainer):catch(function(err)
-                if RunService:IsStudio() then warn(tostring(err)) end
-            end)
+            local success, err = pcall(ProjectileLib[projectile.Name], projectile, projectileContainer)
+            if not success and RunService:IsStudio() then
+                warn(err)
+            end
         else
             warn("Invalid projectile ID: ".. projectile.Name)
         end
@@ -595,9 +596,10 @@ function CriRPGLib:_ListenClassSPSceneTracker()
             return
         end
 
-        Promise.try(ClassSPSceneLib[sceneId], data.Caster, data.ProjectileUniqueId):catch(function(err)
-            if RunService:IsStudio() then warn(tostring(err)) end
-        end)
+        local success, err = pcall(ClassSPSceneLib[sceneId], data.Caster, data.ProjectileUniqueId)
+        if not success and RunService:IsStudio() then
+            warn(err)
+        end
     end))
 end
 

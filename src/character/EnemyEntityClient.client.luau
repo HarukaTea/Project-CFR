@@ -136,15 +136,17 @@ Add(Events.ApplyHighlightForEntity.On(function(data)
 end))
 local storagePromise = Promise.try(function()
     while wait(0.5) do
+        local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
+
         for _, entityObj in allEntityPool do
             if not entityObj.IsReady then continue end
             if not ClientLib:IsModelValid(entityObj.Entity) then continue end
 
             pcall(function()
                 local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
-                if distance < 189 and distance > 0 then
+                if distance < entityRenderDistance and distance > 0 then
                     entityObj.Entity.Parent = workspace.Entities
-                elseif distance >= 200 and entityObj.HasModel then
+                elseif distance >= entityRenderDistance + 20 then
                     entityObj.Entity.Parent = entityStorage
                 end
             end)
@@ -529,6 +531,9 @@ local function initEntity(enemy: Model)
     end
 end
 for _, enemy: Model in CollectionService:GetTagged("EnemyEntity") do
-    Promise.try(initEntity, enemy)
+    local success, err = pcall(initEntity, enemy)
+    if not success then
+        warn(err)
+    end
 end
 CollectionService:GetInstanceAddedSignal("EnemyEntity"):Connect(initEntity)

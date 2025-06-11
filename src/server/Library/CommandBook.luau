@@ -154,8 +154,8 @@ local commands = {
             {
                 Name = "stat_id",
                 Type = "enum",
-                EnumItems = HarukaLib.TableUtils().Keys(
-                    HarukaLib.TableUtils().Filter(CharTemplate, function(val, key, tbl)
+                EnumItems = HarukaLib.TableUtils.Keys(
+                    HarukaLib.TableUtils.Filter(CharTemplate, function(val, key, tbl)
                         return string.find(key, "Base")
                     end)
                 )
@@ -195,7 +195,7 @@ local commands = {
             {
                 Name = "item_id",
                 Type = "enum",
-                EnumItems = HarukaLib.TableUtils().Merge(ItemLib:GetAllItems(), { "all" })
+                EnumItems = HarukaLib.TableUtils.Merge(ItemLib:GetAllItems(), { "all" })
             },
             {
                 Name = "item_amount",
@@ -282,7 +282,7 @@ local commands = {
         },
 
         Callback = function(props: CallbackProps)
-            HarukaLib:BanPlayer(props.Args[1], {
+            HarukaLib:BanPlayerByUserId(props.Args[1].UserId, {
                 Duration = props.Args[2] * 60 * 60,
                 DisplayReason = "Banned by Shroomhaven Temple",
                 PrivateReason = "Banned by Shroomhaven Panel",
@@ -422,7 +422,7 @@ local commands = {
             {
                 Name = "entity_id",
                 Type = "enum",
-                EnumItems = HarukaLib.TableUtils().Keys(EntityBook)
+                EnumItems = HarukaLib.TableUtils.Keys(EntityBook)
             },
             {
                 Name = "level",

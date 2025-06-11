@@ -151,7 +151,7 @@ return function(scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(1, 0.55),
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return not HarukaLib.TableUtils().IsEmpty(use(effectList))
+            return not HarukaLib.TableUtils.IsEmpty(use(effectList))
         end),
 
         [Children] = {

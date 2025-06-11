@@ -49,6 +49,10 @@ return function(plr: Player)
 
 	}, {
         BottomProps = {
+            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                return use(self.IsUIShown2)
+            end),
+
             [Children] = {
                 CharacterStatsView(scope, {
                     Class = self.Class,
@@ -114,6 +118,11 @@ return function(plr: Player)
             }
         },
         CenterProps = {
+            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                return use(self.IsUIShown2)
+            end),
+
+
             [Children] = {
                 Components.Frame(scope, {
                     Name = "ItemDropsDiv",
@@ -215,7 +224,7 @@ return function(plr: Player)
 
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, { "Backpack", "Character", "Guild", "Settings" }, function(_, scope: Fusion.Scope, index: number, slot: string)
+                        Fusion.ForPairs(scope, { "Backpack", "Character", "Guild", "PerkTree", "Settings" }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,
                                 Index = index
@@ -228,6 +237,10 @@ return function(plr: Player)
                     Name = "LevelEXP",
                     AnchorPoint = Vector2.new(0.5, 0),
                     Position = UDim2.fromScale(0.5, 1.5),
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.IsUIShown2)
+                    end),
 
                     [Children] = {
                         Components.UIScale(scope, {
@@ -246,7 +259,5 @@ return function(plr: Player)
 
 	return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

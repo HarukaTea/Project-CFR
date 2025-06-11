@@ -381,10 +381,14 @@ end
 
 
 function PlayerLib:_Remove()
-    Promise.try(function()
+    local success, err = pcall(function()
         self:_SaveData()
     end)
-    Promise.try(function()
+    if not success then
+        warn(err)
+    end
+
+    pcall(function()
         self:_RemoveChestAcquire()
     end)
 end

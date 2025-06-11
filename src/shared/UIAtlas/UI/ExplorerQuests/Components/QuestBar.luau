@@ -24,7 +24,7 @@ return function (scope: Fusion.Scope, props: {
         return nil
     end
 
-    local notHasObjective = HarukaLib.TableUtils().IsEmpty(QuestBook[questId].Objectives)
+    local notHasObjective = HarukaLib.TableUtils.IsEmpty(QuestBook[questId].Objectives)
     local objectiveVals = {}
     if not notHasObjective then
         for index: number, objectiveInfo: table in QuestBook[questId].Objectives do

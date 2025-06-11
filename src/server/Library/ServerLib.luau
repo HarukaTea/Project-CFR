@@ -266,6 +266,7 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 		itemVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 		itemVal:SetAttribute("ItemStat", randomStat)
 		itemVal:SetAttribute("Level", itemInfo.Level)
+		itemVal:SetAttribute("IsNew", true)
 
 		itemVal.Parent = items
 	end

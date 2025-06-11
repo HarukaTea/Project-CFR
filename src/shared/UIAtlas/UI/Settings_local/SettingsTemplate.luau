@@ -6,6 +6,8 @@ local UserInputService = game:GetService("UserInputService")
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 
+--// TODO: combat encounter mode dropdown
+
 local template = {
     Sounds = {
         PanelTitle = "Sounds",
@@ -20,7 +22,6 @@ local template = {
 				Min = 0,
 				Max = 2,
 				DefaultValue = 1,
-				Increasement = 0.1,
 
 				ValChanged = Signal.new()
 			},
@@ -32,7 +33,6 @@ local template = {
 				Min = 0,
 				Max = 2,
 				DefaultValue = 1.2,
-				Increasement = 0.1,
 
 				ValChanged = Signal.new()
 			},
@@ -44,7 +44,6 @@ local template = {
 				Min = 0,
 				Max = 2,
 				DefaultValue = 0.9,
-				Increasement = 0.1,
 
 				ValChanged = Signal.new()
 			},
@@ -56,7 +55,6 @@ local template = {
 				Min = 0,
 				Max = 2,
 				DefaultValue = 0.9,
-				Increasement = 0.1,
 
 				ValChanged = Signal.new()
 			}
@@ -75,9 +73,15 @@ local template = {
 				Min = 0.8,
 				Max = 1.2,
 				DefaultValue = if UserInputService.TouchEnabled then 1.1 else 1,
-				Increasement = 0.1,
 
 				ValChanged = Signal.new()
+			},
+			HideUI = {
+				OptionTitle = "Hide UI",
+				Type = "Switcher",
+				LayoutOrder = 2,
+
+				DefaultValue = false,
 			},
 		}
 	},
@@ -106,6 +110,31 @@ local template = {
 				LayoutOrder = 3,
 
 				DefaultValue = true,
+			},
+			WindEffect = {
+				OptionTitle = "Wind Effect",
+				Type = "Switcher",
+				LayoutOrder = 4,
+
+				DefaultValue = true,
+			},
+			RainEffect = {
+				OptionTitle = "Rain Effect",
+				Type = "Switcher",
+				LayoutOrder = 5,
+
+				DefaultValue = true,
+			},
+			EntityRenderDistance = {
+				OptionTitle = "Entity Render Distance",
+				Type = "Slider",
+				LayoutOrder = 6,
+
+				Min = 159,
+				Max = 999,
+				DefaultValue = 189,
+
+				ValChanged = Signal.new()
 			},
 		}
 	}

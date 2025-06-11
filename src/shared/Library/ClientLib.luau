@@ -14,6 +14,8 @@ local ClientLib = {}
 
 
 function ClientLib:WeldModel(part: Part, welded: Model)
+	--// TODO: check any existing weld that uses motor6d
+
 	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
 	local C = welded:GetChildren()
 	if welded:FindFirstChild("Meshes") then
@@ -156,7 +158,9 @@ function ClientLib:TrackEffectListToUI(props: {
 	Target: Model,
 	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
-})
+}) : Fusion.Value
+
+	--// TODO: revamp the ways that check effect list
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 
 
@@ -227,6 +231,41 @@ function ClientLib:TrackEffectListToUI(props: {
 	end)
 
 	return effectListEnemy
+end
+
+
+function ClientLib:TrackInputTextbox(props: {
+	Scope: Fusion.Scope,
+	TextBox: TextBox,
+
+	Callback: (amountVal: Fusion.Value) -> nil
+}): Fusion.Value
+
+	local amount = Fusion.Value(props.Scope, 1)
+
+	props.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+		if tostring(Fusion.peek(amount)) == props.TextBox.Text then return end --- infinite loop prevention
+
+		local text = props.TextBox.Text :: string
+		local input = tonumber(text)
+
+		if input == nil then input = 1 end
+		if input ~= input then input = 1 end
+
+		input = math.floor(input)
+		input = math.clamp(input, 1, 99)
+
+		amount:set(input)
+
+		props.TextBox.Text = tostring(input)
+	end)
+
+	Fusion.Observer(props.Scope, amount):onBind(function()
+		props.TextBox.Text = tostring(Fusion.peek(amount))
+		props.Callback(amount)
+	end)
+
+	return amount
 end
 
 

@@ -34,6 +34,10 @@ return function (plr: Player)
         DisplayOrder = UIPriorityBook.Normal,
         Parent = plr.PlayerGui,
 
+        Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            return use(self.IsUIShown2)
+        end),
+
         [Children] = {
             Fusion.New(scope, "Folder")({
                 Name = "EnemyEntity_HPBars",

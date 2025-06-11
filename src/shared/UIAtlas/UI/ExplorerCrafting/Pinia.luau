@@ -32,6 +32,15 @@ return function (self: table)
         table.insert(self.FilterTierList, Value(true))
     end
 
+    self.SortMethodList = {
+
+    }
+    for _ = 1, 4 do
+        table.insert(self.SortMethodList, Value(false))
+    end
+    self.SortMethodList[1]:set(true)
+
+
     self.CurrentSelectedItem = Value("")
     self.CurrentSelectedItemUniqueId = Value("")
     self.CurrentCategory = Value("Crafting")
@@ -59,6 +68,7 @@ return function (self: table)
             if newPanel == nil then return end
 
             self.IsUIShown:set(newPanel == "Crafting")
+            self.FilterViewShown:set(false)
         end
     }))
     table.insert(scope, Events.OpenCraftingUI.On(function(data)

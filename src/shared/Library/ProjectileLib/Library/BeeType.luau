@@ -19,18 +19,16 @@ return function (self)
 
 
     ProjectileLib.BeeMove1 = function(projectile: Model, container: Folder)
-        Promise.try(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
-            ShouldDetail = true,
+        pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
+            ShouldDetail = false,
             Size = "Small"
-        }):catch(function() end)
-
-
-        Promise.delay(0.5):andThen(function()
+        })
+        pcall(function()
+            wait(0.5)
             ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
                 sProjectile:PivotTo(projectile.PrimaryPart.CFrame)
             end)
-
-        end):catch(function() end)
+        end)
     end
     ProjectileLib.LeafDragonMove1 = ProjectileLib.BeeMove1
 

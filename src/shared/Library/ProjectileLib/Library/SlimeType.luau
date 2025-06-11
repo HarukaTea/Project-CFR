@@ -22,7 +22,7 @@ return function (self)
     ProjectileLib.SlimeMove1_1 = function(projectile: Model, container: Folder)
         local entity = projectile.Owner.Value :: Model
 
-        Promise.try(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
+        pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Small"
         }):catch(function() end)
@@ -44,7 +44,7 @@ return function (self)
             projectile.Shot:PivotTo(projectile.Shot.Base.CFrame * CFrame.Angles(angle, 0, 0))
 
             local rotatingangle = angle * 2
-            HarukaLib:Tween(projectile.Shot, AssetBook.TweenInfos.half, { Pivot = projectile.Shot.Base.CFrame * CFrame.Angles(-rotatingangle, 0, 0) }):Wait()
+            HarukaLib:Tween(projectile.Shot, AssetBook.TweenInfos.half, { Pivot = projectile.Shot.Base.CFrame * CFrame.Angles(-rotatingangle, 0, 0) }, true):Wait()
 
             projectile.Shot:Destroy()
         end):catch(function()  end)
@@ -54,8 +54,7 @@ return function (self)
             ProjectileLib._spawnProjectile(projectile, container, 10, function(sProjectile: Model)
                 sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
             end)
-
-        end):catch(function() end)
+        end)
     end
     ProjectileLib.GreenSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.WheatSlimeMove1_1 = ProjectileLib.SlimeMove1_1
@@ -68,10 +67,10 @@ return function (self)
 
 
     ProjectileLib.SlimeMove2_2 = function(projectile: Model, container: Folder)
-        Promise.try(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
+        pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Small"
-        }):catch(function() end)
+        })
 
         wait(0.5)
         if projectile:FindFirstChildWhichIsA("Sound", true) then
@@ -117,10 +116,10 @@ return function (self)
 
 
     ProjectileLib.PurpleSlimeMove3 = function(projectile: Model, container: Folder)
-        Promise.try(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
+        pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Big"
-        }):catch(function() end)
+        })
 
         wait(0.5)
         for i = 1, 2 do
@@ -161,10 +160,10 @@ return function (self)
         for i = 1, 10 do
             for _, part: BasePart in projectile:GetDescendants() do
                 if part.Name == "Position"..i then
-                    Promise.try(ProjectileLib._rotateAttentionPoint, part, container, {
+                    pcall(ProjectileLib._rotateAttentionPoint, part, container, {
                         ShouldDetail = true,
                         Size = "Small"
-                    }):catch(function() end)
+                    })
                 end
             end
             wait(0.1)
@@ -233,7 +232,8 @@ return function (self)
             end
         end
 
-        Promise.delay(0.3):andThen(function()
+        pcall(function()
+            wait(0.3)
             HarukaLib:CreateTween(projectile.BlastCenter, blastInfo, {
                 Size = projectile.BlastCenter.Size - Vector3.yAxis * 22,
             }):Play()
@@ -249,8 +249,7 @@ return function (self)
             HarukaLib:CreateTween(projectile.Blast4, blastInfo, {
                 Size = projectile.Blast4.Size - Vector3.yAxis * 15
             }):Play()
-
-        end):catch(function() end)
+        end)
     end
     ProjectileLib.WheatSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.CrimsonSlimeBlast = ProjectileLib.SlimeBlast
@@ -267,7 +266,8 @@ return function (self)
     ProjectileLib.CrimsonSlimeBomb = function(projectile: Model, container: Folder)
         Debris:AddItem(projectile, 5)
 
-        Promise.delay(1):andThen(function()
+        pcall(function()
+            wait(1)
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
 
             projectile.Bomb1.Transparency = 0
@@ -285,15 +285,14 @@ return function (self)
             projectile:AddTag("PierceEntity")
 
             HarukaLib:CreateTween(projectile.Bomb1, AssetBook.TweenInfos.half, {
-                Size = projectile.Bomb1.Size + Vector3.one * 16,
+                Size = projectile.Bomb1.Size + Vector3.one * 10,
                 Transparency = 1
             }):Play()
             HarukaLib:CreateTween(projectile.Bomb2, AssetBook.TweenInfos.half, {
-                Size = projectile.Bomb2.Size + Vector3.one * 25,
+                Size = projectile.Bomb2.Size + Vector3.one * 18,
                 Transparency = 1
             }):Play()
-
-        end):catch(function() end)
+        end)
     end
     ProjectileLib.PurpleSlimeBomb = ProjectileLib.CrimsonSlimeBomb
     ProjectileLib.EvolvedGreenSlimeBomb = ProjectileLib.CrimsonSlimeBomb

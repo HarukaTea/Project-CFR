@@ -71,7 +71,8 @@ return function (plr: Player)
                 }),
 
                 CharStatPanel(scope, {
-                    StatList = self.Stats
+                    StatList = self.Stats,
+                    BaseStatList = self.BaseStats
                 })
             }
         }

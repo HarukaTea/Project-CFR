@@ -73,7 +73,7 @@ function ServerWorldLib:_DoCreateCraftingProductEntities()
     for _, product in ItemLib:GetAllItems() do
         local info = ItemLib:GetItemInfo(product)
 
-        if HarukaLib.TableUtils().IsEmpty(info.RecipeDesync) then continue end
+        if HarukaLib.TableUtils.IsEmpty(info.RecipeDesync) then continue end
 
         local productVal = Instance.new("IntConstrainedValue")
         productVal.Name = info.ItemId
@@ -326,6 +326,13 @@ function ServerWorldLib:_DoMarketNPCOptimizeInit()
             animTrack.Priority = Enum.AnimationPriority.Idle
 
             animTrack:Play()
+        end
+        if npc:IsA("ProximityPrompt") and npc.Parent and npc.Parent.Parent then
+            local marketModel = npc.Parent.Parent :: Model
+
+            if marketModel:IsA("Model") and string.find(marketModel.Name, "Market") then
+                marketModel:AddTag("MarketEntity")
+            end
         end
     end
     for _, product: Instance in workspace.MapComponents.Markets:GetDescendants() do

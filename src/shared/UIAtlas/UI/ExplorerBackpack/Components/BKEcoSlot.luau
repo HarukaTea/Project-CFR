@@ -75,7 +75,7 @@ return function(scope: Fusion.Scope, props: {
                     if use(isSelecting) then
                         return HarukaLib:CommaifyNumber(currency)
                     else
-                        return HarukaLib:NumberConvert(currency, 1)
+                        return HarukaLib:NumberConvertToCurrencyString(currency, 1)
                     end
                 end),
 
