@@ -472,6 +472,7 @@ function ClientWorldLib:_ListenItemDisplayTracker()
         location += Vector3.new(
             math.random(-4, 4), 0, math.random(-4, 4)
         )
+        location = ClientLib:FindGroundByRay(location)
 
         for _ = 1, data.ItemAmount do
             local itemSphere = ReplicatedStorage.Packages.Effects.ItemDisplay:Clone() :: BasePart

@@ -9,7 +9,6 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
 local SliderForSettings = require(script.Components.Slider)
-local Dropdown = require(script.Components.Dropdown)
 local Switcher = require(script.Components.Switcher)
 
 local Children = Fusion.Children

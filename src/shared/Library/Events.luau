@@ -1418,6 +1418,7 @@ local returns = {
 	RequestToStartCombat = {
 		Fire = function(Value: ({
 			["Entity"]: ((Model)?),
+			["CombatMode"]: ((string)?),
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
@@ -1429,6 +1430,18 @@ local returns = {
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
+			end
+			if Value["CombatMode"] == nil then
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			else
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
+				local len_45 = #Value["CombatMode"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
+				alloc(len_45)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["CombatMode"], len_45)
 			end
 		end,
 	},
@@ -1450,11 +1463,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_45 = #Value["ItemId"]
+				local len_46 = #Value["ItemId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
-				alloc(len_45)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_45)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
+				alloc(len_46)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_46)
 			end
 		end,
 	},
@@ -1471,11 +1484,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_46 = #Value["ItemId"]
+				local len_47 = #Value["ItemId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
-				alloc(len_46)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_46)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
+				alloc(len_47)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_47)
 			end
 			if Value["ItemUniqueId"] == nil then
 				alloc(1)
@@ -1483,11 +1496,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_47 = #Value["ItemUniqueId"]
+				local len_48 = #Value["ItemUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
-				alloc(len_47)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_47)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
+				alloc(len_48)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_48)
 			end
 		end,
 	},
@@ -1504,11 +1517,11 @@ local returns = {
 			else
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-				local len_48 = #Value["SettingId"]
+				local len_49 = #Value["SettingId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
-				alloc(len_48)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SettingId"], len_48)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
+				alloc(len_49)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SettingId"], len_49)
 			end
 			if Value["SettingValue"] == nil then
 				alloc(1)

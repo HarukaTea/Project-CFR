@@ -21,7 +21,7 @@ rainSound.Volume = 0
 --// Private functions
 
 local function adjustRain(rainLevel: number)
-	if rainLevel <= 0 then
+	if rainLevel <= 0 or not workspace:GetAttribute("RainEffectEnabled") then
 		Particles:Disable()
 
 		HarukaLib:CreateTween(rainSound, AssetBook.TweenInfos.half, {
@@ -46,5 +46,12 @@ HarukaLib:Hydrate(Lighting, {
 		if not newLevel then return end
 
 		adjustRain(newLevel)
-	end
+	end,
+})
+HarukaLib:Hydrate(workspace, {
+	["Attr-RainEffectEnabled"] = function(state: boolean)
+		state = state or false
+
+		adjustRain(Lighting:GetAttribute("RainLevel") or 0)
+	end,
 })

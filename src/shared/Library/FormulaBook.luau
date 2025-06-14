@@ -7,7 +7,7 @@ local formulas = {
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_MAX_DEX_POINTS = 50,
 
-    EXPEvent = 3,
+    EXPEvent = 1,
 
 
     PlayerLevelCurveCal = function(props: {

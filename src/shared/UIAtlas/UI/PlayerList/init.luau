@@ -149,10 +149,6 @@ return function(plr: Player)
     self.UI = UI
 
 
-    require(script.Anims)(UI, self)
-
-
-
     return function ()
         Fusion.doCleanup(scope)
 

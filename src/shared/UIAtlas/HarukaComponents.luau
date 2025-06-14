@@ -145,10 +145,18 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: table, list
 		listProps.Padding = Fusion.Computed(scope, function(use: Fusion.Use, _)
 			if fillDirection == "Vertical" then
 				local Y = use(VPSize).Y
-				return UDim.new(0, Y / (DESIGN_VP_SIZE.Y / originalPadding.Offset))
+				local finalY = Y / (DESIGN_VP_SIZE.Y / originalPadding.Offset)
+
+				finalY = math.min(originalPadding.Offset, finalY)
+
+				return UDim.new(0, finalY)
 			elseif fillDirection == "Horizontal" then
 				local X = use(VPSize).X
-				return UDim.new(0, X / (DESIGN_VP_SIZE.X / originalPadding.Offset))
+				local finalX = X / (DESIGN_VP_SIZE.X / originalPadding.Offset)
+
+				finalX = math.min(originalPadding.Offset, finalX)
+
+				return UDim.new(0, finalX)
 			end
 		end)
 

@@ -156,7 +156,6 @@ return function (plr: Player)
                                 CurrentSelectedItem = Fusion.Value(scope, ""),
                                 CurrentSelectedItemUniqueId = Fusion.Value(scope, ""),
                                 CurrentCategory = self.CurrentCategory,
-                                CurrentItemLimit = Fusion.Value(scope, 100),
                             })
                         end)
                     }

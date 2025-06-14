@@ -12,9 +12,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 
---// TODO: rain effect toggle, wind effect toggle
---// TODO: make setttings saveable
-
 return function (self: table)
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
@@ -26,6 +23,10 @@ return function (self: table)
 
     workspace:SetAttribute("RainEffectEnabled", true)
     workspace:SetAttribute("WindEffectEnabled", true)
+
+    workspace:SetAttribute("CombatMode", "Public")
+
+    self.SettingsFolder = self.plr:WaitForChild("CriRPGSettings", 999) :: Folder
 
     self.PanelSelected = Value("Graphics")
     self.IsSettingsShown = Value(false)
@@ -70,8 +71,13 @@ return function (self: table)
         for optionId: string, optionInfo: table in panelInfo.Includes do
             if optionInfo.Type ~= "Slider" then continue end
 
-            self.SliderProgressVals[panelId][optionId] = Value((optionInfo.DefaultValue - optionInfo.Min) / (optionInfo.Max - optionInfo.Min))
-            self.SliderVals[panelId][optionId] = Value(optionInfo.DefaultValue)
+            local defaultValue = optionInfo.DefaultValue
+            if self.SettingsFolder:FindFirstChild(optionId) then
+                defaultValue = self.SettingsFolder[optionId].Value
+            end
+
+            self.SliderProgressVals[panelId][optionId] = Value((defaultValue - optionInfo.Min) / (optionInfo.Max - optionInfo.Min))
+            self.SliderVals[panelId][optionId] = Value(defaultValue)
 
             table.insert(scope, optionInfo.ValChanged)
         end
@@ -83,7 +89,12 @@ return function (self: table)
         for optionId: string, optionInfo: table in panelInfo.Includes do
             if optionInfo.Type ~= "Switcher" then continue end
 
-            self.SwitcherVals[panelId][optionId] = Value(optionInfo.DefaultValue)
+            local defaultValue = optionInfo.DefaultValue
+            if self.SettingsFolder:FindFirstChild(optionId) then
+                defaultValue = self.SettingsFolder[optionId].Value
+            end
+
+            self.SwitcherVals[panelId][optionId] = Value(defaultValue)
         end
     end
 
@@ -227,5 +238,64 @@ return function (self: table)
         local state = Fusion.peek(self.SwitcherVals.Graphics.RainEffect)
 
         workspace:SetAttribute("RainEffectEnabled", state)
+    end)
+
+
+    --// track solo/public/party combat
+    local soloObserver = Fusion.Observer(scope, self.SwitcherVals.Game.SoloCombatMode)
+    soloObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Game.SoloCombatMode)
+        local state2 = Fusion.peek(self.SwitcherVals.Game.PublicCombatMode)
+        local state3 = Fusion.peek(self.SwitcherVals.Game.PartyCombatMode)
+
+        if state then
+            self.SwitcherVals.Game.PublicCombatMode:set(false)
+            self.SwitcherVals.Game.PartyCombatMode:set(false)
+
+            workspace:SetAttribute("CombatMode", "Solo")
+
+        elseif not state and not state2 and not state3 then
+            self.SwitcherVals.Game.PublicCombatMode:set(true)
+            workspace:SetAttribute("CombatMode", "Public")
+        end
+    end)
+
+    local publicObserver = Fusion.Observer(scope, self.SwitcherVals.Game.PublicCombatMode)
+    publicObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Game.PublicCombatMode)
+        local state2 = Fusion.peek(self.SwitcherVals.Game.SoloCombatMode)
+        local state3 = Fusion.peek(self.SwitcherVals.Game.PartyCombatMode)
+
+        if state then
+            self.SwitcherVals.Game.SoloCombatMode:set(false)
+            self.SwitcherVals.Game.PartyCombatMode:set(false)
+
+            workspace:SetAttribute("CombatMode", "Public")
+
+        elseif not state and not state2 and not state3 then
+            workspace:SetAttribute("CombatMode", "Public")
+
+            task.defer(function()
+                self.SwitcherVals.Game.PublicCombatMode:set(true)
+            end)
+        end
+    end)
+
+    local partyObserver = Fusion.Observer(scope, self.SwitcherVals.Game.PartyCombatMode)
+    partyObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Game.PartyCombatMode)
+        local state2 = Fusion.peek(self.SwitcherVals.Game.SoloCombatMode)
+        local state3 = Fusion.peek(self.SwitcherVals.Game.PublicCombatMode)
+
+        if state then
+            self.SwitcherVals.Game.SoloCombatMode:set(false)
+            self.SwitcherVals.Game.PublicCombatMode:set(false)
+
+            workspace:SetAttribute("CombatMode", "Party")
+
+        elseif not state and not state2 and not state3 then
+            self.SwitcherVals.Game.PublicCombatMode:set(true)
+            workspace:SetAttribute("CombatMode", "Public")
+        end
     end)
 end

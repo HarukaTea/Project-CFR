@@ -19,7 +19,7 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
-local HarukaPathCreator = require(ServerScriptService.HarukaServer.Shared.HarukaPathCreator)
+local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
@@ -27,6 +27,26 @@ local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
 local EntityStatLimitTemplate = require(ServerScriptService.HarukaServer.Library.EntityLimitTemplate)
+
+
+local PATH_COSTS = {
+    Grass = 0,
+    Plastic = 0,
+    SmoothPlastic = 0,
+
+    Slate = 10,
+    Wood = 10,
+    WoodPlanks = 10,
+    DangerZone = math.huge
+}
+local PATH_FOR_DETECTING = PathCreator.View({
+    Costs = PATH_COSTS,
+    AgentCanJump = false,
+    AgentCanClimb = false,
+    PathSettings = {
+        SupportPartialPath = false
+    }
+})
 
 
 local allEntityPool = {}
@@ -65,19 +85,36 @@ entityContainer.Parent = workspace
 --// Init once
 local enemyDiedSignal = Signal.new()
 local enterCombatSignal = Signal.new()
+local joinCombatSignal = Signal.new()
 local destroyEntityObjSignal = Signal.new()
 
-enterCombatSignal:Connect(function(entity: Model, target: Model)
+enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: string)
     if not ServerLib:IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
-    if not entity:GetAttribute("IsReady") then return end
+
+    if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then return end
 
 
     if not ServerLib:IsCharValid(target) then return end
     if target:GetAttribute("IsInCombat") then return end
-    if target:GetAttribute("EnteringCombat") then return end
+    if target:GetAttribute("CombatLocation_Encounter") then return end
 
+
+    for _, entityObj in allEntityPool do
+        if entityObj.Entity == entity then
+            entityObj:_EnterCombat(target, combatMode)
+            break
+        end
+    end
+end)
+joinCombatSignal:Connect(function(entity: Model, target: Model)
+    if not ServerLib:IsCharValid(entity) then return end
+    if entity:GetAttribute("IsInCombat") then return end
+    if entity:GetAttribute("EnteringCombat") then return end
+    if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") < 3 then return end
+
+    if not ServerLib:IsCharValid(target) then return end
 
     for _, entityObj in allEntityPool do
         if entityObj.Entity == entity then
@@ -89,7 +126,7 @@ end)
 destroyEntityObjSignal:Connect(function(uniqueId: string)
     local entityObj = allEntityPool[uniqueId]
     if entityObj then
-        Promise.delay(1.599):andThenCall(entityObj.Destroy, entityObj)
+        Promise.delay(1.599):andThenCall(entityObj.EntityDestroy, entityObj)
     end
 end)
 Players.PlayerRemoving:Connect(function(player)
@@ -105,28 +142,20 @@ Players.PlayerRemoving:Connect(function(player)
         end)
     end
 end)
-enemyDiedSignal:Connect(function(info: {
-    Name: string,
-    Location: CFrame,
-    Level: number
-})
+enemyDiedSignal:Connect(function(uniqueId: string)
+    local entityObj = allEntityPool[uniqueId]
+    if not entityObj then
+        warn("Error finding entity object when respawning enemy")
+        return
+    end
+
     Promise.delay(12):andThen(function()
-        local locator = HarukaLib:CreateMockPart()
-        locator.Name = info.Name
-
-        locator.Size = Vector3.new(5, 2, 5)
-        locator.CFrame = info.Location
-
-        locator:AddTag("EnemyLocatorEntity")
-        locator:SetAttribute("Level", info.Level)
-
-        locator.Parent = workspace.Enemies
+        entityObj:EntityInit()
     end)
-
 
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
     countdown.Transparency = 1
-    countdown.CFrame = info.Location
+    countdown.CFrame = entityObj.Locator.CFrame
     countdown.Parent = workspace
     Maid:AddItem(countdown, 12)
 
@@ -141,12 +170,16 @@ enemyDiedSignal:Connect(function(info: {
 end)
 Events.RequestToStartCombat.SetCallback(function(plr: Player, data)
     local entity = data.Entity
+    local combatMode = data.CombatMode
+    if not combatMode then return end
+
+
     if not ServerLib:IsCharValid(entity) then return end
 
     local char = plr.Character
     if not ServerLib:IsCharValid(char) then return end
 
-    enterCombatSignal:Fire(entity, char)
+    enterCombatSignal:Fire(entity, char, combatMode)
 end)
 ServerBindables.PlayerDied:Connect(function(charId: string)
     for _, entityObj in allEntityPool do
@@ -181,9 +214,6 @@ end
 function EntityLib.new(locator: BasePart)
     if locator:GetAttribute("HarukaUniqueId") then return end
 
-    _enemyVariant(locator)
-
-
     local self = setmetatable({}, EntityLib)
 
     self.Locator = locator
@@ -213,16 +243,17 @@ function EntityLib:Init()
         end
     end))
 
+    self:EntityInit()
+end
 
+
+function EntityLib:EntityInit()
     self:_SpawnModel()
     self:_ListenStatsTracker()
     self:_ListenStatLimitTracker()
-
     self:_RoamTask()
 
-    self.IsReady = true
-
-    self.WholeAdd(HarukaLib.Clock(5, function()
+    self.Add(HarukaLib.Clock(5, function()
         local targetingList = self.Entity.TargetingList
 
         for _, targetObj: ObjectValue in targetingList:GetChildren() do
@@ -233,9 +264,36 @@ function EntityLib:Init()
         end
     end))
 
-    Promise.delay(1):andThen(function()
-        self.Entity:SetAttribute("IsReady", true)
-    end)
+    self.IsInCombat = false
+    self.IsDead = false
+    self.EntityDestroyed = false
+end
+
+
+function EntityLib:EntityDestroy()
+    if self.Destroyed then return end
+    if self.EntityDestroyed then return end
+
+    self.EntityDestroyed = true
+
+
+    local noRespawn = false
+    if self.Locator then
+        if self.Locator:GetAttribute("NoRespawn") then
+            noRespawn = true
+        end
+    end
+    if not noRespawn then
+        enemyDiedSignal:Fire(self.UniqueId)
+    end
+
+
+    self.RoamEmpty()
+    self.Empty()
+
+    if self.EntityObj then
+        self.EntityObj:Destroy()
+    end
 end
 
 
@@ -245,26 +303,8 @@ function EntityLib:Destroy()
     self.Destroyed = true
     allEntityPool[self.UniqueId] = nil
 
-    local noRespawn = false
-
-    if self.Locator then
-        if self.Locator:GetAttribute("NoRespawn") then
-            noRespawn = true
-        end
-    end
-    if not noRespawn then
-        enemyDiedSignal:Fire({
-            Name = self.Locator.Name,
-            Level = self.Locator:GetAttribute("Level"),
-            Location = self.Locator.CFrame
-        })
-    end
-    if self.EntityObj then
-        self.EntityObj:Destroy()
-    end
-
-    self.Empty()
     self.RoamEmpty()
+    self.Empty()
     self.WholeEmpty()
 end
 
@@ -273,7 +313,9 @@ end
 
 
 function EntityLib:_SpawnModel()
-    if self.HasModel then return end
+    if ServerLib:IsModelValid(self.Entity) then return end
+
+    _enemyVariant(self.Locator)
 
 
     local locator = self.Locator :: BasePart
@@ -289,7 +331,6 @@ function EntityLib:_SpawnModel()
 
     local uniqueId = HttpService:GenerateGUID(false)
     model:SetAttribute("HarukaUniqueId", uniqueId)
-    model:SetAttribute("IsLeader", locator:GetAttribute("IsLeader"))
 
 
     self.UniqueId = uniqueId
@@ -317,6 +358,7 @@ function EntityLib:_SpawnModel()
 	model.PrimaryPart.CollisionGroup = "EnemyBodyPart"
 
     model:AddTag("EnemyEntity")
+    model:SetAttribute("SpawnClock", DateTime.now().UnixTimestamp)
 
 
 	local humanoid = Instance.new("Humanoid")
@@ -354,8 +396,6 @@ function EntityLib:_SpawnModel()
 	self.Entity = model
     self.BoundingSize = select(2, model:GetBoundingBox())
 
-    self.HasModel = true
-
     self.Add(model)
 
     self.Add(self.Entity.Humanoid.HealthChanged:Connect(function(health: number)
@@ -363,7 +403,7 @@ function EntityLib:_SpawnModel()
             if self.IsInCombat then
                 return
             end
-			self:Destroy()
+			self:EntityDestroy()
 		end
 	end))
 	self.Add(self.Entity.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
@@ -374,11 +414,11 @@ function EntityLib:_SpawnModel()
                 return
             end
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-                self:Destroy()
+                self:EntityDestroy()
                 return
             end
         else
-            self:Destroy()
+            self:EntityDestroy()
         end
 	end))
 
@@ -545,52 +585,21 @@ function EntityLib:_RoamTask()
     local locator = self.Locator :: BasePart
     local entity = self.Entity :: Model
 
-    local path, pathForDetecting = nil, nil
+    local path = nil
     if entity.Humanoid.WalkSpeed > 0 then
-        local costs = {
-            Grass = 0,
-            Plastic = 0,
-            SmoothPlastic = 0,
-
-            Slate = 10,
-            Wood = 10,
-            WoodPlanks = 10,
-            DangerZone = math.huge
-        }
-
-        path = HarukaPathCreator.new(entity, {
-            Costs = costs,
+        path = PathCreator.Humanoid(entity, {
+            Costs = PATH_COSTS,
             AgentCanJump = false,
             AgentCanClimb = false,
             PathSettings = {
                 SupportPartialPath = true
             }
         })
-        pathForDetecting = HarukaPathCreator.new(entity, {
-            Costs = costs,
-            AgentCanJump = false,
-            AgentCanClimb = false,
-            PathSettings = {
-                SupportPartialPath = false
-            }
-        })
-
         path.Visualize = RunService:IsStudio()
-
-
-        path.Events.Errored:Connect(function(errorType: string)
-            if errorType == "AgentStuck" or errorType == "AgentUnreachable" then
-                entity:PivotTo(locator.CFrame * CFrame.new(0, self.BoundingSize.Y / 2, 0) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0))
-            end
-        end)
 
         self.RoamAdd(function()
             path:Stop()
             path:Destroy()
-        end)
-        self.RoamAdd(function()
-            pathForDetecting:Stop()
-            pathForDetecting:Destroy()
         end)
     end
 
@@ -609,6 +618,7 @@ function EntityLib:_RoamTask()
             if entity:GetAttribute("IsInCombat") then break end
 
             if self.NearestChar then continue end
+            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
 
 
             local success, err = pcall(function()
@@ -626,7 +636,7 @@ function EntityLib:_RoamTask()
 
                     rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
 
-                    isValid = path:IsPathValid(rPos)
+                    isValid = path:Compute(entity.PrimaryPart.Position, rPos)
                     repeatTimes += 1
                 end
 
@@ -650,6 +660,8 @@ function EntityLib:_RoamTask()
 
 
             if entity:GetAttribute("IsInCombat") then break end
+            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
+
 
 
             Promise.new(function(resolve)
@@ -661,15 +673,16 @@ function EntityLib:_RoamTask()
 
                 for _, char: Model in nearestChars do
                     if not ServerLib:IsCharValid(char) then continue end
+
                     if char:GetAttribute("IsInCombat") then continue end
-                    if char:GetAttribute("EnteringCombat") then continue end
+                    if char:GetAttribute("CombatLocation_Encounter") then continue end
                     if char:FindFirstChild("CombatCooldown") then continue end
 
 
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
                     if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
-                        if pathForDetecting:IsPathValid(char.PrimaryPart.Position) then
+                        if PATH_FOR_DETECTING:Compute(entity.PrimaryPart.Position, char.PrimaryPart.Position) then
                             nearestDist = mag
                             nearestChar = char
                         end
@@ -692,7 +705,8 @@ function EntityLib:_RoamTask()
 
                         ServerLib:PlayWorldSound(SoundService.SFXs.Found, curPos)
                     end
-                    self.NearestChar = nearestChar
+
+                    self.NearestChar = nearestChar:GetAttribute("HarukaUniqueId")
                     entity:SetAttribute("NearestChar", nearestChar.Name)
 
                     path:Run(targetPos)
@@ -717,7 +731,7 @@ function EntityLib:_ErrorAndRespawn(step: number)
 end
 
 
-function EntityLib:_EnterCombat(target: Model)
+function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     if self.IsInCombat then return end
     self.IsInCombat = true
 
@@ -749,27 +763,6 @@ function EntityLib:_EnterCombat(target: Model)
 
 
     --// ready to fight
-    local nearbyCount = 0
-    local function _nearbyEnemyEnterCombat()
-        for _, entityObj: table in allEntityPool do
-            if nearbyCount >= 5 then break end
-
-            local thatEntity = entityObj.Entity :: Model
-            if not ServerLib:IsCharValid(thatEntity) then continue end
-
-            --// we don't call bosses
-            if entityObj.HasLeader then continue end
-            if entityObj.IsLeader then continue end
-            if entityObj.IsInCombat then continue end
-
-
-            if (thatEntity.PrimaryPart.Position - combatLocation.Position).Magnitude <= 32 then
-                enterCombatSignal:Fire(thatEntity, target)
-                nearbyCount += 1
-            end
-        end
-    end
-
     entity.Humanoid.WalkSpeed = 0
     entity.PrimaryPart.CanCollide = false
 
@@ -784,12 +777,32 @@ function EntityLib:_EnterCombat(target: Model)
 
 
     local encounterBorder: Model = nil
+    local nearbyCount = 0
+    local function _nearbyEnemyEnterCombat()
+        for _, entityObj: table in allEntityPool do
+            if nearbyCount >= 5 then break end
+
+            local thatEntity = entityObj.Entity :: Model
+            if not ServerLib:IsCharValid(thatEntity) then continue end
+
+            --// we don't call bosses
+            if entityObj.IsInCombat then continue end
+            if thatEntity:HasTag("BossEnemyEntity") then continue end
+
+            if (thatEntity.PrimaryPart.Position - combatLocation.Position).Magnitude <= 35 then
+                joinCombatSignal:Fire(thatEntity, target)
+                nearbyCount += 1
+            end
+        end
+    end
     if not hasPosVal then
-        encounterBorder = ReplicatedStorage.Packages.Unloads.EncounterBorder:Clone() :: Model
-        encounterBorder:PivotTo(combatLocation)
-        encounterBorder:SetAttribute("Owner", target.Name)
-        encounterBorder.Parent = workspace
-        Debris:AddItem(encounterBorder, 5)
+        if combatMode and combatMode ~= "Solo" then
+            encounterBorder = ReplicatedStorage.Packages.Unloads.EncounterBorder:Clone() :: Model
+            encounterBorder:PivotTo(combatLocation)
+            encounterBorder:SetAttribute("Owner", target.Name)
+            encounterBorder.Parent = workspace
+            Debris:AddItem(encounterBorder, 5)
+        end
 
 
         if (target.PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
@@ -814,14 +827,24 @@ function EntityLib:_EnterCombat(target: Model)
 
             resolve()
 
-        end):timeout(1.1599 * 2.599 + 0.1599):catch(function()
+        end):timeout(5):catch(function()
 
         end):await()
     end
 
 
     if not hasPosVal then
-        wait(1.1599 * (if self.Entity:GetAttribute("IsBoss") then 2.599 else 1))
+        local waitTime = 1.599
+
+        if self.Entity:HasTag("BossEnemyEntity") then
+            waitTime *= 2.599
+        end
+        if combatMode and combatMode == "Solo" then
+            --// TODO: party combat mode
+            waitTime = 0.1
+        end
+
+        wait(waitTime)
     end
     if bp then bp:Destroy() end
     if encounterBorder then encounterBorder:Destroy() end
@@ -910,15 +933,22 @@ function EntityLib:_EnterCombat(target: Model)
         --// combat starter enemy
         _addInCombat(target)
 
-        for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
-            if nearbyChar.Name == target.Name then continue end
-            if not ServerLib:IsCharValid(nearbyChar) then continue end
+        if combatMode then
+            if combatMode == "Public" then
+                for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
+                    if nearbyChar.Name == target.Name then continue end
+                    if not ServerLib:IsCharValid(nearbyChar) then continue end
 
-            if nearbyChar:GetAttribute("IsInCombat") then continue end
-            if nearbyChar:FindFirstChild("CombatCooldown") then continue end
+                    if nearbyChar:GetAttribute("IsInCombat") then continue end
+                    if nearbyChar:FindFirstChild("CombatCooldown") then continue end
 
-            nearbyCharCount += 1
-            _addInCombat(nearbyChar)
+                    nearbyCharCount += 1
+                    _addInCombat(nearbyChar)
+                end
+
+            elseif combatMode == "Party" then
+                --// TODO: party combat mode
+            end
         end
     else
         --// got pulled by combat starter enemy

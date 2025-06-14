@@ -98,16 +98,18 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             plr:SetAttribute(attr, val)
         end
 
-        local itemFolder, equippingFolder, questFolder =
-            Instance.new("Folder"), Instance.new("Folder"), Instance.new("Folder")
+        local itemFolder, equippingFolder, questFolder, settingsFolder =
+            Instance.new("Folder"), Instance.new("Folder"), Instance.new("Folder"), Instance.new("Configuration")
 
         itemFolder.Name = "Items"
         equippingFolder.Name = "EquippingItems"
         questFolder.Name = "Quests"
+        settingsFolder.Name = "CriRPGSettings"
 
         itemFolder.Parent = plr
         equippingFolder.Parent = plr
         questFolder.Parent = plr
+        settingsFolder.Parent = plr
 
 
         for _, itemInfo: table in validatedData.ItemsSQL do
@@ -145,6 +147,20 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end
         for questId: string, questInfo: table in validatedData.QuestsV2 do
             HarukaQuest:GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
+        end
+        for settingsId: string, settingsVal: any in validatedData.Settings do
+            local val = nil
+
+            if type(settingsVal) == "number" then
+                val = Instance.new("NumberValue")
+            elseif type(settingsVal) == "boolean" then
+                val = Instance.new("BoolValue")
+            end
+            if val then
+                val.Name = settingsId
+                val.Value = settingsVal
+                val.Parent = settingsFolder
+            end
         end
 
 
@@ -283,6 +299,28 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
 
     Events.CreateFSNotify.Fire(plr, "Save file erased!", 2)
 end)
+Events.RequestToSaveSettings.SetCallback(function(plr: Player, data)
+    if not data.SettingId then return end
+    if not data.SettingValue then return end
+
+    local id, val = data.SettingId, data.SettingValue
+    if id == "HideUI" then return end
+
+    local valueSymbol = plr.CriRPGSettings:FindFirstChild(id)
+    if not valueSymbol then
+        if type(val) == "number" then
+            valueSymbol = Instance.new("NumberValue")
+        elseif type(val) == "boolean" then
+            valueSymbol = Instance.new("BoolValue")
+        end
+
+        valueSymbol.Name = id
+        valueSymbol.Value = val
+        valueSymbol.Parent = plr.CriRPGSettings
+    end
+
+    valueSymbol.Value = val
+end)
 
 
 
@@ -383,6 +421,10 @@ end
 function PlayerLib:_Remove()
     local success, err = pcall(function()
         self:_SaveData()
+
+        if self.Profile then
+            self.Profile:EndSession()
+        end
     end)
     if not success then
         warn(err)
@@ -415,10 +457,12 @@ function PlayerLib:_SaveData()
     local items = self.Player.Items :: Folder
     local equippingItems = self.Player.EquippingItems :: Folder
     local quests = self.Player.Quests :: Folder
+    local criSettings = self.Player.CriRPGSettings :: Configuration
 
     local itemSQL = {}
     local equippingItemsSQL = {}
     local questsV2 = {}
+    local criSettingsSQL = {}
 
     for _, item: IntConstrainedValue in items:GetChildren() do
         if item:IsA("IntConstrainedValue") then
@@ -476,10 +520,14 @@ function PlayerLib:_SaveData()
             }
         end
     end
+    for _, symbol: any in criSettings:GetChildren() do
+        criSettingsSQL[symbol.Name] = symbol.Value
+    end
 
     profileAttrs.ItemsSQL = itemSQL
     profileAttrs.EquippingItemsSQL = equippingItemsSQL
     profileAttrs.QuestsV2 = questsV2
+    profileAttrs.Settings = criSettingsSQL
 end
 
 

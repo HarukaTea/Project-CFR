@@ -17,7 +17,6 @@ return function(scope: Fusion.Scope, props: {
     CurrentSelectedItemUniqueId: Fusion.Value,
     CurrentSelectedItem: Fusion.Value,
     CurrentCategory: Fusion.Value,
-    CurrentItemLimit: Fusion.Value
 })
 
     local ICONS = {
@@ -81,7 +80,6 @@ return function(scope: Fusion.Scope, props: {
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     props.CurrentSelectedItem:set("")
                     props.CurrentSelectedItemUniqueId:set("")
-                    props.CurrentItemLimit:set(100)
                     props.CurrentCategory:set(props.Category)
                 end
             }),

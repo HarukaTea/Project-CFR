@@ -25,8 +25,8 @@ local playerStats = {
 
             ItemsSQL = {},
             EquippingItemsSQL = {},
-
             QuestsV2 = {},
+            Settings = {}
         }
     },
 

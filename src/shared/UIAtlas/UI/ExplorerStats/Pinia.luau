@@ -363,12 +363,18 @@ return function (self: table)
         _createCooldownAnim(5, info)
 
 
+        local direction = self.char.Humanoid.MoveDirection :: Vector3
+        if direction.Magnitude <= 0 then
+            direction = self.char.PrimaryPart.CFrame.LookVector
+        end
+
+
         local linearVelo = Instance.new("LinearVelocity")
         linearVelo.Name = "Dash"
         linearVelo.Attachment0 = self.char.PrimaryPart.AlignMoverAttachment
         linearVelo.RelativeTo = Enum.ActuatorRelativeTo.World
         linearVelo.MaxForce = 1500 * self.char.PrimaryPart.AssemblyMass
-        linearVelo.VectorVelocity = self.char.Humanoid.MoveDirection * 100
+        linearVelo.VectorVelocity = direction * 100
         linearVelo.Parent = self.char.PrimaryPart
         Debris:AddItem(linearVelo, 0.2)
 
@@ -399,7 +405,7 @@ return function (self: table)
     local keyCodes = {
         B = "Backpack",
         C = "CharSelfView",
-        Z = "PerkTree",
+        --Z = "PerkTree",
         N = "Settings",
         X = "Guild",
         V = "Store"

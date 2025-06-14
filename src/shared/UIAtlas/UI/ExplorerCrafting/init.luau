@@ -228,7 +228,6 @@ return function (plr: Player)
                                 CurrentSelectedItem = self.CurrentSelectedItem,
                                 CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                 CurrentCategory = self.CurrentCategory,
-                                CurrentItemLimit = Fusion.Value(scope, 100),
                             })
                         end)
                     }

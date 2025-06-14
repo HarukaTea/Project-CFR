@@ -5,6 +5,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local Children = Fusion.Children
 
@@ -102,6 +103,11 @@ return function(scope: Fusion.Scope, props: {
 				end,
 				[Fusion.OnEvent("MouseButton1Click")] = function()
 					props.BooleanValue:set(not Fusion.peek(props.BooleanValue))
+
+					Events.RequestToSaveSettings.Fire({
+						SettingId = props.OptionId,
+						SettingValue = Fusion.peek(props.BooleanValue)
+					})
 				end,
 
 

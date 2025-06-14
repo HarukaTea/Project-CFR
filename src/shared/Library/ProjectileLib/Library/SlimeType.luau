@@ -25,7 +25,7 @@ return function (self)
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Small"
-        }):catch(function() end)
+        })
 
 
         Promise.delay(0.4):andThen(function()
@@ -277,19 +277,17 @@ return function (self)
 
             projectile.Blob:Destroy()
             projectile.Core:Destroy()
-
-            Maid:AddItem(projectile.Bomb1, 0.8)
-            Maid:AddItem(projectile.Bomb2, 0.8)
-
             projectile:AddTag("DMGEntity")
             projectile:AddTag("PierceEntity")
 
+            Maid:AddItem(projectile, 0.35)
+
             HarukaLib:CreateTween(projectile.Bomb1, AssetBook.TweenInfos.half, {
-                Size = projectile.Bomb1.Size + Vector3.one * 10,
+                Size = projectile.Bomb1.Size + Vector3.one * 7,
                 Transparency = 1
             }):Play()
             HarukaLib:CreateTween(projectile.Bomb2, AssetBook.TweenInfos.half, {
-                Size = projectile.Bomb2.Size + Vector3.one * 18,
+                Size = projectile.Bomb2.Size + Vector3.one * 12,
                 Transparency = 1
             }):Play()
         end)

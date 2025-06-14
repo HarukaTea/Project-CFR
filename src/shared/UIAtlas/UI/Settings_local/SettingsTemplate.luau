@@ -11,7 +11,7 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local template = {
     Sounds = {
         PanelTitle = "Sounds",
-		LayoutOrder = 3,
+		LayoutOrder = 4,
 
 		Includes = {
 			MusicVolume = {
@@ -54,7 +54,7 @@ local template = {
 
 				Min = 0,
 				Max = 2,
-				DefaultValue = 0.9,
+				DefaultValue = 0.8,
 
 				ValChanged = Signal.new()
 			}
@@ -62,7 +62,7 @@ local template = {
     },
 	Interface = {
 		PanelTitle = "Interface",
-		LayoutOrder = 2,
+		LayoutOrder = 3,
 
 		Includes = {
 			UIScale = {
@@ -135,6 +135,34 @@ local template = {
 				DefaultValue = 189,
 
 				ValChanged = Signal.new()
+			},
+		}
+	},
+	Game = {
+		PanelTitle = "Game",
+		LayoutOrder = 2,
+
+		Includes = {
+			PublicCombatMode = {
+				OptionTitle = "Public Combat Mode",
+				Type = "Switcher",
+				LayoutOrder = 1,
+
+				DefaultValue = true,
+			},
+			SoloCombatMode = {
+				OptionTitle = "Solo Combat Mode",
+				Type = "Switcher",
+				LayoutOrder = 2,
+
+				DefaultValue = false,
+			},
+			PartyCombatMode = {
+				OptionTitle = "Party Combat Mode",
+				Type = "Switcher",
+				LayoutOrder = 3,
+
+				DefaultValue = false,
 			},
 		}
 	}

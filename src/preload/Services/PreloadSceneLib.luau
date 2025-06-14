@@ -11,6 +11,9 @@ local wait = task.wait
 repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Library", 999)
 repeat wait() until ReplicatedStorage.HarukaShared.Library:WaitForChild("AssetBook", 999)
 repeat wait() until ReplicatedStorage.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
+repeat wait() until ReplicatedStorage:WaitForChild("Packages", 999)
+repeat wait() until ReplicatedStorage.Packages:WaitForChild("Unloads", 999)
+repeat wait() until ReplicatedStorage.Packages.Unloads:WaitForChild("TeleportUI", 999)
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)

@@ -3,6 +3,7 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
+local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
@@ -39,6 +40,11 @@ return function(scope: Fusion.Scope, props: {
 
 			barVal:set(val)
 			props.OptionInfo.ValChanged:Fire(val)
+
+			Events.RequestToSaveSettings.Fire({
+				SettingId = props.OptionId,
+				SettingValue = val
+			})
 		end
 	})
 
@@ -130,8 +136,9 @@ return function(scope: Fusion.Scope, props: {
 			Components.TextLabel(scope, {
 				Name = "Value",
 				AnchorPoint = Vector2.new(0, 0.5),
-				Position = UDim2.fromScale(0.34, 0.5),
-				Size = UDim2.fromScale(0.05, 1),
+				Position = UDim2.fromScale(0.28, 0.5),
+				Size = UDim2.fromScale(0.1, 1),
+				TextXAlignment = Enum.TextXAlignment.Right,
 
 				Text = Fusion.Computed(scope, function(use: Fusion.Use)
 					return use(barVal)

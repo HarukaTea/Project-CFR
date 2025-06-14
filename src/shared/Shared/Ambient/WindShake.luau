@@ -1,23 +1,14 @@
 --[=[
-
-WindShake- High performance wind effect for leaves and foliage
-by: boatbomber, MaximumADHD
-
-Docs: https://devforum.roblox.com/t/wind-shake-high-performance-wind-effect-for-leaves-and-foliage/1039806/1
-
+	Docs: https://devforum.roblox.com/t/wind-shake-high-performance-wind-effect-for-leaves-and-foliage/1039806/1
 --]=]
 
---!strict
+--!nocheck
 local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
 local Settings = require(script.Parent.WindShakeSettings)
 local VectorMap = require(script.Parent.VectorMap)
 
 local COLLECTION_TAG = "WindShake" -- The CollectionService tag to be watched and mounted automatically
-
--- Use the script's attributes as the default settings.
--- The table provided is a fallback if the attributes
--- are undefined or using the wrong value types.
 
 local FALLBACK_SETTINGS = {
 	WindDirection = Vector3.new(0.5, 0, 0.5),
@@ -26,14 +17,6 @@ local FALLBACK_SETTINGS = {
 }
 
 type Settings = Settings.Class
-
------------------------------------------------------------------------------------------------------------------
-
-local Paused = Instance.new("BindableEvent")
-local Resumed = Instance.new("BindableEvent")
-local ObjectShakeAdded = Instance.new("BindableEvent")
-local ObjectShakeRemoved = Instance.new("BindableEvent")
-local ObjectShakeUpdated = Instance.new("BindableEvent")
 
 
 local WindShake = {
@@ -57,13 +40,6 @@ local WindShake = {
 
 	_partList = table.create(500) :: { any }, -- ('any' because Studio and Luau LSP disagree on the type)
 	_cframeList = table.create(500) :: { CFrame },
-
-	ObjectShakeAdded = ObjectShakeAdded.Event,
-	ObjectShakeRemoved = ObjectShakeRemoved.Event,
-	ObjectShakeUpdated = ObjectShakeUpdated.Event,
-
-	Paused = Paused.Event,
-	Resumed = Resumed.Event,
 
 	Initialized = nil :: boolean?,
 	AddedConnection = nil :: RBXScriptConnection?,
@@ -121,7 +97,6 @@ function WindShake.AddObjectShake(self: WindShake, object: BasePart | Bone, sett
 		self:UpdateObjectSettings(object, settingsTable)
 	end
 
-	ObjectShakeAdded:Fire(object)
 	self.Handled += 1
 
 	return
@@ -152,7 +127,6 @@ function WindShake.RemoveObjectShake(self: WindShake, object: BasePart | Bone)
 		end
 	end
 
-	ObjectShakeRemoved:Fire(object)
 	return
 end
 
@@ -284,8 +258,6 @@ function WindShake.Pause(self: WindShake)
 
 	self.Active = 0
 	self.Running = false
-
-	Paused:Fire()
 end
 
 function WindShake.Resume(self: WindShake)
@@ -296,8 +268,6 @@ function WindShake.Resume(self: WindShake)
 	-- Connect updater
 	self.UpdateConnection = Connect(self, RunService.Heartbeat, self.Update)
 	self.Running = true
-
-	Resumed:Fire()
 end
 
 function WindShake.Init(self: WindShake, config: { MatchWorkspaceWind: boolean? }?)
@@ -398,8 +368,6 @@ function WindShake.UpdateObjectSettings(self: WindShake, object: Instance, setti
 	for key, value in pairs(settingsTable) do
 		object:SetAttribute(key, value)
 	end
-
-	ObjectShakeUpdated:Fire(object)
 	return
 end
 
@@ -412,8 +380,6 @@ function WindShake.UpdateAllObjectSettings(self: WindShake, settingsTable: WindS
 		for key, value in pairs(settingsTable) do
 			obj:SetAttribute(key, value)
 		end
-
-		ObjectShakeUpdated:Fire(obj)
 	end
 end
 

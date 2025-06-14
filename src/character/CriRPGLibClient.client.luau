@@ -388,11 +388,9 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             if not orb:GetAttribute("DontBounce") then
                 humanoid.Jump = true
 
-                for _, child: Instance in char.PrimaryPart:GetChildren() do
-                    if child:IsA("LinearVelocity") or child:IsA("BodyVelocity") then
-                        child:Destroy()
-                        char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-                    end
+                if char.PrimaryPart:FindFirstChild("OrbBV") then
+                    char.PrimaryPart.OrbBV:Destroy()
+                    char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
                 end
 
                 local bounceWeight = 36
@@ -671,6 +669,32 @@ function CriRPGLib:_ListenCombatStateTreesTracker()
 end
 
 
+function CriRPGLib:_ListenCombatStateCharHitboxTracker()
+    local function _clearHitboxes()
+        for _, part: BasePart in char:GetDescendants() do
+            if not HarukaLib:IsBasePartType(part) then continue end
+            if part == char.PrimaryPart then continue end
+
+            part.CanCollide = false
+        end
+    end
+    Add(HarukaLib:Hydrate(char, {
+        ["Attr-IsInCombat"] = function(state: boolean)
+            if state then
+                for _, part: BasePart in char:GetDescendants() do
+                    if not HarukaLib:IsBasePartType(part) then continue end
+                    if part == char.PrimaryPart then continue end
+
+                    part.CanCollide = true
+                end
+            else
+                _clearHitboxes()
+            end
+        end
+    }))
+end
+
+
 function CriRPGLib:_ListenSpellExtraJumpOnlyTracker()
     Add(Events.Spell_ExtraJumpSupport.On(function()
         SoundService.SFXs.EXP:Play()
@@ -682,14 +706,16 @@ function CriRPGLib:_ListenSpellExtraJumpOnlyTracker()
         end
 
         vel = math.abs(vel)
+        vel = math.min(50, vel)
+
         char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
 
 
         local linearVelocity = Instance.new("LinearVelocity")
-        linearVelocity.Name = "ExtraUpBV"
+        linearVelocity.Name = "DoubleJumpVel"
         linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
         linearVelocity.ForceLimitsEnabled = false
-        linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 80 + Vector3.yAxis * math.abs(vel)
+        linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 80 + Vector3.yAxis * vel
         linearVelocity.Parent = char.PrimaryPart
         Debris:AddItem(linearVelocity, 0.05)
     end))

@@ -154,45 +154,43 @@ local storagePromise = Promise.try(function()
     end
 end)
 local encounterPromise = Promise.try(function()
-    local encounterCD = false
     while wait(0.5) do
-        if encounterCD then continue end
         if char:FindFirstChild("CombatCooldown") then continue end
+        if char:GetAttribute("IsInCombat") then continue end
+        if char:GetAttribute("CombatLocation_Encounter") then continue end
 
-        local nearestEnemy = nil
-        local nearestDist = 999
+        pcall(function()
+            local nowClock = DateTime.now().UnixTimestamp
+            local nearestEnemy = nil
+            local nearestDist = 999
 
-        for _, entityObj in allEntityPool do
-            if not entityObj.IsReady then continue end
-            if not ClientLib:IsCharValid(entityObj.Entity) then continue end
+            for _, entityObj in allEntityPool do
+                if not entityObj.IsReady then continue end
+                if not ClientLib:IsCharValid(entityObj.Entity) then continue end
 
-            local entity = entityObj.Entity
+                local entity = entityObj.Entity
 
-            if entity:GetAttribute("IsInCombat") then continue end
-            if entity:GetAttribute("IsDead") then continue end
-            if entity:GetAttribute("EnteringCombat") then continue end
-            if not entity:GetAttribute("IsReady") then continue end
+                if entity:GetAttribute("IsInCombat") then continue end
+                if entity:GetAttribute("IsDead") then continue end
+                if entity:GetAttribute("EnteringCombat") then continue end
+                if nowClock - entity:GetAttribute("SpawnClock") <= 3 then continue end
 
-
-            local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
-            if distance > 0 then
-                if distance <= nearestDist then
-                    nearestEnemy = entity
-                    nearestDist = distance
+                local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+                if distance > 0 then
+                    if distance <= nearestDist then
+                        nearestEnemy = entity
+                        nearestDist = distance
+                    end
                 end
             end
-        end
 
-        if nearestDist > 0 and nearestDist < 18 then
-            encounterCD = true
-            task.delay(2, function()
-                encounterCD = false
-            end)
-
-            Events.RequestToStartCombat.Fire({
-                Entity = nearestEnemy
-            })
-        end
+            if nearestDist > 0 and nearestDist < 18 then
+                Events.RequestToStartCombat.Fire({
+                    Entity = nearestEnemy,
+                    CombatMode = workspace:GetAttribute("CombatMode")
+                })
+            end
+        end)
     end
 end)
 local bossTrackingPromise = Promise.try(function()
@@ -240,14 +238,16 @@ end)
 
 
 function EntityLib.new(enemy: Model)
-	if not ClientLib:IsCharValid(enemy) then return nil end
     if allEntityPool[enemy:GetAttribute("HarukaUniqueId")] then return nil end
 
 
     local self = setmetatable({}, EntityLib)
 
+    repeat wait() until ClientLib:IsModelValid(enemy)
     repeat wait() until enemy:WaitForChild("Locator", 999)
     repeat wait() until enemy.Locator.Value
+
+    if enemy:GetAttribute("IsDead") then return nil end
 
 	self.Entity = enemy
     self.Locator = enemy.Locator.Value :: BasePart
