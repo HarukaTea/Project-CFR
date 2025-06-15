@@ -242,13 +242,10 @@ function EntityLib.new(enemy: Model)
     local self = setmetatable({}, EntityLib)
 
     repeat wait() until ClientLib:IsModelValid(enemy)
-    repeat wait() until enemy:WaitForChild("Locator", 999)
-    repeat wait() until enemy.Locator.Value
 
     if enemy:GetAttribute("IsDead") then return nil end
 
 	self.Entity = enemy
-    self.Locator = enemy.Locator.Value :: BasePart
 
     self.UniqueId = enemy:GetAttribute("HarukaUniqueId")
 	self.SourceModel = ReplicatedStorage.Packages.EnemyModels:FindFirstChild(enemy.Name, true)
@@ -268,15 +265,6 @@ function EntityLib.new(enemy: Model)
                 return
             end
         else
-            self:Destroy()
-        end
-    end))
-    self.Add(self.Locator:GetPropertyChangedSignal("Parent"):Connect(function()
-        local newParent = self.Locator
-        if newParent then
-            newParent = newParent.Parent
-        end
-        if newParent == nil then
             self:Destroy()
         end
     end))
@@ -526,7 +514,7 @@ function EntityLib:_SpawnHighlightIndicator()
     if not ClientLib:IsModelValid(self.Entity) then return end
 
 
-    local distance = player:DistanceFromCharacter(self.Locator.Position)
+    local distance = player:DistanceFromCharacter(self.Entity.PrimaryPart.Position)
     if distance >= 159 or distance <= 0 then return end
 
 

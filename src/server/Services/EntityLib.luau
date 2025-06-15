@@ -1106,7 +1106,11 @@ function EntityLib:_CombatEnd()
 
         local result, _, _ = HarukaLib:RollLoot(drops)
 
-        ServerLib:PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position)
+        if not ServerLib:IsModelValid(entity) then
+            ServerLib:PlaceItemDropPart(plr, result, 1, self.Locator.Position)
+        else
+            ServerLib:PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position)
+        end
     end
     local function _giveBadge(entityInfo: table, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)

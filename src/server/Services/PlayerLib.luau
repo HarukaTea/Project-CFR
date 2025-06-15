@@ -302,8 +302,8 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
     Events.CreateFSNotify.Fire(plr, "Save file erased!", 2)
 end)
 Events.RequestToSaveSettings.SetCallback(function(plr: Player, data)
-    if not data.SettingId then return end
-    if not data.SettingValue then return end
+    if data.SettingId == nil then return end
+    if data.SettingValue == nil then return end
 
     local id, val = data.SettingId, data.SettingValue
     if id == "HideUI" then return end
@@ -363,7 +363,7 @@ function PlayerLib:Init()
             })
 
             if profile == nil then
-                reject("Profile is nil")
+                reject("Failed to fetch profile")
                 return
             end
 
@@ -374,7 +374,7 @@ function PlayerLib:Init()
                 warn("Roblox server is handling data requests slowly [Timeout]")
             else
                 Events.CreateNotify.Fire(plr, "Roblox server is handling requests slowly, we're trying to load...")
-                warn("Roblox server is handling data requests slowly [Error]")
+                warn(tostring(err))
             end
         end):await()
     end
@@ -785,6 +785,7 @@ function PlayerLib:_ValidateSaveData(data: table)
     if data.INTPoints < 0 then shouldReset = true end
     if data.STRPoints < 0 then shouldReset = true end
     if data.DEXPoints < 0 then shouldReset = true end
+    if data.DEXPoints > FormulaBook.PLAYER_MAX_DEX_POINTS then shouldReset = true end
 
     if shouldReset then
         data.PerkPoints = shouldPoint

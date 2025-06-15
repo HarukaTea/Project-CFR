@@ -1,9 +1,11 @@
 --!nocheck
 
+local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local PPS = game:GetService("ProximityPromptService")
 local RepS = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -49,8 +51,6 @@ return function (self: table)
 
 
 	--// track prompts
-	local mapComponents = workspace:WaitForChild("MapComponents", 999) :: Folder
-
 	local function _updatePrompt(prompt: ProximityPrompt)
 		if not prompt:IsA("ProximityPrompt") then return end
 
@@ -72,10 +72,10 @@ return function (self: table)
 
 		promptNodes[prompt] = part.Position
 	end
-	for _, child: Instance in mapComponents:GetDescendants() do
+	for _, child: ProximityPrompt in CollectionService:GetTagged("PromptEntity") do
 		_updatePrompt(child)
 	end
-	mapComponents.DescendantAdded:Connect(_updatePrompt)
+	CollectionService:GetInstanceAddedSignal("PromptEntity"):Connect(_updatePrompt)
 
 
 
@@ -162,9 +162,16 @@ return function (self: table)
 		self.CurrentPromptIndex:set(validIndex)
 	end)
 
-
-	--// track index
+	--// track index for both PC and controller
 	local mouse = self.plr:GetMouse() :: Mouse
+	local gamepadInputs = { {}, {}, {}, {} }
+	local RThumbstick = { "None", "None", "None", "None" }
+
+	for i = 1, 4 do
+		for _, input: InputObject in UserInputService:GetGamepadState(Enum.UserInputType["Gamepad"..i]) do
+			gamepadInputs[i][input.KeyCode] = input
+		end
+	end
 
 	local function _setIndex(nextIndex: number)
 		local totalPrompts = #Fusion.peek(self.PromptList)
@@ -174,11 +181,59 @@ return function (self: table)
 
 		self.CurrentPromptIndex:set(nextIndex)
 	end
+	local function covertDirection(angle: number, val: string, delta: Vector3) : string
+		if angle > 135 or angle < -135 and delta.Y <= 0 then
+			return "Down"
+		elseif angle <= 135 and angle >= 45 and delta.X >= 0 then
+			return "Right"
+		elseif angle >= -135 and angle <= -45 and delta.X <= 0 then
+			return "Left"
+		elseif angle < 45 and angle > -45 and delta.Y >= 0 then
+			return "Up"
+		end
+		return val
+	end
+
 	table.insert(scope, mouse.WheelBackward:Connect(function()
 		_setIndex(Fusion.peek(self.CurrentPromptIndex) + 1)
 	end))
 	table.insert(scope, mouse.WheelForward:Connect(function()
 		_setIndex(Fusion.peek(self.CurrentPromptIndex) - 1)
+	end))
+	table.insert(scope, task.spawn(function()
+		while wait(0.1) do
+			if table.find(RThumbstick, "Down") then
+				_setIndex(Fusion.peek(self.CurrentPromptIndex) + 1)
+			elseif table.find(RThumbstick, "Up") then
+				_setIndex(Fusion.peek(self.CurrentPromptIndex) - 1)
+			end
+		end
+	end))
+	table.insert(scope, RunService.Heartbeat:Connect(function()
+		for i = 1, 4 do
+			local thumbStick = gamepadInputs[i][Enum.KeyCode.Thumbstick2]
+			local angle = math.deg(math.atan2(thumbStick.Position.X, thumbStick.Position.Y))
+
+			if math.abs(thumbStick.Position.X) > 0.3 or math.abs(thumbStick.Position.Y) > 0.3 then
+				local dir = covertDirection(angle, RThumbstick[i], thumbStick.Delta)
+
+				if RThumbstick[i] ~= dir then
+					RThumbstick[i] = dir
+				end
+
+			elseif RThumbstick[i] ~= "None" then
+				RThumbstick[i] = "None"
+			end
+		end
+	end))
+	table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
+		if gpe then return end
+
+		if input.KeyCode == Enum.KeyCode.DPadUp then
+			_setIndex(Fusion.peek(self.CurrentPromptIndex) - 1)
+		elseif input.KeyCode == Enum.KeyCode.DPadDown then
+			_setIndex(Fusion.peek(self.CurrentPromptIndex) + 1)
+		end
 	end))
 
 
@@ -186,7 +241,7 @@ return function (self: table)
 	table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)
 		if gpe then return end
 
-		if inputObj.KeyCode == Enum.KeyCode.F then
+		if inputObj.KeyCode == Enum.KeyCode.F or inputObj.KeyCode == Enum.KeyCode.ButtonY then
 			if not Fusion.peek(self.IsUIShown) then return end
 			if #Fusion.peek(self.PromptList) <= 0 then return end
 

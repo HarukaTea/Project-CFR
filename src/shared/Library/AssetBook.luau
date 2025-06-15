@@ -152,5 +152,12 @@ AssetBook.EnemyVariants = {
 }
 
 
+AssetBook.XboxControllerColors = {
+	X = Color3.fromHex('#1e90ff'),
+	A = Color3.fromHex('#2ed573'),
+	B = Color3.fromHex('#d63031'),
+	Y = Color3.fromHex('#f9ca24')
+}
+
 
 return AssetBook

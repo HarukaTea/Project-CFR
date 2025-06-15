@@ -176,6 +176,8 @@ return function(scope: Fusion.Scope, props: {
                         [Children] = {
                             Components.TextUIStroke(scope, {
                                 Thickness = 2,
+
+                                [Fusion.Attribute("IgnoreDPI")] = true,
                             })
                         }
                     })
@@ -214,6 +216,8 @@ return function(scope: Fusion.Scope, props: {
                         [Children] = {
                             Components.TextUIStroke(scope, {
                                 Thickness = 2,
+
+                                [Fusion.Attribute("IgnoreDPI")] = true,
                             })
                         }
                     })

@@ -314,6 +314,9 @@ function CriRPGLib:_ListenOrbSpawnTracker()
             warn("Invalid orb Id when spawning")
             return
         end
+        if data.OrbUniqueId == nil then
+            warn("Invalid orb UniqueId when spawning")
+        end
         orb = orb:Clone()
 
         orb:SetAttribute("HarukaUniqueId", data.OrbUniqueId)
@@ -394,6 +397,10 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
 
                 if char.PrimaryPart:FindFirstChild("OrbBV") then
                     char.PrimaryPart.OrbBV:Destroy()
+                    char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+                end
+                if char.PrimaryPart:FindFirstChild("Dash") then
+                    char.PrimaryPart.Dash:Destroy()
                     char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
                 end
 

@@ -34,6 +34,8 @@ return function(plr: Player)
         playerListHover = Components.HoverImageButton(scope, {
             Name = "PlayerListHover",
             AnchorPoint = Vector2.xAxis,
+            Selectable = false,
+            SelectionOrder = -1,
 
             Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return if use(self.IsUIFolded) then UDim2.fromScale(1.5, 1.5) else UDim2.fromScale(1, 1.5)

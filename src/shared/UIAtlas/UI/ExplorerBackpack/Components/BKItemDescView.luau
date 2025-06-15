@@ -392,7 +392,7 @@ return function (scope: Fusion.Scope, props: {
                         TextColor3 = Color3.fromRGB(159, 159, 159),
 
                         TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return math.clamp(use(absDescFrameSize).Y / 1.2, 1, 33 / 1.2)
+                            return math.clamp(use(absDescFrameSize).Y / 1.1, 1, 33)
                         end)
                     }),
 

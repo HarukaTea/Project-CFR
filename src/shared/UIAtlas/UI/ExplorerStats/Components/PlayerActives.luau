@@ -7,6 +7,7 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
@@ -25,6 +26,51 @@ return function(scope: Fusion.Scope, props: {
 }, self: table)
 
     local isSelectingUlt = Fusion.Value(scope, false)
+
+
+    local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+        local input = use(lastInput) :: string
+
+        if input == "Keyboard" then
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                Text = "Q",
+                Size = UDim2.fromScale(0.4, 0.4),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+                ZIndex = 2,
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
+
+        elseif input == "Controller" then
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                Text = "Y",
+                Size = UDim2.fromScale(0.4, 0.4),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+                BackgroundColor3 = AssetBook.XboxControllerColors.Y,
+                TextColor3 = Color3.fromRGB(),
+                ZIndex = 2,
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
+        else
+            return nil
+        end
+    end)
 
 
     local frame = Components.Frame(scope, {
@@ -235,21 +281,7 @@ return function(scope: Fusion.Scope, props: {
                                         }
                                     }),
 
-                                    Components.TextLabel(scope, {
-                                        Name = "Key",
-                                        AnchorPoint = Vector2.one,
-                                        Text = "Q",
-                                        Size = UDim2.fromScale(0.4, 0.4),
-                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                                        Position = UDim2.fromScale(1.05, 1),
-                                        BackgroundTransparency = 0,
-                                        ZIndex = 2,
-
-                                        [Children] = {
-                                            Components.RoundUICorner(scope),
-                                            Components.UIPadding(scope, {})
-                                        }
-                                    }),
+                                    key
                                 }
                             }),
 

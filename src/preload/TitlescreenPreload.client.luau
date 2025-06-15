@@ -190,21 +190,6 @@ do
             return
         end
     end
-    if HarukaLib:GetDevice() == "Console" then
-        wait(1.5)
-        local result = Components:CreateConfirmPrompt(scope, {
-            Hint = "When using <yellow>console devices</font>, <red>you must use mouse and keyboard to play</font>. Do you still wish to continue?",
-            ConfirmText = "YES",
-            CancelText = "NO",
-
-            ConfirmUniqueId = "ConfirmConsoleVersion"
-        }):Wait()
-
-        if result == "NO" then
-            plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
-            return
-        end
-    end
 
 
     wait(1)

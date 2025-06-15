@@ -248,6 +248,9 @@ function ServerWorldLib:_DoTerrainTag()
 
     for _, part: BasePart in workspace.Maps:GetDescendants() do
         if HarukaLib:IsBasePartType(part) then
+            if part.CanCollide == false then continue end
+
+
             local isInTerrainFolder = false
             for _, folder: Folder in terrainFolders do
                 if part:IsDescendantOf(folder) then
@@ -462,6 +465,7 @@ function ServerWorldLib:_DoTagPrompts()
 		prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
 		prompt.Style = Enum.ProximityPromptStyle.Custom
 		prompt.KeyboardKeyCode = Enum.KeyCode.Home
+        prompt.GamepadKeyCode = Enum.KeyCode.ButtonStart
 		prompt.RequiresLineOfSight = false
 		prompt.HoldDuration = 0
 		prompt.MaxActivationDistance = 15.99
@@ -510,7 +514,7 @@ end
 
 function ServerWorldLib:_DoTrusses()
     for _, truss: TrussPart in workspace:GetDescendants() do
-        if truss.ClassName == "TrussPart" then
+        if truss.ClassName == "TrussPart" and not truss:GetAttribute("IgnoreCriRPGReq") then
             truss:AddTag("TrussEntity")
             truss.CanCollide = false
             truss.CanTouch = true

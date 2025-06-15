@@ -10,8 +10,7 @@
 
             "HarukaPreload": {
                 "$className": "Folder",
-                "$path": "src/preload",
-                "$ignoreUnknownInstances": true
+                "$path": "src/preload"
             }
         },
         "ReplicatedStorage": {
@@ -20,8 +19,7 @@
 
             "HarukaShared": {
                 "$className": "Folder",
-                "$path": "src/shared",
-                "$ignoreUnknownInstances": true
+                "$path": "src/shared"
             },
             "VERSION": {
                 "$path": "src/VERSION.luau"

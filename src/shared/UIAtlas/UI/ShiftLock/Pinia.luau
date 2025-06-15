@@ -2,10 +2,14 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 
 local MKK_NUMBER = 1599 * 40 ^ 2
@@ -20,9 +24,22 @@ return function (self: table)
 	local ON_ICON, OFF_ICON = "rbxasset://textures/ui/mouseLock_on@2x.png", "rbxasset://textures/ui/mouseLock_off@2x.png"
 
     self.Icon = Fusion.Value(scope, OFF_ICON)
+    self.OFFSET = CFrame.new(2, 0.25, 0)
 
     self.ChangeShiftLockState = Signal.new()
     table.insert(scope, self.ChangeShiftLockState)
+
+
+    self.CameraOffsetTweenVal = Instance.new("CFrameValue")
+    self.CameraOffsetTweenVal.Value = CFrame.identity
+    table.insert(scope, self.CameraOffsetTweenVal)
+
+    self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
+
+
+    table.insert(scope, RS.RenderStepped:Connect(function()
+        workspace.CurrentCamera.CFrame *= self.CameraOffsetTweenVal.Value
+    end))
 
 
     local function _enableShiftLock()
@@ -52,6 +69,13 @@ return function (self: table)
             self.LockEnabled:set(true)
             self.Icon:set(ON_ICON)
 
+            UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+            UserInputService.MouseIconEnabled = false
+
+            HarukaLib:CreateTween(self.CameraOffsetTweenVal, AssetBook.TweenInfos.twiceHalf, {
+                Value = self.OFFSET
+            }):Play()
+
             _enableShiftLock()
         else
             self.LockEnabled:set(false)
@@ -62,7 +86,24 @@ return function (self: table)
                     self.char.Humanoid.AutoRotate = true
                 end
             end
+
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+            UserInputService.MouseIconEnabled = true
+
+            HarukaLib:CreateTween(self.CameraOffsetTweenVal, AssetBook.TweenInfos.twiceHalf, {
+                Value = CFrame.identity
+            }):Play()
         end
     end
     self.ChangeShiftLockState:Connect(_setLockState)
+
+
+    --// track shift key
+    table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+
+        if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+            _setLockState(if Fusion.peek(self.LockEnabled) then "Off" else "On")
+        end
+    end))
 end

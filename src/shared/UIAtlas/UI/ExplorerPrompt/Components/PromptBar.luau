@@ -9,6 +9,8 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
 
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
+
 local Children = Fusion.Children
 
 local v2New = Vector2.new
@@ -24,6 +26,8 @@ return function (scope: Fusion.Scope, props: {
 
 
     props.Platform = HarukaLib:GetDevice()
+
+    local isPC = props.Platform == "PC" or props.Platform == "Console"
 
 
     local promptType = props.PromptObject.Name :: string
@@ -51,31 +55,58 @@ return function (scope: Fusion.Scope, props: {
     end
 
 
+    local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local keyOrIcon = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+        local input = use(lastInput) :: string
 
-    local keyOrIcon = nil
-    if props.Platform == "PC" then
-        keyOrIcon = Components.TextLabel(scope, {
-            Name = "Key",
-            Position = UDim2.fromScale(-0.18, 0.5),
-            Size = UDim2.fromScale(0.8, 0.8),
-            SizeConstraint = Enum.SizeConstraint.RelativeYY,
-            AnchorPoint = Vector2.new(0, 0.5),
-            BackgroundTransparency = 0,
-            FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-            BackgroundColor3 = Components.WHITE_COLOR,
-            TextColor3 = Components.BLACK_COLOR,
+        if input == "Keyboard" then
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                Position = UDim2.fromScale(-0.18, 0.5),
+                Size = UDim2.fromScale(0.8, 0.8),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                AnchorPoint = Vector2.new(0, 0.5),
+                BackgroundTransparency = 0,
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+                BackgroundColor3 = Components.WHITE_COLOR,
+                TextColor3 = Components.BLACK_COLOR,
 
-            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return use(props.CurrentPromptIndex) == props.LayoutOrder
-            end),
-            Text = "F",
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(props.CurrentPromptIndex) == props.LayoutOrder
+                end),
+                Text = "F",
 
-            [Children] = {
-                Components.RoundUICorner(scope),
-                Components.UIPadding(scope, {})
-            }
-        })
-    end
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
+        elseif input == "Controller" then
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                Position = UDim2.fromScale(-0.18, 0.5),
+                Size = UDim2.fromScale(0.8, 0.8),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                AnchorPoint = Vector2.new(0, 0.5),
+                BackgroundTransparency = 0,
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+                BackgroundColor3 = AssetBook.XboxControllerColors.Y,
+                TextColor3 = Components.BLACK_COLOR,
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(props.CurrentPromptIndex) == props.LayoutOrder
+                end),
+                Text = "Y",
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
+        else
+            return nil
+        end
+    end)
 
 
     local itemIconOrNomalIcon = nil
@@ -129,7 +160,7 @@ return function (scope: Fusion.Scope, props: {
             Image = AssetBook.PromptIcons[promptType],
 
             ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return if use(props.CurrentPromptIndex) == props.LayoutOrder and props.Platform == "PC" then Components.BLACK_COLOR else Components.WHITE_COLOR
+                return if use(props.CurrentPromptIndex) == props.LayoutOrder and isPC then Components.BLACK_COLOR else Components.WHITE_COLOR
             end),
         })
     end
@@ -143,7 +174,7 @@ return function (scope: Fusion.Scope, props: {
 
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return if use(props.CurrentPromptIndex) == props.LayoutOrder and props.Platform == "PC" then Components.WHITE_COLOR else Components.BLACK_COLOR
+            return if use(props.CurrentPromptIndex) == props.LayoutOrder and isPC then Components.WHITE_COLOR else Components.BLACK_COLOR
         end),
 
         [Children] = {
@@ -169,7 +200,7 @@ return function (scope: Fusion.Scope, props: {
 		        TextXAlignment = Enum.TextXAlignment.Left,
 
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return if use(props.CurrentPromptIndex) == props.LayoutOrder and props.Platform == "PC" then Components.BLACK_COLOR else Components.WHITE_COLOR
+                    return if use(props.CurrentPromptIndex) == props.LayoutOrder and isPC then Components.BLACK_COLOR else Components.WHITE_COLOR
                 end),
             }),
 

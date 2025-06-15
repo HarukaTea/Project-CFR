@@ -122,6 +122,8 @@ function HarukaComponents.Frame(scope: Fusion.Scope, props: table) : Frame
 		BackgroundColor3 = BLACK_COLOR,
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
+		Selectable = false,
+		SelectionOrder = -1
 	})
 end
 
@@ -175,6 +177,8 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: table, list
 		ScrollBarImageColor3 = Color3.new(1, 1, 1),
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
+		Selectable = false,
+		SelectionOrder = -1,
 
 		CanvasSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
 			return if use(absContentSize).Y > use(absSize).Y then UDim2.fromOffset(0, use(absContentSize).Y + 15.99) else UDim2.fromOffset(0, 0)
@@ -201,6 +205,8 @@ function HarukaComponents.TextLabel(scope: Fusion.Scope, props: table) : TextLab
 		TextSize = 100,
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
+		Selectable = false,
+		SelectionOrder = -1
 	})
 end
 
@@ -229,6 +235,8 @@ function HarukaComponents.ImageLabel(scope: Fusion.Scope, props: table) : ImageL
 		Image = "",
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
+		Selectable = false,
+		SelectionOrder = -1
 	})
 end
 
@@ -239,6 +247,8 @@ function HarukaComponents.IconImageLabel(scope: Fusion.Scope, props: table) : Im
 		BackgroundTransparency = 0,
 		Image = "",
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
+		Selectable = false,
+		SelectionOrder = -1,
 
 		[Fusion.Children] = {
 			HarukaComponents.RoundUICorner(scope)
@@ -328,7 +338,7 @@ function HarukaComponents.UIStroke(scope: Fusion.Scope, props: table) : UIStroke
 		Thickness = 1,
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 		Color = WHITE_COLOR,
-		Transparency = 0,
+		Transparency = 0
 	})
 end
 
@@ -397,7 +407,7 @@ function HarukaComponents.PaddingFrame(scope: Fusion.Scope, name: string) : Fram
 	return HarukaComponents.Frame(scope, {
 		Name = name.."_"..name,
 		Size = UDim2.fromOffset(1, 1),
-		LayoutOrder = if name == "AAA" then -9999 else 9999
+		LayoutOrder = if name == "AAA" then -9999 else 9999,
 	})
 end
 
@@ -439,6 +449,8 @@ function HarukaComponents.ViewportFrame(scope: Fusion.Scope, props: table) : Vie
 		LightDirection = Vector3.xAxis * -1,
 		BackgroundColor3 = BLACK_COLOR,
 		BackgroundTransparency = 1,
+		Selectable = false,
+		SelectionOrder = -1
 	})
 end
 
@@ -541,17 +553,23 @@ function HarukaComponents:TrackButtonEvents(scope: Fusion.Scope, button: GuiObje
 	if leaveFunc then
 		mouseLeave:Connect(function()
 			if not _isButtonValid(screenGui) then return end
-
 			if leaveFunc then leaveFunc() end
 		end)
 		button.MouseLeave:Connect(function()
 			if not _isButtonValid(screenGui) then return end
-
+			if leaveFunc then leaveFunc() end
+		end)
+		button.SelectionLost:Connect(function()
+			if not _isButtonValid(screenGui) then return end
 			if leaveFunc then leaveFunc() end
 		end)
 	end
 	if hoverFunc then
 		button.MouseEnter:Connect(function()
+			if not _isButtonValid(screenGui) then return end
+			if hoverFunc then hoverFunc() end
+		end)
+		button.SelectionGained:Connect(function()
 			if not _isButtonValid(screenGui) then return end
 			if hoverFunc then hoverFunc() end
 		end)

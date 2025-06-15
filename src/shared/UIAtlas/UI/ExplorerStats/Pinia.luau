@@ -420,19 +420,19 @@ return function (self: table)
 
             self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and keyCodes[inputObj.KeyCode.Name] or "None")
 
-        elseif inputObj.KeyCode == Enum.KeyCode.Q then
+        elseif inputObj.KeyCode == Enum.KeyCode.Q or inputObj.KeyCode == Enum.KeyCode.ButtonY then
             self.RequestToCastClassUlt:Fire()
 
-        elseif inputObj.KeyCode == Enum.KeyCode.One then
+        elseif inputObj.KeyCode == Enum.KeyCode.One or inputObj.KeyCode == Enum.KeyCode.ButtonL1 then
             self.RequestToCastItem:Fire(1)
 
-        elseif inputObj.KeyCode == Enum.KeyCode.Two then
+        elseif inputObj.KeyCode == Enum.KeyCode.Two or inputObj.KeyCode == Enum.KeyCode.ButtonR1 then
             self.RequestToCastItem:Fire(2)
 
-        elseif inputObj.KeyCode == Enum.KeyCode.Three then
+        elseif inputObj.KeyCode == Enum.KeyCode.Three or inputObj.KeyCode == Enum.KeyCode.ButtonR2 then
             self.RequestToCastItem:Fire(3)
 
-        elseif inputObj.KeyCode == Enum.KeyCode.R then
+        elseif inputObj.KeyCode == Enum.KeyCode.R or inputObj.KeyCode == Enum.KeyCode.ButtonX then
             self.RequestToDash:Fire()
         end
     end))

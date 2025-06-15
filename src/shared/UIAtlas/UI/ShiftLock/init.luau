@@ -1,22 +1,21 @@
 --!nocheck
 
 local RepS = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
 local Children = Fusion.Children
 
 
 return function(plr: Player)
-	if not UserInputService.TouchEnabled then
-		return function ()
-
-		end
+	if HarukaLib:GetDevice() == "VR" then
+		return function () end
 	end
-
+	local isPC = HarukaLib:GetDevice() == "PC" or HarukaLib:GetDevice() == "Console"
 
 
 	local self = {}
@@ -48,8 +47,9 @@ return function(plr: Player)
 					Position = UDim2.fromScale(0.99, 0),
 					AnchorPoint = Vector2.xAxis,
 
-					Visible = UserInputService.TouchEnabled,
-
+					Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+						return use(self.LastInputType) ~= "Keyboard"
+					end),
 					Image = Fusion.Computed(scope, function(use: Fusion.Use)
 						return use(self.Icon)
 					end),
@@ -70,7 +70,7 @@ return function(plr: Player)
 					Image = "rbxasset://textures/MouseLockedCursor.png",
 
 					Visible = Fusion.Computed(scope, function(use: Fusion.Use)
-						return use(self.LockEnabled) and not UserInputService.TouchEnabled
+						return use(self.LockEnabled) and isPC
 					end)
 				})
 			}

@@ -6,6 +6,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local Children = Fusion.Children
 
@@ -38,22 +39,32 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
+    local lastInputType = FusionComponents.useXboxControllerHotInput(scope)
     local key = nil
-    if Keys[props.Slot] then
-        key = Components.TextLabel(scope, {
-            Name = "Key",
-            AnchorPoint = Vector2.one,
-            Text = Keys[props.Slot],
-            Size = UDim2.fromScale(0.5, 0.5),
-            SizeConstraint = Enum.SizeConstraint.RelativeYY,
-            Position = UDim2.fromScale(1.05, 1),
-            BackgroundTransparency = 0,
 
-            [Children] = {
-                Components.RoundUICorner(scope),
-                Components.UIPadding(scope, {})
-            }
-        })
+    if Keys[props.Slot] then
+        key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+            local input = use(lastInputType) :: string
+
+            if input == "Keyboard" then
+                return Components.TextLabel(scope, {
+                    Name = "Key",
+                    AnchorPoint = Vector2.one,
+                    Text = Keys[props.Slot],
+                    Size = UDim2.fromScale(0.5, 0.5),
+                    SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                    Position = UDim2.fromScale(1.05, 1),
+                    BackgroundTransparency = 0,
+
+                    [Children] = {
+                        Components.RoundUICorner(scope),
+                        Components.UIPadding(scope, {})
+                    }
+                })
+            else
+                return nil
+            end
+        end)
     end
 
     local point = nil

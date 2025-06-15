@@ -24,6 +24,8 @@ return function (scope: Fusion.Scope, props: {
 
     return Components.IconImageLabel(scope, {
         Image = itemInfo.Icon,
+        Selectable = true,
+        SelectionOrder = 0,
 
         [Fusion.OnEvent("MouseEnter")] = function()
             isSelecting:set(true)

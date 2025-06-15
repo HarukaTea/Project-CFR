@@ -421,21 +421,13 @@ function GlobalCriRPGLib:_ListenPlayerDMGTracker()
             Events.CreateNotify.Fire(plr, "[Error] Invalid Character")
             return
         end
-
-        local orbList = ServerStorage.OrbSymbolContainer:FindFirstChild("OrbSymbols_"..char:GetAttribute("HarukaUniqueId")) :: Folder?
-
-        if not orbList then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Orb List")
-            warn("Invalid orb list")
-            return
-        end
-        if not orbList:FindFirstChild(orbUniqueId) then
+        if not ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) then
             Events.CreateNotify.Fire(plr, "[Error] Invalid Orb Identity")
             warn("Invalid orb identity")
             return
         end
 
-        local symbol = orbList[orbUniqueId] :: CFrameValue
+        local symbol = ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) :: CFrameValue
         if symbol:GetAttribute("Owner") ~= char.Name then return end
 
         local thatOrbStyle = symbol:GetAttribute("OrbStyle") :: string

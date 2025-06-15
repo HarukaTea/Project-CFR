@@ -1,7 +1,9 @@
 --!nocheck
 
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -16,6 +18,24 @@ return function (scope: Fusion.Scope, props: {
 }) : Frame
 
     local isSelecting = Fusion.Value(scope, false)
+
+    local function _close()
+        props.ViewShownValue:set(false)
+        isSelecting:set(false)
+
+        Players.LocalPlayer:SetAttribute("CurrentUIGroup", "None")
+
+        HarukaLib:FreezePlayerControls("Unfreeze")
+
+        GuiService.SelectedObject = nil
+    end
+    table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+
+        if input.KeyCode == Enum.KeyCode.ButtonB then
+            _close()
+        end
+    end))
 
     return Components.Frame(scope, {
         Name = "Tab",
@@ -54,14 +74,7 @@ return function (scope: Fusion.Scope, props: {
                         end,
 
 
-                        [Fusion.OnEvent("MouseButton1Click")] = function()
-                            props.ViewShownValue:set(false)
-                            isSelecting:set(false)
-
-                            Players.LocalPlayer:SetAttribute("CurrentUIGroup", "None")
-
-                            HarukaLib:FreezePlayerControls("Unfreeze")
-                        end
+                        [Fusion.OnEvent("MouseButton1Click")] = _close
                     })
                 }
             })

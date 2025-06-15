@@ -32,6 +32,7 @@ end
 do
 	Players.CharacterAutoLoads = false
 	StarterPlayer.CharacterUseJumpPower = true
+    StarterPlayer.EnableMouseLockOption = false
     StarterGui.ScreenOrientation = Enum.ScreenOrientation.LandscapeSensor
     StarterPlayer.CameraMaxZoomDistance = 15.99 * 4.59
 
