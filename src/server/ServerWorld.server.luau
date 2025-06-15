@@ -41,12 +41,12 @@ end
 
 --// Init server modules
 do
+    require(SSS.HarukaServer.Shared.ProfileStore)
     require(SSS.HarukaServer.Services.ServerWorldLib):Init()
     require(SSS.HarukaServer.Shared.GlobalTimer)
     require(SSS.HarukaServer.Services.GlobalCriRPGLib):Init()
     require(SSS.HarukaServer.Services.GlobalQuestFuncLib):Init()
     require(RepS.HarukaShared.Shared.Maid):Init()
-    require(SSS.HarukaServer.Shared.ProfileStore)
 end
 
 
@@ -56,7 +56,6 @@ do
     local CommandBook = require(SSS.HarukaServer.Library.CommandBook)
 
     local harukaCMDObj = HarukaCMD.new()
-
     harukaCMDObj:Init()
 
     for _, command in CommandBook do

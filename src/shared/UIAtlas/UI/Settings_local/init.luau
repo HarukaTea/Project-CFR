@@ -191,7 +191,4 @@ return function (plr: Player)
             }
         }
     })
-
-
-    require(script.Anims)(UI, self)
 end

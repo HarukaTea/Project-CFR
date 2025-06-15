@@ -49,7 +49,4 @@ return function (plr: Player)
         }
     })
     self.UI = UI
-
-
-    require(script.Anims)(UI, self)
 end

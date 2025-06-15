@@ -1,7 +1,6 @@
 repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
 
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -48,9 +47,9 @@ function CharLib:Init()
 
     Add(char.Humanoid.HealthChanged:Connect(function(health: number)
         if health <= 0 then
-            self:__Destroy()
-            self:Destroy()
-            self:_TriggerRagdoll()
+            pcall(self.__Destroy, self)
+            pcall(self.Destroy, self)
+            pcall(self._TriggerRagdoll, self)
 
             char.Humanoid.Health = -1
         end
@@ -63,13 +62,13 @@ function CharLib:Init()
                 return
             end
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-                self:__Destroy()
-                self:Destroy()
+                pcall(self.__Destroy, self)
+                pcall(self.Destroy, self)
                 return
             end
         else
-            self:__Destroy()
-            self:Destroy()
+            pcall(self.__Destroy, self)
+            pcall(self.Destroy, self)
         end
     end))
 

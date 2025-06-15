@@ -19,6 +19,7 @@ local Add, Empty = HarukaLib.Bin()
 
 
 local player = Players.LocalPlayer
+local plr = player
 local char = script:FindFirstAncestorOfClass("Model")
 
 
@@ -139,7 +140,6 @@ local storagePromise = Promise.try(function()
         local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
 
         for _, entityObj in allEntityPool do
-            if not entityObj.IsReady then continue end
             if not ClientLib:IsModelValid(entityObj.Entity) then continue end
 
             pcall(function()
@@ -165,7 +165,6 @@ local encounterPromise = Promise.try(function()
             local nearestDist = 999
 
             for _, entityObj in allEntityPool do
-                if not entityObj.IsReady then continue end
                 if not ClientLib:IsCharValid(entityObj.Entity) then continue end
 
                 local entity = entityObj.Entity
@@ -201,7 +200,6 @@ local bossTrackingPromise = Promise.try(function()
             if not entity:GetAttribute("HarukaUniqueId") then continue end
             if not allEntityPool[entity:GetAttribute("HarukaUniqueId")] then continue end
 
-            if not entity:GetAttribute("IsReady") then continue end
             if entity:GetAttribute("IsDead") then continue end
             if entity:GetAttribute("EnteringCombat") then continue end
             if entity:GetAttribute("IsInCombat") then continue end
@@ -299,7 +297,7 @@ function EntityLib:Init()
     self:_LoadAnims()
     self:_MakeModel()
 
-    self.IsReady = true
+    self:_SpawnHighlightIndicator()
 end
 
 
@@ -414,11 +412,11 @@ function EntityLib:_MakeModel()
 
     HarukaLib:SetCollisionGroup(entity, "EnemyBodyPart")
 
-    self.Anims.Idle:Play()
-
     self.HasModel = true
 
-    return model
+    if not ClientLib:IsCharValid(entity) then return end
+
+    self:PlayAnim("Idle")
 end
 
 
@@ -523,6 +521,25 @@ function EntityLib:_ListenAttributeTracker()
 end
 
 
+function EntityLib:_SpawnHighlightIndicator()
+    if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") <= 15 then return end
+    if not ClientLib:IsModelValid(self.Entity) then return end
+
+
+    local distance = player:DistanceFromCharacter(self.Locator.Position)
+    if distance >= 159 or distance <= 0 then return end
+
+
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = self.Entity
+    Debris:AddItem(highlight, 5)
+
+    HarukaLib:CreateTween(highlight, AssetBook.TweenInfos.six, {
+        FillTransparency = 1,
+        OutlineTransparency = 1
+    }):Play()
+end
+
 
 local function initEntity(enemy: Model)
     local entityObj = EntityLib.new(enemy)
@@ -531,9 +548,6 @@ local function initEntity(enemy: Model)
     end
 end
 for _, enemy: Model in CollectionService:GetTagged("EnemyEntity") do
-    local success, err = pcall(initEntity, enemy)
-    if not success then
-        warn(err)
-    end
+    Promise.try(initEntity, enemy)
 end
 CollectionService:GetInstanceAddedSignal("EnemyEntity"):Connect(initEntity)

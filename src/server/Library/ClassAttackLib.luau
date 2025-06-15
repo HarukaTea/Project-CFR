@@ -386,11 +386,8 @@ function ClassAttackLib:_CalDMG(dmgType: string, char: Model, props: {
             minDMG = math.max(minDMG, maxDMG)
             maxDMG = math.max(minDMG, maxDMG)
         end
+        local rDMG = math.random(minDMG, maxDMG)
 
-        local random = Random.new()
-        local rDMG = random:NextInteger(minDMG, maxDMG)
-
-        random = nil
         if isCrit then
             rDMG = math.ceil(maxDMG * (100 + char:GetAttribute("CriDMG")) / 100)
         end

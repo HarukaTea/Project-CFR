@@ -373,6 +373,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             if not ClientLib:IsCharValid(char) then return end
 
             local humanoid = char.Humanoid :: Humanoid
+            local orbUniqueId = orb:GetAttribute("HarukaUniqueId") :: string
 
 
             task.delay(0.25, function()
@@ -380,6 +381,9 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             end)
             pcall(_fadeOrb, orb)
 
+            Events.RequestToDMGEnemy.Fire({
+                OrbUniqueId = orbUniqueId or "nil",
+            })
 
             local SFXId = orb:GetAttribute("SFXId") :: string
             local SFX: Sound = if SFXId then SoundService.SFXs:FindFirstChild(SFXId, true) else SoundService.SFXs.OrbHit
@@ -423,9 +427,6 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
 
                 char.PrimaryPart.CFrame = HarukaLib:CFLookAt(char.PrimaryPart.Position, enemy.Value.PrimaryPart.Position)
             end
-            Events.RequestToDMGEnemy.Fire({
-                OrbUniqueId = orb:GetAttribute("HarukaUniqueId") or "nil"
-            })
 
         elseif hit.Parent:HasTag("DMGEntity") then
             if dmgCD then return end
@@ -671,17 +672,19 @@ end
 
 function CriRPGLib:_ListenCombatStateCharHitboxTracker()
     local function _clearHitboxes()
-        for _, part: BasePart in char:GetDescendants() do
+        for _, part: BasePart in char:GetChildren() do
             if not HarukaLib:IsBasePartType(part) then continue end
             if part == char.PrimaryPart then continue end
 
             part.CanCollide = false
         end
+
+        char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = function(state: boolean)
             if state then
-                for _, part: BasePart in char:GetDescendants() do
+                for _, part: BasePart in char:GetChildren() do
                     if not HarukaLib:IsBasePartType(part) then continue end
                     if part == char.PrimaryPart then continue end
 

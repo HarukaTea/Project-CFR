@@ -142,19 +142,12 @@ do
     task.delay(8, function()
         if isAlreadyLoaded then return end
 
-        LoadingTextVal:set("Datastore is taking longer than expected...")
-    end)
-    task.delay(23, function()
-        if isAlreadyLoaded then return end
+        for i = 1, 999 do
+            if isAlreadyLoaded then break end
 
-        LoadingTextVal:set("Datastore is taking too long to load...")
-    end)
-    task.delay(33, function()
-        if isAlreadyLoaded then return end
-
-        LoadingTextVal:set("Datastore loaded time out!")
-
-        plr:Kick("We're sorry, but datastore took too long to load. Maybe try again later?")
+            LoadingTextVal:set(`Datastore is taking too long to load...({i})`)
+            wait(5)
+        end
     end)
 
 
@@ -230,7 +223,12 @@ do
             SlotId = "Slot1"
         })
     else
-        workspace.Maps.Parent = SS
+        if workspace:FindFirstChild("Maps") then
+            workspace.Maps.Parent = SS
+        end
+        if workspace:FindFirstChild("Entities") then
+            workspace.Entities.Parent = SS
+        end
 
         --// init ambient
         SoundService.Musics.Titlescreen:Play()
@@ -273,6 +271,9 @@ do
     pcall(function()
         if SS:FindFirstChild("Maps") then
             SS.Maps.Parent = workspace
+        end
+        if SS:FindFirstChild("Entities") then
+            SS.Entities.Parent = workspace
         end
         Lighting.Ambient = Color3.fromRGB(159, 159, 159)
         Lighting.Brightness = 1.599

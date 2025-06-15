@@ -398,6 +398,8 @@ function CriRPGLib:_ListenPlayerLevelTracker()
             if totalLevelShouldGive > 0 then
                 if plr:GetAttribute("Level") + totalLevelShouldGive > FormulaBook.PLAYER_MAX_LEVEL then
                     totalLevelShouldGive = FormulaBook.PLAYER_MAX_LEVEL - plr:GetAttribute("Level")
+
+                    Events.CreateNotify.Fire(plr, "You've reached the maximum level!")
                 end
                 if totalLevelShouldGive <= 0 then
                     plr:SetAttribute("EXP", 0)
@@ -419,6 +421,8 @@ function CriRPGLib:_ListenPlayerLevelTracker()
 
             if level > FormulaBook.PLAYER_MAX_LEVEL then
                 plr:SetAttribute("Level", FormulaBook.PLAYER_MAX_LEVEL)
+
+                Events.CreateNotify.Fire(plr, "You've reached the maximum level!")
             end
         end
     }))
@@ -774,8 +778,7 @@ end
 
 
 function CriRPGLib:_ListenStatLimitTracker()
-
-
+    --// TODO: only base stat limit is not enough, need to track all stats
     local totalBin = {}
 
 
@@ -820,8 +823,6 @@ end
 
 
 function CriRPGLib:_ListenHealTracker()
-
-
     local healAdd, healEmpty = HarukaLib.Bin()
     Add(healEmpty)
 
@@ -999,17 +1000,27 @@ Add(HarukaLib.Clock(5, function()
 			obj:Destroy()
 		end
 	end
+    for _, obj: ObjectValue in char.TargetingList:GetChildren() do
+		for _, anotherObj: ObjectValue in char.TargetingList:GetChildren() do
+            if anotherObj == obj then continue end
+
+            if obj.Value == anotherObj.Value then
+                obj:Destroy()
+            end
+        end
+	end
 
 	local targetingEnemy = char.TargetingEnemy.Value
 	if not ServerLib:IsCharValid(targetingEnemy) then
 		char.TargetingEnemy.Value = nil
-
+    end
+    if char.TargetingEnemy.Value == nil then
 		if #char.TargetingList:GetChildren() > 0 then
 			char.TargetingEnemy.Value = char.TargetingList:FindFirstChildOfClass("ObjectValue").Value
 		end
-		if char.TargetingEnemy.Value == nil then
-			ServerBindables.PlayerCombatEnded:Fire(char.Name)
-		end
+	end
+    if char.TargetingEnemy.Value == nil then
+		ServerBindables.PlayerCombatEnded:Fire(char.Name)
 	end
 end))
 Add(ServerBindables.PlayerCombatEnded:Connect(function(charId: string)

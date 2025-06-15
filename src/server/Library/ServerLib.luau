@@ -106,11 +106,9 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
 	local MAGNITUDE = 28
 
-	local random = Random.new()
-
 	Promise.new(function(resolve)
 		local repeatedTimes = 0
-		local pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(random:NextInteger(-MAGNITUDE, MAGNITUDE), 0, random:NextInteger(-MAGNITUDE, MAGNITUDE)))
+		local pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
 
 		while repeatedTimes <= 15 do
 			-- we gonna try to find a valid position, if we can't, we'll try again
@@ -118,7 +116,7 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 				break
 			end
 
-			pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(random:NextInteger(-MAGNITUDE, MAGNITUDE), 0, random:NextInteger(-MAGNITUDE, MAGNITUDE)))
+			pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
 			repeatedTimes += 1
 		end
 
@@ -131,7 +129,6 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 		warn(tostring(err))
 	end):await()
 
-	random = nil
 
 	return orbLocation
 end
@@ -215,11 +212,7 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
 			if val > maxVal then
 				maxVal, val = val, maxVal
 			end
-
-			local random = Random.new()
-			local randomVal = random:NextInteger(val, maxVal)
-
-			random = nil
+			local randomVal = math.random(val, maxVal)
 
 			finalDesync[attr] = randomVal
 		else

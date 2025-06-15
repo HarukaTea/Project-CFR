@@ -54,7 +54,7 @@ return function (self)
             ProjectileLib._spawnProjectile(projectile, container, 10, function(sProjectile: Model)
                 sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
             end)
-        end)
+        end):catch(function() end)
     end
     ProjectileLib.GreenSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.WheatSlimeMove1_1 = ProjectileLib.SlimeMove1_1

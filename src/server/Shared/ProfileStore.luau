@@ -1,10 +1,10 @@
 
-local AUTO_SAVE_PERIOD = 300 -- (Seconds) Time between when changes to a profile are saved to the DataStore
-local LOAD_REPEAT_PERIOD = 10 -- (Seconds) Time between successive profile reads when handling a session conflict
-local FIRST_LOAD_REPEAT = 5 -- (Seconds) Time between first and second profile read when handling a session conflict
-local SESSION_STEAL = 40 -- (Seconds) Time until a session conflict is resolved with the waiting server stealing the session
-local ASSUME_DEAD = 630 -- (Seconds) If a profile hasn't had updates for this long, quickly assume an active session belongs to a crashed server
-local START_SESSION_TIMEOUT = 120 -- (Seconds) If a session can't be started for a profile for this long, stop repeating calls to the DataStore
+local AUTO_SAVE_PERIOD = 60 -- (Seconds) Time between when changes to a profile are saved to the DataStore
+local LOAD_REPEAT_PERIOD = 5 -- (Seconds) Time between successive profile reads when handling a session conflict
+local FIRST_LOAD_REPEAT = 10 -- (Seconds) Time between first and second profile read when handling a session conflict
+local SESSION_STEAL = 10 -- (Seconds) Time until a session conflict is resolved with the waiting server stealing the session
+local ASSUME_DEAD = 300 -- (Seconds) If a profile hasn't had updates for this long, quickly assume an active session belongs to a crashed server
+local START_SESSION_TIMEOUT = 30 -- (Seconds) If a session can't be started for a profile for this long, stop repeating calls to the DataStore
 
 local CRITICAL_STATE_ERROR_COUNT = 5 -- Assume critical state if this many issues happen in a short amount of time
 local CRITICAL_STATE_ERROR_EXPIRE = 120 -- (Seconds) Individual issue expiration
@@ -12,21 +12,10 @@ local CRITICAL_STATE_EXPIRE = 120 -- (Seconds) Critical state expiration
 
 local MAX_MESSAGE_QUEUE = 1000 -- Max messages saved in a profile that were sent using "ProfileStore:MessageAsync()"
 
------ Dependencies -----
-
--- local Util = require(game.ReplicatedStorage.Shared.Util)
--- local Signal = Util.Signal
 
 local Signal do
 
 	local FreeRunnerThread
-
-	--[[
-		Yield-safe coroutine reusing by stravant;
-		Sources:
-		https://devforum.roblox.com/t/lua-signal-class-comparison-optimal-goodsignal-class/1387063
-		https://gist.github.com/stravant/b75a322e0919d60dde8a0316d1f09d2f
-	--]]
 
 	local function AcquireRunnerThreadAndCallEventHandler(fn, ...)
 		local acquired_runner_thread = FreeRunnerThread

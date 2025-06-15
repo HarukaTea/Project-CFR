@@ -17,7 +17,7 @@ chatWindow.TextSize = 17
 chatWindow.WidthScale = 0.1599 * 5
 chatWindow.TextColor3 = Components.WHITE_COLOR
 
-chatInput.BackgroundColor3 = Components.BLACK_COLOR:Lerp(Color3.new(), 0.5)
+chatInput.BackgroundColor3 = Components.BLACK_COLOR:Lerp(Color3.fromRGB(), 0.5)
 chatInput.BackgroundTransparency = 0.3
 chatInput.TextColor3 = Components.WHITE_COLOR
 chatInput.FontFace = Font.fromEnum(Enum.Font.SourceSansBold)

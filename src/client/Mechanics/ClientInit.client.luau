@@ -593,7 +593,7 @@ function ClientWorldLib:_DoMapComponentTracker()
 
         wait()
         task.defer(function()
-            while wait(0.02) do
+            while wait(0.01) do
                 windmill.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
             end
         end)
@@ -603,7 +603,7 @@ function ClientWorldLib:_DoMapComponentTracker()
 
         wait()
         task.defer(function()
-            while wait(0.02) do
+            while wait(0.01) do
                 for _ = 1, 50 do
                     galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
                     wait(0.01)

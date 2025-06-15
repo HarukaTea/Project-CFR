@@ -240,16 +240,4 @@ return function (UI: ScreenGui, self: table)
 
         SoundService.SFXs.DiceRoll:Play()
     end))
-
-
-    --// enter fx
-    table.insert(scope, HarukaLib:Hydrate(UI, {
-        ["Prop-Enabled"] = function(newState: boolean)
-            if newState then
-                HarukaLib:UITween(UI, "In", {
-                    TweenTime = 0.35
-                })
-            end
-        end
-    }))
 end

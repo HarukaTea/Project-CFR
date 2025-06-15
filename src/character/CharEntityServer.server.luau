@@ -61,7 +61,7 @@ function CharLib:_ListenCharDestroyTracker()
 	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
 			self:Destroy()
-			self:_TriggerRagdoll()
+			pcall(self._TriggerRagdoll, self)
 
 			char.Humanoid.Health = -1
 		end

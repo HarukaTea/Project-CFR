@@ -37,6 +37,8 @@ local totalPlayersJoined = 0
 
 local allPlayerObjPool = {}
 
+local wait = task.wait
+
 
 local attrWhiteList = {}
 for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
@@ -165,7 +167,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
 
         --// apply player rank in another thread
-        pcall(function()
+        Promise.try(function()
             local playerUID = tostring(plr.UserId)
 
             local hasCustomRole = false
@@ -184,7 +186,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
                     plr:SetAttribute("Role", RankBook.RankRoleInfo[rank].Role)
                 end
             end
-        end)
+        end):catch(function()  end)
 
 
         --// Load in player roles
@@ -192,7 +194,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         roleContainer.Name = "Roles"
         roleContainer.Parent = plr
 
-        pcall(function()
+        Promise.try(function()
             local isPremium = (plr.MembershipType == Enum.MembershipType.Premium)
 
             local rank = plr:GetRankInGroup(16912246)
@@ -226,7 +228,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             if plr.UserId == 304008764 then
                 _createSymbol("Translator")
             end
-        end)
+        end):catch(function() end)
 
 
         --// FIXME: Pressure test 3 - give badge
@@ -241,7 +243,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         plr:AddTag("PlayerEntity")
         plr:SetAttribute("_PlayerDataInited", true)
 
-        self.Add(HarukaLib.Clock(60, function()
+        self.Add(HarukaLib.Clock(45, function()
             self:_SaveData()
         end))
         self.Add(HarukaLib.Clock(15, function()
@@ -348,60 +350,71 @@ function PlayerLib:Init()
     local plr = self.Player :: Player
 
 
+    local profile = nil
+
+
+    while profile == nil do
+        wait()
+        Promise.new(function(resolve, reject)
+            profile = profileStoreMain:StartSessionAsync("Player_"..plr.UserId, {
+                Cancel = function()
+                    return plr.Parent ~= Players
+                end
+            })
+
+            if profile == nil then
+                reject("Profile is nil")
+                return
+            end
+
+            resolve(true)
+        end):timeout(8):catch(function(err)
+            if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
+                Events.CreateNotify.Fire(plr, "Roblox server is running slower than usual, we're trying to load...")
+                warn("Roblox server is handling data requests slowly [Timeout]")
+            else
+                Events.CreateNotify.Fire(plr, "Roblox server is handling requests slowly, we're trying to load...")
+                warn("Roblox server is handling data requests slowly [Error]")
+            end
+        end):await()
+    end
+
+
     --// Load in datastore
-    Promise.new(function(resolve, reject)
-		local profile = profileStoreMain:StartSessionAsync("Player_"..plr.UserId, {
-            Cancel = function()
-                return plr.Parent ~= Players
-            end
-        })
+    profile:Reconcile()
+    profile:AddUserId(plr.UserId)
 
-        if not profile then reject("Profile is nil") return end
-
-        profile:Reconcile()
-		profile:AddUserId(plr.UserId)
-
-		profile.OnSessionEnd:Connect(function()
-			plr:Kick("Profile session end, Data was loaded on another roblox server, please try again later?")
-		end)
-
-        self.Add(function()
-            profile:EndSession()
-        end)
-
-		if plr.Parent ~= Players then
-			profile:EndSession()
-			return
-		end
-
-        self.Profile = profile
-
-
-        local profileContainer = Instance.new("Folder")
-        profileContainer.Name = "ProfileContainer"
-        profileContainer.Parent = plr
-
-        for i = 1, 3 do
-            local data = profile.Data["Slot"..i].Attrs :: table
-
-            for attr: string, val: any in data do
-                if not table.find(attrWhiteList, attr) then continue end
-
-                profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
-            end
-        end
-
-        plr:SetAttribute("_PlayerProfileInited", true)
-        resolve()
-
-	end):timeout(30):catch(function(err)
-        if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
-            plr:Kick("Your data failed to load, reason: Timed out, please try again later?")
-        else
-            plr:Kick("Your data failed to load, reason: Internal, please contact us in community!")
-            warn(tostring(err))
-        end
+    profile.OnSessionEnd:Connect(function()
+        plr:Kick("Profile session end, Data was loaded on another roblox server, please try again later?")
     end)
+
+    self.Add(function()
+        profile:EndSession()
+    end)
+
+    if plr.Parent ~= Players then
+        profile:EndSession()
+        return
+    end
+
+    self.Profile = profile
+
+
+    local profileContainer = Instance.new("Folder")
+    profileContainer.Name = "ProfileContainer"
+    profileContainer.Parent = plr
+
+    for i = 1, 3 do
+        local data = profile.Data["Slot"..i].Attrs :: table
+
+        for attr: string, val: any in data do
+            if not table.find(attrWhiteList, attr) then continue end
+
+            profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
+        end
+    end
+
+    plr:SetAttribute("_PlayerProfileInited", true)
 end
 
 
@@ -421,7 +434,8 @@ end
 function PlayerLib:_Remove()
     local success, err = pcall(function()
         self:_SaveData()
-
+    end)
+    pcall(function()
         if self.Profile then
             self.Profile:EndSession()
         end

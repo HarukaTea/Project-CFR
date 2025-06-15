@@ -138,9 +138,7 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
 
 
         local enumState = {
-            Enum.HumanoidStateType.StrafingNoPhysics,
             Enum.HumanoidStateType.Swimming,
-            Enum.HumanoidStateType.RunningNoPhysics,
         }
         for _, state: Enum.HumanoidStateType in enumState do
             r6Char.Humanoid:SetStateEnabled(state, false)
@@ -148,7 +146,7 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
 
 
         --// clear collision box
-        for _, part: BasePart in r6Char:GetDescendants() do
+        for _, part: BasePart in r6Char:GetChildren() do
             if not HarukaLib:IsBasePartType(part) then continue end
             if part == r6Char.PrimaryPart then continue end
 
@@ -1199,22 +1197,48 @@ function GlobalCriRPGLib:_ListenPlayerAddPointRequestsTracker()
         local pointAdd = data.PointAmount :: number
         local availablePoint = plr:GetAttribute("PerkPoints") :: number
 
-        if availablePoint < pointAdd then
-            pointAdd = availablePoint
-        end
         if pointAdd == 0 then return end
-        if plr:GetAttribute(data.PointId.."Points") <= 0 and pointAdd <= 0 then return end
 
-
-        if data.PointId == "DEX" and pointAdd > 0 then
-            if plr:GetAttribute("DEXPoints") >= FormulaBook.PLAYER_MAX_DEX_POINTS then
-                Events.CreateNotify.Fire(plr, "DEX points have reached their limit!")
-                return
+        if pointAdd > 0 then
+            if availablePoint < pointAdd then
+                pointAdd = availablePoint
             end
-        end
 
-        HarukaLib:AddAttr(plr, "PerkPoints", -pointAdd)
-        HarukaLib:AddAttr(plr, data.PointId.."Points", pointAdd)
+            if data.PointId == "DEX" then
+                if plr:GetAttribute("DEXPoints") >= FormulaBook.PLAYER_MAX_DEX_POINTS then
+                    plr:SetAttribute("DEXPoints", FormulaBook.PLAYER_MAX_DEX_POINTS)
+
+                    Events.CreateNotify.Fire(plr, "DEX points have reached their limit!")
+                    return
+                end
+            end
+
+            HarukaLib:AddAttr(plr, "PerkPoints", -pointAdd)
+            HarukaLib:AddAttr(plr, data.PointId.."Points", pointAdd)
+
+
+            if data.PointId == "DEX" then
+                if plr:GetAttribute("DEXPoints") >= FormulaBook.PLAYER_MAX_DEX_POINTS then
+                    local maxOut = plr:GetAttribute("DEXPoints") - FormulaBook.PLAYER_MAX_DEX_POINTS
+                    HarukaLib:AddAttr(plr, "PerkPoints", maxOut)
+
+                    plr:SetAttribute("DEXPoints", FormulaBook.PLAYER_MAX_DEX_POINTS)
+
+                    Events.CreateNotify.Fire(plr, "DEX points have reached their limit!")
+                end
+            end
+
+        elseif pointAdd < 0 then
+            if plr:GetAttribute(data.PointId.."Points") <= 0 then return end
+
+            local pointHave = plr:GetAttribute(data.PointId.."Points") :: number
+            if pointAdd < -pointHave then
+                pointAdd = -pointHave
+            end
+
+            HarukaLib:AddAttr(plr, "PerkPoints", -pointAdd)
+            HarukaLib:AddAttr(plr, data.PointId.."Points", pointAdd)
+        end
     end)
     Events.RequestToResetPoint.SetCallback(function(plr: Player)
         local char = plr.Character

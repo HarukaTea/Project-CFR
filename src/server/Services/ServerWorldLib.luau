@@ -529,6 +529,15 @@ function ServerWorldLib:_DoMobInit()
             end
         end
     end
+    for _, mob: BasePart in ReplicatedStorage.Packages.EnemyModels:GetDescendants() do
+        if mob.Name == "HumanoidRootPart" then
+            mob.CanCollide = true
+            mob.CanTouch = false
+            mob.CanQuery = false
+
+            mob.CustomPhysicalProperties = PhysicalProperties.new(100, 2, 1)
+        end
+    end
 end
 
 

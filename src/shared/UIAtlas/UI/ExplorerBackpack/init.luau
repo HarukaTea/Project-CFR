@@ -471,9 +471,6 @@ return function (plr: Player)
     })
 
 
-    require(script.Anims)(UI, self)
-
-
     return function ()
         Fusion.doCleanup(scope)
 

@@ -39,14 +39,6 @@ local PATH_COSTS = {
     WoodPlanks = 10,
     DangerZone = math.huge
 }
-local PATH_FOR_DETECTING = PathCreator.View({
-    Costs = PATH_COSTS,
-    AgentCanJump = false,
-    AgentCanClimb = false,
-    PathSettings = {
-        SupportPartialPath = false
-    }
-})
 
 
 local allEntityPool = {}
@@ -98,7 +90,6 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: str
 
     if not ServerLib:IsCharValid(target) then return end
     if target:GetAttribute("IsInCombat") then return end
-    if target:GetAttribute("CombatLocation_Encounter") then return end
 
 
     for _, entityObj in allEntityPool do
@@ -148,6 +139,8 @@ enemyDiedSignal:Connect(function(uniqueId: string)
         warn("Error finding entity object when respawning enemy")
         return
     end
+
+    allEntityPool[uniqueId] = nil
 
     Promise.delay(12):andThen(function()
         entityObj:EntityInit()
@@ -227,6 +220,7 @@ function EntityLib.new(locator: BasePart)
     self.Add, self.Empty = HarukaLib.Bin()
 
     self.WholeAdd(self.Locator)
+    self.CombatInfo = {}
 
     return self
 end
@@ -259,13 +253,20 @@ function EntityLib:EntityInit()
         for _, targetObj: ObjectValue in targetingList:GetChildren() do
             if not ServerLib:IsCharValid(targetObj.Value) then
                 targetObj:Destroy()
-                continue
+            end
+        end
+        for _, targetObj: ObjectValue in targetingList:GetChildren() do
+            if not targetObj.Value:GetAttribute("IsInCombat") then
+                wait(1)
+                if not targetObj.Value:GetAttribute("IsInCombat") then
+                    targetObj:Destroy()
+                end
             end
         end
     end))
 
-    self.IsInCombat = false
-    self.IsDead = false
+
+    table.clear(self.CombatInfo)
     self.EntityDestroyed = false
 end
 
@@ -293,6 +294,7 @@ function EntityLib:EntityDestroy()
 
     if self.EntityObj then
         self.EntityObj:Destroy()
+        self.EntityObj = nil
     end
 end
 
@@ -301,11 +303,12 @@ function EntityLib:Destroy()
     if self.Destroyed then return end
 
     self.Destroyed = true
-    allEntityPool[self.UniqueId] = nil
 
     self.RoamEmpty()
     self.Empty()
     self.WholeEmpty()
+
+    allEntityPool[self.UniqueId] = nil
 end
 
 
@@ -344,6 +347,7 @@ function EntityLib:_SpawnModel()
     hrp.CastShadow = false
     hrp.EnableFluidForces = false
     hrp.Transparency = 1
+    hrp.Massless = false
     hrp.Parent = model
 
     if hrp:FindFirstChildOfClass("Motor6D") then
@@ -370,8 +374,6 @@ function EntityLib:_SpawnModel()
 
 
     local enumState = {
-        Enum.HumanoidStateType.StrafingNoPhysics,
-        Enum.HumanoidStateType.RunningNoPhysics,
         Enum.HumanoidStateType.Climbing,
         Enum.HumanoidStateType.Seated,
         Enum.HumanoidStateType.Swimming
@@ -400,7 +402,7 @@ function EntityLib:_SpawnModel()
 
     self.Add(self.Entity.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
-            if self.IsInCombat then
+            if self.CombatInfo.IsInCombat then
                 return
             end
 			self:EntityDestroy()
@@ -421,6 +423,7 @@ function EntityLib:_SpawnModel()
             self:EntityDestroy()
         end
 	end))
+
 
     allEntityPool[uniqueId] = self
 end
@@ -587,15 +590,21 @@ function EntityLib:_RoamTask()
 
     local path = nil
     if entity.Humanoid.WalkSpeed > 0 then
-        path = PathCreator.Humanoid(entity, {
+        path = PathCreator.new(entity, {
             Costs = PATH_COSTS,
             AgentCanJump = false,
             AgentCanClimb = false,
             PathSettings = {
-                SupportPartialPath = true
+                SupportPartialPath = false
             }
         })
         path.Visualize = RunService:IsStudio()
+
+        path.Events.Errored:Connect(function(errorType: string)
+            if errorType == "AgentStuck" or errorType == "AgentUnreachable" then
+                entity:PivotTo(locator.CFrame * CFrame.new(0, self.BoundingSize.Y / 2, 0) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0))
+            end
+        end)
 
         self.RoamAdd(function()
             path:Stop()
@@ -603,6 +612,7 @@ function EntityLib:_RoamTask()
         end)
     end
 
+    self.NearestChar = nil
 
 
     --// roaming
@@ -611,9 +621,7 @@ function EntityLib:_RoamTask()
 
         local AREA_MAG = 15.99
 
-        local waitTime = 1.5 + Random.new():NextNumber() * Random.new():NextInteger(1, 2)
-
-        while wait(waitTime) do
+        while wait(1.5 + math.random(10) / 10) do
             if not ServerLib:IsCharValid(entity) then break end
             if entity:GetAttribute("IsInCombat") then break end
 
@@ -636,7 +644,7 @@ function EntityLib:_RoamTask()
 
                     rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
 
-                    isValid = path:Compute(entity.PrimaryPart.Position, rPos)
+                    isValid = path:IsPathValid(rPos)
                     repeatTimes += 1
                 end
 
@@ -682,7 +690,7 @@ function EntityLib:_RoamTask()
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
                     if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
-                        if PATH_FOR_DETECTING:Compute(entity.PrimaryPart.Position, char.PrimaryPart.Position) then
+                        if path:IsPathValid(char.PrimaryPart.Position) then
                             nearestDist = mag
                             nearestChar = char
                         end
@@ -732,8 +740,8 @@ end
 
 
 function EntityLib:_EnterCombat(target: Model, combatMode: string?)
-    if self.IsInCombat then return end
-    self.IsInCombat = true
+    if self.CombatInfo.IsInCombat then return end
+    self.CombatInfo.IsInCombat = true
 
     local entity = self.Entity :: Model
 
@@ -742,38 +750,53 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     entity:SetAttribute("EnteringCombat", true)
     RunService.Heartbeat:Wait()
 
-
+    pcall(function()
+        if self.EntityObj then
+            self.EntityObj:Destroy()
+            self.EntityObj = nil
+        end
+    end)
     self.EntityObj = require(ServerScriptService.HarukaServer.Library.Entities:FindFirstChild(entity.Name, true)).new(entity)
 
 
     local hasPosVal = true
-    local combatLocation = target:GetAttribute("CombatLocation_Encounter")
-    if not combatLocation then
-        hasPosVal = false
 
-        combatLocation = CFrame.new(ServerLib:FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
-        target:SetAttribute("CombatLocation_Encounter", combatLocation)
+    self.CombatInfo.CombatStarterUniqueId = target:GetAttribute("HarukaUniqueId")
 
-        self.CombatTriggererUniqueId = target:GetAttribute("HarukaUniqueId")
+    if self.CombatInfo.CombatTriggererUniqueId == nil then
+        Promise.new(function(resolve)
+            for _, thatEntityObj in allEntityPool do
+                if thatEntityObj.UniqueId == self.UniqueId then continue end
+                if not thatEntityObj.CombatInfo.IsInCombat then continue end
+                if not thatEntityObj.CombatInfo.CombatTriggererUniqueId then continue end
+                if thatEntityObj.CombatInfo.IsDead then continue end
+
+                if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
+                    resolve(true, thatEntityObj.CombatInfo.CombatLocation)
+                end
+            end
+
+            resolve(false)
+
+        end):andThen(function(state: boolean, location: CFrame?)
+            if not state then
+                hasPosVal = false
+
+                self.CombatInfo.CombatTriggererUniqueId = self.CombatInfo.CombatStarterUniqueId
+                self.CombatInfo.CombatLocation = CFrame.new(ServerLib:FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
+            else
+                self.CombatInfo.CombatLocation = location
+            end
+        end):await()
     end
 
-    self.CombatStarterUniqueId = target:GetAttribute("HarukaUniqueId")
-
+    local combatLocation = self.CombatInfo.CombatLocation :: CFrame
     entity:SetAttribute("CombatLocation", combatLocation)
 
 
     --// ready to fight
     entity.Humanoid.WalkSpeed = 0
-    entity.PrimaryPart.CanCollide = false
-
-
-    local bp = Instance.new("BodyPosition")
-    bp.Name = "Blackhole"
-    bp.D = 159 * 2
-    bp.Position = combatLocation.Position + Vector3.yAxis * self.BoundingSize.Y
-    bp.MaxForce = Vector3.one * math.huge
-    bp.Parent = entity.PrimaryPart
-    Debris:AddItem(bp, 5)
+    entity:PivotTo(combatLocation + Vector3.yAxis * self.BoundingSize.Y)
 
 
     local encounterBorder: Model = nil
@@ -785,9 +808,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             local thatEntity = entityObj.Entity :: Model
             if not ServerLib:IsCharValid(thatEntity) then continue end
 
-            --// we don't call bosses
-            if entityObj.IsInCombat then continue end
-            if thatEntity:HasTag("BossEnemyEntity") then continue end
+            if entityObj.CombatInfo.IsInCombat then continue end
 
             if (thatEntity.PrimaryPart.Position - combatLocation.Position).Magnitude <= 35 then
                 joinCombatSignal:Fire(thatEntity, target)
@@ -796,13 +817,11 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end
     end
     if not hasPosVal then
-        if combatMode and combatMode ~= "Solo" then
-            encounterBorder = ReplicatedStorage.Packages.Unloads.EncounterBorder:Clone() :: Model
-            encounterBorder:PivotTo(combatLocation)
-            encounterBorder:SetAttribute("Owner", target.Name)
-            encounterBorder.Parent = workspace
-            Debris:AddItem(encounterBorder, 5)
-        end
+        encounterBorder = ReplicatedStorage.Packages.Unloads.EncounterBorder:Clone() :: Model
+        encounterBorder:PivotTo(combatLocation)
+        encounterBorder:SetAttribute("Owner", target.Name)
+        encounterBorder.Parent = workspace
+        Debris:AddItem(encounterBorder, 5)
 
 
         if (target.PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
@@ -815,20 +834,22 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         Promise.new(function(resolve)
             for _, thatEntityObj in allEntityPool do --- force late enemies to wait
                 if thatEntityObj.UniqueId == self.UniqueId then continue end
-                if not thatEntityObj.IsInCombat then continue end
-                if not thatEntityObj.CombatTriggererUniqueId then continue end
-                if thatEntityObj.IsDead then continue end
+                if not thatEntityObj.CombatInfo.IsInCombat then continue end
+                if not thatEntityObj.CombatInfo.CombatTriggererUniqueId then continue end
+                if thatEntityObj.CombatInfo.IsDead then continue end
 
-                if thatEntityObj.CombatTriggererUniqueId == target:GetAttribute("HarukaUniqueId") then
-                    repeat wait() until thatEntityObj.EnteringCombat_Ready
+                if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
+                    repeat wait() until thatEntityObj.CombatInfo.EnteringCombat_Ready
                     break
                 end
             end
 
-            resolve()
+            resolve(true)
 
-        end):timeout(5):catch(function()
+        end):timeout(5):catch(function(err)
+            warn(tostring(err))
 
+            self:_ErrorAndRespawn(7)
         end):await()
     end
 
@@ -841,15 +862,12 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end
         if combatMode and combatMode == "Solo" then
             --// TODO: party combat mode
-            waitTime = 0.1
+            waitTime = 1
         end
 
         wait(waitTime)
     end
-    if bp then bp:Destroy() end
     if encounterBorder then encounterBorder:Destroy() end
-
-    entity.PrimaryPart.CanCollide = true
 
 
     --- check again!
@@ -858,7 +876,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     target = nil
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
-        if char:GetAttribute("HarukaUniqueId") == self.CombatStarterUniqueId then
+        if char:GetAttribute("HarukaUniqueId") == self.CombatInfo.CombatStarterUniqueId then
             target = char
             break
         end
@@ -871,16 +889,15 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         Promise.new(function(resolve)
             for _, thatEntityObj in allEntityPool do
                 if thatEntityObj.UniqueId == self.UniqueId then continue end
-                if not thatEntityObj.IsInCombat then continue end
-                if not thatEntityObj.CombatTriggererUniqueId then continue end
-                if thatEntityObj.IsDead then continue end
+                if not thatEntityObj.CombatInfo.IsInCombat then continue end
+                if not thatEntityObj.CombatInfo.CombatTriggererUniqueId then continue end
+                if thatEntityObj.CombatInfo.IsDead then continue end
 
-                if thatEntityObj.CombatTriggererUniqueId == target:GetAttribute("HarukaUniqueId") then
+                if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
                     resolve(ServerLib:IsCharValid(thatEntityObj.Entity))
                     break
                 end
             end
-
             resolve(false)
 
         end):andThen(function(state)
@@ -901,7 +918,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     entity:PivotTo(CFrame.new(rLocation) * CFrame.new(0, self.BoundingSize.Y / 2, 0) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0))
     entity:AddTag("EnemyEntity_Combat")
 
-    self.EnteringCombat_Ready = true
+    self.CombatInfo.EnteringCombat_Ready = true
 
 
     --- make players into combat
@@ -916,13 +933,14 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             char.TargetingEnemy.Value = entity
         end
     end
-    local function _addInCombat(char: Model)
+    local function _addInCombat(char: Model, withoutSettingAttr: boolean?)
         _addAndSetTargetingEnemy(char)
 
-        char:SetAttribute("CombatLocation", combatLocation)
-        char:SetAttribute("CombatStartClock", DateTime.now().UnixTimestamp)
-        char:SetAttribute("IsInCombat", true)
-
+        if not withoutSettingAttr then
+            char:SetAttribute("CombatLocation", combatLocation)
+            char:SetAttribute("CombatStartClock", DateTime.now().UnixTimestamp)
+            char:SetAttribute("IsInCombat", true)
+        end
 
         local targetSymbol = Instance.new("ObjectValue")
         targetSymbol.Name = char.Name
@@ -956,24 +974,18 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
         for _, thatEntityObj in allEntityPool do
             if thatEntityObj.UniqueId == self.UniqueId then continue end
-            if not thatEntityObj.IsInCombat then continue end
-            if not thatEntityObj.CombatTriggererUniqueId then continue end
-            if thatEntityObj.IsDead then continue end
+            if not thatEntityObj.CombatInfo.IsInCombat then continue end
+            if not thatEntityObj.CombatInfo.CombatTriggererUniqueId then continue end
+            if thatEntityObj.CombatInfo.IsDead then continue end
 
-            if thatEntityObj.CombatTriggererUniqueId == target:GetAttribute("HarukaUniqueId") then
+            if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
                 for _, thatEntitySymbol: ObjectValue in thatEntityObj.Entity.TargetingList:GetChildren() do
                     if not ServerLib:IsCharValid(thatEntitySymbol.Value) then continue end
 
                     local char = thatEntitySymbol.Value :: Model
-
-                    _addAndSetTargetingEnemy(char)
+                    _addInCombat(char, true)
 
                     nearbyCharCount += 1
-
-                    local targetSymbol = Instance.new("ObjectValue")
-                    targetSymbol.Name = char.Name
-                    targetSymbol.Value = char
-                    targetSymbol.Parent = entity.TargetingList
                 end
             end
         end
@@ -1020,64 +1032,69 @@ end
 
 
 function EntityLib:_CombatEnd()
-    if self.IsDead then return end
-    if not self.IsInCombat then return end
-    if not self.Entity:GetAttribute("IsInCombat") then return end
+    if self.CombatInfo.IsDead then return end
+    if not self.CombatInfo.IsInCombat then return end
 
-    self.IsDead = true
+    self.CombatInfo.IsDead = true
     self.Entity:SetAttribute("IsDead", true)
 
     local entity = self.Entity :: Model
 
-    if not ServerLib:IsModelValid(entity) then self:_ErrorAndRespawn(4) return end
+    if not entity then self:_ErrorAndRespawn(4) return end
+    if not entity.Parent then self:_ErrorAndRespawn(4) return end
 
 
     --- search for nearby entities, if there are any, will have to wait for them to die
     local foundTeamUpEnemies = false
-    for _, thatEntityObj: table in allEntityPool do
-        if thatEntityObj.UniqueId == self.UniqueId then continue end
-        if not thatEntityObj.IsInCombat then continue end
-        if not thatEntityObj.CombatStarterUniqueId then continue end
-        if thatEntityObj.IsDead then continue end
 
-        if thatEntityObj.CombatStarterUniqueId == self.CombatStarterUniqueId then
-            foundTeamUpEnemies = true
+    Promise.new(function(resolve)
+        local check = false
 
-            local alreadyAdded = thatEntityObj.Entity.TeamUpEnemies:FindFirstChild(self.UniqueId) ~= nil
-            if not alreadyAdded then
-                local teamUpEntitySymbol = Instance.new("ObjectValue")
-                teamUpEntitySymbol.Name = self.UniqueId
-                teamUpEntitySymbol.Value = self.Locator
+        for _, thatEntityObj: table in allEntityPool do
+            if thatEntityObj.UniqueId == self.UniqueId then continue end
+            if not thatEntityObj.CombatInfo.IsInCombat then continue end
+            if not thatEntityObj.CombatInfo.CombatStarterUniqueId then continue end
+            if thatEntityObj.CombatInfo.IsDead then continue end
 
-                teamUpEntitySymbol:SetAttribute("Level", self.Entity:GetAttribute("Level"))
+            if thatEntityObj.CombatInfo.CombatStarterUniqueId == self.CombatInfo.CombatStarterUniqueId then
+                local alreadyAdded = thatEntityObj.Entity.TeamUpEnemies:FindFirstChild(self.UniqueId) ~= nil
+                if not alreadyAdded then
+                    local teamUpEntitySymbol = Instance.new("ObjectValue")
+                    teamUpEntitySymbol.Name = self.UniqueId
+                    teamUpEntitySymbol.Value = self.Locator
 
-                teamUpEntitySymbol.Parent = thatEntityObj.Entity.TeamUpEnemies
+                    teamUpEntitySymbol:SetAttribute("Level", entity:GetAttribute("Level"))
+
+                    teamUpEntitySymbol.Parent = thatEntityObj.Entity.TeamUpEnemies
+                end
+
+                check = true
             end
         end
-    end
-    if not foundTeamUpEnemies then
-        local teamUpEnemies = self.Entity.TeamUpEnemies:GetChildren() :: { ObjectValue }
 
-        if #teamUpEnemies > 0 then
-            for _, teamUpEntitySymbol in teamUpEnemies do
+        foundTeamUpEnemies = check
+
+        resolve(check)
+    end):await()
+
+
+    --// respawn team enemies
+    Promise.new(function(resolve)
+        if not foundTeamUpEnemies then
+            destroyEntityObjSignal:Fire(self.UniqueId)
+
+            for _, teamUpEntitySymbol in entity.TeamUpEnemies:GetChildren() do
                 destroyEntityObjSignal:Fire(teamUpEntitySymbol.Name)
             end
         end
 
+        resolve(true)
+
+    end):catch(function(err)
         destroyEntityObjSignal:Fire(self.UniqueId)
-    end
 
-
-    if not entity:FindFirstChild("TargetingList") then self:_ErrorAndRespawn(5) return end
-
-    local targetingList = self.Entity.TargetingList:GetChildren() :: { ObjectValue }
-
-
-    --// check if entity is dead, if no, then means player failed
-    local isEnemyDeadCheck = false
-    if entity.Humanoid.Health <= 0 then
-        isEnemyDeadCheck = true
-    end
+        warn(tostring(err))
+    end):await()
 
 
     local function _giveLoot(drops: table, char: Model)
@@ -1099,81 +1116,98 @@ function EntityLib:_CombatEnd()
             ServerLib:GiveBadge(entityInfo.BadgeId, plr)
         end
     end
-    for _, charSymbol: ObjectValue in targetingList do
-        local thatChar = charSymbol.Value :: Model
-
-        if not ServerLib:IsCharValid(thatChar) then continue end
 
 
-        local charTargetingList = thatChar.TargetingList :: Folder
-        for _, targetingSymbol: ObjectValue in charTargetingList:GetChildren() do
-            if not ServerLib:IsCharValid(targetingSymbol.Value) then
-                targetingSymbol:Destroy()
-                continue
-            end
+    --// give loots
+    Promise.new(function(resolve)
+        --// check if entity is dead, if no, then means player failed
+        local isEnemyDeadCheck = false
+        if entity.Humanoid.Health <= 0 then
+            isEnemyDeadCheck = true
         end
 
-        --// check if player has done all the targets
-        if #charTargetingList:GetChildren() <= 0 then
-            ServerBindables.PlayerCombatEnded:Fire(thatChar.Name)
-        else
-            --- get the first target again
-            thatChar.TargetingEnemy.Value = charTargetingList:FindFirstChildOfClass("ObjectValue").Value
-        end
+        for _, charSymbol: ObjectValue in entity.TargetingList:GetChildren() do
+            local thatChar = charSymbol.Value :: Model
+
+            if not ServerLib:IsCharValid(thatChar) then continue end
 
 
-        --- give loots and badges, combat won!
-        local success, err = pcall(function()
-            if not foundTeamUpEnemies and isEnemyDeadCheck then
-                local entityInfo = EntityBook[entity.Name]
-
-                _giveLoot(entityInfo.Drops, thatChar)
-                _giveBadge(entityInfo, thatChar)
-
-                for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
-                    local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
-
-                    _giveLoot(diedEntityInfo.Drops, thatChar)
-                    _giveBadge(diedEntityInfo, thatChar)
+            local charTargetingList = thatChar.TargetingList :: Folder
+            for _, targetingSymbol: ObjectValue in charTargetingList:GetChildren() do
+                if not ServerLib:IsCharValid(targetingSymbol.Value) then
+                    targetingSymbol:Destroy()
+                    continue
                 end
+                if targetingSymbol.Value == entity then
+                    targetingSymbol:Destroy()
+                    continue
+                end
+            end
 
-                --// give exp
-                local totalEXP = 0
-                totalEXP += FormulaBook.EnemyEXPCurveCal({
-                    Level = entity:GetAttribute("Level"),
-                })
+            --// check if player has done all the targets
+            if #charTargetingList:GetChildren() <= 0 then
+                ServerBindables.PlayerCombatEnded:Fire(thatChar.Name)
+            else
+                --- get the first target again
+                thatChar.TargetingEnemy.Value = charTargetingList:FindFirstChildOfClass("ObjectValue").Value
+            end
 
-                for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+
+            --- give loots and badges, combat won!
+            local success, err = pcall(function()
+                if not foundTeamUpEnemies and isEnemyDeadCheck then
+                    local entityInfo = EntityBook[entity.Name]
+
+                    _giveLoot(entityInfo.Drops, thatChar)
+                    _giveBadge(entityInfo, thatChar)
+
+                    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+                        local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
+
+                        _giveLoot(diedEntityInfo.Drops, thatChar)
+                        _giveBadge(diedEntityInfo, thatChar)
+                    end
+
+                    --// give exp
+                    local totalEXP = 0
                     totalEXP += FormulaBook.EnemyEXPCurveCal({
-                        Level = diedEntitySymbol:GetAttribute("Level"),
+                        Level = entity:GetAttribute("Level"),
                     })
-                end
+
+                    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+                        totalEXP += FormulaBook.EnemyEXPCurveCal({
+                            Level = diedEntitySymbol:GetAttribute("Level"),
+                        })
+                    end
 
 
-                --// give gold
-                local totalGold = 0
-                totalGold += FormulaBook.EnemyGoldCurveCal({
-                    Level = entity:GetAttribute("Level"),
-                })
-
-                for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+                    --// give gold
+                    local totalGold = 0
                     totalGold += FormulaBook.EnemyGoldCurveCal({
-                        Level = diedEntitySymbol:GetAttribute("Level"),
+                        Level = entity:GetAttribute("Level"),
                     })
+
+                    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+                        totalGold += FormulaBook.EnemyGoldCurveCal({
+                            Level = diedEntitySymbol:GetAttribute("Level"),
+                        })
+                    end
+
+
+                    local plr = Players:GetPlayerFromCharacter(thatChar)
+                    if plr then
+                        ServerLib:GiveEXPRewards(plr, totalEXP)
+
+                        HarukaLib:AddAttr(plr, "Gold", totalGold)
+                        ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
+                    end
                 end
+            end)
+            if not success then warn(err) end
+        end
 
-
-                local plr = Players:GetPlayerFromCharacter(thatChar)
-                if plr then
-                    ServerLib:GiveEXPRewards(plr, totalEXP)
-
-                    HarukaLib:AddAttr(plr, "Gold", totalGold)
-                    ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
-                end
-            end
-        end)
-        if not success then warn(err) end
-    end
+        resolve(true)
+    end):await()
 end
 
 

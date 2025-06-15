@@ -6,6 +6,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -27,6 +28,10 @@ return function (self: table)
     workspace:SetAttribute("CombatMode", "Public")
 
     self.SettingsFolder = self.plr:WaitForChild("CriRPGSettings", 999) :: Folder
+
+    if #self.SettingsFolder:GetChildren() > 0 then
+        Bindables.CreateNotify:Fire("Loaded saved settings!")
+    end
 
     self.PanelSelected = Value("Graphics")
     self.IsSettingsShown = Value(false)
