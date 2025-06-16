@@ -429,7 +429,7 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         dmgProps.DMG /= 2
         dmgProps.DMG = math.ceil(dmgProps.DMG)
 
-        ServerLib:ShowText(targeting, "ATTACK IMMUNE!", Color3.fromHex('#ffffff'))
+        ServerLib:ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
     end
 
     targeting.Humanoid:TakeDamage(dmgProps.DMG)

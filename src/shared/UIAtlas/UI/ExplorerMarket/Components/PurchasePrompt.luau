@@ -161,8 +161,8 @@ return function(scope: Fusion.Scope, props: {
 
                                 Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return ColorSequence.new(
-                                        AssetBook.TierColorsType2[use(info).Tier]:Lerp(Color3.new(), 0.5),
-                                        AssetBook.TierColorsType2[use(info).Tier]
+                                        AssetBook.ItemTierColors[use(info).Tier]:Lerp(Color3.new(), 0.5),
+                                        AssetBook.ItemTierColors[use(info).Tier]
                                     )
                                 end),
                             }),

@@ -72,35 +72,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _slimeDive2(target: Model)
         SlimeUniversal.SlimeDive2(entity, target)
     end
-    local function _slimePurge(target: Model)
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            Entity = entity,
-            AnimId = "SlimeSpin"
-        })
-        Events.SpawnUniATKs.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            ProjectileUniqueId = HttpService:GenerateGUID(false),
-            ProjectileId = "SlimeSpin",
-            ProjectileCF = entity.PrimaryPart.CFrame,
-            ProjectileOwner = entity
-        })
-
-        _lookAt(target)
-        local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(entity.PrimaryPart.Position)
-
-        projectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector)
-
-
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-            ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = entity.Name.."Move5",
-            ProjectileCF = projectilePos,
-            ProjectileOwner = entity
-        })
-
-        UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
-    end
-
 
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
@@ -119,12 +90,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             _slimeBomb()
             wait(0.5)
         end
-    end)
-    table.insert(self.AttackFuncs, function(target: Model)
-        if not _checkIsTargetOrEntityValid(target) then return end
-
-        _slimePurge(target)
-        wait(0.7)
     end)
 
 

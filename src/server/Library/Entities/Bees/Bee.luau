@@ -132,9 +132,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-
             _spike(target)
-            wait(0.5)
+            wait(1)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
@@ -143,7 +142,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
             _spikeShot(target)
-            wait(0.15)
+            wait(0.5)
         end
     end)
 
@@ -153,16 +152,15 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _ = 1, math.random(1, 2) do
                 if not _checkIsTargetOrEntityValid(target) then break end
 
-
                 _moving()
-                wait(0.3)
+                wait(0.5)
             end
         end
     end)
 
 
     --// attack loop
-    wait(0.5)
+    wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
 

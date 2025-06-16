@@ -26,7 +26,7 @@ return function(scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(0.25, 0.65),
         BackgroundTransparency = 0,
 
-        BackgroundColor3 = AssetBook.TierColors[itemInfo.Tier]:Lerp(Color3.new(), 0.45),
+        BackgroundColor3 = AssetBook.ItemTierColors[itemInfo.Tier],
 
         [Children] = {
             Components.UIGradient(scope, {

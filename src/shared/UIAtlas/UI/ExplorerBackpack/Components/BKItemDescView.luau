@@ -214,7 +214,7 @@ return function (scope: Fusion.Scope, props: {
                         Size = UDim2.fromScale(0.02, 0.65),
 
                         BackgroundTransparency = 0,
-                        BackgroundColor3 = AssetBook.TierColorsType2[info.Tier]
+                        BackgroundColor3 = AssetBook.ItemTierColors[info.Tier]
                     }),
                     Components.TextLabel(scope, {
                         Name = "ItemName",
@@ -270,8 +270,8 @@ return function (scope: Fusion.Scope, props: {
 
                     Components.UIGradient(scope, {
                         Color = ColorSequence.new(
-                            AssetBook.TierColorsType2[info.Tier],
-                            AssetBook.TierColorsType2[info.Tier]:Lerp(Color3.new(), 0.5)
+                            AssetBook.ItemTierColors[info.Tier],
+                            AssetBook.ItemTierColors[info.Tier]:Lerp(Color3.new(), 0.5)
                         ),
                         Rotation = 60,
                         Transparency = NumberSequence.new({

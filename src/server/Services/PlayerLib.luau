@@ -1,4 +1,5 @@
 local CollectionService = game:GetService("CollectionService")
+local AnalyticsService = game:GetService("AnalyticsService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -351,10 +352,15 @@ function PlayerLib:Init()
 
 
     local profile = nil
-
+    local profileFailedTimes = 0
 
     while profile == nil do
         wait()
+        if not plr then break end
+        if not plr.Parent then break end
+        if profile ~= nil then break end
+
+
         Promise.new(function(resolve, reject)
             profile = profileStoreMain:StartSessionAsync("Player_"..plr.UserId, {
                 Cancel = function()
@@ -374,10 +380,28 @@ function PlayerLib:Init()
                 warn("Roblox server is handling data requests slowly [Timeout]")
             else
                 Events.CreateNotify.Fire(plr, "Roblox server is handling requests slowly, we're trying to load...")
-                warn(tostring(err))
             end
         end):await()
+
+        if profile == nil then
+            profileFailedTimes += 1
+        end
     end
+
+    wait(1.15)
+    if profile == nil then
+        plr:Kick("Profile session end, please try again later?")
+        return
+    end
+    if plr == nil then return end
+    if plr.Parent == nil then return end
+
+    pcall(function()
+        if profileFailedTimes > 0 then
+            AnalyticsService:LogCustomEvent(plr, "PlayerProfileFailedTimes", profileFailedTimes)
+        end
+    end)
+
 
 
     --// Load in datastore
@@ -387,16 +411,14 @@ function PlayerLib:Init()
     profile.OnSessionEnd:Connect(function()
         plr:Kick("Profile session end, Data was loaded on another roblox server, please try again later?")
     end)
-
-    self.Add(function()
-        profile:EndSession()
-    end)
-
     if plr.Parent ~= Players then
         profile:EndSession()
         return
     end
 
+    self.Add(function()
+        profile:EndSession()
+    end)
     self.Profile = profile
 
 

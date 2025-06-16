@@ -74,7 +74,7 @@ function CriRPGLib:Init()
 
     for funcId: string, func: (self) -> nil in CriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
+            task.spawn(func, self)
         end
     end
 
@@ -272,7 +272,7 @@ function CriRPGLib:_ListenOrbTracker()
             symbol:SetAttribute("Owner", char.Name)
 
             symbol.Parent = orbSymbolContainer
-            Maid:AddItem(symbol, orbFadeTime + 0.5)
+            Maid:AddItem(symbol, orbFadeTime + 5)
 
 
             Events.PlaceOrb.Fire(plr, {
@@ -1028,7 +1028,6 @@ Add(ServerBindables.PlayerCombatEnded:Connect(function(charId: string)
 		char.TargetingEnemy.Value = nil
 
 		char:SetAttribute("CombatLocation", nil)
-		char:SetAttribute("CombatLocation_Encounter", nil)
 		char:SetAttribute("IsInCombat", false)
 
 

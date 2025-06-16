@@ -135,98 +135,95 @@ Add(Events.ApplyHighlightForEntity.On(function(data)
         OutlineTransparency = 1
     }):Play()
 end))
-local storagePromise = Promise.try(function()
-    while wait(0.5) do
-        local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
+Add(HarukaLib.Clock(1, function()
+    local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
 
-        for _, entityObj in allEntityPool do
-            if not ClientLib:IsModelValid(entityObj.Entity) then continue end
-
-            pcall(function()
-                local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
-                if distance < entityRenderDistance and distance > 0 then
-                    entityObj.Entity.Parent = workspace.Entities
-                elseif distance >= entityRenderDistance + 20 then
-                    entityObj.Entity.Parent = entityStorage
-                end
-            end)
-        end
-    end
-end)
-local encounterPromise = Promise.try(function()
-    while wait(0.5) do
-        if char:FindFirstChild("CombatCooldown") then continue end
-        if char:GetAttribute("IsInCombat") then continue end
-        if char:GetAttribute("CombatLocation_Encounter") then continue end
+    for _, entityObj in allEntityPool do
+        if not ClientLib:IsModelValid(entityObj.Entity) then continue end
 
         pcall(function()
-            local nowClock = DateTime.now().UnixTimestamp
-            local nearestEnemy = nil
-            local nearestDist = 999
-
-            for _, entityObj in allEntityPool do
-                if not ClientLib:IsCharValid(entityObj.Entity) then continue end
-
-                local entity = entityObj.Entity
-
-                if entity:GetAttribute("IsInCombat") then continue end
-                if entity:GetAttribute("IsDead") then continue end
-                if entity:GetAttribute("EnteringCombat") then continue end
-                if nowClock - entity:GetAttribute("SpawnClock") <= 3 then continue end
-
-                local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
-                if distance > 0 then
-                    if distance <= nearestDist then
-                        nearestEnemy = entity
-                        nearestDist = distance
-                    end
-                end
-            end
-
-            if nearestDist > 0 and nearestDist < 18 then
-                Events.RequestToStartCombat.Fire({
-                    Entity = nearestEnemy,
-                    CombatMode = workspace:GetAttribute("CombatMode")
-                })
+            local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
+            if distance < entityRenderDistance and distance > 0 then
+                entityObj.Entity.Parent = workspace.Entities
+            elseif distance >= entityRenderDistance + 20 then
+                entityObj.Entity.Parent = entityStorage
             end
         end)
     end
-end)
-local bossTrackingPromise = Promise.try(function()
-    while wait(1.2) do
-        for _, entity: Model in CollectionService:GetTagged("BossEnemyEntity") do
-            if entity.Parent ~= workspace.Entities then continue end
-            if not entity:IsA("Model") then continue end
-            if not entity:GetAttribute("HarukaUniqueId") then continue end
-            if not allEntityPool[entity:GetAttribute("HarukaUniqueId")] then continue end
+end))
 
-            if entity:GetAttribute("IsDead") then continue end
-            if entity:GetAttribute("EnteringCombat") then continue end
-            if entity:GetAttribute("IsInCombat") then continue end
-            if entity:GetAttribute("NoRotate") then continue end
-            if entity:GetAttribute("NearestChar") then continue end
 
-            Promise.try(function()
-                wait(math.random(5) / 10)
-                local rotating = math.random(5, 20)
-                local direction = math.random(-2, 2)
+local encounterCD = false
+Add(HarukaLib.Clock(0.5, function()
+    if encounterCD then return end
+    if char:FindFirstChild("CombatCooldown") then return end
+    if char:GetAttribute("IsInCombat") then return end
 
-                for _ = 1, rotating do
-                    if not ClientLib:IsModelValid(entity) then break end
-                    if entity:GetAttribute("NearestChar") then break end
 
-                    entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
-                    wait(0.01)
+    local nowClock = DateTime.now().UnixTimestamp
+    local nearestEnemy = nil
+    local nearestDist = 999
+
+    for _, entityObj in allEntityPool do
+        local entity = entityObj.Entity
+
+        if not ClientLib:IsCharValid(entity) then continue end
+        if entity:GetAttribute("IsInCombat") then continue end
+        if entity:GetAttribute("IsDead") then continue end
+        if entity:GetAttribute("EnteringCombat") then continue end
+        if nowClock - entity:GetAttribute("SpawnClock") <= 3 then continue end
+
+        pcall(function()
+            local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+            if distance > 0 then
+                if distance <= nearestDist then
+                    nearestEnemy = entity
+                    nearestDist = distance
                 end
-            end)
-        end
+            end
+        end)
     end
-end)
-Add(function()
-    storagePromise:cancel()
-    encounterPromise:cancel()
-    bossTrackingPromise:cancel()
-end)
+
+    if nearestDist > 0 and nearestDist < 20 then
+        Events.RequestToStartCombat.Fire({
+            Entity = nearestEnemy,
+            CombatMode = workspace:GetAttribute("CombatMode")
+        })
+
+        encounterCD = true
+        task.delay(4, function()
+            encounterCD = false
+        end)
+    end
+end))
+Add(HarukaLib.Clock(1.2, function()
+    for _, entity: Model in CollectionService:GetTagged("BossEnemyEntity") do
+        if entity.Parent ~= workspace.Entities then continue end
+        if not entity:IsA("Model") then continue end
+        if not entity:GetAttribute("HarukaUniqueId") then continue end
+        if not allEntityPool[entity:GetAttribute("HarukaUniqueId")] then continue end
+
+        if entity:GetAttribute("IsDead") then continue end
+        if entity:GetAttribute("EnteringCombat") then continue end
+        if entity:GetAttribute("IsInCombat") then continue end
+        if entity:GetAttribute("NoRotate") then continue end
+        if entity:GetAttribute("NearestChar") then continue end
+
+        Promise.try(function()
+            wait(math.random(5) / 10)
+            local rotating = math.random(5, 20)
+            local direction = math.random(-2, 2)
+
+            for _ = 1, rotating do
+                if not ClientLib:IsModelValid(entity) then break end
+                if entity:GetAttribute("NearestChar") then break end
+
+                entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
+                wait(0.01)
+            end
+        end)
+    end
+end))
 Add(function()
     for _, entityObj in allEntityPool do
         pcall(entityObj.Destroy, entityObj)
@@ -251,15 +248,17 @@ function EntityLib.new(enemy: Model)
 	self.SourceModel = ReplicatedStorage.Packages.EnemyModels:FindFirstChild(enemy.Name, true)
 
     self.Add, self.Empty = HarukaLib.Bin()
+    self.ModelAdd, self.ModelEmpty = HarukaLib.Bin()
 
 
-    self.Add(self.Entity.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-        local newParent = self.Entity
+    self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
+		if health <= 0 then
+			Promise.delay(1):andThenCall(self.Destroy, self):catch(function() end)
+		end
+	end))
+    self.Add(enemy.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+        local newParent = char
         if newParent then
-            if newParent.PrimaryPart == nil and newParent:FindFirstChild("Humanoid") then
-                newParent.Humanoid.Health = -1
-                return
-            end
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
                 self:Destroy()
                 return
@@ -352,11 +351,7 @@ end
 
 
 function EntityLib:_DestroyModel()
-    for _, child: Instance in self.Entity:GetDescendants() do
-        if child == nil then continue end
-        if child:HasTag("EntityBodyPart") then child:Destroy() end
-    end
-
+    self.ModelEmpty()
     self.HasModel = false
 end
 
@@ -380,14 +375,14 @@ function EntityLib:_MakeModel()
     model:PivotTo(entity.PrimaryPart.CFrame)
 
     local motor6d = model.PrimaryPart:FindFirstChildOfClass("Motor6D"):Clone()
-    motor6d.Parent = entity.PrimaryPart
-    motor6d:AddTag("EntityBodyPart")
+    self.ModelAdd(motor6d)
 
     model.PrimaryPart:Destroy()
 
     --// clone in
     for _, child: Instance in model:GetChildren() do
-        child:AddTag("EntityBodyPart")
+        self.ModelAdd(child)
+
         child.Parent = entity
     end
     model:Destroy()

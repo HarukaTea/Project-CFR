@@ -191,7 +191,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         for _ = 1, math.random(2, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-
             _wolfBite(target)
             wait(0.35)
         end
@@ -204,7 +203,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _ = 1, math.random(1, 2) do
                 if not _checkIsTargetOrEntityValid(target) then break end
 
-
                 _moving()
                 wait(0.2)
             end
@@ -216,7 +214,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
                 if not _checkIsTargetOrEntityValid(target) then break end
 
                 _wolfBarrage(target)
-                wait(0.3)
+                wait(0.4)
             end
         end
     end)

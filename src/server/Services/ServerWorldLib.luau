@@ -28,7 +28,7 @@ function ServerWorldLib:Init()
 
     for funcId: string, func: (self) -> nil in ServerWorldLib do
         if string.find(funcId, "_Do") and typeof(func) == "function" then
-            func(self)
+            task.spawn(func, self)
         end
     end
 end

@@ -87,7 +87,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
             _spikeRain(target)
-            wait(0.6)
+            wait(1)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
@@ -95,7 +95,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
         _spikeShot(target)
-        wait(0.5)
+        wait(1)
     end)
 
     --// combo attack functions
@@ -104,9 +104,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _ = 1, math.random(1, 2) do
                 if not _checkIsTargetOrEntityValid(target) then break end
 
-
                 _moving()
-                wait(0.3)
+                wait(0.5)
             end
         end
     end)
@@ -114,15 +113,14 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if comboR == 1 then
             if not _checkIsTargetOrEntityValid(target) then return end
 
-
             _spikeShot(target)
-            wait(0.5)
+            wait(1)
         end
     end)
 
 
     --// attack loop
-    wait(0.5)
+    wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
 

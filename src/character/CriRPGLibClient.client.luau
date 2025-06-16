@@ -82,7 +82,7 @@ end
 function CriRPGLib:Init()
     for funcId: string, func: (self) -> nil in CriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
+            task.spawn(func, self)
         end
     end
 
@@ -674,34 +674,6 @@ function CriRPGLib:_ListenCombatStateTreesTracker()
         end
     }))
     Add(_clearAnyTransparentTrees)
-end
-
-
-function CriRPGLib:_ListenCombatStateCharHitboxTracker()
-    local function _clearHitboxes()
-        for _, part: BasePart in char:GetChildren() do
-            if not HarukaLib:IsBasePartType(part) then continue end
-            if part == char.PrimaryPart then continue end
-
-            part.CanCollide = false
-        end
-
-        char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-IsInCombat"] = function(state: boolean)
-            if state then
-                for _, part: BasePart in char:GetChildren() do
-                    if not HarukaLib:IsBasePartType(part) then continue end
-                    if part == char.PrimaryPart then continue end
-
-                    part.CanCollide = true
-                end
-            else
-                _clearHitboxes()
-            end
-        end
-    }))
 end
 
 

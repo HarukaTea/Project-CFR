@@ -124,7 +124,7 @@ return function(scope: Fusion.Scope, props: {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
 
             Components.UIGradient(scope, {
-                Color = ColorSequence.new(AssetBook.TierColorsType2[info.Tier]),
+                Color = ColorSequence.new(AssetBook.ItemTierColors[info.Tier]),
                 Rotation = 45
             }),
 

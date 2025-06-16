@@ -31,7 +31,7 @@ function ClientWorldLib:Init()
     for funcId: string, func: (self) -> nil in ClientWorldLib do
         if typeof(func) == "function" then
             if string.find(funcId, "_Listen") or string.find(funcId, "_Do") then
-                func(self)
+                task.spawn(func, self)
             end
         end
     end
@@ -491,7 +491,7 @@ function ClientWorldLib:_ListenItemDisplayTracker()
                 return
             end
 
-            local color = AssetBook.TierColors[tonumber(info.Tier)]
+            local color = AssetBook.ItemTierColors[tonumber(info.Tier)]
             itemSphere.Color = color
             itemSphere.Trail.Color = ColorSequence.new(color)
             itemSphere.BillboardGui.Icon.Image = info.Icon

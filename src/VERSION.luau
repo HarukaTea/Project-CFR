@@ -1,1 +1,1 @@
-return "CF_Part2.7_XBOX_SUPPORT_Patch5_0615"
+return "CF_Part2.7_XBOX_SUPPORT_Patch6_0616"

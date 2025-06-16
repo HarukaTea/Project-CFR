@@ -286,7 +286,7 @@ local commands = {
                 Duration = props.Args[2] * 60 * 60,
                 DisplayReason = "Banned by Shroomhaven Temple",
                 PrivateReason = "Banned by Shroomhaven Panel",
-                ExcludeAltAccounts = true
+                ExcludeAltAccounts = false
             })
             Events.CreateNotify.Fire(props.Executor, "[Haven] Banned successfully!")
 
@@ -330,7 +330,7 @@ local commands = {
                 Duration = props.Args[2] * 60 * 60,
                 DisplayReason = "Banned by Shroomhaven Temple",
                 PrivateReason = "Banned by Shroomhaven Panel",
-                ExcludeAltAccounts = true
+                ExcludeAltAccounts = false
             })
             Events.CreateNotify.Fire(props.Executor, "[Haven] Banned successfully!")
 

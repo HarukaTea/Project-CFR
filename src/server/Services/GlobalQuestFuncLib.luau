@@ -16,7 +16,7 @@ local GlobalQuestFuncLib = {}
 function GlobalQuestFuncLib:Init()
     for funcId: string, func: (self) -> nil in GlobalQuestFuncLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
+            task.spawn(func, self)
         end
     end
 end

@@ -10,7 +10,6 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 local wait = task.wait
 
@@ -33,8 +32,6 @@ return function (self)
     ProjectileLib.HardmodeWolfMove1 = ProjectileLib.FoxMove1
     ProjectileLib.HardmodeWolfMove2 = ProjectileLib.FoxMove1
     ProjectileLib.HardmodeWolfMove5 = ProjectileLib.FoxMove1
-    ProjectileLib.LeafDragonMove2 = ProjectileLib.FoxMove1
-    ProjectileLib.LeafDragonMove3 = ProjectileLib.FoxMove1
     ProjectileLib.BeeMove2 = ProjectileLib.FoxMove1
 
 
@@ -53,8 +50,6 @@ return function (self)
 
 
     ProjectileLib.WolfMove4 = function(projectile: Model, container: Folder)
-        Maid:AddItem(projectile, 5)
-
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
 
         HarukaLib:CreateTween(projectile.Fang1.Part, AssetBook.TweenInfos.half, { Transparency = 0 }):Play()
@@ -62,7 +57,7 @@ return function (self)
 
         Promise.delay(0.5):andThen(function()
             HarukaLib:Tween(projectile.Fang1, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang1.Base.CFrame * CFrame.new(0, 0, -6) })
-            HarukaLib:Tween(projectile.Fang2, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang2.Base.CFrame * CFrame.new(0, 0, -6) })
+            HarukaLib:Tween(projectile.Fang2, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang2.Base.CFrame * CFrame.new(0, 0, -6) }, true):Wait()
 
             projectile.Fang1:AddTag("DMGEntity")
             projectile.Fang2:AddTag("DMGEntity")
@@ -79,12 +74,13 @@ return function (self)
 
 
     ProjectileLib.FoxSpike1 = function(projectile: Model, container: Folder)
-        projectile:AddTag("DMGEntity")
         projectile.Base.CFrame *= CFrame.new(0, 0, -80)
 
         HarukaLib:CreateTween(projectile.Part, AssetBook.TweenInfos.oneHalf, {
             Position = projectile.Base.Position
         }):Play()
+
+        projectile:AddTag("DMGEntity")
 
         Promise.delay(1.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
     end
@@ -94,18 +90,16 @@ return function (self)
 
 
     ProjectileLib.FoxSpike2 = function(projectile: Model, container: Folder)
-        projectile:AddTag("DMGEntity")
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
-
-        Maid:AddItem(projectile, 10)
 
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 30, 0))
 
-        HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, { Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, -30, 0) })
+        HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, { Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, -30, 0) }, true):Wait()
 
+        projectile:AddTag("DMGEntity")
 
-        Promise.delay(9.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(6):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
     end
     ProjectileLib.HardmodeWolfSpike2 = ProjectileLib.FoxSpike2
 end

@@ -683,7 +683,6 @@ function EntityLib:_RoamTask()
                     if not ServerLib:IsCharValid(char) then continue end
 
                     if char:GetAttribute("IsInCombat") then continue end
-                    if char:GetAttribute("CombatLocation_Encounter") then continue end
                     if char:FindFirstChild("CombatCooldown") then continue end
 
 
@@ -796,7 +795,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
     --// ready to fight
     entity.Humanoid.WalkSpeed = 0
-    entity:PivotTo(combatLocation + Vector3.yAxis * self.BoundingSize.Y)
+    entity:PivotTo(combatLocation * CFrame.Angles(0, math.rad(math.random(360)), 0) + Vector3.yAxis * self.BoundingSize.Y)
 
 
     local encounterBorder: Model = nil

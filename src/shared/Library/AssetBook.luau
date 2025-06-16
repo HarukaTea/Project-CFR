@@ -34,14 +34,7 @@ AssetBook.ExtraIcons = {
 }
 
 
-AssetBook.TierColors = {
-	fromRGB(0, 255, 0),
-	fromRGB(49, 226, 236),
-	fromRGB(214, 96, 253),
-	fromRGB(250, 250, 65),
-	fromRGB(255, 22, 57),
-}
-AssetBook.TierColorsType2 = {
+AssetBook.ItemTierColors = {
 	fromHex('#626771'),
 	fromHex('#52836f'),
 	fromHex('#57789c'),

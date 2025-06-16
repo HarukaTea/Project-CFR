@@ -175,7 +175,7 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
 
     projectileSymbol.Parent = ServerStorage.ProjectileSymbolContainer
 
-    Maid:AddItem(projectileSymbol, 15.99 * 2)
+    Maid:AddItem(projectileSymbol, 10)
 end
 
 

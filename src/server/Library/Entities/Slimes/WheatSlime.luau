@@ -97,7 +97,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
             _slimeWave(target)
-            wait(0.8)
+            wait(1)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
@@ -106,7 +106,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
             _slimeBarrage()
-            wait(0.55)
+            wait(1)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
@@ -116,7 +116,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         wait(1 + math.random(5) / 10)
         _slimeDive2(target)
 
-        wait(0.5)
+        wait(1)
     end)
 
     --// combo attack functions
@@ -127,13 +127,13 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
             _slimeWave(target)
-            wait(0.5)
+            wait(1)
         end
     end)
 
 
     --// attack loop
-    wait(0.5)
+    wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
 

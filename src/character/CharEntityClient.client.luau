@@ -40,7 +40,7 @@ end))
 function CharLib:Init()
     for funcId: string, func: (self) -> nil in CharLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
+            task.spawn(func, self)
         end
     end
 

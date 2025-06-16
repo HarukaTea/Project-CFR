@@ -83,9 +83,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _ = 1, 3 do
                 if not _checkIsTargetOrEntityValid(target) then break end
 
-
                 _slimeShot(target)
-                wait(0.8)
+                wait(1.5)
             end
         end
     end)
@@ -93,10 +92,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-
-
             _slimeWave(target)
-            wait(0.8)
+            wait(1.5)
         end
     end)
 
@@ -109,13 +106,13 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
             _slimeWave(target)
-            wait(0.5)
+            wait(1.2)
         end
     end)
 
 
     --// attack loop
-    wait(0.5)
+    wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
 

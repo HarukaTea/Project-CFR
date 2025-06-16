@@ -10,7 +10,6 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 local wait = task.wait
 
@@ -30,21 +29,20 @@ return function (self)
             end)
         end)
     end
-    ProjectileLib.LeafDragonMove1 = ProjectileLib.BeeMove1
 
 
 
     ProjectileLib.BeeSpike1 = function(projectile: Model, container: Folder)
-        projectile:AddTag("DMGEntity")
-
         if not projectile:GetAttribute("NoSound") then
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
         end
 
+        Promise.delay(5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+
         HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, {
             Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, 11, 0)
-        })
+        }, true):Wait()
 
-        Promise.delay(5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        projectile:AddTag("DMGEntity")
     end
 end
