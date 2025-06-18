@@ -50,7 +50,7 @@ AssetBook.QuestTypeColors = {
 
 
 AssetBook.ItemEffectIcons = {
-	CanLight = "rbxassetid://2965771738",
+	CanYellowLight = "rbxassetid://2965771738",
 	CanMine = "rbxassetid://12118509077",
 	CanClimb = "rbxassetid://119170658838472",
 
@@ -60,7 +60,11 @@ AssetBook.ItemEffectIcons = {
 	ATK = "rbxassetid://2965862892",
 	Speed = "rbxassetid://128019227796527",
 	Magic = "rbxassetid://2965863231",
-	MaxHealth = "rbxassetid://73706423714397",
+	MaxHealth = "rbxassetid://104142948728530",
+	MaxShield = "rbxassetid://139807236835811",
+	Warding = "rbxassetid://133479347120603",
+	PoisonChance = "rbxassetid://137874332790885",
+	BurnChance = "rbxassetid://74588474308433",
 
 	Intensity = "rbxassetid://128019227796527",
 	CriDMG = "rbxassetid://73146024586376",
@@ -69,14 +73,17 @@ AssetBook.ItemEffectIcons = {
 	Combo = "rbxassetid://91123652494859",
 	Stack = "rbxassetid://85379466166048",
 
-	Luck = "rbxassetid://109492434580670"
+	Luck = "rbxassetid://109627611842021"
 }
 AssetBook.ItemEffectIcons.Mana = AssetBook.ItemEffectIcons.MaxMana
+AssetBook.ItemEffectIcons.CanLight = AssetBook.ItemEffectIcons.CanYellowLight
 
 
 AssetBook.ItemEffectIconColors = {
 	CriChance = fromHex('#ffeaa7'),
+	Luck = fromHex('#2ed573'),
 	MaxHealth = fromHex('#2ed573'),
+	MaxShield = fromHex('#ffeaa7'),
 }
 AssetBook.ItemEffectNames = {
 	CD = "CD Time",
@@ -90,32 +97,41 @@ AssetBook.ItemEffectNames = {
 	MaxHealthEx = "Health",
 	IntensityEx = "Intensity",
 	LuckEx = "Luck",
+	MaxShieldEx = "Shield",
+	WardingEx = "Warding",
+	PoisonChanceEx = "Poison Chance",
+	BurnChanceEx = "Burn Chance",
 }
 AssetBook.ItemEffectIsPercentage = {
 	CriChanceEx = true,
 	CriDMGEx = true,
 	IntensityEx = true,
 	LuckEx = true,
+	WardingEx = true,
+	PoisonChanceEx = true,
+	BurnChanceEx = true
 }
 
 
 AssetBook.CharStatIcons = {
 	ATK = "rbxassetid://2965862892",
-	["BURN CHANCE"] = "rbxassetid://12371104403",
+	["BURN CHANCE"] = "rbxassetid://74588474308433",
+	["POISON CHANCE"] = "rbxassetid://137874332790885",
 	["CRIT CHANCE"] = "rbxassetid://73146024586376",
 	["CRIT DMG"] = "rbxassetid://73146024586376",
 	["DODGE CHANCE"] = "rbxassetid://74429503512836",
-	HP = "rbxassetid://73706423714397",
+	HP = "rbxassetid://104142948728530",
 	JMP = "rbxassetid://89411498131129",
 	MAGIC = "rbxassetid://2965863231",
 	MANA = "rbxassetid://131740194041023",
 	SHIELD = "rbxassetid://139807236835811",
 	SPD = "rbxassetid://128019227796527",
-	LUCK = "rbxassetid://109492434580670"
+	LUCK = "rbxassetid://109627611842021"
 }
 AssetBook.CharStatIconColors = {
 	["CRIT CHANCE"] = fromHex('#ffeaa7'),
 	HP = fromHex('#2ed573'),
+	LUCK = fromHex('#2ed573'),
 	SHIELD = fromHex('#ffeaa7'),
 	["DODGE CHANCE"] = fromHex('#70a1ff')
 }

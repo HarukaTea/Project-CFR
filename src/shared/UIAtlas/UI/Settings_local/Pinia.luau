@@ -42,6 +42,7 @@ return function (self: table)
     self.SliderVals = {}
 
     self.SwitcherVals = {}
+    self.DropdownVals = {}
 
     local scope = self.scope :: Fusion.Scope
 
@@ -84,6 +85,8 @@ return function (self: table)
             self.SliderProgressVals[panelId][optionId] = Value((defaultValue - optionInfo.Min) / (optionInfo.Max - optionInfo.Min))
             self.SliderVals[panelId][optionId] = Value(defaultValue)
 
+            self.INFO[panelId].Includes[optionId].DefaultValue = defaultValue
+
             table.insert(scope, optionInfo.ValChanged)
         end
     end
@@ -100,6 +103,21 @@ return function (self: table)
             end
 
             self.SwitcherVals[panelId][optionId] = Value(defaultValue)
+        end
+    end
+    --// track dropdown
+    for panelId: string, panelInfo: table in self.INFO do
+        self.DropdownVals[panelId] = {}
+
+        for optionId: string, optionInfo: table in panelInfo.Includes do
+            if optionInfo.Type ~= "Dropdown" then continue end
+
+            local defaultValue = optionInfo.DefaultValue
+            if self.SettingsFolder:FindFirstChild(optionId) then
+                defaultValue = self.SettingsFolder[optionId].Value
+            end
+
+            self.DropdownVals[panelId][optionId] = Value(defaultValue)
         end
     end
 
@@ -247,60 +265,11 @@ return function (self: table)
 
 
     --// track solo/public/party combat
-    local soloObserver = Fusion.Observer(scope, self.SwitcherVals.Game.SoloCombatMode)
-    soloObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Game.SoloCombatMode)
-        local state2 = Fusion.peek(self.SwitcherVals.Game.PublicCombatMode)
-        local state3 = Fusion.peek(self.SwitcherVals.Game.PartyCombatMode)
+    local combatObserver = Fusion.Observer(scope, self.DropdownVals.Game.CombatMode)
+    combatObserver:onBind(function()
+        local mode = Fusion.peek(self.DropdownVals.Game.CombatMode)
+        mode = mode or "Public"
 
-        if state then
-            self.SwitcherVals.Game.PublicCombatMode:set(false)
-            self.SwitcherVals.Game.PartyCombatMode:set(false)
-
-            workspace:SetAttribute("CombatMode", "Solo")
-
-        elseif not state and not state2 and not state3 then
-            self.SwitcherVals.Game.PublicCombatMode:set(true)
-            workspace:SetAttribute("CombatMode", "Public")
-        end
-    end)
-
-    local publicObserver = Fusion.Observer(scope, self.SwitcherVals.Game.PublicCombatMode)
-    publicObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Game.PublicCombatMode)
-        local state2 = Fusion.peek(self.SwitcherVals.Game.SoloCombatMode)
-        local state3 = Fusion.peek(self.SwitcherVals.Game.PartyCombatMode)
-
-        if state then
-            self.SwitcherVals.Game.SoloCombatMode:set(false)
-            self.SwitcherVals.Game.PartyCombatMode:set(false)
-
-            workspace:SetAttribute("CombatMode", "Public")
-
-        elseif not state and not state2 and not state3 then
-            workspace:SetAttribute("CombatMode", "Public")
-
-            task.defer(function()
-                self.SwitcherVals.Game.PublicCombatMode:set(true)
-            end)
-        end
-    end)
-
-    local partyObserver = Fusion.Observer(scope, self.SwitcherVals.Game.PartyCombatMode)
-    partyObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Game.PartyCombatMode)
-        local state2 = Fusion.peek(self.SwitcherVals.Game.SoloCombatMode)
-        local state3 = Fusion.peek(self.SwitcherVals.Game.PublicCombatMode)
-
-        if state then
-            self.SwitcherVals.Game.SoloCombatMode:set(false)
-            self.SwitcherVals.Game.PublicCombatMode:set(false)
-
-            workspace:SetAttribute("CombatMode", "Party")
-
-        elseif not state and not state2 and not state3 then
-            self.SwitcherVals.Game.PublicCombatMode:set(true)
-            workspace:SetAttribute("CombatMode", "Public")
-        end
+        workspace:SetAttribute("CombatMode", mode)
     end)
 end

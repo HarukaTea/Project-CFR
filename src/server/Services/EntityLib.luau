@@ -626,6 +626,7 @@ function EntityLib:_RoamTask()
             if entity:GetAttribute("IsInCombat") then break end
 
             if self.NearestChar then continue end
+            if self.CombatInfo.IsInCombat then break end
             if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
 
 
@@ -668,6 +669,7 @@ function EntityLib:_RoamTask()
 
 
             if entity:GetAttribute("IsInCombat") then break end
+            if self.CombatInfo.IsInCombat then break end
             if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
 
 
@@ -720,6 +722,61 @@ function EntityLib:_RoamTask()
                 else
                     self.NearestChar = nil
                     entity:SetAttribute("NearestChar", nil)
+                end
+
+                resolve()
+            end):catch(function(err)
+                warn(tostring(err))
+            end):await()
+        end
+    end))
+
+
+    --// encountering
+    self.RoamAdd(task.spawn(function()
+        while wait(2) do
+            if not ServerLib:IsCharValid(entity) then break end
+
+            if entity:GetAttribute("IsInCombat") then break end
+            if self.CombatInfo.IsInCombat then break end
+            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
+
+            Promise.new(function(resolve)
+                local curPos = entity.PrimaryPart.Position :: Vector3
+
+                local nearestChars = _getCharsByRadius(curPos, 20)
+                local nearestChar = nil
+                local nearestDist = 999
+
+                for _, char: Model in nearestChars do
+                    if not ServerLib:IsCharValid(char) then continue end
+
+                    if char:GetAttribute("IsInCombat") then continue end
+                    if char:FindFirstChild("CombatCooldown") then continue end
+
+
+                    local mag = (char.PrimaryPart.Position - curPos).Magnitude
+
+                    if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
+                        nearestDist = mag
+                        nearestChar = char
+                    end
+                end
+
+                if nearestChar and ServerLib:IsCharValid(nearestChar) then
+                    local player = Players:GetPlayerFromCharacter(nearestChar)
+                    if not player then
+                        resolve()
+                        return
+                    end
+
+                    local criRPGSettings = player.CriRPGSettings :: Configuration
+                    local combatMode = "Public"
+                    if criRPGSettings:FindFirstChild("CombatMode") then
+                        combatMode = criRPGSettings.CombatMode.Value
+                    end
+
+                    enterCombatSignal:Fire(entity, nearestChar, combatMode)
                 end
 
                 resolve()

@@ -36,7 +36,7 @@ return function(scope: Fusion.Scope, props: {
         INT = "rbxassetid://81020560446846",
         VIT = "rbxassetid://106075217220023",
 
-        Crafting = "rbxassetid://117468861815122",
+        Crafting = "rbxassetid://105673885617491",
         Gemstone = "rbxassetid://139698715468743"
     }
     local DEFAULT_COLOR = Color3.fromRGB(211, 188, 142)

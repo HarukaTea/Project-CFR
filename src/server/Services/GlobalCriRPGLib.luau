@@ -1039,7 +1039,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         end
 
 
-        local totalPrice = itemInfo.Price * sellAmount
+        local totalPrice = itemInfo.SellPrice * sellAmount
 
         Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
         Events.CreateNotify.Fire(plr, "Sell successful! Welcome back!")
@@ -1161,7 +1161,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
         local totalGold = 0
         for _, symbol: IntConstrainedValue in itemsWithThisId do
-            totalGold += itemInfo.Price * symbol.Value
+            totalGold += itemInfo.SellPrice * symbol.Value
             symbol:Destroy()
         end
 

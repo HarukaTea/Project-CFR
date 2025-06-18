@@ -10,6 +10,7 @@ local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
 local SliderForSettings = require(script.Components.Slider)
 local Switcher = require(script.Components.Switcher)
+local Dropdown = require(script.Components.Dropdown)
 
 local Children = Fusion.Children
 
@@ -154,6 +155,16 @@ return function (plr: Player)
                                                     LayoutOrder = optionInfo.LayoutOrder,
 
                                                     BooleanValue = self.SwitcherVals[panelId][optionId],
+                                                })
+
+                                            elseif optionInfo.Type == "Dropdown" then
+                                                return optionId, Dropdown(scope, {
+                                                    OptionId = optionId,
+                                                    OptionTitle = optionInfo.OptionTitle,
+                                                    OptionDropdownOptions = optionInfo.DropdownOptions,
+                                                    LayoutOrder = optionInfo.LayoutOrder,
+
+                                                    DropdownValue = self.DropdownVals[panelId][optionId],
                                                 })
                                             end
 

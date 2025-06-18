@@ -115,12 +115,12 @@ CastItemLib.GoldenApple = function(player: Player, char: Model) : number?
 
     _eatSoundFunc(char, function()
         local amount = StatusLib:HealPercentage(char, 15)
+        ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+
         StatusLib:DMGBoost(char, {
             DMGPower = 0.5,
             Duration = 6
         })
-
-        ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
     end)
 end
 
@@ -202,12 +202,35 @@ CastItemLib.ManaPotion = function(player: Player, char: Model) : number?
 
 
     _drinkSoundFunc(char, function()
-        HarukaLib:AddAttr(char, "Mana", math.floor(char:GetAttribute("MaxMana") * 0.3))
+        HarukaLib:AddAttr(char, "Mana", math.floor(char:GetAttribute("MaxMana") * 0.35))
 
         local restoreEff = RepS.Packages.Effects.Restoring:Clone() :: BasePart
         restoreEff.Parent = char
 
         Debris:AddItem(restoreEff, 1.5)
+    end)
+end
+
+
+CastItemLib.EndurancePotion = function(player: Player, char: Model) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "EndurancePotion",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    _drinkSoundFunc(char, function()
+        HarukaLib:AddAttr(char, "Shield", math.floor(char:GetAttribute("MaxShield") * 0.5))
+
+        local repairingEff = RepS.Packages.Effects.Repairing:Clone() :: BasePart
+        repairingEff.Parent = char
+
+        Debris:AddItem(repairingEff, 1.5)
     end)
 end
 

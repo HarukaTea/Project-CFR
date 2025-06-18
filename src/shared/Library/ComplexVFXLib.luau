@@ -23,6 +23,7 @@ ComplexVFXLib.Healing = function(part: BasePart)
     end)
 end
 ComplexVFXLib.Restoring = ComplexVFXLib.Healing
+ComplexVFXLib.Repairing = ComplexVFXLib.Healing
 
 
 

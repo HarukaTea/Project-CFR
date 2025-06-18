@@ -81,7 +81,7 @@ function ServerWorldLib:_DoCreateCraftingProductEntities()
 
         productVal:AddTag("CraftingProductEntity")
 
-        productVal:SetAttribute("ItemStat", ServerLib:GiveRandomStatForItem(info.ItemId))
+        productVal:SetAttribute("ItemStat", info.StatInfo)
         productVal:SetAttribute("Level", info.Level)
         productVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
@@ -344,7 +344,7 @@ function ServerWorldLib:_DoMarketNPCOptimizeInit()
                 product:AddTag("MarketProductEntity")
                 product:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
-                product:SetAttribute("ItemStat", ServerLib:GiveRandomStatForItem(product.Name))
+                product:SetAttribute("ItemStat", ItemLib:GetItemInfo(product.Name).StatInfo)
                 product:SetAttribute("Level", ItemLib:GetItemInfo(product.Name).Level)
             end
         end

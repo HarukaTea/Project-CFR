@@ -373,10 +373,11 @@ return function(scope: Fusion.Scope, props: {
 
                                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local typedAmount = use(amount) :: number
-
                                             typedAmount = math.clamp(typedAmount, 1, 99)
 
-                                            return `{HarukaLib:CommaifyNumber(use(info).Price * typedAmount)}`
+                                            local priceType = if props.Action == "Purchase" then "Price" else "SellPrice"
+
+                                            return `{HarukaLib:CommaifyNumber(use(info)[priceType] * typedAmount)}`
                                         end),
                                     }),
                                 }

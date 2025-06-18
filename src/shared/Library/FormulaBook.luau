@@ -91,9 +91,9 @@ local formulas = {
         ATKType: string
     })
 
-        local baseFactor = 38
+        local baseFactor = 37
         if props.ATKType == "Max" then
-            baseFactor = 42
+            baseFactor = 43
         end
         local extra = 1 + ((props.DMGPoints * baseFactor) / 100)
 
@@ -130,14 +130,14 @@ local formulas = {
         BaseCritChance: number,
         DexPoints: number
     })
-        return math.floor(props.BaseCritChance + math.min(60, math.floor(props.DexPoints * 0.8)))
+        return math.floor(props.BaseCritChance + math.min(40, math.floor(props.DexPoints * 0.8)))
     end,
 
     PlayerDodgeChanceCurveCal = function(props: {
         BaseDodgeChance: number,
         DexPoints: number
     })
-        return math.floor(props.BaseDodgeChance + math.min(20, math.floor(props.DexPoints / 2.75)))
+        return math.floor(props.BaseDodgeChance + math.min(18, math.floor(props.DexPoints / 2.75)))
     end,
 
 

@@ -119,7 +119,8 @@ local charStats = {
 
     --- item related
     CanMine = false,
-    CanLight = false,
+    CanYellowLight = false,
+    CanBlueLight = false,
     CanClimb = false,
 
 

@@ -62,7 +62,7 @@ return function (scope: Fusion.Scope, props: {
                 Name = "ItemName",
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.fromScale(0.5, -0.7),
-                Size = UDim2.fromScale(5, 0.5),
+                Size = UDim2.fromScale(15, 0.5),
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)

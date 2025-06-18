@@ -17,7 +17,7 @@ return function(scope: Fusion.Scope, props: {
     OptionId: string,
     OptionTitle: string,
 })
-	local isSelected = Fusion.Value(scope, false)
+	local isSelecting = Fusion.Value(scope, false)
 	local barVal = props.BarVal
 
 	local nodePosition = Fusion.Value(scope, UDim2.fromScale(1, 0.5))
@@ -112,7 +112,7 @@ return function(scope: Fusion.Scope, props: {
 						Thickness = 2,
 
 						Transparency = Fusion.Computed(scope, function(use: Fusion.Use)
-							return if use(isSelected) then 0 else 1
+							return if use(isSelecting) then 0 else 1
 						end)
 					})
 				}
@@ -194,16 +194,17 @@ return function(scope: Fusion.Scope, props: {
 				ZIndex = 5,
 			}),
 
-			Components.HoverImageButton(scope, {
+			Components.Frame(scope, {
 				AnchorPoint = Vector2.zero,
 				Position = UDim2.fromScale(-0.02, 0),
 				Size = UDim2.fromScale(0.935, 1),
 
+
 				[Fusion.OnEvent("MouseEnter")] = function()
-					isSelected:set(true)
+					isSelecting:set(true)
 				end,
 				[Fusion.OnEvent("MouseLeave")] = function()
-					isSelected:set(false)
+					isSelecting:set(false)
 				end,
 			})
 		}

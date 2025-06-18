@@ -31,7 +31,7 @@ return {
     },
 
     HealthBoost = {
-        Icon = "rbxassetid://73706423714397",
+        Icon = "rbxassetid://104142948728530",
         Color = Color3.fromHex('#7bed9f'),
     },
 
@@ -44,7 +44,7 @@ return {
 
     --// Debuffs
     BurnDebuff = {
-        Icon = "rbxassetid://12218488404",
+        Icon = "rbxassetid://74588474308433",
         Color = Color3.fromRGB(255, 0, 0),
     }
 

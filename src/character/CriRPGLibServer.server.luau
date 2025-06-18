@@ -179,7 +179,7 @@ function CriRPGLib:_ListenLightTracker()
     light.Parent = char.PrimaryPart
 
     Add(HarukaLib:Hydrate(char, {
-        ["Attr-CanLight"] = function(state: boolean)
+        ["Attr-CanYellowLight"] = function(state: boolean)
             light.Enabled = state or false
         end
     }))
@@ -496,8 +496,10 @@ function CriRPGLib:_ListenStatsTracker()
         local minDMGBuff = char:GetAttribute("MinDMGEx") :: number
         local minDMGExBuff = char:GetAttribute("MinDMGExPower") :: number
 
+        local exMinDMG = baseMinDMG + minDMGBuff / 89
+
         baseMinDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = baseMinDMG,
+            BaseDMG = math.floor(exMinDMG),
             DMGPoints = plr:GetAttribute("STRPoints")
         })
 
@@ -518,8 +520,10 @@ function CriRPGLib:_ListenStatsTracker()
         local maxDMGBuff = char:GetAttribute("MaxDMGEx") :: number
         local maxDMGExBuff = char:GetAttribute("MaxDMGExPower") :: number
 
+        local exMaxDMG = baseMaxDMG + maxDMGBuff / 89
+
         baseMaxDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = baseMaxDMG,
+            BaseDMG = math.floor(exMaxDMG),
             DMGPoints = plr:GetAttribute("STRPoints"),
 
             ATKType = "Max"
@@ -542,9 +546,11 @@ function CriRPGLib:_ListenStatsTracker()
         local magicBuff = char:GetAttribute("MagicEx") :: number
         local magicExBuff = char:GetAttribute("MagicExPower") :: number
 
+        local exMagic = baseMagic + magicBuff / 89
+
 
         baseMagic = FormulaBook.PlayerMagicCurveCal({
-            BaseMagic = baseMagic,
+            BaseMagic = math.ceil(exMagic),
             MagicPoints = plr:GetAttribute("INTPoints")
         })
 

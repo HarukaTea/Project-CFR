@@ -6,8 +6,6 @@ local UserInputService = game:GetService("UserInputService")
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 
---// TODO: combat encounter mode dropdown
-
 local template = {
     Sounds = {
         PanelTitle = "Sounds",
@@ -143,27 +141,14 @@ local template = {
 		LayoutOrder = 2,
 
 		Includes = {
-			PublicCombatMode = {
-				OptionTitle = "Public Combat Mode",
-				Type = "Switcher",
+			CombatMode = {
+				OptionTitle = "Combat Mode",
+				Type = "Dropdown",
 				LayoutOrder = 1,
+				DropdownOptions = { "Solo", "Public", "Party" },
 
-				DefaultValue = true,
-			},
-			SoloCombatMode = {
-				OptionTitle = "Solo Combat Mode",
-				Type = "Switcher",
-				LayoutOrder = 2,
-
-				DefaultValue = false,
-			},
-			PartyCombatMode = {
-				OptionTitle = "Party Combat Mode",
-				Type = "Switcher",
-				LayoutOrder = 3,
-
-				DefaultValue = false,
-			},
+				DefaultValue = "Public",
+			}
 		}
 	}
 }

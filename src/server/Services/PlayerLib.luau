@@ -158,6 +158,8 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
                 val = Instance.new("NumberValue")
             elseif type(settingsVal) == "boolean" then
                 val = Instance.new("BoolValue")
+            elseif type(settingsVal) == "string" then
+                val = Instance.new("StringValue")
             end
             if val then
                 val.Name = settingsId
@@ -315,6 +317,8 @@ Events.RequestToSaveSettings.SetCallback(function(plr: Player, data)
             valueSymbol = Instance.new("NumberValue")
         elseif type(val) == "boolean" then
             valueSymbol = Instance.new("BoolValue")
+        elseif type(val) == "string" then
+            valueSymbol = Instance.new("StringValue")
         end
 
         valueSymbol.Name = id
@@ -610,6 +614,11 @@ function PlayerLib:_ValidateSaveData(data: table)
         end
         if itemInfo.Level ~= trueItemInfo.Level then
             data.ItemsSQL[itemInfo.UniqueId].Level = trueItemInfo.Level
+        end
+        if table.find(trueItemInfo.TagsDesync, "NoRandom") then
+            if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
+                data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
+            end
         end
     end
 

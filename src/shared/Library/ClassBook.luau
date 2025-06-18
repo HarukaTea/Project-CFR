@@ -2,7 +2,7 @@
 
 return {
 	Chain = {
-		Icon = "rbxassetid://126556799732536",
+		Icon = "rbxassetid://80163543853288",
 		Color = Color3.fromHex('#ffeaa7'),
         Type = "DMG",
 
@@ -33,7 +33,7 @@ return {
         Hint = "Gather as many Arrows as you can!",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://105762177488028",
+            UltSkillIcon = "rbxassetid://119538556978639",
         },
 
 

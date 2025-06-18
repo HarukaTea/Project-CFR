@@ -99,6 +99,7 @@ ItemLib.GetItemInfo = function(_, itemId: string) : {
     StatInfo: string,
     Icon: string,
     Price: number,
+    SellPrice: number,
     ExtraStatInfo: string,
     Recipe: string,
     Tags: string,
@@ -182,11 +183,17 @@ for index: number, itemInfo: table in ItemBook do
         itemInfo.TagsDesync = string.split(tags, ",")
     end
 
+    --// add passive info
+    if itemInfo.Type == "Passive" then
+        itemInfo.Stat = "<yellow>(Passive will work without equipping)</font> <br/>"..itemInfo.Stat
+    end
+
 
     itemInfo.Tier = tonumber(itemInfo.Tier) or 1
     itemInfo.Level = tonumber(itemInfo.Level) or 1
     itemInfo.Icon = "rbxassetid://"..itemInfo.Icon
     itemInfo.Price = tonumber(itemInfo.Price) or 1599
+    itemInfo.SellPrice = tonumber(itemInfo.SellPrice) or 1599
 
     ItemBook[index] = itemInfo
 end

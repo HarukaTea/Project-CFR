@@ -34,7 +34,7 @@ return {
 
         Drops = {
             BeeStinger = 80,
-            HoneyArmor = 10,
+            HoneyArmor2 = 10,
             QueenBeeBow = 5
         }
     },
