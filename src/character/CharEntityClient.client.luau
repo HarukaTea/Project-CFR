@@ -40,7 +40,7 @@ end))
 function CharLib:Init()
     for funcId: string, func: (self) -> nil in CharLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
+            func(self)
         end
     end
 
@@ -87,7 +87,12 @@ end
 
 
 function CharLib:__Init()
-    SoundService.Musics.Overworld:Play()
+    if not workspace:GetAttribute("DungeonId") then
+        SoundService.Musics.Overworld:Play()
+    end
+    if workspace:GetAttribute("DungeonId") and workspace:GetAttribute("DungeonStarted") then
+        SoundService.Musics.Overworld:Play()
+    end
 
     local camera = workspace.CurrentCamera
     if camera:FindFirstChild("DeathBlur") then

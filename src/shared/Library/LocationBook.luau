@@ -44,7 +44,7 @@ return {
 
         Music = "Fareland",
         MusicVolume = 1.7,
-        CombatMusic = "KeterLibrary",
+        CombatMusic = "KetherLibrary",
         CombatMusicVolume = 1,
 
         LightingInfo = defaultLighting,
@@ -59,7 +59,7 @@ return {
 
         Music = "Nest",
         MusicVolume = 0.6,
-        CombatMusic = "KeterLibrary",
+        CombatMusic = "KetherLibrary",
         CombatMusicVolume = 1,
 
         LightingInfo = defaultLighting,
@@ -142,7 +142,7 @@ return {
 
         Music = "StepInEDITHV3",
         MusicVolume = 1,
-        CombatMusic = "KeterLibrary",
+        CombatMusic = "KetherLibrary",
         CombatMusicVolume = 0.5,
 
         LightingInfo = defaultLighting,
@@ -150,34 +150,6 @@ return {
 
         RainLevel = 0,
     },
-
-    CrystalDoor = {
-        Name = "???",
-        Desc = "This door seals the mouth of a vast, shadow drenched cave...",
-
-        Music = "QuietAndFalling",
-        MusicVolume = 0.5,
-         CombatMusic = "ComplexDreams",
-        CombatMusicVolume = 0.7,
-
-        LightingInfo = {
-            Ambient = Color3.fromRGB(106, 106, 106),
-            Brightness = 1.8,
-            EnvironmentDiffuseScale = 0,
-            EnvironmentSpecularScale = 0,
-            OutdoorAmbient = Color3.fromRGB(177, 177, 177),
-            ExposureCompensation = 0.15,
-            FogColor = Color3.fromRGB(218, 206, 255),
-            FogEnd = 1599,
-            FogStart = 59
-        },
-        ClockTime = 2,
-
-        RainLevel = 1
-    },
-
-
-
 
 
 
@@ -188,12 +160,45 @@ return {
 
         Music = "StepInEDITHV3",
         MusicVolume = 1.2,
-        CombatMusic = "KeterLibrary",
+        CombatMusic = "KetherLibrary",
         CombatMusicVolume = 1,
 
         LightingInfo = {},
         ClockTime = 0,
 
         RainLevel = 0,
+    },
+    DungeonTestPlace = {
+        Name = "Dungeon Dimension",
+        Desc = "",
+
+        Music = "_DUNGEON",
+        MusicVolume = 1.2,
+        CombatMusic = "_DUNGEON",
+        CombatMusicVolume = 1,
+
+        LightingInfo = {},
+        ClockTime = 0,
+
+        RainLevel = 0,
+    },
+
+
+
+
+    --// Dungeon areas
+    ForestLevelD1 = {
+        Name = "Unknown Forest",
+        Desc = "",
+
+        Music = "_DUNGEON",
+        MusicVolume = 1.2,
+        CombatMusic = "_DUNGEON",
+        CombatMusicVolume = 1,
+
+        LightingInfo = {},
+        ClockTime = 0,
+
+        RainLevel = 5,
     }
 }

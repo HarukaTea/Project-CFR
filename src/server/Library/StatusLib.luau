@@ -11,6 +11,8 @@ local GlobalTimer = require(SSS.HarukaServer.Shared.GlobalTimer)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
+local StatusBook = require(RepS.HarukaShared.Library.StatusBook)
 
 local StatusLib = {}
 
@@ -182,14 +184,70 @@ end
 
 
 
-StatusLib.Burn = function(_, char: Model, info: {
-    Target: Model,
+local function _calDoTDMG(char: Model, dmgType: string)
+    if dmgType == "DMG" then
+        local minDMG, maxDMG = char:GetAttribute("MinDMG"), char:GetAttribute("MaxDMG")
+        if minDMG > maxDMG then
+            maxDMG, minDMG = minDMG, maxDMG
+        end
+
+        return minDMG
+    elseif dmgType == "Magic" then
+        local magic = char:GetAttribute("Magic")
+
+        return magic
+    end
+end
+
+
+StatusLib.Burn = function(_, target: Model, info: {
     Type: string,
-    Creator: string,
+    Creator: Model,
     Power: number,
     Duration: number,
 })
+    local dmg = _calDoTDMG(info.Creator, "DMG")
 
+    dmg *= info.Power
+    dmg /= 3
+    dmg = math.floor(dmg)
+
+    target.Humanoid:TakeDamage(dmg)
+    ServerLib:ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
+end
+
+
+StatusLib.Bleed = function(_, target: Model, info: {
+    Type: string,
+    Creator: Model,
+    Power: number,
+    Duration: number,
+})
+    local dmg = _calDoTDMG(info.Creator, "DMG")
+
+    dmg *= info.Power
+    dmg /= 2.5
+    dmg = math.floor(dmg)
+
+    target.Humanoid:TakeDamage(dmg)
+    ServerLib:ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
+end
+
+
+StatusLib.Poison = function(_, target: Model, info: {
+    Type: string,
+    Creator: Model,
+    Power: number,
+    Duration: number,
+})
+    local dmg = _calDoTDMG(info.Creator, "Magic")
+
+    dmg *= info.Power
+    dmg /= 2.5
+    dmg = math.floor(dmg)
+
+    target.Humanoid:TakeDamage(dmg)
+    ServerLib:ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
 end
 
 

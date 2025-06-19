@@ -51,6 +51,8 @@ function CharLib:Destroy()
 
 	ServerBindables.PlayerDied:Fire(plr.Name)
     ServerBindables.RToSpawnChar:Fire(plr)
+
+	char.DestroyBindableEvent:Fire()
 end
 
 

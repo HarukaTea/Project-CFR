@@ -24,6 +24,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
+local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
 
 
 local GlobalCriRPGLib = {}
@@ -36,7 +37,7 @@ local wait = task.wait
 function GlobalCriRPGLib:Init()
     for funcId: string, func: (self) -> nil in GlobalCriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
+            func(self)
         end
     end
 end
@@ -132,6 +133,10 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
         alignMoverAtt.Name = "AlignMoverAttachment"
         alignMoverAtt.Parent = r6Char.PrimaryPart
 
+        local destroyBE = Instance.new("BindableEvent")
+        destroyBE.Name = "DestroyBindableEvent"
+        destroyBE.Parent = r6Char
+
         HarukaLib:SetCollisionGroup(r6Char, "PlayerBodyPart")
 
         plr.Character = r6Char
@@ -169,6 +174,8 @@ end
 
 function GlobalCriRPGLib:_ListenPromptRequestsTracker()
     ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, plr: Player)
+        if prompt.Enabled == false then return end
+
         local adornee = prompt.Parent :: BasePart
 
         if plr == nil then return end
@@ -247,15 +254,10 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             Events.OpenCraftingUI.Fire(plr)
 
 
-        elseif prompt.Name == "Dungeon" then
-            local destination = prompt:GetAttribute("Destination") :: string
-
-            local map = workspace.Maps:FindFirstChild(destination, true)
-            if not map then return end
+        elseif prompt.Name == "DungeonPortal" then
             if not ServerLib:IsCharValid(plr.Character) then return end
 
-
-            plr.Character:PivotTo(map.Locators.TeleporterIn.CFrame)
+            plr.Character:PivotTo(prompt.Destination.Value.CFrame)
 
 
         elseif prompt.Name == "Class" then
@@ -316,7 +318,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             ServerLib:GiveItemDrop(plr, finalMaterial, amount)
 
 
-            task.delay(120, function()
+            Promise.delay(math.random(60, 100)):andThen(function()
                 material.Parent = workspace.MapComponents.Materials
 
                 prompt.Enabled = true
@@ -1275,6 +1277,7 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
 
 
         local projectileType = symbol:GetAttribute("ProjectileType") :: string
+        local projectileDoTType = symbol:GetAttribute("DoTType") :: string
         local enemyUniqueId = data.EnemyEntity:GetAttribute("HarukaUniqueId") :: string
         if symbol:FindFirstChild(enemyUniqueId) then return end
 
@@ -1294,6 +1297,16 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
                 ForceMaxDMG = true
             })
         })
+        if projectileDoTType ~= "None" then
+            local debuffObj = HarukaDoT.new({
+                Target = data.EnemyEntity,
+                Type = projectileDoTType,
+                Duration = 5,
+                Creator = char,
+                Power = 1,
+            })
+            debuffObj:Activate()
+        end
     end)
 end
 

@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local CharacterStatsView = require(script.Components.CharacterStatsView)
 local PlayerActive = require(script.Components.PlayerActives)
@@ -246,6 +247,45 @@ return function(plr: Player)
                         Components.UIScale(scope, {
                             Scale = 0.8
                         }),
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "DungeonStarter",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 1.5),
+                    ZIndex = 5,
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.DungeonId) ~= nil and use(self.DungeonStarted) == false
+                    end),
+
+                    [Children] = {
+                        Components.UIScale(scope, {
+                            Scale = 1
+                        }),
+                        Components.UIListLayout(scope, {
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                        }),
+
+                        Components.TextButton(scope, {
+                            Name = "DungeonStart",
+                            Size = UDim2.fromScale(0.2, 0.65),
+                            Text = "START DUNGEON",
+                            BackgroundTransparency = 0,
+                            BackgroundColor3 = Components.GREEN_COLOR,
+                            TextColor3 = Color3.new(),
+
+                            [Fusion.OnEvent("MouseButton1Click")] = function()
+                                Events.DUNGEON_RequestToStartDungeon.Fire()
+                            end,
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.UIPadding(scope, {})
+                            }
+                        })
                     }
                 })
             }

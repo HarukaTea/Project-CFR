@@ -238,9 +238,22 @@ function EntityLib.new(enemy: Model)
 
     local self = setmetatable({}, EntityLib)
 
-    repeat wait() until ClientLib:IsModelValid(enemy)
+    Promise.new(function(resolve)
+        repeat wait() until ClientLib:IsModelValid(enemy)
+
+        resolve(true)
+
+    end):timeout(10):catch(function() end):await()
 
     if enemy:GetAttribute("IsDead") then return nil end
+
+
+    Promise.new(function(resolve)
+        repeat wait() until enemy:WaitForChild("Humanoid", 2)
+
+        resolve(true)
+
+    end):timeout(10):catch(function() end):await()
 
 	self.Entity = enemy
 

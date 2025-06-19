@@ -15,6 +15,10 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local CollisionBook = require(ServerScriptService.HarukaServer.Library.CollisionBook)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
+local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
+
+
+local wait = task.wait
 
 
 function ServerWorldLib:Init()
@@ -28,7 +32,9 @@ function ServerWorldLib:Init()
 
     for funcId: string, func: (self) -> nil in ServerWorldLib do
         if string.find(funcId, "_Do") and typeof(func) == "function" then
-            task.spawn(func, self)
+            Promise.try(func, self):catch(function(err)
+                warn(tostring(err))
+            end):await()
         end
     end
 end
@@ -287,6 +293,17 @@ function ServerWorldLib:_DoInitSoundGroups()
     end
     for _, child: Instance in ReplicatedStorage.Packages.EnemyAttacks:GetDescendants() do
         if child:IsA("Sound") then child.SoundGroup = SoundService.SFXs end
+    end
+
+    if ReplicatedStorage:FindFirstChild("LocalPackages") then
+        if ReplicatedStorage.LocalPackages:FindFirstChild("DungeonAudio") then
+            SoundService.Musics:ClearAllChildren()
+
+            for _, music: Sound in ReplicatedStorage.LocalPackages.DungeonAudio.Musics:GetChildren() do
+                music.SoundGroup = SoundService.Musics
+                music.Parent = SoundService.Musics
+            end
+        end
     end
 end
 
@@ -552,6 +569,28 @@ function ServerWorldLib:_DoStatuesInit()
         if statue:IsA("Model") then
             statue:AddTag("StatueEntity")
         end
+    end
+end
+
+
+function ServerWorldLib:_DoInitMaterials()
+    if not workspace.MapComponents:FindFirstChild("Materials") then return end
+
+
+    local givers = {}
+
+    for _, giver: BasePart in workspace.MapComponents.Materials:GetDescendants() do
+        if giver.Name == "Giver" and HarukaLib:IsBasePartType(giver) and giver:FindFirstChildOfClass("ProximityPrompt") then
+            table.insert(givers, giver)
+        end
+    end
+    for _, giver: BasePart in givers do
+        giver:FindFirstChildOfClass("ProximityPrompt").Enabled = false
+    end
+
+    wait(math.random(5, 10))
+    for _, giver: BasePart in givers do
+        giver:FindFirstChildOfClass("ProximityPrompt").Enabled = true
     end
 end
 

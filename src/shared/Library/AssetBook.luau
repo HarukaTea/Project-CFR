@@ -77,6 +77,7 @@ AssetBook.ItemEffectIcons = {
 }
 AssetBook.ItemEffectIcons.Mana = AssetBook.ItemEffectIcons.MaxMana
 AssetBook.ItemEffectIcons.CanLight = AssetBook.ItemEffectIcons.CanYellowLight
+AssetBook.ItemEffectIcons.CanBlueLight = AssetBook.ItemEffectIcons.CanYellowLight
 
 
 AssetBook.ItemEffectIconColors = {

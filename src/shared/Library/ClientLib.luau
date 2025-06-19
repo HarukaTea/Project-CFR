@@ -14,25 +14,11 @@ local ClientLib = {}
 
 
 function ClientLib:WeldModel(part: Part, welded: Model)
-	--// TODO: check any existing weld that uses motor6d
-
 	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
 	local C = welded:GetChildren()
 	if welded:FindFirstChild("Meshes") then
 		C = welded.Meshes:GetChildren()
 	end
-
-	--// clear any existing weld
-	if target:GetAttribute("IgnoreWeldScript") then return end
-
-
-	for _, weld: Weld in target:GetChildren() do
-		if weld:IsA("Weld") then weld:Destroy() end
-	end
-	for _, weld: Weld in part:GetChildren() do
-		if weld:IsA("Weld") then weld:Destroy() end
-	end
-
 
 	if target == nil then
 		warn("Lacking of target part in welded model!")
@@ -160,7 +146,6 @@ function ClientLib:TrackEffectListToUI(props: {
 	GuiContainer: GuiObject,
 }) : Fusion.Value
 
-	--// TODO: revamp the ways that check effect list
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 
 

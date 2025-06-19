@@ -21,6 +21,10 @@
                 "$className": "Folder",
                 "$path": "src/shared"
             },
+            "HarukaRes": {
+                "$className": "Folder",
+                "$path": "src/res"
+            },
             "VERSION": {
                 "$path": "src/VERSION.luau"
             }

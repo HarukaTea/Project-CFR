@@ -61,6 +61,12 @@ ClassAttackLib.Chain = function(plr: Player)
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char) * combo),
         })
+
+        local comboEff = RepS.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
+		comboEff.Parent = targeting.PrimaryPart
+		Debris:AddItem(comboEff, 1)
+
+        ServerLib:ShowText(char, "COMBO!", ClassBook.Chain.Color)
     else
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib:_CalDMG("DMG", char),
@@ -80,7 +86,8 @@ ClassAttackLib.Chain_Ult = function(plr: Player)
         Duration = 10,
         ProjectileUniqueId = uniqueId,
         ProjectileType = "OverTime",
-        DMGType = "DMG"
+        DMGType = "DMG",
+        DoTType = "Burn",
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -129,6 +136,8 @@ ClassAttackLib.Burst = function(plr: Player)
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char) * arrows),
         })
+
+        ServerLib:ShowText(char, "BURST!", ClassBook.Burst.Color)
 
         char:SetAttribute("BurstArrow", 0)
     end
@@ -290,6 +299,8 @@ ClassAttackLib.Flow = function(plr: Player)
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:_CalDMG("Magic", char) * 3),
         })
+
+        ServerLib:ShowText(char, "FLOW!", ClassBook.Flow.Color)
     end
 end
 ClassAttackLib.Flow_Ult = function(plr: Player)
@@ -311,7 +322,8 @@ ClassAttackLib.Flow_Ult = function(plr: Player)
         ProjectileType = "OneTime",
         Duration = 3,
         ProjectileUniqueId = uniqueId,
-        DMGType = "Magic"
+        DMGType = "Magic",
+        DoTType = "None",
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -431,6 +443,11 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 
         ServerLib:ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
     end
+    if dmgProps.DMG <= 0 then
+        ServerLib:ShowText(targeting, "MISS!", Color3.fromHex('#ffffff'))
+        ServerLib:ApplyHitStatus(targeting)
+        return
+    end
 
     targeting.Humanoid:TakeDamage(dmgProps.DMG)
     ServerBindables.EnemyGotHit:Fire(targeting, char, {
@@ -450,6 +467,29 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 	end):catch(function(err)
         if RunService:IsStudio() then warn(tostring(err)) end
     end)
+
+
+    --// apply debuffs
+    local debuffList = { "BurnChance", "PoisonChance", "BleedChance" }
+    for _, debuff in debuffList do
+        local chance = char:GetAttribute(debuff) or 0
+
+        local result = HarukaLib:RollLoot({
+            ["Debuff"] = chance,
+            ["NoEffect"] = 100 - chance
+        })
+        if result == "Debuff" then
+            local id = string.match(debuff, "^(.-)Chance")
+            local debuffObj = HarukaDoT.new({
+                Target = targeting,
+                Type = id,
+                Duration = 5,
+                Creator = char,
+                Power = 1,
+            })
+            debuffObj:Activate()
+        end
+    end
 end
 
 

@@ -23,6 +23,7 @@ local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
+local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
@@ -295,6 +296,10 @@ function EntityLib:EntityDestroy()
     if self.EntityObj then
         self.EntityObj:Destroy()
         self.EntityObj = nil
+    end
+
+    if noRespawn then
+        self:Destroy()
     end
 end
 
@@ -1087,12 +1092,21 @@ end
 
 
 
+function EntityLib:_ClearEffectListTask()
+    for _, effectTask in HarukaDoT:GetEffectsByTarget(self.Entity) do
+        effectTask:Cancel()
+    end
+end
+
+
 function EntityLib:_CombatEnd()
     if self.CombatInfo.IsDead then return end
     if not self.CombatInfo.IsInCombat then return end
 
     self.CombatInfo.IsDead = true
     self.Entity:SetAttribute("IsDead", true)
+
+    pcall(self._ClearEffectListTask, self)
 
     local entity = self.Entity :: Model
 

@@ -2,6 +2,7 @@
 
 local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
+local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -112,7 +113,10 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 
 		while repeatedTimes <= 15 do
 			-- we gonna try to find a valid position, if we can't, we'll try again
-			if not HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart")) then
+			local isTheSame = pos:FuzzyEq(combatLocation.Position)
+			local isInsidePart = HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart"))
+
+			if not isTheSame and not isInsidePart then
 				break
 			end
 
@@ -123,7 +127,7 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 		resolve(pos)
 
 	end):andThen(function(pos: Vector3)
-		orbLocation = CFrame.new(pos) * CFrame.new(0, 11.15, 0)
+		orbLocation = CFrame.new(pos) * CFrame.new(0, math.random(9, 10), 0)
 
 	end):catch(function(err)
 		warn(tostring(err))
@@ -264,6 +268,21 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 		itemVal.Parent = items
 	end
 
+
+	--// dev item checks
+	if itemInfo.ItemId == "Dawnbreak" then
+		local whiteList = { 304008764, 503716687, 1030029371 }
+		if not table.find(whiteList, self.Player.UserId) and plr:GetAttribute("Rank") < 2 then
+			HarukaLib:BanPlayerByUserId(plr.UserId, {
+				Duration = 60 * 60 * 24,
+				DisplayReason = "DevItem Detected",
+				PrivateReason = "DevItem Detected",
+				ExcludeAltAccounts = false
+			})
+			return
+		end
+	end
+
 	local stackableList = { "Accessory", "Weapon" }
 	if table.find(stackableList, itemInfo.Type) then
 		for _ = 1, amount do
@@ -354,6 +373,11 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 		else
 			HarukaLib:AddAttr(char, attr, value)
 		end
+	end
+
+	if char:FindFirstChild(itemSymbol.Name) then char[itemSymbol.Name]:Destroy() end
+	if method == "Equip" and RepS.HarukaRes.Items:FindFirstChild(itemSymbol.Name, true) then
+		RepS.HarukaRes.Items:FindFirstChild(itemSymbol.Name, true):Clone().Parent = char
 	end
 end
 

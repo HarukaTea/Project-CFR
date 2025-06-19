@@ -51,7 +51,6 @@ return function (scope: Fusion.Scope, props: {
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.fromScale(0.5, 0.6),
                 Size = UDim2.fromScale(1, 0.5),
-                FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(HP)

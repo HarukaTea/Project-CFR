@@ -46,6 +46,14 @@ return {
     BurnDebuff = {
         Icon = "rbxassetid://74588474308433",
         Color = Color3.fromRGB(255, 0, 0),
+    },
+    BleedDebuff = {
+        Icon = "rbxassetid://114332372182764",
+        Color = Color3.fromRGB(255, 0, 0),
+    },
+    PoisonDebuff = {
+        Icon = "rbxassetid://114332372182764",
+        Color = Color3.fromHex('#845ef7'),
     }
 
 }

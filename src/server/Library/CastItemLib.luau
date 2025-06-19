@@ -12,6 +12,7 @@ local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local CastItemLib = {}
 
@@ -260,26 +261,29 @@ CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {
     })
     Events.PlaySound.Fire(player, SoundService.SFXs.SpellReadyToCast)
 
-    wait(1)
-    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
-        ProjectileId = "FireballSpell",
-        Duration = 3,
-        ProjectileType = "OneTime",
-        ProjectileUniqueId = uniqueId,
-        DMGType = "Magic"
-    })
-    Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
-    Events.PlayAnimation.Fire(player, {
-        AnimId = "MagicCasted1"
-    })
-    Events.FaceToTargetingEnemy.Fire(player)
+
+    Promise.delay(1):andThen(function()
+        ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+            ProjectileId = "FireballSpell",
+            Duration = 3,
+            ProjectileType = "OneTime",
+            ProjectileUniqueId = uniqueId,
+            DMGType = "Magic",
+            DoTType = "Burn"
+        })
+        Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
+        Events.PlayAnimation.Fire(player, {
+            AnimId = "MagicCasted1"
+        })
+        Events.FaceToTargetingEnemy.Fire(player)
 
 
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "FireballSpell",
-        Caster = char,
-        ProjectileUniqueId = uniqueId,
-    })
+        Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "FireballSpell",
+            Caster = char,
+            ProjectileUniqueId = uniqueId,
+        })
+    end)
 end
 
 
@@ -303,6 +307,16 @@ CastItemLib.Agility = function(player: Player, char: Model, extraInfo: {
         Power = 0.5,
         Duration = 6
     })
+
+
+    local eff = RepS.Packages.Effects.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
+    eff.Parent = char.PrimaryPart
+    Debris:AddItem(eff, 6)
+
+
+    Promise.delay(5):andThen(function()
+        eff.Enabled = false
+    end):catch(function() end)
 end
 
 

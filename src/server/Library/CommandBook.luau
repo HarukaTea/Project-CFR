@@ -213,7 +213,12 @@ local commands = {
 
                 local item = props.Args[2]
                 if item == "all" then
-                    for _, itemId: string in ItemLib:GetAllItems() do
+                    local allItems = ItemLib:GetAllItems()
+                    if table.find(allItems, "Dawnbreak") then
+                        table.remove(allItems, table.find(allItems, "Dawnbreak"))
+                    end
+
+                    for _, itemId: string in allItems do
                         ServerLib:GiveItemDrop(thatPlr, itemId, props.Args[3])
                     end
                 else

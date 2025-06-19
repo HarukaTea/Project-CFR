@@ -24,7 +24,7 @@ return function (self: table)
 	local ON_ICON, OFF_ICON = "rbxasset://textures/ui/mouseLock_on@2x.png", "rbxasset://textures/ui/mouseLock_off@2x.png"
 
     self.Icon = Fusion.Value(scope, OFF_ICON)
-    self.OFFSET = CFrame.new(2, 0.25, 0)
+    self.OFFSET = CFrame.new(1.8, 0, 0)
 
     self.ChangeShiftLockState = Signal.new()
     table.insert(scope, self.ChangeShiftLockState)

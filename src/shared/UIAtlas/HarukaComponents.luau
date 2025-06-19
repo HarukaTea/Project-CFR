@@ -20,6 +20,8 @@ local DESIGN_VP_SIZE = Vector2.new(1172, 471.2)
 
 HarukaComponents.BLACK_COLOR = BLACK_COLOR
 HarukaComponents.WHITE_COLOR = WHITE_COLOR
+HarukaComponents.GREEN_COLOR = Color3.fromRGB(123, 217, 159)
+HarukaComponents.RED_COLOR = Color3.fromRGB(255, 118, 117)
 
 --// Init once only
 local existingButtonElements = {}

@@ -285,10 +285,12 @@ do
         workspace.MapComponents.Titlescreen:Destroy()
     end)
 
-    HarukaLib:CreateTween(SoundService.Musics.Titlescreen, TweenInfo.new(0.5), {
-        Volume = 0
-    }):Play()
+    if SoundService.Musics:FindFirstChild("Titlescreen") then
+        HarukaLib:CreateTween(SoundService.Musics.Titlescreen, TweenInfo.new(0.5), {
+            Volume = 0
+        }):Play()
 
-    Debris:AddItem(SoundService.Musics.Titlescreen, 5)
+        Debris:AddItem(SoundService.Musics.Titlescreen, 5)
+    end
     workspace:SetAttribute("Haruka_GameEntered", true)
 end

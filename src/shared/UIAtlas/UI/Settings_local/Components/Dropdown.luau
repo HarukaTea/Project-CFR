@@ -109,8 +109,11 @@ return function(scope: Fusion.Scope, props: {
                         Position = UDim2.fromScale(0.86, 0.55),
                         Size = UDim2.fromScale(0.4, 0.4),
                         SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                        Rotation = -180,
-                        Image = "rbxassetid://125510901687900"
+                        Image = "rbxassetid://125510901687900",
+
+                        Rotation = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return if use(isSelectingDropdownList) then 0 else -180
+                        end)
                     }),
 
                     Components.TextLabel(scope, {

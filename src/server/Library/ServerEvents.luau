@@ -317,6 +317,15 @@ if not RunService:IsRunning() then
 		RequestToSaveSettings = table.freeze({
 			SetCallback = noop
 		}),
+		DUNGEON_RequestToStartDungeon = table.freeze({
+			SetCallback = noop
+		}),
+		DUNGEON_StartDungeon = table.freeze({
+			Fire = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
+		}),
 		Spell_ExtraJumpSupport = table.freeze({
 			Fire = noop,
 			FireExcept = noop,
@@ -443,7 +452,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(20)
+local reliable_events = table.create(21)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -739,6 +748,11 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			local value
 			if reliable_events[19] then
 				task.spawn(reliable_events[19], player, value)
+			end
+		elseif id == 20 then
+			local value
+			if reliable_events[20] then
+				task.spawn(reliable_events[20], player, value)
 			end
 		else
 			error("Unknown event id")
@@ -3206,7 +3220,7 @@ local returns = {
 			end
 		end,
 	},
-	Spell_ExtraJumpSupport = {
+	DUNGEON_StartDungeon = {
 		Fire = function(Player: Player)
 			load_player(Player)
 			alloc(1)
@@ -3255,6 +3269,55 @@ local returns = {
 			end
 		end,
 	},
+	Spell_ExtraJumpSupport = {
+		Fire = function(Player: Player)
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player)
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { Player })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: true })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+	},
 	CLASS_RollNewResonateNumForEnemy = {
 		Fire = function(Player: Player, Value: ({
 			["Entity"]: ((Model)?),
@@ -3262,7 +3325,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
 			if Value["Entity"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3282,7 +3345,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
 			if Value["Entity"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3311,7 +3374,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
 			if Value["Entity"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3338,7 +3401,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
 			if Value["Entity"] == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3366,7 +3429,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
 			player_map[Player] = save()
@@ -3376,7 +3439,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3395,7 +3458,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3412,7 +3475,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -3429,7 +3492,7 @@ local returns = {
 		Fire = function(Player: Player, sound: ((Sound)?), timePos: ((number)?))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			if sound == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3453,7 +3516,7 @@ local returns = {
 		FireExcept = function(Except: Player, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			if sound == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3486,7 +3549,7 @@ local returns = {
 		FireList = function(List: { Player }, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			if sound == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3517,7 +3580,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			if sound == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3555,7 +3618,7 @@ local returns = {
 		}))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local len_103 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_103)
@@ -3607,7 +3670,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local len_107 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_107)
@@ -3668,7 +3731,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local len_111 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_111)
@@ -3727,7 +3790,7 @@ local returns = {
 		}))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local len_115 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_115)
@@ -3783,7 +3846,7 @@ local returns = {
 		Fire = function(Player: Player, part: ((BasePart)?))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			if part == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3798,7 +3861,7 @@ local returns = {
 		FireExcept = function(Except: Player, part: ((BasePart)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			if part == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3822,7 +3885,7 @@ local returns = {
 		FireList = function(List: { Player }, part: ((BasePart)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			if part == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3844,7 +3907,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, part: ((BasePart)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			if part == nil then
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, 0)
@@ -3868,7 +3931,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_119 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_119)
@@ -3879,7 +3942,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_120 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_120)
@@ -3899,7 +3962,7 @@ local returns = {
 		FireList = function(List: { Player }, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_121 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_121)
@@ -3917,7 +3980,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_122 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_122)
@@ -3937,7 +4000,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local len_123 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_123)
@@ -3948,7 +4011,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local len_124 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_124)
@@ -3968,7 +4031,7 @@ local returns = {
 		FireList = function(List: { Player }, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local len_125 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_125)
@@ -3986,7 +4049,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local len_126 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_126)
@@ -4006,7 +4069,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string), showBar: (boolean))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_127 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_127)
@@ -4019,7 +4082,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_128 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_128)
@@ -4041,7 +4104,7 @@ local returns = {
 		FireList = function(List: { Player }, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_129 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_129)
@@ -4061,7 +4124,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_130 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_130)
@@ -4083,7 +4146,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string), duration: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			local len_131 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_131)
@@ -4096,7 +4159,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string), duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			local len_132 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_132)
@@ -4118,7 +4181,7 @@ local returns = {
 		FireList = function(List: { Player }, text: (string), duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			local len_133 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_133)
@@ -4138,7 +4201,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, text: (string), duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			local len_134 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_134)
@@ -4160,7 +4223,7 @@ local returns = {
 		Fire = function(Player: Player, duration: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			player_map[Player] = save()
@@ -4168,7 +4231,7 @@ local returns = {
 		FireExcept = function(Except: Player, duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -4185,7 +4248,7 @@ local returns = {
 		FireList = function(List: { Player }, duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -4200,7 +4263,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: true }, duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -4402,7 +4465,7 @@ local returns = {
 			end
 		end,
 	},
-	RequestToForceReset = {
+	DUNGEON_RequestToStartDungeon = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
 			reliable_events[18] = Callback
 			return function()
@@ -4410,11 +4473,19 @@ local returns = {
 			end
 		end,
 	},
-	RequestToRejoinGame = {
+	RequestToForceReset = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
 			reliable_events[19] = Callback
 			return function()
 				reliable_events[19] = nil
+			end
+		end,
+	},
+	RequestToRejoinGame = {
+		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
+			reliable_events[20] = Callback
+			return function()
+				reliable_events[20] = nil
 			end
 		end,
 	},

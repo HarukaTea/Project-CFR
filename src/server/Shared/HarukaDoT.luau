@@ -1,3 +1,4 @@
+local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -11,6 +12,7 @@ local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local GlobalTimer = require(ServerScriptService.HarukaServer.Shared.GlobalTimer)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
+local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 
 HarukaDoT.OnEffectActivated = Signal.new()
@@ -24,7 +26,7 @@ local allDoTObjs = {}
 function HarukaDoT.new(info: {
     Target: Model,
     Type: string,
-    Creator: string,
+    Creator: Model,
     Power: number,
     Duration: number,
 })
@@ -37,6 +39,7 @@ function HarukaDoT.new(info: {
     self.Duration = info.Duration
 
     self.UniqueId = HttpService:GenerateGUID(false)
+    self.Cancelled = false
 
     allDoTObjs[self.UniqueId] = self
 
@@ -59,13 +62,16 @@ function HarukaDoT:Activate()
     effectSymbol:SetAttribute("TaskUniqueId", self.UniqueId)
 
     effectSymbol.Parent = self.Target.EffectList
+    Debris:AddItem(effectSymbol, self.Duration)
 
     self.EffectSymbol = effectSymbol
 
 
-    local effectParticle = ReplicatedStorage.Packages.Effects.Status:FindFirstChild(self.Type, true) :: ParticleEmitter
+    local effectParticle = ReplicatedStorage.Packages.Effects.Status:FindFirstChild(self.Type, true) :: BasePart
     if effectParticle then
-        effectParticle = effectParticle:Clone()
+        effectParticle = effectParticle.Attachment:Clone()
+        effectParticle.Parent = self.Target.PrimaryPart
+        Debris:AddItem(effectParticle, self.Duration)
 
         self.EffectParticle = effectParticle
     end
@@ -76,7 +82,7 @@ function HarukaDoT:Activate()
     self.Tasks = {}
 
     for i = 1, self.Duration do
-        table.insert(self.Tasks, GlobalTimer:AddTask(1, function()
+        table.insert(self.Tasks, GlobalTimer:AddTask(i, function()
             if not ServerLib:IsCharValid(self.Target) then return end
 
             if StatusLib[self.Type] then
@@ -84,10 +90,16 @@ function HarukaDoT:Activate()
             end
         end))
     end
+    Promise.delay(self.Duration + 0.1):andThenCall(self.Cancel, self):catch(function() end)
 end
 
 
 function HarukaDoT:Cancel()
+    if self.Cancelled then return end
+
+    self.Cancelled = true
+
+
     for _, taskId: string in self.Tasks do
         GlobalTimer:CancelTaskImmediately(taskId)
     end

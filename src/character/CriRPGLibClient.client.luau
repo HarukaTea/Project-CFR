@@ -82,7 +82,7 @@ end
 function CriRPGLib:Init()
     for funcId: string, func: (self) -> nil in CriRPGLib do
         if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
+            func(self)
         end
     end
 
@@ -163,16 +163,20 @@ function CriRPGLib:_ListenCombatTracker()
             end):catch(function() end):await()
 
 
-            SoundService.Musics.Overworld:Pause()
             pcall(function()
                 if isBoss then
                     local targetSoundId = SoundService.Musics.Areas.Combat:FindFirstChild(targetMusicId) :: Sound
                     if targetSoundId then
+                        SoundService.Musics.Overworld:Pause()
+
                         SoundService.Musics.BossCombat.SoundId = targetSoundId.SoundId
                         SoundService.Musics.BossCombat:Play()
                     end
                 else
-                    SoundService.Musics.Combat:Play()
+                    if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
+                        SoundService.Musics.Overworld:Pause()
+                        SoundService.Musics.Combat:Play()
+                    end
                 end
             end)
             SoundService.SFXs.CombatStart:Play()
@@ -231,13 +235,18 @@ function CriRPGLib:_ListenAreaTracker()
 
             ---// apply sound
             areaAdd(task.spawn(function()
+                local owMusic, cbMusic = LocationBook[location].Music, LocationBook[location].CombatMusic
+                if owMusic == "_DUNGEON" or cbMusic == "_DUNGEON" then return end
+
                 local musicLib = SoundService.Musics.Areas :: Folder
 
                 local overworldMusic = SoundService.Musics.Overworld :: Sound
                 local combatMusic = SoundService.Musics.Combat :: Sound
 
-                local targetSoundOW = musicLib.Overworld[LocationBook[location].Music] :: Sound
-                local targetSoundCB = musicLib.Combat[LocationBook[location].CombatMusic] :: Sound
+                local targetSoundOW = musicLib.Overworld:FindFirstChild(owMusic) :: Sound
+                local targetSoundCB = musicLib.Combat:FindFirstChild(cbMusic) :: Sound
+
+                if not targetSoundCB or not targetSoundOW then return end
 
                 if overworldMusic.SoundId ~= targetSoundOW.SoundId then
                     HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.twiceHalf, {
@@ -700,6 +709,22 @@ function CriRPGLib:_ListenSpellExtraJumpOnlyTracker()
         linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 80 + Vector3.yAxis * vel
         linearVelocity.Parent = char.PrimaryPart
         Debris:AddItem(linearVelocity, 0.05)
+    end))
+end
+
+
+function CriRPGLib:_ListenDungeonStarterTracker()
+    if not workspace:GetAttribute("DungeonId") then return end
+
+    Add(Events.DUNGEON_StartDungeon.On(function()
+        local overworldMusic = SoundService.Musics.Overworld :: Sound
+
+        overworldMusic.Volume = 0
+        overworldMusic:Play()
+
+        HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.one, {
+            Volume = 0.7
+        }):Play()
     end))
 end
 

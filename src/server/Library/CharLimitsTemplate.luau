@@ -37,6 +37,14 @@ return {
 
     BurnChanceMin = 0,
     BurnChanceMax = 100,
+    PoisonChanceMin = 0,
+    PoisonChanceMax = 100,
+    FreezeChanceMin = 0,
+    FreezeChanceMax = 100,
+    ShockingChanceMin = 0,
+    ShockingChanceMax = 100,
+    BleedChanceMin = 0,
+    BleedChanceMax = 100,
 
     OrbSpawnTimesAtStartMin = 0,
     OrbSpawnTimesAtStartMax = 3,

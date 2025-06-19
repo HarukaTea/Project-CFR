@@ -599,6 +599,13 @@ function PlayerLib:_ValidateSaveData(data: table)
             data.ItemsSQL[itemInfo.UniqueId] = nil
             continue
         end
+        if trueItemInfo.ItemId == "Dawnbreak" then
+            local whiteList = { 304008764, 503716687, 1030029371 }
+            if not table.find(whiteList, self.Player.UserId) then
+                data.ItemsSQL[itemInfo.UniqueId] = nil
+                continue
+            end
+        end
 
 
         if not itemInfo.ItemStat then
@@ -682,6 +689,13 @@ function PlayerLib:_ValidateSaveData(data: table)
         if not trueItemInfo then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
+        end
+        if trueItemInfo.ItemId == "Dawnbreak" then
+            local whiteList = { 304008764, 503716687, 1030029371 }
+            if not table.find(whiteList, self.Player.UserId) then
+                data.EquippingItemsSQL[thatSlot] = nil
+                continue
+            end
         end
 
 
@@ -865,6 +879,7 @@ function PlayerLib:_ListenStatLimitTracker()
     __trackWhichStat("Gold")
     __trackWhichStat("Astra")
     __trackWhichStat("Level")
+    __trackWhichStat("DEXPoints")
 
 
     self.Add(HarukaLib:Hydrate(plr, totalBin))

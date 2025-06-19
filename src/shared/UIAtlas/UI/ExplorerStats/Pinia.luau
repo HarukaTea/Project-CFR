@@ -81,6 +81,9 @@ return function (self: table)
 
     self.CurrentHoveringPassive = Value("")
 
+    self.DungeonId = Value(nil)
+    self.DungeonStarted = Value(nil)
+
 
     --// track server
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -578,4 +581,15 @@ return function (self: table)
         wait(data.Duration)
         HarukaLib:UITween(castingTimeBar, "Out")
     end))
+
+
+    --// track dungeon
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-DungeonId"] = function(id: string)
+            self.DungeonId:set(id)
+        end,
+        ["Attr-DungeonStarted"] = function(state: boolean)
+            self.DungeonStarted:set(state)
+        end
+    }))
 end

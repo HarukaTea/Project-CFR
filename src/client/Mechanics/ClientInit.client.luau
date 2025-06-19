@@ -31,7 +31,7 @@ function ClientWorldLib:Init()
     for funcId: string, func: (self) -> nil in ClientWorldLib do
         if typeof(func) == "function" then
             if string.find(funcId, "_Listen") or string.find(funcId, "_Do") then
-                task.spawn(func, self)
+                func(self)
             end
         end
     end
@@ -441,12 +441,16 @@ end
 
 function ClientWorldLib:_ListenVFXTracker()
     local function _doSimpleVFXEntity(holder: BasePart)
+        if not holder:IsDescendantOf(workspace) then return end
+
         HarukaLib:EmitParticles(holder)
     end
     CollectionService:GetInstanceAddedSignal("VFXEntity"):Connect(_doSimpleVFXEntity)
 
 
     local function _doComplexVFXEntity(holder: BasePart)
+        if not holder:IsDescendantOf(workspace) then return end
+
         if not ComplexVFXLib[holder.Name] then
             warn("Invalid Complex VFX ID: ".. holder.Name)
             return
@@ -457,6 +461,17 @@ function ClientWorldLib:_ListenVFXTracker()
         end)
     end
     CollectionService:GetInstanceAddedSignal("ComplexVFXEntity"):Connect(_doComplexVFXEntity)
+
+
+    local function _doParticleVFXEntity(holder: ParticleEmitter)
+        if not holder:IsDescendantOf(workspace) then return end
+
+        HarukaLib:EmitParticles(holder)
+
+        wait(0.4)
+        holder.Enabled = false
+    end
+    CollectionService:GetInstanceAddedSignal("ParticleEntity"):Connect(_doParticleVFXEntity)
 end
 
 

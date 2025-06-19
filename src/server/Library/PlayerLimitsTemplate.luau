@@ -10,5 +10,8 @@ return {
     AstraMax = MAX_NUMBER,
 
     LevelMin = 1,
-    LevelMax = 999
+    LevelMax = 999,
+
+    DEXPointsMin = 0,
+    DEXPointsMax = 50,
 }

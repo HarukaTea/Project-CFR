@@ -71,6 +71,18 @@ local charStats = {
     BurnChance = 0, --- percentage
     BurnChanceEx = 0,
     BurnChanceExPower = 1,
+    PoisonChance = 0, --- percentage
+    PoisonChanceEx = 0,
+    PoisonChanceExPower = 1,
+    BleedChance = 0, --- percentage
+    BleedChanceEx = 0,
+    BleedChanceExPower = 1,
+    FreezeChance = 0, --- percentage
+    FreezeChanceEx = 0,
+    FreezeChanceExPower = 1,
+    ShockingChance = 0, --- percentage
+    ShockingChanceEx = 0,
+    ShockingChanceExPower = 1,
 
 
     --- combat related

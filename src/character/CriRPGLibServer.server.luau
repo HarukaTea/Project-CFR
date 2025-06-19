@@ -187,8 +187,6 @@ end
 
 
 function CriRPGLib:_ListenClassTracker()
-
-
 	local function _equipWeapon()
 		for _, weapon: Model in char:GetChildren() do
 			if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
@@ -220,6 +218,8 @@ function CriRPGLib:_ListenClassTracker()
     Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
         ["Prop-Value"] = _equipWeapon
     }))
+
+    _equipWeapon()
 end
 
 
@@ -352,7 +352,8 @@ function CriRPGLib:_ListenSkillProjectileTracker()
         ProjectileType: "OneTime" | "OverTime",
         Duration: number,
         ProjectileUniqueId: string,
-        DMGType: string
+        DMGType: string,
+        DoTType: string
     })
         if charId ~= char.Name then return end
 
@@ -364,6 +365,7 @@ function CriRPGLib:_ListenSkillProjectileTracker()
         symbol:SetAttribute("DMGType", props.DMGType)
         symbol:SetAttribute("ProjectileType", props.ProjectileType)
         symbol:SetAttribute("Owner", charId)
+        symbol:SetAttribute("DoTType", props.DoTType)
 
         symbol.Parent = projectileContainer
         Maid:AddItem(symbol, props.Duration)
@@ -413,6 +415,15 @@ function CriRPGLib:_ListenPlayerLevelTracker()
                 Events.PlaySound.Fire(plr, SoundService.SFXs.LevelUp)
 
                 ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
+
+
+                local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
+		        levelUpEffect.Parent = char.PrimaryPart
+		        Debris:AddItem(levelUpEffect, 1)
+
+
+                char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
+                char.Humanoid.Health = char.Humanoid.MaxHealth
             end
         end,
         ["Attr-Level"] = function(level: number)
@@ -496,10 +507,8 @@ function CriRPGLib:_ListenStatsTracker()
         local minDMGBuff = char:GetAttribute("MinDMGEx") :: number
         local minDMGExBuff = char:GetAttribute("MinDMGExPower") :: number
 
-        local exMinDMG = baseMinDMG + minDMGBuff / 89
-
         baseMinDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = math.floor(exMinDMG),
+            BaseDMG = baseMinDMG,
             DMGPoints = plr:GetAttribute("STRPoints")
         })
 
@@ -520,10 +529,8 @@ function CriRPGLib:_ListenStatsTracker()
         local maxDMGBuff = char:GetAttribute("MaxDMGEx") :: number
         local maxDMGExBuff = char:GetAttribute("MaxDMGExPower") :: number
 
-        local exMaxDMG = baseMaxDMG + maxDMGBuff / 89
-
         baseMaxDMG = FormulaBook.PlayerDMGCurveCal({
-            BaseDMG = math.floor(exMaxDMG),
+            BaseDMG = baseMaxDMG,
             DMGPoints = plr:GetAttribute("STRPoints"),
 
             ATKType = "Max"
@@ -546,11 +553,8 @@ function CriRPGLib:_ListenStatsTracker()
         local magicBuff = char:GetAttribute("MagicEx") :: number
         local magicExBuff = char:GetAttribute("MagicExPower") :: number
 
-        local exMagic = baseMagic + magicBuff / 89
-
-
         baseMagic = FormulaBook.PlayerMagicCurveCal({
-            BaseMagic = math.ceil(exMagic),
+            BaseMagic = baseMagic,
             MagicPoints = plr:GetAttribute("INTPoints")
         })
 
@@ -784,12 +788,14 @@ end
 
 
 function CriRPGLib:_ListenStatLimitTracker()
-    --// TODO: only base stat limit is not enough, need to track all stats
     local totalBin = {}
 
 
-    local function __trackWhichStat(statAttr: string)
-        local attr = string.sub(statAttr, 5)
+    local function __trackWhichStat(statAttr: string, withoutSub: boolean?)
+        local attr = statAttr
+        if not withoutSub then
+            attr = string.sub(statAttr, 5)
+        end
         if char:GetAttribute(statAttr) == nil then
             warn("Invalid base stat: "..statAttr)
             return
@@ -821,6 +827,7 @@ function CriRPGLib:_ListenStatLimitTracker()
         if table.find(blackList, attr) then continue end
         if string.find(attr, "Base") then
             __trackWhichStat(attr)
+            __trackWhichStat(string.sub(attr, 5), true)
         end
     end
 
