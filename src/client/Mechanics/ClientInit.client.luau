@@ -17,7 +17,7 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local ComplexVFXLib = require(ReplicatedStorage.HarukaShared.Library.ComplexVFXLib)
 local Bezier = require(ReplicatedStorage.HarukaShared.Library.Bezier)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
-local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
+local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
 
 local wait = task.wait
@@ -25,6 +25,16 @@ local plr = Players.LocalPlayer
 
 
 local ClientWorldLib = {}
+
+
+local focusRenderDistance = 486
+HarukaLib:Hydrate(workspace, {
+    ["Attr-FocusRenderDistance"] = function(val: number)
+        val = val or 486
+
+        focusRenderDistance = val
+    end
+})
 
 
 function ClientWorldLib:Init()
@@ -47,6 +57,25 @@ function ClientWorldLib:_DoDefaultEventTracker()
         if not style then return end
 
         for _, obj: Instance in objs do
+            if HarukaLib:IsBasePartType(obj) then
+                local distance = plr:DistanceFromCharacter(obj.Position)
+                if distance <= 0 or distance > focusRenderDistance then
+                    continue
+                end
+            end
+            if obj:IsA("Model") then
+                local pos = obj.WorldPivot.Position
+                if obj.PrimaryPart then
+                    pos = obj.PrimaryPart.Position
+                end
+
+                local distance = plr:DistanceFromCharacter(pos)
+                if distance <= 0 or distance > focusRenderDistance then
+                    continue
+                end
+            end
+
+
             pcall(function()
                 if not useHarukaTween then
                     HarukaLib:CreateTween(obj, style, goal):Play()
@@ -114,7 +143,7 @@ function ClientWorldLib:_DoOpenChestsThatAlreadyOpened()
 
         prompt.Enabled = false
 
-        local itemInfo = ItemLib:GetItemInfo(chest.Name)
+        local itemInfo = ItemBook:GetItemInfo(chest.Name)
         if itemInfo == nil then continue end
 
         prompt.Enabled = true
@@ -143,7 +172,7 @@ function ClientWorldLib:_ListenBorderTracker()
             repeat wait() until border.Border:FindFirstChild("Owner")
 
             local distance = plr:DistanceFromCharacter(border.PrimaryPart.Position)
-            if distance <= 0 or distance > 486 then
+            if distance <= 0 or distance > focusRenderDistance then
                 wait()
                 border:Destroy()
 
@@ -161,8 +190,26 @@ function ClientWorldLib:_ListenBorderTracker()
                     if plr:DistanceFromCharacter(border.PrimaryPart.Position) > 17 then
                         plr.Character:PivotTo(CFrame.new(border.PrimaryPart.Position))
                     end
-                else
-                    HarukaLib:SetCollisionGroup(border, "NoCollision")
+                    HarukaLib:SetCollisionGroup(border, "Hitbox")
+                end
+
+                local combatMode = border:GetAttribute("CombatMode")
+                if combatMode then
+                    local color = Color3.fromRGB(255, 255, 255)
+                    if combatMode == "Solo" then
+                        color = Color3.fromHex('#f03e3e')
+                    elseif combatMode == "Party" then
+                        color = Color3.fromHex('#339af0')
+                    end
+                    for _, child: Instance in border:GetChildren() do
+                        if HarukaLib:IsBasePartType(child) then
+                            local beam = child:FindFirstChildOfClass("Beam")
+                            if not beam then continue end
+
+                            beam.Color = ColorSequence.new(color, Color3.new())
+                            beam.Transparency = NumberSequence.new(1, 1)
+                        end
+                    end
                 end
             end
 
@@ -283,7 +330,7 @@ function ClientWorldLib:_ListenDMGNumberTracker()
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
-        if distance <= 0 or distance > 486 then return end
+        if distance <= 0 or distance > focusRenderDistance then return end
 
         local pos = entity.PrimaryPart.Position
         local random = Random.new()
@@ -344,7 +391,7 @@ function ClientWorldLib:_ListenTextTracker()
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
-        if distance <= 0 or distance > 486 then return end
+        if distance <= 0 or distance > focusRenderDistance then return end
 
         local pos = entity.PrimaryPart.Position
         local random = Random.new()
@@ -400,7 +447,7 @@ function ClientWorldLib:_ListenHitStatusTracker()
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
-        if distance <= 0 or distance > 486 then return end
+        if distance <= 0 or distance > focusRenderDistance then return end
 
 
         Promise.try(function()
@@ -443,6 +490,9 @@ function ClientWorldLib:_ListenVFXTracker()
     local function _doSimpleVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
 
+        local distance = plr:DistanceFromCharacter(holder.Position)
+        if distance <= 0 or distance > focusRenderDistance then return end
+
         HarukaLib:EmitParticles(holder)
     end
     CollectionService:GetInstanceAddedSignal("VFXEntity"):Connect(_doSimpleVFXEntity)
@@ -450,6 +500,9 @@ function ClientWorldLib:_ListenVFXTracker()
 
     local function _doComplexVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
+
+        local distance = plr:DistanceFromCharacter(holder.Position)
+        if distance <= 0 or distance > focusRenderDistance then return end
 
         if not ComplexVFXLib[holder.Name] then
             warn("Invalid Complex VFX ID: ".. holder.Name)
@@ -495,10 +548,10 @@ function ClientWorldLib:_ListenItemDisplayTracker()
             itemSphere.CFrame = CFrame.new(location)
             itemSphere:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
             itemSphere:AddTag("ItemDisplayEntity")
-            itemSphere.Anchored = false
-            itemSphere.CanCollide = true
+            itemSphere.Anchored = true
+            itemSphere.CanCollide = false
 
-            local info = ItemLib:GetItemInfo(data.ItemId)
+            local info = ItemBook:GetItemInfo(data.ItemId)
             if info == nil then
                 warn(`Invalid item Id for item display: {data.ItemId}`)
 
@@ -538,9 +591,6 @@ function ClientWorldLib:_ListenItemDisplayTracker()
         local hit = plr.Character.PrimaryPart :: BasePart
 
         Promise.delay(0.5):andThen(function()
-            itemSphere.Anchored = true
-            itemSphere.CanCollide = false
-
             local timeout = 10
 
             repeat wait(0.1)
@@ -603,32 +653,30 @@ end
 
 
 function ClientWorldLib:_DoMapComponentTracker()
+    local clientObjContainerAFK = Instance.new("Folder")
+    clientObjContainerAFK.Name = "ClientObjsContainerAFK"
+    clientObjContainerAFK.Parent = game:GetService("ServerStorage")
+
+    local clientObjContainer = Instance.new("Folder")
+    clientObjContainer.Name = "ClientObjsContainer"
+    clientObjContainer.Parent = workspace
+
+
+    local windmillWings = {}
+    local galleons = {}
+
+
     local function _handleWindmill(windmill: Model)
         repeat wait() until windmill and windmill.PrimaryPart
 
         wait()
-        task.defer(function()
-            while wait(0.01) do
-                windmill.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
-            end
-        end)
+        table.insert(windmillWings, windmill)
     end
     local function _handleGalleon(galleon: Model)
         repeat wait() until galleon and galleon.PrimaryPart
 
         wait()
-        task.defer(function()
-            while wait(0.01) do
-                for _ = 1, 50 do
-                    galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
-                    wait(0.01)
-                end
-                for _ = 1, 50 do
-                    galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
-                    wait(0.01)
-                end
-            end
-        end)
+        table.insert(galleons, galleon)
     end
     for _, wings: Model in CollectionService:GetTagged("WindmillWings") do
         _handleWindmill(wings)
@@ -638,6 +686,52 @@ function ClientWorldLib:_DoMapComponentTracker()
     end
     CollectionService:GetInstanceAddedSignal("WindmillWings"):Connect(_handleWindmill)
     CollectionService:GetInstanceAddedSignal("SkyGalleon"):Connect(_handleGalleon)
+
+
+
+    task.spawn(function()
+        while wait(0.01) do
+            for _, wing: Model in windmillWings do
+                pcall(function()
+                    wing.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
+                end)
+            end
+        end
+    end)
+    task.spawn(function()
+        while wait(0.01) do
+            for _ = 1, 50 do
+                for _, galleon: Model in galleons do
+                    pcall(function()
+                        galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
+                    end)
+                end
+                wait(0.01)
+            end
+            for _ = 1, 50 do
+                for _, galleon: Model in galleons do
+                    pcall(function()
+                        galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
+                    end)
+                end
+                wait(0.01)
+            end
+        end
+    end)
+
+
+    HarukaLib.Clock(2, function()
+        for _, wing: Model in windmillWings do
+            pcall(function()
+                local distance = plr:DistanceFromCharacter(wing.PrimaryPart.Position)
+                if distance <= 0 or distance > focusRenderDistance then
+                    wing.Parent = clientObjContainerAFK
+                else
+                    wing.Parent = clientObjContainer
+                end
+            end)
+        end
+    end)
 end
 
 

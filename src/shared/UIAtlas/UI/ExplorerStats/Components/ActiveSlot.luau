@@ -6,20 +6,16 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
+
 local Children = Fusion.Children
 
-
-local CONTROLLER_KEYS = {
-    [1] = "L1",
-    [2] = "R1",
-    [3] = "R2"
-}
 
 return function(scope: Fusion.Scope, props: {
     Index: number,
@@ -34,17 +30,24 @@ return function(scope: Fusion.Scope, props: {
     table.insert(scope, subscribeEmpty)
 
 
+    local refreshBoolean = Fusion.Value(scope, false)
+    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+        refreshBoolean:set(not Fusion.peek(refreshBoolean))
+    end))
+
+
     local lastInput = FusionComponents.useXboxControllerHotInput(scope)
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
+        local boolean = use(refreshBoolean)
 
         if input == "Keyboard" then
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
-                Text = props.Index,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC["Active"..props.Index].Name] or KeybindsBook.PC["Active"..props.Index].Name,
+                AutomaticSize = Enum.AutomaticSize.X,
                 Size = UDim2.fromScale(0.4, 0.4),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 Position = UDim2.fromScale(1.05, 1),
                 BackgroundTransparency = 0,
                 ZIndex = 10,
@@ -57,14 +60,20 @@ return function(scope: Fusion.Scope, props: {
             })
 
         elseif input == "Controller" then
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console["Active"..props.Index].Name] or KeybindsBook.Console["Active"..props.Index].Name
+
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
-                Text = CONTROLLER_KEYS[props.Index],
+                Text = keybind,
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
+                AutomaticSize = Enum.AutomaticSize.X,
                 Size = UDim2.fromScale(0.6, 0.4),
                 Position = UDim2.fromScale(1.05, 1),
                 BackgroundTransparency = 0,
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
                 ZIndex = 10,
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
 
                 [Children] = {
                     Components.RoundUICorner(scope),
@@ -84,7 +93,7 @@ return function(scope: Fusion.Scope, props: {
         amount:set(1)
 
         local item = Fusion.peek(props.ActiveInfo.ItemId) :: string
-        local hasItem = ItemLib:GetItemInfo(item)
+        local hasItem = ItemBook:GetItemInfo(item)
         if not hasItem then return end
         if not self.plr.Items:FindFirstChild(item) then return end
 
@@ -135,7 +144,7 @@ return function(scope: Fusion.Scope, props: {
                         return AssetBook.ExtraIcons.Null
                     end
 
-                    local itemInfo = ItemLib:GetItemInfo(itemId)
+                    local itemInfo = ItemBook:GetItemInfo(itemId)
                     if not itemInfo then
                         return AssetBook.ExtraIcons.Unknown
                     end

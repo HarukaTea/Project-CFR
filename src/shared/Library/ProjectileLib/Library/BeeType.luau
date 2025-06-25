@@ -25,10 +25,11 @@ return function (self)
         pcall(function()
             wait(0.5)
             ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
-                sProjectile:PivotTo(projectile.PrimaryPart.CFrame)
+                sProjectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
             end)
         end)
     end
+    ProjectileLib.LeafDragonMove1 = ProjectileLib.BeeMove1
 
 
 
@@ -45,4 +46,5 @@ return function (self)
 
         projectile:AddTag("DMGEntity")
     end
+    ProjectileLib.LeafDragonSpike1 = ProjectileLib.BeeSpike1
 end

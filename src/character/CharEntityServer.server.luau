@@ -6,7 +6,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local CharLib = {}
 
-
+local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
@@ -52,7 +52,7 @@ function CharLib:Destroy()
 	ServerBindables.PlayerDied:Fire(plr.Name)
     ServerBindables.RToSpawnChar:Fire(plr)
 
-	char.DestroyBindableEvent:Fire()
+	char.PlayerDied:Fire()
 end
 
 
@@ -170,9 +170,12 @@ end
 
 
 function CharLib:_ListenZoneInTracker()
-    Add(HarukaLib.Clock(1, function()
+    Add(HarukaLib.Clock(0.5, function()
 		if not ServerLib:IsModelValid(char) then return end
 		if not plr then return end
+
+
+		if char:GetAttribute("IsInCombat") then return end
 
 
         local regionIn = HarukaLib:IsInRegion(char.PrimaryPart.Position, CollectionService:GetTagged("ZoneEntity"))
@@ -183,6 +186,59 @@ function CharLib:_ListenZoneInTracker()
             char:SetAttribute("AreaIn", regionIn.Name)
         end
     end))
+end
+
+
+
+function CharLib:_ListenBadgesCompletionsTracker()
+	local event = Instance.new("BindableEvent")
+	event.Name = "EnemyGotHit"
+	event.Parent = script
+
+	local function _checkAndAward(badgeId: number)
+		if not plr:GetAttribute("BADGE_"..badgeId) then
+			plr:SetAttribute("BADGE_"..badgeId, true)
+
+			ServerLib:GiveBadge(badgeId, plr)
+		end
+	end
+
+	Add(HarukaLib:Hydrate(plr, {
+		["Attr-Gold"] = function(val: number)
+			val = val or 0
+
+			if val >= 1000 then
+				_checkAndAward(AssetBook.BadgeIds.GoldGatherer)
+			end
+			if val >= 1000 * 100 then
+				_checkAndAward(AssetBook.BadgeIds.GoldCollector)
+			end
+		end,
+		["Attr-CombatWonTimes"] = function(val: number)
+			val = val or 0
+
+			if val >= 100 then
+				_checkAndAward(AssetBook.BadgeIds.Fighter)
+			end
+		end
+	}))
+	Add(event.Event:Connect(function(_, attacker: Model, dmgProps: {
+		DMG: number,
+		Attacker: string
+	})
+		if script == nil then return end
+		if script.Parent == nil then return end
+		if attacker ~= char then return end
+		if not dmgProps then return end
+		if not dmgProps.DMG then return end
+		if not dmgProps.Attacker then return end
+		if dmgProps.Attacker ~= "ClassAttacks" then return end
+
+
+		if dmgProps.DMG >= 1000 then
+			_checkAndAward(AssetBook.BadgeIds.StoneBreaker)
+		end
+	end))
 end
 
 

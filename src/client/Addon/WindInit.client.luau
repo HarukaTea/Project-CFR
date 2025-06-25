@@ -78,3 +78,5 @@ HarukaLib:Hydrate(workspace, {
         end
     end
 })
+
+workspace:SetAttribute("WindEffectEnabled", true)

@@ -58,7 +58,7 @@ return function (plr: Player)
 
         CenterProps = {
             [Children] = {
-                --// FIXME: Implement the perk tree here.
+                --// TODO: guild UI
                 Components.TextLabel(scope, {
                     Name = "WIPTitle",
                     Text = "COMING SOON IN PT3!",

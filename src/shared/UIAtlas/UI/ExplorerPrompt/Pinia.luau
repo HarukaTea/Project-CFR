@@ -14,6 +14,8 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
+
 
 local wait = task.wait
 
@@ -241,7 +243,7 @@ return function (self: table)
 	table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)
 		if gpe then return end
 
-		if inputObj.KeyCode == Enum.KeyCode.F or inputObj.KeyCode == Enum.KeyCode.ButtonY then
+		if inputObj.KeyCode == KeybindsBook.PC.PromptTrigger or inputObj.KeyCode == KeybindsBook.Console.PromptTrigger then
 			if not Fusion.peek(self.IsUIShown) then return end
 			if #Fusion.peek(self.PromptList) <= 0 then return end
 

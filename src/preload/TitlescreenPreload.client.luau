@@ -7,7 +7,6 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local SG = game:GetService("StarterGui")
 local RepS = game:GetService("ReplicatedStorage")
-local SS = game:GetService("ServerStorage")
 
 local plr = Players.LocalPlayer
 
@@ -157,37 +156,38 @@ do
 
 
     --// Titlescreen
-    local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
+    if not workspace:GetAttribute("NoRequiresTitlescreen") then
+        local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 
-     --// FIXME: First demo version confirm prompt
-    wait(2)
-    local result = Components:CreateConfirmPrompt(scope, {
-        Hint = "Current version is <red>unfinished</font>, and may contain unwanted bugs and glitches. Do you still wish to continue?",
-        ConfirmText = "YES",
-        CancelText = "NO",
-
-        ConfirmUniqueId = "ConfirmDemoVersion"
-    }):Wait()
-
-    if result == "NO" then
-        plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
-        return
-    end
-
-
-    if HarukaLib:GetDevice() == "Mobile" then
-        wait(1.5)
+        wait(0.5)
         local result = Components:CreateConfirmPrompt(scope, {
-            Hint = "When using <yellow>mobile devices</font>, you may encounter <red>performance issues</font>. Do you still wish to continue?",
+            Hint = "Current version is <red>unfinished</font>, and may contain unwanted bugs and glitches. Do you still wish to continue?",
             ConfirmText = "YES",
             CancelText = "NO",
 
-            ConfirmUniqueId = "ConfirmMobileVersion"
+            ConfirmUniqueId = "ConfirmDemoVersion"
         }):Wait()
 
         if result == "NO" then
             plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
             return
+        end
+
+
+        if HarukaLib:GetDevice() == "Mobile" then
+            wait(1)
+            local result = Components:CreateConfirmPrompt(scope, {
+                Hint = "When using <yellow>mobile devices</font>, you may encounter <red>performance issues</font>. Do you still wish to continue?",
+                ConfirmText = "YES",
+                CancelText = "NO",
+
+                ConfirmUniqueId = "ConfirmMobileVersion"
+            }):Wait()
+
+            if result == "NO" then
+                plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
+                return
+            end
         end
     end
 
@@ -208,24 +208,19 @@ do
             SlotId = "Slot1"
         })
     else
-        if workspace:FindFirstChild("Maps") then
-            workspace.Maps.Parent = SS
-        end
-        if workspace:FindFirstChild("Entities") then
-            workspace.Entities.Parent = SS
-        end
 
         --// init ambient
         SoundService.Musics.Titlescreen:Play()
 
         Lighting:SetAttribute("RainLevel", 6)
-        Lighting.Ambient = Color3.fromRGB(122, 122, 122)
-        Lighting.Brightness = 10
-        Lighting.ColorShift_Bottom = Color3.fromRGB(18, 18, 18)
-        Lighting.ColorShift_Top = Color3.fromRGB(0, 0, 68)
-        Lighting.OutdoorAmbient = Color3.fromRGB(75, 75, 75)
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+        Lighting.Brightness = 1
+        Lighting.ColorShift_Bottom = Color3.fromRGB(0, 0, 0)
+        Lighting.ColorShift_Top = Color3.fromRGB(0, 0, 0)
+        Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
         Lighting.ClockTime = 0
-        Lighting.GeographicLatitude = 255
+        Lighting.GeographicLatitude = 0
+        Lighting.ExposureCompensation = -0.15
 
         local atmosphere = Instance.new("Atmosphere")
         atmosphere.Name = "TitlescreenAtmosphere"
@@ -247,19 +242,14 @@ do
     end
 
 
-
-
     repeat wait() until plr.Character
     repeat wait() until plr.Character.PrimaryPart
     repeat wait() until plr.Character:GetAttribute("_CharDataInited")
 
+
+    workspace:SetAttribute("Haruka_TitlescreenDestroying", true)
+
     pcall(function()
-        if SS:FindFirstChild("Maps") then
-            SS.Maps.Parent = workspace
-        end
-        if SS:FindFirstChild("Entities") then
-            SS.Entities.Parent = workspace
-        end
         Lighting.Ambient = Color3.fromRGB(159, 159, 159)
         Lighting.Brightness = 1.599
         Lighting.ColorShift_Bottom = Color3.fromRGB(220, 255, 255)
@@ -267,11 +257,12 @@ do
         Lighting.OutdoorAmbient = Color3.fromRGB(241, 242, 246)
         Lighting.ClockTime = 14
         Lighting.GeographicLatitude = 0
+        Lighting.ExposureCompensation = 0.15
 
         Lighting:SetAttribute("RainLevel", 0)
 
         if workspace.Terrain:FindFirstChild("Clouds") then
-            workspace.Terrain.Clouds.Color = Color3.fromRGB(255, 255, 255)
+            workspace.Terrain.Clouds.Cover = 0.65
         end
         if Lighting:FindFirstChild("TitlescreenAtmosphere") then
             Lighting.TitlescreenAtmosphere:Destroy()
@@ -279,10 +270,17 @@ do
         if Lighting:FindFirstChild("_TitlescreenSkybox") then
             Lighting._TitlescreenSkybox:Destroy()
         end
+        if Lighting:FindFirstChild("TitlescreenBloom") then
+            Lighting.TitlescreenBloom:Destroy()
+        end
         RepS.Packages.Unloads._WorldSkybox:Clone().Parent = Lighting
 
 
-        workspace.MapComponents.Titlescreen:Destroy()
+        for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do
+            if ins:IsA("Model") then
+                ins:Destroy()
+            end
+        end
     end)
 
     if SoundService.Musics:FindFirstChild("Titlescreen") then

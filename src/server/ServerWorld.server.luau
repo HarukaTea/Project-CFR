@@ -42,12 +42,10 @@ end
 
 --// Init server modules
 do
-    require(SSS.HarukaServer.Shared.ProfileStore)
     require(SSS.HarukaServer.Services.ServerWorldLib):Init()
     require(SSS.HarukaServer.Shared.GlobalTimer)
     require(SSS.HarukaServer.Services.GlobalCriRPGLib):Init()
     require(SSS.HarukaServer.Services.GlobalQuestFuncLib):Init()
-    require(RepS.HarukaShared.Shared.Maid):Init()
 end
 
 

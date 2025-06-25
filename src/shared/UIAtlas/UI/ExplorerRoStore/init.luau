@@ -2,11 +2,17 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
+
+local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
+
+local DevProductSlot = require(script.Components.DevProductSlot)
+local DonationRankSlot = require(script.Components.DonationRankSlot)
 
 
 local Children = Fusion.Children
@@ -31,7 +37,51 @@ return function (plr: Player)
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
-        end)
+        end),
+
+
+        [Children] = {
+            Components.Frame(scope, {
+                Name = "FullCenter",
+                Size = UDim2.fromScale(0.944, 0.7),
+                Position = UDim2.fromScale(0.5, 0.53),
+
+                [Children] = {
+                    Components.UIAspectRatioConstraint(scope, 3.389),
+
+                    Components.Frame(scope, {
+                        Name = "ProductList",
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.CurrentCategory) == "RoStore"
+                        end),
+
+                        [Children] = {
+                            --// FIXME: remember to use Fusion.Computed when using scrolling in the future
+                            Components.UIGridLayout(scope, {
+                                FillDirection = Enum.FillDirection.Horizontal,
+                                CellPadding = UDim2.fromOffset(24, 24),
+                                CellSize = UDim2.fromScale(0.15, 0.4)
+                            }),
+
+
+                            Fusion.ForPairs(scope, AssetBook.GamepassIds, function(_, scope: Fusion.Scope, gamepass: string, gamepassId: number)
+                                return gamepass, DevProductSlot(scope, {
+                                    Type = "GamePass",
+                                    AssetId = gamepassId
+                                })
+                            end),
+                            Fusion.ForPairs(scope, AssetBook.DevProductIds, function(_, scope: Fusion.Scope, devProduct: string, devProductId: number)
+                                return devProduct, DevProductSlot(scope, {
+                                    Type = "Product",
+                                    AssetId = devProductId
+                                })
+                            end)
+                        }
+                    })
+                }
+            })
+        }
 
     }, {
         FullProps = {
@@ -52,19 +102,66 @@ return function (plr: Player)
                     BackgroundTransparency = 0.1,
                     Size = UDim2.fromScale(2, 1.8),
                     ZIndex = 0,
-                })
+                }),
+
+
+                Components.Frame(scope, {
+                    Name = "Categories",
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        Fusion.ForPairs(scope, { "RoStore", "RoLeaderboard" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                            return index, BKCategoryBtn(scope, {
+                                Category = category,
+                                Index = index,
+
+                                CurrentSelectedItemUniqueId = Fusion.Value(scope, ""),
+                                CurrentSelectedItem = Fusion.Value(scope, ""),
+                                CurrentCategory = self.CurrentCategory,
+                            })
+                        end)
+                    }
+                }),
             }
         },
 
         CenterProps = {
             [Children] = {
-                --// FIXME: Implement the perk tree here.
-                Components.TextLabel(scope, {
-                    Name = "WIPTitle",
-                    Text = "COMING SOON IN PT3!",
-                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                    Size = UDim2.fromScale(1, 0.6),
-                    TextTransparency = 0.7
+                Components.ScrollingFrame(scope, {
+                    Name = "DonationRankLeaderboard",
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    Position = UDim2.fromScale(0.5, 1),
+                    Size = UDim2.fromScale(0.6, 7.3),
+                    ScrollBarThickness = 5,
+                    ScrollingDirection = Enum.ScrollingDirection.Y,
+
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.CurrentCategory) == "RoLeaderboard"
+                    end),
+
+                    [Children] = {
+                        Components.PaddingFrame(scope, "AAA"),
+
+                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: NumberValue)
+                            return index, DonationRankSlot(scope, {
+                                Index = val:GetAttribute("Order"),
+                                Value = val.Value,
+                                PlayerName = val:GetAttribute("PlayerName"),
+                                AvatarId = val:GetAttribute("PlayerThumbnail"),
+                            })
+                        end)
+                    }
+
+                }, {
+                    Padding = UDim.new(0, 0),
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 })
             }
         }

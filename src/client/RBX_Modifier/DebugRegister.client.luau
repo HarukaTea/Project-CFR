@@ -62,6 +62,7 @@ end
 
 
 wait(5)
+repeat wait() until plr:GetAttribute("Rank")
 if (plr:GetAttribute("Rank") or 0) < 2 then
     return
 end

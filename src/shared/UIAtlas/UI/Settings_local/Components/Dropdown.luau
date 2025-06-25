@@ -27,43 +27,33 @@ return function(scope: Fusion.Scope, props: {
 
 	return Components.Frame(scope, {
 		Name = props.OptionId,
-		Size = UDim2.fromScale(1, 0.08),
-		LayoutOrder = props.LayoutOrder,
+		Size = UDim2.fromScale(0.9, 0.08),
+        BackgroundTransparency = 0,
+        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+        LayoutOrder = props.LayoutOrder,
 
 		[Children] = {
-			Components.Frame(scope, {
-				Name = "FakeBGOverlay",
-				AnchorPoint = Vector2.new(0, 0.5),
-				Position = UDim2.fromScale(-0.02, 0.5),
-				Size = UDim2.fromScale(0.935, 1.2),
-				BackgroundTransparency = 0,
-				BackgroundColor3 = Components.BLACK_COLOR,
-				ZIndex = 0,
+            Components.UIAspectRatioConstraint(scope, 26.688),
 
-				[Children] = {
-					Components.RoundUICorner(scope),
-					Components.UIStroke(scope, {
-						Thickness = 2,
+            Components.RoundUICorner(scope),
+            Components.UIStroke(scope, {
+                Thickness = 2,
 
-						Transparency = Fusion.Computed(scope, function(use: Fusion.Use)
-							return if use(isSelecting) then 0 else 1
-						end)
-					})
-				}
-			}),
+                Transparency = Fusion.Computed(scope, function(use: Fusion.Use)
+                    return if use(isSelecting) then 0 else 1
+                end)
+            }),
 
 			Components.TextLabel(scope, {
 				Name = "Title",
-				Size = UDim2.fromScale(0.3, 1),
+				Size = UDim2.fromScale(0.35, 1),
 				Text = props.OptionTitle,
 				TextXAlignment = Enum.TextXAlignment.Left,
 
 				[Children] = {
 					Components.UIPadding(scope, {
 						PaddingTop = UDim.new(0.05, 0),
-						PaddingBottom = UDim.new(0.05, 0),
-						PaddingLeft = UDim.new(),
-						PaddingRight = UDim.new()
+						PaddingBottom = UDim.new(0.05, 0)
 					})
 				}
 			}),
@@ -71,9 +61,9 @@ return function(scope: Fusion.Scope, props: {
 
             Components.Frame(scope, {
                 Name = "DropdownButton",
-                AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromScale(0.7, 0.5),
-                Size = UDim2.fromScale(0.22, 1.2),
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.fromScale(1, 0.5),
+                Size = UDim2.fromScale(0.22, 1),
                 BackgroundColor3 = Color3.new(),
                 BackgroundTransparency = 0,
 
@@ -135,8 +125,8 @@ return function(scope: Fusion.Scope, props: {
 
 			Components.Frame(scope, {
                 Name = "DropdownList",
-                AnchorPoint = Vector2.zero,
-                Position = UDim2.fromScale(0.69, 1.5),
+                AnchorPoint = Vector2.xAxis,
+                Position = UDim2.fromScale(1, 1.5),
                 Size = UDim2.fromScale(0.235, 1),
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -253,10 +243,7 @@ return function(scope: Fusion.Scope, props: {
 
 
 			Components.Frame(scope, {
-				AnchorPoint = Vector2.zero,
-				Position = UDim2.fromScale(-0.02, 0),
-				Size = UDim2.fromScale(0.935, 1),
-
+                Name = "Hover",
 
 				[Fusion.OnEvent("MouseEnter")] = function()
 					isSelecting:set(true)

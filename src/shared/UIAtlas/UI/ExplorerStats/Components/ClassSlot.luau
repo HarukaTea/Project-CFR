@@ -6,7 +6,7 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local Children = Fusion.Children
 
@@ -48,7 +48,7 @@ return function(scope: Fusion.Scope, props: {
 
 
             local weaponId = weapon.Value :: string
-            local itemInfo = ItemLib:GetItemInfo(weaponId)
+            local itemInfo = ItemBook:GetItemInfo(weaponId)
 
             if itemInfo == nil then
                 return AssetBook.ExtraIcons.Unknown
@@ -97,7 +97,7 @@ return function(scope: Fusion.Scope, props: {
                         local r = 0.8
 
                         local item = use(info.ItemId) :: string
-                        local itemInfo = ItemLib:GetItemInfo(item)
+                        local itemInfo = ItemBook:GetItemInfo(item)
                         if itemInfo == nil then return index, nil end
 
 

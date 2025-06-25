@@ -13,12 +13,13 @@ local SoundService = game:GetService("SoundService")
 local StarterPlayer = game:GetService("StarterPlayer")
 local TeleportService = game:GetService("TeleportService")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassAttackLib = require(SSS.HarukaServer.Library.ClassAttackLib)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local CastItemLib = require(SSS.HarukaServer.Library.CastItemLib)
 local DialogueBook = require(RepS.HarukaShared.Library.DialogueBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
@@ -133,10 +134,6 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
         alignMoverAtt.Name = "AlignMoverAttachment"
         alignMoverAtt.Parent = r6Char.PrimaryPart
 
-        local destroyBE = Instance.new("BindableEvent")
-        destroyBE.Name = "DestroyBindableEvent"
-        destroyBE.Parent = r6Char
-
         HarukaLib:SetCollisionGroup(r6Char, "PlayerBodyPart")
 
         plr.Character = r6Char
@@ -218,7 +215,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
         elseif prompt.Name == "Chest" then
             local chest = prompt:FindFirstAncestorOfClass("Model")
 
-            if not ItemLib:GetItemInfo(chest.Name) then
+            if not ItemBook:GetItemInfo(chest.Name) then
                 Events.CreateNotify.Fire(plr, "[Error] Invalid Chest")
                 return
             end
@@ -238,7 +235,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
         elseif prompt.Name == "Market" then
             local products = {}
             for _, product: Instance in prompt:FindFirstAncestorOfClass("Model").Products:GetChildren() do
-                if ItemLib:GetItemInfo(product.Name) then
+                if ItemBook:GetItemInfo(product.Name) then
                     table.insert(products, {
                         ProductId = product.Name,
                         ProductUniqueId = product:GetAttribute("HarukaUniqueId")
@@ -252,6 +249,10 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
         elseif prompt.Name == "Crafting" then
             Events.OpenCraftingUI.Fire(plr)
+
+
+        elseif prompt.Name == "AbyssView" then
+            Events.OpenAbyssUI.Fire(plr)
 
 
         elseif prompt.Name == "DungeonPortal" then
@@ -272,7 +273,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
         elseif prompt.Name == "Material" then
             local material = prompt:FindFirstAncestorOfClass("Model")
-            local itemInfo = ItemLib:GetItemInfo(material.Name)
+            local itemInfo = ItemBook:GetItemInfo(material.Name)
 
 
             if itemInfo == nil then return end
@@ -315,8 +316,18 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             amount = math.floor(amount)
 
 
-            ServerLib:GiveItemDrop(plr, finalMaterial, amount)
+            local tempModel = HarukaLib:CreateMockModel()
+            tempModel:PivotTo(CFrame.new(adornee.Position + Vector3.yAxis * 3))
+            tempModel.Parent = workspace
+            Debris:AddItem(tempModel, 5)
 
+
+            Events.PlayHitStatusVFX.FireList(ServerLib:GetNearbyPlayers(adornee.Position), {
+                Target = tempModel,
+            })
+            ServerLib:PlaceItemDropPart(plr, finalMaterial, amount, adornee.Position + Vector3.new(
+                math.random(-8, 8), 0, math.random(-8, 8)
+            ))
 
             Promise.delay(math.random(60, 100)):andThen(function()
                 material.Parent = workspace.MapComponents.Materials
@@ -367,6 +378,23 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
         end):catch(function() end):await()
 
 
+        --// perk bonus
+        local DMGResistBonus = char:GetAttribute("DMGResistBonus") or 0 :: number
+        local resist = projectileDMG * DMGResistBonus / 100
+
+        projectileDMG -= resist
+        projectileDMG = math.floor(projectileDMG)
+
+
+        --// perk bonus by VIT
+        local DMGResistByVIT = char:GetAttribute("DMGResistByVIT") or 0 :: number
+        local resistByVIT = projectileDMG * DMGResistByVIT / 100
+
+        projectileDMG -= resistByVIT
+        projectileDMG = math.floor(projectileDMG)
+
+
+
         if projectileDMG <= 0 then return end
 
 
@@ -380,8 +408,7 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
             afterShield = math.clamp(afterShield, 0, 1599 * 40 * 40)
 
             char:SetAttribute("Shield", afterShield)
-
-            ServerBindables.PlayerGotHit:Fire(char.Name, projectileDMG, "Shield")
+            char.PlayerGotHit:Fire(char.Name, projectileDMG, "Shield")
 
             Events.PlaySound.Fire(plr, SoundService.SFXs.ShieldAbsorb)
 
@@ -395,7 +422,7 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
 
                     Events.PlayGotHitScreenFX.Fire(plr)
 
-                    ServerBindables.PlayerGotHit:Fire(char.Name, exceededDMG, "Health")
+                    char.PlayerGotHit:Fire(char.Name, exceededDMG, "Health")
                 end
             end
         else
@@ -403,12 +430,10 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
                 ServerLib:ShowText(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
             end
 
-
             char.Humanoid:TakeDamage(projectileDMG)
+            char.PlayerGotHit:Fire(char.Name, projectileDMG, "Health")
 
             Events.PlayGotHitScreenFX.Fire(plr)
-
-            ServerBindables.PlayerGotHit:Fire(char.Name, projectileDMG, "Health")
         end
     end)
 end
@@ -528,7 +553,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
             return
         end
 
-        local itemInfo = ItemLib:GetItemInfo(equippingInfo.Value)
+        local itemInfo = ItemBook:GetItemInfo(equippingInfo.Value)
         if not itemInfo then
             Events.CreateNotify.Fire(plr, "[Error] Invalid Item Info")
             Events.RequestToCastItem_Response.Fire(plr, {
@@ -588,6 +613,14 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
             return
         end
 
+        --// intensity
+        local intensity = char:GetAttribute("Intensity") or 0
+
+        local reduce = realCD * (intensity / 100)
+        realCD -= reduce
+        realCD = math.ceil(realCD)
+        realCD = math.max(0, realCD)
+
 
         if itemInfo.Type == "Consumable" then
             itemSymbol.Value -= 1
@@ -599,9 +632,18 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
             end
         end
         if itemInfo.ExtraStatInfoDesync.Mana then
+            local manaNeededToCost = itemInfo.ExtraStatInfoDesync.Mana :: number
+
+            --// perk bonus
+            local spellCostReduction = char:GetAttribute("SpellCostReduction") or 0 :: number
+            local reduction = manaNeededToCost * spellCostReduction / 100
+
+            manaNeededToCost -= reduction
+            manaNeededToCost = math.ceil(manaNeededToCost)
+
             local curMana = char:GetAttribute("Mana") :: number
 
-            if curMana < itemInfo.ExtraStatInfoDesync.Mana then
+            if curMana < manaNeededToCost then
                 Events.CreateNotify.Fire(plr, "You do not have enough Mana to cast this skill!")
                 Events.RequestToCastItem_Response.Fire(plr, {
                     SlotId = slotId,
@@ -626,7 +668,18 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
         Promise.try(function()
             local statusCode = CastItemLib[itemInfo.ItemId](plr, char, {
                 CostManaFunc = function()
-                    HarukaLib:AddAttr(char, "Mana", -itemInfo.ExtraStatInfoDesync.Mana)
+                    if itemInfo.ExtraStatInfoDesync.Mana then
+                        local manaNeededToCost = itemInfo.ExtraStatInfoDesync.Mana :: number
+
+                        --// perk bonus
+                        local spellCostReduction = char:GetAttribute("SpellCostReduction") or 0 :: number
+                        local reduction = manaNeededToCost * spellCostReduction / 100
+
+                        manaNeededToCost -= reduction
+                        manaNeededToCost = math.ceil(manaNeededToCost)
+
+                        HarukaLib:AddAttr(char, "Mana", manaNeededToCost)
+                    end
                 end
             }) :: number?
 
@@ -763,7 +816,7 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
             return
         end
 
-        local itemInfo = ItemLib:GetItemInfo(data.ItemId)
+        local itemInfo = ItemBook:GetItemInfo(data.ItemId)
         if not itemInfo then return end
 
         local items = plr.Items :: Folder
@@ -806,7 +859,7 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
                 weapon1Symbol.Name = "Weapon1"
             end
 
-            ServerLib:EquipItem(plr, weapon1Symbol:GetAttribute("HarukaUniqueId"), "Unequip")
+            ServerLib:UnequipItem(plr, weapon1Symbol:GetAttribute("HarukaUniqueId"))
 
             weapon1Symbol:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
             weapon1Symbol.Value = data.ItemId
@@ -840,14 +893,18 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
 
 
         --// already equipped same item id?
-        local sameItemCheck = true
+        local sameItemCheck = false
         for _, symbol: StringValue in equipping:GetChildren() do
             if symbol.Value == data.ItemId then
-                sameItemCheck = false
+                sameItemCheck = true
+                break
+            end
+            if string.match(symbol.Value, "^(%w+)%d*$") == string.match(data.ItemId, "^(%w+)%d*$") then
+                sameItemCheck = true
                 break
             end
         end
-        if not sameItemCheck then
+        if sameItemCheck then
             Events.CreateNotify.Fire(plr, "You have already equipped this item!")
             return
         end
@@ -925,7 +982,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         end
 
 
-        local itemInfo = ItemLib:GetItemInfo(product)
+        local itemInfo = ItemBook:GetItemInfo(product)
         if not itemInfo then return end
 
 
@@ -980,12 +1037,16 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
 
         --// cant sell items obtained from chests / nil
-        local itemInfo = ItemLib:GetItemInfo(item)
+        local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then return end
 
 
         if itemInfo.Type == "Passive" then
             Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
+            return
+        end
+        if itemInfo.Type == "Quest" then
+            Events.CreateNotify.Fire(plr, "You can't sell your Quest items!")
             return
         end
         local foundInChest = false
@@ -1055,13 +1116,17 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         local item = data.ItemId
 
         --// cant not sell nil items
-        local itemInfo = ItemLib:GetItemInfo(item)
+        local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then return end
 
 
         --// cant sell passive items
         if itemInfo.Type == "Passive" then
             Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
+            return
+        end
+        if itemInfo.Type == "Quest" then
+            Events.CreateNotify.Fire(plr, "You can't sell your Quest items!")
             return
         end
 
@@ -1292,10 +1357,18 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
         end
 
 
+        local trueDMGStyle = "Physical"
+        if style == "Magic" then
+            trueDMGStyle = "Magic"
+        end
+
+
         ClassAttackLib:_DealDamageToEnemy(char, data.EnemyEntity, {
             DMG = ClassAttackLib:_CalDMG(style, char, {
                 ForceMaxDMG = true
-            })
+            }),
+            Attacker = "SkillProjectile",
+            DMGType = trueDMGStyle
         })
         if projectileDoTType ~= "None" then
             local debuffObj = HarukaDoT.new({
@@ -1325,7 +1398,7 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
             return
         end
 
-        local itemInfo = ItemLib:GetItemInfo(item)
+        local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then
             Events.CreateNotify.Fire(plr, "[Error] Invalid Item Id")
             return
@@ -1339,12 +1412,37 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
         local materialCheck = true
         for material: string, amount: number in itemInfo.RecipeDesync do
             local itemSymbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
+            local materialInfo = ItemBook:GetItemInfo(material)
+
+            if not materialInfo then
+                materialCheck = false
+                Events.CreateNotify.Fire(plr, "Invalid material id, please contact the developer!")
+                break
+            end
             if not itemSymbol then
                 materialCheck = false
                 break
             end
             if itemSymbol.Value < amount then
                 materialCheck = false
+                break
+            end
+
+            if plr.EquippingItems:FindFirstChild(material) then
+                materialCheck = false
+                Events.CreateNotify.Fire(plr, "You can't craft this item while you have equipped one of the materials!")
+                break
+            end
+
+
+            if materialInfo.Type == "Passive" then
+                materialCheck = false
+                Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
+                break
+            end
+            if materialInfo.Type == "Quest" then
+                materialCheck = false
+                Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
                 break
             end
         end
@@ -1371,5 +1469,218 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
         ServerLib:GiveItemDrop(plr, item, 1)
     end)
 end
+
+
+
+function GlobalCriRPGLib:_ListenPlayerPartyRequestsTracker()
+    local function partyInvite(plr: Player, option: string, newMember: string)
+        if option == "Invite" then
+            --- check character exists
+            local char = workspace.EntitiesPlayerChar:FindFirstChild(newMember) :: Model?
+            if not char then Events.CreateNotify.Fire(plr, "Failed to invite!") return end
+
+            --- check valid player
+            local player = Players:GetPlayerFromCharacter(char)
+            if not player then Events.CreateNotify.Fire(plr, "Failed to invite!") return end
+
+            --- check if player already have a party
+            local pass = true
+            for _, child: Instance in workspace.MapComponents.PartyHolder:GetDescendants() do
+                if child:IsA("ObjectValue") and child.Name == player.Name then
+                    pass = false
+                elseif child:IsA("ObjectValue") and child.Name == plr.Name then
+                    if child.Parent.Name ~= plr.Name then pass = false end
+                end
+            end
+            if not pass then Events.CreateNotify.Fire(plr, "Player already has a party!") return end
+
+            --- check if player is in a request
+            local foundTicket = false
+            for _, child: Instance in char:GetChildren() do
+                if child.Name == "PartyInviteTicket" and child.Value == plr.Character then foundTicket = true break end
+            end
+            if foundTicket then Events.CreateNotify.Fire(plr, "Player already has an invitation!") return end
+
+            local ticket = Instance.new("ObjectValue")
+            ticket.Name = "PartyInviteTicket"
+            ticket.Value = plr.Character
+            ticket.Parent = char
+
+            Events.PartyInviteResult.Fire(player, { Option = "Invite", PlayerName = plr.Name })
+            Events.PlaySound.Fire(player, workspace.Sounds.SFXs.ChestOpened)
+
+        elseif option == "InviteAccept" or option == "InviteDecline" then
+            --- check if player is already in a party
+            local pass = true
+            for _, child: Instance in workspace.MapComponents.PartyHolder:GetDescendants() do
+                if child:IsA("ObjectValue") and child.Name == plr.Name then pass = false break end
+            end
+            if not pass then Events.CreateNotify.Fire(plr, "You are already in a party!") return end
+
+            --- check valid player
+            local char = plr.Character
+            if not char then Events.CreateNotify.Fire(plr, "Failed to do so!") return end
+
+            local inviterChar = workspace.EntitiesPlayerChar:FindFirstChild(newMember) :: Model?
+            if not inviterChar then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
+
+            --- check valid player
+            local player = Players:GetPlayerFromCharacter(char)
+            if not player then return end
+
+            local inviter = Players:GetPlayerFromCharacter(inviterChar)
+            if not inviter then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
+
+            --- get ticket
+            local ticket: ObjectValue? = nil
+            for _, child: Instance in char:GetChildren() do
+                if child.Name == "PartyInviteTicket" and child.Value == inviterChar then ticket = child break end
+            end
+            if ticket == nil then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
+
+            --- join party
+            if option == "InviteAccept" then
+                if not workspace.MapComponents.PartyHolder:FindFirstChild(inviter.Name) then
+                    local partyFolder = Instance.new("Folder")
+                    partyFolder.Name = inviter.Name
+                    partyFolder.Parent = workspace.MapComponents.PartyHolder
+
+                    local leaderSymbol = Instance.new("ObjectValue")
+                    leaderSymbol.Name = inviter.Name
+                    leaderSymbol.Value = inviterChar
+                    leaderSymbol.Parent = partyFolder
+
+                    local memberSymbol = Instance.new("ObjectValue")
+                    memberSymbol.Name = plr.Name
+                    memberSymbol.Value = char
+                    memberSymbol.Parent = partyFolder
+
+                    plr:SetAttribute("IsInParty", true)
+                    inviter:SetAttribute("IsInParty", true)
+
+                    ticket:Destroy()
+
+                elseif workspace.MapComponents.PartyHolder:FindFirstChild(inviter.Name) then
+                    local count = 0
+                    for _, symbol: ObjectValue in workspace.MapComponents.PartyHolder[inviter.Name]:GetChildren() do
+                        if symbol:IsA("ObjectValue") then count += 1 end
+                    end
+                    if count >= 6 then
+                        Events.CreateNotify.Fire(plr, "Party is full!")
+                        Events.CreateNotify.Fire(inviter, "Party is full!")
+
+                        ticket:Destroy()
+                        return
+                    end
+
+                    local memberSymbol = Instance.new("ObjectValue")
+                    memberSymbol.Name = plr.Name
+                    memberSymbol.Value = char
+                    memberSymbol.Parent = workspace.MapComponents.PartyHolder[inviter.Name]
+
+                    plr:SetAttribute("IsInParty", true)
+
+                    ticket:Destroy()
+                end
+            elseif option == "InviteDecline" then
+                ticket:Destroy()
+
+                Events.CreateNotify.Fire(inviter, plr.DisplayName.." declined your invitation!")
+            end
+
+        elseif option == "PartyKick" then
+            if not workspace.MapComponents.PartyHolder:FindFirstChild(plr.Name) then
+                Events.CreateNotify.Fire(plr, "You are not a leader!")
+                return
+            end
+            if not workspace.MapComponents.PartyHolder[plr.Name]:FindFirstChild(newMember) then
+                Events.CreateNotify.Fire(plr, "Player is not in your party!")
+                return
+            end
+
+            workspace.MapComponents.PartyHolder[plr.Name][newMember]:Destroy()
+
+            if not Players[newMember] then return end
+            Players[newMember]:SetAttribute("IsInParty", false)
+
+        elseif option == "PartyLeave" then
+            local function _disbandPartyAction(partyFolder: Folder)
+                for _, symbol: ObjectValue in partyFolder:GetChildren() do
+                    if symbol:IsA("ObjectValue") and symbol.Value then
+                        local memeber = Players:GetPlayerFromCharacter(symbol.Value)
+                        if not memeber then continue end
+
+                        memeber:SetAttribute("IsInParty", false)
+
+                        Events.CreateNotify.Fire(memeber, "Party has been disbanded!")
+                    end
+                end
+            end
+
+            local partyFolder: Folder? = nil
+            for _, child: Instance in workspace.MapComponents.PartyHolder:GetDescendants() do
+                if child:IsA("ObjectValue") and child.Name == plr.Name then
+                    partyFolder = child.Parent
+                    child:Destroy()
+
+                    plr:SetAttribute("IsInParty", false)
+                    for _, symbol: ObjectValue in partyFolder:GetChildren() do
+                        if symbol:IsA("ObjectValue") and symbol.Value then
+                            local memeber = Players:GetPlayerFromCharacter(symbol.Value)
+                            if not memeber then continue end
+
+                            Events.CreateNotify.Fire(memeber, `{plr.DisplayName} has left the party!`)
+                        end
+                    end
+
+                    if partyFolder.Name == plr.Name then
+                        _disbandPartyAction(partyFolder)
+
+                        partyFolder:Destroy()
+                    end
+                    break
+                end
+            end
+            if not partyFolder then return end
+
+            local count = 0
+            for _, symbol: ObjectValue in partyFolder:GetChildren() do
+                if symbol:IsA("ObjectValue") then count += 1 end
+            end
+            if count <= 0 then
+                _disbandPartyAction(partyFolder)
+
+                partyFolder:Destroy()
+            end
+        end
+    end
+    Events.RequestToPartyInvite.SetCallback(function(plr: Player, data)
+        local option, newMember = data.Option, data.PlayerName
+
+        partyInvite(plr, option, newMember)
+    end)
+    ServerBindables.PartyInvite:Connect(partyInvite)
+end
+
+
+function GlobalCriRPGLib:_ListenPlayerAbyssChallengeRequestsTracker()
+    Events.RequestToChallengeAbyss.SetCallback(function(plr: Player, data)
+        if not data.AbyssId then return end
+
+        local teleportOptions = Instance.new("TeleportOptions")
+        teleportOptions:SetTeleportData({
+            SlotId = plr:GetAttribute("SlotChosen"),
+            AbyssId = data.AbyssId
+        })
+
+        local code = TeleportService:ReserveServer(AssetBook.PlaceIds.AbyssLevel)
+        teleportOptions.ReservedServerAccessCode = code
+
+        TeleportService:TeleportAsync(AssetBook.PlaceIds.AbyssLevel, { plr }, teleportOptions)
+    end)
+end
+
+
+
 
 return GlobalCriRPGLib

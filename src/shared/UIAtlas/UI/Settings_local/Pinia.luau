@@ -5,12 +5,15 @@ local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
+local UserInputService = game:GetService("UserInputService")
 
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
+
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 
 return function (self: table)
@@ -21,6 +24,7 @@ return function (self: table)
     workspace:SetAttribute("UIScaleFactor", 1)
     workspace:SetAttribute("HideUIFactor", false)
     workspace:SetAttribute("EntityRenderDistance", 159)
+    workspace:SetAttribute("FocusRenderDistance", 486)
 
     workspace:SetAttribute("RainEffectEnabled", true)
     workspace:SetAttribute("WindEffectEnabled", true)
@@ -37,12 +41,15 @@ return function (self: table)
     self.IsSettingsShown = Value(false)
 
     self.PanelSwitched = Signal.new()
+    self.ValidInputBegan = Signal.new()
 
     self.SliderProgressVals = {}
     self.SliderVals = {}
 
     self.SwitcherVals = {}
     self.DropdownVals = {}
+
+    self.IsInKeybindMode = Value(false)
 
     local scope = self.scope :: Fusion.Scope
 
@@ -55,6 +62,39 @@ return function (self: table)
             self.IsSettingsShown:set(newPanel == "Settings")
         end
     }))
+
+
+    --// track valid input
+    local validKeycodeNames = {}
+    local deprecated = {
+        "MouseBackButton", "MouseNoButton", "MouseX", "MouseY"
+    }
+    for _, keycode: Enum.KeyCode in Enum.KeyCode:GetEnumItems() do
+        if string.find(keycode.Name, "World") then continue end
+        if table.find(deprecated, keycode.Name) then continue end
+
+        validKeycodeNames[keycode.Name] = true
+    end
+    table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+
+        if Fusion.peek(self.IsInKeybindMode) and validKeycodeNames[input.KeyCode.Name] then
+            self.ValidInputBegan:Fire(input.KeyCode.Name)
+        end
+    end))
+
+
+    --// load saved keybinds
+    for _, symbol: StringValue in self.SettingsFolder:GetChildren() do
+        if symbol:IsA("StringValue") and string.find(symbol.Name, "KEYBIND") then
+            local keybind = symbol.Value
+            local platform = if string.find(symbol.Name, "Console") then "Console" else "PC"
+            local keybindId = string.match(symbol.Name, "_(%w+)$")
+
+            KeybindsBook[platform][keybindId] = Enum.KeyCode[keybind]
+            KeybindsBook.OnKeybindChanged:Fire(true)
+        end
+    end
 
 
     --// track ui blur
@@ -71,6 +111,9 @@ return function (self: table)
 
     --// track slider
     for panelId: string, panelInfo: table in self.INFO do
+        if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
+
+
         self.SliderProgressVals[panelId] = {}
         self.SliderVals[panelId] = {}
 
@@ -92,6 +135,9 @@ return function (self: table)
     end
     --// track switcher
     for panelId: string, panelInfo: table in self.INFO do
+        if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
+
+
         self.SwitcherVals[panelId] = {}
 
         for optionId: string, optionInfo: table in panelInfo.Includes do
@@ -107,6 +153,9 @@ return function (self: table)
     end
     --// track dropdown
     for panelId: string, panelInfo: table in self.INFO do
+        if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
+
+
         self.DropdownVals[panelId] = {}
 
         for optionId: string, optionInfo: table in panelInfo.Includes do
@@ -149,6 +198,9 @@ return function (self: table)
 
     self.INFO.Graphics.Includes.EntityRenderDistance.ValChanged:Connect(function(val: number)
         workspace:SetAttribute("EntityRenderDistance", val)
+    end)
+    self.INFO.Graphics.Includes.FocusRenderDistance.ValChanged:Connect(function(val: number)
+        workspace:SetAttribute("FocusRenderDistance", val)
     end)
 
 

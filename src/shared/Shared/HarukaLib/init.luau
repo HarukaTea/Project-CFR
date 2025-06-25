@@ -588,7 +588,6 @@ end
 ]]
 function HarukaLib:CombineRbxId(id: string | number)
     if not id then
-		warn("Invalid ID")
         return "rbxassetid://0"
     end
 
@@ -1079,6 +1078,22 @@ function HarukaLib:CreateMockPart() : BasePart
 	part.CollisionGroup = "NoCollision"
 
 	return part
+end
+
+
+--[[
+	Quickly return an empty part for mocking
+]]
+function HarukaLib:CreateMockModel() : BasePart
+	local model = Instance.new("Model")
+	model.Name = "MockModel"
+
+	local part = HarukaLib:CreateMockPart()
+	part.Parent = model
+
+	model.PrimaryPart = part
+
+	return model
 end
 
 

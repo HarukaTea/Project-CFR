@@ -16,7 +16,7 @@ PreloadSceneLib:_LoadPreloadAssets()
 PreloadSceneLib:_LoadTeleportEvents()
 PreloadSceneLib:_LoadScreenMouseFollower()
 
-repeat task.wait() until workspace:GetAttribute("Haruka_GameEntered")
+repeat task.wait() until workspace:GetAttribute("Haruka_TitlescreenDestroying")
 
 PreloadSceneLib:Destroy()
 

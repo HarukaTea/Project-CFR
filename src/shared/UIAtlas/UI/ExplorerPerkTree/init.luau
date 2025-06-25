@@ -10,6 +10,9 @@ local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
 local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
 
+local PerkListView = require(script.Components.PerkListView)
+local PerkDescView = require(script.Components.PerkDescView)
+
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
@@ -40,91 +43,26 @@ return function (plr: Player)
 
         [Children] = {
             Components.Frame(scope, {
-                Name = "FullBottom",
-                AnchorPoint = Vector2.zero,
-                Position = UDim2.fromScale(0.008, 0.192),
-                Size = UDim2.fromScale(0.97, 0.76),
+                Name = "CenterLeft",
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.03, 0.52),
+                Size = UDim2.fromScale(0.65, 0.66),
 
                 [Children] = {
-                    Components.ScrollingFrame(scope, {
+                    Components.Frame(scope, {
                         Name = "PerkList",
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        ScrollingDirection = Enum.ScrollingDirection.Y,
-                        ScrollBarThickness = 5,
 
                         [Children] = {
-                            Fusion.ForPairs(scope, self.Perks, function(_, scope: Fusion.Scope, index: number, perkInfo: table)
+                            PerkListView(scope, {
+                                CurrentCategory = self.CurrentCategory,
+                                CurrentSelectedPerk = self.CurrentSelectedPerk,
 
-                                local absTextSize = Fusion.Value(scope, Vector2.zero)
-
-                                return index, Components.Frame(scope, {
-                                    Name = perkInfo.Id,
-                                    BackgroundColor3 = Color3.fromRGB(),
-                                    BackgroundTransparency = if index % 2 == 0 then 0.2 else 0.8,
-                                    Size = UDim2.fromScale(0.95, 0.2),
-
-                                    [Children] = {
-                                        Components.UIAspectRatioConstraint(scope, 15.261),
-                                        Components.IconImageLabel(scope, {
-                                            AnchorPoint = Vector2.new(0, 0.5),
-                                            Position = UDim2.fromScale(0.015, 0.5),
-                                            Size = UDim2.fromScale(0.8, 0.8),
-                                            Image = perkInfo.Icon,
-                                        }),
-
-                                        Components.TextLabel(scope, {
-                                            Name = "PerkStat",
-                                            AnchorPoint = Vector2.new(0, 0.5),
-                                            Position = UDim2.fromScale(0.081, 0.5),
-                                            Size = UDim2.fromScale(0.761, 0.9),
-                                            Text = HarukaLib:RichTextify(
-                                                `<yellow>{perkInfo.Name}</font>:   {perkInfo.Desc}`
-                                            ),
-                                            TextScaled = false,
-                                            TextWrapped = true,
-                                            TextXAlignment = Enum.TextXAlignment.Left,
-                                            TextYAlignment = Enum.TextYAlignment.Top,
-                                            RichText = true,
-
-                                            TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                                return use(absTextSize).Y / (63 / 20)
-                                            end),
-
-                                            [Fusion.Out("AbsoluteSize")] = absTextSize,
-                                        }),
-
-                                        Components.TextLabel(scope, {
-                                            Name = "UnlockState",
-                                            AnchorPoint = Vector2.new(0, 0.5),
-                                            Position = UDim2.fromScale(0.855, 0.5),
-                                            Size = UDim2.fromScale(0.136, 0.34),
-
-                                            TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                                if use(self.Points[perkInfo.Type]) >= perkInfo.Req then
-                                                    return Color3.fromRGB(85, 255, 127)
-                                                else
-                                                    return Color3.fromRGB(255, 0, 0)
-                                                end
-                                            end),
-                                            Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                                if use(self.Points[perkInfo.Type]) >= perkInfo.Req then
-                                                    return "UNLOCKED"
-                                                else
-                                                    return "Req ".. perkInfo.Req .."+ "..perkInfo.Type
-                                                end
-                                            end)
-                                        })
-                                    }
-                                })
-                            end)
+                                PerkList = self.Points
+                            })
                         }
-                    }, {
-                        Padding = UDim.new(0, 0),
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     })
                 }
-            })
+            }),
         }
 
     }, {
@@ -148,12 +86,12 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "STR", "INT", "VIT", "DEX" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                        Fusion.ForPairs(scope, { "STR", "INT", "VIT" }, function(_, scope: Fusion.Scope, index: number, category: string)
                             return index, BKCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
 
-                                CurrentSelectedItem = Fusion.Value(scope, ""),
+                                CurrentSelectedItem = self.CurrentSelectedPerk,
                                 CurrentSelectedItemUniqueId = Fusion.Value(scope, ""),
                                 CurrentCategory = self.CurrentCategory,
                             })
@@ -176,12 +114,31 @@ return function (plr: Player)
         },
 
         CenterProps = {
-            [Children] = {
+            ZIndex = 2,
 
+            [Children] = {
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    return PerkDescView(scope, {
+                        PerkId = use(self.CurrentSelectedPerk),
+                    })
+                end),
             }
         }
     })
     self.UI = UI
+
+
+    local syncUIPackage = plr.PlayerGui:WaitForChild("SyncUIs", 999)
+    local perkPackage = syncUIPackage:WaitForChild("PerkListPath2Ds", 999)
+
+
+    for _, container: Folder in perkPackage:GetChildren() do
+        for _, path2d: Path2D in container:GetChildren() do
+            local path = path2d:Clone()
+            path.Visible = true
+            path.Parent = UI.CenterLeft.PerkList[container.Name]
+        end
+    end
 
     return function ()
         Fusion.doCleanup(scope)

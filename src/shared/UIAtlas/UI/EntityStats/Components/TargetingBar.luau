@@ -1,6 +1,5 @@
 --!nocheck
 
-local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
@@ -10,7 +9,6 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 
 local Children = Fusion.Children
@@ -144,14 +142,17 @@ return function(scope: Fusion.Scope, props: {
     })
 
 
-    local effectList = FusionComponents.useFolder(scope, targeting:WaitForChild("EffectList"))
+    local absoluteEffectListSize = Value(Vector2.zero)
+    local absoluteAmount = Value(Vector2.zero)
     local bar2 = Components.Frame(scope, {
         Name = "Targeting_"..uniqueId.."_EffectList",
         AnchorPoint = Vector2.new(1, 0),
-        Size = UDim2.fromScale(1, 0.55),
+        Size = UDim2.fromScale(1, 0.4),
+
+        [Fusion.Out("AbsoluteSize")] = absoluteEffectListSize,
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return not HarukaLib.TableUtils.IsEmpty(use(effectList))
+            return use(absoluteAmount).X > 0
         end),
 
         [Children] = {
@@ -159,11 +160,18 @@ return function(scope: Fusion.Scope, props: {
                 Name = "EffectList",
 
                 [Children] = {
-                    Components.UIListLayout(scope, {
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        Padding = UDim.new(0.005, 0),
+                    Components.UIGridLayout(scope, {
+                        CellPadding = UDim2.fromScale(0.05, 0.05),
+                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local y = use(absoluteEffectListSize).Y
+
+                            return UDim2.fromOffset(y, y)
+                        end),
+                        SortOrder = Enum.SortOrder.Name,
+                        StartCorner = Enum.StartCorner.TopRight,
                         HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
+
+                        [Fusion.Out("AbsoluteCellCount")] = absoluteAmount,
                     }),
                 }
             }),

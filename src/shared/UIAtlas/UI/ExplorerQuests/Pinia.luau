@@ -18,7 +18,7 @@ return function (self: table)
     local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(true)
-    self.Quests = FusionComponents.useFolder(scope, self.plr.Quests)
+    self.Quests = FusionComponents.useFolder(scope, self.plr:WaitForChild("Quests", 999))
     self.NPCs = FusionComponents.useTagged(scope, "NPCEntity")
 
     self.StoryLocators = FusionComponents.useTagged(scope, "StoryLocatorEntity")

@@ -12,8 +12,11 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local PlayerBar = require(script.Components.PlayerBar)
 local PlayerInfoView = require(script.Components.PlayerInfoView)
 local PlayerInfoBar = require(script.Components.PlayerInfoBar)
+local PartyMemberBar = require(script.Components.PartyMemberBar)
 
 local Children = Fusion.Children
+
+local wait = task.wait
 
 return function(plr: Player)
 	local self = {}
@@ -71,7 +74,60 @@ return function(plr: Player)
                         })
                     end)
                 }
-            })
+            }),
+            Fusion.New(scope, "Folder")({
+				Name = "PartyMemberMarkers",
+
+				[Children] = {
+					Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope, member: ObjectValue)
+						local player = Players:FindFirstChild(member.Name) :: Player?
+
+						if not player then return nil end
+						if member.Name == self.plr.Name then return nil end
+
+						local character = player.Character
+						if not character then return nil end
+						if not character.PrimaryPart then return nil end
+
+						local adornee = Fusion.Value(scope, character.PrimaryPart)
+						table.insert(scope, player.CharacterAdded:Connect(function(newChar)
+							repeat wait() until newChar.PrimaryPart
+
+							adornee:set(newChar.PrimaryPart)
+						end))
+
+						return Components.BillboardGui(scope, {
+							Name = "PartyMarker_"..member.Name,
+							Size = UDim2.fromOffset(45, 45),
+
+							Adornee = Fusion.Computed(scope, function(use: Fusion.Use)
+								return use(adornee)
+							end),
+
+							[Children] = {
+								Components.Frame(scope, {
+									Name = "MarkerFrame",
+									BackgroundColor3 = Color3.new(1, 1, 1),
+									BackgroundTransparency = 0.1,
+									Rotation = 45,
+									Size = UDim2.fromScale(0.2, 0.2),
+									ZIndex = 999,
+
+									[Children] = {
+                                        Components.UICorner(scope, {
+                                            CornerRadius = UDim.new(0.2, 0)
+                                        }),
+										Components.UIStroke(scope, {
+											Color = Color3.new(),
+											Thickness = 3
+										})
+									}
+								})
+							}
+						})
+					end)
+				}
+			})
         }
 	}, {
         TopProps = {
@@ -145,6 +201,32 @@ return function(plr: Player)
                         Components.RoundUICorner(scope)
                     }
                 })
+            }
+        },
+        BottomProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "PartyFrame",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -4.5),
+                    Size = UDim2.fromScale(0.97, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope,{
+                            Padding = UDim.new(0.1, 0),
+                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
+                        }),
+
+                        Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope, member: ObjectValue)
+                            local player = Players:FindFirstChild(member.Name) :: Player?
+                            if not player then return nil end
+
+                            return PartyMemberBar(scope, {
+                                Member = member,
+                            })
+                        end)
+                    }
+				})
             }
         }
     })

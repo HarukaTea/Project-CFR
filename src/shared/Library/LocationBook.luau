@@ -10,9 +10,20 @@ local defaultLighting = {
     FogEnd = 1599,
     FogStart = 59
 }
+local tundraLighting = {
+    Ambient = Color3.fromRGB(),
+    Brightness = 2,
+    EnvironmentDiffuseScale = 0,
+    EnvironmentSpecularScale = 0,
+    OutdoorAmbient = Color3.fromRGB(128, 128, 128),
+    ExposureCompensation = 0.15,
+    FogColor = Color3.fromRGB(0, 196, 255),
+    FogEnd = 350,
+    FogStart = 0
+}
 
 
-return {
+local book = {
     PrimisField = {
         Name = "Primis Field",
         Desc = "",
@@ -187,8 +198,8 @@ return {
 
 
     --// Dungeon areas
-    ForestLevelD1 = {
-        Name = "Unknown Forest",
+    TundraLevelD1 = {
+        Name = "Unknown Tundra",
         Desc = "",
 
         Music = "_DUNGEON",
@@ -196,9 +207,17 @@ return {
         CombatMusic = "_DUNGEON",
         CombatMusicVolume = 1,
 
-        LightingInfo = {},
+        LightingInfo = tundraLighting,
         ClockTime = 0,
 
-        RainLevel = 5,
+        RainLevel = 0,
     }
 }
+book.TundraLevelD2 = book.TundraLevelD1
+book.TundraLevelD3 = book.TundraLevelD1
+book.TundraLevelD4 = book.TundraLevelD1
+book.TundraLevelD5 = book.TundraLevelD1
+book.TundraLevelD6 = book.TundraLevelD1
+
+
+return book

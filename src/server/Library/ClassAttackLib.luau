@@ -60,6 +60,8 @@ ClassAttackLib.Chain = function(plr: Player)
     if combo >= 2 then
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char) * combo),
+            DMGType = "Physical",
+            Attacker = "ClassAttacks"
         })
 
         local comboEff = RepS.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
@@ -70,6 +72,8 @@ ClassAttackLib.Chain = function(plr: Player)
     else
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib:_CalDMG("DMG", char),
+            DMGType = "Physical",
+            Attacker = "ClassAttacks"
         })
     end
 end
@@ -128,13 +132,19 @@ ClassAttackLib.Burst = function(plr: Player)
     if arrows == nil or arrows <= 0 then
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib:_CalDMG("DMG", char),
+            DMGType = "Physical",
+            Attacker = "ClassAttacks"
         })
     else
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib:_CalDMG("DMG", char),
+            DMGType = "Physical",
+            Attacker = "ClassAttacks"
         })
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char) * arrows),
+            DMGType = "Physical",
+            Attacker = "ClassAttacks"
         })
 
         ServerLib:ShowText(char, "BURST!", ClassBook.Burst.Color)
@@ -174,7 +184,9 @@ ClassAttackLib.Burst_Ult = function(plr: Player)
     Promise.delay(0.9):andThen(function()
         for _ = 1, 3 do
             ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-                DMG = ClassAttackLib:_CalDMG("DMG", char)
+                DMG = ClassAttackLib:_CalDMG("DMG", char),
+                DMGType = "Physical",
+                Attacker = "SkillProjectile"
             })
             wait(0.05)
         end
@@ -212,6 +224,8 @@ ClassAttackLib.Reverberation = function(plr: Player)
 
     ClassAttackLib:_DealDamageToEnemy(char, targeting, {
         DMG = ClassAttackLib:_CalDMG(ClassBook.Reverberation.Type, char),
+        DMGType = "Physical",
+        Attacker = "ClassAttacks"
     })
 
     local thatResonateNum = targeting:GetAttribute("ReverResonateNum_"..plr.UserId) :: number
@@ -220,6 +234,8 @@ ClassAttackLib.Reverberation = function(plr: Player)
             DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char, {
                 ForceMaxDMG = true
             }) * 3),
+            DMGType = "Physical",
+            Attacker = "ClassAttacks"
         })
 
         ServerLib:ShowText(char, "ECHOED!", Color3.fromHex('#81ecec'))
@@ -250,7 +266,9 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player)
             ClassAttackLib:_DealDamageToEnemy(char, targeting, {
                 DMG = ClassAttackLib:_CalDMG("DMG", char, {
                     ForceMaxDMG = true
-                })
+                }),
+                DMGType = "Physical",
+                Attacker = "SkillProjectile"
             })
             wait(0.5)
         end
@@ -292,13 +310,27 @@ ClassAttackLib.Flow = function(plr: Player)
 
     ClassAttackLib:_DealDamageToEnemy(char, targeting, {
         DMG = ClassAttackLib:_CalDMG("Magic", char),
+        DMGType = "Magic",
+        Attacker = "ClassAttacks"
     })
     if nextHeat >= 100 then
         char:SetAttribute("FlowHeat", 0)
 
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:_CalDMG("Magic", char) * 3),
+            DMGType = "Magic",
+            Attacker = "ClassAttacks"
         })
+
+        local burnObj = HarukaDoT.new({
+            Target = targeting,
+            Type = "Burn",
+            Duration = 8,
+            Creator = char,
+            Power = 1,
+        })
+        burnObj:Activate()
+
 
         ServerLib:ShowText(char, "FLOW!", ClassBook.Flow.Color)
     end
@@ -309,14 +341,15 @@ ClassAttackLib.Flow_Ult = function(plr: Player)
 
 
     local uniqueId = HttpService:GenerateGUID(false)
+    local castTime = ClassAttackLib:_CalCastingTime(char, 1)
 
 
     Events.OpenCastTimeBar.Fire(plr, {
-        Duration = 1
+        Duration = castTime
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
-    wait(1)
+    wait(castTime)
     ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
         ProjectileId = "FlowAyakaUlt",
         ProjectileType = "OneTime",
@@ -352,9 +385,13 @@ ClassAttackLib.Rise = function(plr: Player)
 
     ClassAttackLib:_DealDamageToEnemy(char, targeting, {
         DMG = ClassAttackLib:_CalDMG("DMG", char),
+        DMGType = "Physical",
+        Attacker = "ClassAttacks"
     })
     ClassAttackLib:_DealDamageToEnemy(char, targeting, {
         DMG = ClassAttackLib:_CalDMG("Magic", char),
+        DMGType = "Physical",
+        Attacker = "ClassAttacks"
     })
 end
 ClassAttackLib.Rise_Ult = function(plr: Player)
@@ -371,8 +408,23 @@ ClassAttackLib.HEAL_ATTACK_Rise = ClassAttackLib.HEAL_ATTACK
 --// Private Methods
 
 
+function ClassAttackLib:_CalCastingTime(char: Model, baseTime: number) : number
+    baseTime = baseTime or 1
+
+    local intensity = char:GetAttribute("Intensity") or 0
+    local reduce = baseTime * (intensity / 100)
+
+    local castingTime = baseTime - reduce
+    castingTime = math.ceil(castingTime)
+    castingTime = math.max(0, castingTime)
+
+    return castingTime
+end
+
+
 function ClassAttackLib:_CalDMG(dmgType: string, char: Model, props: {
-    ForceMaxDMG: boolean?
+    ForceMaxDMG: boolean?,
+    ForceDMG: number?,
 }) : number
 
     props = props or {}
@@ -389,6 +441,14 @@ function ClassAttackLib:_CalDMG(dmgType: string, char: Model, props: {
     end
 
 
+    if props.ForceDMG then
+        local finalDMG = props.ForceDMG
+
+        if isCrit then
+            finalDMG = math.ceil(finalDMG * (100 + char:GetAttribute("CriDMG")) / 100)
+        end
+        return finalDMG
+    end
     if dmgType == "DMG" then
         local minDMG, maxDMG = char:GetAttribute("MinDMG"), char:GetAttribute("MaxDMG")
         if minDMG > maxDMG then
@@ -434,6 +494,8 @@ end
 
 function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgProps: {
     DMG: number,
+    DMGType: string,
+    Attacker: string
 })
     if not ServerLib:IsCharValid(targeting) then return end
 
@@ -449,10 +511,25 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         return
     end
 
+    --// perk bonus
+    if dmgProps.Attacker == "ClassAttacks" then
+        local bonus = char:GetAttribute("ClassAttackBonusDMG") or 100
+        dmgProps.DMG = math.ceil(dmgProps.DMG * bonus / 100)
+    end
+
+    --// blood spellbook bonus
+    if dmgProps.Attacker == "ClassAttacks" and char:FindFirstChild("BloodSpellbook") then
+        dmgProps.DMG = math.ceil(dmgProps.DMG * 1.5)
+    end
+
     targeting.Humanoid:TakeDamage(dmgProps.DMG)
-    ServerBindables.EnemyGotHit:Fire(targeting, char, {
-        DMG = dmgProps.DMG,
-    })
+    for _, event: BindableEvent in char:GetDescendants() do
+        if event:IsA("BindableEvent") then
+            if event.Name == "EnemyGotHit" then
+                event:Fire(targeting, char, dmgProps)
+            end
+        end
+    end
 
 
     Promise.try(function()

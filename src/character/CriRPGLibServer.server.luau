@@ -18,14 +18,13 @@ local ClassBook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
+local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
 local PerkBook = require(ReplicatedStorage.HarukaShared.Library.PerkBook)
 local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLib)
 
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
-local CharLimitsTemplate = require(ServerScriptService.HarukaServer.Library.CharLimitsTemplate)
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -130,6 +129,12 @@ function CriRPGLib:_InitAttrs()
             objVal.Parent = char
             continue
         end
+        if val == "_EVENT" then
+            local bindable = Instance.new("BindableEvent")
+            bindable.Name = attr
+            bindable.Parent = char
+            continue
+        end
 
         char:SetAttribute(attr, val)
     end
@@ -157,7 +162,7 @@ function CriRPGLib:_AutoEquipItems()
         ServerLib:EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
     end
     for _, item: IntConstrainedValue in plr.Items:GetChildren() do
-        local itemInfo = ItemLib:GetItemInfo(item.Name)
+        local itemInfo = ItemBook:GetItemInfo(item.Name)
         if not itemInfo then continue end
 
         if itemInfo.Type == "Passive" then
@@ -172,15 +177,25 @@ end
 
 function CriRPGLib:_ListenLightTracker()
     local light = Instance.new("PointLight")
-    light.Range = 32
-    light.Brightness = 3
+    light.Range = 28
+    light.Brightness = 2.5
     light.Color = Color3.fromHex('#f1c40f')
     light.Shadows = false
     light.Parent = char.PrimaryPart
 
+    local blueLight = Instance.new("PointLight")
+    blueLight.Range = 38
+    blueLight.Brightness = 3
+    blueLight.Color = Color3.fromHex('#81ecec')
+    blueLight.Shadows = false
+    blueLight.Parent = char.PrimaryPart
+
     Add(HarukaLib:Hydrate(char, {
         ["Attr-CanYellowLight"] = function(state: boolean)
             light.Enabled = state or false
+        end,
+        ["Attr-CanBlueLight"] = function(state: boolean)
+            blueLight.Enabled = state or false
         end
     }))
 end
@@ -193,33 +208,29 @@ function CriRPGLib:_ListenClassTracker()
 		end
 
         local combatState = char:GetAttribute("IsInCombat") or false
-        local class = plr:GetAttribute("Class") or "Burst"
         local targetFolder = if combatState then "Combat" else "Overworld"
         local weaponId = plr.EquippingItems.Weapon1.Value :: string
 
-        if not ReplicatedStorage.Packages.ClassWeapons:FindFirstChild(class) then return end
-        if not ReplicatedStorage.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
-        if not ReplicatedStorage.Packages.ClassWeapons[class][weaponId]:FindFirstChild(targetFolder) then return end
 
+        local weaponFolder = ReplicatedStorage.Packages.ClassWeapons:FindFirstChild(weaponId, true) :: Folder
+        if not weaponFolder then return end
+        if not weaponFolder:FindFirstChild(targetFolder) then return end
 
-		for _, weapon: Model in ReplicatedStorage.Packages.ClassWeapons[class][weaponId][targetFolder]:GetChildren() do
-			weapon = weapon:Clone()
-			weapon:AddTag("ClassWeapon")
+		for _, weapon: Model in weaponFolder[targetFolder]:GetChildren() do
+            task.defer(function()
+                weapon = weapon:Clone()
+			    weapon:AddTag("ClassWeapon")
 
-			ServerLib:WeldWeapon(weapon, char)
+			    ServerLib:WeldWeapon(weapon, char)
+            end)
 		end
 	end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _equipWeapon
     }))
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-Class"] = _equipWeapon
-    }))
     Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
         ["Prop-Value"] = _equipWeapon
     }))
-
-    _equipWeapon()
 end
 
 
@@ -786,55 +797,6 @@ function CriRPGLib:_ListenStatsTracker()
 end
 
 
-
-function CriRPGLib:_ListenStatLimitTracker()
-    local totalBin = {}
-
-
-    local function __trackWhichStat(statAttr: string, withoutSub: boolean?)
-        local attr = statAttr
-        if not withoutSub then
-            attr = string.sub(statAttr, 5)
-        end
-        if char:GetAttribute(statAttr) == nil then
-            warn("Invalid base stat: "..statAttr)
-            return
-        end
-        if CharLimitsTemplate[attr.."Min"] == nil or CharLimitsTemplate[attr.."Max"] == nil then
-            warn("Invalid limit stat: "..attr)
-            return
-        end
-
-        local function __track()
-            local base = char:GetAttribute(statAttr) :: any
-            local limitMin = CharLimitsTemplate[attr.."Min"] :: number
-            local limitMax = CharLimitsTemplate[attr.."Max"] :: number
-
-
-            if base < limitMin then
-                char:SetAttribute(statAttr, limitMin)
-            end
-            if base > limitMax then
-                char:SetAttribute(statAttr, limitMax)
-            end
-        end
-        totalBin["Attr-"..statAttr] = __track
-    end
-
-
-    local blackList = { "BaseSpeed", "BaseJumpPower", "BaseSpeedCombat" }
-    for attr: string, _ in char:GetAttributes() do
-        if table.find(blackList, attr) then continue end
-        if string.find(attr, "Base") then
-            __trackWhichStat(attr)
-            __trackWhichStat(string.sub(attr, 5), true)
-        end
-    end
-
-    Add(HarukaLib:Hydrate(char, totalBin))
-end
-
-
 function CriRPGLib:_ListenHealTracker()
     local healAdd, healEmpty = HarukaLib.Bin()
     Add(healEmpty)
@@ -863,7 +825,7 @@ function CriRPGLib:_ListenHealTracker()
             end
         end))
     end
-    Add(ServerBindables.PlayerGotHit:Connect(function(charId: string, _, part: string)
+    Add(char.PlayerGotHit.Event:Connect(function(charId: string, _, part: string)
         if charId ~= char.Name then return end
         if part == "Health" then _healthRecover() end
     end))
@@ -907,7 +869,7 @@ function CriRPGLib:_ListenShieldRepairTracker()
     Add(HarukaLib:Hydrate(char, {
         ["Attr-MaxShield"] = _shieldRecover,
     }))
-    Add(ServerBindables.PlayerGotHit:Connect(function(charId: string, _, part: string)
+    Add(char.PlayerGotHit.Event:Connect(function(charId: string, _, part: string)
         if charId ~= char.Name then return end
         if part == "Shield" then _shieldRecover() end
     end))
@@ -922,9 +884,9 @@ function CriRPGLib:_ListenClassChangeTracker()
         ["Prop-Value"] = function(weapon: string)
             weapon = weapon or ""
 
-            if not ItemLib:GetItemInfo(weapon) then return end
+            if not ItemBook:GetItemInfo(weapon) then return end
 
-            local class = ItemLib:GetItemInfo(weapon).StatInfoDesync.ForClass :: string
+            local class = ItemBook:GetItemInfo(weapon).StatInfoDesync.ForClass :: string
             plr:SetAttribute("Class", class)
         end
     }))
@@ -933,7 +895,7 @@ end
 
 function CriRPGLib:_ListenPassiveAutoEquipTracker()
     Add(plr.Items.ChildAdded:Connect(function(item: IntConstrainedValue)
-        local itemInfo = ItemLib:GetItemInfo(item.Name)
+        local itemInfo = ItemBook:GetItemInfo(item.Name)
         if not itemInfo then return end
 
         if itemInfo.Type == "Passive" then
@@ -949,7 +911,7 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
     perkContainer.Parent = char
     Add(perkContainer)
 
-    local points = { "STR", "INT", "VIT", "DEX" }
+    local points = { "STR", "INT", "VIT" }
     for _, pointId: string in points do
         local folder = Instance.new("Folder")
         folder.Name = pointId
@@ -958,16 +920,21 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
 
 
     local function _listenToPerk(id: string, point: number)
+        if point == nil then return end
+
         local passed = {}
         for _, perkInfo in PerkBook[id] do
             if point >= perkInfo.Req then
-                table.insert(passed, perkInfo.Id)
+                table.insert(passed, perkInfo.PerkId)
             end
         end
         for _, perk: BoolValue in perkContainer[id]:GetChildren() do
             if not table.find(passed, perk.Name) then
                 if PerkLib[perk.Name] then
                     PerkLib[perk.Name](char, -1)
+                end
+                if char:FindFirstChild(perk.Name) then
+                    char[perk.Name]:Destroy()
                 end
                 perk:Destroy()
             end
@@ -983,6 +950,9 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
             if PerkLib[perk.Name] then
                 PerkLib[perk.Name](char, 1)
             end
+            if ReplicatedStorage.HarukaRes.Perks:FindFirstChild(perk.Name) then
+                ReplicatedStorage.HarukaRes.Perks[perk.Name]:Clone().Parent = char
+            end
         end
     end
 
@@ -991,8 +961,17 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
         ["Attr-STRPoints"] = function(point: number)
             if point == nil then return end
 
-            --// TODO: perks
-            --_listenToPerk("STR", point)
+            _listenToPerk("STR", point)
+        end,
+        ["Attr-INTPoints"] = function(point: number)
+            if point == nil then return end
+
+            _listenToPerk("INT", point)
+        end,
+        ["Attr-VITPoints"] = function(point: number)
+            if point == nil then return end
+
+            _listenToPerk("VIT", point)
         end
     }))
 end
@@ -1002,7 +981,7 @@ CriRPGLib:Init()
 
 
 Add(char.TargetingList.ChildAdded:Connect(function(child: ObjectValue)
-	ServerBindables.PlayerTargetingListChanged:Fire(char.Name, child.Value)
+	char.PlayerTargetAdded:Fire(char.Name, child.Value)
 end))
 Add(HarukaLib.Clock(5, function()
     if not char:GetAttribute("IsInCombat") then return end
@@ -1033,10 +1012,10 @@ Add(HarukaLib.Clock(5, function()
 		end
 	end
     if char.TargetingEnemy.Value == nil then
-		ServerBindables.PlayerCombatEnded:Fire(char.Name)
+		char.PlayerCombatEnded:Fire(char.Name)
 	end
 end))
-Add(ServerBindables.PlayerCombatEnded:Connect(function(charId: string)
+Add(char.PlayerCombatEnded.Event:Connect(function(charId: string)
 	if charId == char.Name then
 		char.TargetingEnemy.Value = nil
 

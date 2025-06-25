@@ -6,6 +6,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
+local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
+
 local Children = Fusion.Children
 
 local wait = task.wait
@@ -49,4 +51,11 @@ return function (plr: Player)
         }
     })
     self.UI = UI
+
+
+
+    local AGLObj = HarukaListLayout.new(UI.Top.Hints.UIListLayout)
+    AGLObj:Enable()
+
+    table.insert(scope, AGLObj)
 end

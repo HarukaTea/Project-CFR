@@ -26,11 +26,17 @@ local playerStats = {
             ItemsSQL = {},
             EquippingItemsSQL = {},
             QuestsV2 = {},
-            Settings = {}
+            Settings = {},
+
+            CombatWonTimes = 0,
         }
     },
 
-    JoinDateTime = DateTime.now():ToIsoDate()
+    JoinDateTime = DateTime.now():ToIsoDate(),
+
+
+    GamepassPurchaseLogs = {},
+    DevProductsPurchaseLogs = {}
 }
 playerStats.Slot2 = table.clone(playerStats.Slot1)
 playerStats.Slot3 = table.clone(playerStats.Slot1)

@@ -12,6 +12,9 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
 
+
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
+
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -29,16 +32,23 @@ return function(scope: Fusion.Scope, props: {
 
 
     local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local refreshBoolean = Fusion.Value(scope, false)
+    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+        refreshBoolean:set(not Fusion.peek(refreshBoolean))
+    end))
+
+
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
+        local boolean = use(refreshBoolean)
 
         if input == "Keyboard" then
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
-                Text = "Q",
-                Size = UDim2.fromScale(0.4, 0.4),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.ClassUlt.Name] or KeybindsBook.PC.ClassUlt.Name,
+                AutomaticSize = Enum.AutomaticSize.X,
+                Size = UDim2.fromScale(0.25, 0.4),
                 Position = UDim2.fromScale(1.05, 1),
                 BackgroundTransparency = 0,
                 ZIndex = 2,
@@ -50,16 +60,18 @@ return function(scope: Fusion.Scope, props: {
             })
 
         elseif input == "Controller" then
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.ClassUlt.Name] or KeybindsBook.Console.ClassUlt.Name
+
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
-                Text = "Y",
-                Size = UDim2.fromScale(0.4, 0.4),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                Text = keybind,
+                Size = UDim2.fromScale(0.25, 0.4),
+                AutomaticSize = Enum.AutomaticSize.X,
                 Position = UDim2.fromScale(1.05, 1),
                 BackgroundTransparency = 0,
-                BackgroundColor3 = AssetBook.XboxControllerColors.Y,
-                TextColor3 = Color3.fromRGB(),
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
                 ZIndex = 2,
 
                 [Children] = {

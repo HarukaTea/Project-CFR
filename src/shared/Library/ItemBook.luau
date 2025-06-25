@@ -2,12 +2,12 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
+local ItemRawBook = require(RepS.HarukaShared.Library.ItemRawBook)
 
-local ItemLib = {}
+local ItemBook = {}
 
 
-ItemLib.PackItemAttrToTable = function(_, itemSymbol: IntValue) : { [string]: any }
+ItemBook.PackItemAttrToTable = function(_, itemSymbol: IntValue) : { [string]: any }
     local attrs = {}
 
     for attr: string, val: any in itemSymbol:GetAttributes() do
@@ -20,7 +20,7 @@ ItemLib.PackItemAttrToTable = function(_, itemSymbol: IntValue) : { [string]: an
 end
 
 
-ItemLib.DesyncItemStat = function(_, infoType: "Stat" | "Extra", info: { string }) : { [string]: any }
+ItemBook.DesyncItemStat = function(_, infoType: "Stat" | "Extra", info: { string }) : { [string]: any }
     local attrs = {}
 
     if infoType == "Extra" then
@@ -63,7 +63,7 @@ ItemLib.DesyncItemStat = function(_, infoType: "Stat" | "Extra", info: { string 
 end
 
 
-ItemLib.PackTableToItemStat = function(_, infoType: "Stat" | "Extra", info: { [string]: any }) : string
+ItemBook.PackTableToItemStat = function(_, infoType: "Stat" | "Extra", info: { [string]: any }) : string
     local randomStat = ""
 
     if infoType == "Stat" then
@@ -88,7 +88,7 @@ end
 
 
 
-ItemLib.GetItemInfo = function(_, itemId: string) : {
+ItemBook.GetItemInfo = function(_, itemId: string) : {
     ItemId: string,
     Name: string,
     Type: string,
@@ -111,7 +111,7 @@ ItemLib.GetItemInfo = function(_, itemId: string) : {
 }
     local itemInfo = nil :: ItemInfo
 
-    for _, thatItemInfo in ItemBook do
+    for _, thatItemInfo in ItemRawBook do
         if thatItemInfo.ItemId == itemId then
             itemInfo = thatItemInfo
             break
@@ -122,10 +122,10 @@ ItemLib.GetItemInfo = function(_, itemId: string) : {
 end
 
 
-ItemLib.GetAllItems = function(_) : { string }
+ItemBook.GetAllItems = function(_) : { string }
     local itemIds = {}
 
-    for _, itemInfo in ItemBook do
+    for _, itemInfo in ItemRawBook do
         table.insert(itemIds, itemInfo.ItemId)
     end
 
@@ -133,11 +133,40 @@ ItemLib.GetAllItems = function(_) : { string }
 end
 
 
+ItemBook.GetAllMaterialsLoot = function(_) : { [string]: number }
+    local materialsLoot = {}
+
+    for _, itemInfo in ItemRawBook do
+        if itemInfo.Type == "Material" then
+            materialsLoot[itemInfo.ItemId] = 10
+        end
+    end
+
+    return materialsLoot
+end
+
+
+ItemBook.GetAllRareWeaponsLoot = function(_) : { [string]: number }
+    local rareWeaponsLoot = {}
+
+    for _, itemInfo in ItemRawBook do
+        if itemInfo.Type == "Weapon" and itemInfo.Tier == 5 and table.find(itemInfo.TagsDesync, "BossDrop") then
+            rareWeaponsLoot[itemInfo.ItemId] = 1
+        end
+    end
+
+    rareWeaponsLoot["None"] = 100
+
+    return rareWeaponsLoot
+end
+
+
+
 
 
 --// handle item book
 
-for index: number, itemInfo: table in ItemBook do
+for index: number, itemInfo: table in ItemRawBook do
     itemInfo = table.clone(itemInfo)
 
     itemInfo.ExtraStatInfoDesync = {}
@@ -152,7 +181,7 @@ for index: number, itemInfo: table in ItemBook do
         extraInfo = string.gsub(extraInfo, " ", "")
         local attrsExtra = string.split(extraInfo, ",")
 
-        itemInfo.ExtraStatInfoDesync = ItemLib:DesyncItemStat("Extra", attrsExtra)
+        itemInfo.ExtraStatInfoDesync = ItemBook:DesyncItemStat("Extra", attrsExtra)
     end
 
     --// desync stat info
@@ -162,7 +191,7 @@ for index: number, itemInfo: table in ItemBook do
         statInfo = string.gsub(statInfo, " ", "")
         local attrs = string.split(statInfo, ",")
 
-        itemInfo.StatInfoDesync = ItemLib:DesyncItemStat("Stat", attrs)
+        itemInfo.StatInfoDesync = ItemBook:DesyncItemStat("Stat", attrs)
     end
 
     --// desync recipe
@@ -172,7 +201,7 @@ for index: number, itemInfo: table in ItemBook do
         recipeInfo = string.gsub(recipeInfo, " ", "")
         local attrs = string.split(recipeInfo, ",")
 
-        itemInfo.RecipeDesync = ItemLib:DesyncItemStat("Extra", attrs)
+        itemInfo.RecipeDesync = ItemBook:DesyncItemStat("Extra", attrs)
     end
 
     --// desync tags
@@ -195,7 +224,7 @@ for index: number, itemInfo: table in ItemBook do
     itemInfo.Price = tonumber(itemInfo.Price) or 1599
     itemInfo.SellPrice = tonumber(itemInfo.SellPrice) or 1599
 
-    ItemBook[index] = itemInfo
+    ItemRawBook[index] = itemInfo
 end
 
-return ItemLib
+return ItemBook

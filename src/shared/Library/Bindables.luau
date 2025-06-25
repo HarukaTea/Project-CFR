@@ -22,4 +22,9 @@ return {
     CreateCircularFade = Signal.new(),
 
     ConfirmPromptChosen = Signal.new(),
+
+
+    Titlescreen_ChangeClassScene = Signal.new(),
+
+    DisplayTutorialTopic = Signal.new(),
 }

@@ -104,7 +104,7 @@ return function (plr: Player)
 
                             [Children] = {
                                 Components.UIListLayout(scope, {
-                                    Padding = UDim.new(0.4, 0),
+                                    Padding = UDim.new(0.2, 0),
                                     HorizontalAlignment = Enum.HorizontalAlignment.Right,
                                     VerticalAlignment = Enum.VerticalAlignment.Center,
                                     SortOrder = Enum.SortOrder.Name

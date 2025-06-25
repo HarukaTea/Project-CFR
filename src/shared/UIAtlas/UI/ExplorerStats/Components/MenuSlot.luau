@@ -8,6 +8,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
+
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
+
 local Children = Fusion.Children
 
 local Icons = {
@@ -20,15 +23,9 @@ local Icons = {
     Guild = "rbxassetid://132493733644902",
     Stats = "rbxassetid://97344315886689",
     Trade = "rbxassetid://129768568967812",
-    Store = "rbxassetid://84845838429032",
-}
-local Keys = {
-    Backpack = "B",
-    Character = "C",
-    PerkTree = "Z",
-    Settings = "N",
-    Guild = "X",
-    Store = "V"
+    Store = "rbxassetid://73470004505046",
+    Achievements = "rbxassetid://135736394286615",
+    TutorialBook = "rbxassetid://105305190168965"
 }
 
 return function(scope: Fusion.Scope, props: {
@@ -42,17 +39,29 @@ return function(scope: Fusion.Scope, props: {
     local lastInputType = FusionComponents.useXboxControllerHotInput(scope)
     local key = nil
 
-    if Keys[props.Slot] then
+    local refreshBoolean = Fusion.Value(scope, false)
+    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+        refreshBoolean:set(not Fusion.peek(refreshBoolean))
+    end))
+
+
+    local realSlot = props.Slot
+    if props.Slot == "Character" then
+        realSlot = "CharSelfView"
+    end
+
+    if KeybindsBook.PC[realSlot] then
         key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
             local input = use(lastInputType) :: string
+            local boolean = use(refreshBoolean) :: boolean
 
             if input == "Keyboard" then
                 return Components.TextLabel(scope, {
                     Name = "Key",
                     AnchorPoint = Vector2.one,
-                    Text = Keys[props.Slot],
+                    AutomaticSize = Enum.AutomaticSize.X,
+                    Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name] or KeybindsBook.PC[realSlot].Name,
                     Size = UDim2.fromScale(0.5, 0.5),
-                    SizeConstraint = Enum.SizeConstraint.RelativeYY,
                     Position = UDim2.fromScale(1.05, 1),
                     BackgroundTransparency = 0,
 
@@ -136,24 +145,12 @@ return function(scope: Fusion.Scope, props: {
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     local curUIGroup = self.plr:GetAttribute("CurrentUIGroup") :: string
 
-                    if props.Slot == "Backpack" then
-                        self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "Backpack" or "None")
-
-                    elseif props.Slot == "Character" then
+                    if props.Slot == "Character" then
                         self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "CharSelfView" or "None")
-
-                    elseif props.Slot == "PerkTree" then
-                        self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "PerkTree" or "None")
-
-                    elseif props.Slot == "Guild" then
-                        self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "Guild" or "None")
-
-                    elseif props.Slot == "Store" then
-                        self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "Store" or "None")
-
-                    elseif props.Slot == "Settings" then
-                        self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "Settings" or "None")
+                        return
                     end
+
+                    self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and props.Slot or "None")
                 end,
             })
         }

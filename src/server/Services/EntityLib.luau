@@ -27,7 +27,6 @@ local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
-local EntityStatLimitTemplate = require(ServerScriptService.HarukaServer.Library.EntityLimitTemplate)
 
 
 local PATH_COSTS = {
@@ -116,6 +115,9 @@ joinCombatSignal:Connect(function(entity: Model, target: Model)
     end
 end)
 destroyEntityObjSignal:Connect(function(uniqueId: string)
+    if uniqueId == nil then return end
+
+
     local entityObj = allEntityPool[uniqueId]
     if entityObj then
         Promise.delay(1.599):andThenCall(entityObj.EntityDestroy, entityObj)
@@ -237,15 +239,22 @@ function EntityLib:Init()
             self:Destroy()
         end
     end))
-
     self:EntityInit()
+
+
+    self.WholeAdd(HarukaLib:Hydrate(self.Locator, {
+        ["Attr-_RESPAWN_SYMBOL"] = function(state: boolean)
+            if state == nil then return end
+
+            destroyEntityObjSignal:Fire(self.UniqueId)
+        end
+    }))
 end
 
 
 function EntityLib:EntityInit()
     self:_SpawnModel()
     self:_ListenStatsTracker()
-    self:_ListenStatLimitTracker()
     self:_RoamTask()
 
     self.Add(HarukaLib.Clock(5, function()
@@ -541,53 +550,6 @@ function EntityLib:_ListenStatsTracker()
 end
 
 
-function EntityLib:_ListenStatLimitTracker()
-    local entity = self.Entity :: Model
-
-    local totalBin = {}
-
-
-    local function __trackWhichStat(statAttr: string)
-        local attr = string.sub(statAttr, 5)
-        if entity:GetAttribute(statAttr) == nil then
-            warn("Invalid base stat: "..statAttr)
-            return
-        end
-        if EntityStatLimitTemplate[attr.."Min"] == nil or EntityStatLimitTemplate[attr.."Max"] == nil then
-            warn("Invalid limit stat: "..attr)
-            return
-        end
-
-        local function __track()
-            local base = entity:GetAttribute(statAttr) :: any
-            local limitMin = EntityStatLimitTemplate[attr.."Min"] :: number
-            local limitMax = EntityStatLimitTemplate[attr.."Max"] :: number
-
-
-            if base < limitMin then
-                entity:SetAttribute(statAttr, limitMin)
-            end
-            if base > limitMax then
-                entity:SetAttribute(statAttr, limitMax)
-            end
-        end
-        totalBin["Attr-"..statAttr] = __track
-    end
-
-
-    local blackList = {}
-    for attr: string, _ in entity:GetAttributes() do
-        if table.find(blackList, attr) then continue end
-        if string.find(attr, "Base") then
-            __trackWhichStat(attr)
-        end
-    end
-
-    self.Add(HarukaLib:Hydrate(entity, totalBin))
-end
-
-
-
 
 function EntityLib:_RoamTask()
     local locator = self.Locator :: BasePart
@@ -881,6 +843,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         encounterBorder = ReplicatedStorage.Packages.Unloads.EncounterBorder:Clone() :: Model
         encounterBorder:PivotTo(combatLocation)
         encounterBorder:SetAttribute("Owner", target.Name)
+        encounterBorder:SetAttribute("CombatMode", combatMode)
         encounterBorder.Parent = workspace
         Debris:AddItem(encounterBorder, 5)
 
@@ -921,11 +884,17 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         if self.Entity:HasTag("BossEnemyEntity") then
             waitTime *= 2.599
         end
-        if combatMode and combatMode == "Solo" then
-            --// TODO: party combat mode
-            waitTime = 1
-        end
+        if combatMode then
+            if combatMode == "Solo" then
+                waitTime = 1
+            elseif combatMode == "Party" then
+                waitTime = 2
 
+                if self.Entity:HasTag("BossEnemyEntity") then
+                    waitTime *= 2.599
+                end
+            end
+        end
         wait(waitTime)
     end
     if encounterBorder then encounterBorder:Destroy() end
@@ -1026,7 +995,24 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 end
 
             elseif combatMode == "Party" then
-                --// TODO: party combat mode
+                local partyContainer = workspace.MapComponents.PartyHolder:FindFirstChild(target.Name, true) :: Instance?
+
+                if partyContainer:IsA("ObjectValue") then
+                    partyContainer = partyContainer.Parent
+                end
+                if partyContainer then
+                    for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
+                        if nearbyChar.Name == target.Name then continue end
+                        if not ServerLib:IsCharValid(nearbyChar) then continue end
+                        if not partyContainer:FindFirstChild(nearbyChar.Name) then continue end
+
+                        if nearbyChar:GetAttribute("IsInCombat") then continue end
+                        if nearbyChar:FindFirstChild("CombatCooldown") then continue end
+
+                        nearbyCharCount += 1
+                        _addInCombat(nearbyChar)
+                    end
+                end
             end
         end
     else
@@ -1220,7 +1206,7 @@ function EntityLib:_CombatEnd()
 
             --// check if player has done all the targets
             if #charTargetingList:GetChildren() <= 0 then
-                ServerBindables.PlayerCombatEnded:Fire(thatChar.Name)
+                thatChar.PlayerCombatEnded:Fire(thatChar.Name)
             else
                 --- get the first target again
                 thatChar.TargetingEnemy.Value = charTargetingList:FindFirstChildOfClass("ObjectValue").Value
@@ -1230,6 +1216,10 @@ function EntityLib:_CombatEnd()
             --- give loots and badges, combat won!
             local success, err = pcall(function()
                 if not foundTeamUpEnemies and isEnemyDeadCheck then
+                    if workspace:GetAttribute("DungeonId") then
+                        self.Locator:SetAttribute("NoRespawn", true)
+                    end
+
                     local entityInfo = EntityBook[entity.Name]
 
                     _giveLoot(entityInfo.Drops, thatChar)
@@ -1274,6 +1264,8 @@ function EntityLib:_CombatEnd()
 
                         HarukaLib:AddAttr(plr, "Gold", totalGold)
                         ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
+
+                        HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
                     end
                 end
             end)

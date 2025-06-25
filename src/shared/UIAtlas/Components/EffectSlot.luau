@@ -49,6 +49,13 @@ return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
                 return ""
             end
         end),
+        ImageColor3 = Fusion.Computed(scope, function()
+            if EffectBook[effect.Value] then
+                return EffectBook[effect.Value].IconColor or Color3.fromRGB(255, 255, 255)
+            else
+                return Color3.fromRGB(255, 255, 255)
+            end
+        end),
 
         [Children] = {
             Components.TextLabel(scope, {

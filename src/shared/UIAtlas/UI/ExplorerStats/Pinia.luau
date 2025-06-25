@@ -10,12 +10,11 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-local CastingTimeBar = require(script.Parent.Components.CastTimeBar)
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local wait = task.wait
 
@@ -72,17 +71,15 @@ return function (self: table)
 
 
     self.IsMenuShown = Value(false)
-    self.IsUIShown = Value(false)
     self.IsUIShown = Value(true)
 
     self.PassiveBGAbsContentSize = Value(Vector2.zero)
-
-    self.AreaIn = Value("None")
 
     self.CurrentHoveringPassive = Value("")
 
     self.DungeonId = Value(nil)
     self.DungeonStarted = Value(nil)
+    self.DungeonLeftTime = Value(0)
 
 
     --// track server
@@ -203,7 +200,7 @@ return function (self: table)
         end
 
         for _, equipping: StringValue in Fusion.peek(self.EquippingItems) do
-            local itemInfo = ItemLib:GetItemInfo(equipping.Value)
+            local itemInfo = ItemBook:GetItemInfo(equipping.Value)
             if itemInfo == nil then continue end
 
 
@@ -264,7 +261,7 @@ return function (self: table)
         if equippingItems:FindFirstChild(slotId) then
             local itemSymbol = equippingItems[slotId] :: StringValue
 
-            local itemInfo = ItemLib:GetItemInfo(itemSymbol.Value)
+            local itemInfo = ItemBook:GetItemInfo(itemSymbol.Value)
             if not itemInfo then
                 Bindables.CreateNotify:Fire("[Error] Invalid Item Id")
                 _normalCancelCD(info)
@@ -405,37 +402,43 @@ return function (self: table)
 
 
 
-    local keyCodes = {
-        B = "Backpack",
-        C = "CharSelfView",
-        --Z = "PerkTree",
-        N = "Settings",
-        X = "Guild",
-        V = "Store"
+    local uiButtons = {
+        "Backpack", "CharSelfView", "PerkTree", "Settings",
+        "Store", "Achievements", "TutorialBook", "Settings"
     }
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj: InputObject, gpe: boolean)
         if gpe then return end
 
-        if keyCodes[inputObj.KeyCode.Name] then
+        local isUIButtonCheck = false
+        local isWhichUIButton = nil
+        for _, uiButton: string in uiButtons do
+            if KeybindsBook.PC[uiButton] == inputObj.KeyCode then
+                isUIButtonCheck = true
+                isWhichUIButton = uiButton
+                break
+            end
+        end
+
+        if isWhichUIButton and isUIButtonCheck then
             local curUIGroup = self.plr:GetAttribute("CurrentUIGroup") :: string
 
-            if curUIGroup ~= "None" and curUIGroup ~= keyCodes[inputObj.KeyCode.Name] then return end
+            if curUIGroup ~= "None" and curUIGroup ~= isWhichUIButton then return end
 
-            self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and keyCodes[inputObj.KeyCode.Name] or "None")
-
-        elseif inputObj.KeyCode == Enum.KeyCode.Q or inputObj.KeyCode == Enum.KeyCode.ButtonY then
+            self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and isWhichUIButton or "None")
+        end
+        if inputObj.KeyCode == KeybindsBook.PC.ClassUlt or inputObj.KeyCode == KeybindsBook.Console.ClassUlt then
             self.RequestToCastClassUlt:Fire()
 
-        elseif inputObj.KeyCode == Enum.KeyCode.One or inputObj.KeyCode == Enum.KeyCode.ButtonL1 then
+        elseif inputObj.KeyCode == KeybindsBook.PC.Active1 or inputObj.KeyCode == KeybindsBook.Console.Active1 then
             self.RequestToCastItem:Fire(1)
 
-        elseif inputObj.KeyCode == Enum.KeyCode.Two or inputObj.KeyCode == Enum.KeyCode.ButtonR1 then
+        elseif inputObj.KeyCode == KeybindsBook.PC.Active2 or inputObj.KeyCode == KeybindsBook.Console.Active2 then
             self.RequestToCastItem:Fire(2)
 
-        elseif inputObj.KeyCode == Enum.KeyCode.Three or inputObj.KeyCode == Enum.KeyCode.ButtonR2 then
+        elseif inputObj.KeyCode == KeybindsBook.PC.Active3 or inputObj.KeyCode == KeybindsBook.Console.Active3 then
             self.RequestToCastItem:Fire(3)
 
-        elseif inputObj.KeyCode == Enum.KeyCode.R or inputObj.KeyCode == Enum.KeyCode.ButtonX then
+        elseif inputObj.KeyCode == KeybindsBook.PC.Dash or inputObj.KeyCode == KeybindsBook.Console.Dash then
             self.RequestToDash:Fire()
         end
     end))
@@ -568,21 +571,6 @@ return function (self: table)
     end
 
 
-    --// track cast cd
-    table.insert(scope, Events.OpenCastTimeBar.On(function(data)
-        local castingTimeBar = CastingTimeBar(scope, {
-            Time = data.Duration
-        })
-        castingTimeBar.Parent = self.UI.Bottom.CastTimeBars
-
-        Debris:AddItem(castingTimeBar, data.Duration + 0.2)
-
-
-        wait(data.Duration)
-        HarukaLib:UITween(castingTimeBar, "Out")
-    end))
-
-
     --// track dungeon
     table.insert(scope, HarukaLib:Hydrate(workspace, {
         ["Attr-DungeonId"] = function(id: string)
@@ -590,6 +578,11 @@ return function (self: table)
         end,
         ["Attr-DungeonStarted"] = function(state: boolean)
             self.DungeonStarted:set(state)
+        end,
+        ["Attr-DungeonLeftTime"] = function(val: number)
+            val = val or 0
+
+            self.DungeonLeftTime:set(val)
         end
     }))
 end

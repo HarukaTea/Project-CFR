@@ -1,5 +1,8 @@
 --!nocheck
 
+--// A simple pathfinding module for NPCs, inspired by SimplePath
+--// https://devforum.roblox.com/t/simplepath-pathfinding-module/1196762
+
 local PFS = game:GetService("PathfindingService")
 local RepS = game:GetService("ReplicatedStorage")
 
@@ -45,12 +48,21 @@ local function destroyVisualWaypoints(waypoints)
 	return
 end
 
-
+local function _setJumpState(humanoid: Humanoid)
+    pcall(function()
+		if humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+			humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+	end)
+end
 local function _disconnectMoveConns(self: table)
     self.moveConn:Disconnect()
 	self.moveConn = nil
 end
 local function _moveNPC(self: table)
+    if self.Waypoints[self.CurWaypoint].Action == Enum.PathWaypointAction.Jump then
+		_setJumpState(self.Humanoid)
+	end
 	self.Humanoid:MoveTo(self.Waypoints[self.CurWaypoint].Position)
 end
 local function _moveToFinished(self: table, isReached: boolean)
@@ -80,6 +92,8 @@ local function _comparePosition(self: table)
 	self.Position.LastPos = self.NPC.PrimaryPart.Position
 
 	if self.Position.StuckCount >= self.Settings.ComparisonCheckTimes then
+		_setJumpState(self.Humanoid)
+
         self.Events.Errored:Fire("AgentStuck")
 	end
 end
@@ -107,11 +121,6 @@ function PathCreator.new(npc: Model, pfsArgs: table)
         }
 
     }, PathCreator)
-
-
-    self.Add, self.Empty = HarukaLib.Bin()
-
-    self.Add(self.Events.Errored)
 
 
     return self
@@ -215,8 +224,9 @@ end
 function PathCreator:Destroy()
     pcall(destroyVisualWaypoints, self.VisualWaypoints)
     pcall(self.Stop, self)
-
-    self.Empty()
+    pcall(function()
+        self.Events.Errored:Destroy()
+    end)
     self.PathObj:Destroy()
 end
 

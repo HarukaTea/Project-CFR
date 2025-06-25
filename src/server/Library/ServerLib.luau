@@ -14,7 +14,7 @@ local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ServerLib = {}
@@ -31,6 +31,11 @@ end
 
 ServerLib.FindGroundByRayForOrb = function(_, givenPos: Vector3)
 	return ClientLib:FindGroundByRayForOrb(givenPos)
+end
+
+
+ServerLib.WeldWeapon = function(_, weapon: Model, char: Model)
+	ClientLib:WeldWeapon(weapon, char)
 end
 
 
@@ -85,27 +90,9 @@ function ServerLib:GetNearbyPlayers(position: Vector3)
 end
 
 
-function ServerLib:WeldWeapon(weapon: Model, char: Model)
-	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
-	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
-
-	if not motor6D then warn("No Motor6D found on weapon") return end
-	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
-
-	weldTarget = char:FindFirstChild(weldTarget)
-	if not weldTarget then warn("Cannot weld weapon, target not found") return end
-
-	motor6D.Part0 = weldTarget
-
-	ServerLib:WeldModel(weapon.Handle, weapon)
-
-	weapon.Parent = char
-end
-
-
 function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
-	local MAGNITUDE = 28
+	local MAGNITUDE = 25
 
 	Promise.new(function(resolve)
 		local repeatedTimes = 0
@@ -197,10 +184,13 @@ end
 
 
 function ServerLib:GiveRandomStatForItem(itemId: string) : string
-	if not ItemLib:GetItemInfo(itemId) then return "" end
+	if not ItemBook:GetItemInfo(itemId) then return "" end
 
-	local itemInfo = ItemLib:GetItemInfo(itemId)
+	local itemInfo = ItemBook:GetItemInfo(itemId)
 	if table.find(itemInfo.TagsDesync, "NoRandom") then
+		return itemInfo.StatInfo
+	end
+	if table.find(itemInfo.TagsDesync, "Chest") then
 		return itemInfo.StatInfo
 	end
 	local statInfoDesync = itemInfo.StatInfoDesync
@@ -224,16 +214,16 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
         end
 	end
 
-	return ItemLib:PackTableToItemStat("Stat", finalDesync)
+	return ItemBook:PackTableToItemStat("Stat", finalDesync)
 end
 
 
 function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
-	if not ItemLib:GetItemInfo(itemId) then return end
+	if not ItemBook:GetItemInfo(itemId) then return end
 
 
 	local items = plr.Items :: Folder
-	local itemInfo = ItemLib:GetItemInfo(itemId)
+	local itemInfo = ItemBook:GetItemInfo(itemId)
 
 	local function _createNewSymbol(forcedAmount: number?)
 		local randomStat = ServerLib:GiveRandomStatForItem(itemId)
@@ -353,7 +343,7 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 
 
 	local itemStat = itemSymbol:GetAttribute("ItemStat") :: string
-	local itemStatDesync = ItemLib:DesyncItemStat("Stat", string.split(itemStat, ","))
+	local itemStatDesync = ItemBook:DesyncItemStat("Stat", string.split(itemStat, ","))
 
 	for attr: string, val: any in itemStatDesync do
 		local value = val
@@ -404,7 +394,13 @@ function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 		if not hasBadge then
 			local badgeMarketInfo = BadgeService:GetBadgeInfoAsync(badgeId)
 
-			if badgeMarketInfo.IsEnabled then BadgeService:AwardBadge(plr.UserId, badgeId) end
+			if badgeMarketInfo.IsEnabled then
+				BadgeService:AwardBadge(plr.UserId, badgeId)
+
+				Events.DisplayAchievementNotify.Fire(plr, {
+					BadgeId = badgeId,
+				})
+			end
 		end
 
 		if callBack then callBack() end

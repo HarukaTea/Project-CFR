@@ -10,6 +10,7 @@ local CharacterStatsView = require(script.Components.CharacterStatsView)
 local PlayerActive = require(script.Components.PlayerActives)
 
 local MenuSlot = require(script.Components.MenuSlot)
+local DungeonTimer = require(script.Components.DungeonTimer)
 
 local Children = Fusion.Children
 
@@ -80,24 +81,6 @@ return function(plr: Player)
                 }, self),
 
 
-                Components.Frame(scope, {
-                    Name = "CastTimeBars",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, -1),
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        }),
-
-                        Components.UIScale(scope, {
-                            Scale = 0.92
-                        }),
-                    }
-                }),
-
-
                 Components.TextLabel(scope, {
                     Name = "ServerLocation",
                     Position = UDim2.fromScale(0, 0.5),
@@ -125,31 +108,6 @@ return function(plr: Player)
 
 
             [Children] = {
-                Components.Frame(scope, {
-                    Name = "ItemDropsDiv",
-                    AnchorPoint = Vector2.new(1, 0),
-                    Position = UDim2.fromScale(1, 0),
-
-                    [Children] = {
-                        Components.UIScale(scope),
-
-                        Components.Frame(scope, {
-                            Name = "ItemDrops",
-                            AnchorPoint = Vector2.new(1, 0),
-                            Position = UDim2.fromScale(0.99, 0),
-
-                            [Children] = {
-                                Components.UIListLayout(scope, {
-                                    Padding = UDim.new(0.15, 0),
-                                    HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                    VerticalAlignment = Enum.VerticalAlignment.Top,
-                                    SortOrder = Enum.SortOrder.Name,
-                                }),
-                            }
-                        }),
-                    }
-                }),
-
                 Components.Frame(scope, {
                     Name = "ClassAbilityDiv",
                     AnchorPoint = Vector2.new(0, 0),
@@ -225,28 +183,15 @@ return function(plr: Player)
 
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, { "Backpack", "Character", "Guild", "Settings" }, function(_, scope: Fusion.Scope, index: number, slot: string)
+                        Fusion.ForPairs(scope, {
+                            "Backpack", "Character", "PerkTree", "Store", "Achievements",
+                            "TutorialBook", "Settings"
+                        }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,
                                 Index = index
                             }, self)
                         end)
-                    }
-                }),
-
-                Components.Frame(scope, {
-                    Name = "LevelEXP",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 1.5),
-
-                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.IsUIShown2)
-                    end),
-
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 0.8
-                        }),
                     }
                 }),
 
@@ -272,7 +217,7 @@ return function(plr: Player)
                         Components.TextButton(scope, {
                             Name = "DungeonStart",
                             Size = UDim2.fromScale(0.2, 0.65),
-                            Text = "START DUNGEON",
+                            Text = "START",
                             BackgroundTransparency = 0,
                             BackgroundColor3 = Components.GREEN_COLOR,
                             TextColor3 = Color3.new(),
@@ -287,7 +232,28 @@ return function(plr: Player)
                             }
                         })
                     }
-                })
+                }),
+
+
+                Components.Frame(scope, {
+                    Name = "TimerFrame",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center
+                        }),
+
+                        DungeonTimer(scope, {
+                            DungeonId = self.DungeonId,
+                            DungeonStarted = self.DungeonStarted,
+                            CountdownTime = self.DungeonLeftTime
+                        })
+                    }
+                }),
             }
         }
     })

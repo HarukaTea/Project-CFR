@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -46,21 +47,6 @@ local function Label(scope: Fusion.Scope, props: { [string]: any }, emptyVal: Fu
 
     return Components.TextLabel(scope, default)
 end
-local function weldWeapon(weapon: Model, char: Model)
-	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
-	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
-
-	if not motor6D then warn("No Motor6D found on weapon") return end
-	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
-
-	weldTarget = char:FindFirstChild(weldTarget)
-	if not weldTarget then warn("Cannot weld weapon, target not found") return end
-
-
-	motor6D.Part0 = weldTarget
-	weapon.Parent = char
-end
-
 
 
 return function (scope: Fusion.Scope, props: {
@@ -74,7 +60,8 @@ return function (scope: Fusion.Scope, props: {
     FriendListClickedSignal: RBXScriptSignal,
     ServerListClickedSignal: RBXScriptSignal,
 
-    IsUIShown: Fusion.Value
+    IsUIShown: Fusion.Value,
+    IsSelectingClass: Fusion.Value,
 })
 
     local POS = {
@@ -109,8 +96,12 @@ return function (scope: Fusion.Scope, props: {
     local playerPlayTime = Value(0)
     local playerLastSeen = Value("InitusBay")
 
+    local playerWeapon = Value("WoodenSword")
 
-    HarukaLib:Hydrate(Players.LocalPlayer.ProfileContainer, {
+    local profileContainer = Players.LocalPlayer.ProfileContainer :: Folder
+
+
+    table.insert(scope, HarukaLib:Hydrate(profileContainer, {
         ["Attr_Slot"..props.SlotId.."_PlayTime"] = function(val: number)
             playerPlayTime:set(val)
             isEmpty:set(val <= 0)
@@ -127,7 +118,16 @@ return function (scope: Fusion.Scope, props: {
         ["Attr_Slot"..props.SlotId.."_LastSeen"] = function(val: string)
             playerLastSeen:set(val)
         end
-    })
+    }))
+
+    if profileContainer:FindFirstChild("Slot"..props.SlotId.."_Weapon1") then
+        table.insert(scope, HarukaLib:Hydrate(profileContainer["Slot"..props.SlotId.."_Weapon1"], {
+            ["Prop-Value"] = function(val: string)
+                playerWeapon:set(val or "WoodenSword")
+            end
+        }))
+    end
+
 
     return Components.Frame(scope, {
         Name = "Slot"..props.SlotId,
@@ -170,14 +170,25 @@ return function (scope: Fusion.Scope, props: {
                             Size = UDim2.fromScale(0.48, 0.095),
                             ButtonText = "PLAY",
                             ButtonClickFunc = function()
-                                props.ReadyToTeleportSignal:Fire()
+                                if Fusion.peek(playerPlayTime) > 30 then
+                                    props.IsUIShown:set(false)
+                                    props.ReadyToTeleportSignal:Fire()
+                                    Bindables.CreateCircularFade:Fire(2)
 
-                                Bindables.CreateCircularFade:Fire(2)
+                                    wait(0.5)
+                                    Events.RequestToChooseWhichSlotToPlay.Fire({
+                                        SlotId = "Slot"..props.SlotId
+                                    })
+                                else
+                                    props.IsUIShown:set(false)
+                                    Bindables.CreateCircularFade:Fire(2)
 
-                                wait(0.5)
-                                Events.RequestToChooseWhichSlotToPlay.Fire({
-                                    SlotId = "Slot"..props.SlotId
-                                })
+                                    wait(0.5)
+                                    Bindables.CreateNotify:Fire("Now, choose a start class...")
+
+                                    props.IsSelectingClass:set(true)
+                                    Bindables.Titlescreen_ChangeClassScene:Fire()
+                                end
                             end,
                             ButtonType = "Confirm"
                         })
@@ -334,16 +345,23 @@ return function (scope: Fusion.Scope, props: {
                         charClone.Parent = vpFrame:FindFirstChildOfClass("WorldModel")
 
                         local class = use(playerClass) :: string
+                        local weaponId = use(playerWeapon) :: string
 
-                        local targetFolder = RepS.Packages.ClassWeapons[class]:FindFirstChild("Overworld", true)
+
                         for _, weapon: Model in charClone:GetChildren() do
                             if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
                         end
+                        if not RepS.Packages.ClassWeapons:FindFirstChild(class) then return end
+                        if not RepS.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
+
+
+                        local targetFolder = RepS.Packages.ClassWeapons[class][weaponId].Overworld :: Folder
+
                         for _, weapon: Model in targetFolder:GetChildren() do
                             weapon = weapon:Clone()
                             weapon:AddTag("ClassWeapon")
 
-                            weldWeapon(weapon, charClone)
+                            ClientLib:WeldWeapon(weapon, charClone)
                         end
 
                         repeat wait() until vpFrame.Parent

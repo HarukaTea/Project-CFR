@@ -6,7 +6,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 
 local ProductBar = require(script.Components.ProductBar)
@@ -118,7 +118,7 @@ return function (plr: Player)
                                 if not use(self.IsUIShown) then return nil end
                                 if use(self.CurrentCategory) ~= "Sell" then return nil end
 
-                                local info = ItemLib:GetItemInfo(itemSymbol.Name)
+                                local info = ItemBook:GetItemInfo(itemSymbol.Name)
                                 if not info then return nil end
 
                                 local isVisible = false
@@ -210,6 +210,10 @@ return function (plr: Player)
                 Name = "Center_ZIndex2",
                 Size = UDim2.fromScale(1, 0.1),
 
+                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return not use(self.IsPurchasing)
+                end),
+
                 [Children] = {
                     Components.UIAspectRatioConstraint(scope),
 
@@ -251,6 +255,10 @@ return function (plr: Player)
                 Position = UDim2.fromScale(0.5, 0.02),
                 ZIndex = 10,
 
+                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return not use(self.IsPurchasing)
+                end),
+
                 [Children] = {
                     CloseTab(scope, {
                         ViewShownValue = self.IsUIShown
@@ -265,6 +273,10 @@ return function (plr: Player)
                 Position = UDim2.fromScale(1, 0),
                 Size = UDim2.fromScale(0.3, 1),
                 ZIndex = 3,
+
+                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return not use(self.IsPurchasing)
+                end),
 
                 [Children] = {
                     Components.Frame(scope, {
@@ -322,6 +334,10 @@ return function (plr: Player)
                     AnchorPoint = Vector2.new(0.5, 0),
                     Position = UDim2.fromScale(0.5, -0.1),
                     Size = UDim2.fromScale(0.96, 1),
+
+                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return not use(self.IsPurchasing)
+                    end),
 
                     [Children] = {
                         Components.UIListLayout(scope, {
@@ -393,6 +409,9 @@ return function (plr: Player)
 
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(self.CurrentCategory) == "Sell"
+                    end),
+                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return not use(self.IsPurchasing)
                     end),
 
                     [Children] = {
@@ -474,6 +493,10 @@ return function (plr: Player)
                 Components.Frame(scope, {
                     Name = "Categories",
 
+                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return not use(self.IsPurchasing)
+                    end),
+
                     [Children] = {
                         Components.UIListLayout(scope, {
                             FillDirection = Enum.FillDirection.Horizontal,
@@ -499,6 +522,10 @@ return function (plr: Player)
                     Name = "Economy",
                     Size = UDim2.fromScale(0.82, 1),
 
+                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return not use(self.IsPurchasing)
+                    end),
+
                     [Children] = {
                         Components.UIListLayout(scope, {
                             FillDirection = Enum.FillDirection.Horizontal,
@@ -507,7 +534,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Gold", "Astra" }, function(_, scope: Fusion.Scope, index: number, currency: string)
+                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
                             return index, BKEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,

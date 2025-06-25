@@ -19,12 +19,10 @@ return function (self: table)
     self.IsUIShown = Value(false)
 
     self.CurrentCategory = Value("STR")
-    self.Perks = Value(PerkBook.STR)
-
+    self.CurrentSelectedPerk = Value(nil)
 
     self.Points = {
         STR = Value(0),
-        DEX = Value(0),
         INT = Value(0),
         VIT = Value(0),
     }
@@ -35,9 +33,6 @@ return function (self: table)
         ["Attr-STRPoints"] = function(val: number)
             self.Points.STR:set(val)
         end,
-        ["Attr-DEXPoints"] = function(val: number)
-            self.Points.DEX:set(val)
-        end,
         ["Attr-INTPoints"] = function(val: number)
             self.Points.INT:set(val)
         end,
@@ -45,11 +40,6 @@ return function (self: table)
             self.Points.VIT:set(val)
         end
     }))
-    Fusion.Observer(scope, self.CurrentCategory):onBind(function()
-        local category = Fusion.peek(self.CurrentCategory) :: string
-
-        self.Perks:set(PerkBook[category])
-    end)
 
 
     --// track menu

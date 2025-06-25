@@ -9,7 +9,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 
@@ -28,7 +28,7 @@ return function(scope: Fusion.Scope, props: {
     CurrentSelectedItemUniqueId: Fusion.Value
 })
 
-    local info = ItemLib:GetItemInfo(props.ProductId)
+    local info = ItemBook:GetItemInfo(props.ProductId)
     if info == nil then return nil end
 
 

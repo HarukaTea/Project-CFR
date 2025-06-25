@@ -3,7 +3,7 @@ local LOG_E = 2.71828
 
 local formulas = {
     ENEMY_MAX_LEVEL = 950,
-    PLAYER_MAX_LEVEL = 180,
+    PLAYER_MAX_LEVEL = 185,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_MAX_DEX_POINTS = 50,
 
@@ -28,8 +28,14 @@ local formulas = {
         elseif props.Level > 170 and props.Level <= 180 then
             return math.floor(188 * props.Level)
 
-        elseif props.Level > 180 then
+        elseif props.Level > 180 and props.Level <= 190 then
             return math.floor(233 * props.Level)
+
+        elseif props.Level > 190 and props.Level <= 200 then
+            return math.floor(300 * props.Level)
+
+        elseif props.Level > 200 then
+            return math.floor(1599 * 40 * props.Level)
         end
     end,
 
@@ -106,7 +112,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 63) / 100)
+        local extra = 1 + ((props.MagicPoints * 60) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,
@@ -157,10 +163,7 @@ local formulas = {
             return val
         end
 
-
         return val + math.floor(val * 0.11)
-
-        --// TODO: make intensity useful
     end
 
 }

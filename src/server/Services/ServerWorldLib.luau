@@ -14,7 +14,7 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local CollisionBook = require(ServerScriptService.HarukaServer.Library.CollisionBook)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
+local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 
@@ -72,12 +72,16 @@ function ServerWorldLib:_DoCreateEssentialFolders()
     local craftingProductContainer = Instance.new("Folder")
     craftingProductContainer.Name = "CraftingProductContainer"
     craftingProductContainer.Parent = workspace
+
+    local partyHolderContainer = Instance.new("Folder")
+    partyHolderContainer.Name = "PartyHolder"
+    partyHolderContainer.Parent = workspace.MapComponents
 end
 
 
 function ServerWorldLib:_DoCreateCraftingProductEntities()
-    for _, product in ItemLib:GetAllItems() do
-        local info = ItemLib:GetItemInfo(product)
+    for _, product in ItemBook:GetAllItems() do
+        local info = ItemBook:GetItemInfo(product)
 
         if HarukaLib.TableUtils.IsEmpty(info.RecipeDesync) then continue end
 
@@ -153,6 +157,14 @@ function ServerWorldLib:_DoMapOptimization()
         end
     end
 
+    for _, part: BasePart in workspace.Maps:GetDescendants() do
+        if HarukaLib:IsBasePartType(part) then
+            if part:HasTag("ZoneEntity") then continue end
+
+            part.Anchored = true
+        end
+    end
+
 
     local function _optimize(container: Instance)
         for _, part: BasePart in container:GetDescendants() do
@@ -160,27 +172,9 @@ function ServerWorldLib:_DoMapOptimization()
                 part.EnableFluidForces = false
             end
         end
-        for _, part: Model in container:GetDescendants() do
-            if part:IsA("Model") then
-                if #part:GetChildren() <= 0 then
-                    part:Destroy()
-                end
-            end
-        end
     end
     _optimize(workspace)
     _optimize(ReplicatedStorage)
-
-    if workspace.MapComponents:FindFirstChild("Titlescreen") then
-        for _, part: BasePart in workspace.MapComponents.Titlescreen:GetDescendants() do
-            if HarukaLib:IsBasePartType(part) then
-                part.CanTouch = false
-                part.CanQuery = false
-                part.CastShadow = false
-                part.CollisionGroup = "NoCollision"
-            end
-        end
-    end
 end
 
 
@@ -254,7 +248,7 @@ function ServerWorldLib:_DoTerrainTag()
 
     for _, part: BasePart in workspace.Maps:GetDescendants() do
         if HarukaLib:IsBasePartType(part) then
-            if part.CanCollide == false then continue end
+            if part:HasTag("IgnoreTerrain") then continue end
 
 
             local isInTerrainFolder = false
@@ -310,7 +304,7 @@ end
 
 function ServerWorldLib:_DoInitCollision()
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.CombatBorder, CollisionBook.Group.Hitbox)
-    HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.EncounterBorder, CollisionBook.Group.Hitbox)
+    HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.EncounterBorder, CollisionBook.Group.NoCollision)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyModels, CollisionBook.Group.EnemyBodyPart)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyAttacks, CollisionBook.Group.EnemyProjectile)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.ClassWeapons, CollisionBook.Group.NoCollision)
@@ -357,12 +351,12 @@ function ServerWorldLib:_DoMarketNPCOptimizeInit()
     end
     for _, product: Instance in workspace.MapComponents.Markets:GetDescendants() do
         if product.Parent and product.Parent:IsA("Folder") and product.Parent.Name == "Products" then
-            if ItemLib:GetItemInfo(product.Name) then
+            if ItemBook:GetItemInfo(product.Name) then
                 product:AddTag("MarketProductEntity")
                 product:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
-                product:SetAttribute("ItemStat", ItemLib:GetItemInfo(product.Name).StatInfo)
-                product:SetAttribute("Level", ItemLib:GetItemInfo(product.Name).Level)
+                product:SetAttribute("ItemStat", ItemBook:GetItemInfo(product.Name).StatInfo)
+                product:SetAttribute("Level", ItemBook:GetItemInfo(product.Name).Level)
             end
         end
     end
@@ -511,7 +505,7 @@ function ServerWorldLib:_DoShutdownTracker()
         if RunService:IsStudio() then return end
         if closeReason ~= Enum.CloseReason.DeveloperUpdate then return end
 
-        Events.CreateFSNotify.FireList(Players:GetPlayers(), string.upper("game is updating and restarting, please wait..."), 15)
+        Events.CreateFSNotify.FireList(Players:GetPlayers(), string.upper("CF is updating, please wait..."), 15)
     end
     game:BindToClose(shutdownSetup)
 end
@@ -588,10 +582,11 @@ function ServerWorldLib:_DoInitMaterials()
         giver:FindFirstChildOfClass("ProximityPrompt").Enabled = false
     end
 
-    wait(math.random(5, 10))
-    for _, giver: BasePart in givers do
-        giver:FindFirstChildOfClass("ProximityPrompt").Enabled = true
-    end
+    Promise.delay(math.random(5, 10)):andThen(function()
+        for _, giver: BasePart in givers do
+            giver:FindFirstChildOfClass("ProximityPrompt").Enabled = true
+        end
+    end):catch(function() end)
 end
 
 

@@ -3,7 +3,7 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -14,7 +14,7 @@ return function(scope: Fusion.Scope, props: {
     Amount: number
 })
 
-    local itemInfo = ItemLib:GetItemInfo(props.ItemId)
+    local itemInfo = ItemBook:GetItemInfo(props.ItemId)
     if itemInfo == nil then
         warn(`Lacking of item info for drops: {props.ItemId}`)
         return nil

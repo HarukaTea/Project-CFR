@@ -8,7 +8,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
 
@@ -104,7 +104,7 @@ return function (scope: Fusion.Scope, props: {
 
                             if item == nil then return AssetBook.ExtraIcons.Null end
 
-                            local itemInfo = ItemLib:GetItemInfo(item.Value)
+                            local itemInfo = ItemBook:GetItemInfo(item.Value)
                             if itemInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
                             return itemInfo.Icon
@@ -112,7 +112,7 @@ return function (scope: Fusion.Scope, props: {
 
                         if item == nil then return AssetBook.ExtraIcons.Null end
 
-                        local itemInfo = ItemLib:GetItemInfo(item.Value)
+                        local itemInfo = ItemBook:GetItemInfo(item.Value)
                         if itemInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
                         return itemInfo.Icon

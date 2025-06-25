@@ -7,7 +7,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local Events = require(RepS.HarukaShared.Library.Events)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemDescView)
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemFilterView)
@@ -74,7 +75,7 @@ return function (plr: Player)
                                 if not use(self.IsUIShown) then return nil end
 
 
-                                local info = ItemLib:GetItemInfo(itemSymbol.Name)
+                                local info = ItemBook:GetItemInfo(itemSymbol.Name)
                                 if not info then return nil end
 
                                 local isVisible = false
@@ -259,7 +260,7 @@ return function (plr: Player)
 
                 Components.TextLabel(scope, {
                     Name = "WIPTitle",
-                    Text = "GEMSTONE FEATURE COMING SOON IN PT3!",
+                    Text = "GEMSTONE FEATURE COMING SOON IN DEMO 1!",
                     FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
                     Size = UDim2.fromScale(1, 0.6),
                     TextTransparency = 0.7,
@@ -314,7 +315,7 @@ return function (plr: Player)
                             local item = use(self.CurrentSelectedItem) :: string
                             local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
 
-                            local itemInfo = ItemLib:GetItemInfo(item)
+                            local itemInfo = ItemBook:GetItemInfo(item)
                             if itemInfo == nil then
                                 return nil
                             end
@@ -455,7 +456,21 @@ return function (plr: Player)
                                         ItemId = itemId,
                                         Amount = amount
                                     })
-                                end)
+                                end),
+
+                                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local price = use(self.CraftingPrice) :: number
+
+                                    if price > 0 then
+                                        return CraftItemMatSlot(scope, {
+                                            ItemId = "GOLD",
+                                            Amount = price
+                                        })
+                                    else
+                                        return nil
+                                    end
+                                end),
+
                             }
                         })
                     }

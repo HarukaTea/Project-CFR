@@ -27,6 +27,9 @@ return function (self: table)
     self.PlayerSelecting = Value(nil)
 
 
+    self.PartyMembers = Value({})
+
+
 
 
     --// track menu
@@ -47,4 +50,32 @@ return function (self: table)
             self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
         end
     end))
+
+
+    --// track party
+    local partyAdd, partyEmpty = HarukaLib.Bin()
+
+	table.insert(scope, HarukaLib:Hydrate(self.plr, {
+		["Attr-IsInParty"] = function(state: boolean)
+			partyEmpty()
+
+			if not state then
+				self.PartyMembers:set({})
+			else
+				repeat wait(0.03) until workspace.MapComponents.PartyHolder:FindFirstChild(self.plr.Name, true)
+
+				local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.plr.Name, true)
+				if party:IsA("ObjectValue") then party = party.Parent end
+
+				local function _updateParty()
+                    wait()
+					self.PartyMembers:set(party:GetChildren())
+				end
+				_updateParty()
+				partyAdd(party.ChildAdded:Connect(_updateParty))
+				partyAdd(party.ChildRemoved:Connect(_updateParty))
+			end
+		end
+	}))
+	table.insert(scope, partyEmpty)
 end

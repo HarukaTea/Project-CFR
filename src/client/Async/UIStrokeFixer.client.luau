@@ -9,7 +9,7 @@ local camera = workspace.CurrentCamera
 local normalUIStrokes = {}
 local billboardUIStrokes = {}
 
-local DESIGN_VP_SIZE = Vector2.new(1172, 471.2)
+local DESIGN_VP_SIZE = Vector2.new(1172.8, 464)
 
 
 --// Helper functions
@@ -55,11 +55,11 @@ local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal",
         local distanceRatio = ((billboardGui:GetAttribute("Distance") or 15.99) / magnitude)
 
         finalThickness = info.Thickness * distanceRatio * _calScreenRatio() * scale
-        finalThickness = math.clamp(finalThickness, 0, 3)
+        finalThickness = math.clamp(finalThickness, 1, 3)
 
     elseif belongTo == "Normal" then
         finalThickness = info.Thickness * _calScreenRatio() * scale
-        finalThickness = math.clamp(finalThickness, 0, 999)
+        finalThickness = math.clamp(finalThickness, 1, 999)
     end
 
     stroke.Thickness = finalThickness
@@ -81,7 +81,10 @@ local function _updateSize()
 	end
 end
 local function _strokeAdded(added: Instance)
-	if added:IsA("UIStroke") and not added:GetAttribute("AlreadyTransformed") and not added:GetAttribute("IgnoreDPI") then
+	if (added:IsA("UIStroke") or added:IsA("Path2D"))
+		and not added:GetAttribute("AlreadyTransformed")
+		and not added:GetAttribute("IgnoreDPI") then
+
 		if added:FindFirstAncestorOfClass("BillboardGui") then
 			billboardUIStrokes[added] = {
 				Thickness = added.Thickness,

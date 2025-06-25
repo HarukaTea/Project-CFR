@@ -5,12 +5,10 @@ return {
         Icon = "rbxassetid://4821548100",
         Color = Color3.new(1, 1, 1)
     },
-
     SpeedBoost = {
         Icon = "rbxassetid://4824421210",
         Color = Color3.new(1, 1, 1)
     },
-
     ATKBoost = {
         Icon = "rbxassetid://2965862892",
         Color = Color3.fromRGB(255, 100, 100)
@@ -19,22 +17,19 @@ return {
         Icon = "rbxassetid://2965863231",
         Color = Color3.fromHex('#a29bfe')
     },
-
     OrbBounceBoost = {
         Icon = "rbxassetid://4821548100",
         Color = Color3.new(1, 1, 1)
     },
-
     OrbSpawnTimeBoost = {
         Icon = "rbxassetid://82541180063318",
         Color = Color3.fromHex('#7bed9f'),
     },
-
     HealthBoost = {
         Icon = "rbxassetid://104142948728530",
         Color = Color3.fromHex('#7bed9f'),
+        IconColor = Color3.fromHex('#2ed573')
     },
-
     ReverberationBoost = {
         Icon = "rbxassetid://120613067089872",
         Color = Color3.fromHex('#34ace0'),
@@ -48,12 +43,21 @@ return {
         Color = Color3.fromRGB(255, 0, 0),
     },
     BleedDebuff = {
-        Icon = "rbxassetid://114332372182764",
-        Color = Color3.fromRGB(255, 0, 0),
+        Icon = "rbxassetid://101337562500575",
+        Color = Color3.fromHex('#c0392b'),
     },
     PoisonDebuff = {
-        Icon = "rbxassetid://114332372182764",
+        Icon = "rbxassetid://137874332790885",
         Color = Color3.fromHex('#845ef7'),
-    }
-
+    },
+    ShockingDebuff = {
+        Icon = "rbxassetid://106465902273177",
+        Color = Color3.fromHex('#ffeaa7'),
+        IconColor = Color3.fromHex('#ffeaa7')
+    },
+    FreezingDebuff = {
+        Icon = "rbxassetid://115865570364586",
+        Color = Color3.fromHex('#81ecec'),
+        IconColor = Color3.fromHex('#81ecec')
+    },
 }

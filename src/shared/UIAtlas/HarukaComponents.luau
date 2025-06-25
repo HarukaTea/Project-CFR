@@ -16,12 +16,13 @@ local HarukaComponents = {}
 local WHITE_COLOR = Color3.fromRGB(236, 229, 216)
 local BLACK_COLOR = Color3.fromRGB(28, 28, 37)
 
-local DESIGN_VP_SIZE = Vector2.new(1172, 471.2)
+local DESIGN_VP_SIZE = Vector2.new(1172.8, 464)
 
 HarukaComponents.BLACK_COLOR = BLACK_COLOR
 HarukaComponents.WHITE_COLOR = WHITE_COLOR
 HarukaComponents.GREEN_COLOR = Color3.fromRGB(123, 217, 159)
 HarukaComponents.RED_COLOR = Color3.fromRGB(255, 118, 117)
+HarukaComponents.DARKER_WHITE_COLOR = Color3.fromRGB(202, 196, 185)
 
 --// Init once only
 local existingButtonElements = {}
@@ -138,31 +139,39 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: table, list
 	listProps = listProps or {
 		Padding = UDim.new(0, 0),
 	}
+	props = props or {
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+	}
+	props.ScrollingDirection = props.ScrollingDirection or Enum.ScrollingDirection.Y
 
 	if listProps.Padding ~= nil then --- UIListLayout
 		listProps[Fusion.Out("AbsoluteContentSize")] = absContentSize
 		listProps.FillDirection = listProps.FillDirection or Enum.FillDirection.Vertical
 
-		local originalPadding = listProps.Padding
-		local fillDirection = listProps.FillDirection.Name or "Vertical"
 
-		listProps.Padding = Fusion.Computed(scope, function(use: Fusion.Use, _)
-			if fillDirection == "Vertical" then
-				local Y = use(VPSize).Y
-				local finalY = Y / (DESIGN_VP_SIZE.Y / originalPadding.Offset)
+		local device = HarukaLib:GetAccurateDevice()
+		if device == "Phone" or device == "Tablet" then
+			local originalPadding = listProps.Padding
+			local fillDirection = listProps.FillDirection.Name or "Vertical"
 
-				finalY = math.min(originalPadding.Offset, finalY)
+			listProps.Padding = Fusion.Computed(scope, function(use: Fusion.Use, _)
+				if fillDirection == "Vertical" then
+					local Y = use(VPSize).Y
+					local finalY = Y / (DESIGN_VP_SIZE.Y / originalPadding.Offset)
 
-				return UDim.new(0, finalY)
-			elseif fillDirection == "Horizontal" then
-				local X = use(VPSize).X
-				local finalX = X / (DESIGN_VP_SIZE.X / originalPadding.Offset)
+					finalY = math.min(originalPadding.Offset, finalY)
 
-				finalX = math.min(originalPadding.Offset, finalX)
+					return UDim.new(0, finalY)
+				elseif fillDirection == "Horizontal" then
+					local X = use(VPSize).X
+					local finalX = X / (DESIGN_VP_SIZE.X / originalPadding.Offset)
 
-				return UDim.new(0, finalX)
-			end
-		end)
+					finalX = math.min(originalPadding.Offset, finalX)
+
+					return UDim.new(0, finalX)
+				end
+			end)
+		end
 
 		table.insert(props[Fusion.Children], 1, HarukaComponents.UIListLayout(scope, listProps))
 
@@ -177,16 +186,35 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: table, list
 		BackgroundTransparency = 1,
 		ScrollBarThickness = 5,
 		ScrollBarImageColor3 = Color3.new(1, 1, 1),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
 		Selectable = false,
 		SelectionOrder = -1,
 
 		CanvasSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-			return if use(absContentSize).Y > use(absSize).Y then UDim2.fromOffset(0, use(absContentSize).Y + 15.99) else UDim2.fromOffset(0, 0)
+			local target = props.ScrollingDirection.Name
+
+			if use(absContentSize)[target] > use(absSize)[target] then
+				if target == "Y" then
+					return UDim2.fromOffset(0, use(absContentSize)[target] + 15.99)
+				elseif target == "X" then
+					return UDim2.fromOffset(use(absContentSize)[target] + 15.99, 0)
+				else
+					return UDim2.fromOffset(0, 0)
+				end
+			else
+				return UDim2.fromOffset(0, 0)
+			end
 		end),
 		ScrollingEnabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-			return if use(absContentSize).Y > use(absSize).Y then true else false
+			local target = props.ScrollingDirection.Name
+
+			if use(absContentSize)[target] > use(absSize)[target] then
+				return true
+			else
+				return false
+			end
 		end),
 
 		[Fusion.Out("AbsoluteSize")] = absSize,

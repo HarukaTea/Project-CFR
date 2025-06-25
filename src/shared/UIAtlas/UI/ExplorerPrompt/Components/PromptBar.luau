@@ -7,7 +7,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
@@ -118,7 +118,7 @@ return function (scope: Fusion.Scope, props: {
             AnchorPoint = Vector2.new(0, 0.5),
 
             Image = Fusion.Computed(scope, function()
-                local info = ItemLib:GetItemInfo(materialId)
+                local info = ItemBook:GetItemInfo(materialId)
 
                 if info == nil then return AssetBook.ExtraIcons.Unknown end
 

@@ -5,7 +5,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymbol)
 
@@ -19,7 +19,7 @@ return function(scope: Fusion.Scope, props: {
     CurrentSelectedItemUniqueId: Fusion.Value
 })
 
-    local info = ItemLib:GetItemInfo(props.ProductId)
+    local info = ItemBook:GetItemInfo(props.ProductId)
     if not info then return nil end
 
 

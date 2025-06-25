@@ -6,6 +6,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
+
 local wait = task.wait
 
 return function (self: table)
@@ -15,6 +17,11 @@ return function (self: table)
     local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(false)
+
+
+    self.CurrentCategory = Value("RoStore")
+
+    self.DonationRanks = FusionComponents.useFolder(scope, workspace:WaitForChild("DonationRankContainer", 999))
 
 
     --// track menu

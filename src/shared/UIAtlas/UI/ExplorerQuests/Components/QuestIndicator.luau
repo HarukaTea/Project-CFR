@@ -34,9 +34,7 @@ return function (scope: Fusion.Scope, props: {
                     Components.RoundUICorner(scope),
                     Components.UIStroke(scope, {
                         Thickness = 2,
-                        Color = Components.BLACK_COLOR,
-
-                        [Fusion.Attribute("IgnoreDPI")] = true
+                        Color = Components.BLACK_COLOR
                     })
                 }
             }),
@@ -57,8 +55,7 @@ return function (scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Components.TextUIStroke(scope, {
-                        Thickness = 2,
-                        [Fusion.Attribute("IgnoreDPI")] = true
+                        Thickness = 2
                     })
                 }
             })

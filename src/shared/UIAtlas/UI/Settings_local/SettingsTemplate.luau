@@ -5,6 +5,8 @@ local UserInputService = game:GetService("UserInputService")
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
+
 
 local template = {
     Sounds = {
@@ -124,13 +126,24 @@ local template = {
 				DefaultValue = true,
 			},
 			EntityRenderDistance = {
-				OptionTitle = "Entity Render Distance",
+				OptionTitle = "Enemy Render Distance",
 				Type = "Slider",
 				LayoutOrder = 6,
 
 				Min = 159,
 				Max = 999,
 				DefaultValue = 189,
+
+				ValChanged = Signal.new()
+			},
+			FocusRenderDistance = {
+				OptionTitle = "Text Render Distance",
+				Type = "Slider",
+				LayoutOrder = 6,
+
+				Min = 159,
+				Max = 999,
+				DefaultValue = 486,
 
 				ValChanged = Signal.new()
 			},
@@ -148,8 +161,27 @@ local template = {
 				DropdownOptions = { "Solo", "Public", "Party" },
 
 				DefaultValue = "Public",
-			}
+			},
+			AllowPartyInvites = {
+				OptionTitle = "Allow Party Invites",
+				Type = "Switcher",
+				LayoutOrder = 2,
+
+				DefaultValue = true,
+			},
 		}
+	},
+	KeybindsPC = {
+		PanelTitle = "Keybinds / PC",
+		LayoutOrder = 5,
+
+		Includes = KeybindsBook.PC
+	},
+	KeybindsConsole = {
+		PanelTitle = "Keybinds / Xbox",
+		LayoutOrder = 6,
+
+		Includes = KeybindsBook.Console
 	}
 }
 

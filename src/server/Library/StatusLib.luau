@@ -206,7 +206,7 @@ StatusLib.Burn = function(_, target: Model, info: {
     Power: number,
     Duration: number,
 })
-    local dmg = _calDoTDMG(info.Creator, "DMG")
+    local dmg = _calDoTDMG(info.Creator, "Magic")
 
     dmg *= info.Power
     dmg /= 3

@@ -8,7 +8,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
@@ -195,7 +195,7 @@ local commands = {
             {
                 Name = "item_id",
                 Type = "enum",
-                EnumItems = HarukaLib.TableUtils.Merge(ItemLib:GetAllItems(), { "all" })
+                EnumItems = HarukaLib.TableUtils.Merge(ItemBook:GetAllItems(), { "all" })
             },
             {
                 Name = "item_amount",
@@ -213,7 +213,7 @@ local commands = {
 
                 local item = props.Args[2]
                 if item == "all" then
-                    local allItems = ItemLib:GetAllItems()
+                    local allItems = ItemBook:GetAllItems()
                     if table.find(allItems, "Dawnbreak") then
                         table.remove(allItems, table.find(allItems, "Dawnbreak"))
                     end

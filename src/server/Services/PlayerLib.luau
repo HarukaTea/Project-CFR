@@ -1,9 +1,12 @@
+local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
 local AnalyticsService = game:GetService("AnalyticsService")
 local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 
 
 local PlayerLib = {}
@@ -11,6 +14,7 @@ PlayerLib.__index = PlayerLib
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
+local Classbook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
@@ -18,7 +22,7 @@ local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerB
 local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local ItemLib = require(ReplicatedStorage.HarukaShared.Library.ItemLib)
+local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local HarukaQuest = require(ServerScriptService.HarukaServer.Shared.HarukaQuest)
 
@@ -26,7 +30,6 @@ local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
 local EXTRA_TEMPLATE = require(ServerScriptService.HarukaServer.Library.PlayerExtraAttrs)
-local PlayerLimitsTemplate = require(ServerScriptService.HarukaServer.Library.PlayerLimitsTemplate)
 
 
 local profileStoreMain = ProfileStore.New(
@@ -35,10 +38,103 @@ local profileStoreMain = ProfileStore.New(
 )
 
 local totalPlayersJoined = 0
-
 local allPlayerObjPool = {}
 
+
 local wait = task.wait
+
+
+
+
+--// Dev products purchase callback
+local productFunctions = {}
+
+for _, productId in AssetBook.DevProductIds do
+    productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: ProfileStore.Profile)
+        local productInfo = MarketplaceService:GetProductInfo(receipt.ProductId, Enum.InfoType.Product)
+        assert(productInfo)
+
+
+        table.insert(profile.Data.DevProductsPurchaseLogs, {
+            Purchased = true,
+            PurchaseDateTime = DateTime.now():ToIsoDate(),
+            PurchasedPrice = productInfo.PriceInRobux,
+        })
+
+        profile:Save()
+        PlayerLib:_RequestToCalculateTotalDonationAndSave(profile, player)
+    end
+end
+local function processReceipt(receiptInfo: {[string]: any})
+    local userId = receiptInfo.PlayerId
+    local productId = receiptInfo.ProductId
+
+    local player = Players:GetPlayerByUserId(userId)
+    if player then
+        while player:GetAttribute("HarukaUniqueId") == nil and player.Parent == Players do
+            wait()
+        end
+        wait()
+
+        if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
+            local playerObj = allPlayerObjPool[player:GetAttribute("HarukaUniqueId")]
+            if playerObj then
+                local profile = playerObj.Profile
+
+                if profile and profile:IsActive() then
+                    local handler = productFunctions[tostring(productId)]
+                    local success, result = pcall(handler, receiptInfo, player, profile)
+
+                    if success then
+                        Events.CreateNotify.Fire(player, "You have successfully purchased the product!")
+                        return Enum.ProductPurchaseDecision.PurchaseGranted
+                    else
+                        Events.CreateNotify.Fire(player, "Failed to process receipt!")
+                        Events.CreateNotify.Fire(player, "But you didnt lose your Robux!")
+                        warn(`Failed to process receipt: `, receiptInfo, result)
+                    end
+                end
+            end
+        end
+    end
+
+    return Enum.ProductPurchaseDecision.NotProcessedYet
+end
+MarketplaceService.ProcessReceipt = processReceipt
+
+
+
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Player, gamePassId: number, wasPurchased: boolean)
+    if not wasPurchased then return end
+    if not player then return end
+    if player.Parent ~= Players then return end
+
+    local stringifyGamepassId = tostring(gamePassId)
+
+    local playerObj = allPlayerObjPool[player:GetAttribute("HarukaUniqueId")]
+    if not playerObj then return end
+
+    local profile = playerObj.Profile
+    if not profile then return end
+
+
+    pcall(function()
+        local gamepassInfo = MarketplaceService:GetProductInfo(gamePassId, Enum.InfoType.GamePass)
+        if not gamepassInfo then return end
+
+        profile.Data.GamepassPurchaseLogs[stringifyGamepassId] = {
+            PurchaseDateTime = DateTime.now():ToIsoDate(),
+            Purchased = true,
+            PurchasedPrice = gamepassInfo.PriceInRobux
+        }
+    end)
+
+    profile:Save()
+    PlayerLib:_RequestToCalculateTotalDonationAndSave(profile, player)
+
+
+    Events.CreateNotify.Fire(player, "You have successfully purchased the gamepass!")
+end)
 
 
 local attrWhiteList = {}
@@ -71,8 +167,10 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
     --// Load in datastore
     Promise.new(function(resolve, reject)
-        local slotChosen = netData.SlotId or "Slot1"
+        local slotChosen = self.PreSlotChosen or netData.SlotId
         local profile = self.Profile
+
+        slotChosen = slotChosen or "Slot1"
 
 
         --// start to load in
@@ -80,6 +178,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         local data = profile.Data[slot].Attrs :: table
 
         self.Slot = slot
+        plr:SetAttribute("SlotChosen", slot)
 
         --// update join time
         data.LastJoinedDateTime = DateTime.now():ToIsoDate()
@@ -89,10 +188,13 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end
 
         --// validate
-        local validatedData = self:_ValidateSaveData(data)
+        local validatedData = self:_ValidateSaveData(data, netData.ClassChosen)
         if validatedData == nil then return end
 
         profile.Data[slot].Attrs = validatedData
+        if netData.ClassChosen and netData.ClassChosen ~= "" then
+            profile.Data[slot].Attrs.Class = netData.ClassChosen
+        end
 
         --// load validated data
         for attr: string, val: any in validatedData do
@@ -119,7 +221,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             local itemVal = Instance.new("IntConstrainedValue")
             itemVal.MinValue = 0
 
-            local itemType = ItemLib:GetItemInfo(itemInfo.ItemId).Type
+            local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
             local maxVal = 999
             if itemType == "Active" or itemType == "Passive" then
                 maxVal = 1
@@ -234,8 +336,45 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end):catch(function() end)
 
 
-        --// FIXME: Pressure test 3 - give badge
-        ServerLib:GiveBadge(4241425362230986, plr)
+        --// load in player badges
+        Promise.try(function()
+            --// FIXME: this API has a maximum limit of 10 badges per call, need to split it into multiple calls
+            local badgesPlayerOwned = BadgeService:CheckUserBadgesAsync(plr.UserId, HarukaLib.TableUtils.Values(AssetBook.BadgeIds))
+            for _, badgeId: number in badgesPlayerOwned do
+                plr:SetAttribute("BADGE_"..badgeId, true)
+            end
+
+        end):catch(function() end)
+
+
+        --// load in player gamepass and dev products
+        Promise.try(function()
+            for gamepass: string, gamepassId: number in AssetBook.GamepassIds do
+                Promise.try(function()
+                    if profile.Data.GamepassPurchaseLogs[gamepass] then return end
+
+                    local ownedGamepass = MarketplaceService:UserOwnsGamePassAsync(plr.UserId, gamepassId)
+                    if not ownedGamepass then return end
+
+                    local gamepassInfo = MarketplaceService:GetProductInfo(gamepassId, Enum.InfoType.GamePass)
+                    if not gamepassInfo then return end
+
+                    profile.Data.GamepassPurchaseLogs[gamepass] = {
+                        PurchaseDateTime = DateTime.now():ToIsoDate(),
+                        Purchased = true,
+                        PurchasedPrice = gamepassInfo.PriceInRobux
+                    }
+
+                end):catch(function() end)
+            end
+
+
+            self:_RequestToCalculateTotalDonationAndSave(profile, plr)
+        end)
+
+
+        --// FIXME: PT3 Badge, remove this when ended
+        ServerLib:GiveBadge(2853156407323188, plr)
 
 
 
@@ -255,7 +394,16 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
         ServerBindables.RToSpawnChar:Fire(plr)
 
-        self:_ListenStatLimitTracker()
+        self:_ListenLeadDevDebuggerToolsTracker()
+
+        self:_RequestToGetCurrentRankOnDonations()
+        self.Add(HarukaLib.Clock(77, function()
+            self:_RequestToGetCurrentRankOnDonations()
+        end))
+
+        if plr:FindFirstChild("ProfileContainer") then
+            plr.ProfileContainer:Destroy()
+        end
 
         resolve()
 
@@ -299,6 +447,9 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
         if not table.find(attrWhiteList, attr) then continue end
 
         profileContainer:SetAttribute(data.SlotId.."_"..attr, val)
+    end
+    if profileContainer:FindFirstChild(data.SlotId.."_Weapon1") then
+        profileContainer[data.SlotId.."_Weapon1"].Value = "WoodenSword"
     end
 
 
@@ -354,6 +505,19 @@ end
 function PlayerLib:Init()
     local plr = self.Player :: Player
 
+
+    local teleportData = plr:GetJoinData().TeleportData
+    if teleportData then
+        if type(teleportData) == "table" then
+            if workspace:GetAttribute("DungeonId") and teleportData.AbyssId then
+                if teleportData.SlotId then
+                    self.PreSlotChosen = teleportData.SlotId
+                end
+
+                ServerBindables.RToActivateDungeonSystem:Fire(teleportData.AbyssId)
+            end
+        end
+    end
 
     local profile = nil
     local profileFailedTimes = 0
@@ -430,15 +594,33 @@ function PlayerLib:Init()
     profileContainer.Name = "ProfileContainer"
     profileContainer.Parent = plr
 
-    for i = 1, 3 do
-        local data = profile.Data["Slot"..i].Attrs :: table
 
-        for attr: string, val: any in data do
-            if not table.find(attrWhiteList, attr) then continue end
+    Promise.new(function(resolve)
+        for i = 1, 3 do
+            local data = self:_ValidateSaveData(profile.Data["Slot"..i].Attrs)
 
-            profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
+            for attr: string, val: any in data do
+                if not table.find(attrWhiteList, attr) then continue end
+
+                profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
+            end
+
+            local weapon1 = data.EquippingItemsSQL.Weapon1 :: table
+            if weapon1 then
+                local weapon1Val = Instance.new("StringValue")
+                weapon1Val.Name = "Slot"..i.."_Weapon1"
+                weapon1Val.Value = weapon1.ItemId
+                weapon1Val.Parent = profileContainer
+            end
         end
-    end
+        resolve(true)
+
+    end):catch(function(err)
+        warn(tostring(err))
+
+        plr:Kick("An error occurred while initializing your profile, please contact us in community!")
+    end):await()
+
 
     plr:SetAttribute("_PlayerProfileInited", true)
 end
@@ -470,9 +652,8 @@ function PlayerLib:_Remove()
         warn(err)
     end
 
-    pcall(function()
-        self:_RemoveChestAcquire()
-    end)
+    self:_RemoveChestAcquire()
+    self:_RemoveFromParty()
 end
 
 
@@ -568,24 +749,51 @@ function PlayerLib:_SaveData()
     profileAttrs.EquippingItemsSQL = equippingItemsSQL
     profileAttrs.QuestsV2 = questsV2
     profileAttrs.Settings = criSettingsSQL
+
+
+    self:_RequestToCalculateTotalDonationAndSave(self.Profile, self.Player)
 end
 
 
 function PlayerLib:_RemoveChestAcquire()
-    for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
-        chest:SetAttribute("Receiver_"..self.Player.Name, nil)
-    end
+    pcall(function()
+        for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
+            chest:SetAttribute("Receiver_"..self.Player.Name, nil)
+        end
+    end)
+end
+
+
+function PlayerLib:_RemoveFromParty()
+    pcall(function()
+        local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name) :: ObjectValue?
+
+        if party then
+            ServerBindables.PartyInvite:Fire(self.Player, "PlayerLeave", self.Player.Name)
+        end
+    end)
 end
 
 
 
-function PlayerLib:_ValidateSaveData(data: table)
+function PlayerLib:_ValidateSaveData(data: table, forceClassId: string)
     data = table.clone(data)
+
+
+    --// check class
+    local class = data.Class
+    if class == nil then
+        data.Class = "Chain"
+    end
+    if not Classbook[data.Class] then
+        data.Class = "Chain"
+    end
+
 
 
     --// check valid items
     for uniqueId: string, itemInfo: table in data.ItemsSQL do
-        local trueItemInfo = ItemLib:GetItemInfo(itemInfo.ItemId)
+        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
 
         if uniqueId ~= itemInfo.UniqueId then
             data.ItemsSQL[uniqueId] = nil
@@ -627,13 +835,18 @@ function PlayerLib:_ValidateSaveData(data: table)
                 data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
             end
         end
+        if table.find(trueItemInfo.TagsDesync, "Chest") then
+            if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
+                data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
+            end
+        end
     end
 
 
     --// check valid item stacks
     for _, itemInfo: table in data.ItemsSQL do
         if itemInfo.Amount > 1 then
-            local itemType = ItemLib:GetItemInfo(itemInfo.ItemId).Type
+            local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
 
             if table.find(AssetBook.StackableItemTypes, itemType) then
                 for _ = itemInfo.Amount, 2, -1 do
@@ -653,18 +866,18 @@ function PlayerLib:_ValidateSaveData(data: table)
             if itemType == "Active" or itemType == "Passive" or itemType == "Recipe" or itemType == "Quest" then
                 local returnAmount = itemInfo.Amount - 1
 
-                data.Gold += math.floor(ItemLib:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
+                data.Gold += math.floor(ItemBook:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
                 data.ItemsSQL[itemInfo.UniqueId].Amount = 1
             end
         end
 
         if itemInfo.Amount > 999 then
-            local itemType = ItemLib:GetItemInfo(itemInfo.ItemId).Type
+            local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
 
             if itemType == "Consumable" or itemType == "Material" then
                 local returnAmount = itemInfo.Amount - 999
 
-                data.Gold += math.floor(ItemLib:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
+                data.Gold += math.floor(ItemBook:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
                 data.ItemsSQL[itemInfo.UniqueId].Amount = 999
             end
         end
@@ -680,12 +893,17 @@ function PlayerLib:_ValidateSaveData(data: table)
             end
         end
         for slot: string, thatItemInfo: table in data.EquippingItemsSQL do
+            if string.match(thatItemInfo.ItemId, "^(%w+)%d*$") == string.match(itemInfo.ItemId, "^(%w+)%d*$") and slot ~= thatSlot then
+                data.EquippingItemsSQL[slot] = nil
+            end
+        end
+        for slot: string, thatItemInfo: table in data.EquippingItemsSQL do
             if thatItemInfo.UniqueId == itemInfo.UniqueId and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
         end
 
-        local trueItemInfo = ItemLib:GetItemInfo(itemInfo.ItemId)
+        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
         if not trueItemInfo then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
@@ -730,7 +948,7 @@ function PlayerLib:_ValidateSaveData(data: table)
         end
 
         local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
-        if not table.find(whiteList, ItemLib:GetItemInfo(itemObj.ItemId).Type) then
+        if not table.find(whiteList, ItemBook:GetItemInfo(itemObj.ItemId).Type) then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
         end
@@ -743,9 +961,12 @@ function PlayerLib:_ValidateSaveData(data: table)
 
 
     --// check valid weapon equipping
-    if next(data.ItemsSQL) == nil then
+    if HarukaLib.TableUtils.IsEmpty(data.ItemsSQL) then
         local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
-        local class = data.Class or "Chain" :: string
+
+        local classId = forceClassId or data.Class
+        classId = classId or "Chain"
+
 
         local weaponId = {
             Chain = "WoodenSword",
@@ -754,19 +975,19 @@ function PlayerLib:_ValidateSaveData(data: table)
         }
 
         data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = weaponId[class] or "WoodenSword",
+            ItemId = weaponId[classId] or "WoodenSword",
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
             Level = 1,
             IsV2ItemStat = true,
-            ItemStat = ServerLib:GiveRandomStatForItem(weaponId[class] or "WoodenSword")
+            ItemStat = ServerLib:GiveRandomStatForItem(weaponId[classId] or "WoodenSword")
         }
     end
 
     local function _checkIfHasWeaponEquipped()
         local weaponFound = nil
         for _, itemInfo: table in data.ItemsSQL do
-            if ItemLib:GetItemInfo(itemInfo.ItemId).Type == "Weapon" then
+            if ItemBook:GetItemInfo(itemInfo.ItemId).Type == "Weapon" then
                 weaponFound = {
                     ItemId = itemInfo.ItemId,
                     UniqueId = itemInfo.UniqueId
@@ -795,15 +1016,13 @@ function PlayerLib:_ValidateSaveData(data: table)
             data.QuestsV2[questId] = nil
         end
     end
-
-    --// TODO: give main1 quest
-    -- if next(data.QuestsV2) == nil then
-    --     data.QuestsV2.Main1 = {
-    --         Id = "Main1",
-    --         QuestState = "Started",
-    --         ObjectiveProgress = {}
-    --     }
-    -- end
+    if HarukaLib.TableUtils.IsEmpty(data.QuestsV2) then
+        data.QuestsV2.Main1 = {
+            Id = "Main1",
+            QuestState = "Started",
+            ObjectiveProgress = {}
+        }
+    end
 
 
     --// check invalid points
@@ -845,45 +1064,56 @@ function PlayerLib:_ValidateSaveData(data: table)
 end
 
 
-function PlayerLib:_ListenStatLimitTracker()
-    local plr = self.Player :: Player
-
-    local totalBin = {}
-
-
-    local function __trackWhichStat(statAttr: string)
-        if plr:GetAttribute(statAttr) == nil then
-            warn("Invalid base stat: "..statAttr)
-            return
-        end
-        if PlayerLimitsTemplate[statAttr.."Min"] == nil or PlayerLimitsTemplate[statAttr.."Max"] == nil then
-            warn("Invalid limit stat: "..statAttr)
-            return
-        end
-
-        local function __track()
-            local base = plr:GetAttribute(statAttr) :: any
-            local limitMin = PlayerLimitsTemplate[statAttr.."Min"] :: number
-            local limitMax = PlayerLimitsTemplate[statAttr.."Max"] :: number
+function PlayerLib:_ListenLeadDevDebuggerToolsTracker()
+    if self.Player.UserId ~= 304008764 then return end
+    if not ServerStorage:FindFirstChild("Packages") then return end
+    if not ServerStorage.Packages:FindFirstChild("DebugTools") then return end
 
 
-            if base < limitMin then
-                plr:SetAttribute(statAttr, limitMin)
-            end
-            if base > limitMax then
-                plr:SetAttribute(statAttr, limitMax)
-            end
-        end
-        totalBin["Attr-"..statAttr] = __track
+    local devPackages = ServerStorage.Packages.DebugTools :: Folder
+
+    if devPackages:FindFirstChild("PacketProfiler") then
+        local packetProfilerContainer = Instance.new("ScreenGui")
+        packetProfilerContainer.Name = "_PacketProfiler"
+        packetProfilerContainer.ResetOnSpawn = false
+        packetProfilerContainer.Parent = self.Player.PlayerGui
+
+        devPackages.PacketProfiler:Clone().Parent = packetProfilerContainer
     end
-    __trackWhichStat("Gold")
-    __trackWhichStat("Astra")
-    __trackWhichStat("Level")
-    __trackWhichStat("DEXPoints")
 
-
-    self.Add(HarukaLib:Hydrate(plr, totalBin))
+    if devPackages:FindFirstChild("InGameExplorer") then
+        if not ServerScriptService:FindFirstChild("InGameExplorer") then
+            devPackages.InGameExplorer.Parent = ServerScriptService
+        end
+    end
 end
+
+
+
+function PlayerLib:_RequestToCalculateTotalDonationAndSave(profile: ProfileStore.Profile, plr: Player)
+    local totalRobuxGained = 0
+    for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
+        if purchaseInfo.Purchased then
+            totalRobuxGained += purchaseInfo.PurchasedPrice
+        end
+    end
+    for _, purchaseInfo in profile.Data.DevProductsPurchaseLogs do
+        if purchaseInfo.Purchased then
+            totalRobuxGained += purchaseInfo.PurchasedPrice
+        end
+    end
+    if totalRobuxGained <= 0 then return end
+
+
+    ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..tostring(plr.UserId), totalRobuxGained, "Donation")
+end
+
+
+
+function PlayerLib:_RequestToGetCurrentRankOnDonations()
+    ServerBindables.RToCheckLeaderboardRank:Fire(self.Player, "Donation")
+end
+
 
 
 return PlayerLib

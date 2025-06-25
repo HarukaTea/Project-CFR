@@ -41,6 +41,8 @@ end
 
 --// Listeners
 
+adjustRain(0)
+
 HarukaLib:Hydrate(Lighting, {
 	["Attr-RainLevel"] = function(newLevel: number)
 		if not newLevel then return end
@@ -55,3 +57,6 @@ HarukaLib:Hydrate(workspace, {
 		adjustRain(Lighting:GetAttribute("RainLevel") or 0)
 	end,
 })
+
+
+workspace:SetAttribute("RainEffectEnabled", true)

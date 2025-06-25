@@ -8,13 +8,16 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 return function (scope: Fusion.Scope, props: {
     Visible: Fusion.Computed? | boolean?,
-    Color: Color3?
+    Color: Fusion.Computed? | Color3?,
+
+    Transparency: Fusion.Computed? |number?,
 })
 
     props = props or {}
 
     props.Visible = props.Visible or true
     props.Color = props.Color or Components.WHITE_COLOR
+    props.Transparency = props.Transparency or 0.3
 
 
     return Components.ImageLabel(scope, {
@@ -27,7 +30,7 @@ return function (scope: Fusion.Scope, props: {
         Visible = props.Visible,
 
         Image = "rbxassetid://91832243782412",
-        ImageTransparency = 0.3,
+        ImageTransparency = props.Transparency,
         ImageColor3 = props.Color
     })
 end

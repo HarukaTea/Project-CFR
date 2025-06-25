@@ -51,6 +51,7 @@ AssetBook.QuestTypeColors = {
 
 AssetBook.ItemEffectIcons = {
 	CanYellowLight = "rbxassetid://2965771738",
+	CanBlueLight = "rbxassetid://2965771738",
 	CanMine = "rbxassetid://12118509077",
 	CanClimb = "rbxassetid://119170658838472",
 
@@ -65,6 +66,8 @@ AssetBook.ItemEffectIcons = {
 	Warding = "rbxassetid://133479347120603",
 	PoisonChance = "rbxassetid://137874332790885",
 	BurnChance = "rbxassetid://74588474308433",
+	BleedChance = "rbxassetid://101337562500575",
+	JumpPower = "rbxassetid://89411498131129",
 
 	Intensity = "rbxassetid://128019227796527",
 	CriDMG = "rbxassetid://73146024586376",
@@ -77,7 +80,6 @@ AssetBook.ItemEffectIcons = {
 }
 AssetBook.ItemEffectIcons.Mana = AssetBook.ItemEffectIcons.MaxMana
 AssetBook.ItemEffectIcons.CanLight = AssetBook.ItemEffectIcons.CanYellowLight
-AssetBook.ItemEffectIcons.CanBlueLight = AssetBook.ItemEffectIcons.CanYellowLight
 
 
 AssetBook.ItemEffectIconColors = {
@@ -102,6 +104,8 @@ AssetBook.ItemEffectNames = {
 	WardingEx = "Warding",
 	PoisonChanceEx = "Poison Chance",
 	BurnChanceEx = "Burn Chance",
+	BleedChanceEx = "Bleed Chance",
+	JumpPowerEx = "Jump",
 }
 AssetBook.ItemEffectIsPercentage = {
 	CriChanceEx = true,
@@ -110,7 +114,8 @@ AssetBook.ItemEffectIsPercentage = {
 	LuckEx = true,
 	WardingEx = true,
 	PoisonChanceEx = true,
-	BurnChanceEx = true
+	BurnChanceEx = true,
+	BleedChanceEx = true
 }
 
 
@@ -118,6 +123,7 @@ AssetBook.CharStatIcons = {
 	ATK = "rbxassetid://2965862892",
 	["BURN CHANCE"] = "rbxassetid://74588474308433",
 	["POISON CHANCE"] = "rbxassetid://137874332790885",
+	["BLEED CHANCE"] = "rbxassetid://101337562500575",
 	["CRIT CHANCE"] = "rbxassetid://73146024586376",
 	["CRIT DMG"] = "rbxassetid://73146024586376",
 	["DODGE CHANCE"] = "rbxassetid://74429503512836",
@@ -169,5 +175,50 @@ AssetBook.XboxControllerColors = {
 	Y = Color3.fromHex('#f9ca24')
 }
 
+
+AssetBook.PerkPointColors = {
+	STR = Color3.fromRGB(255, 255, 0),
+	INT = Color3.fromHex('#91a7ff'),
+	VIT = Color3.fromHex('#63e6be'),
+}
+
+
+
+AssetBook.GamepassIds = {
+	Donation1 = 1094837868,
+	Donation2 = 1094827969,
+	Donation3 = 1274366124,
+	Donation4 = 1274424139
+}
+
+
+AssetBook.DevProductIds = {
+	DonationPack5 = 3315706829,
+	DonationPack6Mega = 3315707330
+}
+
+AssetBook.BadgeIds = {
+	CrimsonSlimeHunter = 4040961258983736,
+	QueenBeeDestroyer = 2491246281240652,
+	HMWolfHunter = 467703311828658,
+	GoldCollector = 306749336762986,
+	SkyAdventurer = 2140109709187125,
+	GoldGatherer = 4119351477910950,
+	StoneBreaker = 1589730243445305,
+	Fighter = 3437152739289237
+}
+
+
+
+AssetBook.PlaceIds = {
+	AbyssLevelTest = 17737750943,
+	AbyssLevelReal = 18331795211,
+
+	MainworldTest = 118088243313343,
+	MainworldReal = 124519565742104,
+
+	AbyssLevel = 18331795211,
+	Mainworld = 124519565742104,
+}
 
 return AssetBook

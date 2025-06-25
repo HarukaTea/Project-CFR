@@ -4,17 +4,16 @@ local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 
 local ServerBindables = {
     RToSpawnChar = Signal.new(),
-    RToApplyCharCriRPGAttrs = Signal.new(),
     RToSpawnOrb = Signal.new(),
     RToCreateProjectileSymbol = Signal.new(),
 
+    RToUpdateLeaderboardRank = Signal.new(),
+    RToCheckLeaderboardRank = Signal.new(),
+    RToActivateDungeonSystem = Signal.new(),
+
     PlayerDied = Signal.new(),
-    PlayerGotHit = Signal.new(),
-    PlayerCombatEnded = Signal.new(),
-    EnemyGotHit = Signal.new(),
 
-
-    PlayerTargetingListChanged = Signal.new(),
+    PartyInvite = Signal.new(),
 }
 
 return ServerBindables

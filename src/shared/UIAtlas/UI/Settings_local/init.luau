@@ -8,9 +8,10 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
-local SliderForSettings = require(script.Components.Slider)
+local Slider = require(script.Components.Slider)
 local Switcher = require(script.Components.Switcher)
 local Dropdown = require(script.Components.Dropdown)
+local Keybind = require(script.Components.Keybind)
 
 local Children = Fusion.Children
 
@@ -123,21 +124,36 @@ return function (plr: Player)
 
                         [Children] = {
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
-                                return panelId, Components.Frame(scope, {
+                                return panelId, Components.ScrollingFrame(scope, {
                                     Name = panelId,
+                                    AnchorPoint = Vector2.zero,
+                                    Position = UDim2.fromScale(-0.05, 0),
 
                                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         return use(self.PanelSelected) == panelId
                                     end),
 
                                     [Children] = {
-                                        Components.UIListLayout(scope, {
-                                            Padding = UDim.new(0.05, 0),
-                                        }),
+                                        Components.PaddingFrame(scope, "AAA"),
+                                        Components.PaddingFrame(scope, "ZZZ"),
 
                                         Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope, optionId: string, optionInfo: table)
+                                            if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then
+                                                return optionId, Keybind(scope, {
+                                                    Platfrom = if panelId == "KeybindsPC" then "PC" else "Console",
+
+                                                    KeybindId = optionId,
+                                                    KeybindVal = optionInfo,
+
+                                                    KeybindModeVal = self.IsInKeybindMode,
+                                                    KeybindBegan = self.ValidInputBegan,
+                                                })
+                                            end
+
+
+
                                             if optionInfo.Type == "Slider" then
-                                                return optionId, SliderForSettings(scope, {
+                                                return optionId, Slider(scope, {
                                                     OptionId = optionId,
                                                     OptionTitle = optionInfo.OptionTitle,
                                                     OptionInfo = optionInfo,
@@ -171,6 +187,10 @@ return function (plr: Player)
                                             return optionId, nil
                                         end)
                                     }
+                                }, {
+                                    Padding = UDim.new(0, 12),
+                                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                                    SortOrder = if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then Enum.SortOrder.Name else Enum.SortOrder.LayoutOrder
                                 })
                             end)
                         }

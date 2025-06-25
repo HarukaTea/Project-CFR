@@ -5,7 +5,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local Children = Fusion.Children
 
@@ -15,7 +15,15 @@ return function (scope: Fusion.Scope, props: {
     Amount: number,
 })
 
-    local itemInfo = ItemLib:GetItemInfo(props.ItemId)
+    local itemInfo = nil
+    if props.ItemId == "GOLD" then
+        itemInfo = {
+            Icon = "rbxassetid://18421784947",
+            Name = "Gold",
+        }
+    else
+        itemInfo = ItemBook:GetItemInfo(props.ItemId)
+    end
     if not itemInfo then return nil end
 
 
@@ -26,6 +34,7 @@ return function (scope: Fusion.Scope, props: {
         Image = itemInfo.Icon,
         Selectable = true,
         SelectionOrder = 0,
+        LayoutOrder = if props.ItemId == "GOLD" then 233 else 1,
 
         [Fusion.OnEvent("MouseEnter")] = function()
             isSelecting:set(true)

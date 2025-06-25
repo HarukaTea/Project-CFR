@@ -8,7 +8,7 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
@@ -25,7 +25,7 @@ return function (scope: Fusion.Scope, props: {
     local absDescFrameSize = Fusion.Value(scope, Vector2.zero)
 
 
-    local info = ItemLib:GetItemInfo(props.Item)
+    local info = ItemBook:GetItemInfo(props.Item)
     if not info then return nil end
 
 
@@ -59,7 +59,7 @@ return function (scope: Fusion.Scope, props: {
     if itemStat == nil then return nil end
 
     local itemStatExtra = string.split(itemStat, ",")
-    itemStatExtra = ItemLib:DesyncItemStat("Stat", itemStatExtra)
+    itemStatExtra = ItemBook:DesyncItemStat("Stat", itemStatExtra)
 
 
 
@@ -176,7 +176,7 @@ return function (scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(0.28, 7),
 
         Visible = Fusion.Computed(scope, function()
-            return ItemLib:GetItemInfo(props.Item) ~= nil
+            return ItemBook:GetItemInfo(props.Item) ~= nil
         end),
 
         [Children] = {

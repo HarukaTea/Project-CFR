@@ -122,7 +122,7 @@ end
 
 
 ClassMechanicLib._CLASS_Reverberation = function(self)
-    ClassAdd(ServerBindables.PlayerTargetingListChanged:Connect(function(charId: string, entity: Model)
+    ClassAdd(char.PlayerTargetAdded.Event:Connect(function(charId: string, entity: Model)
         if char.Name ~= charId then return end
         if entity:GetAttribute("ReverResonateNum_"..plr.UserId) then return end
 

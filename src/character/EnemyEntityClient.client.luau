@@ -245,6 +245,7 @@ function EntityLib.new(enemy: Model)
 
     end):timeout(10):catch(function() end):await()
 
+    if self.Destroying then return nil end
     if enemy:GetAttribute("IsDead") then return nil end
 
 
@@ -255,6 +256,8 @@ function EntityLib.new(enemy: Model)
 
     end):timeout(10):catch(function() end):await()
 
+    if self.Destroying then return nil end
+
 	self.Entity = enemy
 
     self.UniqueId = enemy:GetAttribute("HarukaUniqueId")
@@ -262,7 +265,6 @@ function EntityLib.new(enemy: Model)
 
     self.Add, self.Empty = HarukaLib.Bin()
     self.ModelAdd, self.ModelEmpty = HarukaLib.Bin()
-
 
     self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
@@ -302,8 +304,12 @@ end
 
 
 function EntityLib:Destroy()
+    self.Destroying = true
+
+
     allEntityPool[self.UniqueId] = nil
 
+    self.ModelEmpty()
     self.Empty()
 end
 
@@ -353,6 +359,8 @@ function EntityLib:_LoadAnims()
         track.Looped = false
         track.Priority = Enum.AnimationPriority.Action2
 
+        self.Add(track)
+
         if anim.Name == "Idle" then
             track.Looped = true
             track.Priority = Enum.AnimationPriority.Idle
@@ -400,8 +408,14 @@ function EntityLib:_MakeModel()
     end
     model:Destroy()
 
+
+    local torso = entity.Torso
+    if torso:IsA("ObjectValue") then
+        torso = torso.Value
+    end
+
     motor6d.Part0 = entity.PrimaryPart
-    motor6d.Part1 = entity.Torso
+    motor6d.Part1 = torso
     motor6d.Parent = entity.PrimaryPart
 
     entity.PrimaryPart.Anchored = false
@@ -430,6 +444,9 @@ function EntityLib:_ListenAttributeTracker()
             if alreadyAttributeEnteringCombat then return end
             if not ClientLib:IsCharValid(entity) then return end
 
+            local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+            if distance >= 159 or distance <= 0 then return end
+
 
             for _, child: Instance in entity:GetDescendants() do
                 if child.Parent == entity then continue end
@@ -450,6 +467,9 @@ function EntityLib:_ListenAttributeTracker()
             if not self.HasModel then return end
             if alreadyAttributeEnteredCombat then return end
             if not ClientLib:IsCharValid(entity) then return end
+
+            local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+            if distance >= 159 or distance <= 0 then return end
 
 
             local cylinderMesh = Instance.new("CylinderMesh")
@@ -481,6 +501,11 @@ function EntityLib:_ListenAttributeTracker()
             if not self.HasModel then return end
             if alreadyAttributeIsDead then return end
             if not ClientLib:IsModelValid(entity) then return end
+
+
+            local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
+            if distance >= 159 or distance <= 0 then return end
+
 
             for _, child: Instance in entity:GetDescendants() do
                 if child.Parent == entity then continue end

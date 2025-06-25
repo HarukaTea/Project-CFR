@@ -5,7 +5,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local BKOptionBtn = require(script.Components.BKOptionBtn)
@@ -64,7 +64,7 @@ return function (plr: Player)
 
                         [Children] = {
                             Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope, index: number, itemSymbol: IntConstrainedValue)
-                                local info = ItemLib:GetItemInfo(itemSymbol.Name)
+                                local info = ItemBook:GetItemInfo(itemSymbol.Name)
                                 if not info then return nil end
 
                                 local isVisible = false
@@ -239,7 +239,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Gold", "Astra" }, function(_, scope: Fusion.Scope, index: number, currency: string)
+                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
                             return index, BKEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,
@@ -297,7 +297,7 @@ return function (plr: Player)
                             local item = use(self.CurrentSelectedItem) :: string
                             local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
 
-                            local itemInfo = ItemLib:GetItemInfo(item)
+                            local itemInfo = ItemBook:GetItemInfo(item)
                             if itemInfo == nil then
                                 return nil
                             end

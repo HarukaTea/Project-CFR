@@ -7,6 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+
 
 local wait = task.wait
 
@@ -25,7 +28,7 @@ return function (self: table)
         table.insert(self.CharVals, Fusion.Value(scope, nil))
     end
 
-    task.spawn(function()
+    table.insert(scope, task.spawn(function()
         Promise.new(function(resolve)
             local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(Players.LocalPlayer.UserId)
             local r6Char = Players:CreateHumanoidModelFromDescription(humanoidDesc, Enum.HumanoidRigType.R6)
@@ -50,6 +53,65 @@ return function (self: table)
             end
 
         end):catch(function() end)
-    end)
+    end))
+
+
+    table.insert(scope, task.spawn(function()
+        local cframe = workspace.MapComponents.Titlescreen.TitleRoom.Rig.PrimaryPart.CFrame
+
+        local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(self.plr.UserId)
+        local r6Char = Players:CreateHumanoidModelFromDescription(humanoidDesc, Enum.HumanoidRigType.R6)
+
+        r6Char.Name = "Rig"
+        r6Char.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        r6Char.Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+        r6Char.Animate:Destroy()
+
+        workspace.MapComponents.Titlescreen.TitleRoom.Rig:Destroy()
+        r6Char:PivotTo(cframe)
+
+        r6Char.Parent = workspace.MapComponents.Titlescreen.TitleRoom
+
+
+        local anim: Animation = RepS.Packages.Anims.CharAnims.Idle1
+        local animTrack = r6Char.Humanoid.Animator:LoadAnimation(anim) :: AnimationTrack
+
+        animTrack.Looped = true
+        animTrack.Priority = Enum.AnimationPriority.Idle
+
+        animTrack:Play()
+
+
+        table.insert(scope, HarukaLib:Hydrate(workspace, {
+            ["Attr-Titlescreen_TempClass"] = function(class: string)
+                class = class or "Chain"
+
+                local weapons = {
+                    Chain = "WoodenSword",
+                    Burst = "WoodenBow",
+                    Flow = "WoodenStaff",
+                }
+                local weaponId = weapons[class] or "WoodenSword"
+
+                for _, weapon: Model in r6Char:GetChildren() do
+                    if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
+                end
+                if not RepS.Packages.ClassWeapons:FindFirstChild(class) then return end
+                if not RepS.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
+
+
+                local targetFolder = RepS.Packages.ClassWeapons[class][weaponId].Combat :: Folder
+
+                for _, weapon: Model in targetFolder:GetChildren() do
+                    weapon = weapon:Clone()
+                    weapon:AddTag("ClassWeapon")
+
+                    ClientLib:WeldWeapon(weapon, r6Char)
+                end
+
+                HarukaLib:EmitParticles(workspace.MapComponents.Titlescreen.TitleRoom.SwitchVFX)
+            end
+        }))
+    end))
 
 end

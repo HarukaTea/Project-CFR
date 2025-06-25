@@ -118,7 +118,7 @@ function CriRPGLib:_ListenCombatTracker()
 
     local function _destroyCombatBorder()
         for _, border: Model in CollectionService:GetTagged("CombatBorder") do
-            if border.Parent == workspace then border:Destroy() end
+            if border:IsDescendantOf(workspace) then border:Destroy() end
         end
     end
     local function _checkCombatState(state: boolean)
@@ -167,10 +167,12 @@ function CriRPGLib:_ListenCombatTracker()
                 if isBoss then
                     local targetSoundId = SoundService.Musics.Areas.Combat:FindFirstChild(targetMusicId) :: Sound
                     if targetSoundId then
-                        SoundService.Musics.Overworld:Pause()
+                        if targetSoundId.SoundId ~= SoundService.Musics.Overworld.SoundId then
+                            SoundService.Musics.Overworld:Pause()
 
-                        SoundService.Musics.BossCombat.SoundId = targetSoundId.SoundId
-                        SoundService.Musics.BossCombat:Play()
+                            SoundService.Musics.BossCombat.SoundId = targetSoundId.SoundId
+                            SoundService.Musics.BossCombat:Play()
+                        end
                     end
                 else
                     if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
@@ -201,6 +203,11 @@ function CriRPGLib:_ListenCombatTracker()
         ["Attr-IsInCombat"] = _checkCombatState
     }))
     Add(_destroyCombatBorder)
+    Add(function()
+        if char.Humanoid.Health <= 0 and char:GetAttribute("IsInCombat") then
+            SoundService.SFXs.CombatFailed:Play()
+        end
+    end)
 
     _destroyCombatBorder()
 end
@@ -371,6 +378,8 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
         if not hit then return end
         if not hit.Parent then return end
 
+        if not ClientLib:IsCharValid(char) then return end
+
         if hit.Parent:HasTag("OrbEntity") then
             local orb = hit.Parent
             local whiteList = { "HEAL_ATTACK", "BUFF_ATTACK" }
@@ -387,6 +396,13 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             local humanoid = char.Humanoid :: Humanoid
             local orbUniqueId = orb:GetAttribute("HarukaUniqueId") :: string
 
+            if not orbUniqueId then
+                warn("Invalid orb uniqueId when attacking")
+
+                Bindables.CreateNotify:Fire("Invalid Orb UniqueId")
+                return
+            end
+
 
             task.delay(0.25, function()
                 humanoid.AutoRotate = true
@@ -398,7 +414,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             })
 
             local SFXId = orb:GetAttribute("SFXId") :: string
-            local SFX: Sound = if SFXId then SoundService.SFXs:FindFirstChild(SFXId, true) else SoundService.SFXs.OrbHit
+            local SFX: Sound = if SFXId then SoundService.SFXs:FindFirstChild(SFXId) else SoundService.SFXs.OrbHit
             SFX:Play()
 
             if not orb:GetAttribute("DontBounce") then
@@ -448,7 +464,7 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             if dmgCD then return end
 
             dmgCD = true
-            task.delay(0.4, function()
+            task.delay(0.6, function()
                 dmgCD = false
             end)
 
@@ -465,13 +481,24 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
                 shouldPierce = true
             end
 
+            local DoTStatus = "Normal"
+            if hit.Parent:HasTag("PoisonEntity") then
+                DoTStatus = "Poison"
+            end
+            if hit.Parent:HasTag("BurnEntity") then
+                DoTStatus = "Burn"
+            end
+            if hit.Parent:HasTag("FreezeEntity") then
+                DoTStatus = "Freeze"
+            end
+            if hit.Parent:HasTag("ShockingEntity") then
+                DoTStatus = "Shocking"
+            end
 
-            --// TODO: dot status
             Events.RequestToDMGPlayer.Fire({
                 ProjectileUniqueId = uniqueId,
                 IsPierce = shouldPierce,
-
-                DoTStatus = "Normal"
+                DoTStatus = DoTStatus
             })
         end
     end))
@@ -534,6 +561,9 @@ function CriRPGLib:_ListenProjectileSpawnTracker()
     local function _checkCombatState(state: boolean)
         if not state then
             projectileContainer.Parent = ServerStorage
+
+            RunService.Heartbeat:Wait()
+            projectileContainer:ClearAllChildren()
         else
             projectileContainer:ClearAllChildren()
             projectileContainer.Parent = workspace
@@ -716,15 +746,30 @@ end
 function CriRPGLib:_ListenDungeonStarterTracker()
     if not workspace:GetAttribute("DungeonId") then return end
 
-    Add(Events.DUNGEON_StartDungeon.On(function()
+
+    local function _playOverworldMusic(soundId: string)
         local overworldMusic = SoundService.Musics.Overworld :: Sound
 
+        overworldMusic.SoundId = soundId
         overworldMusic.Volume = 0
         overworldMusic:Play()
 
         HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.one, {
             Volume = 0.7
         }):Play()
+    end
+    Add(Events.DUNGEON_StartDungeon.On(function()
+        _playOverworldMusic(SoundService.Musics.Overworld.SoundId)
+    end))
+    Add(Events.DUNGEON_StartBossFight.On(function()
+        SoundService.Musics.Combat.SoundId = SoundService.Musics.BossCombat.SoundId
+
+        _playOverworldMusic(SoundService.Musics.BossCombat.SoundId)
+    end))
+    Add(Events.DUNGEON_EndDungeon.On(function()
+        SoundService.Musics.Combat.SoundId = SoundService.Musics.Victory.SoundId
+
+        _playOverworldMusic(SoundService.Musics.Victory.SoundId)
     end))
 end
 

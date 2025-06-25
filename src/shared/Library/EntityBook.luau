@@ -325,21 +325,41 @@ return {
 
 
     --// Dragon species
-    -- LeafDragon = {
-    --     Name = "Leaf Dragon",
-    --     Icon = "rbxassetid://105149911325359",
+    LeafDragon = {
+        Name = "Leaf Dragon",
+        Icon = "rbxassetid://105149911325359",
 
-    --     Tier = 10,
-    --     BaseSpeed = 0,
-    --     BaseJumpPower = 0,
-    --     EnvironmentBonus = 1.5,
+        Tier = 10,
+        BaseSpeed = 0,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 3,
 
-    --     IsBoss = true,
-    --     Species = "Dragon",
-    --     Tag = "The Verdant Guardian",
+        IsBoss = true,
+        Species = "Dragon",
+        Tag = "The Forest Guardian",
 
-    --     Drops = {
-    --         GoldenApple = 100
-    --     }
-    -- },
+        Drops = {
+            GoldenApple = 100
+        }
+    },
+
+
+    --// Risk of Rain 2 species
+    Sylvarion = {
+        Name = "Sylvarion",
+        Icon = "",
+
+        Tier = 10,
+        BaseSpeed = 0,
+        BaseJumpPower = 0,
+        EnvironmentBonus = 3,
+
+        IsBoss = true,
+        Species = "RiskRain",
+        Tag = "The Forest Guardian",
+
+        Drops = {
+            GoldenApple = 100
+        }
+    }
 }

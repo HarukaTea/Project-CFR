@@ -6,13 +6,15 @@ local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 local SoundService = game:GetService("SoundService")
 
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ClassAttackLib = require(SSS.HarukaServer.Library.ClassAttackLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
+local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
 
 local CastItemLib = {}
 
@@ -38,7 +40,7 @@ local function _preCheck(props: {
     if not ServerLib:IsCharValid(char) then
         return false
     end
-    if not ItemLib:GetItemInfo(data.ItemId) then
+    if not ItemBook:GetItemInfo(data.ItemId) then
         Events.CreateNotify.Fire(player, "[Error] Invalid Item Id")
         return false
     end
@@ -79,7 +81,7 @@ local function _drinkSoundFunc(char: Model, func: () -> nil)
 end
 
 
---// Actives
+--// Consumables
 
 
 CastItemLib.HealthyApple = function(player: Player, char: Model) : number?
@@ -236,6 +238,73 @@ CastItemLib.EndurancePotion = function(player: Player, char: Model) : number?
 end
 
 
+CastItemLib.HalloweenCandy = function(player: Player, char: Model) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "HalloweenCandy",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    _eatSoundFunc(char, function()
+        local amount = StatusLib:HealPercentage(char, 10)
+        HarukaLib:AddAttr(char, "LuckEx", 20)
+
+        ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+    end)
+end
+
+
+CastItemLib.CookedSteak = function(player: Player, char: Model) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "CookedSteak",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    _eatSoundFunc(char, function()
+        local amount = StatusLib:HealPercentage(char, 15)
+
+        ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+    end)
+end
+
+
+CastItemLib.ShrimpDish = function(player: Player, char: Model) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "ShrimpDish",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    _eatSoundFunc(char, function()
+        local amount = StatusLib:HealPercentage(char, 20)
+
+        ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+    end)
+end
+
+
+
+
+
+
+--// Actives
+
 CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {
     CostManaFunc: () -> nil,
 }) : number?
@@ -254,15 +323,16 @@ CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {
 
 
     local uniqueId = HttpService:GenerateGUID(false)
+    local castTime = ClassAttackLib:_CalCastingTime(char, 1)
 
 
     Events.OpenCastTimeBar.Fire(player, {
-        Duration = 1
+        Duration = castTime
     })
     Events.PlaySound.Fire(player, SoundService.SFXs.SpellReadyToCast)
 
 
-    Promise.delay(1):andThen(function()
+    Promise.delay(castTime):andThen(function()
         ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
             ProjectileId = "FireballSpell",
             Duration = 3,
@@ -333,8 +403,140 @@ CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: {
     })
     if not check then return 0 end
 
-
     Events.Spell_ExtraJumpSupport.Fire(player)
+
+    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+        SceneId = "ChainJump",
+        Caster = char,
+        ProjectileUniqueId = "nil"
+    })
+end
+
+
+CastItemLib.ArcaneMark = function(player: Player, char: Model, extraInfo: {
+    CostManaFunc: () -> nil
+}) : number?
+    local check = _preCheck({
+        ReqCombat = true,
+        ReqEnemy = true
+    }, {
+        ItemId = "ArcaneMark",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+
+    extraInfo.CostManaFunc()
+
+
+    local uniqueId = HttpService:GenerateGUID(false)
+    local castTime = ClassAttackLib:_CalCastingTime(char, 2)
+
+
+    Events.OpenCastTimeBar.Fire(player, {
+        Duration = castTime
+    })
+    Events.PlaySound.Fire(player, SoundService.SFXs.SpellReadyToCast)
+
+
+    Promise.delay(castTime):andThen(function()
+        Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
+        Events.PlayAnimation.Fire(player, {
+            AnimId = "MagicCasted1"
+        })
+        Events.FaceToTargetingEnemy.Fire(player)
+
+
+        Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "ArcaneMarkRune",
+            Caster = char,
+            ProjectileUniqueId = uniqueId,
+        })
+
+        wait(0.5)
+        local targeting = char.TargetingEnemy.Value :: Model
+
+
+        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib:_CalDMG("Magic", char, {
+                ForceMaxDMG = true
+            }) * 2),
+            DMGType = "Magic",
+            Attacker = "SkillProjectile"
+        })
+
+
+        local result = HarukaLib:RollLoot({
+            ["Debuff"] = 5,
+            ["NoEffect"] = 100 - 5
+        })
+        if result == "Debuff" then
+            local debuffObj = HarukaDoT.new({
+                Target = targeting,
+                Type = "Burn",
+                Duration = 5,
+                Creator = char,
+                Power = 1,
+            })
+            debuffObj:Activate()
+        end
+    end)
+end
+
+
+
+CastItemLib.StarBeamStrike = function(player: Player, char: Model, extraInfo: {
+    CostManaFunc: () -> nil
+}) : number?
+    local check = _preCheck({
+        ReqCombat = false,
+        ReqEnemy = false
+    }, {
+        ItemId = "StarBeamStrike",
+        Player = player,
+        Char = char
+    })
+    if not check then return 0 end
+
+
+    extraInfo.CostManaFunc()
+
+
+    local uniqueId = HttpService:GenerateGUID(false)
+    local castTime = ClassAttackLib:_CalCastingTime(char, 3)
+
+
+    Events.OpenCastTimeBar.Fire(player, {
+        Duration = castTime
+    })
+    Events.PlaySound.Fire(player, SoundService.SFXs.SpellReadyToCast)
+
+
+    Promise.delay(castTime):andThen(function()
+        ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+            ProjectileId = "StarBeamStrike",
+            Duration = 6,
+            ProjectileType = "OverTime",
+            ProjectileUniqueId = uniqueId,
+            DMGType = "Magic",
+            DoTType = "Burn"
+        })
+        Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
+        Events.PlayAnimation.Fire(player, {
+            AnimId = "MagicCasted1"
+        })
+        Events.FaceToTargetingEnemy.Fire(player)
+
+
+        Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "StarBeamStrike",
+            Caster = char,
+            ProjectileUniqueId = uniqueId,
+        })
+    end)
+
 end
 
 

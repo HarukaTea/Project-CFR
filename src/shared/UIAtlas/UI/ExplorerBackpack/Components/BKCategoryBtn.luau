@@ -1,7 +1,6 @@
 --!nocheck
 
 local RepS = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
@@ -37,7 +36,10 @@ return function(scope: Fusion.Scope, props: {
         VIT = "rbxassetid://106075217220023",
 
         Crafting = "rbxassetid://105673885617491",
-        Gemstone = "rbxassetid://139698715468743"
+        Gemstone = "rbxassetid://139698715468743",
+
+        RoStore = "rbxassetid://135736394286615",
+        RoLeaderboard = "rbxassetid://106569943333610",
     }
     local DEFAULT_COLOR = Color3.fromRGB(211, 188, 142)
     local COLORS = {
@@ -57,7 +59,10 @@ return function(scope: Fusion.Scope, props: {
         VIT = DEFAULT_COLOR,
 
         Crafting = Color3.fromRGB(255, 255, 255),
-        Gemstone = DEFAULT_COLOR
+        Gemstone = DEFAULT_COLOR,
+
+        RoStore = DEFAULT_COLOR,
+        RoLeaderboard = DEFAULT_COLOR,
     }
 
     local isSelecting = Fusion.Value(scope, false)

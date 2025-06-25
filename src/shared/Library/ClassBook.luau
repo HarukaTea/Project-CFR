@@ -6,10 +6,8 @@ return {
 		Color = Color3.fromHex('#ffeaa7'),
         Type = "DMG",
 
-        Desc = "",
-        LoreDesc = "",
-
-        Hint = "Stay airborne as much as possible to build more Combos!",
+        Desc = "As a <yellow>Chain</font> class, deal high damage by building <red>Combos</font>. <br/>Gain <red>Combos</font> by touching <yellow>Orbs</font>. <br/>Your <red>Combo</font> resets immediately upon landing.<br/>Not recommended for beginners.",
+        Hint = "Build more combos!",
 
         Skills = {
             UltSkillIcon = "rbxassetid://80904500184652",
@@ -27,10 +25,8 @@ return {
 		Color = Color3.fromHex('#7bed9f'),
 		Type = "DMG",
 
-        Desc = "",
-        LoreDesc = "",
-
-        Hint = "Gather as many Arrows as you can!",
+        Desc = "The <green>Burst</font> class deals high damage based on the number of <green>Arrows</font> you have. <br/>Touching a bow-shaped Orb instantly spawns an <green>Arrow Orb</font> on the field. <br/>Touching an <green>Arrow Orb</font> grants you an Arrow. <br/>Recommended for beginners.",
+        Hint = "Collect more Arrows!",
 
         Skills = {
             UltSkillIcon = "rbxassetid://119538556978639",
@@ -48,10 +44,8 @@ return {
 		Color = Color3.fromHex('#a29bfe'),
 		Type = "Magic",
 
-        Desc = "",
-        LoreDesc = "",
-
-        Hint = "Strategically use burst damage!",
+        Desc = "<purple>Flow</font> class damage scales with your Flow amount. <br/>Each hit builds 35% Flow, culminating in a devastating burst and a <red>Burn</font> effect once Full Flow is achieved. <br/>Not ideal for new players.",
+        Hint = "",
 
         Skills = {
             UltSkillIcon = "rbxassetid://79241468928508"
@@ -70,9 +64,7 @@ return {
 		Type = "DMG",
 
         Desc = "",
-        LoreDesc = "",
-
-        Hint = "A blessing from The City!",
+        Hint = "",
 
 
         Skills = {
@@ -92,8 +84,6 @@ return {
 		Type = "DMG",
 
         Desc = "",
-        LoreDesc = "",
-
         Hint = "",
 
 
@@ -105,6 +95,25 @@ return {
 
         BaseStats = {
             MaxHealth = 1599,
+        }
+    },
+
+
+    Furioso = {
+        Icon = "rbxassetid://128714575176870",
+        Color = Color3.fromHex('#ffffff'),
+        Type = "Magic",
+
+        Desc = "",
+        Hint = "",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://118519686473047",
+            UltSkillWithoutRecolor = true
+        },
+
+        BaseStats = {
+            ShockingChance = 10
         }
     }
 }

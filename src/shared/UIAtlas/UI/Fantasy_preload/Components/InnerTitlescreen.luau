@@ -1,7 +1,9 @@
 --!nocheck
 
+local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")
 
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
@@ -11,6 +13,10 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 local SaveSlot = require(script.Parent.SaveSlot)
 
 local FriendListView = require(script.Parent.FriendListView)
+local ClassSelectionView = require(script.Parent.ClassSelectionView)
+
+
+local Haruka3DifyUI = require(RepS.HarukaShared.Shared.Haruka3DifyUI)
 
 local Children = Fusion.Children
 
@@ -42,6 +48,8 @@ return function (scope: Fusion.Scope, props: {
 
     local whichSlotIsChosen = Fusion.Value(scope, "Slot1")
 
+    local isSelectingStartClass = Fusion.Value(scope, false)
+
     table.insert(scope, props.CutsceneUISignal:Connect(function()
         isShown:set(false)
     end))
@@ -50,6 +58,7 @@ return function (scope: Fusion.Scope, props: {
     end))
     table.insert(scope, readyToTeleportSignal:Connect(function()
         isShown:set(false)
+        isSelectingStartClass:set(false)
     end))
 
 
@@ -115,6 +124,7 @@ return function (scope: Fusion.Scope, props: {
                                 ServerListClickedSignal = serverListClickedSignal,
 
                                 IsUIShown = isShown,
+                                IsSelectingClass = isSelectingStartClass,
                             })
                         end)
                     }
@@ -141,6 +151,23 @@ return function (scope: Fusion.Scope, props: {
             }
         }
     })
+    local UI2; UI2 = Components.HarukaScreenGui(scope, {
+        Name = "InnerTitlescreen",
+        DisplayOrder = 233,
+
+        Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
+            return use(isSelectingStartClass)
+        end),
+
+        [Children] = {
+            ClassSelectionView(scope, {
+                IsSelectingStartClass = isSelectingStartClass,
+                ReadyToTeleportSignal = readyToTeleportSignal,
+                IsUIShown = isShown,
+                SlotId = whichSlotIsChosen,
+            })
+        }
+    }, {})
 
 
     --// anims
@@ -167,5 +194,55 @@ return function (scope: Fusion.Scope, props: {
 
 
 
-    return UI
+    local screen3DObj = Haruka3DifyUI.new(UI2, 5)
+    local part2D_classSelection = screen3DObj:GetPart2D(UI2.ClassSelection)
+
+    part2D_classSelection:SetOffsetY(4)
+    part2D_classSelection:Enable()
+
+
+    table.insert(scope, screen3DObj)
+
+
+
+
+    --// change class scene request
+    table.insert(scope, Bindables.Titlescreen_ChangeClassScene:Connect(function()
+        workspace.MapComponents.Titlescreen.CameraLocator.Value = workspace.MapComponents.Titlescreen.CameraLocator2
+
+        Lighting.Ambient = Color3.fromRGB(7, 0, 50)
+        Lighting.Brightness = 0.5
+        Lighting.ColorShift_Bottom = Color3.fromRGB(0, 0, 0)
+        Lighting.ColorShift_Top = Color3.fromRGB(24, 0, 71)
+        Lighting.EnvironmentDiffuseScale = 0.5
+        Lighting.EnvironmentSpecularScale = 1
+        Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
+        Lighting.ClockTime = 0
+        Lighting.ExposureCompensation = 0
+
+        if Lighting:FindFirstChildOfClass("Sky") then
+            Lighting:FindFirstChildOfClass("Sky"):Destroy()
+        end
+        if Lighting:FindFirstChildOfClass("Atmosphere") then
+            Lighting:FindFirstChildOfClass("Atmosphere"):Destroy()
+        end
+
+        local atmosphere = Instance.new("Atmosphere")
+        atmosphere.Name = "TitlescreenAtmosphere"
+        atmosphere.Color = Color3.fromRGB(29, 29, 59)
+        atmosphere.Decay = Color3.fromRGB(99, 99, 99)
+        atmosphere.Glare = 0.25
+        atmosphere.Haze = 1.3
+        atmosphere.Density = 0.35
+        atmosphere.Offset = 0.15
+        atmosphere.Parent = Lighting
+
+        local sky = RepS.Packages.Unloads._ClassSelectionSkybox:Clone() :: Sky
+        sky.Name = "_TitlescreenSkybox"
+        sky.Parent = Lighting
+    end))
+
+
+
+    return { UI, UI2 }
 end

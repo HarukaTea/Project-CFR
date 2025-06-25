@@ -38,7 +38,7 @@ local function _tweenValue(start: number, duration: number, endTime: number, obj
 end
 local function _createMarkContainer() : Folder
     local tempMarkedContainer = Instance.new("Folder")
-    tempMarkedContainer.Name = "TempMarkedContainer"
+    tempMarkedContainer.Name = "TempMarkedContainer_"..HarukaLib:GenerateUUID()
     tempMarkedContainer.Parent = game:GetService("ServerStorage")
     Debris:AddItem(tempMarkedContainer, 15)
 
@@ -99,7 +99,7 @@ ClassSPSceneLib.ChainSlash = function(char: Model, projectileUniqueId: string)
     local tempMarkedContainer = _createMarkContainer()
 
 
-    Promise.try(function()
+    Promise.new(function(resolve)
         while true do
             RunService.Heartbeat:Wait()
 
@@ -132,9 +132,11 @@ ClassSPSceneLib.ChainSlash = function(char: Model, projectileUniqueId: string)
                 end
             end
         end
-    end):catch(function() end)
 
-    Promise.try(function()
+        resolve()
+    end):timeout(15):catch(function() end)
+
+    Promise.new(function(resolve)
         while RunService.RenderStepped:Wait() do
             if not ClientLib:IsModelValid(vortex) then break end
             if not ClientLib:IsModelValid(char) then break end
@@ -143,7 +145,9 @@ ClassSPSceneLib.ChainSlash = function(char: Model, projectileUniqueId: string)
             vortex.PrimaryPart.Position = char.PrimaryPart.Position
             vortex:PivotTo(vortex.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(-2.5), 0))
         end
-    end):catch(function() end)
+
+        resolve()
+    end):timeout(15):catch(function() end)
 end
 
 
@@ -224,7 +228,7 @@ ClassSPSceneLib.FireballSpell = function(char: Model, projectileUniqueId: string
     fireball.CFrame = HarukaLib:CFLookAt(fireball.Position, targetingEnemy.PrimaryPart.Position)
     fireball.Anchored = true
     fireball.Parent = workspace
-    Debris:AddItem(fireball, 1.5)
+    Debris:AddItem(fireball, 3)
 
 
     HarukaLib:CreateTween(fireball, AssetBook.TweenInfos.one, {
@@ -232,7 +236,7 @@ ClassSPSceneLib.FireballSpell = function(char: Model, projectileUniqueId: string
     }):Play()
 
 
-    Promise.try(function()
+    Promise.new(function(resolve, reject)
         local found = false
 
         while true do
@@ -257,6 +261,15 @@ ClassSPSceneLib.FireballSpell = function(char: Model, projectileUniqueId: string
                         EnemyEntity = entity,
                     })
 
+
+                    local hitVFX = RepS.Packages.SkillProjectiles:FindFirstChild("FireballHitVFX", true):Clone() :: BasePart
+                    hitVFX.CFrame = entity.PrimaryPart.CFrame
+                    hitVFX.Anchored = true
+                    hitVFX.Parent = workspace
+                    Debris:AddItem(hitVFX, 5)
+
+                    HarukaLib:EmitParticles(hitVFX)
+
                     found = true
                     break
                 end
@@ -265,7 +278,9 @@ ClassSPSceneLib.FireballSpell = function(char: Model, projectileUniqueId: string
 
         if fireball then fireball:Destroy() end
 
-    end):catch(function() end)
+        resolve()
+
+    end):timeout(10):catch(function() end)
 end
 
 
@@ -296,7 +311,7 @@ ClassSPSceneLib.FlowAyakaUlt = function(char: Model, projectileUniqueId: string)
             Debris:AddItem(part, 10)
 
 
-            Promise.try(function()
+            Promise.new(function(resolve)
                 local isFound = false
 
                 while true do
@@ -334,7 +349,9 @@ ClassSPSceneLib.FlowAyakaUlt = function(char: Model, projectileUniqueId: string)
                     end
                 end
 
-            end):catch(function() end)
+                resolve()
+
+            end):timeout(5):catch(function() end)
 
 
             local startPos = part.CFrame
@@ -508,6 +525,94 @@ ClassSPSceneLib.BlueEchoUlt = function(char: Model, projectileUniqueId: string)
     Debris:AddItem(echoRay, 1.5)
 end
 
+
+
+ClassSPSceneLib.ArcaneMarkRune = function(char: Model, projectileUniqueId: string)
+    if not ClientLib:IsCharValid(char) then return end
+
+    local targetingEnemy = char.TargetingEnemy.Value
+    if not ClientLib:IsCharValid(targetingEnemy) then return end
+
+
+    local mark = RepS.Packages.SkillProjectiles:FindFirstChild("ArcaneMarkRune", true):Clone() :: BasePart
+    mark.CFrame = targetingEnemy.PrimaryPart.CFrame
+    mark.Anchored = true
+    mark.Parent = workspace
+    Debris:AddItem(mark, 5)
+
+    HarukaLib:EmitParticles(mark)
+end
+
+
+
+ClassSPSceneLib.BeamStrike = function(char: Model, projectileUniqueId: string)
+    if not ClientLib:IsCharValid(char) then return end
+
+
+    local beamStrike = RepS.Packages.SkillProjectiles:FindFirstChild("BeamStrike", true):Clone() :: BasePart
+    beamStrike.CFrame = char.PrimaryPart.CFrame
+    beamStrike.Parent = char
+    Debris:AddItem(beamStrike, 6)
+
+
+    Promise.new(function(resolve, reject)
+        while beamStrike and beamStrike.Parent do
+            beamStrike.CFrame = char.PrimaryPart.CFrame
+            RunService.Heartbeat:Wait()
+        end
+
+        resolve()
+    end):timeout(7):catch(function() end)
+
+
+    local tempMarkedContainer = _createMarkContainer()
+
+
+    Promise.new(function()
+        local isFound = false
+
+        local part = beamStrike.Part :: BasePart
+
+        while true do
+            RunService.Heartbeat:Wait()
+
+            if isFound then break end
+            if beamStrike == nil then break end
+            if beamStrike.Parent == nil then break end
+            if part == nil then break end
+            if part.Parent == nil then break end
+
+            local pos = part.Position
+
+            for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
+                if not ClientLib:IsCharValid(symbol.Value) then continue end
+                if tempMarkedContainer:FindFirstChild(symbol.Value:GetAttribute("HarukaUniqueId")) then continue end
+
+
+                local entity = symbol.Value :: Model
+                local enemyPos = entity.PrimaryPart.Position
+                local dist = (pos - enemyPos).Magnitude :: number
+
+                if dist < 15 then
+                    local bool = Instance.new("BoolValue")
+                    bool.Name = entity:GetAttribute("HarukaUniqueId")
+                    bool.Value = true
+                    bool.Parent = tempMarkedContainer
+                    Debris:AddItem(bool, 2)
+
+
+                    Events.RequestToDMGEnemyBySkillProjectile.Fire({
+                        ProjectileUniqueId = projectileUniqueId,
+                        EnemyEntity = entity,
+                    })
+                    isFound = true
+                    break
+                end
+            end
+        end
+
+    end):catch(function() end)
+end
 
 
 return ClassSPSceneLib

@@ -67,20 +67,14 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
         repeat wait() until workspace:WaitForChild("MapComponents", 999)
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
+        repeat wait() until workspace.MapComponents.Titlescreen.CameraLocator.Value
 
-
-        local locator = workspace.MapComponents.Titlescreen.CameraLocator :: BasePart
 
         local camera = workspace.CurrentCamera
         local XFloat, YFloat = 0, 0
         local maxXRotation, maxYRotation = 5, 5
         local rad, clock, noise, random = math.rad, os.clock, math.noise, math.random
         local xSeed, ySeed, zSeed = random(10 ^ 3, 10 ^ 4), random(10 ^ 3, 10 ^ 4), random(10 ^ 3, 10 ^ 4)
-
-        camera.CameraType = Enum.CameraType.Scriptable
-        camera.CameraSubject = locator
-        camera.CFrame = locator.CFrame
-
 
         repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
@@ -90,6 +84,11 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
             YFloat = -0.5 + mouse.Y / camera.ViewportSize.Y
         end))
         Add(RunService.RenderStepped:Connect(function()
+            local locator = workspace.MapComponents.Titlescreen.CameraLocator.Value :: BasePart
+
+            camera.CameraType = Enum.CameraType.Scriptable
+            camera.CameraSubject = locator
+
             local x = noise(xSeed, clock() % 1000 * 0.5)
             local y = noise(ySeed, clock() % 1000 * 0.5)
             local z = noise(zSeed, clock() % 1000 * 0.5)

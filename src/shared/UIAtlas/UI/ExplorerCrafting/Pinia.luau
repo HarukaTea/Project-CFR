@@ -6,7 +6,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ItemLib = require(RepS.HarukaShared.Library.ItemLib)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 
 local wait = task.wait
@@ -46,6 +46,7 @@ return function (self: table)
     self.CurrentCategory = Value("Crafting")
 
     self.CraftingMaterials = Value({})
+    self.CraftingPrice = Value(0)
     self.ItemListAbsSize = Value(Vector2.zero)
 
 
@@ -53,12 +54,14 @@ return function (self: table)
     --// track item
     Fusion.Observer(scope, self.CurrentSelectedItem):onBind(function()
         self.CraftingMaterials:set({})
+        self.CraftingPrice:set(0)
 
         local item = Fusion.peek(self.CurrentSelectedItem) :: string
-        local itemInfo = ItemLib:GetItemInfo(item)
+        local itemInfo = ItemBook:GetItemInfo(item)
         if itemInfo == nil then return end
 
         self.CraftingMaterials:set(itemInfo.RecipeDesync)
+        self.CraftingPrice:set(itemInfo.Price)
     end)
 
 

@@ -68,6 +68,22 @@ function ClientLib:FindGroundByRay(givenPos: Vector3) : Vector3
 end
 
 
+function ClientLib:WeldWeapon(weapon: Model, char: Model)
+	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
+	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
+
+	if not motor6D then warn("No Motor6D found on weapon") return end
+	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
+
+	weldTarget = char:FindFirstChild(weldTarget)
+	if not weldTarget then warn("Cannot weld weapon, target not found") return end
+
+
+	motor6D.Part0 = weldTarget
+	weapon.Parent = char
+end
+
+
 function ClientLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 	local rParams = RaycastParams.new()
 	rParams.RespectCanCollide = false
@@ -228,7 +244,7 @@ function ClientLib:TrackInputTextbox(props: {
 
 	local amount = Fusion.Value(props.Scope, 1)
 
-	props.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+	props.TextBox.FocusLost:Connect(function()
 		if tostring(Fusion.peek(amount)) == props.TextBox.Text then return end --- infinite loop prevention
 
 		local text = props.TextBox.Text :: string
