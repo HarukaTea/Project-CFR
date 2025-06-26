@@ -54,7 +54,6 @@ for _, productId in AssetBook.DevProductIds do
         local productInfo = MarketplaceService:GetProductInfo(receipt.ProductId, Enum.InfoType.Product)
         assert(productInfo)
 
-
         table.insert(profile.Data.DevProductsPurchaseLogs, {
             Purchased = true,
             PurchaseDateTime = DateTime.now():ToIsoDate(),
@@ -121,6 +120,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     pcall(function()
         local gamepassInfo = MarketplaceService:GetProductInfo(gamePassId, Enum.InfoType.GamePass)
         if not gamepassInfo then return end
+        if not gamepassInfo.IsForSale then return end
 
         profile.Data.GamepassPurchaseLogs[stringifyGamepassId] = {
             PurchaseDateTime = DateTime.now():ToIsoDate(),
@@ -167,10 +167,8 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
     --// Load in datastore
     Promise.new(function(resolve, reject)
-        local slotChosen = self.PreSlotChosen or netData.SlotId
+        local slotChosen = netData.SlotId or "Slot1"
         local profile = self.Profile
-
-        slotChosen = slotChosen or "Slot1"
 
 
         --// start to load in
@@ -187,14 +185,13 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             plr:SetAttribute(attr, val)
         end
 
+
         --// validate
-        local validatedData = self:_ValidateSaveData(data, netData.ClassChosen)
+        local validatedData = self:_ValidateSaveData(data)
         if validatedData == nil then return end
 
         profile.Data[slot].Attrs = validatedData
-        if netData.ClassChosen and netData.ClassChosen ~= "" then
-            profile.Data[slot].Attrs.Class = netData.ClassChosen
-        end
+
 
         --// load validated data
         for attr: string, val: any in validatedData do
@@ -202,6 +199,17 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
             plr:SetAttribute(attr, val)
         end
+
+        --// load class chosen
+        local classChosen = netData.ClassChosen
+        if classChosen then
+            validatedData = self:_RevalidateClassData(validatedData, classChosen)
+            if validatedData == nil then return end
+
+            profile.Data[slot].Attrs = validatedData
+        end
+
+
 
         local itemFolder, equippingFolder, questFolder, settingsFolder =
             Instance.new("Folder"), Instance.new("Folder"), Instance.new("Folder"), Instance.new("Configuration")
@@ -358,6 +366,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
                     local gamepassInfo = MarketplaceService:GetProductInfo(gamepassId, Enum.InfoType.GamePass)
                     if not gamepassInfo then return end
+                    if not gamepassInfo.IsForSale then return end
 
                     profile.Data.GamepassPurchaseLogs[gamepass] = {
                         PurchaseDateTime = DateTime.now():ToIsoDate(),
@@ -505,25 +514,11 @@ end
 function PlayerLib:Init()
     local plr = self.Player :: Player
 
-
-    local teleportData = plr:GetJoinData().TeleportData
-    if teleportData then
-        if type(teleportData) == "table" then
-            if workspace:GetAttribute("DungeonId") and teleportData.AbyssId then
-                if teleportData.SlotId then
-                    self.PreSlotChosen = teleportData.SlotId
-                end
-
-                ServerBindables.RToActivateDungeonSystem:Fire(teleportData.AbyssId)
-            end
-        end
-    end
-
     local profile = nil
     local profileFailedTimes = 0
 
     while profile == nil do
-        wait()
+        wait(2)
         if not plr then break end
         if not plr.Parent then break end
         if profile ~= nil then break end
@@ -776,7 +771,7 @@ end
 
 
 
-function PlayerLib:_ValidateSaveData(data: table, forceClassId: string)
+function PlayerLib:_ValidateSaveData(data: table)
     data = table.clone(data)
 
 
@@ -793,6 +788,10 @@ function PlayerLib:_ValidateSaveData(data: table, forceClassId: string)
 
     --// check valid items
     for uniqueId: string, itemInfo: table in data.ItemsSQL do
+        if itemInfo.ItemId == nil then
+            data.ItemsSQL[uniqueId] = nil
+            continue
+        end
         local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
 
         if uniqueId ~= itemInfo.UniqueId then
@@ -961,28 +960,39 @@ function PlayerLib:_ValidateSaveData(data: table, forceClassId: string)
 
 
     --// check valid weapon equipping
-    if HarukaLib.TableUtils.IsEmpty(data.ItemsSQL) then
+    local woodenSword = nil
+    local woodenBow = nil
+    local woodenStaff = nil
+
+    for _, itemObj in data.ItemsSQL do
+        if itemObj.ItemId == "WoodenSword" then
+            woodenSword = itemObj
+        end
+        if itemObj.ItemId == "WoodenBow" then
+            woodenBow = itemObj
+        end
+        if itemObj.ItemId == "WoodenStaff" then
+            woodenStaff = itemObj
+        end
+    end
+
+    local function _checkIfHasWeapon(weaponId: string)
         local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
 
-        local classId = forceClassId or data.Class
-        classId = classId or "Chain"
-
-
-        local weaponId = {
-            Chain = "WoodenSword",
-            Burst = "WoodenBow",
-            Flow = "WoodenStaff"
-        }
-
         data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = weaponId[classId] or "WoodenSword",
+            ItemId = weaponId,
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
             Level = 1,
             IsV2ItemStat = true,
-            ItemStat = ServerLib:GiveRandomStatForItem(weaponId[classId] or "WoodenSword")
+            ItemStat = ServerLib:GiveRandomStatForItem(weaponId)
         }
     end
+    if not woodenSword then _checkIfHasWeapon("WoodenSword") end
+    if not woodenBow then _checkIfHasWeapon("WoodenBow") end
+    if not woodenStaff then _checkIfHasWeapon("WoodenStaff") end
+
+
 
     local function _checkIfHasWeaponEquipped()
         local weaponFound = nil
@@ -1064,6 +1074,49 @@ function PlayerLib:_ValidateSaveData(data: table, forceClassId: string)
 end
 
 
+
+function PlayerLib:_RevalidateClassData(data: table, classChosen: string)
+    data = table.clone(data)
+
+
+    local weaponIds = {
+        Chain = "WoodenSword",
+        Burst = "WoodenBow",
+        Flow = "WoodenStaff"
+    }
+
+    local targetItemObj = nil
+    for _, itemObj in data.ItemsSQL do
+        if itemObj.ItemId == weaponIds[classChosen] then
+            targetItemObj = itemObj
+            break
+        end
+    end
+    if targetItemObj == nil then
+        local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
+
+        data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
+            ItemId = weaponIds[classChosen],
+            Amount = 1,
+            UniqueId = itemUniqueIdForEmptyWeapon,
+            Level = 1,
+            IsV2ItemStat = true,
+            ItemStat = ServerLib:GiveRandomStatForItem(weaponIds[classChosen])
+        }
+
+        targetItemObj = data.ItemsSQL[itemUniqueIdForEmptyWeapon]
+    end
+
+
+    data.EquippingItemsSQL["Weapon1"] = {
+        ItemId = targetItemObj.ItemId,
+        UniqueId = targetItemObj.UniqueId
+    }
+
+    return data
+end
+
+
 function PlayerLib:_ListenLeadDevDebuggerToolsTracker()
     if self.Player.UserId ~= 304008764 then return end
     if not ServerStorage:FindFirstChild("Packages") then return end
@@ -1090,20 +1143,26 @@ end
 
 
 
-function PlayerLib:_RequestToCalculateTotalDonationAndSave(profile: ProfileStore.Profile, plr: Player)
+function PlayerLib:_GetCurrentDonation(profile: ProfileStore.Profile) : number
     local totalRobuxGained = 0
     for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
         if purchaseInfo.Purchased then
-            totalRobuxGained += purchaseInfo.PurchasedPrice
+            totalRobuxGained += purchaseInfo.PurchasedPrice or 0
         end
     end
     for _, purchaseInfo in profile.Data.DevProductsPurchaseLogs do
         if purchaseInfo.Purchased then
-            totalRobuxGained += purchaseInfo.PurchasedPrice
+            totalRobuxGained += purchaseInfo.PurchasedPrice or 0
         end
     end
-    if totalRobuxGained <= 0 then return end
 
+    return totalRobuxGained
+end
+
+
+function PlayerLib:_RequestToCalculateTotalDonationAndSave(profile: ProfileStore.Profile, plr: Player) : number
+    local totalRobuxGained = self:_GetCurrentDonation(profile)
+    if totalRobuxGained <= 0 then return 0 end
 
     ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..tostring(plr.UserId), totalRobuxGained, "Donation")
 end
@@ -1111,6 +1170,13 @@ end
 
 
 function PlayerLib:_RequestToGetCurrentRankOnDonations()
+    local profile = self.Profile
+    if profile == nil then return end
+
+
+    local totalRobuxGained = self:_GetCurrentDonation(profile)
+    if totalRobuxGained <= 0 then return end
+
     ServerBindables.RToCheckLeaderboardRank:Fire(self.Player, "Donation")
 end
 

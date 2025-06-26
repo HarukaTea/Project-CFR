@@ -170,7 +170,7 @@ return function (scope: Fusion.Scope, props: {
                             Size = UDim2.fromScale(0.48, 0.095),
                             ButtonText = "PLAY",
                             ButtonClickFunc = function()
-                                if Fusion.peek(playerPlayTime) > 30 then
+                                if Fusion.peek(playerPlayTime) > 5 then
                                     props.IsUIShown:set(false)
                                     props.ReadyToTeleportSignal:Fire()
                                     Bindables.CreateCircularFade:Fire(2)

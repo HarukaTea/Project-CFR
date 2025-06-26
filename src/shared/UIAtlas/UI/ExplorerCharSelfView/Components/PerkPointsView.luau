@@ -301,7 +301,7 @@ return function(scope: Fusion.Scope, props: {
                 [Children] = {
                     Fusion.ForPairs(scope, { "STR", "INT", "VIT", "DEX" }, function(_, scope: Fusion.Scope, index: number, point: string)
                         local SYMBOL_ICONS = {
-                            STR = "rbxassetid://112396684316741",
+                            STR = "rbxassetid://134445989246357",
                             DEX = "rbxassetid://123194426967050",
                             INT = "rbxassetid://81020560446846",
                             VIT = "rbxassetid://106075217220023"

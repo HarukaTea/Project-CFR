@@ -38,7 +38,7 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
         --//  TODO: slow debuff
         local debuffObj = HarukaDoT.new({
             Target = targeting,
-            Type = "Slow",
+            Type = "Burn",
             Duration = 5,
             Creator = char,
             Power = 1,

@@ -10,7 +10,9 @@ return {
         Hint = "Build more combos!",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://80904500184652",
+            UltSkillIcon_None = "rbxassetid://80904500184652",
+            UltSkillIcon_Combo = "rbxassetid://93384862517537",
+            UltSkillCombo_WithoutRecolor = true
         },
 
 
@@ -29,7 +31,9 @@ return {
         Hint = "Collect more Arrows!",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://119538556978639",
+            UltSkillIcon_None = "rbxassetid://119538556978639",
+            UltSkillIcon_Stack = "rbxassetid://112248243587928",
+            UltSkillStack_WithoutRecolor = true
         },
 
 
@@ -48,7 +52,9 @@ return {
         Hint = "",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://79241468928508"
+            UltSkillIcon_None = "rbxassetid://79241468928508",
+            UltSkillIcon_Focus = "rbxassetid://139131407566901",
+            UltSkillFocus_WithoutRecolor = true
         },
 
 
@@ -68,8 +74,8 @@ return {
 
 
         Skills = {
-            UltSkillIcon = "rbxassetid://117298958380190",
-            UltSkillWithoutRecolor = true
+            UltSkillIcon_None = "rbxassetid://117298958380190",
+            UltSkillNone_WithoutRecolor = true
         },
 
 
@@ -88,8 +94,8 @@ return {
 
 
         Skills = {
-            UltSkillIcon = "rbxassetid://117298958380190",
-            UltSkillWithoutRecolor = true
+            UltSkillIcon_None = "rbxassetid://117298958380190",
+            UltSkillNone_WithoutRecolor = true
         },
 
 
@@ -108,8 +114,8 @@ return {
         Hint = "",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://118519686473047",
-            UltSkillWithoutRecolor = true
+            UltSkillIcon_None = "rbxassetid://118519686473047",
+            UltSkillNone_WithoutRecolor = true
         },
 
         BaseStats = {

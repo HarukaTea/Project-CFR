@@ -60,7 +60,10 @@ return function (plr: Player)
 
                                 local badgeInfo = Fusion.Value(scope, {})
                                 table.insert(scope, task.spawn(function()
-                                    local info = BadgeService:GetBadgeInfoAsync(badgeId)
+                                    local info
+                                    pcall(function()
+                                        info = BadgeService:GetBadgeInfoAsync(badgeId)
+                                    end)
                                     badgeInfo:set(info)
                                 end))
 

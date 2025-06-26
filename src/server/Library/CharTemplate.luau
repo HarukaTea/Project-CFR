@@ -92,7 +92,7 @@ local charStats = {
 local exAndExPowerList = {
     "MinDMG", "MaxDMG", "Magic", "MaxMana", "ManaRegen",
     "MaxHealth", "HealthRegenWaitTime", "MaxShield", "ShieldRegenWaitTime",
-    "Speed", "JumpPower",
+    "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",
     "OrbSpawnTimesAtStart", "OrbSpawnTime", "OrbFadeTime", "OrbBounce", "Intensity", "Warding", "Drawback", "Luck",

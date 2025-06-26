@@ -16,7 +16,7 @@ local plr = Players:GetPlayerFromCharacter(char)
 local wait = task.wait
 
 
-repeat wait() until char:GetAttribute("Haruka_CharServerInited")
+repeat wait() until char:HasTag("PlayerCharEntity")
 
 local ClassAdd, ClassEmpty = HarukaLib.Bin()
 local Add, Empty = HarukaLib.Bin()

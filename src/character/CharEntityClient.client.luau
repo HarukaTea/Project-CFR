@@ -87,6 +87,8 @@ end
 
 
 function CharLib:__Init()
+    Bindables.PlayCameraCutscene:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
+
     if not workspace:GetAttribute("DungeonId") then
         SoundService.Musics.Overworld:Play()
     end

@@ -7,6 +7,7 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local SG = game:GetService("StarterGui")
 local RepS = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
 
 local plr = Players.LocalPlayer
 
@@ -124,16 +125,29 @@ do
         end
     })
 
-    if not workspace:GetAttribute("NoRequiresTitlescreen") then
+
+    local teleportData = TeleportService:GetLocalPlayerTeleportData()
+    local shouldSkipTitlescreen = workspace:GetAttribute("NoRequiresTitlescreen")
+    local forceSlotChosen = "Slot1"
+
+    if teleportData then
+        if type(teleportData) == "table" then
+            if teleportData.FromAbyss then
+                shouldSkipTitlescreen = true
+                forceSlotChosen = teleportData.SlotIds[Players.LocalPlayer.Name] or "Slot1"
+            end
+        end
+    end
+    if shouldSkipTitlescreen then
+        local folder = Instance.new("Folder")
+        folder.Name = "Titlescreen"
+        folder.Parent = workspace.MapComponents
+    else
         repeat wait() until RepS:WaitForChild("Packages", 999)
         repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
 
         wait(1)
         RepS.Packages.Titlescreen.Parent = workspace.MapComponents
-    else
-        local folder = Instance.new("Folder")
-        folder.Name = "Titlescreen"
-        folder.Parent = workspace.MapComponents
     end
 
 
@@ -155,43 +169,6 @@ do
     isAlreadyLoaded = true
 
 
-    --// Titlescreen
-    if not workspace:GetAttribute("NoRequiresTitlescreen") then
-        local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
-
-        wait(0.5)
-        local result = Components:CreateConfirmPrompt(scope, {
-            Hint = "Current version is <red>unfinished</font>, and may contain unwanted bugs and glitches. Do you still wish to continue?",
-            ConfirmText = "YES",
-            CancelText = "NO",
-
-            ConfirmUniqueId = "ConfirmDemoVersion"
-        }):Wait()
-
-        if result == "NO" then
-            plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
-            return
-        end
-
-
-        if HarukaLib:GetDevice() == "Mobile" then
-            wait(1)
-            local result = Components:CreateConfirmPrompt(scope, {
-                Hint = "When using <yellow>mobile devices</font>, you may encounter <red>performance issues</font>. Do you still wish to continue?",
-                ConfirmText = "YES",
-                CancelText = "NO",
-
-                ConfirmUniqueId = "ConfirmMobileVersion"
-            }):Wait()
-
-            if result == "NO" then
-                plr:Kick("Thank you for your interest in our game. We hope to see you again soon!")
-                return
-            end
-        end
-    end
-
-
     wait(1)
     HarukaLib:UITween(UI, "Out", {
         TweenCallback = function()
@@ -201,14 +178,13 @@ do
     workspace:SetAttribute("Haruka_CompletedPreload", true)
 
 
-    if workspace:GetAttribute("NoRequiresTitlescreen") then
+    if shouldSkipTitlescreen then
         local Events = require(RepS.HarukaShared.Library.Events)
 
         Events.RequestToChooseWhichSlotToPlay.Fire({
-            SlotId = "Slot1"
+            SlotId = forceSlotChosen
         })
     else
-
         --// init ambient
         SoundService.Musics.Titlescreen:Play()
 

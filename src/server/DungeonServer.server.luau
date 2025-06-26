@@ -7,4 +7,6 @@ if not workspace:GetAttribute("DungeonId") then return end
 
 
 local DungeonWorldLib = require(ServerScriptService.HarukaServer.Services.DungeonWorldLib)
-DungeonWorldLib:Init()
+if DungeonWorldLib then
+    DungeonWorldLib:Init()
+end

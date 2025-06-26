@@ -9,7 +9,6 @@ local ServerBindables = {
 
     RToUpdateLeaderboardRank = Signal.new(),
     RToCheckLeaderboardRank = Signal.new(),
-    RToActivateDungeonSystem = Signal.new(),
 
     PlayerDied = Signal.new(),
 

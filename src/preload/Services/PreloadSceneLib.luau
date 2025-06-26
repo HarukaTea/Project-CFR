@@ -87,7 +87,6 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
             local locator = workspace.MapComponents.Titlescreen.CameraLocator.Value :: BasePart
 
             camera.CameraType = Enum.CameraType.Scriptable
-            camera.CameraSubject = locator
 
             local x = noise(xSeed, clock() % 1000 * 0.5)
             local y = noise(ySeed, clock() % 1000 * 0.5)

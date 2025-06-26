@@ -1,10 +1,10 @@
 
-local AUTO_SAVE_PERIOD = 60 -- (Seconds) Time between when changes to a profile are saved to the DataStore
-local LOAD_REPEAT_PERIOD = 5 -- (Seconds) Time between successive profile reads when handling a session conflict
-local FIRST_LOAD_REPEAT = 10 -- (Seconds) Time between first and second profile read when handling a session conflict
-local SESSION_STEAL = 10 -- (Seconds) Time until a session conflict is resolved with the waiting server stealing the session
-local ASSUME_DEAD = 300 -- (Seconds) If a profile hasn't had updates for this long, quickly assume an active session belongs to a crashed server
-local START_SESSION_TIMEOUT = 30 -- (Seconds) If a session can't be started for a profile for this long, stop repeating calls to the DataStore
+local AUTO_SAVE_PERIOD = 120 -- (Seconds) Time between when changes to a profile are saved to the DataStore
+local LOAD_REPEAT_PERIOD = 10 -- (Seconds) Time between successive profile reads when handling a session conflict
+local FIRST_LOAD_REPEAT = 5 -- (Seconds) Time between first and second profile read when handling a session conflict
+local SESSION_STEAL = 40 -- (Seconds) Time until a session conflict is resolved with the waiting server stealing the session
+local ASSUME_DEAD = 630 -- (Seconds) If a profile hasn't had updates for this long, quickly assume an active session belongs to a crashed server
+local START_SESSION_TIMEOUT = 45 -- (Seconds) If a session can't be started for a profile for this long, stop repeating calls to the DataStore
 
 local CRITICAL_STATE_ERROR_COUNT = 5 -- Assume critical state if this many issues happen in a short amount of time
 local CRITICAL_STATE_ERROR_EXPIRE = 120 -- (Seconds) Individual issue expiration

@@ -157,14 +157,6 @@ function ServerWorldLib:_DoMapOptimization()
         end
     end
 
-    for _, part: BasePart in workspace.Maps:GetDescendants() do
-        if HarukaLib:IsBasePartType(part) then
-            if part:HasTag("ZoneEntity") then continue end
-
-            part.Anchored = true
-        end
-    end
-
 
     local function _optimize(container: Instance)
         for _, part: BasePart in container:GetDescendants() do
@@ -368,9 +360,12 @@ function ServerWorldLib:_DoInitNPCs()
 
 
     for _, npc: Model in workspace.MapComponents.NPCs:GetDescendants() do
-        if npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid") then
+        if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
-            npc.PrimaryPart = npc.Humanoid.RootPart
+            npc.PrimaryPart = npc.HumanoidRootPart
+
+            if npc.PrimaryPart.Anchored then continue end
+            if not npc:FindFirstChild("Humanoid") then continue end
 
             if npc.Humanoid:FindFirstChildOfClass("Animator") then
                 local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"

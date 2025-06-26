@@ -101,7 +101,7 @@ return function (plr: Player)
 
                         }, {
                             Padding = UDim.new(0, 36),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             VerticalAlignment = Enum.VerticalAlignment.Center,
                             FillDirection = Enum.FillDirection.Horizontal,
                         })
@@ -205,9 +205,8 @@ return function (plr: Player)
                                 task.delay(9, function()
                                     self.Cooldown = false
                                 end)
-                                Bindables.CreateFSNotify:Fire("Teleporting to Abyss...", 10)
+                                Bindables.CreateNotify:Fire("Teleporting to Abyss...")
 
-                                wait(1)
                                 Events.RequestToChallengeAbyss.Fire({
                                     AbyssId = Fusion.peek(self.AbyssIndexSelected)
                                 })

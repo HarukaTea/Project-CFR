@@ -17,7 +17,10 @@ return function(scope: Fusion.Scope, props: {
 
     local productInfo = Fusion.Value(scope, {})
     table.insert(scope, task.spawn(function()
-        local info = MarketplaceService:GetProductInfo(props.AssetId, Enum.InfoType[props.Type])
+        local info
+        pcall(function()
+            info = MarketplaceService:GetProductInfo(props.AssetId, Enum.InfoType[props.Type])
+        end)
 
         productInfo:set(info)
     end))

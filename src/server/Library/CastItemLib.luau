@@ -339,7 +339,8 @@ CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {
             ProjectileType = "OneTime",
             ProjectileUniqueId = uniqueId,
             DMGType = "Magic",
-            DoTType = "Burn"
+            DoTType = "Burn",
+            DMGBonus = 1
         })
         Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
         Events.PlayAnimation.Fire(player, {
@@ -521,7 +522,8 @@ CastItemLib.StarBeamStrike = function(player: Player, char: Model, extraInfo: {
             ProjectileType = "OverTime",
             ProjectileUniqueId = uniqueId,
             DMGType = "Magic",
-            DoTType = "Burn"
+            DoTType = "Burn",
+            DMGBonus = 2
         })
         Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
         Events.PlayAnimation.Fire(player, {

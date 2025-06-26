@@ -161,7 +161,6 @@ return function(scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Components.UIGridLayout(scope, {
-                        CellPadding = UDim2.fromScale(0.05, 0.05),
                         CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local y = use(absoluteEffectListSize).Y
 

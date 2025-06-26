@@ -3,6 +3,7 @@
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
+local MemoryStoreService = game:GetService("MemoryStoreService")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local RepS = game:GetService("ReplicatedStorage")
@@ -277,15 +278,8 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
 
             if itemInfo == nil then return end
-            if plr:FindFirstChild("MaterialCD") then return end
             if not prompt:IsDescendantOf(workspace) then return end
 
-
-            local cdSymbol = Instance.new("BoolValue")
-            cdSymbol.Value = true
-            cdSymbol.Name = "MaterialCD"
-            cdSymbol.Parent = plr
-            Debris:AddItem(cdSymbol, 1)
 
             local char = plr.Character
             if not ServerLib:IsCharValid(char) then return end
@@ -678,7 +672,7 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
                         manaNeededToCost -= reduction
                         manaNeededToCost = math.ceil(manaNeededToCost)
 
-                        HarukaLib:AddAttr(char, "Mana", manaNeededToCost)
+                        HarukaLib:AddAttr(char, "Mana", -manaNeededToCost)
                     end
                 end
             }) :: number?
@@ -749,17 +743,20 @@ function GlobalCriRPGLib:_ListenCastClassUltRequestsTracker()
 
         --// cast Ult if req meets
         local class = plr:GetAttribute("Class") :: string
+        local variant = plr:GetAttribute("ClassVariant") :: string
 
         if char:GetAttribute("ClassUltProgress") >= char:GetAttribute("MaxClassUltProgress") then
             char:SetAttribute("ClassUltProgress", 0)
 
             Promise.new(function()
-                if not ClassAttackLib[class.."_Ult"] then
+                if not ClassAttackLib[class.."_Ult_"..variant] then
                     warn(`ClassAttackLib ult Func for {class} not found`)
+
+                    Events.CreateNotify.Fire(plr, "[Error] Missing ult Func, please contact the developer!")
                     return
                 end
 
-                ClassAttackLib[class.."_Ult"](plr)
+                ClassAttackLib[class.."_Ult_"..variant](plr)
 
             end):catch(function(err)
                 warn(tostring(err))
@@ -1362,11 +1359,13 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
             trueDMGStyle = "Magic"
         end
 
+        local trueDMGBonus = symbol:GetAttribute("DMGBonus") or 1
+
 
         ClassAttackLib:_DealDamageToEnemy(char, data.EnemyEntity, {
-            DMG = ClassAttackLib:_CalDMG(style, char, {
+            DMG = math.ceil(ClassAttackLib:_CalDMG(style, char, {
                 ForceMaxDMG = true
-            }),
+            }) * trueDMGBonus),
             Attacker = "SkillProjectile",
             DMGType = trueDMGStyle
         })
@@ -1409,6 +1408,16 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
         end
 
 
+        local gold = plr:GetAttribute("Gold") :: number
+        if gold < itemInfo.Price then
+            Events.CreateNotify.Fire(plr, "You don't have enough Gold to craft this item!")
+            return
+        end
+
+
+        --// TODO: distance check
+
+
         local materialCheck = true
         for material: string, amount: number in itemInfo.RecipeDesync do
             local itemSymbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
@@ -1428,12 +1437,20 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
                 break
             end
 
-            if plr.EquippingItems:FindFirstChild(material) then
+            local isEquipping = false
+            for _, symbol: StringValue in plr.EquippingItems:GetChildren() do
+                if symbol.Value == material then
+                    isEquipping = true
+                    materialCheck = false
+                    break
+                end
+            end
+            if isEquipping then
                 materialCheck = false
+
                 Events.CreateNotify.Fire(plr, "You can't craft this item while you have equipped one of the materials!")
                 break
             end
-
 
             if materialInfo.Type == "Passive" then
                 materialCheck = false
@@ -1461,6 +1478,8 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
                 symbol:Destroy()
             end
         end
+        HarukaLib:AddAttr(plr, "Gold", -itemInfo.Price)
+
 
         Events.PlaySound.Fire(plr, SoundService.SFXs.AnvilUse)
         Events.CreateNotify.Fire(plr, "Craft successful! Welcome back!")
@@ -1507,7 +1526,7 @@ function GlobalCriRPGLib:_ListenPlayerPartyRequestsTracker()
             ticket.Parent = char
 
             Events.PartyInviteResult.Fire(player, { Option = "Invite", PlayerName = plr.Name })
-            Events.PlaySound.Fire(player, workspace.Sounds.SFXs.ChestOpened)
+            Events.PlaySound.Fire(player, SoundService.SFXs.ChestDrop)
 
         elseif option == "InviteAccept" or option == "InviteDecline" then
             --- check if player is already in a party
@@ -1667,16 +1686,24 @@ function GlobalCriRPGLib:_ListenPlayerAbyssChallengeRequestsTracker()
     Events.RequestToChallengeAbyss.SetCallback(function(plr: Player, data)
         if not data.AbyssId then return end
 
+
+        local abyssSortedMap = MemoryStoreService:GetSortedMap("AbyssTeleportData")
+        pcall(function()
+            abyssSortedMap:SetAsync("AbyssChallenge_"..plr.UserId, data.AbyssId, 60 * 5)
+        end)
+
         local teleportOptions = Instance.new("TeleportOptions")
         teleportOptions:SetTeleportData({
-            SlotId = plr:GetAttribute("SlotChosen"),
-            AbyssId = data.AbyssId
+            SlotId = plr:GetAttribute("SlotChosen")
         })
 
         local code = TeleportService:ReserveServer(AssetBook.PlaceIds.AbyssLevel)
         teleportOptions.ReservedServerAccessCode = code
 
         TeleportService:TeleportAsync(AssetBook.PlaceIds.AbyssLevel, { plr }, teleportOptions)
+
+
+        Events.CreateFSNotify.Fire(plr, "Teleporting to Abyss...", 15)
     end)
 end
 

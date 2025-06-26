@@ -77,7 +77,8 @@ return function(plr: Player)
                     ClassUltProgress = self.ClassUltProgress,
                     MaxClassUltProgress = self.MaxClassUltProgress,
 
-                    Class = self.Class
+                    Class = self.Class,
+                    ClassVariant = self.ClassVariant
                 }, self),
 
 
@@ -184,7 +185,7 @@ return function(plr: Player)
                         Components.PaddingFrame(scope, "ZZZ"),
 
                         Fusion.ForPairs(scope, {
-                            "Backpack", "Character", "PerkTree", "Store", "Achievements",
+                            "Backpack", "Character", "PerkTree", "Achievements", "Store",
                             "TutorialBook", "Settings"
                         }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {

@@ -11,7 +11,6 @@ local GlobalTimer = require(SSS.HarukaServer.Shared.GlobalTimer)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local StatusBook = require(RepS.HarukaShared.Library.StatusBook)
 
 local StatusLib = {}
@@ -24,6 +23,8 @@ StatusLib.Heal = function(_, char: Model, healAmount: number) : number
 
     local plr = Players:GetPlayerFromCharacter(char)
     if plr == nil then return end
+
+    if char:FindFirstChild("AntiHeal") then return end
 
     char.Humanoid.Health += healAmount
 

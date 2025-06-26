@@ -15,10 +15,12 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 
-local AbyssTeambook = require(ReplicatedStorage.HarukaShared.Library.AbyssTeambook)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
+
+
+if not workspace:GetAttribute("DungeonId") then return nil end
+if workspace:GetAttribute("AbyssId") then return nil end
 
 
 local wait = task.wait
@@ -44,7 +46,7 @@ end
 --// Private functions
 
 
-function DungeonWorldLib:_DoInitDungeons()
+function DungeonWorldLib:_DoInitDungeonBindables()
     if not workspace:GetAttribute("DungeonId") then return end
 
     workspace:SetAttribute("DungeonStarted", false)
@@ -92,6 +94,10 @@ function DungeonWorldLib:_DoInitDungeonPortals()
 
         portal.Transparency = 1
     end
+end
+
+
+function DungeonWorldLib:_DoInitDungeonHashNames()
     if not workspace.Maps:FindFirstChild("_DUNGEON_LEVELS") then return end
 
 
@@ -103,6 +109,16 @@ end
 
 
 
+function DungeonWorldLib:_RevertDungeonHashNames()
+    if not workspace.Maps:FindFirstChild("_DUNGEON_LEVELS") then return end
+
+
+    for _, map: Folder in workspace.Maps._DUNGEON_LEVELS:GetChildren() do
+        map.Name = map:GetAttribute("OriName")
+    end
+end
+
+
 function DungeonWorldLib:_ListenDungeonRequestsTracker()
     Events.DUNGEON_RequestToStartDungeon.SetCallback(function(plr: Player)
         workspace:SetAttribute("DungeonStarted", true)
@@ -112,48 +128,39 @@ function DungeonWorldLib:_ListenDungeonRequestsTracker()
         Events.DUNGEON_StartDungeon.FireList(CollectionService:GetTagged("PlayerEntity"))
 
 
-        if workspace.Maps:FindFirstChild("_DUNGEON_LEVELS") then
-            for _, map: Folder in workspace.Maps._DUNGEON_LEVELS:GetChildren() do
-                map.Name = map:GetAttribute("OriName")
-            end
-        end
-
-
+        self:_RevertDungeonHashNames()
         workspace.MapComponents:FindFirstChild("_DungeonStartAirWall", true):Destroy()
 
 
-        if not workspace:GetAttribute("AbyssId") then
-            workspace:SetAttribute("DungeonLeftTime", 60 * 11)
+        local clockDisconnect = nil
+        workspace:SetAttribute("DungeonLeftTime", 60 * 11)
 
-            HarukaLib.Clock(1, function()
-                HarukaLib:AddAttr(workspace, "DungeonLeftTime", -1)
-            end)
-        else
-            workspace:SetAttribute("DungeonLeftTime", 0)
+        clockDisconnect = HarukaLib.Clock(1, function()
+            HarukaLib:AddAttr(workspace, "DungeonLeftTime", -1)
+        end)
 
-            HarukaLib.Clock(1, function()
-                HarukaLib:AddAttr(workspace, "DungeonLeftTime", 1)
-            end)
-        end
+
+        repeat wait() until workspace:GetAttribute("DungeonFinished")
+
+        if clockDisconnect then clockDisconnect() end
     end)
 end
 
 
 
 function DungeonWorldLib:_ListenDungeonStageAirwallDestroyTracker()
-    if not workspace:GetAttribute("AbyssId") then
-        HarukaLib.Clock(1, function()
-            for _, part: BasePart in CollectionService:GetTagged("DungeonStageWallEntity") do
-                if workspace:GetAttribute("_DUNGEON_"..part.Name.."_PASSED") then
-                    part:Destroy()
-                end
+    if workspace:GetAttribute("AbyssId") then return end
+
+    HarukaLib.Clock(1, function()
+        for _, part: BasePart in CollectionService:GetTagged("DungeonStageWallEntity") do
+            if workspace:GetAttribute("_DUNGEON_"..part.Name.."_PASSED") then
+                part:Destroy()
             end
-        end)
+        end
+    end)
+    repeat wait(1) until #CollectionService:GetTagged("DungeonStageWallEntity") <= 0
 
-        repeat wait(1) until #CollectionService:GetTagged("DungeonStageWallEntity") <= 0
-
-        Events.DUNGEON_StartBossFight.FireList(CollectionService:GetTagged("PlayerEntity"))
-    end
+    Events.DUNGEON_StartBossFight.FireList(CollectionService:GetTagged("PlayerEntity"))
 end
 
 
@@ -168,17 +175,7 @@ function DungeonWorldLib:_ListenBossEndTracker()
     Events.DUNGEON_EndDungeon.FireList(CollectionService:GetTagged("PlayerEntity"))
 
 
-    --// record their completion time
-    Promise.try(function()
-        if not workspace:GetAttribute("AbyssId") then return end
-        if not workspace:GetAttribute("AbyssLevelId") then return end
-        if workspace:GetAttribute("AbyssLevelId") <= 5 then return end
-        if workspace:GetAttribute("DungeonLeftTime") <= 0 then return end
-
-        for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
-            ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..player.UserId, workspace:GetAttribute("DungeonLeftTime"), "SkyTower")
-        end
-    end)
+    workspace:SetAttribute("DungeonFinished", true)
 
 
     wait(1)
@@ -189,14 +186,7 @@ function DungeonWorldLib:_ListenBossEndTracker()
 
                 local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot())
 
-                ServerLib:GiveItemDrop(player, result, 5)
-
-                if result == "VolatileGem" then
-                    Events.CreateSystemNotify.FireList(
-                        CollectionService:GetTagged("PlayerEntity"),
-                        `<red>{player.Name} has looted {result}!</font>`
-                    )
-                end
+                ServerLib:GiveItemDrop(player, result, 10)
                 wait(0.15)
             end
 
@@ -214,42 +204,12 @@ function DungeonWorldLib:_ListenBossEndTracker()
     end
 
 
-    wait(10)
+    wait(9)
+    Events.CreateFSNotify.FireList(CollectionService:GetTagged("PlayerEntity"), "Teleporting back to Mainworld...", 999)
+    wait(1)
     TeleportService:TeleportAsync(AssetBook.PlaceIds.Mainworld, Players:GetPlayers())
 end
 
-
-
-function DungeonWorldLib:_ListenDungeonActivationsTracker()
-    ServerBindables.RToActivateDungeonSystem:Connect(function(abyssId: number)
-        if workspace:GetAttribute("AbyssId") then
-            local folder = workspace.Enemies:FindFirstChild("_DUNGEON_BOSS") :: Folder
-            if not folder then
-                warn("Did you forget to add the _BOSS folder to the Enemies folder?")
-                return
-            end
-
-            workspace:SetAttribute("AbyssLevelId", abyssId)
-
-            local totalMobs = folder:GetChildren() :: { BasePart }
-            local index = 1
-            for mobId: string, mobInfo in AbyssTeambook[abyssId].Team do
-                if not totalMobs[index] then break end
-
-                local locator = totalMobs[index] :: BasePart
-
-                locator.Name = mobId
-                locator:SetAttribute("Level", mobInfo.Level)
-                locator:SetAttribute("EnvironmentBonus", mobInfo.EnvironmentBonus)
-
-                locator:SetAttribute("NoRandomName", true)
-                locator:SetAttribute("_RESPAWN_SYMBOL", true)
-
-                index += 1
-            end
-        end
-    end)
-end
 
 
 return DungeonWorldLib

@@ -15,6 +15,7 @@ local char = script:FindFirstAncestorOfClass("Model")
 
 Add(HarukaLib.Clock(1, function()
     if not ServerLib:IsCharValid(char) then return end
+    if not char:GetAttribute("IsInCombat") then return end
 
     char.Humanoid:TakeDamage(10)
 end))

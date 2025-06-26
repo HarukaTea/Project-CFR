@@ -997,8 +997,10 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             elseif combatMode == "Party" then
                 local partyContainer = workspace.MapComponents.PartyHolder:FindFirstChild(target.Name, true) :: Instance?
 
-                if partyContainer:IsA("ObjectValue") then
-                    partyContainer = partyContainer.Parent
+                if partyContainer then
+                    if partyContainer:IsA("ObjectValue") then
+                        partyContainer = partyContainer.Parent
+                    end
                 end
                 if partyContainer then
                     for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do

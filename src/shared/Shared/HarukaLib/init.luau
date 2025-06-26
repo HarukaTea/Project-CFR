@@ -1043,11 +1043,19 @@ HarukaLib.TableUtils = TableUtils
 --[[
 	A quick helper function to emit particles
 ]]
-function HarukaLib:EmitParticles(obj: Instance)
-	for _, child: ParticleEmitter in obj:GetDescendants() do
-		if not child:IsA("ParticleEmitter") then continue end
+function HarukaLib:EmitParticles(obj: Instance, childrenOnly: boolean?)
+	if childrenOnly then
+		for _, child: ParticleEmitter in obj:GetChildren() do
+			if not child:IsA("ParticleEmitter") then continue end
 
-		child:Emit(child:GetAttribute("EmitCount") or 0)
+			child:Emit(child:GetAttribute("EmitCount") or 0)
+		end
+	else
+		for _, child: ParticleEmitter in obj:GetDescendants() do
+			if not child:IsA("ParticleEmitter") then continue end
+
+			child:Emit(child:GetAttribute("EmitCount") or 0)
+		end
 	end
 end
 
@@ -1100,11 +1108,19 @@ end
 --[[
 	Quickly set all particles of an object to a state
 ]]
-function HarukaLib:SetParticleState(obj: Instance, state: boolean)
-	for _, child: ParticleEmitter in obj:GetDescendants() do
-		if not child:IsA("ParticleEmitter") then continue end
+function HarukaLib:SetParticleState(obj: Instance, state: boolean, childrenOnly: boolean?)
+	if childrenOnly then
+		for _, child: ParticleEmitter in obj:GetChildren() do
+			if not child:IsA("ParticleEmitter") then continue end
 
-		child.Enabled = state
+			child.Enabled = state
+		end
+	else
+		for _, child: ParticleEmitter in obj:GetDescendants() do
+			if not child:IsA("ParticleEmitter") then continue end
+
+			child.Enabled = state
+		end
 	end
 end
 
@@ -1120,6 +1136,49 @@ function HarukaLib:CreateTween(instance: Instance, tweenInfo: TweenInfo, tweenPr
 	end)
 
 	return tweenObj
+end
+
+
+--[[
+	Toggles the Enabled property ParticleEmitters (and Beams if IncludeBeams is true)
+	in (Parent) to (Value), or reverses the value if (Switch)
+]]
+function HarukaLib:ZonitoToggleParticles(instance: Instance, val: boolean, reverse: boolean, includeBeams: boolean, childrenOnly: boolean?)
+	if childrenOnly then
+		for _, v in instance:GetChildren() do
+			if v:IsA("ParticleEmitter") then
+				if reverse then
+					v.Enabled = not v.Enabled
+				else
+					v.Enabled = val
+				end
+			end
+			if includeBeams and (v:IsA("Beam")) or (v:IsA("Trail")) then
+				if reverse then
+					v.Enabled = not v.Enabled
+				else
+					v.Enabled = val
+				end
+			end
+		end
+	else
+		for _, v in instance:GetDescendants() do
+			if v:IsA("ParticleEmitter") then
+				if reverse then
+					v.Enabled = not v.Enabled
+				else
+					v.Enabled = val
+				end
+			end
+			if includeBeams and (v:IsA("Beam")) or (v:IsA("Trail")) then
+				if reverse then
+					v.Enabled = not v.Enabled
+				else
+					v.Enabled = val
+				end
+			end
+		end
+	end
 end
 
 

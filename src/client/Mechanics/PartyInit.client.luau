@@ -4,6 +4,7 @@ local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
@@ -32,13 +33,15 @@ local function _targetCheck(target: BasePart) : Model | nil
     local thatPlr = Players:GetPlayerFromCharacter(target)
     if not thatPlr then return end
 
+    local distance = thatPlr:DistanceFromCharacter(plr.Character.PrimaryPart.Position)
+    if distance > 33 or distance <= 0 then return end
+
     return target
 end
 
 mouse.Button1Down:Connect(function()
     local char = plr.Character
-    if not char then return end
-    if not char.PrimaryPart then return end
+    if not ClientLib:IsCharValid(char) then return end
     if char:GetAttribute("InCombat") then return end
 
     local target = mouse.Target

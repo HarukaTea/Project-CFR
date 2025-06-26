@@ -14,6 +14,7 @@ return {
 
         Drops = {
             BeeStinger = 60,
+            GHoneyWings = 10,
             EarthBow = 10
         }
     },
@@ -34,6 +35,7 @@ return {
 
         Drops = {
             BeeStinger = 80,
+            GHoneyWings = 10,
             HoneyArmor2 = 10,
             QueenBeeBow = 5
         }
@@ -181,16 +183,18 @@ return {
         Icon = "rbxassetid://127989665826507",
 
         Tier = 6,
-        BaseSpeed = 10,
+        BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
+        IsBoss = true,
         Species = "Slime",
+        Tag = "The King of Slimes",
 
         Drops = {
+            SlimeKingCrown = 5,
             SlimeGel = 40,
-            SlimeCore = 30,
-            DivineBlade = 10
+            SlimeCore = 40,
         }
     },
     CrimsonSlime = {
@@ -332,7 +336,7 @@ return {
         Tier = 10,
         BaseSpeed = 0,
         BaseJumpPower = 0,
-        EnvironmentBonus = 3,
+        EnvironmentBonus = 2,
 
         IsBoss = true,
         Species = "Dragon",
@@ -352,7 +356,7 @@ return {
         Tier = 10,
         BaseSpeed = 0,
         BaseJumpPower = 0,
-        EnvironmentBonus = 3,
+        EnvironmentBonus = 2,
 
         IsBoss = true,
         Species = "RiskRain",

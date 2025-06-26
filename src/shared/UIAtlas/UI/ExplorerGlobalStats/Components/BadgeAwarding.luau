@@ -15,7 +15,10 @@ return function(scope: Fusion.Scope, props: {
 
     local badgeInfo = Fusion.Value(scope, {})
     table.insert(scope, task.spawn(function()
-        local info = BadgeService:GetBadgeInfoAsync(props.BadgeId)
+        local info
+        pcall(function()
+            info = BadgeService:GetBadgeInfoAsync(props.BadgeId)
+        end)
         badgeInfo:set(info)
     end))
 

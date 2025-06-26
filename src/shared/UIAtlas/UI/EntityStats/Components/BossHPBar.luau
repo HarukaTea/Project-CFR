@@ -80,7 +80,6 @@ return function (scope: Fusion.Scope, props: {
                         [Children] = {
                             Components.UIListLayout(scope, {
                                 FillDirection = Enum.FillDirection.Horizontal,
-                                Padding = UDim.new(0.015, 0),
                                 HorizontalAlignment = Enum.HorizontalAlignment.Left,
                                 SortOrder = Enum.SortOrder.Name,
                             })

@@ -7,6 +7,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
+
 
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
@@ -21,8 +23,15 @@ return function(scope: Fusion.Scope, props: {
 
 
     local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local refreshBoolean = Fusion.Value(scope, false)
+    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+        refreshBoolean:set(not Fusion.peek(refreshBoolean))
+    end))
+
+
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
+        local boolean = use(refreshBoolean)
 
         if input == "Keyboard" then
             return Components.TextLabel(scope, {

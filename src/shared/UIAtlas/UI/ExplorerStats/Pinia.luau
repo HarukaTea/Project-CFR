@@ -46,6 +46,7 @@ return function (self: table)
     self.Level = Value(1)
     self.Class = Value("Burst")
     self.ClassUltProgress = Value(0)
+    self.ClassVariant = Value("None")
     self.MaxClassUltProgress = Value(100)
 
     self.MinDMG = Value(0)
@@ -404,7 +405,8 @@ return function (self: table)
 
     local uiButtons = {
         "Backpack", "CharSelfView", "PerkTree", "Settings",
-        "Store", "Achievements", "TutorialBook", "Settings"
+        "Store",
+        "Achievements", "TutorialBook", "Settings"
     }
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj: InputObject, gpe: boolean)
         if gpe then return end
@@ -447,7 +449,14 @@ return function (self: table)
     --// track class
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-Class"] = function(val: string)
+            val = val or "Burst"
+
             self.Class:set(val)
+        end,
+        ["Attr-ClassVariant"] = function(val: string)
+            val = val or "None"
+
+            self.ClassVariant:set(val)
         end
     }))
     table.insert(scope, HarukaLib:Hydrate(self.char, {

@@ -59,7 +59,7 @@
         "Icon": "95756938920138",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "CD(7)",
+        "ExtraStatInfo": "CD(8)",
         "Tags": "Heal",
         "Recipe": ""
     },
@@ -107,7 +107,7 @@
         "Icon": "85421931804228",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "CD(5)",
+        "ExtraStatInfo": "CD(8)",
         "Tags": "Combat",
         "Recipe": ""
     },
@@ -123,7 +123,7 @@
         "Icon": "96238227355398",
         "Price": "150",
         "SellPrice": "75",
-        "ExtraStatInfo": "CD(5)",
+        "ExtraStatInfo": "CD(10)",
         "Tags": "Combat",
         "Recipe": ""
     },
@@ -172,7 +172,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Physical,Chest",
+        "Tags": "Chest",
         "Recipe": ""
     },
     {
@@ -204,7 +204,7 @@
         "Price": "150",
         "SellPrice": "75",
         "ExtraStatInfo": "",
-        "Tags": "Physical,Chest",
+        "Tags": "Chest",
         "Recipe": ""
     },
     {
@@ -220,7 +220,7 @@
         "Price": "300",
         "SellPrice": "150",
         "ExtraStatInfo": "",
-        "Tags": "Physical,Chest",
+        "Tags": "Chest",
         "Recipe": ""
     },
     {
@@ -252,7 +252,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting,Alchemy",
+        "Tags": "Slime",
         "Recipe": ""
     },
     {
@@ -268,7 +268,7 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Slime",
         "Recipe": ""
     },
     {
@@ -284,7 +284,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Wolf,Fox",
         "Recipe": ""
     },
     {
@@ -300,7 +300,7 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Wolf,Fox",
         "Recipe": ""
     },
     {
@@ -316,7 +316,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Bee",
         "Recipe": ""
     },
     {
@@ -332,7 +332,7 @@
         "Price": "450",
         "SellPrice": "225",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Slime,BossDrop",
         "Recipe": ""
     },
     {
@@ -364,7 +364,7 @@
         "Price": "450",
         "SellPrice": "225",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Wolf,BossDrop",
         "Recipe": ""
     },
     {
@@ -396,7 +396,7 @@
         "Price": "450",
         "SellPrice": "225",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Dragon,BossDrop",
         "Recipe": ""
     },
     {
@@ -412,7 +412,7 @@
         "Price": "600",
         "SellPrice": "300",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Dragon,BossDrop",
         "Recipe": ""
     },
     {
@@ -428,7 +428,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Mine",
         "Recipe": ""
     },
     {
@@ -524,7 +524,7 @@
         "Price": "3900",
         "SellPrice": "1950",
         "ExtraStatInfo": "",
-        "Tags": "BossDrop",
+        "Tags": "BossDrop,OldDrop",
         "Recipe": ""
     },
     {
@@ -540,8 +540,8 @@
         "Price": "3900",
         "SellPrice": "1950",
         "ExtraStatInfo": "",
-        "Tags": "BossDrop",
-        "Recipe": ""
+        "Tags": "Crafting,BossDrop",
+        "Recipe": "IronOre(10),BeeStinger(25),HealthPotion(25)"
     },
     {
         "ItemId": "WoodenSword",
@@ -598,7 +598,7 @@
         "Tier": "5",
         "Level": "65",
         "Desc": "This jagged greatsword, rumored to be a single, massive tooth from the legendary wolf, still shimmers with the lava. Its edge howls with the ferocity of the Wolf King himself.",
-        "Stat": "For every attack, it will has a low chance to inflict <red>Bleed</font> to enemy",
+        "Stat": "For every attack, there is a low chance to inflict <red>Bleed</font> on the enemy",
         "StatInfo": "ForClass(Chain),ForVariant(Combo),ATK(325)",
         "Icon": "91123652494859",
         "Price": "4875",
@@ -614,14 +614,14 @@
         "Tier": "5",
         "Level": "65",
         "Desc": "Crafted from the hardened chitin of the Queen Bee, this elegant bow buzzes with a faint, sweet hum. Arrows loosed from its string fly with the speed and precision of a stinging insect, leaving a trace of venomous magic.",
-        "Stat": "For every attack, it will has a low chance to inflict <red>Bleed</font> to enemy",
+        "Stat": "",
         "StatInfo": "ForClass(Burst),ForVariant(Stack),ATK(325)",
         "Icon": "85379466166048",
         "Price": "4875",
         "SellPrice": "2437",
         "ExtraStatInfo": "",
         "Tags": "BossDrop,Crafting",
-        "Recipe": "BeeStinger(50),IronOre(5)"
+        "Recipe": "GHoneyWings(50),IronOre(5)"
     },
     {
         "ItemId": "LeafDragonStaff",
@@ -630,8 +630,8 @@
         "Tier": "5",
         "Level": "65",
         "Desc": "Carved from the very core of the ancient tree the Forest Dragon guarded, this staff pulses with the raw, untamed energy of the deep woods. Its touch awakens dormant nature magic, allowing the wielder to command vines, thorns, and the very breath of the forest.",
-        "Stat": "For every attack, it will has a low chance to inflict <red>Burn</font> to enemy",
-        "StatInfo": "ForClass(Flow),ForVariant(Focus),MagicEx(300)",
+        "Stat": "For every attack, there is a low chance to inflict <red>Burn</font> on the enemy",
+        "StatInfo": "ForClass(Flow),ForVariant(Focus),MagicEx(500)",
         "Icon": "132943384940547",
         "Price": "4875",
         "SellPrice": "2437",
@@ -668,7 +668,7 @@
         "Price": "11250",
         "SellPrice": "5625",
         "ExtraStatInfo": "",
-        "Tags": "Heaven,Deprecated,Sell",
+        "Tags": "Heaven,Sell",
         "Recipe": ""
     },
     {
@@ -699,7 +699,7 @@
         "Icon": "131661133837379",
         "Price": "150",
         "SellPrice": "75",
-        "ExtraStatInfo": "CD(5)",
+        "ExtraStatInfo": "CD(4)",
         "Tags": "Exploration",
         "Recipe": ""
     },
@@ -774,7 +774,7 @@
         "Tier": "4",
         "Level": "50",
         "Desc": "A blade forged with the essence of corruption, harboring an unimaginable power at the cost of its wielder's life. It brims with such an intense yet heinous force of magic, one could mistake it for a cursed blade, however it could not be farther from the truth. It overpowers any sort of energy it interacts with, overriding it with itself, giving it—its signature trait to create severely infected wounds with ease.",
-        "Stat": "Wielding it will reduce your health every second, for every attack, it will has a low chance to inflict <purple>Poison</font> to enemy",
+        "Stat": "Wielding it will reduce your health every second in combat, for every attack, there is a low chance to inflict <purple>Poison</font> on the enemy",
         "StatInfo": "ATK(250),CriChanceEx(16)",
         "Icon": "129041452735731",
         "Price": "3000",
@@ -797,7 +797,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
-        "Recipe": "Coal(7),Wood(10),Glass(5)"
+        "Recipe": "CoalOre(7),Wood(10),Glass(5)"
     },
     {
         "ItemId": "ManaLantern",
@@ -844,7 +844,7 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Mine",
         "Recipe": ""
     },
     {
@@ -860,7 +860,7 @@
         "Price": "45",
         "SellPrice": "22",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Mine",
         "Recipe": ""
     },
     {
@@ -876,7 +876,7 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "",
         "Recipe": ""
     },
     {
@@ -892,7 +892,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "",
         "Recipe": ""
     },
     {
@@ -908,7 +908,23 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Mine",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "GoldOre",
+        "Name": "Gold Ore",
+        "Type": "Material",
+        "Tier": "3",
+        "Level": "1",
+        "Desc": "A heavy, shimmering lump of raw earth, streaked with veins of gleaming gold. It holds the promise of immense wealth and represents the untamed riches hidden deep within the earth",
+        "Stat": "",
+        "StatInfo": "",
+        "Icon": "83980205906883",
+        "Price": "45",
+        "SellPrice": "22",
+        "ExtraStatInfo": "",
+        "Tags": "Mine",
         "Recipe": ""
     },
     {
@@ -924,7 +940,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "",
         "Recipe": ""
     },
     {
@@ -944,6 +960,38 @@
         "Recipe": "Glass(25),IronOre(40),ColdFlame(5)"
     },
     {
+        "ItemId": "GHoneyWings",
+        "Name": "Glistening Honey Wings",
+        "Type": "Material",
+        "Tier": "3",
+        "Level": "1",
+        "Desc": "These delicate, translucent wings shimmer with a faint, golden iridescence, as if constantly coated in fresh nectar. They hum with a gentle, buzzing energy, granting the wearer an ethereal lightness and the ability to glide through the air with graceful ease",
+        "Stat": "",
+        "StatInfo": "",
+        "Icon": "73783849665335",
+        "Price": "45",
+        "SellPrice": "22",
+        "ExtraStatInfo": "",
+        "Tags": "Bee",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "QueenBeeCrown",
+        "Name": "Queen Bee's Crown",
+        "Type": "Accessory",
+        "Tier": "5",
+        "Level": "150",
+        "Desc": "An ornate crown, meticulously crafted from hardened amber and the finest gold, shimmers with the collective essence of the hive. It pulses with a subtle, commanding hum, signifying absolute authority over the swarming legions.",
+        "Stat": "Every attack has a small chance to trigger <red>Execution</font>, which applies all negative effects to the enemy and deals massive damage. As a trade-off, you'll be unable to receive healing for <red>8</font> seconds.",
+        "StatInfo": "ATK(800),CriChanceEx(20),CriDMGEx(80),BleedChanceEx(25),IntensityEx(5),SpeedEx(2)",
+        "Icon": "75949659278478",
+        "Price": "11250",
+        "SellPrice": "5625",
+        "ExtraStatInfo": "",
+        "Tags": "Crafting",
+        "Recipe": "BeeStinger(150),GHoneyWings(150),GoldOre(150),ColdFlame(150),HealthPotion(500)"
+    },
+    {
         "ItemId": "KitsuneFlame",
         "Name": "Kitsune Flame",
         "Type": "Material",
@@ -956,7 +1004,7 @@
         "Price": "60",
         "SellPrice": "30",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "",
         "Recipe": ""
     },
     {
@@ -998,7 +1046,7 @@
         "Tier": "3",
         "Level": "50",
         "Desc": "This spell is valuable despite the difficulty of using raw magic. By forming a weak barrier and releasing mana pulses, it creates strong magical ripples in a controlled area. However, due to high mana consumption, it is not advisable to cast an Arcane Mark larger than three times the size of a slime, as the area of effect impacts its effectiveness and duration.",
-        "Stat": "Deals decent <purple>Magic</font> damage to enemy <red>if hits</font>, and has a chance to inflict <blue>Burn</font>",
+        "Stat": "Deals decent <purple>Magic</font> damage to enemy, and has a chance to inflict <blue>Burn</font>",
         "StatInfo": "",
         "Icon": "18857805491",
         "Price": "2250",
@@ -1014,7 +1062,7 @@
         "Tier": "3",
         "Level": "50",
         "Desc": "Resting upon the grace of the Astral Orders, offer up a heartfelt prayer to call forth a swivelling, streamlined burst of stars, crashing down onto enemies with the blinding light of a supernova.",
-        "Stat": "Deals high <purple>Magic</font> damage to enemy, inflict <red>Burn</font> to enemy for a while",
+        "Stat": "Deals high <purple>Magic</font> damage to enemy, inflict <red>Burn</font> on the enemy for a while",
         "StatInfo": "",
         "Icon": "129838506946434",
         "Price": "2250",
@@ -1190,7 +1238,7 @@
         "Tier": "2",
         "Level": "30",
         "Desc": "A matching pair of finely balanced blades, designed for fluid, rapid strikes. In the hands of a skilled warrior, they weave a deadly dance, overwhelming opponents with a flurry of precise attacks",
-        "Stat": "For every attack, it will has a decent chance to perform an extra attack",
+        "Stat": "For every attack, there is a decent chance to perform an extra attack",
         "StatInfo": "ATK(135)",
         "Icon": "139724872871679",
         "Price": "900",
@@ -1286,7 +1334,7 @@
         "Tier": "4",
         "Level": "85",
         "Desc": "This sword hums with the searing heat of a forge, its edge constantly aglow with embers. Every swing leaves a trail of scorching air, and its touch can ignite even the most stubborn materials",
-        "Stat": "For every attack, it will has a decent chance to inflict Bleed to enemy",
+        "Stat": "For every attack, there is a chance to inflict <red>Bleed</font> on the enemy",
         "StatInfo": "BurnChanceEx(50),ATK(100)",
         "Icon": "120301062302918",
         "Price": "5100",
@@ -1552,22 +1600,6 @@
         "Recipe": ""
     },
     {
-        "ItemId": "LightingBlast",
-        "Name": "Lightning Blast",
-        "Type": "Active",
-        "Tier": "3",
-        "Level": "45",
-        "Desc": "A sudden, violent discharge of raw electrical energy. It rips through the air, striking targets with blinding speed and immense force, leaving a lingering scent of ozone",
-        "Stat": "Lightning will hit u",
-        "StatInfo": "",
-        "Icon": "139131407566901",
-        "Price": "2025",
-        "SellPrice": "1012",
-        "ExtraStatInfo": "CD(12),Mana(800)",
-        "Tags": "Magic",
-        "Recipe": ""
-    },
-    {
         "ItemId": "LumiscentCrystal",
         "Name": "Lumiscent Crystal",
         "Type": "Accessory",
@@ -1624,7 +1656,7 @@
         "Desc": "A simple metal plate, it's not much, but it does the job.",
         "Stat": "",
         "StatInfo": "MaxShieldEx(15)",
-        "Icon": "140689161718898",
+        "Icon": "124437417498647",
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
@@ -1767,7 +1799,7 @@
         "Level": "5",
         "Desc": "It's unknown where this foot came from, or how it's still intact. What you do know however is that you feel a lot less heavy whilst having it equipped. What an enigma...",
         "Stat": "",
-        "StatInfo": "JumpPowerEx(10)",
+        "StatInfo": "JumpEx(10)",
         "Icon": "95436986881993",
         "Price": "75",
         "SellPrice": "37",
@@ -2023,7 +2055,7 @@
         "Level": "10",
         "Desc": "A sturdy axe with a blade shaped like a broad leaf, crafted from resilient forest wood and sharp, reinforced edges. It's designed for quick, decisive strikes, mirroring the swiftness of nature",
         "Stat": "",
-        "StatInfo": "ATK(40),CriChanceEx(5),BleedChance(2)",
+        "StatInfo": "ATK(40),CriChanceEx(5),BleedChanceEx(2)",
         "Icon": "121025463935820",
         "Price": "300",
         "SellPrice": "150",

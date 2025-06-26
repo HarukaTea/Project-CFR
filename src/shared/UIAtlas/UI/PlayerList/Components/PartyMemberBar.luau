@@ -20,7 +20,7 @@ return function (scope: Fusion.Scope, props: {
 
     return Components.Frame(scope, {
         Name = member.Name,
-        BackgroundTransparency = 0.2,
+        BackgroundTransparency = 0,
         Size = fromScale(0.15, 0.7),
 
         [Children] = {
@@ -46,11 +46,10 @@ return function (scope: Fusion.Scope, props: {
                 Position = if math.random(1, 2) == 1 then fromScale(-0.05, -0.15) else fromScale(0.92, -0.15),
                 AutoLocalize = false,
                 Text = "X",
-                BackgroundColor3 = Color3.fromRGB(229, 76, 0),
+                BackgroundColor3 = Components.RED_COLOR,
+                TextColor3 = Components.BLACK_COLOR,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                    workspace.Sounds.SFXs.Click:Play()
-
                     if not member then return end
                     if not member.Parent then return end
 

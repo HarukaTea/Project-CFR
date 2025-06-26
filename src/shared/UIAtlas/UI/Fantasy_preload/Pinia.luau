@@ -57,61 +57,63 @@ return function (self: table)
 
 
     table.insert(scope, task.spawn(function()
-        local cframe = workspace.MapComponents.Titlescreen.TitleRoom.Rig.PrimaryPart.CFrame
+        Promise.try(function()
+            local cframe = workspace.MapComponents.Titlescreen.TitleRoom.Rig.PrimaryPart.CFrame
 
-        local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(self.plr.UserId)
-        local r6Char = Players:CreateHumanoidModelFromDescription(humanoidDesc, Enum.HumanoidRigType.R6)
+            local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(self.plr.UserId)
+            local r6Char = Players:CreateHumanoidModelFromDescription(humanoidDesc, Enum.HumanoidRigType.R6)
 
-        r6Char.Name = "Rig"
-        r6Char.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-        r6Char.Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
-        r6Char.Animate:Destroy()
+            r6Char.Name = "Rig"
+            r6Char.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+            r6Char.Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+            r6Char.Animate:Destroy()
 
-        workspace.MapComponents.Titlescreen.TitleRoom.Rig:Destroy()
-        r6Char:PivotTo(cframe)
+            workspace.MapComponents.Titlescreen.TitleRoom.Rig:Destroy()
+            r6Char:PivotTo(cframe)
 
-        r6Char.Parent = workspace.MapComponents.Titlescreen.TitleRoom
-
-
-        local anim: Animation = RepS.Packages.Anims.CharAnims.Idle1
-        local animTrack = r6Char.Humanoid.Animator:LoadAnimation(anim) :: AnimationTrack
-
-        animTrack.Looped = true
-        animTrack.Priority = Enum.AnimationPriority.Idle
-
-        animTrack:Play()
+            r6Char.Parent = workspace.MapComponents.Titlescreen.TitleRoom
 
 
-        table.insert(scope, HarukaLib:Hydrate(workspace, {
-            ["Attr-Titlescreen_TempClass"] = function(class: string)
-                class = class or "Chain"
+            local anim: Animation = RepS.Packages.Anims.CharAnims.Idle1
+            local animTrack = r6Char.Humanoid.Animator:LoadAnimation(anim) :: AnimationTrack
 
-                local weapons = {
-                    Chain = "WoodenSword",
-                    Burst = "WoodenBow",
-                    Flow = "WoodenStaff",
-                }
-                local weaponId = weapons[class] or "WoodenSword"
+            animTrack.Looped = true
+            animTrack.Priority = Enum.AnimationPriority.Idle
 
-                for _, weapon: Model in r6Char:GetChildren() do
-                    if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
+            animTrack:Play()
+
+
+            table.insert(scope, HarukaLib:Hydrate(workspace, {
+                ["Attr-Titlescreen_TempClass"] = function(class: string)
+                    class = class or "Chain"
+
+                    local weapons = {
+                        Chain = "WoodenSword",
+                        Burst = "WoodenBow",
+                        Flow = "WoodenStaff",
+                    }
+                    local weaponId = weapons[class] or "WoodenSword"
+
+                    for _, weapon: Model in r6Char:GetChildren() do
+                        if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
+                    end
+                    if not RepS.Packages.ClassWeapons:FindFirstChild(class) then return end
+                    if not RepS.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
+
+
+                    local targetFolder = RepS.Packages.ClassWeapons[class][weaponId].Combat :: Folder
+
+                    for _, weapon: Model in targetFolder:GetChildren() do
+                        weapon = weapon:Clone()
+                        weapon:AddTag("ClassWeapon")
+
+                        ClientLib:WeldWeapon(weapon, r6Char)
+                    end
+
+                    HarukaLib:EmitParticles(workspace.MapComponents.Titlescreen.TitleRoom.SwitchVFX)
                 end
-                if not RepS.Packages.ClassWeapons:FindFirstChild(class) then return end
-                if not RepS.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
-
-
-                local targetFolder = RepS.Packages.ClassWeapons[class][weaponId].Combat :: Folder
-
-                for _, weapon: Model in targetFolder:GetChildren() do
-                    weapon = weapon:Clone()
-                    weapon:AddTag("ClassWeapon")
-
-                    ClientLib:WeldWeapon(weapon, r6Char)
-                end
-
-                HarukaLib:EmitParticles(workspace.MapComponents.Titlescreen.TitleRoom.SwitchVFX)
-            end
-        }))
+            }))
+        end):catch(function() end)
     end))
 
 end

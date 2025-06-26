@@ -364,7 +364,8 @@ function CriRPGLib:_ListenSkillProjectileTracker()
         Duration: number,
         ProjectileUniqueId: string,
         DMGType: string,
-        DoTType: string
+        DoTType: string,
+        DMGBonus: number,
     })
         if charId ~= char.Name then return end
 
@@ -377,6 +378,7 @@ function CriRPGLib:_ListenSkillProjectileTracker()
         symbol:SetAttribute("ProjectileType", props.ProjectileType)
         symbol:SetAttribute("Owner", charId)
         symbol:SetAttribute("DoTType", props.DoTType)
+        symbol:SetAttribute("DMGBonus", props.DMGBonus)
 
         symbol.Parent = projectileContainer
         Maid:AddItem(symbol, props.Duration)
@@ -498,8 +500,8 @@ function CriRPGLib:_ListenStatsTracker()
 
 
     local function _updateJump()
-        local jumpBuff = char:GetAttribute("JumpPowerEx") :: number
-        local jumpExBuff = char:GetAttribute("JumpPowerExPower") :: number
+        local jumpBuff = char:GetAttribute("JumpEx") :: number
+        local jumpExBuff = char:GetAttribute("JumpExPower") :: number
         local baseJump = char:GetAttribute("BaseJumpPower") :: number
 
         local final = baseJump * jumpExBuff + jumpBuff
@@ -814,7 +816,8 @@ function CriRPGLib:_ListenHealTracker()
             wait(waitTime)
             while wait(0.35) do
                 if char.Humanoid.Health <= 0
-                    or char.Humanoid.Health >= char.Humanoid.MaxHealth then
+                    or char.Humanoid.Health >= char.Humanoid.MaxHealth
+                    or char:FindFirstChild("AntiHeal") then
 
                     char:SetAttribute("IsHPRecovering", false)
                     break
@@ -886,8 +889,13 @@ function CriRPGLib:_ListenClassChangeTracker()
 
             if not ItemBook:GetItemInfo(weapon) then return end
 
-            local class = ItemBook:GetItemInfo(weapon).StatInfoDesync.ForClass :: string
+            local info = ItemBook:GetItemInfo(weapon)
+
+            local class = info.StatInfoDesync.ForClass :: string
             plr:SetAttribute("Class", class)
+
+            local variant = info.StatInfoDesync.ForVariant :: string
+            plr:SetAttribute("ClassVariant", variant or "None")
         end
     }))
 end

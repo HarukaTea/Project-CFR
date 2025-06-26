@@ -77,7 +77,7 @@ ClassAttackLib.Chain = function(plr: Player)
         })
     end
 end
-ClassAttackLib.Chain_Ult = function(plr: Player)
+ClassAttackLib.Chain_Ult_None = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -92,6 +92,7 @@ ClassAttackLib.Chain_Ult = function(plr: Player)
         ProjectileType = "OverTime",
         DMGType = "DMG",
         DoTType = "Burn",
+        DMGBonus = 1
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -99,6 +100,43 @@ ClassAttackLib.Chain_Ult = function(plr: Player)
     })
     Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "ChainSlash",
+        Caster = char,
+        ProjectileUniqueId = uniqueId
+    })
+end
+ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+
+    local uniqueId = HttpService:GenerateGUID(false)
+    local castTime = ClassAttackLib:_CalCastingTime(char, 1)
+
+
+    Events.OpenCastTimeBar.Fire(plr, {
+        Duration = castTime
+    })
+    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellReadyToCast)
+
+    wait(castTime)
+    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+        ProjectileId = "ChainSwordAstral",
+        ProjectileType = "OverTime",
+        Duration = 4,
+        ProjectileUniqueId = uniqueId,
+        DMGType = "DMG",
+        DoTType = "None",
+        DMGBonus = 1.5
+    })
+    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
+    Events.PlayAnimation.Fire(plr, {
+        AnimId = "MagicCasted1"
+    })
+    Events.FaceToTargetingEnemy.Fire(plr)
+
+
+    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+        SceneId = "ChainSwordAstral",
         Caster = char,
         ProjectileUniqueId = uniqueId
     })
@@ -152,7 +190,7 @@ ClassAttackLib.Burst = function(plr: Player)
         char:SetAttribute("BurstArrow", 0)
     end
 end
-ClassAttackLib.Burst_Ult = function(plr: Player)
+ClassAttackLib.Burst_Ult_None = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -192,6 +230,7 @@ ClassAttackLib.Burst_Ult = function(plr: Player)
         end
     end):catch(function() end)
 end
+ClassAttackLib.Burst_Ult_Stack = ClassAttackLib.Burst_Ult_None
 ClassAttackLib.Burst_BurstArrow = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -241,7 +280,7 @@ ClassAttackLib.Reverberation = function(plr: Player)
         ServerLib:ShowText(char, "ECHOED!", Color3.fromHex('#81ecec'))
     end
 end
-ClassAttackLib.Reverberation_Ult = function(plr: Player)
+ClassAttackLib.Reverberation_Ult_None = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -335,7 +374,7 @@ ClassAttackLib.Flow = function(plr: Player)
         ServerLib:ShowText(char, "FLOW!", ClassBook.Flow.Color)
     end
 end
-ClassAttackLib.Flow_Ult = function(plr: Player)
+ClassAttackLib.Flow_Ult_None = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -357,6 +396,7 @@ ClassAttackLib.Flow_Ult = function(plr: Player)
         ProjectileUniqueId = uniqueId,
         DMGType = "Magic",
         DoTType = "None",
+        DMGBonus = 1
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -368,6 +408,58 @@ ClassAttackLib.Flow_Ult = function(plr: Player)
         SceneId = "FlowAyakaUlt",
         Caster = char,
         ProjectileUniqueId = uniqueId
+    })
+end
+ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+
+    local uniqueId = HttpService:GenerateGUID(false)
+    local castTime = ClassAttackLib:_CalCastingTime(char, 3)
+
+    local uniqueId2 = HttpService:GenerateGUID(false)
+
+
+    Events.OpenCastTimeBar.Fire(plr, {
+        Duration = castTime
+    })
+    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellReadyToCast)
+
+    wait(castTime)
+    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+        ProjectileId = "FlowGanyuUlt",
+        ProjectileType = "OverTime",
+        Duration = 8,
+        ProjectileUniqueId = uniqueId,
+        DMGType = "Magic",
+        DoTType = "Burn",
+        DMGBonus = 3
+    })
+    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+        ProjectileId = "FlowLightningBlast",
+        ProjectileType = "OneTime",
+        Duration = 3,
+        ProjectileUniqueId = uniqueId2,
+        DMGType = "Magic",
+        DoTType = "Burn",
+        DMGBonus = 3
+    })
+    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
+    Events.PlayAnimation.Fire(plr, {
+        AnimId = "MagicCasted1"
+    })
+    Events.FaceToTargetingEnemy.Fire(plr)
+
+    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+        SceneId = "FlowGanyuUlt",
+        Caster = char,
+        ProjectileUniqueId = uniqueId
+    })
+    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+        SceneId = "FlowLightningBlast",
+        Caster = char,
+        ProjectileUniqueId = uniqueId2
     })
 end
 ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
@@ -394,13 +486,7 @@ ClassAttackLib.Rise = function(plr: Player)
         Attacker = "ClassAttacks"
     })
 end
-ClassAttackLib.Rise_Ult = function(plr: Player)
-    local char, targeting = _getCharAndTargeting(plr)
-    if not _charAndTargetingCheck(char, targeting) then return end
-
-
-
-end
+ClassAttackLib.Rise_Ult_None = ClassAttackLib.Chain_Ult_Combo
 ClassAttackLib.HEAL_ATTACK_Rise = ClassAttackLib.HEAL_ATTACK
 
 

@@ -14,8 +14,8 @@ local function onDropped()
     local resist = maxHealth / 200
     resist = math.floor(resist)
 
-    local trueResist = 0.5 * resist * 100
-    trueResist = math.min(10 * 100, trueResist)
+    local trueResist = 0.5 * resist
+    trueResist = math.min(10, trueResist)
 
     char:SetAttribute("DMGResistByVIT", trueResist)
 end

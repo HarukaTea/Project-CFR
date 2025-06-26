@@ -105,7 +105,7 @@ AssetBook.ItemEffectNames = {
 	PoisonChanceEx = "Poison Chance",
 	BurnChanceEx = "Burn Chance",
 	BleedChanceEx = "Bleed Chance",
-	JumpPowerEx = "Jump",
+	JumpEx = "Jump",
 }
 AssetBook.ItemEffectIsPercentage = {
 	CriChanceEx = true,

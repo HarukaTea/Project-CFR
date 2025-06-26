@@ -20,7 +20,7 @@ return function (scope: Fusion.Scope, info: {
     PerkPoints: { [string]: Fusion.Value }
 })
     local NODE_SYMBOLS = {
-        STR = "rbxassetid://112396684316741",
+        STR = "rbxassetid://134445989246357",
         INT = "rbxassetid://81020560446846",
         VIT = "rbxassetid://106075217220023",
     }

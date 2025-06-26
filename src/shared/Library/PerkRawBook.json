@@ -82,7 +82,7 @@
     {
         "PerkId": "INT5",
         "Name": "Temporal Affinity",
-        "Stat": "Your spell casting speed is increased by <yellow>10%</font>. Additionally, all your spells have a <yellow>5%</font> chance to apply a 'Slow' effect on hit, reducing enemy attack speed by 15% for 3 seconds.",
+        "Stat": "Your spell casting speed is increased by <yellow>10%</font>. Additionally, all your spells have a <yellow>5%</font> chance to apply a <red>Burn</font> effect on hit",
         "Desc": "You begin to perceive the subtle flows of time and magic. Your spellcasting becomes smoother, faster, leaving enemies with less time to react",
         "Req": "240",
         "Type": "INT"
@@ -122,7 +122,7 @@
     {
         "PerkId": "VIT4",
         "Name": "Vital Strike",
-        "Stat": "Your physical attacks deal an additional <green>1%</font> of your maximum HP as bonus damage, which also has a chance to be a critical hit",
+        "Stat": "Your physical attacks deal an additional <green>10%</font> of your maximum HP as bonus damage, which also has a chance to be a critical hit",
         "Desc": "Your strikes are no longer just about strength; they're about the sheer force of your life energy. Every blow carries a portion of your boundless vitality, striking harder with every beat of your mighty heart.",
         "Req": "120",
         "Type": "VIT"

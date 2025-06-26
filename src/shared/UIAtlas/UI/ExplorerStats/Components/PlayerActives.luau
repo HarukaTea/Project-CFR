@@ -24,7 +24,8 @@ return function(scope: Fusion.Scope, props: {
     ClassUltProgress: Fusion.Value,
     MaxClassUltProgress: Fusion.Value,
 
-    Class: Fusion.Value
+    Class: Fusion.Value,
+    ClassVariant: Fusion.Value
 
 }, self: table)
 
@@ -255,10 +256,11 @@ return function(scope: Fusion.Scope, props: {
 
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]
+                                            local variant = use(props.ClassVariant) or "None"
 
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                            return classInfo.Skills.UltSkillIcon
+                                            return classInfo.Skills["UltSkillIcon_"..variant] or ""
                                         end),
                                     }),
                                     Components.IconImageLabel(scope, {
@@ -266,17 +268,21 @@ return function(scope: Fusion.Scope, props: {
 
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]
+                                            local variant = use(props.ClassVariant) or "None"
 
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                            return classInfo.Skills.UltSkillIcon
+                                            return classInfo.Skills["UltSkillIcon_"..variant] or ""
                                         end),
                                         ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local classInfo = ClassBook[use(props.Class)]
+                                            local variant = use(props.ClassVariant) or "None"
 
                                             if classInfo == nil then return Color3.new(1, 1, 1) end
 
-                                            return if classInfo.Skills.UltSkillWithoutRecolor then Color3.new(1, 1, 1) else classInfo.Color
+                                            return if classInfo.Skills["UltSkill"..variant.."_WithoutRecolor"] then
+                                                Color3.new(1, 1, 1)
+                                            else classInfo.Color
                                         end),
 
                                         [Children] = {

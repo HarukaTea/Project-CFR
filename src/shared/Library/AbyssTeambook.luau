@@ -5,9 +5,9 @@ local abyss = {}
 abyss[1] = {
     Icon = "rbxassetid://71574854293599",
     Team = {
-        SpikeWolf = {
+        KingSlime = {
             Level = 100,
-            EnvironmentBonus = 4
+            EnvironmentBonus = 6
         }
     }
 }
@@ -17,7 +17,7 @@ abyss[2] = {
     Team = {
         QueenBee = {
             Level = 125,
-            EnvironmentBonus = 4
+            EnvironmentBonus = 6.5
         }
     }
 }
@@ -27,7 +27,7 @@ abyss[3] = {
     Team = {
         CrimsonSlime = {
             Level = 150,
-            EnvironmentBonus = 4.5
+            EnvironmentBonus = 7
         }
     }
 }
@@ -37,7 +37,7 @@ abyss[4] = {
     Team = {
         HardmodeWolf = {
             Level = 175,
-            EnvironmentBonus = 5
+            EnvironmentBonus = 10
         }
     }
 }

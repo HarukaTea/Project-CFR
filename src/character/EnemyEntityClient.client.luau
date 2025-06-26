@@ -257,6 +257,7 @@ function EntityLib.new(enemy: Model)
     end):timeout(10):catch(function() end):await()
 
     if self.Destroying then return nil end
+    if not enemy:FindFirstChild("Humanoid") then return nil end
 
 	self.Entity = enemy
 
@@ -265,6 +266,16 @@ function EntityLib.new(enemy: Model)
 
     self.Add, self.Empty = HarukaLib.Bin()
     self.ModelAdd, self.ModelEmpty = HarukaLib.Bin()
+
+
+    Promise.new(function(resolve)
+        repeat wait() until enemy:WaitForChild("Humanoid", 2)
+
+        resolve(true)
+
+    end):timeout(10):catch(function() end):await()
+    if not enemy:FindFirstChild("Humanoid") then return nil end
+
 
     self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then

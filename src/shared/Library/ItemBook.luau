@@ -137,10 +137,11 @@ ItemBook.GetAllMaterialsLoot = function(_) : { [string]: number }
     local materialsLoot = {}
 
     for _, itemInfo in ItemRawBook do
-        if itemInfo.Type == "Material" then
+        if itemInfo.Type == "Material" or itemInfo.Type == "Consumable" then
             materialsLoot[itemInfo.ItemId] = 10
         end
     end
+    materialsLoot.HeavenPotion = nil
 
     return materialsLoot
 end

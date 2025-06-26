@@ -1,5 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LOG_E = 2.71828
+
+local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
 local formulas = {
     ENEMY_MAX_LEVEL = 950,
@@ -67,7 +70,7 @@ local formulas = {
         EnvironmentBonus: number?
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
-        props.EnvironmentBonus = math.min(1.35, props.EnvironmentBonus)
+        props.EnvironmentBonus = math.min(1.75, props.EnvironmentBonus)
 
         local f = 3.5 * props.Level * props.EnvironmentBonus
 
@@ -167,6 +170,10 @@ local formulas = {
     end
 
 }
+
+
+if game.PlaceId == AssetBook.PlaceIds.AbyssLevelTest then formulas.EXPEvent = 80 end
+if game.PlaceId == AssetBook.PlaceIds.MainworldTest then formulas.EXPEvent = 80 end
 
 if formulas.EXPEvent > 1 then
     print("[Notice] EXP Event Is Enabled")

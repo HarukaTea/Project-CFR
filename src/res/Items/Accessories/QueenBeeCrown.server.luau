@@ -1,9 +1,12 @@
+local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
 local ClassAttackLib = require(ServerScriptService.HarukaServer.Library.ClassAttackLib)
+local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
 
 
 local Add, Empty = HarukaLib.Bin()
@@ -32,23 +35,40 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
     if not dmgProps.Attacker then return end
     if dmgProps.Attacker ~= "ClassAttacks" then return end
 
-    if not dmgProps.DMGType then return end
 
-
-    if dmgProps.DMGType == "Physical" then
-        local bonusDMG = char.Humanoid.MaxHealth * 0.1
-        bonusDMG = math.floor(bonusDMG)
-
-        local dmg = ClassAttackLib:_CalDMG("Physical", char, {
-            ForceDMG = bonusDMG
-        })
-
+    local result = HarukaLib:RollLoot({
+        ["Execution"] = 2,
+        ["None"] = 99
+    })
+    if result == "Execution" then
         ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = dmg,
+            DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char, {
+                ForceMaxDMG = true
+            }) * 3),
             DMGType = "Physical",
-            Attacker = "VITBonusAttack"
+            Attacker = "QueenBeeCrown"
         })
+
+        for _, debuff in { "Burn", "Poison", "Bleed" } do
+            local debuffObj = HarukaDoT.new({
+                Target = targeting,
+                Type = debuff,
+                Duration = 8,
+                Creator = char,
+                Power = 2,
+            })
+            debuffObj:Activate()
+        end
+
+        ServerLib:ShowText(char, "EXECUTION!", Color3.fromRGB(255, 0, 0))
+        ServerLib:ShowText(targeting, "EXECUTION!", Color3.fromRGB(255, 0, 0))
     end
+
+
+    local antiHealSymbol = Instance.new("BoolValue")
+    antiHealSymbol.Name = "AntiHeal"
+    antiHealSymbol.Parent = char
+    Debris:AddItem(antiHealSymbol, 8)
 end))
 
 
