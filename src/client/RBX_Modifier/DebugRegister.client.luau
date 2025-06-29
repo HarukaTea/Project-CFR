@@ -17,19 +17,24 @@ local wait = task.wait
 
 
 --// rejoin command debug for all players
-local rejoinCommand = Instance.new("TextChatCommand")
-rejoinCommand.Name = "HarukaRejoinCommand"
-rejoinCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
-rejoinCommand.PrimaryAlias = "/rejoin"
-rejoinCommand.SecondaryAlias = "!rejoin"
-rejoinCommand.AutocompleteVisible = true
-rejoinCommand.Enabled = true
+local worldId = workspace:GetAttribute("WorldId")
 
-rejoinCommand.Triggered:Connect(function(textSource: TextSource)
-    if textSource.UserId == plr.UserId then
-        Events.RequestToRejoinGame.Fire()
-    end
-end)
+if worldId and worldId == "InitusWorld" then
+    local rejoinCommand = Instance.new("TextChatCommand")
+    rejoinCommand.Name = "HarukaRejoinCommand"
+    rejoinCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
+    rejoinCommand.PrimaryAlias = "/rejoin"
+    rejoinCommand.SecondaryAlias = "!rejoin"
+    rejoinCommand.AutocompleteVisible = true
+    rejoinCommand.Enabled = true
+
+    rejoinCommand.Triggered:Connect(function(textSource: TextSource)
+        if textSource.UserId == plr.UserId then
+            Events.RequestToRejoinGame.Fire()
+        end
+    end)
+end
+
 
 
 --// freecam

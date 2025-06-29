@@ -42,7 +42,7 @@ end
 mouse.Button1Down:Connect(function()
     local char = plr.Character
     if not ClientLib:IsCharValid(char) then return end
-    if char:GetAttribute("InCombat") then return end
+    if char:GetAttribute("IsInCombat") then return end
 
     local target = mouse.Target
 
@@ -66,7 +66,7 @@ mouse.Button1Down:Connect(function()
         Bindables.CreateNotify:Fire("Player is already in a party!")
         return
     end
-    if target:GetAttribute("InCombat") then
+    if target:GetAttribute("IsInCombat") then
         Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
         return
     end

@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
@@ -59,6 +60,11 @@ return function (plr: Player)
                             }),
 
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
+                                if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
+                                    return panelId, nil
+                                end
+
+
                                 local isSelected = Fusion.Value(scope, false)
                                 if panelInfo.LayoutOrder == 1 then
                                     isSelected:set(true)
@@ -124,6 +130,11 @@ return function (plr: Player)
 
                         [Children] = {
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
+                                if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
+                                    return panelId, nil
+                                end
+
+
                                 return panelId, Components.ScrollingFrame(scope, {
                                     Name = panelId,
                                     AnchorPoint = Vector2.zero,

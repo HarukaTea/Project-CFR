@@ -137,6 +137,11 @@ return function (self: table)
                 self.ProcessedToNextDialogueSignal:Fire()
             end
         end
+        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonA then
+            if Fusion.peek(self.IsChatShown) then
+                self.ProcessedToNextDialogueSignal:Fire()
+            end
+        end
     end))
 
 

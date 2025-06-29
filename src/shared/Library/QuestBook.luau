@@ -33,27 +33,6 @@ local template = {
 
 local quests = {
     --// Side
-    SideTowerTheKey = {
-        Id = "SideTowerTheKey",
-        QuestType = "Side",
-
-        Name = "Sky Tower: The Key",
-        Desc = "",
-        Target = "Find the key",
-        NPC = "",
-        WorldLocatorId = "",
-
-        Repeatable = false,
-        DeliverType = "Normal",
-
-        RequiredQuests = {},
-
-        Rewards = {
-            EXP = 15,
-            Gold = 150
-        },
-        Objectives = {}
-    }
 
 
     --// Town

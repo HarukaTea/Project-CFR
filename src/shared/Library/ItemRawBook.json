@@ -396,7 +396,7 @@
         "Price": "450",
         "SellPrice": "225",
         "ExtraStatInfo": "",
-        "Tags": "Dragon,BossDrop",
+        "Tags": "Dragon,BossDrop,Abyss",
         "Recipe": ""
     },
     {
@@ -412,7 +412,7 @@
         "Price": "600",
         "SellPrice": "300",
         "ExtraStatInfo": "",
-        "Tags": "Dragon,BossDrop",
+        "Tags": "Dragon,BossDrop,Abyss",
         "Recipe": ""
     },
     {
@@ -860,7 +860,7 @@
         "Price": "45",
         "SellPrice": "22",
         "ExtraStatInfo": "",
-        "Tags": "Mine",
+        "Tags": "Mine,Abyss",
         "Recipe": ""
     },
     {
@@ -876,7 +876,7 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "",
+        "Tags": "Abyss",
         "Recipe": ""
     },
     {
@@ -892,7 +892,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "",
+        "Tags": "Abyss",
         "Recipe": ""
     },
     {
@@ -908,7 +908,7 @@
         "Price": "30",
         "SellPrice": "15",
         "ExtraStatInfo": "",
-        "Tags": "Mine",
+        "Tags": "Mine,Abyss",
         "Recipe": ""
     },
     {
@@ -940,7 +940,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "",
+        "Tags": "Abyss",
         "Recipe": ""
     },
     {
@@ -972,7 +972,7 @@
         "Price": "45",
         "SellPrice": "22",
         "ExtraStatInfo": "",
-        "Tags": "Bee",
+        "Tags": "Bee,Abyss",
         "Recipe": ""
     },
     {
@@ -1148,7 +1148,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Crafting,Abyss",
         "Recipe": ""
     },
     {
@@ -1324,7 +1324,7 @@
         "Price": "2700",
         "SellPrice": "1350",
         "ExtraStatInfo": "",
-        "Tags": "Chest",
+        "Tags": "",
         "Recipe": ""
     },
     {

@@ -37,7 +37,7 @@ return function(scope: Fusion.Scope, props: {
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
-                Text = "R",
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.Dash.Name] or KeybindsBook.PC.Dash.Name,
                 Size = UDim2.fromScale(0.4, 0.4),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 Position = UDim2.fromScale(1.05, 1),
@@ -52,15 +52,18 @@ return function(scope: Fusion.Scope, props: {
             })
 
         elseif input == "Controller" then
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.Dash.Name] or KeybindsBook.Console.Dash.Name
+
+
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
-                Text = "X",
+                Text = keybind,
                 Size = UDim2.fromScale(0.4, 0.4),
                 Position = UDim2.fromScale(1.05, 1),
                 BackgroundTransparency = 0,
-                BackgroundColor3 = AssetBook.XboxControllerColors.X,
-                TextColor3 = Color3.fromRGB(),
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
                 ZIndex = 10,
 
                 [Children] = {

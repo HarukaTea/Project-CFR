@@ -85,14 +85,16 @@ return function (self: table)
 
 
     --// load saved keybinds
-    for _, symbol: StringValue in self.SettingsFolder:GetChildren() do
-        if symbol:IsA("StringValue") and string.find(symbol.Name, "KEYBIND") then
-            local keybind = symbol.Value
-            local platform = if string.find(symbol.Name, "Console") then "Console" else "PC"
-            local keybindId = string.match(symbol.Name, "_(%w+)$")
+    if HarukaLib:GetDevice() ~= "Mobile" then
+        for _, symbol: StringValue in self.SettingsFolder:GetChildren() do
+            if symbol:IsA("StringValue") and string.find(symbol.Name, "KEYBIND") then
+                local keybind = symbol.Value
+                local platform = if string.find(symbol.Name, "Console") then "Console" else "PC"
+                local keybindId = string.match(symbol.Name, "_(%w+)$")
 
-            KeybindsBook[platform][keybindId] = Enum.KeyCode[keybind]
-            KeybindsBook.OnKeybindChanged:Fire(true)
+                KeybindsBook[platform][keybindId] = Enum.KeyCode[keybind]
+                KeybindsBook.OnKeybindChanged:Fire(true)
+            end
         end
     end
 

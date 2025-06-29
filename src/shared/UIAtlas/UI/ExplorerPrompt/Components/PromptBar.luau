@@ -9,6 +9,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
+local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local Children = Fusion.Children
@@ -56,8 +57,15 @@ return function (scope: Fusion.Scope, props: {
 
 
     local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local refreshBoolean = Fusion.Value(scope, false)
+    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+        refreshBoolean:set(not Fusion.peek(refreshBoolean))
+    end))
+
+
     local keyOrIcon = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
+        local boolean = use(refreshBoolean) :: boolean
 
         if input == "Keyboard" then
             return Components.TextLabel(scope, {
@@ -74,7 +82,7 @@ return function (scope: Fusion.Scope, props: {
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(props.CurrentPromptIndex) == props.LayoutOrder
                 end),
-                Text = "F",
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.PromptTrigger.Name] or KeybindsBook.PC.PromptTrigger.Name,
 
                 [Children] = {
                     Components.RoundUICorner(scope),
@@ -82,6 +90,10 @@ return function (scope: Fusion.Scope, props: {
                 }
             })
         elseif input == "Controller" then
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.PromptTrigger.Name] or KeybindsBook.Console.PromptTrigger.Name
+
+
+
             return Components.TextLabel(scope, {
                 Name = "Key",
                 Position = UDim2.fromScale(-0.18, 0.5),
@@ -90,13 +102,13 @@ return function (scope: Fusion.Scope, props: {
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundTransparency = 0,
                 FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                BackgroundColor3 = AssetBook.XboxControllerColors.Y,
-                TextColor3 = Components.BLACK_COLOR,
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(props.CurrentPromptIndex) == props.LayoutOrder
                 end),
-                Text = "Y",
+                Text = keybind,
 
                 [Children] = {
                     Components.RoundUICorner(scope),

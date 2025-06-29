@@ -13,8 +13,8 @@ return {
         Species = "Bee",
 
         Drops = {
-            BeeStinger = 60,
-            GHoneyWings = 10,
+            BeeStinger = 50,
+            GHoneyWings = 25,
             EarthBow = 10
         }
     },
@@ -34,7 +34,7 @@ return {
         Tag = "The Hive Matriarch",
 
         Drops = {
-            BeeStinger = 80,
+            BeeStinger = 60,
             GHoneyWings = 10,
             HoneyArmor2 = 10,
             QueenBeeBow = 5
@@ -54,8 +54,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -71,8 +71,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -88,8 +88,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -105,8 +105,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -122,8 +122,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -139,8 +139,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -156,8 +156,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -173,8 +173,8 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 40,
-            SlimeCore = 30,
+            SlimeGel = 50,
+            SlimeCore = 25,
             DivineBlade = 10
         }
     },
@@ -192,9 +192,9 @@ return {
         Tag = "The King of Slimes",
 
         Drops = {
-            SlimeKingCrown = 5,
-            SlimeGel = 40,
-            SlimeCore = 40,
+            SlimeKingCrown = 10,
+            SlimeGel = 50,
+            SlimeCore = 25,
         }
     },
     CrimsonSlime = {
@@ -213,8 +213,8 @@ return {
         Tag = "Core of Corruption",
 
         Drops = {
-            CrimsonSlimeCore = 80,
-            CrimsonSlimeFang = 7,
+            CrimsonSlimeCore = 75,
+            CrimsonSlimeFang = 10,
         }
     },
 
@@ -231,8 +231,8 @@ return {
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 60,
-            SpikyQuills = 30,
+            SpikyFur = 50,
+            SpikyQuills = 25,
             ForestStaff = 10
         }
     },
@@ -248,8 +248,8 @@ return {
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 60,
-            SpikyQuills = 30,
+            SpikyFur = 50,
+            SpikyQuills = 25,
             ForestStaff = 10
         }
     },
@@ -265,8 +265,8 @@ return {
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 60,
-            SpikyQuills = 30,
+            SpikyFur = 50,
+            SpikyQuills = 25,
             ForestStaff = 10
         }
     },
@@ -282,8 +282,8 @@ return {
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 60,
-            SpikyQuills = 30,
+            SpikyFur = 50,
+            SpikyQuills = 25,
             ForestStaff = 10
         }
     },
@@ -299,8 +299,8 @@ return {
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 60,
-            SpikyQuills = 30,
+            SpikyFur = 50,
+            SpikyQuills = 25,
             ForestStaff = 10
         }
     },
@@ -320,9 +320,9 @@ return {
         Tag = "The Dire Howler",
 
         Drops = {
-            BlackFur = 80,
+            BlackFur = 65,
             BlackWolfNecklace = 10,
-            WolfKingSword = 5
+            WolfKingSword = 10
         }
     },
 
@@ -343,7 +343,9 @@ return {
         Tag = "The Forest Guardian",
 
         Drops = {
-            GoldenApple = 100
+            DragonScale = 65,
+            DragonFang = 10,
+            LeafDragonStaff = 10
         }
     },
 
@@ -351,7 +353,7 @@ return {
     --// Risk of Rain 2 species
     Sylvarion = {
         Name = "Sylvarion",
-        Icon = "",
+        Icon = "rbxassetid://95284011272925",
 
         Tier = 10,
         BaseSpeed = 0,
@@ -363,7 +365,9 @@ return {
         Tag = "The Forest Guardian",
 
         Drops = {
-            GoldenApple = 100
+            DragonScale = 65,
+            DragonFang = 10,
+            LeafDragonStaff = 10
         }
     }
 }

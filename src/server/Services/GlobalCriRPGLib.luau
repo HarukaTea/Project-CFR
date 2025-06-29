@@ -61,7 +61,11 @@ function GlobalCriRPGLib:_ListenDefaultEventsTracker()
 
 
     Events.RequestToRejoinGame.SetCallback(function(plr: Player)
-        TeleportService:Teleport(game.PlaceId, plr)
+        local worldId = workspace:GetAttribute("WorldId") :: string
+
+        if worldId and worldId == "InitusWorld" then
+            TeleportService:Teleport(game.PlaceId, plr)
+        end
     end)
 end
 
@@ -1694,6 +1698,7 @@ function GlobalCriRPGLib:_ListenPlayerAbyssChallengeRequestsTracker()
 
         local teleportOptions = Instance.new("TeleportOptions")
         teleportOptions:SetTeleportData({
+            ToAbyss = true,
             SlotId = plr:GetAttribute("SlotChosen")
         })
 

@@ -159,17 +159,25 @@ function AbyssWorldLib:_ListenBossEndTracker()
     wait(1)
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
         Promise.try(function()
+            local char = player.Character
+            local luck = 1
+            if ServerLib:IsCharValid(char) then
+                luck = char:GetAttribute("Luck") / 100 or 1
+            end
+            luck = math.max(1, luck)
+
+
             for _ = 1, 3 do
                 Events.PlaySound.Fire(player, SoundService.SFXs.LootDropped)
 
-                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot())
+                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot(), luck)
 
-                ServerLib:GiveItemDrop(player, result, self.AbyssId * 2)
+                ServerLib:GiveItemDrop(player, result, self.AbyssId * 5)
                 wait(0.15)
             end
 
             wait(0.5)
-            local weaponDrop = HarukaLib:RollLoot(ItemBook:GetAllRareWeaponsLoot())
+            local weaponDrop = HarukaLib:RollLoot(ItemBook:GetAllRareWeaponsLoot(), luck)
             if weaponDrop ~= "None" then
                 local itemInfo = ItemBook:GetItemInfo(weaponDrop)
 

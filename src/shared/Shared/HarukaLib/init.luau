@@ -421,9 +421,13 @@ end
 
 	return a tuple of `(item, weight, entry)`
 ]]
-function HarukaLib:RollLoot(loots: { [string]: number }) : (string, number, number)
+function HarukaLib:RollLoot(loots: { [string]: number }, luck: number?) : (string, number, number)
+	luck = luck or 1
+
 	local lowestBound = 1e-3
 	local weightAdjustment = 1e9
+
+	luck = math.clamp(luck, lowestBound, math.huge)
 
 	--// add items
 	local items = {}
@@ -455,7 +459,7 @@ function HarukaLib:RollLoot(loots: { [string]: number }) : (string, number, numb
 
 	--// roll
 	local bestScore, bestItem, entry = math.huge, nil, nil
-	local value = math.max(lowestBound, totalWeight - math.floor(totalWeight * math.random()))
+	local value = math.max(lowestBound, totalWeight - math.floor(totalWeight * math.random() ^ luck))
 	local upperBound = 0
 
 	for index = #items, 1, -1 do

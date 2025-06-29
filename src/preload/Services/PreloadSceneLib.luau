@@ -60,7 +60,7 @@ end
 
 
 function PreloadSceneLib:_LoadScreenMouseFollower()
-    task.spawn(function()
+    local thread = task.spawn(function()
         if workspace:GetAttribute("NoRequiresTitlescreen") then return end
 
 
@@ -78,12 +78,18 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
 
         repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
+
+        if workspace:GetAttribute("Haruka_GameEntered") then return end
+
         local mouse = Players.LocalPlayer:GetMouse()
         Add(mouse.Move:Connect(function()
             XFloat = -0.5 + mouse.X / camera.ViewportSize.X
             YFloat = -0.5 + mouse.Y / camera.ViewportSize.Y
         end))
         Add(RunService.RenderStepped:Connect(function()
+            if workspace:GetAttribute("Haruka_GameEntered") then return end
+
+
             local locator = workspace.MapComponents.Titlescreen.CameraLocator.Value :: BasePart
 
             camera.CameraType = Enum.CameraType.Scriptable
@@ -100,6 +106,17 @@ function PreloadSceneLib:_LoadScreenMouseFollower()
             camera.CFrame = locator.CFrame * dynamicMouseCF.Rotation * CFrame.Angles(rad(x),rad(y),rad(z)).Rotation
         end))
     end)
+
+
+    local function onGameEntered(state: boolean)
+        if state then
+            if thread then task.cancel(thread) end
+        end
+    end
+    HarukaLib:Hydrate(workspace, {
+        ["Attr-Haruka_GameEntered"] = onGameEntered,
+        ["Attr-ShouldSkipTitlescreen"] = onGameEntered,
+    })
 end
 
 

@@ -102,6 +102,7 @@ do
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
     repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
+    repeat wait() until workspace:WaitForChild("MapComponents", 999)
 
 
     --// Load view
@@ -136,18 +137,29 @@ do
                 shouldSkipTitlescreen = true
                 forceSlotChosen = teleportData.SlotIds[Players.LocalPlayer.Name] or "Slot1"
             end
+            if teleportData.ToAbyss then
+                shouldSkipTitlescreen = true
+                forceSlotChosen = teleportData.SlotId or "Slot1"
+            end
         end
     end
     if shouldSkipTitlescreen then
         local folder = Instance.new("Folder")
         folder.Name = "Titlescreen"
         folder.Parent = workspace.MapComponents
+
+        workspace:SetAttribute("ShouldSkipTitlescreen", true)
     else
         repeat wait() until RepS:WaitForChild("Packages", 999)
         repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
 
         wait(1)
         RepS.Packages.Titlescreen.Parent = workspace.MapComponents
+
+
+        repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
+        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
+        repeat wait() until workspace.MapComponents.Titlescreen.CameraLocator.Value
     end
 
 
