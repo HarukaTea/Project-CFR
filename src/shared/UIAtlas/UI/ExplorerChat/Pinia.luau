@@ -5,14 +5,13 @@ local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
 local DialogueBook = require(RepS.HarukaShared.Library.DialogueBook)
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
-local Typewriter = require(RepS.HarukaShared.Shared.Typewriter)
+local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 
 
 return function (self: table)
@@ -50,7 +49,7 @@ return function (self: table)
 
 
     --// track typewriter
-    local typewriterObj = Typewriter.new()
+    local typewriterObj = HarukaTypeWriter.new()
 
     table.insert(scope, typewriterObj)
 

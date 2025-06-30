@@ -47,7 +47,7 @@ function Part2D:Enable()
     bindPart.CollisionGroup = "NoCollision"
     bindPart.EnableFluidForces = false
     bindPart.Locked = true
-    bindPart.Material = Enum.Material.Plastic
+    bindPart.Material = Enum.Material.SmoothPlastic
     bindPart.Anchored = true
     bindPart.CanCollide = false
     bindPart.CanQuery = false
@@ -77,13 +77,16 @@ function Part2D:Enable()
 
     self.Element.Parent = surfaceGui
 
-    self.Add(RS.RenderStepped:Connect(function()
+    RS:BindToRenderStep("Haruka3DifyUI", Enum.RenderPriority.Last.Value + 2, function()
         self.VPSize = self:GetVPSize()
         surfaceGui.CanvasSize = self.VPSize
 
         bindPart.Size = self:GetXYZFromScreenSize(self.VPSize)
         bindPart.CFrame = self:GetWorldCFrame()
-    end))
+    end)
+    self.Add(function()
+        RS:UnbindFromRenderStep("Haruka3DifyUI")
+    end)
 end
 
 --[[
@@ -157,9 +160,24 @@ function Part2D:GetWorldCFrame() : CFrame
 
         oriCFrame = self.ParentPart2D:GetWorldCFrame()
         udPos = self.ParentPart2D.Element.Position
+
+        local anchorFrame = self:Udim2ToCFrame(UDim2.fromScale(-anchorPoint.X + 0.5, -anchorPoint.Y + 0.5))
+        if not self.ParentPart2D.IsEnabled and self.ParentPart2D.ParentPart2D and self.ParentPart2D.ParentPart2D.Element then
+            local compatibilityPosition = UDim2.new(0, 0, 0, 0)
+
+            if not self.IsEnabled and self.Element and self.ParentPart2D and self.ParentPart2D.Element then
+                local offset = self.Element.AbsolutePosition - self.ParentPart2D.Element.AbsolutePosition
+
+                compatibilityPosition = UDim2.fromOffset(offset.X, offset.Y)
+            end
+            udPos = compatibilityPosition
+            anchorFrame = CFrame.identity
+        end
+
+
         addedPosition = self.ParentPart2D:Udim2ToCFrame(udPos)
             * udMax
-            * self:Udim2ToCFrame(UDim2.fromScale(-anchorPoint.X + 0.5, -anchorPoint.Y + 0.5))
+            * anchorFrame
             * CFrame.Angles(0, 0, -math.rad(self.ParentElement.Rotation))
     else
         local VPDiff = workspace.CurrentCamera.ViewportSize - workspace.CurrentCamera.ViewportSize

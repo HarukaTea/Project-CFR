@@ -5,12 +5,12 @@ local RS = game:GetService("RunService")
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
-local TypeWriter = {}
-TypeWriter.__index = TypeWriter
+local HarukaTypeWriter = {}
+HarukaTypeWriter.__index = HarukaTypeWriter
 
 
-function TypeWriter.new()
-	local self = setmetatable({}, TypeWriter)
+function HarukaTypeWriter.new()
+	local self = setmetatable({}, HarukaTypeWriter)
 
 	self.Stopped = false
 	self.Running = false
@@ -25,7 +25,7 @@ end
 --[[
 	Queue a task to type text
 ]]
-function TypeWriter:TypeText(text: string)
+function HarukaTypeWriter:TypeText(text: string)
 	self:Stop()
 
 	self.Stopped = false
@@ -50,7 +50,7 @@ function TypeWriter:TypeText(text: string)
 end
 
 
-function TypeWriter:Stop()
+function HarukaTypeWriter:Stop()
 	self.Paused = false
 	self.Stopped = true
 
@@ -61,12 +61,12 @@ end
 
 
 
-function TypeWriter:IsTyping()
+function HarukaTypeWriter:IsTyping()
 	return self.Running
 end
 
 
-function TypeWriter:Destroy()
+function HarukaTypeWriter:Destroy()
 	self.Paused = false
 	self.Stopped = true
 
@@ -78,4 +78,4 @@ function TypeWriter:Destroy()
 	end
 end
 
-return TypeWriter
+return HarukaTypeWriter
