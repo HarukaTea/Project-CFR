@@ -50,7 +50,7 @@ return function(plr: Player)
                         }),
 
                         Components.UIScale(scope, {
-                            Scale = 0.92
+                            Scale = 0.9
                         }),
                     }
                 }),
@@ -84,7 +84,9 @@ return function(plr: Player)
                     Position = UDim2.fromScale(1, 0),
 
                     [Children] = {
-                        Components.UIScale(scope),
+                        Components.UIScale(scope, {
+                            Scale = 0.95
+                        }),
 
                         Components.Frame(scope, {
                             Name = "ItemDrops",
@@ -122,7 +124,7 @@ return function(plr: Player)
 
                     [Children] = {
                         Components.UIScale(scope, {
-                            Scale = 0.8
+                            Scale = 0.75
                         }),
                     }
                 }),

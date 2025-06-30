@@ -2,7 +2,7 @@
 
 return {
 	Chain = {
-		Icon = "rbxassetid://80163543853288",
+		Icon = "rbxassetid://125482694089319",
 		Color = Color3.fromHex('#ffeaa7'),
         Type = "DMG",
 
@@ -91,6 +91,7 @@ return {
 
         Desc = "",
         Hint = "",
+        DevClass = true,
 
 
         Skills = {

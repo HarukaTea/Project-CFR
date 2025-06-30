@@ -67,7 +67,7 @@ return function (scope: Fusion.Scope, props: {
                     Components.PaddingFrame(scope, "ZZZ"),
 
                     Components.IconImageLabel(scope, {
-                        Size = UDim2.fromScale(1.2, 1.2),
+                        Size = UDim2.fromScale(1.5, 1.5),
                         LayoutOrder = 3,
 
                         Image = EntityBook[props.Enemy.Name].Icon,

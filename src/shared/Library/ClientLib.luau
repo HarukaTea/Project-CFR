@@ -160,7 +160,7 @@ function ClientLib:TrackEffectListToUI(props: {
 	Target: Model,
 	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
-}) : Fusion.Value
+})
 
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 
@@ -171,7 +171,14 @@ function ClientLib:TrackEffectListToUI(props: {
 	table.insert(props.Scope, effectListContainer)
 
 	local effectListEnemy = FusionComponents.useFolder(props.Scope, props.Target.EffectList)
+	local containerVal = FusionComponents.useFolder(props.Scope, effectListContainer)
 
+
+	Fusion.Observer(props.Scope, containerVal):onBind(function()
+		local children = #effectListContainer:GetChildren()
+
+		props.GuiContainer.EffectList.Visible = children > 0
+	end)
 	Fusion.Observer(props.Scope, effectListEnemy):onBind(function()
 		local list = Fusion.peek(effectListEnemy) :: { StringValue }
 
@@ -230,8 +237,6 @@ function ClientLib:TrackEffectListToUI(props: {
 			end
 		end
 	end)
-
-	return effectListEnemy
 end
 
 

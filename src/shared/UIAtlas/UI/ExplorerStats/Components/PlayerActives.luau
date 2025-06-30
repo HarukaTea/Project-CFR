@@ -212,6 +212,8 @@ return function(scope: Fusion.Scope, props: {
                                 LayoutOrder = 233,
                                 Size = UDim2.fromScale(1.8, 1.8),
                                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                                BackgroundTransparency = 0,
+                                BackgroundColor3 = Color3.new(),
 
                                 [Children] = {
                                     Components.RoundUICorner(scope),
@@ -250,7 +252,7 @@ return function(scope: Fusion.Scope, props: {
 
                                     Components.IconImageLabel(scope, {
                                         Name = "BaseIcon",
-                                        BackgroundTransparency = 0.3,
+                                        BackgroundTransparency = 1,
                                         ZIndex = 0,
                                         ImageTransparency = 0.7,
 
@@ -265,6 +267,7 @@ return function(scope: Fusion.Scope, props: {
                                     }),
                                     Components.IconImageLabel(scope, {
                                         Name = "Icon",
+                                        BackgroundTransparency = 1,
 
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]

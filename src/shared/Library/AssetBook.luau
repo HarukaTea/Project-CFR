@@ -151,7 +151,12 @@ AssetBook.PromptIcons = {
 	Chest = "rbxassetid://89067747729088",
 	Crafting = "rbxassetid://117468861815122",
 }
-AssetBook.PromptIcons.Chat = AssetBook.PromptIcons.Default
+AssetBook.PromptIconsType = {
+	Default = "Default",
+	Market = "CAIcon",
+	Chest = "Default",
+	Crafting = "CAIcon",
+}
 
 AssetBook.PreloadAssets = {
 	Images = {

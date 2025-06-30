@@ -79,6 +79,7 @@ return function (scope: Fusion.Scope, props: {
 
                         [Children] = {
                             Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.015, 0),
                                 FillDirection = Enum.FillDirection.Horizontal,
                                 HorizontalAlignment = Enum.HorizontalAlignment.Left,
                                 SortOrder = Enum.SortOrder.Name,
@@ -95,7 +96,7 @@ return function (scope: Fusion.Scope, props: {
 
                         [Children] = {
                             Components.TextUIStroke(scope, {
-                                Thickness = 2.5
+                                Thickness = 2
                             })
                         }
                     }),
@@ -110,25 +111,8 @@ return function (scope: Fusion.Scope, props: {
 
                         [Children] = {
                             Components.TextUIStroke(scope, {
-                                Thickness = 2.5
+                                Thickness = 2
                             })
-                        }
-                    }),
-
-                    Components.TextLabel(scope, {
-                        Name = "BossLevel",
-                        Position = UDim2.fromScale(1.02, 0),
-                        Size = UDim2.fromScale(0.12, 0.45),
-                        BackgroundTransparency = 0,
-                        BackgroundColor3 = Components.WHITE_COLOR,
-
-                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return `Lv.{use(level)}`
-                        end),
-                        TextColor3 = Components.BLACK_COLOR,
-
-                        [Children] = {
-                            Components.RoundUICorner(scope)
                         }
                     }),
 
@@ -150,9 +134,9 @@ return function (scope: Fusion.Scope, props: {
                                 ZIndex = 2,
 
                                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    local HP, maxHP = use(HP) :: number, use(maxHP) :: number
+                                    local HPState, maxHPState = use(HP) :: number, use(maxHP) :: number
 
-                                    local x = HP / maxHP
+                                    local x = HPState / maxHPState
                                     if x ~= x then x = 0 end
 
                                     x = math.clamp(x, 0, 1)
@@ -173,9 +157,9 @@ return function (scope: Fusion.Scope, props: {
                                 Position = UDim2.fromScale(0, 0),
 
                                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    local HP, maxHP = use(HP) :: number, use(maxHP) :: number
+                                    local HPState, maxHPState = use(HP) :: number, use(maxHP) :: number
 
-                                    local x = HP / maxHP
+                                    local x = HPState / maxHPState
                                     if x ~= x then x = 0 end
 
                                     x = math.clamp(x, 0, 1)
@@ -199,9 +183,9 @@ return function (scope: Fusion.Scope, props: {
                                 FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
 
                                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    local HP, maxHP = use(HP) :: number, use(maxHP) :: number
+                                    local HPState, maxHPState = use(HP) :: number, use(maxHP) :: number
 
-                                    local x = HP / maxHP
+                                    local x = HPState / maxHPState
                                     if x ~= x then x = 0 end
 
                                     x = math.clamp(x, 0, 1)
@@ -211,7 +195,7 @@ return function (scope: Fusion.Scope, props: {
 
                                 [Children] = {
                                     Components.TextUIStroke(scope, {
-                                        Thickness = 2.2
+                                        Thickness = 2
                                     })
                                 }
                             })

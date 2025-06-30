@@ -4,9 +4,11 @@
 
 --!nocheck
 local CollectionService = game:GetService("CollectionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+
 local Settings = require(script.Parent.WindShakeSettings)
-local VectorMap = require(script.Parent.VectorMap)
+local VectorMap = require(ReplicatedStorage.HarukaShared.Shared.RbxUtility.VectorMap)
 
 local COLLECTION_TAG = "WindShake" -- The CollectionService tag to be watched and mounted automatically
 

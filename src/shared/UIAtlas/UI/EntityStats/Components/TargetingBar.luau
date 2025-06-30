@@ -1,6 +1,5 @@
 --!nocheck
 
-local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
@@ -14,6 +13,9 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local Children = Fusion.Children
 
 
+local ORDER = 1
+
+
 return function(scope: Fusion.Scope, props: {
     Targeting: ObjectValue,
     TargetingEnemy: Fusion.Value
@@ -25,10 +27,14 @@ return function(scope: Fusion.Scope, props: {
     if not EntityBook[targeting.Name] then return nil end
 
 
+    ORDER += 2
+
+
     local function Value(val: any): Fusion.Value
         return Fusion.Value(scope, val)
     end
     local level = Value(1)
+    local absContentSize = Value(Vector2.zero)
 
     table.insert(scope, HarukaLib:Hydrate(targeting, {
         ["Attr-Level"] = function(val: number)
@@ -36,13 +42,10 @@ return function(scope: Fusion.Scope, props: {
         end
     }))
 
-    local uniqueId = HttpService:GenerateGUID(false)
-
-
     local bar = Components.Frame(scope, {
-        Name = "Targeting_"..uniqueId,
+        Name = targeting.Name,
         Size = UDim2.fromScale(0.32, 0.6),
-        BackgroundTransparency = 0,
+        LayoutOrder = ORDER,
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -50,9 +53,24 @@ return function(scope: Fusion.Scope, props: {
             Components.Frame(scope, {
                 Name = "CornerTex",
                 BackgroundTransparency = 0,
-                AnchorPoint = Vector2.zero,
-                Position = UDim2.fromScale(0, 0),
-                Size = UDim2.fromScale(0.1, 0.5)
+                AnchorPoint = Vector2.xAxis,
+                Size = UDim2.fromScale(0.1, 0.5),
+
+                Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return UDim2.new(1.05, use(absContentSize).X * -1, 0, 0)
+                end)
+            }),
+
+            Components.Frame(scope, {
+                Name = "BG",
+                BackgroundColor3 = Components.BLACK_COLOR,
+                BackgroundTransparency = 0,
+                AnchorPoint = Vector2.xAxis,
+                Position = UDim2.fromScale(1, 0),
+
+                Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return UDim2.new(0.05, use(absContentSize).X, 1, 0)
+                end),
             }),
 
             Components.Frame(scope, {
@@ -64,6 +82,8 @@ return function(scope: Fusion.Scope, props: {
                         Padding = UDim.new(0.03, 0),
                         HorizontalAlignment = Enum.HorizontalAlignment.Right,
                         VerticalAlignment = Enum.VerticalAlignment.Center,
+
+                        [Fusion.Out("AbsoluteContentSize")] = absContentSize,
                     }),
 
                     Components.PaddingFrame(scope, "ZZZ"),
@@ -111,8 +131,8 @@ return function(scope: Fusion.Scope, props: {
                             Components.UIPadding(scope, {
                                 PaddingTop = UDim.new(0.05, 0),
                                 PaddingBottom = UDim.new(0.05, 0),
-                                PaddingLeft = UDim.new(0.05, 0),
-                                PaddingRight = UDim.new(0.05, 0)
+                                PaddingLeft = UDim.new(0, 5),
+                                PaddingRight = UDim.new(0, 5)
                             })
                         }
                     }),
@@ -123,7 +143,6 @@ return function(scope: Fusion.Scope, props: {
                         Size = UDim2.fromScale(0, 0.8),
                         TextXAlignment = Enum.TextXAlignment.Right,
                         AutomaticSize = Enum.AutomaticSize.X,
-                        RichText = true,
 
                         Text = EntityBook[targeting.Name].Name,
 
@@ -142,36 +161,24 @@ return function(scope: Fusion.Scope, props: {
     })
 
 
-    local absoluteEffectListSize = Value(Vector2.zero)
-    local absoluteAmount = Value(Vector2.zero)
     local bar2 = Components.Frame(scope, {
-        Name = "Targeting_"..uniqueId.."_EffectList",
+        Name = targeting.Name.."_EffectList",
         AnchorPoint = Vector2.new(1, 0),
         Size = UDim2.fromScale(1, 0.4),
-
-        [Fusion.Out("AbsoluteSize")] = absoluteEffectListSize,
-
-        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(absoluteAmount).X > 0
-        end),
+        LayoutOrder = ORDER + 1,
+        Visible = false,
 
         [Children] = {
             Components.Frame(scope, {
                 Name = "EffectList",
 
                 [Children] = {
-                    Components.UIGridLayout(scope, {
-                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local y = use(absoluteEffectListSize).Y
-
-                            return UDim2.fromOffset(y, y)
-                        end),
-                        SortOrder = Enum.SortOrder.Name,
-                        StartCorner = Enum.StartCorner.TopRight,
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.01, 0),
+                        FillDirection = Enum.FillDirection.Horizontal,
                         HorizontalAlignment = Enum.HorizontalAlignment.Right,
-
-                        [Fusion.Out("AbsoluteCellCount")] = absoluteAmount,
-                    }),
+                        VerticalAlignment = Enum.VerticalAlignment.Top,
+                    })
                 }
             }),
         }

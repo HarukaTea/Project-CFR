@@ -78,7 +78,7 @@ return function (scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Amount",
                 Position = UDim2.fromScale(0.06, -0.425),
-                Size = UDim2.fromScale(0.25, 0.57),
+                Size = UDim2.fromScale(0.25, 0.55),
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     return "COMBO x"..use(props.ClassVal)
@@ -91,11 +91,11 @@ return function (scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Tip",
                 Position = UDim2.fromScale(0.06, 0.7),
-                Size = UDim2.fromScale(0.25, 0.4),
+                Size = UDim2.fromScale(0.25, 0.35),
                 Text = ClassBook.Chain.Hint,
                 FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.Bold, Enum.FontStyle.Italic),
 
-                [Children] = { Components.TextUIStroke(scope, { Thickness = 2 }) }
+                [Children] = { Components.TextUIStroke(scope, { Thickness = 1.5 }) }
             })
         }
     })

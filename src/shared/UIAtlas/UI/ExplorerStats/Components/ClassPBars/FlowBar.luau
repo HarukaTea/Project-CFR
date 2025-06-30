@@ -61,7 +61,7 @@ return function (scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Amount",
                 Position = fromScale(0.06, -0.425),
-                Size = fromScale(0.25, 0.57),
+                Size = fromScale(0.25, 0.55),
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     local amount = use(props.ClassVal) :: number
@@ -76,11 +76,11 @@ return function (scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Tip",
                 Position = fromScale(0.06, 0.7),
-                Size = fromScale(0.25, 0.4),
+                Size = fromScale(0.25, 0.35),
                 Text = ClassBook.Flow.Hint,
                 FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.Bold, Enum.FontStyle.Italic),
 
-                [Children] = { Components.TextUIStroke(scope, { Thickness = 2 }) }
+                [Children] = { Components.TextUIStroke(scope, { Thickness = 1.5 }) }
             })
         }
     })

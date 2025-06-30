@@ -104,10 +104,9 @@ return function (plr: Player)
 
                             [Children] = {
                                 Components.UIListLayout(scope, {
-                                    Padding = UDim.new(0.2, 0),
+                                    Padding = UDim.new(0.25, 0),
                                     HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                    VerticalAlignment = Enum.VerticalAlignment.Center,
-                                    SortOrder = Enum.SortOrder.Name
+                                    VerticalAlignment = Enum.VerticalAlignment.Center
                                 }),
 
                                 Fusion.ForValues(scope, self.TargetingList, function(_, scope: Fusion.Scope, targeting: ObjectValue)

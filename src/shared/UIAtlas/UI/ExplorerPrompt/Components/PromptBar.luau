@@ -116,7 +116,14 @@ return function (scope: Fusion.Scope, props: {
                 }
             })
         else
-            return nil
+            return Components.ImageLabel(scope, {
+                Name = "PressIcon",
+                Position = UDim2.fromScale(-0.18, 0.5),
+                Size = UDim2.fromScale(0.8, 0.8),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                AnchorPoint = Vector2.new(0, 0.5),
+                Image = "rbxassetid://118166707173137"
+            })
         end
     end)
 
@@ -162,19 +169,31 @@ return function (scope: Fusion.Scope, props: {
             end)
         })
     else
-        itemIconOrNomalIcon = Components.ImageLabel(scope, {
-            Name = "Icon",
-            Position = UDim2.fromScale(0.05, 0.5),
-            Size = UDim2.fromScale(0.7, 0.7),
-            AnchorPoint = Vector2.new(0, 0.5),
-            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+        local iconType = AssetBook.PromptIconsType[promptType]
+        iconType = iconType or "Default"
 
-            Image = AssetBook.PromptIcons[promptType],
+        if iconType == "CAIcon" then
+            itemIconOrNomalIcon = Components.IconImageLabel(scope, {
+                Position = UDim2.fromScale(0.05, 0.5),
+                Size = UDim2.fromScale(0.7, 0.7),
+                AnchorPoint = Vector2.new(0, 0.5),
+                Image = AssetBook.PromptIcons[promptType],
+            })
+        else
+            itemIconOrNomalIcon = Components.ImageLabel(scope, {
+                Name = "Icon",
+                Position = UDim2.fromScale(0.05, 0.5),
+                Size = UDim2.fromScale(0.7, 0.7),
+                AnchorPoint = Vector2.new(0, 0.5),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
-            ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return if use(props.CurrentPromptIndex) == props.LayoutOrder and isPC then Components.BLACK_COLOR else Components.WHITE_COLOR
-            end),
-        })
+                Image = AssetBook.PromptIcons[promptType],
+
+                ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return if use(props.CurrentPromptIndex) == props.LayoutOrder then Components.BLACK_COLOR else Components.WHITE_COLOR
+                end),
+            })
+        end
     end
 
 
@@ -186,7 +205,7 @@ return function (scope: Fusion.Scope, props: {
 
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return if use(props.CurrentPromptIndex) == props.LayoutOrder and isPC then Components.WHITE_COLOR else Components.BLACK_COLOR
+            return if use(props.CurrentPromptIndex) == props.LayoutOrder then Components.WHITE_COLOR else Components.BLACK_COLOR
         end),
 
         [Children] = {
@@ -212,7 +231,7 @@ return function (scope: Fusion.Scope, props: {
 		        TextXAlignment = Enum.TextXAlignment.Left,
 
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return if use(props.CurrentPromptIndex) == props.LayoutOrder and isPC then Components.BLACK_COLOR else Components.WHITE_COLOR
+                    return if use(props.CurrentPromptIndex) == props.LayoutOrder then Components.BLACK_COLOR else Components.WHITE_COLOR
                 end),
             }),
 

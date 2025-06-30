@@ -70,7 +70,7 @@ return function(plr: Player)
                             MaxDistance = 1599 * 40,
                             Adornee = realLocator,
 
-                            [Fusion.Attribute("Distance")] = 260,
+                            [Fusion.Attribute("Distance")] = 38,
 
                             [Children] = {
                                 QuestIndicator(scope, {

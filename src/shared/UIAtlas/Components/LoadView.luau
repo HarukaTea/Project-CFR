@@ -7,7 +7,10 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
+local Classbook = require(RepS.HarukaShared.Library.ClassBook)
+
 local Children = Fusion.Children
+
 
 
 return function (scope: Fusion.Scope, props: {
@@ -26,14 +29,49 @@ return function (scope: Fusion.Scope, props: {
 
         BottomProps = {
             [Children] = {
-                Components.TextLabel(scope, {
-                    Name = "LoadingText",
-                    Position = UDim2.fromScale(0, -0.3),
-                    Size = UDim2.fromScale(1, 0.5),
+                Components.Frame(scope, {
+                    Name = "AllClasses",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Size = UDim2.fromScale(1, 0.6),
+                    Position = UDim2.fromScale(0.5, 0),
 
-                    Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(props.LoadingText)
-                    end)
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            Padding = UDim.new(0.005, 0),
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            SortOrder = Enum.SortOrder.Name,
+                        }),
+
+                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: table)
+                            if classInfo.DevClass then return classId, nil end
+
+
+                            return classId, Components.IconImageLabel(scope, {
+                                Name = classId,
+                                Image = classInfo.Icon,
+                                ImageColor3 = classInfo.Color
+                            })
+                        end)
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "Tips",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Size = UDim2.fromScale(1, 0.6),
+                    Position = UDim2.fromScale(0.5, -0.8),
+
+                    [Children] = {
+                        Components.TextLabel(scope, {
+                            Name = "Desc",
+                            Size = UDim2.fromScale(1, 0.8),
+                            Text = Fusion.Computed(scope, function(use: Fusion.Use)
+                                return use(props.LoadingText)
+                            end),
+                        })
+                    }
                 })
             }
         }

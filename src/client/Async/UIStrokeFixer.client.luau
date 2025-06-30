@@ -52,7 +52,7 @@ local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal",
         local adornee = billboardGui.Adornee
         local origin = _getInstancePosition(adornee)
         local magnitude = (camera.CFrame.Position - origin).Magnitude
-        local distanceRatio = ((billboardGui:GetAttribute("Distance") or 15.99) / magnitude)
+        local distanceRatio = ((billboardGui:GetAttribute("Distance") or 31) / magnitude)
 
         finalThickness = info.Thickness * distanceRatio * _calScreenRatio() * scale
         finalThickness = math.clamp(finalThickness, 1, 3)

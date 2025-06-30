@@ -115,7 +115,9 @@ return function(plr: Player)
                     Position = UDim2.fromScale(0, 1.5),
 
                     [Children] = {
-                        Components.UIScale(scope),
+                        Components.UIScale(scope, {
+                            Scale = 0.95
+                        }),
 
                         Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             if use(self.IsInCombat) then
@@ -217,7 +219,7 @@ return function(plr: Player)
 
                         Components.TextButton(scope, {
                             Name = "DungeonStart",
-                            Size = UDim2.fromScale(0.2, 0.65),
+                            Size = UDim2.fromScale(0.15, 0.65),
                             Text = "START",
                             BackgroundTransparency = 0,
                             BackgroundColor3 = Components.GREEN_COLOR,
@@ -239,13 +241,16 @@ return function(plr: Player)
                 Components.Frame(scope, {
                     Name = "TimerFrame",
                     AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 1),
+                    Position = UDim2.fromScale(0.5, 1.25),
 
                     [Children] = {
                         Components.UIListLayout(scope, {
                             FillDirection = Enum.FillDirection.Horizontal,
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             VerticalAlignment = Enum.VerticalAlignment.Center
+                        }),
+                        Components.UIScale(scope, {
+                            Scale = 1
                         }),
 
                         DungeonTimer(scope, {

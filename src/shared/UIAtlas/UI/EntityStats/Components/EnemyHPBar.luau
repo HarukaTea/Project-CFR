@@ -58,7 +58,7 @@ return function (scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Components.TextUIStroke(scope, {
-                        Thickness = 2.2
+                        Thickness = 2
                     })
                 }
             }),
@@ -71,6 +71,7 @@ return function (scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.01, 0),
                         FillDirection = Enum.FillDirection.Horizontal,
                         VerticalAlignment = Enum.VerticalAlignment.Center,
                         HorizontalAlignment = Enum.HorizontalAlignment.Center

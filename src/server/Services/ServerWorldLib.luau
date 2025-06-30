@@ -162,6 +162,10 @@ function ServerWorldLib:_DoMapOptimization()
         for _, part: BasePart in container:GetDescendants() do
             if HarukaLib:IsBasePartType(part) then
                 part.EnableFluidForces = false
+
+                if part.Material == Enum.Material.Plastic then
+                    part.Material = Enum.Material.SmoothPlastic
+                end
             end
         end
     end
@@ -582,6 +586,41 @@ function ServerWorldLib:_DoInitMaterials()
             giver:FindFirstChildOfClass("ProximityPrompt").Enabled = true
         end
     end):catch(function() end)
+end
+
+
+function ServerLib:_DoInitOceanWaves()
+    local oceans = workspace.Maps:FindFirstChild("Oceans") :: Folder
+    if not oceans then return end
+
+
+    local boneIniter = Instance.new("AnimationController")
+    boneIniter.Parent = oceans
+
+
+    for _, ocean: MeshPart in oceans:GetDescendants() do
+        if ocean:IsA("MeshPart") then
+            ocean.CanCollide = false
+            ocean.EnableFluidForces = false
+
+            if ocean:FindFirstChild("Ocean") then
+                if ocean.Ocean:IsA("Bone") then
+                    for _, bone: Bone in ocean.Ocean:GetChildren() do
+                        bone.Parent = ocean
+                    end
+
+                    ocean.Ocean:Destroy()
+                end
+            end
+        end
+    end
+end
+
+
+function ServerWorldLib:_DoInitFloatables()
+    local floatableContainer = Instance.new("Folder")
+    floatableContainer.Name = "FloatableContainer"
+    floatableContainer.Parent = workspace
 end
 
 

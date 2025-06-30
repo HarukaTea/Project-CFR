@@ -14,8 +14,6 @@ return function(scope: Fusion.Scope, props: {
 })
     return Components.Frame(scope, {
         Name = "ResonateNum",
-        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
 
         [Children] = {
             Components.IconImageLabel(scope, {
@@ -32,13 +30,13 @@ return function(scope: Fusion.Scope, props: {
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.5, -0.3),
                 ZIndex = 2,
-                Size = UDim2.fromScale(0.6, 0.6),
+                Size = UDim2.fromScale(0.75, 0.75),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 FontFace = Font.fromName("Roboto", Enum.FontWeight.Bold),
                 Text = props.Num,
 
                 [Children] = {
-                    Components.TextUIStroke(scope, { Thickness = 2.3 })
+                    Components.TextUIStroke(scope, { Thickness = 2.5 })
                 }
             })
         }

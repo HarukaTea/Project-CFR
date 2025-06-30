@@ -238,30 +238,32 @@ do
     workspace:SetAttribute("Haruka_TitlescreenDestroying", true)
 
     pcall(function()
-        Lighting.Ambient = Color3.fromRGB(159, 159, 159)
-        Lighting.Brightness = 1.599
-        Lighting.ColorShift_Bottom = Color3.fromRGB(220, 255, 255)
-        Lighting.ColorShift_Top = Color3.fromRGB(220, 255, 255)
-        Lighting.OutdoorAmbient = Color3.fromRGB(241, 242, 246)
-        Lighting.ClockTime = 14
-        Lighting.GeographicLatitude = 0
-        Lighting.ExposureCompensation = 0.15
+        if not workspace:GetAttribute("NoResetLightingConfig") then
+            Lighting.Ambient = Color3.fromRGB(159, 159, 159)
+            Lighting.Brightness = 1.599
+            Lighting.ColorShift_Bottom = Color3.fromRGB(220, 255, 255)
+            Lighting.ColorShift_Top = Color3.fromRGB(220, 255, 255)
+            Lighting.OutdoorAmbient = Color3.fromRGB(241, 242, 246)
+            Lighting.ClockTime = 14
+            Lighting.GeographicLatitude = 0
+            Lighting.ExposureCompensation = 0.15
 
-        Lighting:SetAttribute("RainLevel", 0)
+            Lighting:SetAttribute("RainLevel", 0)
 
-        if workspace.Terrain:FindFirstChild("Clouds") then
-            workspace.Terrain.Clouds.Cover = 0.65
+            if workspace.Terrain:FindFirstChild("Clouds") then
+                workspace.Terrain.Clouds.Cover = 0.65
+            end
+            if Lighting:FindFirstChild("TitlescreenAtmosphere") then
+                Lighting.TitlescreenAtmosphere:Destroy()
+            end
+            if Lighting:FindFirstChild("_TitlescreenSkybox") then
+                Lighting._TitlescreenSkybox:Destroy()
+            end
+            if Lighting:FindFirstChild("TitlescreenBloom") then
+                Lighting.TitlescreenBloom:Destroy()
+            end
+            RepS.Packages.Unloads._WorldSkybox:Clone().Parent = Lighting
         end
-        if Lighting:FindFirstChild("TitlescreenAtmosphere") then
-            Lighting.TitlescreenAtmosphere:Destroy()
-        end
-        if Lighting:FindFirstChild("_TitlescreenSkybox") then
-            Lighting._TitlescreenSkybox:Destroy()
-        end
-        if Lighting:FindFirstChild("TitlescreenBloom") then
-            Lighting.TitlescreenBloom:Destroy()
-        end
-        RepS.Packages.Unloads._WorldSkybox:Clone().Parent = Lighting
 
 
         for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do

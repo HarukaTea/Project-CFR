@@ -107,7 +107,12 @@ function AbyssWorldLib:_ListenAbyssRequestsTracker()
         Events.CreateCenterNotify.FireList(CollectionService:GetTagged("PlayerEntity"), "CHALLENGE STARTED!", true)
         Events.DUNGEON_StartDungeon.FireList(CollectionService:GetTagged("PlayerEntity"))
 
-        workspace.MapComponents:FindFirstChild("_DungeonStartAirWall", true):Destroy()
+
+        for _, part: BasePart in workspace.MapComponents:GetDescendants() do
+            if part.Name == "_DungeonStartAirWall" then
+                part:Destroy()
+            end
+        end
 
 
         local clockDisconnect = nil

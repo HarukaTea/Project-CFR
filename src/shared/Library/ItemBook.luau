@@ -138,7 +138,7 @@ ItemBook.GetAllMaterialsLoot = function(_) : { [string]: number }
 
     for _, itemInfo in ItemRawBook do
         if table.find(itemInfo.TagsDesync, "Abyss") then
-            materialsLoot[itemInfo.ItemId] = 8 * itemInfo.Tier
+            materialsLoot[itemInfo.ItemId] = 10
         end
     end
 

@@ -60,9 +60,11 @@ return function(scope: Fusion.Scope, props: {
                 [Children] = {
                     Components.RoundUICorner(scope),
                     Components.TextUIStroke(scope, {
+                        Name = "UIStrokeText",
                         Thickness = 2
                     }),
                     Components.UIStroke(scope, {
+                        Name = "UIStroke",
                         Color = Color3.fromHex('#7bed9f'),
                         Thickness = 3
                     }),

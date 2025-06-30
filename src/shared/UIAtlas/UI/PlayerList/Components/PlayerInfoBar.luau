@@ -80,7 +80,7 @@ return function(scope: Fusion.Scope, props: {
                     Components.PaddingFrame(scope, "ZZZ"),
 
                     Components.IconImageLabel(scope, {
-                        Size = UDim2.fromScale(1.2, 1.2),
+                        Size = UDim2.fromScale(1.5, 1.5),
                         LayoutOrder = 3,
 
                         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -134,53 +134,17 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.Frame(scope, {
-                Name = "PlayerName",
+            Components.TextLabel(scope, {
+                Name = "PlayerDisplayName",
+                Text = props.Player.DisplayName,
+                AutoLocalize = false,
 
                 [Children] = {
-                    Components.TextLabel(scope, {
-                        Name = "PlayerDisplayName",
-                        Text = props.Player.DisplayName,
-                        AutoLocalize = false,
-
-                        [Children] = {
-                            Components.TextUIStroke(scope, {
-                                Thickness = 2,
-                            })
-                        }
+                    Components.TextUIStroke(scope, {
+                        Thickness = 2
                     })
                 }
-            })
-        }
-    }), Components.BillboardGui(scope, {
-        Name = "PlayerInfoBar",
-        Size = UDim2.fromScale(12, 1),
-        MaxDistance = 65,
-        StudsOffset = Vector3.yAxis * 3.5,
-        Adornee = props.Char.Head,
-
-        Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(HP) > 0
-        end),
-
-        [Children] = {
-            Components.Frame(scope, {
-                Name = "PlayerName",
-
-                [Children] = {
-                    Components.TextLabel(scope, {
-                        Name = "PlayerDisplayName",
-                        Text = props.Player.DisplayName,
-                        AutoLocalize = false,
-
-                        [Children] = {
-                            Components.TextUIStroke(scope, {
-                                Thickness = 2
-                            })
-                        }
-                    })
-                }
-            })
+            }),
         }
     }), Components.BillboardGui(scope, {
         Name = "PlayerRoleBar",
@@ -194,28 +158,21 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.Frame(scope, {
+            Components.TextLabel(scope, {
                 Name = "PlayerRole",
 
+                Text = Fusion.Computed(scope, function(use: Fusion.Use)
+                    local roleState = use(role) :: string
+                    if roleState == nil then return "" end
+                    if roleState == "" then return "" end
+
+                    return `- {roleState} -`
+                end),
+                TextColor3 = Color3.fromHex('#ffeaa7'),
+
                 [Children] = {
-                    Components.TextLabel(scope, {
-                        Name = "PlayerRole",
-
-                        Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                            local role = use(role) :: string
-                            if role == nil then return "" end
-                            if role == "" then return "" end
-
-
-                            return `- {role} -`
-                        end),
-                        TextColor3 = Color3.fromHex('#ffeaa7'),
-
-                        [Children] = {
-                            Components.TextUIStroke(scope, {
-                                Thickness = 2
-                            })
-                        }
+                    Components.TextUIStroke(scope, {
+                        Thickness = 2
                     })
                 }
             })

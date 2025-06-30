@@ -4,9 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 
 local Children = Fusion.Children
 
@@ -33,8 +31,7 @@ return function (scope: Fusion.Scope, props: {
                 [Children] = {
                     Components.RoundUICorner(scope),
                     Components.UIStroke(scope, {
-                        Thickness = 2,
-                        Color = Components.BLACK_COLOR
+                        Thickness = 2
                     })
                 }
             }),
@@ -47,11 +44,10 @@ return function (scope: Fusion.Scope, props: {
                 AutoLocalize = false,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                    local distance = math.floor((use(props.CharPoint) - props.WorldPoint).Magnitude)
+                    local distance = math.ceil((use(props.CharPoint) - props.WorldPoint).Magnitude)
 
                     return `{distance}M`
                 end),
-
 
                 [Children] = {
                     Components.TextUIStroke(scope, {

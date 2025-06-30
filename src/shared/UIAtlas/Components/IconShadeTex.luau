@@ -22,7 +22,7 @@ return function (scope: Fusion.Scope, props: {
 
     return Components.ImageLabel(scope, {
         Name = "IconShadeTex",
-        Size = UDim2.fromScale(1.7, 1.7),
+        Size = UDim2.fromScale(1.8, 1.8),
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.fromScale(0.5, 0.5),
         ZIndex = 0,
