@@ -30,7 +30,7 @@ return function (scope: Fusion.Scope, props: {
             })
 
                 local correspondingBaseStat = nil
-                for _, baseStatInfo: table in props.BaseStatList do
+                for _, baseStatInfo: { any } in props.BaseStatList do
                     if baseStatInfo.Id == val.Id then
                         correspondingBaseStat = baseStatInfo
                         break

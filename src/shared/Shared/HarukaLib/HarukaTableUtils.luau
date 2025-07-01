@@ -1,7 +1,7 @@
 
 local tableUtils = {}
 
-tableUtils.Keys = function(tbl: table) : { string }
+tableUtils.Keys = function(tbl: { any }) : { string }
     local keys = table.create(#tbl)
 
     for key: string in tbl do
@@ -10,7 +10,7 @@ tableUtils.Keys = function(tbl: table) : { string }
 
     return keys
 end
-tableUtils.Values = function(tbl: table) : { any }
+tableUtils.Values = function(tbl: { any }) : { any }
     local values = table.create(#tbl)
 
     for _, value in tbl do
@@ -19,10 +19,10 @@ tableUtils.Values = function(tbl: table) : { any }
 
     return values
 end
-tableUtils.IsEmpty = function(tbl: table) : boolean
+tableUtils.IsEmpty = function(tbl: { any }) : boolean
     return next(tbl) == nil
 end
-tableUtils.Filter = function(tbl: table, predicate: (val: any, key: any, tbl: { table }) -> boolean) : table
+tableUtils.Filter = function(tbl: { any }, predicate: (val: any, key: any, tbl: { table }) -> boolean) : { any }
     local newT = table.create(#tbl)
 
     if #tbl > 0 then
@@ -43,13 +43,13 @@ tableUtils.Filter = function(tbl: table, predicate: (val: any, key: any, tbl: { 
 
     return newT
 end
-tableUtils.Cut = function(tbl: table, len: number) : table
+tableUtils.Cut = function(tbl: { any }, len: number) : { any }
     local n = #tbl
     len = math.clamp(len, 1, n)
 
     return if len == n then table.clone(tbl) else table.move(tbl, 1, len, 1, table.create(len))
 end
-tableUtils.CheckForSome = function(tbl: table, callback: (val: any, key: any, tbl: { table }) -> boolean) : boolean
+tableUtils.CheckForSome = function(tbl: { any }, callback: (val: any, key: any, tbl: { table }) -> boolean) : boolean
     for k, v in tbl do
         if callback(v, k, tbl) then
             return true
@@ -58,7 +58,7 @@ tableUtils.CheckForSome = function(tbl: table, callback: (val: any, key: any, tb
 
     return false
 end
-tableUtils.CheckForEvery = function(tbl: table, callback: (val: any, key: any, tbl: { table }) -> boolean) : boolean
+tableUtils.CheckForEvery = function(tbl: { any }, callback: (val: any, key: any, tbl: { table }) -> boolean) : boolean
     for k, v in tbl do
         if not callback(v, k, tbl) then
             return false
@@ -67,7 +67,7 @@ tableUtils.CheckForEvery = function(tbl: table, callback: (val: any, key: any, t
 
     return true
 end
-tableUtils.Find = function(tbl: table, callback: (val: any, key: any, tbl: { table }) -> boolean) : (Value?, Key?)
+tableUtils.Find = function(tbl: { any }, callback: (val: any, key: any, tbl: { table }) -> boolean) : (Value?, Key?)
     for k, v in tbl do
         if callback(v, k, tbl) then
             return v, k
@@ -76,7 +76,7 @@ tableUtils.Find = function(tbl: table, callback: (val: any, key: any, tbl: { tab
 
     return nil, nil
 end
-tableUtils.Map = function(tbl: table, callback: (val: any, key: any, tbl: { table }) -> any) : table
+tableUtils.Map = function(tbl: { any }, callback: (val: any, key: any, tbl: { table }) -> any) : { any }
     local newT = table.create(#tbl)
 
     for k, v in tbl do
@@ -85,7 +85,7 @@ tableUtils.Map = function(tbl: table, callback: (val: any, key: any, tbl: { tabl
 
     return newT
 end
-tableUtils.Merge = function(tbl1: table, tbl2: table)
+tableUtils.Merge = function(tbl1: { any }, tbl2: { any })
     local newT = table.clone(tbl1)
 
     for _, v in tbl2 do
@@ -103,7 +103,7 @@ tableUtils.CountDictLength = function(dict: { [any]: any }) : number
 
     return count
 end
-tableUtils.MakePackage = function(t: table, whiteList: { string }) : table
+tableUtils.MakePackage = function(t: { any }, whiteList: { string }) : { any }
     local newT = {}
 
     for key: string, val: any in table.clone(t) do
@@ -114,7 +114,7 @@ tableUtils.MakePackage = function(t: table, whiteList: { string }) : table
 
     return newT
 end
-tableUtils.CopyTableExcept = function(t: table, except: { string }, shouldIncludeFunc: boolean?) : table
+tableUtils.CopyTableExcept = function(t: { any }, except: { string }, shouldIncludeFunc: boolean?) : { any }
     local newT = {}
 
     for key: string, val: any in t do
@@ -128,7 +128,7 @@ tableUtils.CopyTableExcept = function(t: table, except: { string }, shouldInclud
 
     return newT
 end
-tableUtils.Clone = function(tbl: table) : table
+tableUtils.Clone = function(tbl: { any }) : { any }
     return tableUtils.CopyTableExcept(tbl, {}, false)
 end
 

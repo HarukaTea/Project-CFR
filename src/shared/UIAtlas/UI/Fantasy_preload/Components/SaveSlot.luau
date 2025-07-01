@@ -24,7 +24,7 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-local function _reconcileProps(default: table, props: table)
+local function _reconcileProps(default: { any }, props: { any })
 	for prop: string, val: any in props do
 		if prop == Fusion.Children and default[Fusion.Children] then
 			table.insert(default[Fusion.Children], val)

@@ -14,7 +14,7 @@ local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 
 
-return function (self: table)
+return function (self: { any })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end

@@ -53,7 +53,7 @@ local function doCleanup(
 			local task = (task :: any) :: {Destroy: (...unknown) -> (...unknown)}
 			task:Destroy()
 
-		-- case 6: table of tasks with an array part
+		-- case 6: { any } of tasks with an array part
 		elseif task[1] ~= nil then
 			local task = task :: {Types.Task}
 

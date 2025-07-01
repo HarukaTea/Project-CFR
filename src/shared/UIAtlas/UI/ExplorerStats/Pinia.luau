@@ -18,7 +18,7 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local wait = task.wait
 
-return function (self: table)
+return function (self: { any })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end
@@ -191,11 +191,11 @@ return function (self: table)
     self.EquippingItems = FusionComponents.useFolder(scope, self.plr.EquippingItems)
 
     local function _handleItemEquip()
-        for _, slotInfo: table in self.ActiveList do
+        for _, slotInfo: { any } in self.ActiveList do
             slotInfo.ItemId:set("None")
             slotInfo.ItemUniqueId:set("None")
         end
-        for _, slotInfo: table in self.PassiveList do
+        for _, slotInfo: { any } in self.PassiveList do
             slotInfo.ItemId:set("None")
             slotInfo.ItemUniqueId:set("None")
         end
@@ -237,7 +237,7 @@ return function (self: table)
     table.insert(scope, self.RequestToDash)
 
 
-    local function _normalCancelCD(info: table)
+    local function _normalCancelCD(info: { any })
         task.delay(0.15, function()
             info.CastCD = false
         end)
@@ -312,7 +312,7 @@ return function (self: table)
 
 
 
-    local function _createCooldownAnim(cdTime: nuamber, info: table)
+    local function _createCooldownAnim(cdTime: nuamber, info: { any })
         local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 
         local cdSymbol = info.CDSymbol :: NumberValue

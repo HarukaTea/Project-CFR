@@ -825,7 +825,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     local encounterBorder: Model = nil
     local nearbyCount = 0
     local function _nearbyEnemyEnterCombat()
-        for _, entityObj: table in allEntityPool do
+        for _, entityObj: { any } in allEntityPool do
             if nearbyCount >= 5 then break end
 
             local thatEntity = entityObj.Entity :: Model
@@ -1108,7 +1108,7 @@ function EntityLib:_CombatEnd()
     Promise.new(function(resolve)
         local check = false
 
-        for _, thatEntityObj: table in allEntityPool do
+        for _, thatEntityObj: { any } in allEntityPool do
             if thatEntityObj.UniqueId == self.UniqueId then continue end
             if not thatEntityObj.CombatInfo.IsInCombat then continue end
             if not thatEntityObj.CombatInfo.CombatStarterUniqueId then continue end
@@ -1155,7 +1155,7 @@ function EntityLib:_CombatEnd()
     end):await()
 
 
-    local function _giveLoot(drops: table, char: Model)
+    local function _giveLoot(drops: { any }, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
 
@@ -1170,7 +1170,7 @@ function EntityLib:_CombatEnd()
             ServerLib:PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position)
         end
     end
-    local function _giveBadge(entityInfo: table, char: Model)
+    local function _giveBadge(entityInfo: { any }, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
 

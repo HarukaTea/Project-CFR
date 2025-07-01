@@ -7,7 +7,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local wait = task.wait
 
-return function (UI: ScreenGui, self: table)
+return function (UI: ScreenGui, self: { any })
     local scope = self.scope :: Fusion.Scope
 
 

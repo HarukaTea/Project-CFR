@@ -17,7 +17,7 @@ local RevPKSlot = require(script.Parent.Components.GlobalClassPBars.Reverberatio
 local wait = task.wait
 
 
-return function (UI: ScreenGui, self: table)
+return function (UI: ScreenGui, self: { any })
     local scope = self.scope :: Fusion.Scope
     local bottom = UI.Bottom :: Frame
 

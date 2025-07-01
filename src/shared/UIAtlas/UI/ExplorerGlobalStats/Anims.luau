@@ -21,7 +21,7 @@ local BadgeAwarding = require(script.Parent.Components.BadgeAwarding)
 local wait = task.wait
 
 
-return function (UI: ScreenGui, self: table)
+return function (UI: ScreenGui, self: { any })
     local scope = self.scope :: Fusion.Scope
 
     --// got hit anim

@@ -65,14 +65,14 @@ local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal",
     stroke.Thickness = finalThickness
 end
 local function _updateSize()
-	for stroke: UIStroke, info: table in normalUIStrokes do
+	for stroke: UIStroke, info: { any } in normalUIStrokes do
 		if not stroke.Parent then
 			normalUIStrokes[stroke] = nil
 		else
 			_updateStroke(stroke, "Normal", info)
 		end
 	end
-	for stroke: UIStroke, info: table in billboardUIStrokes do
+	for stroke: UIStroke, info: { any } in billboardUIStrokes do
 		if not stroke.Parent then
 			billboardUIStrokes[stroke] = nil
 		else

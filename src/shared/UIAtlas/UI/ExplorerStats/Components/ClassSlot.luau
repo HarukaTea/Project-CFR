@@ -12,7 +12,7 @@ local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
     Class: Fusion.Value,
-    EquippingPassives: table,
+    EquippingPassives: { any },
     EquippingItems: Fusion.Value,
 })
 
@@ -33,7 +33,7 @@ return function(scope: Fusion.Scope, props: {
         end,
 
         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            local equippingItems = use(props.EquippingItems) :: table
+            local equippingItems = use(props.EquippingItems) :: { any }
             local weapon: StringValue = nil
 
             for _, symbol: StringValue in equippingItems do
@@ -92,7 +92,7 @@ return function(scope: Fusion.Scope, props: {
                 Name = "Passives",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope, index: number, info: table)
+                    Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope, index: number, info: { any })
                         local RADIANS = { -40, -80, -120 }
                         local r = 0.8
 

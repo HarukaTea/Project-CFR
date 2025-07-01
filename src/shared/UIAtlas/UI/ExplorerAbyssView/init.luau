@@ -158,7 +158,7 @@ return function (plr: Player)
                                 }),
 
 
-                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: table)
+                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: { any })
                                     return mobId, AbyssEnemySlot(scope, {
                                         MobId = mobId,
                                         MobInfo = mobInfo

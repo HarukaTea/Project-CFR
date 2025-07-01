@@ -11,7 +11,7 @@ local AbyssTeambook = require(RepS.HarukaShared.Library.AbyssTeambook)
 
 local wait = task.wait
 
-return function (self: table)
+return function (self: { any })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end

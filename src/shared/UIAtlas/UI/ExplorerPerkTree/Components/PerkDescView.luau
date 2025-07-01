@@ -20,7 +20,7 @@ return function (scope: Fusion.Scope, props: {
 
 
     local belongTo = "STR"
-    for perkPointId: string, perkBelongTo: table in PerkBook do
+    for perkPointId: string, perkBelongTo: { any } in PerkBook do
         for id: string, _ in perkBelongTo do
             if id == props.PerkId then
                 belongTo = perkPointId

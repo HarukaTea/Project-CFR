@@ -10,7 +10,7 @@ return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     TileSize: UDim2,
 
-    [Fusion.Children]: table?,
+    [Fusion.Children]: { any }?,
 })
 
     props = props or {}

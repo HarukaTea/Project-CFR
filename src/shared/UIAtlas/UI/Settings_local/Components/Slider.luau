@@ -12,7 +12,7 @@ local Children = Fusion.Children
 return function(scope: Fusion.Scope, props: {
 	BarVal: Fusion.Value,
 	LayoutOrder: number,
-	OptionInfo: table,
+	OptionInfo: { any },
 
     OptionId: string,
     OptionTitle: string,

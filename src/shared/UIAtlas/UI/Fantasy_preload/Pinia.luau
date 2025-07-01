@@ -13,7 +13,7 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
 local wait = task.wait
 
-return function (self: table)
+return function (self: { any })
 	local scope = self.scope :: Fusion.Scope
 
 

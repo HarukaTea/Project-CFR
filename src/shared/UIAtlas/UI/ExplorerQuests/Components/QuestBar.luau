@@ -27,7 +27,7 @@ return function (scope: Fusion.Scope, props: {
     local notHasObjective = HarukaLib.TableUtils.IsEmpty(QuestBook[questId].Objectives)
     local objectiveVals = {}
     if not notHasObjective then
-        for index: number, objectiveInfo: table in QuestBook[questId].Objectives do
+        for index: number, objectiveInfo: { any } in QuestBook[questId].Objectives do
             objectiveVals[index] = Fusion.Value(scope, objectiveInfo.Default)
 
             table.insert(scope, HarukaLib:Hydrate(props.QuestVal, {

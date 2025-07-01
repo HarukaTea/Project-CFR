@@ -22,13 +22,13 @@ TextChatService.OnIncomingMessage = function(message: TextChatMessage)
 
         if sender:GetAttribute("Role") then
             local role = sender:GetAttribute("Role") :: string
-            local roleInfo: table?
+            local roleInfo: { any }?
 
 
-            for _, roleinfo: table in RankBook.RankRoleInfo do
+            for _, roleinfo: { any } in RankBook.RankRoleInfo do
                 if roleinfo.Role == role then roleInfo = roleinfo break end
             end
-            for _, roleinfo: table in RankBook.CustomRoleInfo do
+            for _, roleinfo: { any } in RankBook.CustomRoleInfo do
                 if roleinfo.Role == role then roleInfo = roleinfo break end
             end
 

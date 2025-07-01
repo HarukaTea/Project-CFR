@@ -241,7 +241,7 @@ end
 
 	Return a function to destroy the tracker.
 ]]
-function HarukaLib:Hydrate(obj: Instance, props: table)
+function HarukaLib:Hydrate(obj: Instance, props: { any })
 	local Add, Empty = HarukaLib.Bin()
 
 	for prop: string, func: (val: any) -> nil in props do
@@ -370,7 +370,7 @@ end
 
 	Return a signal class, it will fire when the tween is completed.
 ]]
-function HarukaLib:Tween(obj: Instance, style: table, goal: any, needSignal: boolean)
+function HarukaLib:Tween(obj: Instance, style: { any }, goal: any, needSignal: boolean)
 	return Tween(obj, style, goal, needSignal)
 end
 
@@ -490,7 +490,7 @@ function HarukaLib:PlayCutscene(pointsTable: { BasePart }, duration: number)
 	local cutsceneSignal = Signal.new()
 
 	--// Helper funcs
-	local function _getCF(points: table, t: number) : CFrame
+	local function _getCF(points: { any }, t: number) : CFrame
 		local copy = { unpack(points) }
 
 		local n = #copy
@@ -687,7 +687,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 	local tweenObjs = ui:GetDescendants()
 	table.insert(tweenObjs, ui)
 
-	local function _tweenGoal(obj: GuiObject, attr: string, tweenProps: table)
+	local function _tweenGoal(obj: GuiObject, attr: string, tweenProps: { any })
 		if not obj then return end
 		if not obj.Parent then return end
 
@@ -717,7 +717,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 			obj.Interactable = false
 		end)
 	end
-	local function _startTween(obj: GuiObject, tweenProps: table)
+	local function _startTween(obj: GuiObject, tweenProps: { any })
 		if not obj then return end
 		if not obj.Parent then return end
 

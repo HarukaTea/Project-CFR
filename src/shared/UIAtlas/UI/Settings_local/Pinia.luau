@@ -16,7 +16,7 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 
-return function (self: table)
+return function (self: { any })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end
@@ -112,14 +112,14 @@ return function (self: table)
 
 
     --// track slider
-    for panelId: string, panelInfo: table in self.INFO do
+    for panelId: string, panelInfo: { any } in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
 
         self.SliderProgressVals[panelId] = {}
         self.SliderVals[panelId] = {}
 
-        for optionId: string, optionInfo: table in panelInfo.Includes do
+        for optionId: string, optionInfo: { any } in panelInfo.Includes do
             if optionInfo.Type ~= "Slider" then continue end
 
             local defaultValue = optionInfo.DefaultValue
@@ -136,13 +136,13 @@ return function (self: table)
         end
     end
     --// track switcher
-    for panelId: string, panelInfo: table in self.INFO do
+    for panelId: string, panelInfo: { any } in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
 
         self.SwitcherVals[panelId] = {}
 
-        for optionId: string, optionInfo: table in panelInfo.Includes do
+        for optionId: string, optionInfo: { any } in panelInfo.Includes do
             if optionInfo.Type ~= "Switcher" then continue end
 
             local defaultValue = optionInfo.DefaultValue
@@ -154,13 +154,13 @@ return function (self: table)
         end
     end
     --// track dropdown
-    for panelId: string, panelInfo: table in self.INFO do
+    for panelId: string, panelInfo: { any } in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
 
         self.DropdownVals[panelId] = {}
 
-        for optionId: string, optionInfo: table in panelInfo.Includes do
+        for optionId: string, optionInfo: { any } in panelInfo.Includes do
             if optionInfo.Type ~= "Dropdown" then continue end
 
             local defaultValue = optionInfo.DefaultValue

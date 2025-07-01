@@ -44,7 +44,7 @@ return function (scope: Fusion.Scope, props: {
                             SortOrder = Enum.SortOrder.Name,
                         }),
 
-                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: table)
+                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: { any })
                             if classInfo.DevClass then return classId, nil end
 
 

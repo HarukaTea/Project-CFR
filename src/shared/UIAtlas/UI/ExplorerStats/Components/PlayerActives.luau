@@ -27,7 +27,7 @@ return function(scope: Fusion.Scope, props: {
     Class: Fusion.Value,
     ClassVariant: Fusion.Value
 
-}, self: table)
+}, self: { any })
 
     local isSelectingUlt = Fusion.Value(scope, false)
 

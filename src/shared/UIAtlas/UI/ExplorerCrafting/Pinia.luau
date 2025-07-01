@@ -11,7 +11,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local wait = task.wait
 
-return function (self: table)
+return function (self: { any })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end

@@ -166,7 +166,7 @@ end
 
 --// handle item book
 
-for index: number, itemInfo: table in ItemRawBook do
+for index: number, itemInfo: { any } in ItemRawBook do
     itemInfo = table.clone(itemInfo)
 
     itemInfo.ExtraStatInfoDesync = {}

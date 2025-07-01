@@ -14,7 +14,7 @@ return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
     OptionTitle: string,
-	OptionInfo: table,
+	OptionInfo: { any },
 
     BooleanValue: Fusion.Value
 })

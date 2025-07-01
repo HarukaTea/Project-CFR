@@ -20,7 +20,7 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local wait = task.wait
 
 
-return function (self: table)
+return function (self: { any })
 	local function Value(val: any)
 		return Fusion.Value(self.scope, val)
 	end

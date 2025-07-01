@@ -14,8 +14,8 @@ local Children = Fusion.Children
 return function(scope: Fusion.Scope, props: {
     Class: Fusion.Value,
 
-    EquippingPassives: table,
-    EquippingItems: table,
+    EquippingPassives: { any },
+    EquippingItems: { any },
 
     HP: Fusion.Value,
     MaxHP: Fusion.Value,

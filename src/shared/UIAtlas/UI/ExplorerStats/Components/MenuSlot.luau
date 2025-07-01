@@ -32,7 +32,7 @@ return function(scope: Fusion.Scope, props: {
     Slot: string,
     Index: number,
 
-}, self: table)
+}, self: { any })
 
     local isSelecting = Fusion.Value(scope, false)
 

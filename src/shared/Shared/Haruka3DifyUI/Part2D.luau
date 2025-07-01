@@ -10,7 +10,7 @@ Part2D.__index = Part2D
 
 
 --// Constructor
-function Part2D.new(element: GuiObject, ancestorModule: table)
+function Part2D.new(element: GuiObject, ancestorModule: { any })
     local self = setmetatable({}, Part2D)
 
     self.IsEnabled = false

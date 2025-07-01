@@ -19,9 +19,9 @@ local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
     Index: number,
-    ActiveInfo: table
+    ActiveInfo: { any }
 
-}, self: table)
+}, self: { any })
 
     local isSelecting = Fusion.Value(scope, false)
     local amount = Fusion.Value(scope, 1)

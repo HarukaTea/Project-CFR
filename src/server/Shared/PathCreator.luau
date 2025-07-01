@@ -55,17 +55,17 @@ local function _setJumpState(humanoid: Humanoid)
 		end
 	end)
 end
-local function _disconnectMoveConns(self: table)
+local function _disconnectMoveConns(self: { any })
     self.moveConn:Disconnect()
 	self.moveConn = nil
 end
-local function _moveNPC(self: table)
+local function _moveNPC(self: { any })
     if self.Waypoints[self.CurWaypoint].Action == Enum.PathWaypointAction.Jump then
 		_setJumpState(self.Humanoid)
 	end
 	self.Humanoid:MoveTo(self.Waypoints[self.CurWaypoint].Position)
 end
-local function _moveToFinished(self: table, isReached: boolean)
+local function _moveToFinished(self: { any }, isReached: boolean)
     if isReached and self.CurWaypoint + 1 <= #self.Waypoints then
         self.CurWaypoint += 1
 
@@ -85,7 +85,7 @@ local function _moveToFinished(self: table, isReached: boolean)
         self.VisualWaypoints = destroyVisualWaypoints(self.VisualWaypoints)
     end
 end
-local function _comparePosition(self: table)
+local function _comparePosition(self: { any })
 	if self.CurWaypoint == #self.Waypoints then return end
 
 	self.Position.StuckCount = ((self.NPC.PrimaryPart.Position - self.Position.LastPos).Magnitude <= 0.07 and (self.Position.StuckCount + 1)) or 0
@@ -100,7 +100,7 @@ end
 
 
 --// Constructor
-function PathCreator.new(npc: Model, pfsArgs: table)
+function PathCreator.new(npc: Model, pfsArgs: { any })
     local self = setmetatable({
         Settings = {
             TimeLimit = 0.07,

@@ -106,7 +106,7 @@ function HarukaQuest:GiveQuest(plr: Player, questId: string, progressVals: { num
     val.Value = progressState
 
 
-    for index: number, objectiveInfo: table in QuestBook[questId].Objectives do
+    for index: number, objectiveInfo: { any } in QuestBook[questId].Objectives do
         val:SetAttribute(objectiveInfo.ObjectiveId, progressVals[index] or objectiveInfo.Default)
     end
 
@@ -118,7 +118,7 @@ function HarukaQuest:AddObjective(plr: Player, questId: string, objectiveId: str
     if not _isValidQuestForPlayer(questId, plr) then return end
 
     local hasObjectiveCheck = false
-    for _, objectiveInfo: table in QuestBook[questId].Objectives do
+    for _, objectiveInfo: { any } in QuestBook[questId].Objectives do
         if objectiveInfo.ObjectiveId == objectiveId then
             hasObjectiveCheck = true
             break
@@ -138,7 +138,7 @@ function HarukaQuest:AddObjective(plr: Player, questId: string, objectiveId: str
 
     --// check if quest is completed
     local completed = true
-    for _, objectiveInfo: table in QuestBook[questId].Objectives do
+    for _, objectiveInfo: { any } in QuestBook[questId].Objectives do
         if val:GetAttribute(objectiveInfo.ObjectiveId) < objectiveInfo.Target then
             completed = false
             break

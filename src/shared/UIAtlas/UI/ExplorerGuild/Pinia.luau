@@ -8,7 +8,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local wait = task.wait
 
-return function (self: table)
+return function (self: { any })
     local function Value(val: any) : Fusion.Value
         return Fusion.Value(self.scope, val)
     end

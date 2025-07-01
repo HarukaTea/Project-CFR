@@ -58,7 +58,7 @@ return function (plr: Player)
                                 SortOrder = Enum.SortOrder.Name,
                             }),
 
-                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
+                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
                                 local isSelected = Fusion.Value(scope, false)
                                 if panelId == "Combat" then
                                     isSelected:set(true)
@@ -122,7 +122,7 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.7, 1),
 
                         [Children] = {
-                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
+                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
                                 return panelId, Components.Frame(scope, {
                                     Name = panelId,
                                     AnchorPoint = Vector2.zero,

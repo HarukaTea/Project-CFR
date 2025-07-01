@@ -173,7 +173,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
         --// start to load in
         local slot = slotChosen
-        local data = profile.Data[slot].Attrs :: table
+        local data = profile.Data[slot].Attrs :: { any }
 
         self.Slot = slot
         plr:SetAttribute("SlotChosen", slot)
@@ -225,7 +225,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         settingsFolder.Parent = plr
 
 
-        for _, itemInfo: table in validatedData.ItemsSQL do
+        for _, itemInfo: { any } in validatedData.ItemsSQL do
             local itemVal = Instance.new("IntConstrainedValue")
             itemVal.MinValue = 0
 
@@ -249,7 +249,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
             itemVal.Parent = itemFolder
         end
-        for thatSlot: string, itemInfo: table in validatedData.EquippingItemsSQL do
+        for thatSlot: string, itemInfo: { any } in validatedData.EquippingItemsSQL do
             local itemVal = Instance.new("StringValue")
             itemVal.Name = thatSlot
             itemVal.Value = itemInfo.ItemId
@@ -258,7 +258,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
             itemVal.Parent = equippingFolder
         end
-        for questId: string, questInfo: table in validatedData.QuestsV2 do
+        for questId: string, questInfo: { any } in validatedData.QuestsV2 do
             HarukaQuest:GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
         end
         for settingsId: string, settingsVal: any in validatedData.Settings do
@@ -600,7 +600,7 @@ function PlayerLib:Init()
                 profileContainer:SetAttribute("Slot"..i.."_"..attr, val)
             end
 
-            local weapon1 = data.EquippingItemsSQL.Weapon1 :: table
+            local weapon1 = data.EquippingItemsSQL.Weapon1 :: { any }
             if weapon1 then
                 local weapon1Val = Instance.new("StringValue")
                 weapon1Val.Name = "Slot"..i.."_Weapon1"
@@ -658,7 +658,7 @@ function PlayerLib:_SaveData()
     if not self.Slot then return end
     if self.Player:GetAttribute("Haruka_DataLocked") then return end
 
-    local profileAttrs = self.Profile.Data[self.Slot].Attrs :: table
+    local profileAttrs = self.Profile.Data[self.Slot].Attrs :: { any }
     local nowAttrs = self.Player:GetAttributes()
 
 
@@ -771,7 +771,7 @@ end
 
 
 
-function PlayerLib:_ValidateSaveData(data: table)
+function PlayerLib:_ValidateSaveData(data: { any })
     data = table.clone(data)
 
 
@@ -787,7 +787,7 @@ function PlayerLib:_ValidateSaveData(data: table)
 
 
     --// check valid items
-    for uniqueId: string, itemInfo: table in data.ItemsSQL do
+    for uniqueId: string, itemInfo: { any } in data.ItemsSQL do
         if itemInfo.ItemId == nil then
             data.ItemsSQL[uniqueId] = nil
             continue
@@ -843,7 +843,7 @@ function PlayerLib:_ValidateSaveData(data: table)
 
 
     --// check valid item stacks
-    for _, itemInfo: table in data.ItemsSQL do
+    for _, itemInfo: { any } in data.ItemsSQL do
         if itemInfo.Amount > 1 then
             local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
 
@@ -884,19 +884,19 @@ function PlayerLib:_ValidateSaveData(data: table)
 
 
     --// check valid equipping items
-    for thatSlot: string, itemInfo: table in data.EquippingItemsSQL do
+    for thatSlot: string, itemInfo: { any } in data.EquippingItemsSQL do
         --// check if there are other same item id in equipping items
-        for slot: string, thatItemInfo: table in data.EquippingItemsSQL do
+        for slot: string, thatItemInfo: { any } in data.EquippingItemsSQL do
             if thatItemInfo.ItemId == itemInfo.ItemId and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
         end
-        for slot: string, thatItemInfo: table in data.EquippingItemsSQL do
+        for slot: string, thatItemInfo: { any } in data.EquippingItemsSQL do
             if string.match(thatItemInfo.ItemId, "^(%w+)%d*$") == string.match(itemInfo.ItemId, "^(%w+)%d*$") and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
         end
-        for slot: string, thatItemInfo: table in data.EquippingItemsSQL do
+        for slot: string, thatItemInfo: { any } in data.EquippingItemsSQL do
             if thatItemInfo.UniqueId == itemInfo.UniqueId and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
@@ -996,7 +996,7 @@ function PlayerLib:_ValidateSaveData(data: table)
 
     local function _checkIfHasWeaponEquipped()
         local weaponFound = nil
-        for _, itemInfo: table in data.ItemsSQL do
+        for _, itemInfo: { any } in data.ItemsSQL do
             if ItemBook:GetItemInfo(itemInfo.ItemId).Type == "Weapon" then
                 weaponFound = {
                     ItemId = itemInfo.ItemId,
@@ -1075,7 +1075,7 @@ end
 
 
 
-function PlayerLib:_RevalidateClassData(data: table, classChosen: string)
+function PlayerLib:_RevalidateClassData(data: { any }, classChosen: string)
     data = table.clone(data)
 
 

@@ -15,7 +15,7 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local MKK_NUMBER = 1599 * 40 ^ 2
 
 
-return function (self: table)
+return function (self: { any })
     local scope = self.scope :: Fusion.Scope
 
     self.LockConn = nil :: RBXScriptConnection

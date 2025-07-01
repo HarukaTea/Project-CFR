@@ -71,7 +71,7 @@ do
         local serverInfo = HttpService:GetAsync("https://ipconfig.io/json", false)
 
         if serverInfo then
-            local realInfo = HttpService:JSONDecode(serverInfo) :: table
+            local realInfo = HttpService:JSONDecode(serverInfo) :: { any }
             local serverLocation = realInfo["country_iso"] :: string
 
             if serverLocation then

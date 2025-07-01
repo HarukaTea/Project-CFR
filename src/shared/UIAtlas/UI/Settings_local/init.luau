@@ -59,7 +59,7 @@ return function (plr: Player)
                                 Padding = UDim.new(0.04, 0),
                             }),
 
-                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
+                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
                                 if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
                                     return panelId, nil
                                 end
@@ -129,7 +129,7 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.7, 1),
 
                         [Children] = {
-                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: table)
+                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
                                 if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
                                     return panelId, nil
                                 end
@@ -148,7 +148,7 @@ return function (plr: Player)
                                         Components.PaddingFrame(scope, "AAA"),
                                         Components.PaddingFrame(scope, "ZZZ"),
 
-                                        Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope, optionId: string, optionInfo: table)
+                                        Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope, optionId: string, optionInfo: { any })
                                             if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then
                                                 return optionId, Keybind(scope, {
                                                     Platfrom = if panelId == "KeybindsPC" then "PC" else "Console",

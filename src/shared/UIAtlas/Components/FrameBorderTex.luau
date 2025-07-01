@@ -47,7 +47,7 @@ return function(scope: Fusion.Scope, props: {
         Name = "FrameBorderTex",
 
         [Children] = {
-            Fusion.ForPairs(scope, pattern, function(_, scope: Fusion.Scope, id: string, data: table)
+            Fusion.ForPairs(scope, pattern, function(_, scope: Fusion.Scope, id: string, data: { any })
                 return id, Components.ImageLabel(scope, {
                     Name = "Tex_"..id,
                     Size = props.Size,

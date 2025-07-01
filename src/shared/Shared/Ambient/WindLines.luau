@@ -59,7 +59,7 @@ function WindLines:_create()
 	att1.Parent = Terrain
 end
 
-function WindLines:Init(settings: table)
+function WindLines:Init(settings: { any })
 	self:Cleanup()
 
 	-- Set defaults

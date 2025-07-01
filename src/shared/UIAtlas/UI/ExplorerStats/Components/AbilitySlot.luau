@@ -15,9 +15,9 @@ local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCirc
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    ActiveInfo: table
+    ActiveInfo: { any }
 
-}, self: table)
+}, self: { any })
 
     local isSelecting = Fusion.Value(scope, false)
 

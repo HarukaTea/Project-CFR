@@ -17,7 +17,7 @@ return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemUniqueId: string,
 
-    Items: table?,
+    Items: { any }?,
     IsMarket: boolean?,
     IsCrafting: boolean?,
 })

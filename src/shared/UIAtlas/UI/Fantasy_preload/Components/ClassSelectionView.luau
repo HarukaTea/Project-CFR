@@ -114,7 +114,7 @@ return function (scope: Fusion.Scope, props: {
                                 SortOrder = Enum.SortOrder.Name,
                             }),
 
-                            Fusion.ForPairs(scope, ClassBook, function(_, scope: Fusion.Scope, classId: string, info: table)
+                            Fusion.ForPairs(scope, ClassBook, function(_, scope: Fusion.Scope, classId: string, info: { any })
                                 local whiteList = { "Chain", "Burst", "Flow" }
                                 if not table.find(whiteList, classId) then return classId, nil end
 

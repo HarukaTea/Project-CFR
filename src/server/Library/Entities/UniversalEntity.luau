@@ -43,7 +43,7 @@ end
 
 
 
-UniversalEntity.InitTemplate = function(_, self: table, entity: Model)
+UniversalEntity.InitTemplate = function(_, self: { any }, entity: Model)
     self.EntityId = entity.Name
     self.Entity = entity
 
@@ -71,14 +71,14 @@ UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ()
 end
 
 
-UniversalEntity.InitAttackTables = function(_, self: table)
+UniversalEntity.InitAttackTables = function(_, self: { any })
     self.Anims = {}
     self.AttackFuncs = {}
     self.ComboAttackFuncs = {}
 end
 
 
-UniversalEntity.InitAttackTasks = function(_, self: table, resolveObj: () -> ())
+UniversalEntity.InitAttackTasks = function(_, self: { any }, resolveObj: () -> ())
     table.insert(self.Promises, Promise.try(function()
         while RunService.Stepped:Wait() do
             if UniversalEntity:CheckCombatState(self.Entity) == false then break end
@@ -199,7 +199,7 @@ UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
 end
 
 
-UniversalEntity.DeadTask = function(_, self: table)
+UniversalEntity.DeadTask = function(_, self: { any })
     self.Died = true
     self.Empty()
 

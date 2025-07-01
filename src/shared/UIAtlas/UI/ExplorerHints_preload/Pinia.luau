@@ -16,7 +16,7 @@ local FullHintLabel = require(script.Parent.Components.FullHintLabel)
 
 local wait = task.wait
 
-return function (self: table)
+return function (self: { any })
 	local scope = self.scope :: Fusion.Scope
 
 
