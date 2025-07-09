@@ -34,11 +34,9 @@ return function(plr: Player)
 
     local playerListHover = nil
     if not UserInputService.TouchEnabled then
-        playerListHover = Components.HoverImageButton(scope, {
+        playerListHover = Components.Frame(scope, {
             Name = "PlayerListHover",
             AnchorPoint = Vector2.xAxis,
-            Selectable = false,
-            SelectionOrder = -1,
 
             Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return if use(self.IsUIFolded) then UDim2.fromScale(1.5, 1.5) else UDim2.fromScale(1, 1.5)
@@ -118,7 +116,6 @@ return function(plr: Player)
                                             CornerRadius = UDim.new(0.2, 0)
                                         }),
 										Components.UIStroke(scope, {
-											Color = Color3.new(),
 											Thickness = 3
 										})
 									}
@@ -159,6 +156,7 @@ return function(plr: Player)
                                         Player = player,
 
                                         PlayerSelecting = self.PlayerSelecting,
+                                        PlayerSelected = self.PlayerSelected
                                     })
                                 end)
                             }
@@ -168,7 +166,7 @@ return function(plr: Player)
                         }),
 
                         PlayerInfoView(scope, {
-                            PlayerSelecting = self.PlayerSelecting,
+                            PlayerSelecting = self.PlayerSelected,
                         })
                     }
                 }),

@@ -25,6 +25,7 @@ return function (self: { any })
     self.IsUIFolded = Value(false)
 
     self.PlayerSelecting = Value(nil)
+    self.PlayerSelected = Value(nil)
 
 
     self.PartyMembers = Value({})

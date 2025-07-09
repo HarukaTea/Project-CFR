@@ -2,7 +2,6 @@
 
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
@@ -18,6 +17,7 @@ return function (scope: Fusion.Scope, props: {
     Player: Player,
 
     PlayerSelecting: Fusion.Value,
+    PlayerSelected: Fusion.Value
 })
     props.Index = props.Player:GetAttribute("JoinOrder") or 1
 
@@ -195,6 +195,7 @@ return function (scope: Fusion.Scope, props: {
                 AnchorPoint = Vector2.new(1, 0),
                 Position = UDim2.fromScale(1, 0),
                 Size = UDim2.fromScale(0.7, 1),
+                ZIndex = 10,
 
 
                 [Fusion.OnEvent("MouseEnter")] = function()
@@ -202,6 +203,15 @@ return function (scope: Fusion.Scope, props: {
                 end,
                 [Fusion.OnEvent("MouseLeave")] = function()
                     props.PlayerSelecting:set(nil)
+                end,
+
+                [Fusion.OnEvent("MouseButton1Click")] = function()
+                    if Fusion.peek(props.PlayerSelected) == props.Player then
+                        props.PlayerSelected:set(nil)
+                        return
+                    end
+
+                    props.PlayerSelected:set(props.Player)
                 end
             })
         }

@@ -1,5 +1,6 @@
 local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -459,8 +460,6 @@ end
 
 
 function ServerWorldLib:_DoTagPrompts()
-    local mapComponents = workspace.MapComponents :: Folder
-
 	local function _updatePrompt(prompt: ProximityPrompt)
 		if not prompt:IsA("ProximityPrompt") then return end
 
@@ -482,10 +481,10 @@ function ServerWorldLib:_DoTagPrompts()
 
         prompt:AddTag("PromptEntity")
 	end
-	for _, child: Instance in mapComponents:GetDescendants() do
+	for _, child: Instance in workspace:GetDescendants() do
 		_updatePrompt(child)
 	end
-	mapComponents.DescendantAdded:Connect(_updatePrompt)
+	workspace.DescendantAdded:Connect(_updatePrompt)
 end
 
 
@@ -589,10 +588,9 @@ function ServerWorldLib:_DoInitMaterials()
 end
 
 
-function ServerLib:_DoInitOceanWaves()
+function ServerWorldLib:_DoInitOceanWaves()
     local oceans = workspace.Maps:FindFirstChild("Oceans") :: Folder
     if not oceans then return end
-
 
     local boneIniter = Instance.new("AnimationController")
     boneIniter.Parent = oceans
@@ -601,6 +599,8 @@ function ServerLib:_DoInitOceanWaves()
     for _, ocean: MeshPart in oceans:GetDescendants() do
         if ocean:IsA("MeshPart") then
             ocean.CanCollide = false
+            ocean.CanQuery = false
+            ocean.CanTouch = true
             ocean.EnableFluidForces = false
 
             if ocean:FindFirstChild("Ocean") then
@@ -621,6 +621,15 @@ function ServerWorldLib:_DoInitFloatables()
     local floatableContainer = Instance.new("Folder")
     floatableContainer.Name = "FloatableContainer"
     floatableContainer.Parent = workspace
+end
+
+
+function ServerWorldLib:_DoInitCASkyAtmosphere()
+    if Lighting:FindFirstChild("_Archived") then
+        for _, sky: Sky in Lighting._Archived:GetChildren() do
+            sky.Parent = Lighting
+        end
+    end
 end
 
 

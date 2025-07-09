@@ -146,7 +146,7 @@ function GerstnerWave(Position: Vector3, k: number, a: number, d: Vector3, c: nu
 	local cosF = COS(f)
 
 	local dX = (d.X * (a * cosF))
-	local dY = a * SIN(f)
+	local dY = a * SIN(f) / 2
 	local dZ = (d.Z * (a * cosF))
 
 	return VECTOR3_NEW(dX, dY, dZ)

@@ -72,7 +72,7 @@ return function (self: { any })
 		prompt.MaxActivationDistance = 15.99
 
 
-		promptNodes[prompt] = part.Position
+		promptNodes[prompt] = part
 	end
 	for _, child: ProximityPrompt in CollectionService:GetTagged("PromptEntity") do
 		_updatePrompt(child)
@@ -83,20 +83,24 @@ return function (self: { any })
 
 	table.insert(scope, task.spawn(function()
 		while wait(0.1599) do
-			if not ClientLib:IsCharValid(self.char) then break end
+			local isAlive = ClientLib:IsCharValid(self.char)
+			local sitting = self.char.Humanoid.SeatPart
 
 			local nearbyPrompts = {}
-			for prompt: ProximityPrompt, position in promptNodes do
-				if not prompt then continue end
-				if not prompt.Parent then continue end
+			if sitting == nil and isAlive then
+				for prompt: ProximityPrompt, part in promptNodes do
+					if not prompt then continue end
+					if not prompt.Parent then continue end
+					if not part then continue end
+					if not part.Parent then continue end
 
-				local distance = self.plr:DistanceFromCharacter(position)
-				if distance > 0 and distance <= 15.99 then
-					table.insert(nearbyPrompts, prompt)
+					local distance = self.plr:DistanceFromCharacter(part.Position)
+					if distance > 0 and distance <= 15.99 then
+						table.insert(nearbyPrompts, prompt)
+					end
 				end
 			end
 			local uniqueIdList = {}
-
 
 			for _, prompt: ProximityPrompt in nearbyPrompts do
 				if not prompt.Enabled then continue end

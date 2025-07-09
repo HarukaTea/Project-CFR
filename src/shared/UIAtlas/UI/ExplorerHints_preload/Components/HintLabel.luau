@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local Children = Fusion.Children
 
@@ -12,6 +13,9 @@ return function (scope: Fusion.Scope, props: {
     Text: string,
     LayoutOrder: number,
 })
+
+    local viewportSize = FusionComponents.useViewportSize(scope)
+
     return Components.TextLabel(scope, {
         Name = "HintLabel",
         AutomaticSize = Enum.AutomaticSize.XY,
@@ -24,7 +28,11 @@ return function (scope: Fusion.Scope, props: {
         TextScaled = false,
         TextWrapped = false,
 
-        TextSize = 19,
+        TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            local size = use(viewportSize).Y / (Components.DESIGN_VP_SIZE.Y / 19)
+
+            return math.clamp(size, 1, 25)
+        end),
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0, 4) }),

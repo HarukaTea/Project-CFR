@@ -1,14 +1,18 @@
 --!nocheck
 
+local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
+local Events = require(RepS.HarukaShared.Library.Events)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 
 local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
 
@@ -17,6 +21,9 @@ local New, Children, Computed = Fusion.New, Fusion.Children, Fusion.Computed
 local v2New, udNew = Vector2.new, UDim.new
 local fromScale = UDim2.fromScale
 local fromRGB = Color3.fromRGB
+
+
+local isInviting = false
 
 
 return function (scope: Fusion.Scope, props: {
@@ -77,9 +84,10 @@ return function (scope: Fusion.Scope, props: {
 
                     Image = Computed(scope, function(use: Fusion.Use, _)
                         local item: StringValue = nil
+                        local equippingItemsState = use(equippingItems)
 
                         if index <= 3 and index >= 1 then
-                            for _, symbol: StringValue in use(equippingItems) do
+                            for _, symbol: StringValue in equippingItemsState do
                                 if symbol.Name == "Accessory"..index then
                                     item = symbol
                                     break
@@ -87,7 +95,7 @@ return function (scope: Fusion.Scope, props: {
                             end
 
                         elseif index <= 6 and index >= 4 then
-                            for _, symbol: StringValue in use(equippingItems) do
+                            for _, symbol: StringValue in equippingItemsState do
                                 if symbol.Name == "Active"..(index - 3) then
                                     item = symbol
                                     break
@@ -95,7 +103,7 @@ return function (scope: Fusion.Scope, props: {
                             end
 
                         elseif index == 7 then
-                            for _, symbol: StringValue in use(equippingItems) do
+                            for _, symbol: StringValue in equippingItemsState do
                                 if symbol.Name == "Weapon1" then
                                     item = symbol
                                     break
@@ -134,10 +142,7 @@ return function (scope: Fusion.Scope, props: {
                         Position = fromScale(0, 0),
                         BackgroundTransparency = 0.1,
                         ZIndex = 0,
-
-                        Size = Fusion.Computed(scope, function(use: Fusion.Use)
-                            return if use(role) then UDim2.fromScale(1, 0.86) else UDim2.fromScale(1, 0.77)
-                        end),
+                        Size = UDim2.fromScale(1, 0.925),
 
                         [Children] = {
                             New(scope, "UICorner")({ CornerRadius = udNew(0.05, 0) }),
@@ -219,8 +224,12 @@ return function (scope: Fusion.Scope, props: {
                         Name = "HorizonLine",
                         AnchorPoint = v2New(0.5, 0),
                         Position = fromScale(0.5, 0.35),
-                        Size = fromScale(0.9, 0.005),
-                        BackgroundTransparency = 0.7
+                        Size = fromScale(0.9, 0.01),
+                        BackgroundTransparency = 0.7,
+
+                        [Children] = {
+                            Components.RoundUICorner(scope)
+                        }
                     }),
 
                     PlayerItemSlot(1),
@@ -231,21 +240,84 @@ return function (scope: Fusion.Scope, props: {
                     PlayerItemSlot(6),
                     PlayerItemSlot(7),
 
-                    Components.TextLabel(scope, {
-                        Name = "Role",
-                        Position = fromScale(0.06, 0.751),
-                        Size = fromScale(0.865, 0.06),
-                        TextTransparency = 0.2,
 
-                        Text = Computed(scope, function(use: Fusion.Use)
-                            return `- {use(role)} -`
-                        end),
-                        Visible = Computed(scope, function(use: Fusion.Use)
-                            local thatRole = use(role) :: string
+                    Components.Frame(scope, {
+                        Name = "Actions",
+                        AnchorPoint = Vector2.new(0.5, 0),
+                        Position = UDim2.fromScale(0.5, 0.78),
+                        Size = UDim2.fromScale(0.9, 0.15),
 
-                            return thatRole ~= nil and thatRole ~= ""
-                        end)
-                    }),
+                        [Children] = {
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.1, 0),
+                                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            }),
+
+                            Fusion.ForValues(scope, { "InviteParty" }, function(_, scope: Fusion.Scope, action: string)
+                                return Components.TextButton(scope, {
+                                    Name = action,
+                                    Size = UDim2.fromScale(1, 0.5),
+                                    BackgroundColor3 = Components.GREEN_COLOR,
+                                    TextColor3 = Components.BLACK_COLOR,
+                                    Text = "INVITE TO PARTY",
+
+                                    [Fusion.OnEvent("MouseButton1Click")] = function()
+                                        if action == "InviteParty" then
+                                            if player == Players.LocalPlayer then return end
+                                            if isInviting then return end
+                                            local thatPlr = player
+
+                                            local criRPGSettings = thatPlr:FindFirstChild("CriRPGSettings") :: Configuration
+                                            if not criRPGSettings then return end
+
+                                            local character = thatPlr.Character
+                                            if not ClientLib:IsCharValid(character) then
+                                                Bindables.CreateNotify:Fire("Player is dead!")
+                                                return
+                                            end
+
+
+                                            if criRPGSettings:FindFirstChild("AllowPartyInvites") then
+                                                local boolean = criRPGSettings.AllowPartyInvites.Value
+                                                if boolean == false then
+                                                    Bindables.CreateNotify:Fire("Player can not be invited due to their privacy settings!")
+                                                    return
+                                                end
+                                            end
+                                            if thatPlr:GetAttribute("IsInParty") then
+                                                Bindables.CreateNotify:Fire("Player is already in a party!")
+                                                return
+                                            end
+                                            if character:GetAttribute("IsInCombat") then
+                                                Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
+                                                return
+                                            end
+                                            isInviting = true
+
+                                            local choice = Components:CreateConfirmPrompt(scope, {
+                                                Hint = `Send party invite to <yellow>{thatPlr.DisplayName}</font>?`,
+                                                ConfirmText = "YES",
+                                                CancelText = "NO",
+                                                ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
+                                            }):Wait()
+
+                                            isInviting = false
+
+                                            if choice ~= "YES" then return end
+
+                                            Events.RequestToPartyInvite.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
+                                        end
+                                    end,
+
+                                    [Children] = {
+                                        Components.UICorner(scope, {
+                                            CornerRadius = UDim.new(0.2, 0)
+                                        })
+                                    }
+                                })
+                            end)
+                        }
+                    })
                 },
             })
         end

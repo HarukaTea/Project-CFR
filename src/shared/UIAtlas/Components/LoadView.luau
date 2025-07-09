@@ -9,6 +9,8 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local Classbook = require(RepS.HarukaShared.Library.ClassBook)
 
+local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
+
 local Children = Fusion.Children
 
 
@@ -25,6 +27,13 @@ return function (scope: Fusion.Scope, props: {
         FullProps = {
             ZIndex = 0,
             BackgroundTransparency = 0,
+
+            [Children] = {
+                CAPatternTex(scope, {
+                    Transparency = 0.985,
+                    TileSize = UDim2.fromOffset(55, 55)
+                })
+            }
         },
 
         BottomProps = {

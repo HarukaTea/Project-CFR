@@ -252,9 +252,9 @@ return function(scope: Fusion.Scope, props: {
 
                                     Components.IconImageLabel(scope, {
                                         Name = "BaseIcon",
-                                        BackgroundTransparency = 1,
                                         ZIndex = 0,
                                         ImageTransparency = 0.7,
+                                        BackgroundTransparency = 0.7,
 
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]

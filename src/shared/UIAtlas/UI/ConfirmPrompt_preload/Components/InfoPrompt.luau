@@ -14,7 +14,6 @@ local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
     ConfirmText: string,
-    CancelText: string,
     Hint: string,
 
     ResultSignal: RBXScriptSignal,
@@ -23,14 +22,14 @@ return function (scope: Fusion.Scope, props: {
     local absTextBGSize = Fusion.Value(scope, Vector2.zero)
 
     local UI; UI = Components.HarukaScreenGui(scope, {
-		Name = "ConfirmPrompt",
+		Name = "InfoPrompt",
 		DisplayOrder = UIPriorityBook.System,
 
 	}, {
         CenterProps = {
             [Children] = {
                 Components.Frame(scope, {
-                    Name = "ConfirmPrompt",
+                    Name = "InfoPrompt",
                     Size = UDim2.fromScale(0.5, 8),
                     BackgroundColor3 = Components.BLACK_COLOR,
                     BackgroundTransparency = 0,
@@ -62,7 +61,7 @@ return function (scope: Fusion.Scope, props: {
                             Position = UDim2.fromScale(0.5, 0.45),
                             Size = UDim2.fromScale(0.3, 0.3),
                             SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                            Image = "rbxassetid://114332372182764",
+                            Image = "rbxassetid://70702384179449",
                             ImageTransparency = 0.9,
                             ZIndex = 0,
                         }),
@@ -96,23 +95,14 @@ return function (scope: Fusion.Scope, props: {
                                 }),
 
                                 ExecuteButton(scope, {
-                                    LayoutOrder = 2,
-                                    Size = UDim2.fromScale(0.45, 0.75),
+                                    LayoutOrder = 1,
+                                    Size = UDim2.fromScale(0.5, 0.75),
                                     ButtonText = props.ConfirmText,
-                                    ButtonType = "Confirm",
+                                    ButtonType = "Info",
                                     ButtonClickFunc = function()
-                                        props.ResultSignal:Fire("YES")
+                                        props.ResultSignal:Fire("INFO")
                                     end
                                 }),
-                                ExecuteButton(scope, {
-                                    LayoutOrder = 1,
-                                    Size = UDim2.fromScale(0.45, 0.75),
-                                    ButtonText = props.CancelText,
-                                    ButtonType = "Cancel",
-                                    ButtonClickFunc = function()
-                                        props.ResultSignal:Fire("NO")
-                                    end
-                                })
                             }
                         })
                     }

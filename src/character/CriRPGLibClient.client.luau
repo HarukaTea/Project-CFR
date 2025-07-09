@@ -287,14 +287,46 @@ function CriRPGLib:_ListenAreaTracker()
                 ClockTime = LocationBook[location].ClockTime
             }):Play()
 
-            if workspace.Terrain:FindFirstChild("Clouds") then
-                HarukaLib:CreateTween(workspace.Terrain.Clouds, AssetBook.TweenInfos.one, {
-                    Color = _calculateColor(LocationBook[location].ClockTime)
+            if workspace.Terrain:FindFirstChildOfClass("Clouds") then
+                HarukaLib:CreateTween(workspace.Terrain:FindFirstChildOfClass("Clouds"), AssetBook.TweenInfos.one, {
+                    Color = _calculateColor(LocationBook[location].LightingInfo.ClockTime)
                 }):Play()
             end
 
             --- apply rain
             Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel)
+
+
+            --- use fog instead
+            if LocationBook[location].UseFogColor then
+                if Lighting:FindFirstChildOfClass("Atmosphere") then
+                    Lighting:FindFirstChildOfClass("Atmosphere"):Destroy()
+                end
+
+                Lighting.FogStart = 50
+                Lighting.FogEnd = 1599
+                Lighting.FogColor = Color3.fromRGB(255, 255, 255)
+
+                HarukaLib:CreateTween(Lighting, AssetBook.TweenInfos.half, LocationBook[location].FogInfo):Play()
+            else
+                if not Lighting:FindFirstChildOfClass("Atmosphere") then
+                    local atmosphere = Instance.new("Atmosphere")
+                    atmosphere.Name = "CA_Atmosphere"
+                    atmosphere.Parent = Lighting
+                end
+            end
+
+
+            --- apply atmosphere
+            if Lighting:FindFirstChildOfClass("Atmosphere") then
+                HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("Atmosphere"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Atmosphere):Play()
+            end
+            if Lighting:FindFirstChildOfClass("ColorCorrectionEffect") then
+                HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("ColorCorrectionEffect"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.ColorCorrection):Play()
+            end
+            if workspace.Terrain:FindFirstChildOfClass("Clouds") then
+                HarukaLib:CreateTween(workspace.Terrain:FindFirstChildOfClass("Clouds"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Clouds):Play()
+            end
         end
 
         wait(1.5)

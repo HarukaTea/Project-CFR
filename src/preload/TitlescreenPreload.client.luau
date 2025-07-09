@@ -239,19 +239,19 @@ do
 
     pcall(function()
         if not workspace:GetAttribute("NoResetLightingConfig") then
-            Lighting.Ambient = Color3.fromRGB(159, 159, 159)
-            Lighting.Brightness = 1.599
-            Lighting.ColorShift_Bottom = Color3.fromRGB(220, 255, 255)
-            Lighting.ColorShift_Top = Color3.fromRGB(220, 255, 255)
-            Lighting.OutdoorAmbient = Color3.fromRGB(241, 242, 246)
+            Lighting.Ambient = Color3.fromRGB(200, 200, 200)
+            Lighting.Brightness = 2
+            Lighting.ColorShift_Bottom = Color3.fromRGB(255, 243, 224)
+            Lighting.ColorShift_Top = Color3.fromRGB(255, 243, 224)
+            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
             Lighting.ClockTime = 14
-            Lighting.GeographicLatitude = 0
+            Lighting.GeographicLatitude = 35
             Lighting.ExposureCompensation = 0.15
 
             Lighting:SetAttribute("RainLevel", 0)
 
             if workspace.Terrain:FindFirstChild("Clouds") then
-                workspace.Terrain.Clouds.Cover = 0.65
+                workspace.Terrain.Clouds.Cover = 0.68
             end
             if Lighting:FindFirstChild("TitlescreenAtmosphere") then
                 Lighting.TitlescreenAtmosphere:Destroy()
@@ -262,7 +262,6 @@ do
             if Lighting:FindFirstChild("TitlescreenBloom") then
                 Lighting.TitlescreenBloom:Destroy()
             end
-            RepS.Packages.Unloads._WorldSkybox:Clone().Parent = Lighting
         end
 
 

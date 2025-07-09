@@ -125,10 +125,17 @@ local template = {
 
 				DefaultValue = true,
 			},
+			WaveEffect = {
+				OptionTitle = "Ocean Wave Effect",
+				Type = "Switcher",
+				LayoutOrder = 6,
+
+				DefaultValue = true,
+			},
 			EntityRenderDistance = {
 				OptionTitle = "Enemy Render Distance",
 				Type = "Slider",
-				LayoutOrder = 6,
+				LayoutOrder = 7,
 
 				Min = 159,
 				Max = 999,
@@ -139,7 +146,7 @@ local template = {
 			FocusRenderDistance = {
 				OptionTitle = "Text Render Distance",
 				Type = "Slider",
-				LayoutOrder = 6,
+				LayoutOrder = 8,
 
 				Min = 159,
 				Max = 999,

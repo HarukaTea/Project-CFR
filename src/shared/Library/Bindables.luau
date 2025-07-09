@@ -18,6 +18,7 @@ return {
     CreateSystemNotify = Signal.new(),
     CreateFSNotify = Signal.new(),
     CreateConfirmPrompt = Signal.new(),
+    CreateInfoPrompt = Signal.new(),
     CreateCenterNotify = Signal.new(),
     CreateCircularFade = Signal.new(),
 
@@ -25,6 +26,7 @@ return {
 
 
     Titlescreen_ChangeClassScene = Signal.new(),
+    Titlescreen_CameraCFrameChanged = Signal.new(),
 
     DisplayTutorialTopic = Signal.new(),
 }

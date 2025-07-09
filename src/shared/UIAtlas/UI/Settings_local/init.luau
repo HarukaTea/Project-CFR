@@ -199,7 +199,7 @@ return function (plr: Player)
                                         end)
                                     }
                                 }, {
-                                    Padding = UDim.new(0, 12),
+                                    Padding = UDim.new(0, 14),
                                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                                     SortOrder = if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then Enum.SortOrder.Name else Enum.SortOrder.LayoutOrder
                                 })

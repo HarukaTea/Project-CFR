@@ -167,7 +167,7 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
         r6Char.Parent = workspace.EntitiesPlayerChar
 
 
-        for _, thatScript: Script in StarterPlayer.StarterCharacterScripts.HarukaChar:GetChildren() do
+        for _, thatScript: Instance in StarterPlayer.StarterCharacterScripts:GetChildren() do
             thatScript:Clone().Parent = r6Char
         end
     end)
@@ -175,16 +175,42 @@ end
 
 
 function GlobalCriRPGLib:_ListenPromptRequestsTracker()
+    local function _sitGalleon(galleon: Model, plr: Player)
+        local seat = galleon:FindFirstChildOfClass("Seat")
+        if not seat then return end
+
+        galleon.PrimaryPart.Anchored = false
+        galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+
+        seat:Sit(plr.Character.Humanoid)
+        seat:GetPropertyChangedSignal("Occupant"):Connect(function()
+            local occupant = seat.Occupant
+            if occupant == nil then
+                galleon.PrimaryPart.Anchored = true
+                galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+            end
+        end)
+
+        pcall(function()
+            galleon.PrimaryPart:SetNetworkOwner(nil)
+        end)
+        Events.SetSkyGalleon.Fire(plr, {
+            Galleon = galleon
+        })
+    end
     ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, plr: Player)
         if prompt.Enabled == false then return end
 
         local adornee = prompt.Parent :: BasePart
+        local char = plr.Character
 
         if plr == nil then return end
         if not adornee:IsA("BasePart") then
             warn("Invalid adornee for proximity prompt")
             return
         end
+
+        if not ServerLib:IsCharValid(char) then return end
 
         local distance = plr:DistanceFromCharacter(adornee.Position)
         if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
@@ -203,7 +229,6 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             local npc = prompt:FindFirstAncestorOfClass("Model")
             if not npc then return end
 
-            local char = plr.Character
             if not ServerLib:IsCharValid(char) then return end
 
             if char:GetAttribute("IsChatting") then
@@ -260,10 +285,48 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             Events.OpenAbyssUI.Fire(plr)
 
 
-        elseif prompt.Name == "DungeonPortal" then
-            if not ServerLib:IsCharValid(plr.Character) then return end
+        elseif prompt.Name == "BoatSummon" then
+            for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
+                if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
 
-            plr.Character:PivotTo(prompt.Destination.Value.CFrame)
+                if galleon.Owner.Value == plr then
+                    galleon:Destroy()
+                    continue
+                end
+            end
+
+            local galleon = RepS.Packages.Unloads.SkyDriveGalleon:Clone() :: Model
+            galleon:PivotTo(adornee._DOCK.CFrame * CFrame.new(0, 10, 0))
+
+
+            HarukaLib:SetCollisionGroup(galleon, "EnemyProjectile")
+            galleon.PrimaryPart.CustomPhysicalProperties = PhysicalProperties.new(Enum.Material.Wood)
+            galleon.Humanoid.WalkSpeed = 50
+
+
+            local owner = Instance.new("ObjectValue")
+            owner.Name = "Owner"
+            owner.Value = plr
+            owner.Parent = galleon
+
+
+            galleon:AddTag("SkyDriveGalleon")
+            galleon.PrimaryPart.Anchored = false
+            galleon.PrimaryPart.Massless = false
+            galleon.Parent = workspace
+
+
+            _sitGalleon(galleon, plr)
+
+        elseif prompt.Name == "BoatEnter" then
+            local galleon = prompt:FindFirstAncestorOfClass("Model")
+            if not galleon then return end
+
+            _sitGalleon(galleon, plr)
+
+
+        elseif prompt.Name == "DungeonPortal" then
+            char:PivotTo(prompt.Destination.Value.CFrame)
 
 
         elseif prompt.Name == "Class" then
@@ -283,9 +346,6 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
             if itemInfo == nil then return end
             if not prompt:IsDescendantOf(workspace) then return end
-
-
-            local char = plr.Character
             if not ServerLib:IsCharValid(char) then return end
 
 
@@ -1709,6 +1769,30 @@ function GlobalCriRPGLib:_ListenPlayerAbyssChallengeRequestsTracker()
 
 
         Events.CreateFSNotify.Fire(plr, "Teleporting to Abyss...", 15)
+    end)
+end
+
+
+
+function GlobalCriRPGLib:_ListenSkyGalleonReplicationTracker()
+    Events.RequestToSetSkyGalleonPos.SetCallback(function(plr: Player, data)
+        if not data.Galleon then return end
+        if not data.Position then return end
+        if not data.Rotation then return end
+
+
+        local galleon, pos, rotation = data.Galleon, data.Position, data.Rotation
+        if not galleon:FindFirstChild("Owner") then return end
+        if galleon.Owner.Value ~= plr then return end
+
+        if not galleon.PrimaryPart.Position:FuzzyEq(pos) then
+            galleon.PrimaryPart.AlignPosition.Position = pos
+        end
+
+        local targetDirection = galleon.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(rotation), 0)
+        local targetPoint = galleon.PrimaryPart.Position + targetDirection.LookVector.Unit * 159
+
+        galleon.Humanoid:MoveTo(targetPoint)
     end)
 end
 

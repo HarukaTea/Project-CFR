@@ -92,6 +92,9 @@ return function (self: { any })
                 local platform = if string.find(symbol.Name, "Console") then "Console" else "PC"
                 local keybindId = string.match(symbol.Name, "_(%w+)$")
 
+                if not KeybindsBook[platform] then continue end
+                if not KeybindsBook[platform][keybindId] then continue end
+
                 KeybindsBook[platform][keybindId] = Enum.KeyCode[keybind]
                 KeybindsBook.OnKeybindChanged:Fire(true)
             end
@@ -315,6 +318,13 @@ return function (self: { any })
         local state = Fusion.peek(self.SwitcherVals.Graphics.RainEffect)
 
         workspace:SetAttribute("RainEffectEnabled", state)
+    end)
+
+    local waveObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.WaveEffect)
+    waveObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Graphics.WaveEffect)
+
+        workspace:SetAttribute("WaveEffectEnabled", state)
     end)
 
 
