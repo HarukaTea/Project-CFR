@@ -15,7 +15,6 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local Tween = require(script.HarukaTween)
 local TableUtils = require(script.HarukaTableUtils)
-local RichTextFormatter = require(script.HarukaRichTextFormatter)
 
 local wait = task.wait
 
@@ -1187,7 +1186,7 @@ function HarukaLib:ZonitoToggleParticles(instance: Instance, val: boolean, rever
 end
 
 
-HarukaLib.RichTextFormatter = RichTextFormatter
+HarukaLib.RichTextFormatter = if script:FindFirstChild("HarukaRichTextFormatter") then require(script.HarukaRichTextFormatter) else nil
 
 
 return HarukaLib

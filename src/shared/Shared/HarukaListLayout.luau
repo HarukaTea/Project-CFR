@@ -157,10 +157,8 @@ function HarukaListLayout:_Refresh()
                 HarukaLib:CreateTween(element, quickTween, { Position = goalPos }):Play()
             end
         else
-            element.Position = UDim2.fromScale(X, Y)
+            element.Position = UDim2.new(X, offsetX, Y, offsetY)
             element:SetAttribute("OldElement", true)
-
-            HarukaLib:CreateTween(element, quickTween, { Position = UDim2.new(X, offsetX, Y, offsetY) }):Play()
         end
 
         if fillDirection == Enum.FillDirection.Horizontal then

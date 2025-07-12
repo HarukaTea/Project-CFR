@@ -464,30 +464,6 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
 
     Events.CreateFSNotify.Fire(plr, "Save file erased!", 2)
 end)
-Events.RequestToSaveSettings.SetCallback(function(plr: Player, data)
-    if data.SettingId == nil then return end
-    if data.SettingValue == nil then return end
-
-    local id, val = data.SettingId, data.SettingValue
-    if id == "HideUI" then return end
-
-    local valueSymbol = plr.CriRPGSettings:FindFirstChild(id)
-    if not valueSymbol then
-        if type(val) == "number" then
-            valueSymbol = Instance.new("NumberValue")
-        elseif type(val) == "boolean" then
-            valueSymbol = Instance.new("BoolValue")
-        elseif type(val) == "string" then
-            valueSymbol = Instance.new("StringValue")
-        end
-
-        valueSymbol.Name = id
-        valueSymbol.Value = val
-        valueSymbol.Parent = plr.CriRPGSettings
-    end
-
-    valueSymbol.Value = val
-end)
 
 
 
