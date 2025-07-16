@@ -71,6 +71,10 @@ return function(scope: Fusion.Scope, props: {
                 Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return UDim2.new(0.05, use(absContentSize).X, 1, 0)
                 end),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                }
             }),
 
             Components.Frame(scope, {

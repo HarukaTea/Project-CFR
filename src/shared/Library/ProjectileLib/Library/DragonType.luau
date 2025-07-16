@@ -11,8 +11,6 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
-
 
 local wait = task.wait
 

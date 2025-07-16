@@ -11,7 +11,6 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 
 local wait = task.wait
@@ -240,7 +239,7 @@ return function (self)
             projectile:AddTag("DMGEntity")
             projectile:AddTag("PierceEntity")
 
-            Maid:AddItem(projectile, 0.35)
+            Debris:AddItem(projectile, 0.35)
 
             HarukaLib:CreateTween(projectile.Bomb1, AssetBook.TweenInfos.half, {
                 Size = projectile.Bomb1.Size + Vector3.one * 9,

@@ -19,7 +19,6 @@ local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
 local PerkBook = require(ReplicatedStorage.HarukaShared.Library.PerkBook)
 local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLib)
 
@@ -283,7 +282,7 @@ function CriRPGLib:_ListenOrbTracker()
             symbol:SetAttribute("Owner", char.Name)
 
             symbol.Parent = orbSymbolContainer
-            Maid:AddItem(symbol, orbFadeTime + 5)
+            Debris:AddItem(symbol, orbFadeTime + 5)
 
 
             Events.PlaceOrb.Fire(plr, {
@@ -381,7 +380,7 @@ function CriRPGLib:_ListenSkillProjectileTracker()
         symbol:SetAttribute("DMGBonus", props.DMGBonus)
 
         symbol.Parent = projectileContainer
-        Maid:AddItem(symbol, props.Duration)
+        Debris:AddItem(symbol, props.Duration)
     end))
 end
 

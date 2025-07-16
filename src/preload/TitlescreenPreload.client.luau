@@ -96,11 +96,14 @@ do
     repeat wait() until RepS:WaitForChild("HarukaShared", 999)
     repeat wait() until RepS.HarukaShared:WaitForChild("Shared", 999)
     repeat wait() until RepS.HarukaShared:WaitForChild("UIAtlas", 999)
+    repeat wait() until RepS.HarukaShared:WaitForChild("Library", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("Components", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas.Components:WaitForChild("LoadView", 999)
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Fusion", 999)
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
+    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("FusionComponents", 999)
+    repeat wait() until RepS.HarukaShared.Library:WaitForChild("ClientLib", 999)
     repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
     repeat wait() until workspace:WaitForChild("MapComponents", 999)
 
@@ -125,6 +128,16 @@ do
             Debris:AddItem(holderGui, 1)
         end
     })
+    task.spawn(function()
+        while not isAlreadyLoaded do
+            LoadingTextVal:set("Sailing to Initus Bay.")
+            wait(0.5)
+            LoadingTextVal:set("Sailing to Initus Bay..")
+            wait(0.5)
+            LoadingTextVal:set("Sailing to Initus Bay...")
+            wait(0.5)
+        end
+    end)
 
 
     local teleportData = TeleportService:GetLocalPlayerTeleportData()
@@ -182,11 +195,15 @@ do
 
 
     wait(1)
-    HarukaLib:UITween(UI, "Out", {
-        TweenCallback = function()
-            Fusion.doCleanup(scope)
-        end
-    })
+    if not shouldSkipTitlescreen then
+        HarukaLib:UITween(UI, "Out", {
+            TweenCallback = function()
+                Fusion.doCleanup(scope)
+            end
+        })
+    else
+        LoadingTextVal:set("Connecting to The World...")
+    end
     workspace:SetAttribute("Haruka_CompletedPreload", true)
 
 
@@ -200,33 +217,10 @@ do
         --// init ambient
         SoundService.Musics.Titlescreen:Play()
 
+        local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+        ClientLib:LoadLightingPreset("Titlescreen")
+
         Lighting:SetAttribute("RainLevel", 6)
-        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
-        Lighting.Brightness = 1
-        Lighting.ColorShift_Bottom = Color3.fromRGB(0, 0, 0)
-        Lighting.ColorShift_Top = Color3.fromRGB(0, 0, 0)
-        Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
-        Lighting.ClockTime = 0
-        Lighting.GeographicLatitude = 0
-        Lighting.ExposureCompensation = -0.15
-
-        local atmosphere = Instance.new("Atmosphere")
-        atmosphere.Name = "TitlescreenAtmosphere"
-        atmosphere.Color = Color3.fromRGB(116, 125, 140)
-        atmosphere.Decay = Color3.fromRGB(87, 96, 111)
-        atmosphere.Glare = 0
-        atmosphere.Haze = 3
-        atmosphere.Density = 0.4
-        atmosphere.Parent = Lighting
-
-        if Lighting:FindFirstChildOfClass("Sky") then
-            Lighting:FindFirstChildOfClass("Sky"):Destroy()
-        end
-        RepS.Packages.Unloads._TitlescreenSkybox:Clone().Parent = Lighting
-
-        if workspace.Terrain:FindFirstChildOfClass("Clouds") then
-            workspace.Terrain.Clouds.Color = Color3.fromRGB(31, 31, 31)
-        end
     end
 
 
@@ -237,33 +231,22 @@ do
 
     workspace:SetAttribute("Haruka_TitlescreenDestroying", true)
 
+    if shouldSkipTitlescreen then
+        HarukaLib:UITween(UI, "Out", {
+            TweenCallback = function()
+                Fusion.doCleanup(scope)
+            end
+        })
+    end
     pcall(function()
         if not workspace:GetAttribute("NoResetLightingConfig") then
-            Lighting.Ambient = Color3.fromRGB(200, 200, 200)
-            Lighting.Brightness = 2
-            Lighting.ColorShift_Bottom = Color3.fromRGB(255, 243, 224)
-            Lighting.ColorShift_Top = Color3.fromRGB(255, 243, 224)
-            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
-            Lighting.ClockTime = 14
-            Lighting.GeographicLatitude = 35
-            Lighting.ExposureCompensation = 0.15
+            local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+
+            local worldId = workspace:GetAttribute("WorldId") or "InitusWorld"
+            ClientLib:LoadLightingPreset(worldId)
 
             Lighting:SetAttribute("RainLevel", 0)
-
-            if workspace.Terrain:FindFirstChild("Clouds") then
-                workspace.Terrain.Clouds.Cover = 0.68
-            end
-            if Lighting:FindFirstChild("TitlescreenAtmosphere") then
-                Lighting.TitlescreenAtmosphere:Destroy()
-            end
-            if Lighting:FindFirstChild("_TitlescreenSkybox") then
-                Lighting._TitlescreenSkybox:Destroy()
-            end
-            if Lighting:FindFirstChild("TitlescreenBloom") then
-                Lighting.TitlescreenBloom:Destroy()
-            end
         end
-
 
         for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do
             if ins:IsA("Model") then

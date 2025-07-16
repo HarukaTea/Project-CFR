@@ -31,7 +31,7 @@ return function (scope: Fusion.Scope, props: {
         TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
             local size = use(viewportSize).Y / (Components.DESIGN_VP_SIZE.Y / 19)
 
-            return math.clamp(size, 1, 25)
+            return math.clamp(size, 1, 20)
         end),
 
         [Children] = {

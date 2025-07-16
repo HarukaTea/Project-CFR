@@ -2,13 +2,13 @@
 
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
+local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")
 
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
 
 local ClientLib = {}
 
@@ -199,11 +199,11 @@ function ClientLib:TrackEffectListToUI(props: {
 			symbol:SetAttribute("Ex", effectObj:GetAttribute("Ex"))
 
 			symbol.Parent = effectListContainer
-			Maid:AddItem(symbol, endClock - nowClock)
+			Debris:AddItem(symbol, endClock - nowClock)
 
 			local effectUI = EffectSlot(props.Scope, symbol)
 			effectUI.Parent = props.GuiContainer.EffectList
-			Maid:AddItem(effectUI, endClock - nowClock)
+			Debris:AddItem(effectUI, endClock - nowClock)
 
 
 			local effectUISymbol = Instance.new("ObjectValue")
@@ -272,6 +272,43 @@ function ClientLib:TrackInputTextbox(props: {
 	end)
 
 	return amount
+end
+
+
+
+function ClientLib:LoadLightingPreset(presetId: string)
+	local lightingPresets = RepS.Packages.LightingPresets :: Folder
+
+	if not lightingPresets:FindFirstChild(presetId) then
+		warn("Invalid lighting preset id: "..presetId)
+		return
+	end
+
+	local config = lightingPresets[presetId]:FindFirstChild("Configuration") :: Configuration
+
+
+	Lighting:ClearAllChildren()
+
+	for _, preset: Instance in lightingPresets[presetId]:GetChildren() do
+		preset:Clone().Parent = Lighting
+	end
+	if config then
+		config = require(config.Config)
+
+		for attr: string, value: any in config do
+			Lighting[attr] = value
+		end
+
+		local cloudsConfig = lightingPresets[presetId].Configuration:FindFirstChild("CloudConfig") :: ModuleScript
+		if cloudsConfig then
+			local clouds = workspace.Terrain:FindFirstChildOfClass("Clouds")
+			if clouds then
+				for attr: string, value: any in require(cloudsConfig) do
+					clouds[attr] = value
+				end
+			end
+		end
+	end
 end
 
 

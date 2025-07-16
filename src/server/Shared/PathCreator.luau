@@ -176,7 +176,15 @@ function PathCreator:Run(targetPos: Vector3, previousAsyncResult: boolean)
         _moveToFinished(self, ...)
     end))
 
+
+    self.RunClock = 1
+
     if self.Humanoid then
+        if self.RunClock <= 1 then
+            --- manually triggers MoveToFinished event at the start
+            self.Humanoid:MoveTo(self.NPC.PrimaryPart.Position)
+            self.RunClock += 1
+        end
         self.Humanoid:MoveTo(self.Waypoints[self.CurWaypoint].Position)
 
     elseif #self.Waypoints == 2 then

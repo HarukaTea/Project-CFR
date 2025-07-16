@@ -266,6 +266,7 @@ function EntityLib.new(enemy: Model)
 
     self.Add, self.Empty = HarukaLib.Bin()
     self.ModelAdd, self.ModelEmpty = HarukaLib.Bin()
+    self.WorldAdd, self.WorldEmpty = HarukaLib.Bin()
 
 
     Promise.new(function(resolve)
@@ -310,6 +311,7 @@ function EntityLib:Init()
     self:_LoadAnims()
     self:_MakeModel()
 
+    self:_ListenMobWalkingTracker()
     self:_SpawnHighlightIndicator()
 end
 
@@ -333,6 +335,16 @@ function EntityLib:PlayAnim(animId: string)
         end
         return
     end
+
+
+    for animationId: string, track: AnimationTrack in self.Anims do
+        if animationId ~= animId then
+            track:Stop()
+        end
+    end
+
+    local animPlaying = self.Anims[animId] :: AnimationTrack
+    if animPlaying.IsPlaying then return end
 
     self.Anims[animId]:Play()
 end
@@ -375,6 +387,10 @@ function EntityLib:_LoadAnims()
         if anim.Name == "Idle" then
             track.Looped = true
             track.Priority = Enum.AnimationPriority.Idle
+        end
+        if anim.Name == "Run" then
+            track.Looped = true
+            track.Priority = Enum.AnimationPriority.Movement
         end
 
         self.Anims[anim.Name] = track
@@ -506,6 +522,8 @@ function EntityLib:_ListenAttributeTracker()
 
             self:_DestroyModel()
             self:_MakeModel()
+
+            self.WorldEmpty()
         end,
         ["Attr-IsDead"] = function(state: boolean)
             if not state then return end
@@ -551,6 +569,32 @@ function EntityLib:_ListenAttributeTracker()
         end
     }))
 end
+
+
+function EntityLib:_ListenMobWalkingTracker()
+    local entity = self.Entity :: Model
+
+    if not ClientLib:IsCharValid(entity) then return end
+
+    local humanoid = entity.Humanoid :: Humanoid
+
+    self.WorldAdd(humanoid.Running:Connect(function()
+        local vel = entity.PrimaryPart.AssemblyLinearVelocity
+        if vel.Magnitude > 1 then
+            self:PlayAnim("Run")
+        else
+            self:PlayAnim("Idle")
+        end
+    end))
+    self.WorldAdd(humanoid.MoveToFinished:Connect(function()
+        self:PlayAnim("Idle")
+    end))
+
+    self.WorldAdd(function()
+        self:PlayAnim("Idle")
+    end)
+end
+
 
 
 function EntityLib:_SpawnHighlightIndicator()

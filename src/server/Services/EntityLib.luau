@@ -22,7 +22,6 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local Maid = require(ReplicatedStorage.HarukaShared.Shared.Maid)
 local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
@@ -153,7 +152,7 @@ enemyDiedSignal:Connect(function(uniqueId: string)
     countdown.Transparency = 1
     countdown.CFrame = entityObj.Locator.CFrame
     countdown.Parent = workspace
-    Maid:AddItem(countdown, 12)
+    Debris:AddItem(countdown, 12)
 
     Promise.try(function()
         for i = 12, 1, -1 do

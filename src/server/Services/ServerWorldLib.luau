@@ -228,6 +228,21 @@ function ServerWorldLib:_DoPlayerOrbInit()
         angularVelocity.MaxTorque = math.huge
         angularVelocity.Parent = orb.PrimaryPart
 
+
+        local pointLight = Instance.new("PointLight")
+        pointLight.Range = 15
+        pointLight.Color = orb.PrimaryPart.Color
+        pointLight.Enabled = true
+        pointLight.Parent = orb.PrimaryPart
+
+
+        orb.PrimaryPart.Beam1.Color = ColorSequence.new(
+            orb.PrimaryPart.Color, orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5)
+        )
+        orb.PrimaryPart.Beam2.Color = ColorSequence.new(
+            orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5), orb.PrimaryPart.Color
+        )
+
         orb.Hitbox.CanTouch = true
     end
 end

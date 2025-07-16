@@ -94,7 +94,6 @@ return function (scope: Fusion.Scope, props: {
     local playerLevel = Value(1)
     local playerLastJoined = Value(DateTime.now():ToIsoDate())
     local playerPlayTime = Value(0)
-    local playerLastSeen = Value("InitusBay")
 
     local playerWeapon = Value("WoodenSword")
 
@@ -114,9 +113,6 @@ return function (scope: Fusion.Scope, props: {
         end,
         ["Attr_Slot"..props.SlotId.."_LastJoinedDateTime"] = function(val: string)
             playerLastJoined:set(val)
-        end,
-        ["Attr_Slot"..props.SlotId.."_LastSeen"] = function(val: string)
-            playerLastSeen:set(val)
         end
     }))
 
@@ -388,7 +384,7 @@ return function (scope: Fusion.Scope, props: {
 
             Label(scope, {
                 Name = "LastJoined",
-                Position = UDim2.fromScale(0.5, 0.84),
+                Position = UDim2.fromScale(0.5, 0.87),
                 Size = UDim2.fromScale(0.86, 0.06),
                 AutoLocalize = false,
 
@@ -398,26 +394,6 @@ return function (scope: Fusion.Scope, props: {
                 TextTransparency = 0.5,
                 TextXAlignment = Enum.TextXAlignment.Center,
             }, isEmpty),
-            Label(scope, {
-                Name = "LastSeen",
-                Position = UDim2.fromScale(0.5, 0.9),
-                Size = UDim2.fromScale(0.86, 0.06),
-                RichText = true,
-
-                Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
-                    local seen = use(playerLastSeen) :: string
-
-                    if not LocationBook[seen] then
-                        warn(`Lack of location Info for {seen}`)
-                        return "Last Seen at: UNKNOWN"
-                    end
-
-                    return `Last Seen at: <u>{LocationBook[seen].Name}</u>`
-                end),
-
-                TextColor3 = Color3.fromHex('#81ecec'),
-            }, isEmpty),
-
 
 
             Components.TextLabel(scope, {

@@ -208,38 +208,11 @@ return function (scope: Fusion.Scope, props: {
 
     --// change class scene request
     table.insert(scope, Bindables.Titlescreen_ChangeClassScene:Connect(function()
-        workspace.MapComponents.Titlescreen.CameraLocator.Value = workspace.MapComponents.Titlescreen.CameraLocator2
+        workspace.MapComponents.Titlescreen.CameraLocator.Value = workspace.MapComponents.Titlescreen.CameraLocator2_Chain
 
-        Lighting.Ambient = Color3.fromRGB(7, 0, 50)
-        Lighting.Brightness = 0.5
-        Lighting.ColorShift_Bottom = Color3.fromRGB(0, 0, 0)
-        Lighting.ColorShift_Top = Color3.fromRGB(24, 0, 71)
-        Lighting.EnvironmentDiffuseScale = 0.5
-        Lighting.EnvironmentSpecularScale = 1
-        Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
-        Lighting.ClockTime = 0
-        Lighting.ExposureCompensation = 0
+        local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
-        if Lighting:FindFirstChildOfClass("Sky") then
-            Lighting:FindFirstChildOfClass("Sky"):Destroy()
-        end
-        if Lighting:FindFirstChildOfClass("Atmosphere") then
-            Lighting:FindFirstChildOfClass("Atmosphere"):Destroy()
-        end
-
-        local atmosphere = Instance.new("Atmosphere")
-        atmosphere.Name = "TitlescreenAtmosphere"
-        atmosphere.Color = Color3.fromRGB(29, 29, 59)
-        atmosphere.Decay = Color3.fromRGB(99, 99, 99)
-        atmosphere.Glare = 0.25
-        atmosphere.Haze = 1.3
-        atmosphere.Density = 0.35
-        atmosphere.Offset = 0.15
-        atmosphere.Parent = Lighting
-
-        local sky = RepS.Packages.Unloads._ClassSelectionSkybox:Clone() :: Sky
-        sky.Name = "_TitlescreenSkybox"
-        sky.Parent = Lighting
+        ClientLib:LoadLightingPreset("ClassSelection_Chain")
     end))
 
 

@@ -310,9 +310,7 @@ return function (scope: Fusion.Scope, props: {
                                     end,
 
                                     [Children] = {
-                                        Components.UICorner(scope, {
-                                            CornerRadius = UDim.new(0.2, 0)
-                                        })
+                                        Components.RoundUICorner(scope)
                                     }
                                 })
                             end)
