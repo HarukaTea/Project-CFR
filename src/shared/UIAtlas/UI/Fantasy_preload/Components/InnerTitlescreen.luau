@@ -208,11 +208,12 @@ return function (scope: Fusion.Scope, props: {
 
     --// change class scene request
     table.insert(scope, Bindables.Titlescreen_ChangeClassScene:Connect(function()
-        workspace.MapComponents.Titlescreen.CameraLocator.Value = workspace.MapComponents.Titlescreen.CameraLocator2_Chain
-
         local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
-        ClientLib:LoadLightingPreset("ClassSelection_Chain")
+        ClientLib:LoadLightingPreset("ClassSelection")
+
+        workspace:SetAttribute("Titlescreen_ClassSelectionState", true)
+        workspace:SetAttribute("Titlescreen_TempClass", "Chain")
     end))
 
 

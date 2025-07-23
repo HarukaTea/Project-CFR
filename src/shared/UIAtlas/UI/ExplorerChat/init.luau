@@ -47,14 +47,12 @@ return function (plr: Player)
                     MaxUTFShown = self.MaxUTFShown,
 
                     ProcessedToNextDialogueSignal = self.ProcessedToNextDialogueSignal,
+                    ProcessedToNextDialogueByChoiceSignal = self.ProcessedToNextDialogueByChoiceSignal,
                 })
             }
         }
     })
     self.UI = UI
-
-
-    require(script.Anims)(UI, self)
 
 
     return function ()

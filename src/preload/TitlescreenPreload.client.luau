@@ -166,28 +166,15 @@ do
         repeat wait() until RepS:WaitForChild("Packages", 999)
         repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
 
-        wait(1)
+        wait()
         RepS.Packages.Titlescreen.Parent = workspace.MapComponents
-
 
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
         repeat wait() until workspace.MapComponents.Titlescreen.CameraLocator.Value
+
+        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("Credits", 999)
     end
-
-
-
-    task.delay(8, function()
-        if isAlreadyLoaded then return end
-
-        for i = 1, 999 do
-            if isAlreadyLoaded then break end
-
-            LoadingTextVal:set(`Datastore is taking too long to load...({i})`)
-            wait(5)
-        end
-    end)
-
 
     repeat wait() until plr:GetAttribute("_PlayerProfileInited")
 
@@ -202,7 +189,7 @@ do
             end
         })
     else
-        LoadingTextVal:set("Connecting to The World...")
+        LoadingTextVal:set("Getting up from bed in Initus Sailor Lodge...")
     end
     workspace:SetAttribute("Haruka_CompletedPreload", true)
 
@@ -252,6 +239,10 @@ do
             if ins:IsA("Model") then
                 ins:Destroy()
             end
+        end
+
+        if RepS.Packages:FindFirstChild("Titlescreen") then
+            RepS.Packages.Titlescreen:Destroy()
         end
     end)
 

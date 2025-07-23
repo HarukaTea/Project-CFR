@@ -8,6 +8,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local CharacterStatsView = require(script.Components.CharacterStatsView)
 local PlayerActive = require(script.Components.PlayerActives)
+local MenuSelections = require(script.Components.MenuSelections)
 
 local MenuSlot = require(script.Components.MenuSlot)
 local DungeonTimer = require(script.Components.DungeonTimer)
@@ -39,7 +40,9 @@ return function(plr: Player)
 	require(script.Pinia)(self)
 
 
-	local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope
+    local isSelectingMenuSelection = Fusion.Value(scope, false)
+
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerStats",
@@ -99,6 +102,33 @@ return function(plr: Player)
                             MaxTextSize = 14
                         })
                     }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "GlobalClassAbilityDiv",
+                    AnchorPoint = Vector2.new(0, 0),
+                    Position = UDim2.fromScale(0, 1.5),
+
+                    [Children] = {
+                        Components.UIScale(scope),
+
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            local class = use(self.Class) :: string
+
+                            local Bar = globalClassBars[class.."Bar"]
+
+                            if not Bar then
+                                return nil
+                            end
+
+                            return Bar(scope, {
+                                ClassVal = self.ClassVals[class],
+                                ClassVal2 = self.ClassVals2[class],
+
+                                Char = self.char
+                            })
+                        end)
+                    }
                 })
             }
         },
@@ -139,31 +169,10 @@ return function(plr: Player)
                         end)
                     }
                 }),
-                Components.Frame(scope, {
-                    Name = "GlobalClassAbilityDiv",
-                    AnchorPoint = Vector2.new(0, 0),
-                    Position = UDim2.fromScale(0, 1.5),
 
-                    [Children] = {
-                        Components.UIScale(scope),
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                            local class = use(self.Class) :: string
-
-                            local Bar = globalClassBars[class.."Bar"]
-
-                            if not Bar then
-                                return nil
-                            end
-
-                            return Bar(scope, {
-                                ClassVal = self.ClassVals[class],
-                                ClassVal2 = self.ClassVals2[class],
-
-                                Char = self.char
-                            })
-                        end)
-                    }
+                MenuSelections(scope, {
+                    MenuShowValue = self.MenuSelectionShown
                 })
             }
         },
@@ -183,12 +192,45 @@ return function(plr: Player)
                         }),
 
                         Components.UIScale(scope),
-
                         Components.PaddingFrame(scope, "ZZZ"),
 
+
+                        Components.Frame(scope, {
+                            Name = "MenuSelections",
+                            BackgroundTransparency = 0,
+                            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                            LayoutOrder = 233,
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.IconImageLabel(scope, {
+                                    Image = "rbxassetid://130903046224988",
+                                }),
+                                Components.UIStroke(scope, {
+                                    Thickness = 2.5,
+
+                                    Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                        return use(isSelectingMenuSelection)
+                                    end)
+                                }),
+
+                                Components.HoverImageButton(scope, {
+                                    [Fusion.OnEvent("MouseEnter")] = function()
+                                        isSelectingMenuSelection:set(true)
+                                    end,
+                                    [Fusion.OnEvent("MouseLeave")] = function()
+                                        isSelectingMenuSelection:set(false)
+                                    end,
+                                    [Fusion.OnEvent("MouseButton1Click")] = function()
+                                        self.MenuSelectionShown:set(not Fusion.peek(self.MenuSelectionShown))
+                                    end,
+                                })
+                            }
+                        }),
+
+
                         Fusion.ForPairs(scope, {
-                            "Backpack", "Character", "PerkTree", "Achievements", "Store",
-                            "TutorialBook", "Settings"
+                            "Events", "Backpack", "Character", "PerkTree", "Settings"
                         }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,

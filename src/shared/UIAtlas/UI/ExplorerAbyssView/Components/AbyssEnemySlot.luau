@@ -7,6 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
+
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
+
 local Children = Fusion.Children
 
 
@@ -45,6 +48,12 @@ return function(scope: Fusion.Scope, props: {
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)
+            }),
+
+
+            CFEmblemTex(scope, {
+                Position = UDim2.fromScale(0.42, 0.5),
+                Transparency = 0.9
             }),
 
 

@@ -228,14 +228,6 @@ function ServerWorldLib:_DoPlayerOrbInit()
         angularVelocity.MaxTorque = math.huge
         angularVelocity.Parent = orb.PrimaryPart
 
-
-        local pointLight = Instance.new("PointLight")
-        pointLight.Range = 15
-        pointLight.Color = orb.PrimaryPart.Color
-        pointLight.Enabled = true
-        pointLight.Parent = orb.PrimaryPart
-
-
         orb.PrimaryPart.Beam1.Color = ColorSequence.new(
             orb.PrimaryPart.Color, orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5)
         )
@@ -387,15 +379,17 @@ function ServerWorldLib:_DoInitNPCs()
             if npc.PrimaryPart.Anchored then continue end
             if not npc:FindFirstChild("Humanoid") then continue end
 
-            if npc.Humanoid:FindFirstChildOfClass("Animator") then
-                local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
-                local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[anim]) :: AnimationTrack
-
-                animTrack.Looped = true
-                animTrack.Priority = Enum.AnimationPriority.Idle
-
-                animTrack:Play()
+            if not npc.Humanoid:FindFirstChildOfClass("Animator") then
+                local animator = Instance.new("Animator")
+                animator.Parent = npc.Humanoid
             end
+
+            local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
+            local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[anim]) :: AnimationTrack
+
+            animTrack.Looped = true
+            animTrack.Priority = Enum.AnimationPriority.Idle
+            animTrack:Play()
         end
     end
 end

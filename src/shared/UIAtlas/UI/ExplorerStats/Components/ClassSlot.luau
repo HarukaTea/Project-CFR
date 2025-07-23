@@ -115,8 +115,8 @@ return function(scope: Fusion.Scope, props: {
                             end),
 
                             Position = UDim2.fromScale(
-                                r * math.cos(math.rad(RADIANS[index])) + 0.5,
-                                r * math.sin(math.rad(RADIANS[index])) + 0.5
+                                r * math.cos(math.rad(RADIANS[4 - index])) + 0.5,
+                                r * math.sin(math.rad(RADIANS[4 - index])) + 0.5
                             )
                         })
                     end)

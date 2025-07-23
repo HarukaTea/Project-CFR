@@ -32,7 +32,7 @@ return function (scope: Fusion.Scope, props: {
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
 
-        if input.KeyCode == Enum.KeyCode.ButtonB then
+        if input.KeyCode == Enum.KeyCode.ButtonB and Fusion.peek(props.ViewShownValue) then
             _close()
         end
     end))

@@ -25,6 +25,15 @@ local entityStats = {
     DMGEx = 0,
     DMGExPower = 1,
 
+    DMGMultiplier = 100, --- percentage
+    DMGMultiplierEx = 0,
+    DMGMultiplierExPower = 1,
+
+    BreakProgress = 0,
+    TotalBreakProgress = 100,
+    TotalBreakProgressEx = 0,
+    TotalBreakProgressExPower = 1,
+
     Speed = 10,
     SpeedEx = 0,
     SpeedExPower = 1,

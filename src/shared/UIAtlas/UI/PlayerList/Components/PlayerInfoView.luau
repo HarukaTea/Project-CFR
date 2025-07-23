@@ -232,6 +232,22 @@ return function (scope: Fusion.Scope, props: {
                         }
                     }),
 
+
+                    Components.ImageLabel(scope, {
+                        Name = "Emblem",
+                        ZIndex = 0,
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.4),
+                        Image = "rbxassetid://70702384179449",
+                        ImageTransparency = 0.925,
+                        Size = UDim2.fromScale(0.45, 0.45),
+                        SizeConstraint = Enum.SizeConstraint.RelativeXX,
+
+                        [Children] = {
+                            Components.RoundUICorner(scope)
+                        }
+                    }),
+
                     PlayerItemSlot(1),
                     PlayerItemSlot(2),
                     PlayerItemSlot(3),
@@ -263,7 +279,10 @@ return function (scope: Fusion.Scope, props: {
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         if action == "InviteParty" then
-                                            if player == Players.LocalPlayer then return end
+                                            if player == Players.LocalPlayer then
+                                                Bindables.CreateNotify:Fire("You can't invite yourself!")
+                                                return
+                                            end
                                             if isInviting then return end
                                             local thatPlr = player
 

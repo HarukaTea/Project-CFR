@@ -15,6 +15,7 @@ local AbyssLevelSlot = require(script.Components.AbyssLevelSlot)
 local AbyssEnemySlot = require(script.Components.AbyssEnemySlot)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 
 local Children = Fusion.Children
@@ -56,13 +57,7 @@ return function (plr: Player)
                 CloseTab(scope, {
                     ViewShownValue = self.IsUIShown
                 }),
-
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBGTex(scope)
             }
         },
 

@@ -7,6 +7,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
+
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -31,7 +33,7 @@ return function(scope: Fusion.Scope, props: {
 
         [Children] = {
             Components.UICorner(scope, {
-                CornerRadius = UDim.new(0.2, 0),
+                CornerRadius = UDim.new(0.15, 0),
             }),
 
 
@@ -67,6 +69,12 @@ return function(scope: Fusion.Scope, props: {
                     return use(badgeInfo).Name or ""
                 end)
             }),
+
+
+            CFEmblemTex(scope, {
+                Transparency = 0.9,
+                Position = UDim2.fromScale(0.5, 0.5),
+            })
         }
     })
 

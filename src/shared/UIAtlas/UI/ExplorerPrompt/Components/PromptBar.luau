@@ -12,6 +12,8 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
+
 local Children = Fusion.Children
 
 local v2New = Vector2.new
@@ -218,6 +220,16 @@ return function (scope: Fusion.Scope, props: {
 					NumberSequenceKeypoint.new(1, 1)
 				})
 			}),
+
+            CFEmblemTex(scope, {
+                Transparency = 0.915,
+                Position = UDim2.fromScale(0.42, 0.5),
+                Size = UDim2.fromScale(4, 4),
+
+                Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return if use(props.CurrentPromptIndex) == props.LayoutOrder then Components.BLACK_COLOR else Components.WHITE_COLOR
+                end)
+            }),
 
             itemIconOrNomalIcon,
 

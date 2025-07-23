@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
-local DialogueBook = require(RepS.HarukaShared.Library.DialogueBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
@@ -34,7 +33,9 @@ return function (self: { any })
     self.MaxUTFShown = Value(-1)
 
     self.ProcessedToNextDialogueSignal = Signal.new()
+    self.ProcessedToNextDialogueByChoiceSignal = Signal.new()
     table.insert(scope, self.ProcessedToNextDialogueSignal)
+    table.insert(scope, self.ProcessedToNextDialogueByChoiceSignal)
 
 
     --// track ui
@@ -66,33 +67,43 @@ return function (self: { any })
 
 
 
-    local npcChatting: string = nil
+    local npcChatting: Model = nil
+    local npcDialogues: { [string]: { string } } = {}
+    local currentDialoguesChatting: { string } = {}
+    local currentDialogueIndexChatting: number = 1
     local dialogueIndexChatting: number = 1
-    local dialogueChatting: string = ""
+    local currentChoiceIndex: number = 0
+    local dialoguesChatting: { string } = {}
     local seriesId: string = "Else"
 
 
 
     --// track dialogue system
-    local function __endChatting()
-        dialogueChatting = ""
+    local function __clearDialogues()
+        currentDialoguesChatting = {}
+        dialoguesChatting = {}
         dialogueIndexChatting = 1
+        currentDialogueIndexChatting = 1
+    end
+    local function __endChatting()
+        __clearDialogues()
 
         HarukaLib:FreezePlayerControls("Unfreeze")
 
         if npcChatting then
             Events.RequestToEndNPCChat.Fire({
-                NPCId = npcChatting,
+                NPCId = npcChatting.Name,
                 SeriesId = seriesId
             })
 
-            local bindableId = DialogueBook[npcChatting].Extra[seriesId]
+            local bindableId = npcDialogues.Extra[seriesId]
             if QuestBindables[bindableId] then
                 QuestBindables[bindableId]:Fire()
             end
         end
 
         npcChatting = nil
+        npcDialogues = {}
         seriesId = "Else"
 
         self.plr:SetAttribute("CurrentUIGroup", "None")
@@ -106,7 +117,7 @@ return function (self: { any })
 
         typewriterObj:TypeText(HarukaLib:RichTextify(text))
     end
-    local function __nextText(method: "Skip" | "Continue")
+    local function __nextText(method: "Skip" | "Continue", forceDialogue: string?)
         if method == "Skip" then
             typewriterObj:Stop()
 
@@ -114,18 +125,84 @@ return function (self: { any })
             return
         end
 
-        dialogueIndexChatting += 1
+        currentDialogueIndexChatting += 1
 
-        --- chat ended
-        if dialogueIndexChatting > #dialogueChatting then
+        --- chat ended and no JUMPBACK
+        if currentDialogueIndexChatting > #currentDialoguesChatting then
             __endChatting()
             return
         end
 
-        __setText(dialogueChatting[dialogueIndexChatting])
+
+        local dialogue = forceDialogue or currentDialoguesChatting[currentDialogueIndexChatting] :: string
+
+        --- patterns
+        if string.find(dialogue, "ENTERCHOICE") and npcChatting.Dialogues:FindFirstChild("Choices") then
+            local choiceIndex = string.match(dialogue, "%d+") :: number
+            if choiceIndex then
+                choiceIndex = tonumber(choiceIndex)
+            end
+            if npcChatting.Dialogues.Choices:FindFirstChild("Choice"..choiceIndex) then
+                local choiceDialogues = require(npcChatting.Dialogues.Choices["Choice"..choiceIndex]) :: { string }
+
+                currentDialoguesChatting = choiceDialogues
+                currentDialogueIndexChatting = 1
+                dialogue = currentDialoguesChatting[currentDialogueIndexChatting] :: string
+
+                __setText(dialogue)
+                return
+            end
+        end
+        if string.find(dialogue, "JUMPBACKCONTINUE") then
+            local originalIndex = dialogueIndexChatting
+            local nextIndex = originalIndex + 2
+
+            currentDialoguesChatting = dialoguesChatting
+            currentDialogueIndexChatting = nextIndex
+            dialogue = currentDialoguesChatting[currentDialogueIndexChatting] :: string
+        end
+        if string.find(dialogue, "JUMPBACKBRANCH") then
+            local originalIndex = dialogueIndexChatting
+
+            currentDialoguesChatting = dialoguesChatting
+            currentDialogueIndexChatting = originalIndex
+            dialogue = currentDialoguesChatting[currentDialogueIndexChatting] :: string
+        end
+        if string.find(dialogue, "CHOICEBRANCH") then
+            currentDialogueIndexChatting -= 1
+
+            local _, branches = string.match(dialogue, "^(.-)%((.-)%)$")
+            if branches then
+                local branch1, branch2 = string.match(branches, "^(.-)-(.*)$")
+                local choices = {}
+
+                for i = branch1, branch2 do
+                    choices[i] = npcDialogues["CHOICE"..i]
+                end
+                self.Choices:set(choices)
+                return
+            else
+                __endChatting()
+            end
+        end
+
+
+        --- is in choice dialogues state?
+        if currentDialoguesChatting[1] == dialoguesChatting[1] then
+            dialogueIndexChatting = currentDialogueIndexChatting
+        end
+
+
+
+        __setText(dialogue)
     end
     self.ProcessedToNextDialogueSignal:Connect(function()
         __nextText(if typewriterObj:IsTyping() then "Skip" else "Continue")
+    end)
+    self.ProcessedToNextDialogueByChoiceSignal:Connect(function(choiceIndex: number)
+        self.Choices:set({})
+
+        __nextText("Continue", "ENTERCHOICE "..choiceIndex)
     end)
 
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
@@ -136,7 +213,7 @@ return function (self: { any })
                 self.ProcessedToNextDialogueSignal:Fire()
             end
         end
-        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonA then
+        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonY then
             if Fusion.peek(self.IsChatShown) then
                 self.ProcessedToNextDialogueSignal:Fire()
             end
@@ -149,21 +226,24 @@ return function (self: { any })
     end)
 
 
-    local function _startChatting(npc: string)
+    local function _startChatting(npc: Model)
+        if npc == nil then return end
+
         npcChatting = npc
+        npcDialogues = require(npc.Dialogues.Main)
 
         self.NPCId:set(npc)
-        self.Speaker:set(string.gsub(npcChatting, "%d+", ""))
+        self.Speaker:set(string.gsub(npcChatting.Name, "%d+", ""))
         self.plr:SetAttribute("CurrentUIGroup", "Chat")
 
         HarukaLib:FreezePlayerControls("Freeze")
+        __clearDialogues()
+
 
 
         local quests = Fusion.peek(self.Quests)
 
         --- main quest is at the highest priority
-        dialogueIndexChatting = 1
-
         local function __priorityChoose(series: string)
             local found = false
 
@@ -173,11 +253,12 @@ return function (self: { any })
 
                 local questId = questSymbol.Name
 
-                if string.find(questId, series) and DialogueBook[npcChatting][questId] then
-                    dialogueChatting = DialogueBook[npcChatting][questId]
+                if string.find(questId, series) and npcDialogues[questId] then
+                    dialoguesChatting = npcDialogues[questId]
+                    currentDialoguesChatting = npcDialogues[questId]
                     seriesId = questId
 
-                    __setText(dialogueChatting[dialogueIndexChatting])
+                    __setText(currentDialoguesChatting[currentDialogueIndexChatting])
                     found = true
                     break
                 end
@@ -192,11 +273,12 @@ return function (self: { any })
         --- all of above don't match
         seriesId = "Else"
 
-        dialogueChatting = DialogueBook[npcChatting].Else
+        currentDialoguesChatting = npcDialogues.Else
+        dialoguesChatting = npcDialogues.Else
 
-        __setText(dialogueChatting[dialogueIndexChatting])
+        __setText(currentDialoguesChatting[currentDialogueIndexChatting])
     end
     table.insert(scope, Events.EnterNPCChat.On(function(data)
-        _startChatting(data.NPCId)
+        _startChatting(data.NPCModel)
     end))
 end

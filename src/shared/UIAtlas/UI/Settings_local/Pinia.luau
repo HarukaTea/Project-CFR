@@ -129,6 +129,9 @@ return function (self: { any })
             if self.SettingsFolder:FindFirstChild(optionId) then
                 defaultValue = self.SettingsFolder[optionId].Value
             end
+            if not optionInfo.AllowDecimals then
+                defaultValue = math.floor(defaultValue)
+            end
 
             self.SliderProgressVals[panelId][optionId] = Value((defaultValue - optionInfo.Min) / (optionInfo.Max - optionInfo.Min))
             self.SliderVals[panelId][optionId] = Value(defaultValue)

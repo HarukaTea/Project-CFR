@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local ClassSlot = require(script.Parent.ClassSlot)
 local HPBar = require(script.Parent.HPBar)
@@ -129,8 +130,23 @@ return function(scope: Fusion.Scope, props: {
                             Components.Frame(scope, {
                                 Name = "DMGStats",
                                 AnchorPoint = Vector2.zero,
-                                Position = UDim2.fromScale(-0.1, -2.2),
                                 Size = UDim2.fromScale(1, 0.5),
+
+                                Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local state = false
+                                    for _, passive: { any } in props.EquippingPassives do
+                                        if ItemBook:GetItemInfo(use(passive.ItemId)) then
+                                            state = true
+                                            break
+                                        end
+                                    end
+
+                                    if state then
+                                        return UDim2.fromScale(-0.1, -2.2)
+                                    else
+                                        return UDim2.fromScale(-0.1, -1.5)
+                                    end
+                                end),
 
                                 [Children] = {
                                     Components.UIListLayout(scope, {

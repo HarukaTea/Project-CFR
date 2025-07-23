@@ -2094,5 +2094,37 @@
         "ExtraStatInfo": "CD(12),Mana(150)",
         "Tags": "Physical",
         "Recipe": ""
+    },
+    {
+        "ItemId": "FuriosoFist",
+        "Name": "Furioso",
+        "Type": "Weapon",
+        "Tier": "4",
+        "Level": "150",
+        "Desc": "abc",
+        "Stat": "abc",
+        "StatInfo": "ForClass(Furioso),MagicEx(750),ShockingChanceEx(10)",
+        "Icon": "0",
+        "Price": "9000",
+        "SellPrice": "4500",
+        "ExtraStatInfo": "",
+        "Tags": "",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "CastoriceReaper",
+        "Name": "Castorice",
+        "Type": "Weapon",
+        "Tier": "5",
+        "Level": "185",
+        "Desc": "Life and death are but a journey. When butterfly alights on the branch, what withers will bloom anew",
+        "Stat": "The time for the promised departure is also nigh",
+        "StatInfo": "ForClass(Execution),ATK(1000),PoisonChanceEx(10),",
+        "Icon": "0",
+        "Price": "13875",
+        "SellPrice": "6937",
+        "ExtraStatInfo": "",
+        "Tags": "",
+        "Recipe": ""
     }
 ]

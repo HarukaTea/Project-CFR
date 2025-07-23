@@ -10,6 +10,7 @@ local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
 local PerkPointsView = require(script.Components.PerkPointsView)
 local CharStatPanel = require(script.Components.CharStatsView)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 
 local Children = Fusion.Children
@@ -49,13 +50,7 @@ return function (plr: Player)
                 CloseTab(scope, {
                     ViewShownValue = self.IsUIShown
                 }),
-
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBGTex(scope),
             }
         },
 

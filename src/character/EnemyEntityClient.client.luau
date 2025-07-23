@@ -331,6 +331,7 @@ end
 function EntityLib:PlayAnim(animId: string)
     if not self.Anims[animId] then
         if RunService:IsStudio() then
+            if animId == "Run" or animId == "Idle" then return end
             warn("Invalid enemy entity anim id: "..animId)
         end
         return
@@ -417,7 +418,6 @@ function EntityLib:_MakeModel()
     if model:FindFirstChild("AnimationController") then model.AnimationController:Destroy() end
     if model:FindFirstChild("AnimSaves") then model.AnimSaves:Destroy() end
 
-    entity.PrimaryPart.Anchored = true
     entity.PrimaryPart.Transparency = 1
 
     model:PivotTo(entity.PrimaryPart.CFrame)
@@ -444,8 +444,6 @@ function EntityLib:_MakeModel()
     motor6d.Part0 = entity.PrimaryPart
     motor6d.Part1 = torso
     motor6d.Parent = entity.PrimaryPart
-
-    entity.PrimaryPart.Anchored = false
 
     HarukaLib:SetCollisionGroup(entity, "EnemyBodyPart")
 

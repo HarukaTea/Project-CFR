@@ -64,12 +64,12 @@ return function(scope: Fusion.Scope, props: {
 
 	return Components.Frame(scope, {
 		Name = props.KeybindId,
-		Size = UDim2.fromScale(0.9, 0.08),
+		Size = UDim2.fromScale(0.9, 0.09),
         BackgroundTransparency = 0,
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
 
 		[Children] = {
-            Components.UIAspectRatioConstraint(scope, 26.688),
+            Components.UIAspectRatioConstraint(scope, 23.723),
 
             Components.RoundUICorner(scope),
             Components.UIStroke(scope, {
@@ -87,10 +87,7 @@ return function(scope: Fusion.Scope, props: {
 				TextXAlignment = Enum.TextXAlignment.Left,
 
 				[Children] = {
-					Components.UIPadding(scope, {
-						PaddingTop = UDim.new(0.05, 0),
-						PaddingBottom = UDim.new(0.05, 0)
-					})
+					Components.UIPadding(scope, {})
 				}
 			}),
 

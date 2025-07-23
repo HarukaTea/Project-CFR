@@ -6,6 +6,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Classbook = require(RepS.HarukaShared.Library.ClassBook)
 
@@ -16,9 +17,31 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    LoadingText: Fusion.Value | string,
+    LoadingText: Fusion.Value,
 })
-    return Components.HarukaScreenGui(scope, {
+
+    local texFrame = Components.Frame(scope, {
+        Name = "CAPatternTexFrame",
+
+        [Children] = {
+            CAPatternTex(scope, {
+                Transparency = 0.985,
+                TileSize = UDim2.fromOffset(55, 55)
+            })
+        }
+    })
+    local texEmblem = Components.ImageLabel(scope, {
+        Name = "Emblem",
+        AnchorPoint = Vector2.new(1, 1),
+        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+        Position = UDim2.fromScale(0.99, 1),
+        Size = UDim2.fromScale(2.5, 2.5),
+        Image = "rbxassetid://72405016863286",
+        ImageTransparency = 0.94,
+    })
+
+
+    local UI = Components.HarukaScreenGui(scope, {
         Name = "LoadScreen",
         DisplayOrder = UIPriorityBook.Highest - 2,
         Parent = Players.LocalPlayer.PlayerGui,
@@ -29,10 +52,7 @@ return function (scope: Fusion.Scope, props: {
             BackgroundTransparency = 0,
 
             [Children] = {
-                CAPatternTex(scope, {
-                    Transparency = 0.985,
-                    TileSize = UDim2.fromOffset(55, 55)
-                })
+                texFrame
             }
         },
 
@@ -81,8 +101,36 @@ return function (scope: Fusion.Scope, props: {
                             end),
                         })
                     }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "CFEmblemTexFrame",
+
+                    [Children] = {
+                        texEmblem
+                    }
                 })
             }
         }
     })
+
+
+    local tween = HarukaLib:CreateTween(texFrame, TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 999, true, 0), {
+        Position = UDim2.new(0.5, 1500 / 1.5, 0.5, 1500 / 1.5),
+        Size = UDim2.new(1, 1500 * 2, 1, 1500 * 2)
+    })
+    local tween2 = HarukaLib:CreateTween(texEmblem, TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 999, false, 0), {
+        Rotation = 360
+    })
+    table.insert(scope, function()
+        tween:Cancel()
+    end)
+    table.insert(scope, function()
+        tween2:Cancel()
+    end)
+    tween:Play()
+    tween2:Play()
+
+
+    return UI
 end

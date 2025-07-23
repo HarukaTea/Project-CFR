@@ -1096,7 +1096,7 @@ end
 --[[
 	Quickly return an empty part for mocking
 ]]
-function HarukaLib:CreateMockModel() : BasePart
+function HarukaLib:CreateMockModel() : Model
 	local model = Instance.new("Model")
 	model.Name = "MockModel"
 

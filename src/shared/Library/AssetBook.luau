@@ -222,8 +222,12 @@ AssetBook.PlaceIds = {
 	MainworldTest = 118088243313343,
 	MainworldReal = 124519565742104,
 
+	TutorialTest = 0,
+	TutorialReal = 1043446942,
+
 	AbyssLevel = 18331795211,
 	Mainworld = 124519565742104,
+	Tutorial = 1043446942,
 }
 
 return AssetBook

@@ -122,5 +122,23 @@ return {
         BaseStats = {
             ShockingChance = 10
         }
+    },
+
+    Execution = {
+        Icon = "rbxassetid://128714575176870",
+        Color = Color3.fromHex('#ffffff'),
+        Type = "DMG",
+
+        Desc = "",
+        Hint = "",
+
+        Skills = {
+            UltSkillIcon_None = "rbxassetid://118519686473047",
+            UltSkillNone_WithoutRecolor = true
+        },
+
+        BaseStats = {
+            ShockingChance = 10
+        }
     }
 }

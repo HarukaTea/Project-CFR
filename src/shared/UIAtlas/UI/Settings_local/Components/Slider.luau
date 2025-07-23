@@ -36,7 +36,12 @@ return function(scope: Fusion.Scope, props: {
 			scale = math.clamp(scale, 0, 1)
 
 			local val = scale * (max - min) + min
-			val = math.floor(val * 10 + 0.5) / 10
+
+			if props.OptionInfo.AllowDecimals then
+				val = math.floor(val * 10 + 0.5) / 10
+			else
+				val = math.floor(val + 0.5)
+			end
 
 			barVal:set(val)
 			props.OptionInfo.ValChanged:Fire(val)

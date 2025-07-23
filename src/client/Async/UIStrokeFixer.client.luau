@@ -18,7 +18,10 @@ local function _calScreenRatio() : number
 	local x = camera.ViewportSize.X / DESIGN_VP_SIZE.X
 	local y = camera.ViewportSize.Y / DESIGN_VP_SIZE.Y
 
-	return (x + y) / 2
+	local ratio = (x + y) / 2
+	workspace:SetAttribute("UIStrokeScreenRatio", ratio)
+
+	return ratio
 end
 local function _getInstancePosition(instance: Instance): Vector3
 	if instance == nil then

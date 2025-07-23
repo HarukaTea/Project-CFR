@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
+local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
@@ -18,7 +19,8 @@ return function (scope: Fusion.Scope, props: {
 
     local ICONS = {
         Play = "rbxassetid://124997253539716",
-        Credits = "rbxassetid://76184661737952"
+        Credits = "rbxassetid://76184661737952",
+        Tutorial = "rbxassetid://70702384179449"
     }
 
     local isShown = Fusion.Value(scope, true)
@@ -50,11 +52,11 @@ return function (scope: Fusion.Scope, props: {
 
                     [Children] = {
                         Components.UIListLayout(scope, {
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
                             Padding = UDim.new(0.5, 0)
                         }),
 
-                        Fusion.ForPairs(scope, { "Play" }, function(_, scope: Fusion.Scope, index: number, panelId: string)
+                        Fusion.ForPairs(scope, { "Play", "Credits", "Tutorial" }, function(_, scope: Fusion.Scope, index: number, panelId: string)
                             local isSelecting = Fusion.Value(scope, false)
 
                             return index, Components.Frame(scope, {
@@ -104,6 +106,33 @@ return function (scope: Fusion.Scope, props: {
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
                                             if panelId == "Play" then
                                                 props.SlotUISignal:Fire()
+
+                                            elseif panelId == "Credits" then
+                                                local target = workspace.MapComponents.Titlescreen.CreditsCamera :: BasePart
+                                                local locatorVal = workspace.MapComponents.Titlescreen.CameraLocator :: ObjectValue
+
+                                                Bindables.CreateCircularFade:Fire(1.5)
+
+                                                wait(0.5)
+                                                if locatorVal.Value == target then
+                                                    locatorVal.Value = workspace.MapComponents.Titlescreen.CameraLocator1
+                                                else
+                                                    locatorVal.Value = target
+                                                end
+
+                                            elseif panelId == "Tutorial" then
+                                                local result = Components:CreateConfirmPrompt(scope, {
+                                                    Hint = "Play the tutorial?",
+                                                    ConfirmText = "PLAY",
+                                                    CancelText = "BACK",
+                                                    ConfirmUniqueId = "TutorialConfirm"
+                                                }):Wait()
+
+                                                if result == "YES" then
+                                                    Events.RequestToPlayTutorial.Fire()
+
+                                                    Bindables.CreateFSNotify:Fire("Teleporting to Tutorial...")
+                                                end
                                             end
                                         end,
                                     })

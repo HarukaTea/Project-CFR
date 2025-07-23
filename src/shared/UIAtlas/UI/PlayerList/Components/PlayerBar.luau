@@ -10,6 +10,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
+
 local Children = Fusion.Children
 
 
@@ -69,6 +72,22 @@ return function (scope: Fusion.Scope, props: {
                     NumberSequenceKeypoint.new(1, 0),
                 })
             }),
+
+
+            CFEmblemTex(scope, {
+                Transparency = 0.91,
+                Size = UDim2.fromScale(4, 4),
+                Position = UDim2.fromScale(0.3, 0.5),
+
+                Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    if use(props.PlayerSelecting) == props.Player then
+                        return Components.BLACK_COLOR
+                    else
+                        return Components.WHITE_COLOR
+                    end
+                end),
+            }),
+
 
             Components.Frame(scope, {
                 Name = "Main",

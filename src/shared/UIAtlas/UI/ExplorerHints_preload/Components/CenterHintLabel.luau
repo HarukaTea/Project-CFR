@@ -56,10 +56,10 @@ return function (scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Components.UIPadding(scope, {
-                        PaddingTop = UDim.new(0.25, 0),
-                        PaddingBottom = UDim.new(0.25, 0),
-                        PaddingLeft = UDim.new(0.25, 0),
-                        PaddingRight = UDim.new(0.25, 0)
+                        PaddingTop = UDim.new(0.2, 0),
+                        PaddingBottom = UDim.new(0.2, 0),
+                        PaddingLeft = UDim.new(0.2, 0),
+                        PaddingRight = UDim.new(0.2, 0)
                     })
                 }
             }),

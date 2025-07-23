@@ -21,6 +21,8 @@ return function (scope: Fusion.Scope, props: {
 
     return Components.ImageLabel(scope, {
         Name = "CAPatternTex",
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.fromScale(0.5, 0.5),
         ZIndex = 0,
 
         Image = "rbxassetid://91666280221875",

@@ -49,6 +49,8 @@ return function (plr: Player)
                 Size = UDim2.fromScale(0.65, 0.66),
 
                 [Children] = {
+                    Components.UIAspectRatioConstraint(scope, 2.488),
+
                     Components.Frame(scope, {
                         Name = "PerkList",
 

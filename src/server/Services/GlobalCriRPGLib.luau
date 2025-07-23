@@ -18,7 +18,6 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassAttackLib = require(SSS.HarukaServer.Library.ClassAttackLib)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local CastItemLib = require(SSS.HarukaServer.Library.CastItemLib)
-local DialogueBook = require(RepS.HarukaShared.Library.DialogueBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
@@ -228,6 +227,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
         if prompt.Name == "Chat" then
             local npc = prompt:FindFirstAncestorOfClass("Model")
             if not npc then return end
+            if not npc:FindFirstChild("Dialogues") then return end
 
             if not ServerLib:IsCharValid(char) then return end
 
@@ -239,7 +239,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             char:SetAttribute("IsChatting", true)
 
             Events.EnterNPCChat.Fire(plr, {
-                NPCId = npc.Name
+                NPCModel = npc
             })
 
         elseif prompt.Name == "Chest" then
@@ -851,8 +851,10 @@ function GlobalCriRPGLib:_ListenNPCChatEndedTracker()
         char:SetAttribute("IsChatting", nil)
 
 
+        local dialogues = npcModel.Dialogues :: Configuration
+
         --// do signal
-        local extra = DialogueBook[data.NPCId].Extra
+        local extra = require(dialogues.Main).Extra
         local bindableId = extra[data.SeriesId] :: string?
 
         if bindableId then
@@ -1824,6 +1826,17 @@ function GlobalCriRPGLib:_ListenPlayerSaveSettingTracker()
     end)
 end
 
+
+function GlobalCriRPGLib:_ListenTutorialTeleportTracker()
+    Events.RequestToPlayTutorial.SetCallback(function(plr: Player)
+        local teleportOptions = Instance.new("TeleportOptions")
+
+        local code = TeleportService:ReserveServer(AssetBook.PlaceIds.Tutorial)
+        teleportOptions.ReservedServerAccessCode = code
+
+        TeleportService:TeleportAsync(AssetBook.PlaceIds.Tutorial, { plr }, teleportOptions)
+    end)
+end
 
 
 return GlobalCriRPGLib

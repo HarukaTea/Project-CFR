@@ -16,7 +16,7 @@ local Children = Fusion.Children
 local Icons = {
     Backpack = "rbxassetid://87334829671948",
     Menu = "rbxassetid://130903046224988",
-    Character = "rbxassetid://130903046224988",
+    Character = "rbxassetid://92862260655045",
 
     Settings = "rbxassetid://104944402116343",
     PerkTree = "rbxassetid://77981089608399",
@@ -25,7 +25,9 @@ local Icons = {
     Trade = "rbxassetid://129768568967812",
     Store = "rbxassetid://73470004505046",
     Achievements = "rbxassetid://135736394286615",
-    TutorialBook = "rbxassetid://105305190168965"
+    TutorialBook = "rbxassetid://105305190168965",
+
+    Events = "rbxassetid://74645793775122",
 }
 
 return function(scope: Fusion.Scope, props: {

@@ -16,11 +16,8 @@ keybinds.Console.PromptTrigger = Enum.KeyCode.ButtonY
 keybinds.PC.Backpack = Enum.KeyCode.B
 keybinds.PC.CharSelfView = Enum.KeyCode.C
 keybinds.PC.Settings = Enum.KeyCode.N
-keybinds.PC.Guild = Enum.KeyCode.X
-keybinds.PC.Store = Enum.KeyCode.V
 keybinds.PC.PerkTree = Enum.KeyCode.Z
-keybinds.PC.Achievements = Enum.KeyCode.K
-keybinds.PC.TutorialBook = Enum.KeyCode.T
+keybinds.PC.Events = Enum.KeyCode.U
 
 keybinds.PC.ClassUlt = Enum.KeyCode.Q
 keybinds.PC.Active1 = Enum.KeyCode.One

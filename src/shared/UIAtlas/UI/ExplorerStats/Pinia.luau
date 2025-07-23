@@ -82,6 +82,8 @@ return function (self: { any })
     self.DungeonStarted = Value(nil)
     self.DungeonLeftTime = Value(0)
 
+    self.MenuSelectionShown = Value(false)
+
 
     --// track server
     table.insert(scope, HarukaLib:Hydrate(workspace, {

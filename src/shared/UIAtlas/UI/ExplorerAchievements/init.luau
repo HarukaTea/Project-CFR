@@ -10,6 +10,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
+
 
 
 local Children = Fusion.Children
@@ -59,12 +62,20 @@ return function (plr: Player)
                             Fusion.ForPairs(scope, AssetBook.BadgeIds, function(_, scope: Fusion.Scope, badge: string, badgeId: number)
 
                                 local badgeInfo = Fusion.Value(scope, {})
+                                local hasOwned = Fusion.Value(scope, false)
                                 table.insert(scope, task.spawn(function()
                                     local info
                                     pcall(function()
                                         info = BadgeService:GetBadgeInfoAsync(badgeId)
                                     end)
                                     badgeInfo:set(info)
+                                end))
+                                table.insert(scope, task.spawn(function()
+                                    local state
+                                    pcall(function()
+                                        state = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
+                                    end)
+                                    hasOwned:set(state)
                                 end))
 
 
@@ -78,11 +89,40 @@ return function (plr: Player)
                                 }))
 
 
+                                local layoutOrder = 1
+                                local firstChar = string.sub(badge, 1, 1)
+                                local charCode = string.byte(firstChar)
+
+                                if string.match(firstChar, "%a") then
+                                    local baseCode
+                                    if charCode >= 65 and charCode <= 90 then
+                                        baseCode = 65
+                                    elseif charCode >= 97 and charCode <= 122 then
+                                        baseCode = 97
+                                    else
+                                        return 0
+                                    end
+                                    layoutOrder = charCode - baseCode + 1
+                                else
+                                    layoutOrder = 0
+                                end
+
+
                                 return badge, Components.Frame(scope, {
                                     Name = badge,
                                     Size = UDim2.fromScale(0.97, 0.22),
                                     BackgroundTransparency = 0,
                                     BackgroundColor3 = Components.DARKER_WHITE_COLOR,
+
+                                    LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                        local state = use(hasOwned)
+                                        if state then
+                                            return layoutOrder + 233
+                                        else
+                                            return layoutOrder
+                                        end
+                                    end),
+
 
                                     [Children] = {
                                         Components.UICorner(scope, {
@@ -103,7 +143,7 @@ return function (plr: Player)
 
                                         Components.TextLabel(scope, {
                                             Name = "Title",
-                                            Position = UDim2.fromScale(0.1, 0.1),
+                                            Position = UDim2.fromScale(0.09, 0.1),
                                             Size = UDim2.fromScale(0.8, 0.35),
                                             TextColor3 = Components.BLACK_COLOR,
                                             TextXAlignment = Enum.TextXAlignment.Left,
@@ -115,7 +155,7 @@ return function (plr: Player)
                                         }),
                                         Components.TextLabel(scope, {
                                             Name = "Desc",
-                                            Position = UDim2.fromScale(0.1, 0.53),
+                                            Position = UDim2.fromScale(0.09, 0.53),
                                             Size = UDim2.fromScale(0.8, 0.25),
                                             TextColor3 = Components.BLACK_COLOR,
                                             TextXAlignment = Enum.TextXAlignment.Left,
@@ -140,6 +180,12 @@ return function (plr: Player)
                                                     CornerRadius = UDim.new(0.1, 0),
                                                 }),
                                             }
+                                        }),
+
+
+                                        CFEmblemTex(scope, {
+                                            Position = UDim2.fromScale(0.75, 0.5),
+                                            Transparency = 0.85
                                         })
                                     }
                                 })
@@ -149,7 +195,7 @@ return function (plr: Player)
                     }, {
                         Padding = UDim.new(0, 12),
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        SortOrder = Enum.SortOrder.Name,
+                        SortOrder = Enum.SortOrder.LayoutOrder,
                     })
                 }
             })
@@ -168,13 +214,7 @@ return function (plr: Player)
                 CloseTab(scope, {
                     ViewShownValue = self.IsUIShown
                 }),
-
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBGTex(scope)
             }
         }
     })

@@ -22,6 +22,7 @@ local template = {
 				Min = 0,
 				Max = 2,
 				DefaultValue = 1,
+				AllowDecimals = true,
 
 				ValChanged = Signal.new()
 			},
@@ -29,6 +30,7 @@ local template = {
 				OptionTitle = "SFX Volume",
 				Type = "Slider",
 				LayoutOrder = 2,
+				AllowDecimals = true,
 
 				Min = 0,
 				Max = 2,
@@ -40,6 +42,7 @@ local template = {
 				OptionTitle = "Footstep Volume",
 				Type = "Slider",
 				LayoutOrder = 2,
+				AllowDecimals = true,
 
 				Min = 0,
 				Max = 2,
@@ -51,6 +54,7 @@ local template = {
 				OptionTitle = "Ambient Volume",
 				Type = "Slider",
 				LayoutOrder = 2,
+				AllowDecimals = true,
 
 				Min = 0,
 				Max = 2,
@@ -69,6 +73,7 @@ local template = {
 				OptionTitle = "UI Scale",
 				Type = "Slider",
 				LayoutOrder = 1,
+				AllowDecimals = true,
 
 				Min = 0.8,
 				Max = 1.2,
@@ -136,6 +141,7 @@ local template = {
 				OptionTitle = "Enemy Render Distance",
 				Type = "Slider",
 				LayoutOrder = 7,
+				AllowDecimals = false,
 
 				Min = 159,
 				Max = 999,
@@ -147,6 +153,7 @@ local template = {
 				OptionTitle = "Text Render Distance",
 				Type = "Slider",
 				LayoutOrder = 8,
+				AllowDecimals = false,
 
 				Min = 159,
 				Max = 999,
