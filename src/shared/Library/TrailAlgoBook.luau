@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local RepS = game:GetService("ReplicatedStorage")
 
 
-local BezierAlgoBook = require(RepS.HarukaShared.Library.Bezier)
+local BezierAlgoBook = require(RepS.HarukaShared.Library.BezierAlgoBook)
 
 
 local TrailAlgoBook = {}

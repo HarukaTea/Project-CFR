@@ -18,9 +18,9 @@
         "sourcemap.json": true,
 
         "src/RbxCharacterSounds.client.luau": true,
-
         "src/shared/Shared/HarukaCMD": true,
         "src/shared/Library/LocationBook.luau": true,
+        "src/DS_VERSION.luau": true
     },
     "stylua.targetReleaseVersion": "latest",
     "robloxLsp.diagnostics.globals": [

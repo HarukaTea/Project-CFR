@@ -366,8 +366,8 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	end
 
 	if char:FindFirstChild(itemSymbol.Name) then char[itemSymbol.Name]:Destroy() end
-	if method == "Equip" and RepS.HarukaRes.Items:FindFirstChild(itemSymbol.Name, true) then
-		RepS.HarukaRes.Items:FindFirstChild(itemSymbol.Name, true):Clone().Parent = char
+	if method == "Equip" and RepS.HarukaRes.Accessories:FindFirstChild(itemSymbol.Name, true) then
+		RepS.HarukaRes.Accessories:FindFirstChild(itemSymbol.Name, true):Clone().Parent = char
 	end
 end
 

@@ -11,14 +11,20 @@ local RankBook = require(RepS.HarukaShared.Library.RankBook)
 TextChatService.OnIncomingMessage = function(message: TextChatMessage)
     local properties = Instance.new("TextChatMessageProperties")
 
-    --- TextChatAddon
     if message.TextSource then
         --// Player message
         local sender = Players:GetPlayerByUserId(message.TextSource.UserId)
-        if not sender:IsDescendantOf(Players) then return properties end
+        if not sender:IsDescendantOf(Players) then
+            return properties
+        end
 
         Bindables.PlayerChatted:Fire(message.Text, sender)
         properties.PrefixText = string.format("%s", message.PrefixText)
+
+
+        if string.find(message.Text, "/e") then
+            return properties
+        end
 
         if sender:GetAttribute("Role") then
             local role = sender:GetAttribute("Role") :: string

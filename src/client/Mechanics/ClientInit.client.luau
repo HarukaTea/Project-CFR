@@ -15,7 +15,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local ComplexVFXLib = require(ReplicatedStorage.HarukaShared.Library.ComplexVFXLib)
-local Bezier = require(ReplicatedStorage.HarukaShared.Library.Bezier)
+local Bezier = require(ReplicatedStorage.HarukaShared.Library.BezierAlgoBook)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
