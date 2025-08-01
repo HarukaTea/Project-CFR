@@ -5,44 +5,26 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
-local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
-
 local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    ItemId: string,
-    Items: Fusion.Value,
+    GoldVal: Fusion.Value,
     Amount: number,
 })
 
-    local itemInfo = ItemBook:GetItemInfo(props.ItemId)
-    if not itemInfo then return nil end
-
-
+    local itemInfo = {
+        Icon = "rbxassetid://18421784947",
+        Name = "Gold",
+    }
     local isSelecting = Fusion.Value(scope, false)
-    local totalAmount = Fusion.Value(scope, 0)
-
-    local itemsObserver = Fusion.Observer(scope, props.Items)
-    itemsObserver:onBind(function()
-        local items = Fusion.peek(props.Items)
-        local amount = 0
-
-        for _, item: IntConstrainedValue in items do
-            if item.Name == props.ItemId then
-                amount += item.Value
-            end
-        end
-
-        totalAmount:set(amount)
-    end)
 
 
     return Components.IconImageLabel(scope, {
         Image = itemInfo.Icon,
         Selectable = true,
         SelectionOrder = 0,
-        LayoutOrder = if props.ItemId == "GOLD" then 233 else 1,
+        LayoutOrder = 233,
 
         [Fusion.OnEvent("MouseEnter")] = function()
             isSelecting:set(true)
@@ -67,13 +49,10 @@ return function (scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(1.3, 0.5),
                 FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
 
-                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return `{use(totalAmount)}/{props.Amount}`
-                end),
+                Text = props.Amount,
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return if use(totalAmount) >= props.Amount then Color3.fromRGB(85, 255, 127) else Color3.fromRGB(255, 118, 117)
+                    return if use(props.GoldVal) >= props.Amount then Color3.fromRGB(85, 255, 127) else Color3.fromRGB(255, 118, 117)
                 end),
-
 
                 [Children] = {
                     Components.TextUIStroke(scope, {

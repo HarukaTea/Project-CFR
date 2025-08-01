@@ -59,7 +59,12 @@ function WindLines:_create()
 	att1.Parent = Terrain
 end
 
-function WindLines:Init(settings: { any })
+function WindLines:Init(settings: {
+	Direction: Vector3?,
+	Speed: number?,
+	LifeTime: number?,
+	SpawnRate: number?,
+})
 	self:Cleanup()
 
 	-- Set defaults
@@ -68,6 +73,10 @@ function WindLines:Init(settings: { any })
 	WindLines.Speed = settings.Speed or 6
 	WindLines.LastSpawned = os.clock()
 	WindLines.SpawnRate = 1 / (settings.SpawnRate or 25)
+
+
+	---// save up little time
+	local cfNew, sin = CFrame.new, math.sin
 
 
 	-- Setup logic loop
@@ -102,11 +111,11 @@ function WindLines:Init(settings: { any })
 			local SeededClock = (clock + windLineObj.Seed) * (windLineObj.Speed * 0.2)
 			local StartPos = windLineObj.Position
 			windLineObj.Attachment0.WorldPosition = (
-				CFrame.new(StartPos, StartPos + windLineObj.Direction) * CFrame.new(0, 0, windLineObj.Speed * -aliveClock
+				cfNew(StartPos, StartPos + windLineObj.Direction) * cfNew(0, 0, windLineObj.Speed * -aliveClock
 			)).Position + Vector3.new(
-				math.sin(SeededClock) * 0.5,
-				math.sin(SeededClock) * 0.8,
-				math.sin(SeededClock) * 0.5
+				sin(SeededClock) * 0.5,
+				sin(SeededClock) * 0.8,
+				sin(SeededClock) * 0.5
 			)
 
 			windLineObj.Attachment1.WorldPosition = windLineObj.Attachment0.WorldPosition + OFFSET

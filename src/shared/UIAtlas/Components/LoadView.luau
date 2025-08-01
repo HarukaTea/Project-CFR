@@ -34,7 +34,7 @@ return function (scope: Fusion.Scope, props: {
         Name = "Emblem",
         AnchorPoint = Vector2.new(1, 1),
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
-        Position = UDim2.fromScale(0.99, 1),
+        Position = UDim2.fromScale(0.99, 0),
         Size = UDim2.fromScale(2.5, 2.5),
         Image = "rbxassetid://72405016863286",
         ImageTransparency = 0.94,
@@ -61,16 +61,31 @@ return function (scope: Fusion.Scope, props: {
                 Components.Frame(scope, {
                     Name = "AllClasses",
                     AnchorPoint = Vector2.new(0.5, 0),
-                    Size = UDim2.fromScale(1, 0.6),
+                    Size = UDim2.fromScale(0.95, 0.6),
                     Position = UDim2.fromScale(0.5, 0),
+                    ClipsDescendants = true,
 
                     [Children] = {
                         Components.UIListLayout(scope, {
-                            Padding = UDim.new(0.005, 0),
+                            Padding = UDim.new(0.008, 0),
                             FillDirection = Enum.FillDirection.Horizontal,
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             VerticalAlignment = Enum.VerticalAlignment.Center,
                             SortOrder = Enum.SortOrder.Name,
+                        }),
+
+
+                        Components.Frame(scope, {
+                            Name = "AAA_AAALine",
+                            BackgroundTransparency = 0.9,
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            Size = UDim2.fromScale(1, 0.1)
+                        }),
+                        Components.Frame(scope, {
+                            Name = "ZZZ_AAALine",
+                            BackgroundTransparency = 0.9,
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            Size = UDim2.fromScale(1, 0.1)
                         }),
 
                         Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: { any })

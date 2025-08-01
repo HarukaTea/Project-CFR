@@ -3,14 +3,11 @@
 --]=]
 
 --!nocheck
-local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Settings = require(script.Parent.WindShakeSettings)
 local VectorMap = require(ReplicatedStorage.HarukaShared.Shared.RbxUtility.VectorMap)
 
-local COLLECTION_TAG = "WindShake" -- The CollectionService tag to be watched and mounted automatically
 
 local FALLBACK_SETTINGS = {
 	WindDirection = Vector3.new(0.5, 0, 0.5),
@@ -18,13 +15,16 @@ local FALLBACK_SETTINGS = {
 	WindSpeed = 20,
 }
 
-type Settings = Settings.Class
+
+local clear = table.clear
+local random, min, noise, clamp = math.random, math.min, math.noise, math.clamp
+local fromAxisAngle, Angles = CFrame.fromAxisAngle, CFrame.Angles
+local clock = os.clock
 
 
 local WindShake = {
 	RenderDistance = 150,
 	MaxRefreshRate = 1 / 60,
-	SharedSettings = Settings.new(script),
 
 	ObjectMetadata = {} :: {
 		[Instance]: {
@@ -64,28 +64,18 @@ local function Connect<Args...>(self: WindShake, event: RBXScriptSignal, callbac
 	end)
 end
 
-function WindShake.AddObjectShake(self: WindShake, object: BasePart | Bone, settingsTable: WindShakeSettings?)
-	if typeof(object) ~= "Instance" then
-		return
-	end
-
-	if not (object:IsA("BasePart") or object:IsA("Bone")) then
-		return
-	end
+function WindShake.AddObjectShake(self: WindShake, object: BasePart | Bone)
+	if typeof(object) ~= "Instance" then return end
+	if not (object:IsA("BasePart") or object:IsA("Bone")) then return end
 
 	local metadata = self.ObjectMetadata
-
-	if metadata[object] then
-		return
-	end
+	if metadata[object] then return end
 
 	metadata[object] = {
 		ChunkKey = self.VectorMap:AddObject(
 			if object:IsA("Bone") then object.WorldPosition else object.Position,
 			object
 		),
-
-		Settings = Settings.new(object),
 		Seed = math.random(5000) * 0.32,
 
 		Origin = if object:IsA("Bone")
@@ -94,61 +84,22 @@ function WindShake.AddObjectShake(self: WindShake, object: BasePart | Bone, sett
 
 		LastUpdate = os.clock(),
 	}
-
-	if settingsTable then
-		self:UpdateObjectSettings(object, settingsTable)
-	end
-
 	self.Handled += 1
-
-	return
 end
 
-function WindShake.RemoveObjectShake(self: WindShake, object: BasePart | Bone)
-	if typeof(object) ~= "Instance" then
-		return
-	end
-
-	if not (object:IsA("BasePart") or object:IsA("Bone")) then
-		return
-	end
-
-	local metadata = self.ObjectMetadata
-	local objMeta = metadata[object]
-
-	if objMeta then
-		self.Handled -= 1
-		metadata[object] = nil
-		objMeta.Settings:Destroy()
-		self.VectorMap:RemoveObject(objMeta.ChunkKey, object)
-
-		if object:IsA("BasePart") then
-			object.CFrame = objMeta.Origin
-		elseif object:IsA("Bone") then
-			object.WorldCFrame = objMeta.Origin
-		end
-	end
-
-	return
-end
 
 function WindShake.Update(self: WindShake, deltaTime: number)
-	debug.profilebegin("WindShake")
-
 	local active = 0
-
-	debug.profilebegin("Update")
-
-	local now = os.clock()
+	local now = clock()
 	local slowerDeltaTime = deltaTime * 3
-	local step = math.min(1, deltaTime * 5)
+	local step = min(1, deltaTime * 5)
 
 	-- Reuse tables to avoid garbage collection
 	local bulkMoveIndex = 0
 	local partList = self._partList
 	local cframeList = self._cframeList
-	table.clear(partList)
-	table.clear(cframeList)
+	clear(partList)
+	clear(cframeList)
 
 	-- Cache hot values
 	local objectMetadata = self.ObjectMetadata
@@ -159,9 +110,9 @@ function WindShake.Update(self: WindShake, deltaTime: number)
 	local maxRefreshRate = self.MaxRefreshRate
 	local sharedSettings = self.SharedSettings
 
-	local sharedWindPower = assert(sharedSettings.WindPower)
-	local sharedWindSpeed = assert(sharedSettings.WindSpeed)
-	local sharedWindDirection = assert(sharedSettings.WindDirection)
+	local sharedWindPower = sharedSettings.WindPower :: number
+	local sharedWindSpeed = sharedSettings.WindSpeed :: number
+	local sharedWindDirection = sharedSettings.WindDirection :: Vector3
 
 	-- Update objects in view at their respective refresh rates
 	self.VectorMap:ForEachObjectInView(camera, renderDistance, function(className: string, object: BasePart | Bone)
@@ -173,7 +124,7 @@ function WindShake.Update(self: WindShake, deltaTime: number)
 		local objectCFrame = if isBone then (object :: Bone).WorldCFrame else object.CFrame
 		local distanceAlpha = ((cameraPos - objectCFrame.Position).Magnitude / renderDistance)
 		local distanceAlphaSq = distanceAlpha * distanceAlpha
-		local jitter = (1 / math.random(60, 120))
+		local jitter = (1 / random(60, 120))
 		local refreshRate = (slowerDeltaTime * distanceAlphaSq) + maxRefreshRate
 
 		if (now - lastUpdate) + jitter <= refreshRate then
@@ -204,8 +155,8 @@ function WindShake.Update(self: WindShake, deltaTime: number)
 		end
 
 		local seed = objMeta.Seed
-		local animValue = (math.noise(freq, 0, seed) + 0.4) * amp
-		local lerpAlpha = math.clamp(step + distanceAlphaSq, 0.1, 0.5)
+		local animValue = (noise(freq, 0, seed) + 0.4) * amp
+		local lerpAlpha = clamp(step + distanceAlphaSq, 0.1, 0.5)
 		local lowAmp = amp / 3
 
 		local origin = objMeta.Origin * (objSettings.PivotOffset or CFrame.identity)
@@ -215,11 +166,11 @@ function WindShake.Update(self: WindShake, deltaTime: number)
 			local bone: Bone = object :: Bone
 			bone.Transform = bone.Transform:Lerp(
 				(
-					CFrame.fromAxisAngle(localWindDirection:Cross(Vector3.yAxis), -animValue)
-					* CFrame.Angles(
-						math.noise(seed, 0, freq) * lowAmp,
-						math.noise(seed, freq, 0) * lowAmp,
-						math.noise(freq, seed, 0) * lowAmp
+					fromAxisAngle(localWindDirection:Cross(Vector3.yAxis), -animValue)
+					* Angles(
+						noise(seed, 0, freq) * lowAmp,
+						noise(seed, freq, 0) * lowAmp,
+						noise(freq, seed, 0) * lowAmp
 					)
 				) + (localWindDirection * animValue * amp),
 				lerpAlpha
@@ -230,11 +181,11 @@ function WindShake.Update(self: WindShake, deltaTime: number)
 			cframeList[bulkMoveIndex] = objectCFrame:Lerp(
 				(
 					origin
-					* CFrame.fromAxisAngle(localWindDirection:Cross(Vector3.yAxis), -animValue)
-					* CFrame.Angles(
-						math.noise(seed, 0, freq) * lowAmp,
-						math.noise(seed, freq, 0) * lowAmp,
-						math.noise(freq, seed, 0) * lowAmp
+					* fromAxisAngle(localWindDirection:Cross(Vector3.yAxis), -animValue)
+					* Angles(
+						noise(seed, 0, freq) * lowAmp,
+						noise(seed, freq, 0) * lowAmp,
+						noise(freq, seed, 0) * lowAmp
 					)
 					* (objSettings.PivotOffsetInverse or CFrame.identity)
 				) + (windDirection * animValue * (amp * 2)),
@@ -245,11 +196,8 @@ function WindShake.Update(self: WindShake, deltaTime: number)
 
 	self.Active = active
 
-	debug.profileend()
 
 	workspace:BulkMoveTo(partList, cframeList, Enum.BulkMoveMode.FireCFrameChanged)
-
-	debug.profileend()
 end
 
 function WindShake.Pause(self: WindShake)
@@ -272,55 +220,28 @@ function WindShake.Resume(self: WindShake)
 	self.Running = true
 end
 
-function WindShake.Init(self: WindShake, config: { MatchWorkspaceWind: boolean? }?)
-	if self.Initialized then
-		return
-	end
+function WindShake.Init(self: WindShake, sharedSettings: {
+	WindSpeed: number?,
+	WindDirection: Vector3?,
+	WindPower: number?,
+})
+	if self.Initialized then return end
 
-	-- Define attributes if they're undefined.
-	local power = script:GetAttribute("WindPower")
-	local speed = script:GetAttribute("WindSpeed")
-	local direction = script:GetAttribute("WindDirection")
 
-	if typeof(power) ~= "number" then
-		script:SetAttribute("WindPower", FALLBACK_SETTINGS.WindPower)
-	end
+	local power = sharedSettings.WindPower or FALLBACK_SETTINGS.WindPower
+	local speed = sharedSettings.WindSpeed or FALLBACK_SETTINGS.WindSpeed
+	local direction = sharedSettings.WindDirection or FALLBACK_SETTINGS.WindDirection
 
-	if typeof(speed) ~= "number" then
-		script:SetAttribute("WindSpeed", FALLBACK_SETTINGS.WindSpeed)
-	end
-
-	if typeof(direction) ~= "Vector3" then
-		script:SetAttribute("WindDirection", FALLBACK_SETTINGS.WindDirection)
-	end
+	self.SharedSettings = {
+		WindPower = power,
+		WindSpeed = speed,
+		WindDirection = direction,
+	}
 
 	-- Clear any old stuff.
 	self:Cleanup()
 	self.Initialized = true
 
-	-- Wire up tag listeners.
-	local windShakeAdded = CollectionService:GetInstanceAddedSignal(COLLECTION_TAG)
-	self.AddedConnection = Connect(self, windShakeAdded, self.AddObjectShake)
-
-	local windShakeRemoved = CollectionService:GetInstanceRemovedSignal(COLLECTION_TAG)
-	self.RemovedConnection = Connect(self, windShakeRemoved, self.RemoveObjectShake)
-
-	for _, object in CollectionService:GetTagged(COLLECTION_TAG) do
-		if object:IsA("BasePart") or object:IsA("Bone") then
-			self:AddObjectShake(object)
-		end
-	end
-
-	-- Wire up workspace wind.
-	if config and config.MatchWorkspaceWind then
-		self:MatchWorkspaceWind()
-
-		self.WorkspaceWindConnection = workspace:GetPropertyChangedSignal("GlobalWind"):Connect(function()
-			self:MatchWorkspaceWind()
-		end)
-	end
-
-	-- Automatically start.
 	self:Resume()
 end
 
@@ -354,57 +275,5 @@ function WindShake.Cleanup(self: WindShake)
 	self.Initialized = false
 end
 
-function WindShake.UpdateObjectSettings(self: WindShake, object: Instance, settingsTable: WindShakeSettings)
-	if typeof(object) ~= "Instance" then
-		return
-	end
-
-	if typeof(settingsTable) ~= "table" then
-		return
-	end
-
-	if not self.ObjectMetadata[object] and (object ~= script) then
-		return
-	end
-
-	for key, value in pairs(settingsTable) do
-		object:SetAttribute(key, value)
-	end
-	return
-end
-
-function WindShake.UpdateAllObjectSettings(self: WindShake, settingsTable: WindShakeSettings)
-	if typeof(settingsTable) ~= "table" then
-		return
-	end
-
-	for obj, _objMeta in self.ObjectMetadata do
-		for key, value in pairs(settingsTable) do
-			obj:SetAttribute(key, value)
-		end
-	end
-end
-
-function WindShake.SetDefaultSettings(self: WindShake, settingsTable: WindShakeSettings)
-	self:UpdateObjectSettings(script, settingsTable)
-end
-
-function WindShake.MatchWorkspaceWind(self: WindShake)
-	local workspaceWind = workspace.GlobalWind
-	local windDirection = workspaceWind.Unit
-	local windSpeed, windPower = 0, 0
-
-	local windMagnitude = workspaceWind.Magnitude
-	if windMagnitude > 0 then
-		windPower = if windMagnitude > 1 then math.log10(windMagnitude) + 0.2 else 0.3
-		windSpeed = if windMagnitude < 100 then (windMagnitude * 1.2) + 5 else 125
-	end
-
-	self:SetDefaultSettings({
-		WindDirection = windDirection,
-		WindSpeed = windSpeed,
-		WindPower = windPower,
-	})
-end
 
 return WindShake

@@ -18,7 +18,9 @@ local ORDER = 1
 
 return function(scope: Fusion.Scope, props: {
     Targeting: ObjectValue,
-    TargetingEnemy: Fusion.Value
+    TargetingEnemy: Fusion.Value,
+
+    TargetArrowPos: Fusion.Value
 })
     if not ClientLib:IsCharValid(props.Targeting.Value) then return nil end
 
@@ -74,6 +76,28 @@ return function(scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Components.RoundUICorner(scope),
+
+                    Components.TextLabel(scope, {
+                        Name = "IsTargeting",
+                        AnchorPoint = Vector2.new(0, 0.5),
+                        Size = UDim2.fromScale(1.5, 1.5),
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                        FontFace = Font.fromName("RobotoMono", Enum.FontWeight.Bold),
+                        Text = ">",
+
+                        Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(props.TargetArrowPos)
+                        end),
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(props.TargetingEnemy) == props.Targeting.Value
+                        end),
+
+                        [Children] = {
+                            Components.TextUIStroke(scope, {
+                                Thickness = 3
+                            })
+                        }
+                    })
                 }
             }),
 

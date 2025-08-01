@@ -102,6 +102,7 @@ ItemBook.GetItemInfo = function(_, itemId: string) : {
     SellPrice: number,
     ExtraStatInfo: string,
     Recipe: string,
+    ArtifactId: string,
     Tags: string,
 
     StatInfoDesync: { [string]: any },
@@ -109,7 +110,7 @@ ItemBook.GetItemInfo = function(_, itemId: string) : {
     RecipeDesync: { [string]: any },
     TagsDesync: { string },
 }
-    local itemInfo = nil :: ItemInfo
+    local itemInfo = nil
 
     for _, thatItemInfo in ItemRawBook do
         if thatItemInfo.ItemId == itemId then

@@ -18,6 +18,7 @@ local BKItemFilterView = require(script.Components.BKItemFilterView)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local FakeTopBG = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
@@ -106,6 +107,8 @@ return function (plr: Player)
                                     return index, BKItemSlot(scope, {
                                         ItemSymbol = itemSymbol,
                                         EquippingItems = self.EquippingItems,
+
+                                        IsBackpack = true,
 
                                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                         CurrentSelectedItem = self.CurrentSelectedItem,
@@ -446,12 +449,7 @@ return function (plr: Player)
                     }
                 }),
 
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBG(scope)
             }
         },
 
@@ -463,6 +461,7 @@ return function (plr: Player)
                     return BKItemDescView(scope, {
                         Item = use(self.CurrentSelectedItem),
                         ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                        EquippingItems = self.EquippingItems,
                         Items = use(self.Items),
                     })
                 end),

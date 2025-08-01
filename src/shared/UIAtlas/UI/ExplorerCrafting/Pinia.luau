@@ -20,7 +20,10 @@ return function (self: { any })
     self.IsUIShown = Value(false)
 
     self.Items = FusionComponents.useTagged(scope, "CraftingProductEntity")
-    self.EquippingItems = FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    self.PlayerItems = FusionComponents.useFolder(scope, self.plr:WaitForChild("Items", 999))
+    self.EquippingItems = FusionComponents.useFolder(scope, self.plr:WaitForChild("EquippingItems", 999))
+
+    self.Gold = Value(0)
 
 
     self.FilterViewShown = Value(false)
@@ -63,6 +66,14 @@ return function (self: { any })
         self.CraftingMaterials:set(itemInfo.RecipeDesync)
         self.CraftingPrice:set(itemInfo.Price)
     end)
+
+
+    --// track gold
+    table.insert(scope, HarukaLib:Hydrate(self.plr, {
+        ["Attr-Gold"] = function(val: number)
+            self.Gold:set(val)
+        end
+    }))
 
 
     --// track menu

@@ -168,6 +168,12 @@ function CharLib:_ListenAnimateTracker()
     end
     self.ClassAttackAnims.MagicCasted1 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted1", true))
     self.ClassAttackAnims.MagicCasted2 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted2", true))
+    self.ClassAttackAnims.Dash = animator:LoadAnimation(animationsClass:FindFirstChild("Dash", true))
+    for _, anim: ObjectValue in animationsClass:GetDescendants() do
+        if string.find(anim.Name, "Attack") and anim:IsA("ObjectValue") then
+            self.ClassAttackAnims[anim.Name] = self.ClassAttackAnims[anim.Value.Name]
+        end
+    end
     for _, anim: AnimationTrack in self.ClassAttackAnims do
         anim.Looped = false
         anim.Priority = Enum.AnimationPriority.Action2
@@ -207,12 +213,16 @@ function CharLib:_ListenAnimateTracker()
     for _, animContainer: Folder in animationsClass:GetChildren() do
         local class = animContainer.Name :: string
 
-
         CLASS_ANIMS[class] = {}
-
-        CLASS_ANIMS[class].Idle = animator:LoadAnimation(animContainer:FindFirstChild("Idle1") or animationsChar.Idle1)
-        CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer:FindFirstChild("Run") or animationsChar.Run)
-        CLASS_ANIMS[class].Jump = animator:LoadAnimation(animContainer:FindFirstChild("Jump") or animationsChar.Jump)
+        if animContainer:FindFirstChild("Run") then
+            if animContainer.Run:IsA("Animation") then
+                CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer.Run)
+            elseif animContainer.Run:IsA("ObjectValue") then
+                CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer.Run.Value)
+            end
+        else
+            CLASS_ANIMS[class].Run = animator:LoadAnimation(animationsChar.Run)
+        end
     end
     self.CLASS_ANIMS = CLASS_ANIMS
     Add(self.CLASS_ANIMS)

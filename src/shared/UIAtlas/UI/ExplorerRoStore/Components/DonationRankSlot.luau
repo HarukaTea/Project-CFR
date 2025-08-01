@@ -25,11 +25,14 @@ return function (scope: Fusion.Scope, props: {
             Components.UIAspectRatioConstraint(scope, 21.063),
 
             Components.TextLabel(scope, {
-                Name = "Title",
+                Name = "PlayerName",
                 Position = UDim2.fromScale(0.08, 0),
                 Size = UDim2.fromScale(0.3, 1),
                 Text = props.PlayerName,
                 TextXAlignment = Enum.TextXAlignment.Left,
+                AutoLocalize = false,
+
+                TextColor3 = if props.Index <= 3 then Color3.fromRGB(255, 255, 0) else Components.WHITE_COLOR,
 
                 [Children] = {
                     Components.UIPadding(scope, {
@@ -46,7 +49,7 @@ return function (scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(0.98, 0),
                 Size = UDim2.fromScale(0.3, 1),
                 TextXAlignment = Enum.TextXAlignment.Right,
-                Text = props.Value,
+                Text = `{utf8.char(0xE002)} {props.Value}`,
 
 
                 [Children] = {

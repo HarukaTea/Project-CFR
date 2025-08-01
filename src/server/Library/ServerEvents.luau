@@ -197,6 +197,9 @@ if not RunService:IsRunning() then
 		RequestToForceReset = table.freeze({
 			SetCallback = noop
 		}),
+		RequestToFavItem = table.freeze({
+			SetCallback = noop
+		}),
 		RequestToEraseSaveFile = table.freeze({
 			SetCallback = noop
 		}),
@@ -506,7 +509,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(25)
+local reliable_events = table.create(26)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -620,10 +623,10 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[14] then
 				task.spawn(reliable_events[14], player, value)
 			end
-		elseif id == 24 then
+		elseif id == 25 then
 			local value
-			if reliable_events[24] then
-				task.spawn(reliable_events[24], player, value)
+			if reliable_events[25] then
+				task.spawn(reliable_events[25], player, value)
 			end
 		elseif id == 9 then
 			local value
@@ -677,16 +680,30 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[18] then
 				task.spawn(reliable_events[18], player, value)
 			end
-		elseif id == 23 then
+		elseif id == 24 then
 			local value
-			if reliable_events[23] then
-				task.spawn(reliable_events[23], player, value)
+			if reliable_events[24] then
+				task.spawn(reliable_events[24], player, value)
 			end
-		elseif id == 1 then
+		elseif id == 22 then
 			local value
 			local bool_8 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			if bit32.btest(bool_8, 0b0000000000000001) then
+				incoming_ipos = incoming_ipos + 1
+				value["ItemSymbol"] = incoming_inst[incoming_ipos]
+				assert(value["ItemSymbol"] == nil or value["ItemSymbol"]:IsA("IntConstrainedValue"), "received instance is not of the IntConstrainedValue class!")
+			else
+				value["ItemSymbol"] = nil
+			end
+			if reliable_events[22] then
+				task.spawn(reliable_events[22], player, value)
+			end
+		elseif id == 1 then
+			local value
+			local bool_9 = buffer.readu8(incoming_buff, read(1))
+			value = {  }
+			if bit32.btest(bool_9, 0b0000000000000001) then
 				local len_11 = buffer.readu16(incoming_buff, read(2))
 				value["SlotId"] = buffer.readstring(incoming_buff, read(len_11), len_11)
 				assert(utf8.len(value["SlotId"]) ~= nil, "value is not valid utf-8")
@@ -698,15 +715,15 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 8 then
 			local value
-			local bool_9 = buffer.readu8(incoming_buff, read(1))
+			local bool_10 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_9, 0b0000000000000001) then
+			if bit32.btest(bool_10, 0b0000000000000001) then
 				local len_12 = buffer.readu16(incoming_buff, read(2))
 				value["ItemId"] = buffer.readstring(incoming_buff, read(len_12), len_12)
 			else
 				value["ItemId"] = nil
 			end
-			if bit32.btest(bool_9, 0b0000000000000010) then
+			if bit32.btest(bool_10, 0b0000000000000010) then
 				local len_13 = buffer.readu16(incoming_buff, read(2))
 				value["ItemUniqueId"] = buffer.readstring(incoming_buff, read(len_13), len_13)
 			else
@@ -717,15 +734,15 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 2 then
 			local value
-			local bool_10 = buffer.readu8(incoming_buff, read(1))
+			local bool_11 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_10, 0b0000000000000001) then
+			if bit32.btest(bool_11, 0b0000000000000001) then
 				local len_14 = buffer.readu16(incoming_buff, read(2))
 				value["NPCId"] = buffer.readstring(incoming_buff, read(len_14), len_14)
 			else
 				value["NPCId"] = nil
 			end
-			if bit32.btest(bool_10, 0b0000000000000010) then
+			if bit32.btest(bool_11, 0b0000000000000010) then
 				local len_15 = buffer.readu16(incoming_buff, read(2))
 				value["SeriesId"] = buffer.readstring(incoming_buff, read(len_15), len_15)
 			else
@@ -736,20 +753,20 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 4 then
 			local value
-			local bool_11 = buffer.readu8(incoming_buff, read(1))
+			local bool_12 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_11, 0b0000000000000001) then
+			if bit32.btest(bool_12, 0b0000000000000001) then
 				local len_16 = buffer.readu16(incoming_buff, read(2))
 				value["ProjectileUniqueId"] = buffer.readstring(incoming_buff, read(len_16), len_16)
 			else
 				value["ProjectileUniqueId"] = nil
 			end
-			if bit32.btest(bool_11, 0b0000000000000010) then
-				value["IsPierce"] = bit32.btest(bool_11, 0b0000000000000100)
+			if bit32.btest(bool_12, 0b0000000000000010) then
+				value["IsPierce"] = bit32.btest(bool_12, 0b0000000000000100)
 			else
 				value["IsPierce"] = nil
 			end
-			if bit32.btest(bool_11, 0b0000000000001000) then
+			if bit32.btest(bool_12, 0b0000000000001000) then
 				local len_17 = buffer.readu16(incoming_buff, read(2))
 				value["DoTStatus"] = buffer.readstring(incoming_buff, read(len_17), len_17)
 			else
@@ -760,15 +777,15 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 12 then
 			local value
-			local bool_12 = buffer.readu8(incoming_buff, read(1))
+			local bool_13 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_12, 0b0000000000000001) then
+			if bit32.btest(bool_13, 0b0000000000000001) then
 				local len_18 = buffer.readu16(incoming_buff, read(2))
 				value["ProjectileUniqueId"] = buffer.readstring(incoming_buff, read(len_18), len_18)
 			else
 				value["ProjectileUniqueId"] = nil
 			end
-			if bit32.btest(bool_12, 0b0000000000000010) then
+			if bit32.btest(bool_13, 0b0000000000000010) then
 				incoming_ipos = incoming_ipos + 1
 				value["EnemyEntity"] = incoming_inst[incoming_ipos]
 				assert(value["EnemyEntity"] == nil or value["EnemyEntity"]:IsA("Model"), "received instance is not of the Model class!")
@@ -780,9 +797,9 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 3 then
 			local value
-			local bool_13 = buffer.readu8(incoming_buff, read(1))
+			local bool_14 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_13, 0b0000000000000001) then
+			if bit32.btest(bool_14, 0b0000000000000001) then
 				local len_19 = buffer.readu16(incoming_buff, read(2))
 				value["OrbUniqueId"] = buffer.readstring(incoming_buff, read(len_19), len_19)
 			else
@@ -793,15 +810,15 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 16 then
 			local value
-			local bool_14 = buffer.readu8(incoming_buff, read(1))
+			local bool_15 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_14, 0b0000000000000001) then
+			if bit32.btest(bool_15, 0b0000000000000001) then
 				local len_20 = buffer.readu16(incoming_buff, read(2))
 				value["ItemId"] = buffer.readstring(incoming_buff, read(len_20), len_20)
 			else
 				value["ItemId"] = nil
 			end
-			if bit32.btest(bool_14, 0b0000000000000010) then
+			if bit32.btest(bool_15, 0b0000000000000010) then
 				local len_21 = buffer.readu16(incoming_buff, read(2))
 				value["ItemUniqueId"] = buffer.readstring(incoming_buff, read(len_21), len_21)
 			else
@@ -812,16 +829,16 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 0 then
 			local value
-			local bool_15 = buffer.readu8(incoming_buff, read(1))
+			local bool_16 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_15, 0b0000000000000001) then
+			if bit32.btest(bool_16, 0b0000000000000001) then
 				local len_22 = buffer.readu16(incoming_buff, read(2))
 				value["SlotId"] = buffer.readstring(incoming_buff, read(len_22), len_22)
 				assert(utf8.len(value["SlotId"]) ~= nil, "value is not valid utf-8")
 			else
 				value["SlotId"] = nil
 			end
-			if bit32.btest(bool_15, 0b0000000000000010) then
+			if bit32.btest(bool_16, 0b0000000000000010) then
 				local len_23 = buffer.readu16(incoming_buff, read(2))
 				value["ClassChosen"] = buffer.readstring(incoming_buff, read(len_23), len_23)
 				assert(utf8.len(value["ClassChosen"]) ~= nil, "value is not valid utf-8")
@@ -833,9 +850,9 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 19 then
 			local value
-			local bool_16 = buffer.readu8(incoming_buff, read(1))
+			local bool_17 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_16, 0b0000000000000001) then
+			if bit32.btest(bool_17, 0b0000000000000001) then
 				value["AbyssId"] = buffer.readu8(incoming_buff, read(1))
 			else
 				value["AbyssId"] = nil
@@ -845,9 +862,9 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 5 then
 			local value
-			local bool_17 = buffer.readu8(incoming_buff, read(1))
+			local bool_18 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_17, 0b0000000000000001) then
+			if bit32.btest(bool_18, 0b0000000000000001) then
 				local len_24 = buffer.readu16(incoming_buff, read(2))
 				value["SlotId"] = buffer.readstring(incoming_buff, read(len_24), len_24)
 			else
@@ -863,15 +880,15 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			end
 		elseif id == 11 then
 			local value
-			local bool_18 = buffer.readu8(incoming_buff, read(1))
+			local bool_19 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_18, 0b0000000000000001) then
+			if bit32.btest(bool_19, 0b0000000000000001) then
 				local len_25 = buffer.readu16(incoming_buff, read(2))
 				value["PointId"] = buffer.readstring(incoming_buff, read(len_25), len_25)
 			else
 				value["PointId"] = nil
 			end
-			if bit32.btest(bool_18, 0b0000000000000010) then
+			if bit32.btest(bool_19, 0b0000000000000010) then
 				value["PointAmount"] = buffer.readi16(incoming_buff, read(2))
 			else
 				value["PointAmount"] = nil
@@ -879,10 +896,10 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[11] then
 				task.spawn(reliable_events[11], player, value)
 			end
-		elseif id == 22 then
+		elseif id == 23 then
 			local value
-			if reliable_events[22] then
-				task.spawn(reliable_events[22], player, value)
+			if reliable_events[23] then
+				task.spawn(reliable_events[23], player, value)
 			end
 		else
 			error("Unknown event id")
@@ -953,8 +970,8 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_19 = 0
-			local bool_19_pos_1 = alloc(1)
+			local bool_20 = 0
+			local bool_20_pos_1 = alloc(1)
 			local len_26 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
@@ -980,11 +997,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_1.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_19 = bit32.bor(bool_19, 0b0000000000000001)
+				bool_20 = bit32.bor(bool_20, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
+			buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -996,8 +1013,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_20 = 0
-			local bool_20_pos_1 = alloc(1)
+			local bool_21 = 0
+			local bool_21_pos_1 = alloc(1)
 			local len_28 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
@@ -1023,11 +1040,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_2.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_20 = bit32.bor(bool_20, 0b0000000000000001)
+				bool_21 = bit32.bor(bool_21, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
+			buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1048,8 +1065,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_21 = 0
-			local bool_21_pos_1 = alloc(1)
+			local bool_22 = 0
+			local bool_22_pos_1 = alloc(1)
 			local len_30 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
@@ -1075,11 +1092,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_3.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_21 = bit32.bor(bool_21, 0b0000000000000001)
+				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
+			buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1098,8 +1115,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_22 = 0
-			local bool_22_pos_1 = alloc(1)
+			local bool_23 = 0
+			local bool_23_pos_1 = alloc(1)
 			local len_32 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
@@ -1125,11 +1142,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_4.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
+				bool_23 = bit32.bor(bool_23, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
+			buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1291,8 +1308,8 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_23 = 0
-			local bool_23_pos_1 = alloc(1)
+			local bool_24 = 0
+			local bool_24_pos_1 = alloc(1)
 			local len_42 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
@@ -1318,11 +1335,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_5.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_23 = bit32.bor(bool_23, 0b0000000000000001)
+				bool_24 = bit32.bor(bool_24, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
+			buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -1334,8 +1351,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_24 = 0
-			local bool_24_pos_1 = alloc(1)
+			local bool_25 = 0
+			local bool_25_pos_1 = alloc(1)
 			local len_44 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
@@ -1361,11 +1378,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_6.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_24 = bit32.bor(bool_24, 0b0000000000000001)
+				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
+			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1386,8 +1403,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_25 = 0
-			local bool_25_pos_1 = alloc(1)
+			local bool_26 = 0
+			local bool_26_pos_1 = alloc(1)
 			local len_46 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
@@ -1413,11 +1430,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_7.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
+				bool_26 = bit32.bor(bool_26, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
+			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1436,8 +1453,8 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_26 = 0
-			local bool_26_pos_1 = alloc(1)
+			local bool_27 = 0
+			local bool_27_pos_1 = alloc(1)
 			local len_48 = #Value["ProjectileId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
@@ -1463,11 +1480,11 @@ local returns = {
 			alloc(4)
 			buffer.writef32(outgoing_buff, outgoing_apos, axis_8.Z)
 			if Value["ProjectileOwner"] ~= nil then
-				bool_26 = bit32.bor(bool_26, 0b0000000000000001)
+				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
 				assert(Value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["ProjectileOwner"])
 			end
-			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
+			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1487,10 +1504,10 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local bool_27 = 0
-			local bool_27_pos_1 = alloc(1)
+			local bool_28 = 0
+			local bool_28_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
-				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
+				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
 				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Target"])
 			end
@@ -1505,7 +1522,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
+			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -1516,10 +1533,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local bool_28 = 0
-			local bool_28_pos_1 = alloc(1)
+			local bool_29 = 0
+			local bool_29_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
-				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
+				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
 				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Target"])
 			end
@@ -1534,7 +1551,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
+			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1554,10 +1571,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local bool_29 = 0
-			local bool_29_pos_1 = alloc(1)
+			local bool_30 = 0
+			local bool_30_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
-				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
+				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
 				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Target"])
 			end
@@ -1572,7 +1589,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
+			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1590,10 +1607,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local bool_30 = 0
-			local bool_30_pos_1 = alloc(1)
+			local bool_31 = 0
+			local bool_31_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
-				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
+				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
 				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Target"])
 			end
@@ -1608,7 +1625,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["TextColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
+			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1628,10 +1645,10 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_31 = 0
-			local bool_31_pos_1 = alloc(1)
+			local bool_32 = 0
+			local bool_32_pos_1 = alloc(1)
 			if Value["DMGTarget"] ~= nil then
-				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
+				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
 				assert(Value["DMGTarget"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["DMGTarget"])
 			end
@@ -1646,7 +1663,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
+			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -1657,10 +1674,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_32 = 0
-			local bool_32_pos_1 = alloc(1)
+			local bool_33 = 0
+			local bool_33_pos_1 = alloc(1)
 			if Value["DMGTarget"] ~= nil then
-				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
+				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
 				assert(Value["DMGTarget"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["DMGTarget"])
 			end
@@ -1675,7 +1692,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
+			buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1695,10 +1712,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_33 = 0
-			local bool_33_pos_1 = alloc(1)
+			local bool_34 = 0
+			local bool_34_pos_1 = alloc(1)
 			if Value["DMGTarget"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
+				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
 				assert(Value["DMGTarget"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["DMGTarget"])
 			end
@@ -1713,7 +1730,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
+			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1731,10 +1748,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_34 = 0
-			local bool_34_pos_1 = alloc(1)
+			local bool_35 = 0
+			local bool_35_pos_1 = alloc(1)
 			if Value["DMGTarget"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
+				bool_35 = bit32.bor(bool_35, 0b0000000000000001)
 				assert(Value["DMGTarget"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["DMGTarget"])
 			end
@@ -1749,7 +1766,7 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].G * 255)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["DMGColor"].B * 255)
-			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
+			buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1767,22 +1784,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
-			local bool_35 = 0
-			local bool_35_pos_1 = alloc(1)
-			if Value["Galleon"] ~= nil then
-				bool_35 = bit32.bor(bool_35, 0b0000000000000001)
-				assert(Value["Galleon"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Galleon"])
-			end
-			buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Galleon"]: ((Model)?),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			local bool_36 = 0
 			local bool_36_pos_1 = alloc(1)
 			if Value["Galleon"] ~= nil then
@@ -1791,6 +1792,22 @@ local returns = {
 				table.insert(outgoing_inst, Value["Galleon"])
 			end
 			buffer.writeu8(outgoing_buff, bool_36_pos_1, bool_36)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["Galleon"]: ((Model)?),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			local bool_37 = 0
+			local bool_37_pos_1 = alloc(1)
+			if Value["Galleon"] ~= nil then
+				bool_37 = bit32.bor(bool_37, 0b0000000000000001)
+				assert(Value["Galleon"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["Galleon"])
+			end
+			buffer.writeu8(outgoing_buff, bool_37_pos_1, bool_37)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -1808,14 +1825,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
-			local bool_37 = 0
-			local bool_37_pos_1 = alloc(1)
+			local bool_38 = 0
+			local bool_38_pos_1 = alloc(1)
 			if Value["Galleon"] ~= nil then
-				bool_37 = bit32.bor(bool_37, 0b0000000000000001)
+				bool_38 = bit32.bor(bool_38, 0b0000000000000001)
 				assert(Value["Galleon"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Galleon"])
 			end
-			buffer.writeu8(outgoing_buff, bool_37_pos_1, bool_37)
+			buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -1831,14 +1848,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
-			local bool_38 = 0
-			local bool_38_pos_1 = alloc(1)
+			local bool_39 = 0
+			local bool_39_pos_1 = alloc(1)
 			if Value["Galleon"] ~= nil then
-				bool_38 = bit32.bor(bool_38, 0b0000000000000001)
+				bool_39 = bit32.bor(bool_39, 0b0000000000000001)
 				assert(Value["Galleon"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Galleon"])
 			end
-			buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
+			buffer.writeu8(outgoing_buff, bool_39_pos_1, bool_39)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -1915,9 +1932,9 @@ local returns = {
 	},
 	RequestToRejoinGame = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
-			reliable_events[24] = Callback
+			reliable_events[25] = Callback
 			return function()
-				reliable_events[24] = nil
+				reliable_events[25] = nil
 			end
 		end,
 	},
@@ -1964,9 +1981,19 @@ local returns = {
 	},
 	RequestToForceReset = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
-			reliable_events[23] = Callback
+			reliable_events[24] = Callback
 			return function()
-				reliable_events[23] = nil
+				reliable_events[24] = nil
+			end
+		end,
+	},
+	RequestToFavItem = {
+		SetCallback = function(Callback: (Player: Player, Value: ({
+			["ItemSymbol"]: ((IntConstrainedValue)?),
+		})) -> ()): () -> ()
+			reliable_events[22] = Callback
+			return function()
+				reliable_events[22] = nil
 			end
 		end,
 	},
@@ -2239,25 +2266,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
-			local bool_39 = 0
-			local bool_39_pos_1 = alloc(1)
-			if sound ~= nil then
-				bool_39 = bit32.bor(bool_39, 0b0000000000000001)
-				assert(sound:IsA("Sound"), "received instance is not of the Sound class!")
-				table.insert(outgoing_inst, sound)
-			end
-			if timePos ~= nil then
-				bool_39 = bit32.bor(bool_39, 0b0000000000000010)
-				alloc(1)
-				buffer.writeu8(outgoing_buff, outgoing_apos, timePos)
-			end
-			buffer.writeu8(outgoing_buff, bool_39_pos_1, bool_39)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, sound: ((Sound)?), timePos: ((number)?))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
 			local bool_40 = 0
 			local bool_40_pos_1 = alloc(1)
 			if sound ~= nil then
@@ -2271,18 +2279,9 @@ local returns = {
 				buffer.writeu8(outgoing_buff, outgoing_apos, timePos)
 			end
 			buffer.writeu8(outgoing_buff, bool_40_pos_1, bool_40)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
+			player_map[Player] = save()
 		end,
-		FireList = function(List: { [unknown]: Player }, sound: ((Sound)?), timePos: ((number)?))
+		FireExcept = function(Except: Player, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
@@ -2300,15 +2299,17 @@ local returns = {
 			end
 			buffer.writeu8(outgoing_buff, bool_41_pos_1, bool_41)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, sound: ((Sound)?), timePos: ((number)?))
+		FireList = function(List: { [unknown]: Player }, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
@@ -2325,6 +2326,32 @@ local returns = {
 				buffer.writeu8(outgoing_buff, outgoing_apos, timePos)
 			end
 			buffer.writeu8(outgoing_buff, bool_42_pos_1, bool_42)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any }, sound: ((Sound)?), timePos: ((number)?))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 35)
+			local bool_43 = 0
+			local bool_43_pos_1 = alloc(1)
+			if sound ~= nil then
+				bool_43 = bit32.bor(bool_43, 0b0000000000000001)
+				assert(sound:IsA("Sound"), "received instance is not of the Sound class!")
+				table.insert(outgoing_inst, sound)
+			end
+			if timePos ~= nil then
+				bool_43 = bit32.bor(bool_43, 0b0000000000000010)
+				alloc(1)
+				buffer.writeu8(outgoing_buff, outgoing_apos, timePos)
+			end
+			buffer.writeu8(outgoing_buff, bool_43_pos_1, bool_43)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2431,22 +2458,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_43 = 0
-			local bool_43_pos_1 = alloc(1)
-			if Value["Target"] ~= nil then
-				bool_43 = bit32.bor(bool_43, 0b0000000000000001)
-				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Target"])
-			end
-			buffer.writeu8(outgoing_buff, bool_43_pos_1, bool_43)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Target"]: ((Model)?),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
 			local bool_44 = 0
 			local bool_44_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
@@ -2455,6 +2466,22 @@ local returns = {
 				table.insert(outgoing_inst, Value["Target"])
 			end
 			buffer.writeu8(outgoing_buff, bool_44_pos_1, bool_44)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["Target"]: ((Model)?),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
+			local bool_45 = 0
+			local bool_45_pos_1 = alloc(1)
+			if Value["Target"] ~= nil then
+				bool_45 = bit32.bor(bool_45, 0b0000000000000001)
+				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["Target"])
+			end
+			buffer.writeu8(outgoing_buff, bool_45_pos_1, bool_45)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2472,14 +2499,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_45 = 0
-			local bool_45_pos_1 = alloc(1)
+			local bool_46 = 0
+			local bool_46_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
-				bool_45 = bit32.bor(bool_45, 0b0000000000000001)
+				bool_46 = bit32.bor(bool_46, 0b0000000000000001)
 				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Target"])
 			end
-			buffer.writeu8(outgoing_buff, bool_45_pos_1, bool_45)
+			buffer.writeu8(outgoing_buff, bool_46_pos_1, bool_46)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2495,14 +2522,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_46 = 0
-			local bool_46_pos_1 = alloc(1)
+			local bool_47 = 0
+			local bool_47_pos_1 = alloc(1)
 			if Value["Target"] ~= nil then
-				bool_46 = bit32.bor(bool_46, 0b0000000000000001)
+				bool_47 = bit32.bor(bool_47, 0b0000000000000001)
 				assert(Value["Target"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Target"])
 			end
-			buffer.writeu8(outgoing_buff, bool_46_pos_1, bool_46)
+			buffer.writeu8(outgoing_buff, bool_47_pos_1, bool_47)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2621,21 +2648,21 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 36)
-			local bool_48 = 0
-			local bool_48_pos_1 = alloc(1)
+			local bool_49 = 0
+			local bool_49_pos_1 = alloc(1)
 			local len_66 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_66)
 			for i_1 = 1, len_66 do
-				local bool_47 = 0
-				local bool_47_pos_1 = alloc(1)
+				local bool_48 = 0
+				local bool_48_pos_1 = alloc(1)
 				local val_1 = Value["Objs"][i_1]
 				if val_1 ~= nil then
-					bool_47 = bit32.bor(bool_47, 0b0000000000000001)
+					bool_48 = bit32.bor(bool_48, 0b0000000000000001)
 					assert(val_1:IsA("BasePart"), "received instance is not of the BasePart class!")
 					table.insert(outgoing_inst, val_1)
 				end
-				buffer.writeu8(outgoing_buff, bool_47_pos_1, bool_47)
+				buffer.writeu8(outgoing_buff, bool_48_pos_1, bool_48)
 			end
 			local len_pos_1
 			local len_67 = 0
@@ -2643,8 +2670,8 @@ local returns = {
 				if len_67 == 0 then
 					len_pos_1 = alloc(2)
 				end
-				local bool_49 = 0
-				local bool_49_pos_1 = alloc(1)
+				local bool_50 = 0
+				local bool_50_pos_1 = alloc(1)
 				len_67 = len_67 + 1
 				local len_68 = #k_1
 				alloc(2)
@@ -2652,15 +2679,15 @@ local returns = {
 				alloc(len_68)
 				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_68)
 				if v_1 ~= nil then
-					bool_49 = bit32.bor(bool_49, 0b0000000000000001)
+					bool_50 = bit32.bor(bool_50, 0b0000000000000001)
 					table.insert(outgoing_inst, v_1)
 				end
-				buffer.writeu8(outgoing_buff, bool_49_pos_1, bool_49)
+				buffer.writeu8(outgoing_buff, bool_50_pos_1, bool_50)
 			end
 			if len_pos_1 then
 				buffer.writeu16(outgoing_buff, len_pos_1, len_67 - 1)
 			else
-				bool_48 = bit32.bor(bool_48, 0b0000000000000001)
+				bool_49 = bit32.bor(bool_49, 0b0000000000000001)
 			end
 			local len_69 = #Value["TweenInfo"]
 			alloc(2)
@@ -2668,9 +2695,9 @@ local returns = {
 			alloc(len_69)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["TweenInfo"], len_69)
 			if Value["UseHarukaTween"] then
-				bool_48 = bit32.bor(bool_48, 0b0000000000000010)
+				bool_49 = bit32.bor(bool_49, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_48_pos_1, bool_48)
+			buffer.writeu8(outgoing_buff, bool_49_pos_1, bool_49)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -2682,21 +2709,21 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 36)
-			local bool_51 = 0
-			local bool_51_pos_1 = alloc(1)
+			local bool_52 = 0
+			local bool_52_pos_1 = alloc(1)
 			local len_70 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_70)
 			for i_2 = 1, len_70 do
-				local bool_50 = 0
-				local bool_50_pos_1 = alloc(1)
+				local bool_51 = 0
+				local bool_51_pos_1 = alloc(1)
 				local val_2 = Value["Objs"][i_2]
 				if val_2 ~= nil then
-					bool_50 = bit32.bor(bool_50, 0b0000000000000001)
+					bool_51 = bit32.bor(bool_51, 0b0000000000000001)
 					assert(val_2:IsA("BasePart"), "received instance is not of the BasePart class!")
 					table.insert(outgoing_inst, val_2)
 				end
-				buffer.writeu8(outgoing_buff, bool_50_pos_1, bool_50)
+				buffer.writeu8(outgoing_buff, bool_51_pos_1, bool_51)
 			end
 			local len_pos_2
 			local len_71 = 0
@@ -2704,8 +2731,8 @@ local returns = {
 				if len_71 == 0 then
 					len_pos_2 = alloc(2)
 				end
-				local bool_52 = 0
-				local bool_52_pos_1 = alloc(1)
+				local bool_53 = 0
+				local bool_53_pos_1 = alloc(1)
 				len_71 = len_71 + 1
 				local len_72 = #k_2
 				alloc(2)
@@ -2713,15 +2740,15 @@ local returns = {
 				alloc(len_72)
 				buffer.writestring(outgoing_buff, outgoing_apos, k_2, len_72)
 				if v_2 ~= nil then
-					bool_52 = bit32.bor(bool_52, 0b0000000000000001)
+					bool_53 = bit32.bor(bool_53, 0b0000000000000001)
 					table.insert(outgoing_inst, v_2)
 				end
-				buffer.writeu8(outgoing_buff, bool_52_pos_1, bool_52)
+				buffer.writeu8(outgoing_buff, bool_53_pos_1, bool_53)
 			end
 			if len_pos_2 then
 				buffer.writeu16(outgoing_buff, len_pos_2, len_71 - 1)
 			else
-				bool_51 = bit32.bor(bool_51, 0b0000000000000001)
+				bool_52 = bit32.bor(bool_52, 0b0000000000000001)
 			end
 			local len_73 = #Value["TweenInfo"]
 			alloc(2)
@@ -2729,9 +2756,9 @@ local returns = {
 			alloc(len_73)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["TweenInfo"], len_73)
 			if Value["UseHarukaTween"] then
-				bool_51 = bit32.bor(bool_51, 0b0000000000000010)
+				bool_52 = bit32.bor(bool_52, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_51_pos_1, bool_51)
+			buffer.writeu8(outgoing_buff, bool_52_pos_1, bool_52)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2752,21 +2779,21 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 36)
-			local bool_54 = 0
-			local bool_54_pos_1 = alloc(1)
+			local bool_55 = 0
+			local bool_55_pos_1 = alloc(1)
 			local len_74 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_74)
 			for i_3 = 1, len_74 do
-				local bool_53 = 0
-				local bool_53_pos_1 = alloc(1)
+				local bool_54 = 0
+				local bool_54_pos_1 = alloc(1)
 				local val_3 = Value["Objs"][i_3]
 				if val_3 ~= nil then
-					bool_53 = bit32.bor(bool_53, 0b0000000000000001)
+					bool_54 = bit32.bor(bool_54, 0b0000000000000001)
 					assert(val_3:IsA("BasePart"), "received instance is not of the BasePart class!")
 					table.insert(outgoing_inst, val_3)
 				end
-				buffer.writeu8(outgoing_buff, bool_53_pos_1, bool_53)
+				buffer.writeu8(outgoing_buff, bool_54_pos_1, bool_54)
 			end
 			local len_pos_3
 			local len_75 = 0
@@ -2774,8 +2801,8 @@ local returns = {
 				if len_75 == 0 then
 					len_pos_3 = alloc(2)
 				end
-				local bool_55 = 0
-				local bool_55_pos_1 = alloc(1)
+				local bool_56 = 0
+				local bool_56_pos_1 = alloc(1)
 				len_75 = len_75 + 1
 				local len_76 = #k_3
 				alloc(2)
@@ -2783,15 +2810,15 @@ local returns = {
 				alloc(len_76)
 				buffer.writestring(outgoing_buff, outgoing_apos, k_3, len_76)
 				if v_3 ~= nil then
-					bool_55 = bit32.bor(bool_55, 0b0000000000000001)
+					bool_56 = bit32.bor(bool_56, 0b0000000000000001)
 					table.insert(outgoing_inst, v_3)
 				end
-				buffer.writeu8(outgoing_buff, bool_55_pos_1, bool_55)
+				buffer.writeu8(outgoing_buff, bool_56_pos_1, bool_56)
 			end
 			if len_pos_3 then
 				buffer.writeu16(outgoing_buff, len_pos_3, len_75 - 1)
 			else
-				bool_54 = bit32.bor(bool_54, 0b0000000000000001)
+				bool_55 = bit32.bor(bool_55, 0b0000000000000001)
 			end
 			local len_77 = #Value["TweenInfo"]
 			alloc(2)
@@ -2799,9 +2826,9 @@ local returns = {
 			alloc(len_77)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["TweenInfo"], len_77)
 			if Value["UseHarukaTween"] then
-				bool_54 = bit32.bor(bool_54, 0b0000000000000010)
+				bool_55 = bit32.bor(bool_55, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_54_pos_1, bool_54)
+			buffer.writeu8(outgoing_buff, bool_55_pos_1, bool_55)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2820,21 +2847,21 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 36)
-			local bool_57 = 0
-			local bool_57_pos_1 = alloc(1)
+			local bool_58 = 0
+			local bool_58_pos_1 = alloc(1)
 			local len_78 = #Value["Objs"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_78)
 			for i_4 = 1, len_78 do
-				local bool_56 = 0
-				local bool_56_pos_1 = alloc(1)
+				local bool_57 = 0
+				local bool_57_pos_1 = alloc(1)
 				local val_4 = Value["Objs"][i_4]
 				if val_4 ~= nil then
-					bool_56 = bit32.bor(bool_56, 0b0000000000000001)
+					bool_57 = bit32.bor(bool_57, 0b0000000000000001)
 					assert(val_4:IsA("BasePart"), "received instance is not of the BasePart class!")
 					table.insert(outgoing_inst, val_4)
 				end
-				buffer.writeu8(outgoing_buff, bool_56_pos_1, bool_56)
+				buffer.writeu8(outgoing_buff, bool_57_pos_1, bool_57)
 			end
 			local len_pos_4
 			local len_79 = 0
@@ -2842,8 +2869,8 @@ local returns = {
 				if len_79 == 0 then
 					len_pos_4 = alloc(2)
 				end
-				local bool_58 = 0
-				local bool_58_pos_1 = alloc(1)
+				local bool_59 = 0
+				local bool_59_pos_1 = alloc(1)
 				len_79 = len_79 + 1
 				local len_80 = #k_4
 				alloc(2)
@@ -2851,15 +2878,15 @@ local returns = {
 				alloc(len_80)
 				buffer.writestring(outgoing_buff, outgoing_apos, k_4, len_80)
 				if v_4 ~= nil then
-					bool_58 = bit32.bor(bool_58, 0b0000000000000001)
+					bool_59 = bit32.bor(bool_59, 0b0000000000000001)
 					table.insert(outgoing_inst, v_4)
 				end
-				buffer.writeu8(outgoing_buff, bool_58_pos_1, bool_58)
+				buffer.writeu8(outgoing_buff, bool_59_pos_1, bool_59)
 			end
 			if len_pos_4 then
 				buffer.writeu16(outgoing_buff, len_pos_4, len_79 - 1)
 			else
-				bool_57 = bit32.bor(bool_57, 0b0000000000000001)
+				bool_58 = bit32.bor(bool_58, 0b0000000000000001)
 			end
 			local len_81 = #Value["TweenInfo"]
 			alloc(2)
@@ -2867,9 +2894,9 @@ local returns = {
 			alloc(len_81)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["TweenInfo"], len_81)
 			if Value["UseHarukaTween"] then
-				bool_57 = bit32.bor(bool_57, 0b0000000000000010)
+				bool_58 = bit32.bor(bool_58, 0b0000000000000010)
 			end
-			buffer.writeu8(outgoing_buff, bool_57_pos_1, bool_57)
+			buffer.writeu8(outgoing_buff, bool_58_pos_1, bool_58)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -2889,15 +2916,15 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local bool_59 = 0
-			local bool_59_pos_1 = alloc(1)
+			local bool_60 = 0
+			local bool_60_pos_1 = alloc(1)
 			local len_82 = #Value["SceneId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_82)
 			alloc(len_82)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["SceneId"], len_82)
 			if Value["Caster"] ~= nil then
-				bool_59 = bit32.bor(bool_59, 0b0000000000000001)
+				bool_60 = bit32.bor(bool_60, 0b0000000000000001)
 				assert(Value["Caster"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Caster"])
 			end
@@ -2906,7 +2933,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_83)
 			alloc(len_83)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_83)
-			buffer.writeu8(outgoing_buff, bool_59_pos_1, bool_59)
+			buffer.writeu8(outgoing_buff, bool_60_pos_1, bool_60)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -2917,15 +2944,15 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local bool_60 = 0
-			local bool_60_pos_1 = alloc(1)
+			local bool_61 = 0
+			local bool_61_pos_1 = alloc(1)
 			local len_84 = #Value["SceneId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_84)
 			alloc(len_84)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["SceneId"], len_84)
 			if Value["Caster"] ~= nil then
-				bool_60 = bit32.bor(bool_60, 0b0000000000000001)
+				bool_61 = bit32.bor(bool_61, 0b0000000000000001)
 				assert(Value["Caster"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Caster"])
 			end
@@ -2934,7 +2961,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_85)
 			alloc(len_85)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_85)
-			buffer.writeu8(outgoing_buff, bool_60_pos_1, bool_60)
+			buffer.writeu8(outgoing_buff, bool_61_pos_1, bool_61)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -2954,15 +2981,15 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local bool_61 = 0
-			local bool_61_pos_1 = alloc(1)
+			local bool_62 = 0
+			local bool_62_pos_1 = alloc(1)
 			local len_86 = #Value["SceneId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_86)
 			alloc(len_86)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["SceneId"], len_86)
 			if Value["Caster"] ~= nil then
-				bool_61 = bit32.bor(bool_61, 0b0000000000000001)
+				bool_62 = bit32.bor(bool_62, 0b0000000000000001)
 				assert(Value["Caster"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Caster"])
 			end
@@ -2971,7 +2998,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_87)
 			alloc(len_87)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_87)
-			buffer.writeu8(outgoing_buff, bool_61_pos_1, bool_61)
+			buffer.writeu8(outgoing_buff, bool_62_pos_1, bool_62)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -2989,15 +3016,15 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 17)
-			local bool_62 = 0
-			local bool_62_pos_1 = alloc(1)
+			local bool_63 = 0
+			local bool_63_pos_1 = alloc(1)
 			local len_88 = #Value["SceneId"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_88)
 			alloc(len_88)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["SceneId"], len_88)
 			if Value["Caster"] ~= nil then
-				bool_62 = bit32.bor(bool_62, 0b0000000000000001)
+				bool_63 = bit32.bor(bool_63, 0b0000000000000001)
 				assert(Value["Caster"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Caster"])
 			end
@@ -3006,7 +3033,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_89)
 			alloc(len_89)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_89)
-			buffer.writeu8(outgoing_buff, bool_62_pos_1, bool_62)
+			buffer.writeu8(outgoing_buff, bool_63_pos_1, bool_63)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -3022,20 +3049,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 37)
-			local bool_63 = 0
-			local bool_63_pos_1 = alloc(1)
-			if part ~= nil then
-				bool_63 = bit32.bor(bool_63, 0b0000000000000001)
-				assert(part:IsA("BasePart"), "received instance is not of the BasePart class!")
-				table.insert(outgoing_inst, part)
-			end
-			buffer.writeu8(outgoing_buff, bool_63_pos_1, bool_63)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, part: ((BasePart)?))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 37)
 			local bool_64 = 0
 			local bool_64_pos_1 = alloc(1)
 			if part ~= nil then
@@ -3044,6 +3057,20 @@ local returns = {
 				table.insert(outgoing_inst, part)
 			end
 			buffer.writeu8(outgoing_buff, bool_64_pos_1, bool_64)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, part: ((BasePart)?))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 37)
+			local bool_65 = 0
+			local bool_65_pos_1 = alloc(1)
+			if part ~= nil then
+				bool_65 = bit32.bor(bool_65, 0b0000000000000001)
+				assert(part:IsA("BasePart"), "received instance is not of the BasePart class!")
+				table.insert(outgoing_inst, part)
+			end
+			buffer.writeu8(outgoing_buff, bool_65_pos_1, bool_65)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -3059,14 +3086,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 37)
-			local bool_65 = 0
-			local bool_65_pos_1 = alloc(1)
+			local bool_66 = 0
+			local bool_66_pos_1 = alloc(1)
 			if part ~= nil then
-				bool_65 = bit32.bor(bool_65, 0b0000000000000001)
+				bool_66 = bit32.bor(bool_66, 0b0000000000000001)
 				assert(part:IsA("BasePart"), "received instance is not of the BasePart class!")
 				table.insert(outgoing_inst, part)
 			end
-			buffer.writeu8(outgoing_buff, bool_65_pos_1, bool_65)
+			buffer.writeu8(outgoing_buff, bool_66_pos_1, bool_66)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -3080,14 +3107,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 37)
-			local bool_66 = 0
-			local bool_66_pos_1 = alloc(1)
+			local bool_67 = 0
+			local bool_67_pos_1 = alloc(1)
 			if part ~= nil then
-				bool_66 = bit32.bor(bool_66, 0b0000000000000001)
+				bool_67 = bit32.bor(bool_67, 0b0000000000000001)
 				assert(part:IsA("BasePart"), "received instance is not of the BasePart class!")
 				table.insert(outgoing_inst, part)
 			end
-			buffer.writeu8(outgoing_buff, bool_66_pos_1, bool_66)
+			buffer.writeu8(outgoing_buff, bool_67_pos_1, bool_67)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -3183,10 +3210,10 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 21)
-			local bool_67 = 0
-			local bool_67_pos_1 = alloc(1)
+			local bool_68 = 0
+			local bool_68_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_67 = bit32.bor(bool_67, 0b0000000000000001)
+				bool_68 = bit32.bor(bool_68, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
@@ -3195,7 +3222,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_94)
 			alloc(len_94)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimId"], len_94)
-			buffer.writeu8(outgoing_buff, bool_67_pos_1, bool_67)
+			buffer.writeu8(outgoing_buff, bool_68_pos_1, bool_68)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -3205,10 +3232,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 21)
-			local bool_68 = 0
-			local bool_68_pos_1 = alloc(1)
+			local bool_69 = 0
+			local bool_69_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_68 = bit32.bor(bool_68, 0b0000000000000001)
+				bool_69 = bit32.bor(bool_69, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
@@ -3217,7 +3244,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_95)
 			alloc(len_95)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimId"], len_95)
-			buffer.writeu8(outgoing_buff, bool_68_pos_1, bool_68)
+			buffer.writeu8(outgoing_buff, bool_69_pos_1, bool_69)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -3236,10 +3263,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 21)
-			local bool_69 = 0
-			local bool_69_pos_1 = alloc(1)
+			local bool_70 = 0
+			local bool_70_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_69 = bit32.bor(bool_69, 0b0000000000000001)
+				bool_70 = bit32.bor(bool_70, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
@@ -3248,7 +3275,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_96)
 			alloc(len_96)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimId"], len_96)
-			buffer.writeu8(outgoing_buff, bool_69_pos_1, bool_69)
+			buffer.writeu8(outgoing_buff, bool_70_pos_1, bool_70)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -3265,10 +3292,10 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 21)
-			local bool_70 = 0
-			local bool_70_pos_1 = alloc(1)
+			local bool_71 = 0
+			local bool_71_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_70 = bit32.bor(bool_70, 0b0000000000000001)
+				bool_71 = bit32.bor(bool_71, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
@@ -3277,7 +3304,7 @@ local returns = {
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_97)
 			alloc(len_97)
 			buffer.writestring(outgoing_buff, outgoing_apos, Value["AnimId"], len_97)
-			buffer.writeu8(outgoing_buff, bool_70_pos_1, bool_70)
+			buffer.writeu8(outgoing_buff, bool_71_pos_1, bool_71)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -3784,22 +3811,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local bool_71 = 0
-			local bool_71_pos_1 = alloc(1)
-			if Value["Chest"] ~= nil then
-				bool_71 = bit32.bor(bool_71, 0b0000000000000001)
-				assert(Value["Chest"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Chest"])
-			end
-			buffer.writeu8(outgoing_buff, bool_71_pos_1, bool_71)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Chest"]: ((Model)?),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
 			local bool_72 = 0
 			local bool_72_pos_1 = alloc(1)
 			if Value["Chest"] ~= nil then
@@ -3808,6 +3819,22 @@ local returns = {
 				table.insert(outgoing_inst, Value["Chest"])
 			end
 			buffer.writeu8(outgoing_buff, bool_72_pos_1, bool_72)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["Chest"]: ((Model)?),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
+			local bool_73 = 0
+			local bool_73_pos_1 = alloc(1)
+			if Value["Chest"] ~= nil then
+				bool_73 = bit32.bor(bool_73, 0b0000000000000001)
+				assert(Value["Chest"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["Chest"])
+			end
+			buffer.writeu8(outgoing_buff, bool_73_pos_1, bool_73)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -3825,14 +3852,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local bool_73 = 0
-			local bool_73_pos_1 = alloc(1)
+			local bool_74 = 0
+			local bool_74_pos_1 = alloc(1)
 			if Value["Chest"] ~= nil then
-				bool_73 = bit32.bor(bool_73, 0b0000000000000001)
+				bool_74 = bit32.bor(bool_74, 0b0000000000000001)
 				assert(Value["Chest"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Chest"])
 			end
-			buffer.writeu8(outgoing_buff, bool_73_pos_1, bool_73)
+			buffer.writeu8(outgoing_buff, bool_74_pos_1, bool_74)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -3848,14 +3875,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 13)
-			local bool_74 = 0
-			local bool_74_pos_1 = alloc(1)
+			local bool_75 = 0
+			local bool_75_pos_1 = alloc(1)
 			if Value["Chest"] ~= nil then
-				bool_74 = bit32.bor(bool_74, 0b0000000000000001)
+				bool_75 = bit32.bor(bool_75, 0b0000000000000001)
 				assert(Value["Chest"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Chest"])
 			end
-			buffer.writeu8(outgoing_buff, bool_74_pos_1, bool_74)
+			buffer.writeu8(outgoing_buff, bool_75_pos_1, bool_75)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -4036,22 +4063,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_75 = 0
-			local bool_75_pos_1 = alloc(1)
-			if Value["NPCModel"] ~= nil then
-				bool_75 = bit32.bor(bool_75, 0b0000000000000001)
-				assert(Value["NPCModel"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["NPCModel"])
-			end
-			buffer.writeu8(outgoing_buff, bool_75_pos_1, bool_75)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["NPCModel"]: ((Model)?),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			local bool_76 = 0
 			local bool_76_pos_1 = alloc(1)
 			if Value["NPCModel"] ~= nil then
@@ -4060,6 +4071,22 @@ local returns = {
 				table.insert(outgoing_inst, Value["NPCModel"])
 			end
 			buffer.writeu8(outgoing_buff, bool_76_pos_1, bool_76)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["NPCModel"]: ((Model)?),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local bool_77 = 0
+			local bool_77_pos_1 = alloc(1)
+			if Value["NPCModel"] ~= nil then
+				bool_77 = bit32.bor(bool_77, 0b0000000000000001)
+				assert(Value["NPCModel"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["NPCModel"])
+			end
+			buffer.writeu8(outgoing_buff, bool_77_pos_1, bool_77)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -4077,14 +4104,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_77 = 0
-			local bool_77_pos_1 = alloc(1)
+			local bool_78 = 0
+			local bool_78_pos_1 = alloc(1)
 			if Value["NPCModel"] ~= nil then
-				bool_77 = bit32.bor(bool_77, 0b0000000000000001)
+				bool_78 = bit32.bor(bool_78, 0b0000000000000001)
 				assert(Value["NPCModel"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["NPCModel"])
 			end
-			buffer.writeu8(outgoing_buff, bool_77_pos_1, bool_77)
+			buffer.writeu8(outgoing_buff, bool_78_pos_1, bool_78)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -4100,14 +4127,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_78 = 0
-			local bool_78_pos_1 = alloc(1)
+			local bool_79 = 0
+			local bool_79_pos_1 = alloc(1)
 			if Value["NPCModel"] ~= nil then
-				bool_78 = bit32.bor(bool_78, 0b0000000000000001)
+				bool_79 = bit32.bor(bool_79, 0b0000000000000001)
 				assert(Value["NPCModel"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["NPCModel"])
 			end
-			buffer.writeu8(outgoing_buff, bool_78_pos_1, bool_78)
+			buffer.writeu8(outgoing_buff, bool_79_pos_1, bool_79)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -4202,13 +4229,13 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
-			local bool_79 = 0
-			local bool_79_pos_1 = alloc(1)
+			local bool_80 = 0
+			local bool_80_pos_1 = alloc(1)
 			if Value["BadgeId"] ~= nil then
-				bool_79 = bit32.bor(bool_79, 0b0000000000000001)
+				bool_80 = bit32.bor(bool_80, 0b0000000000000001)
 				table.insert(outgoing_inst, Value["BadgeId"])
 			end
-			buffer.writeu8(outgoing_buff, bool_79_pos_1, bool_79)
+			buffer.writeu8(outgoing_buff, bool_80_pos_1, bool_80)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, Value: ({
@@ -4217,13 +4244,13 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
-			local bool_80 = 0
-			local bool_80_pos_1 = alloc(1)
+			local bool_81 = 0
+			local bool_81_pos_1 = alloc(1)
 			if Value["BadgeId"] ~= nil then
-				bool_80 = bit32.bor(bool_80, 0b0000000000000001)
+				bool_81 = bit32.bor(bool_81, 0b0000000000000001)
 				table.insert(outgoing_inst, Value["BadgeId"])
 			end
-			buffer.writeu8(outgoing_buff, bool_80_pos_1, bool_80)
+			buffer.writeu8(outgoing_buff, bool_81_pos_1, bool_81)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -4241,13 +4268,13 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
-			local bool_81 = 0
-			local bool_81_pos_1 = alloc(1)
+			local bool_82 = 0
+			local bool_82_pos_1 = alloc(1)
 			if Value["BadgeId"] ~= nil then
-				bool_81 = bit32.bor(bool_81, 0b0000000000000001)
+				bool_82 = bit32.bor(bool_82, 0b0000000000000001)
 				table.insert(outgoing_inst, Value["BadgeId"])
 			end
-			buffer.writeu8(outgoing_buff, bool_81_pos_1, bool_81)
+			buffer.writeu8(outgoing_buff, bool_82_pos_1, bool_82)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -4263,13 +4290,13 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
-			local bool_82 = 0
-			local bool_82_pos_1 = alloc(1)
+			local bool_83 = 0
+			local bool_83_pos_1 = alloc(1)
 			if Value["BadgeId"] ~= nil then
-				bool_82 = bit32.bor(bool_82, 0b0000000000000001)
+				bool_83 = bit32.bor(bool_83, 0b0000000000000001)
 				table.insert(outgoing_inst, Value["BadgeId"])
 			end
-			buffer.writeu8(outgoing_buff, bool_82_pos_1, bool_82)
+			buffer.writeu8(outgoing_buff, bool_83_pos_1, bool_83)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -4380,9 +4407,9 @@ local returns = {
 	},
 	DUNGEON_RequestToStartDungeon = {
 		SetCallback = function(Callback: (Player: Player) -> ()): () -> ()
-			reliable_events[22] = Callback
+			reliable_events[23] = Callback
 			return function()
-				reliable_events[22] = nil
+				reliable_events[23] = nil
 			end
 		end,
 	},
@@ -4712,34 +4739,34 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 40)
-			local bool_83 = 0
-			local bool_83_pos_1 = alloc(1)
+			local bool_84 = 0
+			local bool_84_pos_1 = alloc(1)
 			local len_142 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_142)
 			alloc(len_142)
 			buffer.writestring(outgoing_buff, outgoing_apos, text, len_142)
 			if showBar then
-				bool_83 = bit32.bor(bool_83, 0b0000000000000001)
+				bool_84 = bit32.bor(bool_84, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_83_pos_1, bool_83)
+			buffer.writeu8(outgoing_buff, bool_84_pos_1, bool_84)
 			player_map[Player] = save()
 		end,
 		FireExcept = function(Except: Player, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 40)
-			local bool_84 = 0
-			local bool_84_pos_1 = alloc(1)
+			local bool_85 = 0
+			local bool_85_pos_1 = alloc(1)
 			local len_143 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_143)
 			alloc(len_143)
 			buffer.writestring(outgoing_buff, outgoing_apos, text, len_143)
 			if showBar then
-				bool_84 = bit32.bor(bool_84, 0b0000000000000001)
+				bool_85 = bit32.bor(bool_85, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_84_pos_1, bool_84)
+			buffer.writeu8(outgoing_buff, bool_85_pos_1, bool_85)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -4755,17 +4782,17 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 40)
-			local bool_85 = 0
-			local bool_85_pos_1 = alloc(1)
+			local bool_86 = 0
+			local bool_86_pos_1 = alloc(1)
 			local len_144 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_144)
 			alloc(len_144)
 			buffer.writestring(outgoing_buff, outgoing_apos, text, len_144)
 			if showBar then
-				bool_85 = bit32.bor(bool_85, 0b0000000000000001)
+				bool_86 = bit32.bor(bool_86, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_85_pos_1, bool_85)
+			buffer.writeu8(outgoing_buff, bool_86_pos_1, bool_86)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -4779,17 +4806,17 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 40)
-			local bool_86 = 0
-			local bool_86_pos_1 = alloc(1)
+			local bool_87 = 0
+			local bool_87_pos_1 = alloc(1)
 			local len_145 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_145)
 			alloc(len_145)
 			buffer.writestring(outgoing_buff, outgoing_apos, text, len_145)
 			if showBar then
-				bool_86 = bit32.bor(bool_86, 0b0000000000000001)
+				bool_87 = bit32.bor(bool_87, 0b0000000000000001)
 			end
-			buffer.writeu8(outgoing_buff, bool_86_pos_1, bool_86)
+			buffer.writeu8(outgoing_buff, bool_87_pos_1, bool_87)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -4873,25 +4900,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
-			local bool_87 = 0
-			local bool_87_pos_1 = alloc(1)
-			if Value["Entity"] ~= nil then
-				bool_87 = bit32.bor(bool_87, 0b0000000000000001)
-				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Entity"])
-			end
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
-			buffer.writeu8(outgoing_buff, bool_87_pos_1, bool_87)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Entity"]: ((Model)?),
-			["ResonateNum"]: (number),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local bool_88 = 0
 			local bool_88_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
@@ -4902,6 +4910,25 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
 			buffer.writeu8(outgoing_buff, bool_88_pos_1, bool_88)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["Entity"]: ((Model)?),
+			["ResonateNum"]: (number),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			local bool_89 = 0
+			local bool_89_pos_1 = alloc(1)
+			if Value["Entity"] ~= nil then
+				bool_89 = bit32.bor(bool_89, 0b0000000000000001)
+				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["Entity"])
+			end
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
+			buffer.writeu8(outgoing_buff, bool_89_pos_1, bool_89)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -4920,16 +4947,16 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
-			local bool_89 = 0
-			local bool_89_pos_1 = alloc(1)
+			local bool_90 = 0
+			local bool_90_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_89 = bit32.bor(bool_89, 0b0000000000000001)
+				bool_90 = bit32.bor(bool_90, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
-			buffer.writeu8(outgoing_buff, bool_89_pos_1, bool_89)
+			buffer.writeu8(outgoing_buff, bool_90_pos_1, bool_90)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -4946,16 +4973,16 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
-			local bool_90 = 0
-			local bool_90_pos_1 = alloc(1)
+			local bool_91 = 0
+			local bool_91_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_90 = bit32.bor(bool_90, 0b0000000000000001)
+				bool_91 = bit32.bor(bool_91, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["ResonateNum"])
-			buffer.writeu8(outgoing_buff, bool_90_pos_1, bool_90)
+			buffer.writeu8(outgoing_buff, bool_91_pos_1, bool_91)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
@@ -4974,25 +5001,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 23)
-			local bool_91 = 0
-			local bool_91_pos_1 = alloc(1)
-			if Value["Entity"] ~= nil then
-				bool_91 = bit32.bor(bool_91, 0b0000000000000001)
-				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Entity"])
-			end
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Duration"])
-			buffer.writeu8(outgoing_buff, bool_91_pos_1, bool_91)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Entity"]: ((Model)?),
-			["Duration"]: (number),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 23)
 			local bool_92 = 0
 			local bool_92_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
@@ -5003,18 +5011,9 @@ local returns = {
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Duration"])
 			buffer.writeu8(outgoing_buff, bool_92_pos_1, bool_92)
-			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in Players:GetPlayers() do
-				if player ~= Except then
-					load_player(player)
-					alloc(used)
-					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-					player_map[player] = save()
-				end
-			end
+			player_map[Player] = save()
 		end,
-		FireList = function(List: { [unknown]: Player }, Value: ({
+		FireExcept = function(Except: Player, Value: ({
 			["Entity"]: ((Model)?),
 			["Duration"]: (number),
 		}))
@@ -5032,15 +5031,17 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Duration"])
 			buffer.writeu8(outgoing_buff, bool_93_pos_1, bool_93)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
-			for _, player in List do
-				load_player(player)
-				alloc(used)
-				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
-				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
-				player_map[player] = save()
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
 			end
 		end,
-		FireSet = function(Set: { [Player]: any }, Value: ({
+		FireList = function(List: { [unknown]: Player }, Value: ({
 			["Entity"]: ((Model)?),
 			["Duration"]: (number),
 		}))
@@ -5058,6 +5059,32 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Duration"])
 			buffer.writeu8(outgoing_buff, bool_94_pos_1, bool_94)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any }, Value: ({
+			["Entity"]: ((Model)?),
+			["Duration"]: (number),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 23)
+			local bool_95 = 0
+			local bool_95_pos_1 = alloc(1)
+			if Value["Entity"] ~= nil then
+				bool_95 = bit32.bor(bool_95, 0b0000000000000001)
+				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["Entity"])
+			end
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, Value["Duration"])
+			buffer.writeu8(outgoing_buff, bool_95_pos_1, bool_95)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)
 				alloc(used)
@@ -5074,22 +5101,6 @@ local returns = {
 			load_player(Player)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_95 = 0
-			local bool_95_pos_1 = alloc(1)
-			if Value["Enemy"] ~= nil then
-				bool_95 = bit32.bor(bool_95, 0b0000000000000001)
-				assert(Value["Enemy"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Enemy"])
-			end
-			buffer.writeu8(outgoing_buff, bool_95_pos_1, bool_95)
-			player_map[Player] = save()
-		end,
-		FireExcept = function(Except: Player, Value: ({
-			["Enemy"]: ((Model)?),
-		}))
-			load_empty()
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
 			local bool_96 = 0
 			local bool_96_pos_1 = alloc(1)
 			if Value["Enemy"] ~= nil then
@@ -5098,6 +5109,22 @@ local returns = {
 				table.insert(outgoing_inst, Value["Enemy"])
 			end
 			buffer.writeu8(outgoing_buff, bool_96_pos_1, bool_96)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player, Value: ({
+			["Enemy"]: ((Model)?),
+		}))
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
+			local bool_97 = 0
+			local bool_97_pos_1 = alloc(1)
+			if Value["Enemy"] ~= nil then
+				bool_97 = bit32.bor(bool_97, 0b0000000000000001)
+				assert(Value["Enemy"]:IsA("Model"), "received instance is not of the Model class!")
+				table.insert(outgoing_inst, Value["Enemy"])
+			end
+			buffer.writeu8(outgoing_buff, bool_97_pos_1, bool_97)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in Players:GetPlayers() do
 				if player ~= Except then
@@ -5115,14 +5142,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_97 = 0
-			local bool_97_pos_1 = alloc(1)
+			local bool_98 = 0
+			local bool_98_pos_1 = alloc(1)
 			if Value["Enemy"] ~= nil then
-				bool_97 = bit32.bor(bool_97, 0b0000000000000001)
+				bool_98 = bit32.bor(bool_98, 0b0000000000000001)
 				assert(Value["Enemy"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Enemy"])
 			end
-			buffer.writeu8(outgoing_buff, bool_97_pos_1, bool_97)
+			buffer.writeu8(outgoing_buff, bool_98_pos_1, bool_98)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for _, player in List do
 				load_player(player)
@@ -5138,14 +5165,14 @@ local returns = {
 			load_empty()
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_98 = 0
-			local bool_98_pos_1 = alloc(1)
+			local bool_99 = 0
+			local bool_99_pos_1 = alloc(1)
 			if Value["Enemy"] ~= nil then
-				bool_98 = bit32.bor(bool_98, 0b0000000000000001)
+				bool_99 = bit32.bor(bool_99, 0b0000000000000001)
 				assert(Value["Enemy"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Enemy"])
 			end
-			buffer.writeu8(outgoing_buff, bool_98_pos_1, bool_98)
+			buffer.writeu8(outgoing_buff, bool_99_pos_1, bool_99)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
 			for player in Set do
 				load_player(player)

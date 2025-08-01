@@ -543,7 +543,7 @@ end
 ]]
 function HarukaLib:CalculateStrokeThickness(thickness: number, scale: number) : number
 	local VPSize = workspace.CurrentCamera.ViewportSize
-	local DESIGN_VP_SIZE = Vector2.new(1172, 471.2)
+	local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
 
 	local function _calScreenRatio() : number
 		local x = VPSize.X / DESIGN_VP_SIZE.X
@@ -1096,7 +1096,7 @@ end
 --[[
 	Quickly return an empty part for mocking
 ]]
-function HarukaLib:CreateMockModel() : Model
+function HarukaLib:CreateMockModel() : BasePart
 	local model = Instance.new("Model")
 	model.Name = "MockModel"
 

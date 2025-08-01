@@ -25,16 +25,19 @@ return function (self: { any })
     workspace:SetAttribute("HideUIFactor", false)
     workspace:SetAttribute("EntityRenderDistance", 159)
     workspace:SetAttribute("FocusRenderDistance", 486)
+    workspace:SetAttribute("TreeRenderDistance", 888)
+    workspace:SetAttribute("FlowerRenderDistance", 555)
 
     workspace:SetAttribute("RainEffectEnabled", true)
     workspace:SetAttribute("WindEffectEnabled", true)
+    workspace:SetAttribute("WaveEffectEnabled", true)
 
     workspace:SetAttribute("CombatMode", "Public")
 
     self.SettingsFolder = self.plr:WaitForChild("CriRPGSettings", 999) :: Folder
 
     if #self.SettingsFolder:GetChildren() > 0 then
-        Bindables.CreateNotify:Fire("Loaded saved settings!")
+        Bindables.CreateNotify:Fire("[System] Loaded Saved Settings!")
     end
 
     self.PanelSelected = Value("Graphics")
@@ -72,6 +75,7 @@ return function (self: { any })
     for _, keycode: Enum.KeyCode in Enum.KeyCode:GetEnumItems() do
         if string.find(keycode.Name, "World") then continue end
         if table.find(deprecated, keycode.Name) then continue end
+        if keycode.Name == "Unknown" then continue end
 
         validKeycodeNames[keycode.Name] = true
     end
@@ -209,6 +213,12 @@ return function (self: { any })
     end)
     self.INFO.Graphics.Includes.FocusRenderDistance.ValChanged:Connect(function(val: number)
         workspace:SetAttribute("FocusRenderDistance", val)
+    end)
+    self.INFO.Graphics.Includes.TreeRenderDistance.ValChanged:Connect(function(val: number)
+        workspace:SetAttribute("TreeRenderDistance", val)
+    end)
+    self.INFO.Graphics.Includes.FlowerRenderDistance.ValChanged:Connect(function(val: number)
+        workspace:SetAttribute("FlowerRenderDistance", val)
     end)
 
 

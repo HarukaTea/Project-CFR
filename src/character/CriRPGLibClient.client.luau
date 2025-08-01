@@ -17,7 +17,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ProjectileLib = require(RepS.HarukaShared.Library.ProjectileLib)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
+local HarukaDebris = require(RepS.HarukaShared.Shared.HarukaDebris)
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -355,7 +355,7 @@ function CriRPGLib:_ListenOrbSpawnTracker()
 
         orb.Parent = orbContainer
 
-        Maid:AddItem(orb, data.OrbDuration)
+        HarukaDebris:AddItem(orb, data.OrbDuration)
     end))
 
 
@@ -542,7 +542,7 @@ function CriRPGLib:_ListenProjectileSpawnTracker()
             return
         end
         projectile = projectile:Clone() :: Model
-        Maid:AddItem(projectile, 10)
+        HarukaDebris:AddItem(projectile, 10)
 
 
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)
@@ -612,7 +612,7 @@ function CriRPGLib:_ListenUniProjectileSpawnTracker()
             return
         end
         projectile = projectile:Clone() :: Model
-        Maid:AddItem(projectile, 5)
+        HarukaDebris:AddItem(projectile, 5)
 
 
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)

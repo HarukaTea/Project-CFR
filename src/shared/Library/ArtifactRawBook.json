@@ -1,0 +1,32 @@
+[
+    {
+        "ArtifactId": "Exploration",
+        "ArtifactTitle": "The Explorer",
+        "TwoPieceEff": "Max HP increased by 200",
+        "FourPieceEff": "Defeating an enemy regenerates 30% Max HP over 5s"
+    },
+    {
+        "ArtifactId": "FireEmblem",
+        "ArtifactTitle": "Fire Emblem",
+        "TwoPieceEff": "Increase 10% Burn Chance",
+        "FourPieceEff": "Using Class Ult increases the 2-Piece Set Bonus by 50% of its starting value for 10s. Max 3 stacks."
+    },
+    {
+        "ArtifactId": "Crimson",
+        "ArtifactTitle": "Crimson",
+        "TwoPieceEff": "Magic +18%",
+        "FourPieceEff": "If the wielder uses a Staff, increases their Magic by 35%"
+    },
+    {
+        "ArtifactId": "WolfKing",
+        "ArtifactTitle": "Wolf Howl",
+        "TwoPieceEff": "CRIT Chance +12%",
+        "FourPieceEff": "When HP is below 50%, CRIT Chance increases by an additional 24%"
+    },
+    {
+        "ArtifactId": "QueenBee",
+        "ArtifactTitle": "The Queen Bee",
+        "TwoPieceEff": "Class Ult DMG +20%",
+        "FourPieceEff": "Using an Class Ult increases all nearby combat members' ATK by 20% for 12s. This effect cannot stack"
+    }
+]

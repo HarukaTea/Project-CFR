@@ -21,6 +21,7 @@ local BKOptionBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Compon
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
@@ -222,12 +223,14 @@ return function (plr: Player)
                             return BKItemDescView(scope, {
                                 Item = use(self.CurrentSelectedItem),
                                 ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                                EquippingItems = self.EquippingItems,
                                 Items = use(self.Items),
                             })
                         elseif use(self.CurrentCategory) == "Market" then
                             return BKItemDescView(scope, {
                                 Item = use(self.CurrentSelectedItem),
                                 ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                                EquippingItems = self.EquippingItems,
                                 IsMarket = true
                             })
                         else
@@ -545,12 +548,7 @@ return function (plr: Player)
                     }
                 }),
 
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBGTex(scope)
             }
         },
 

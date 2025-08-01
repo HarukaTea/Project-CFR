@@ -9,7 +9,7 @@ local camera = workspace.CurrentCamera
 local normalUIStrokes = {}
 local billboardUIStrokes = {}
 
-local DESIGN_VP_SIZE = Vector2.new(1172.8, 464)
+local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
 
 
 --// Helper functions

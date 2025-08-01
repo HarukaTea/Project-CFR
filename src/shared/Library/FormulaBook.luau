@@ -20,19 +20,19 @@ local formulas = {
             return math.floor(15 * props.Level)
 
         elseif props.Level > 15 and props.Level <= 45 then
-            return math.floor(55 * props.Level)
+            return math.floor(45 * props.Level)
 
         elseif props.Level > 45 and props.Level <= 100 then
-            return math.floor(99 * props.Level)
+            return math.floor(89 * props.Level)
 
         elseif props.Level > 100 and props.Level <= 170 then
-            return math.floor(135 * props.Level)
+            return math.floor(125 * props.Level)
 
         elseif props.Level > 170 and props.Level <= 180 then
-            return math.floor(188 * props.Level)
+            return math.floor(166 * props.Level)
 
         elseif props.Level > 180 and props.Level <= 190 then
-            return math.floor(233 * props.Level)
+            return math.floor(211 * props.Level)
 
         elseif props.Level > 190 and props.Level <= 200 then
             return math.floor(300 * props.Level)
@@ -48,7 +48,7 @@ local formulas = {
     EnemyEXPCurveCal = function(props: {
         Level: number
     })
-        return math.floor(30 * props.Level)
+        return math.floor(35 * props.Level)
     end,
 
 
@@ -115,7 +115,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 60) / 100)
+        local extra = 1 + ((props.MagicPoints * 55) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,

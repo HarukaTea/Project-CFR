@@ -8,7 +8,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Maid = require(RepS.HarukaShared.Shared.Maid)
+local HarukaDebris = require(RepS.HarukaShared.Shared.HarukaDebris)
 
 local ProjectileLib = {}
 
@@ -106,7 +106,7 @@ local function _spawnProjectile(
 
     sProjectile.Parent = container
 
-    Maid:AddItem(sProjectile, duration)
+    HarukaDebris:AddItem(sProjectile, duration)
 
     ProjectileLib[sProjectile.Name](sProjectile, container)
 end

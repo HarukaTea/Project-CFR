@@ -16,7 +16,7 @@ local HarukaComponents = {}
 local WHITE_COLOR = Color3.fromRGB(236, 229, 216)
 local BLACK_COLOR = Color3.fromRGB(28, 28, 37)
 
-local DESIGN_VP_SIZE = Vector2.new(1172.8, 464)
+local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
 
 HarukaComponents.BLACK_COLOR = BLACK_COLOR
 HarukaComponents.WHITE_COLOR = WHITE_COLOR

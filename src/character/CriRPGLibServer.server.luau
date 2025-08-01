@@ -431,7 +431,9 @@ function CriRPGLib:_ListenPlayerLevelTracker()
 
                 local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
 		        levelUpEffect.Parent = char.PrimaryPart
-		        Debris:AddItem(levelUpEffect, 1)
+		        Debris:AddItem(levelUpEffect, 5)
+
+                HarukaLib:EmitParticles(levelUpEffect)
 
 
                 char:SetAttribute("Shield", char:GetAttribute("MaxShield"))

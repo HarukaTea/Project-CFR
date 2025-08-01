@@ -190,7 +190,11 @@ function ClientWorldLib:_ListenBorderTracker()
                     if plr:DistanceFromCharacter(border.PrimaryPart.Position) > 17 then
                         plr.Character:PivotTo(CFrame.new(border.PrimaryPart.Position))
                     end
-                    HarukaLib:SetCollisionGroup(border, "Hitbox")
+                    for _, part: BasePart in innerBorder:GetChildren() do
+                        if HarukaLib:IsBasePartType(part) and part.Name == "Part" then
+                            part.CollisionGroup = "Hitbox"
+                        end
+                    end
                 end
 
                 local combatMode = border:GetAttribute("CombatMode")
@@ -201,13 +205,10 @@ function ClientWorldLib:_ListenBorderTracker()
                     elseif combatMode == "Party" then
                         color = Color3.fromHex('#339af0')
                     end
-                    for _, child: Instance in border:GetChildren() do
-                        if HarukaLib:IsBasePartType(child) then
-                            local beam = child:FindFirstChildOfClass("Beam")
-                            if not beam then continue end
-
-                            beam.Color = ColorSequence.new(color, Color3.new())
-                            beam.Transparency = NumberSequence.new(1, 1)
+                    for _, child: Instance in innerBorder:GetChildren() do
+                        if HarukaLib:IsBasePartType(child) and child.Name == "Part" then
+                            child.Beam.Color = ColorSequence.new(color, Color3.new())
+                            child.Beam.Transparency = NumberSequence.new(1, 1)
                         end
                     end
                 end
@@ -215,11 +216,8 @@ function ClientWorldLib:_ListenBorderTracker()
 
 
             ---// update transparency
-            for _, child: Instance in innerBorder:GetDescendants() do
-                if HarukaLib:IsBasePartType(child) then
-                    local beam = child:FindFirstChildOfClass("Beam")
-                    if not beam then continue end
-
+            for _, child: Instance in innerBorder:GetChildren() do
+                if HarukaLib:IsBasePartType(child) and child.Name == "Part" then
                     HarukaLib:Tween(child.Beam, AssetBook.TweenInfos.twiceHalfOne, { Transparency = NumberSequence.new(0.1, 1) })
                 end
             end

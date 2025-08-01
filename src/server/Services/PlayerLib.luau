@@ -246,6 +246,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             itemVal:SetAttribute("HarukaUniqueId", itemInfo.UniqueId)
             itemVal:SetAttribute("Level", itemInfo.Level)
             itemVal:SetAttribute("ItemStat", itemInfo.ItemStat)
+            itemVal:SetAttribute("IsFav", itemInfo.IsFav or false)
 
             itemVal.Parent = itemFolder
         end
@@ -403,7 +404,8 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
         ServerBindables.RToSpawnChar:Fire(plr)
 
-        self:_ListenLeadDevDebuggerToolsTracker()
+        --// TODO: turn on when in debug mode
+        --self:_ListenLeadDevDebuggerToolsTracker()
 
         self:_RequestToGetCurrentRankOnDonations()
         self.Add(HarukaLib.Clock(77, function()
@@ -673,7 +675,8 @@ function PlayerLib:_SaveData()
                 UniqueId = uniqueId,
                 Level = level,
                 ItemStat = item:GetAttribute("ItemStat"),
-                IsV2ItemStat = true
+                IsV2ItemStat = true,
+                IsFav = item:GetAttribute("IsFav")
             }
         end
     end
@@ -802,6 +805,9 @@ function PlayerLib:_ValidateSaveData(data: { any })
         if not itemInfo.Level then
             data.ItemsSQL[itemInfo.UniqueId].Level = trueItemInfo.Level
         end
+        if not itemInfo.IsFav then
+            data.ItemsSQL[itemInfo.UniqueId].IsFav = false
+        end
         if itemInfo.Level ~= trueItemInfo.Level then
             data.ItemsSQL[itemInfo.UniqueId].Level = trueItemInfo.Level
         end
@@ -832,7 +838,8 @@ function PlayerLib:_ValidateSaveData(data: { any })
                         Amount = 1,
                         UniqueId = itemUniqueId,
                         Level = itemInfo.Level,
-                        ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
+                        ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId),
+                        IsFav = false
                     }
                 end
 
@@ -961,7 +968,8 @@ function PlayerLib:_ValidateSaveData(data: { any })
             UniqueId = itemUniqueIdForEmptyWeapon,
             Level = 1,
             IsV2ItemStat = true,
-            ItemStat = ServerLib:GiveRandomStatForItem(weaponId)
+            ItemStat = ServerLib:GiveRandomStatForItem(weaponId),
+            IsFav = false
         }
     end
     if not woodenSword then _checkIfHasWeapon("WoodenSword") end

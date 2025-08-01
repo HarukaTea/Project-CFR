@@ -14,6 +14,21 @@ local flowerContainer = workspace:WaitForChild("FlowerContainer", 999)
 local wait = task.wait
 
 
+local treeRenderDistance = 888
+local flowerRenderDistance = 555
+
+HarukaLib:Hydrate(workspace, {
+    ["Attr-TreeRenderDistance"] = function(val: number)
+        val = val or 888
+        treeRenderDistance = val
+    end,
+    ["Attr-FlowerRenderDistance"] = function(val: number)
+        val = val or 555
+        flowerRenderDistance = val
+    end
+})
+
+
 
 local treeAFKContainer = Instance.new("Folder")
 treeAFKContainer.Name = "TreeAFKContainer"
@@ -48,7 +63,7 @@ CollectionService:GetInstanceAddedSignal("FlowerEntity"):Connect(_initFlower)
 
 Promise.try(function()
     local function _execute()
-        local trees = treeOctree:RadiusSearch(workspace.CurrentCamera.CFrame.Position, 888)
+        local trees = treeOctree:RadiusSearch(workspace.CurrentCamera.CFrame.Position, treeRenderDistance)
 
         for _, tree: Model in treeContainer:GetChildren() do
             if not table.find(trees, tree) then
@@ -68,7 +83,7 @@ Promise.try(function()
 end)
 Promise.try(function()
     local function _execute()
-        local flowers = flowerOctree:RadiusSearch(workspace.CurrentCamera.CFrame.Position, 555)
+        local flowers = flowerOctree:RadiusSearch(workspace.CurrentCamera.CFrame.Position, flowerRenderDistance)
 
         for _, flower: Model in flowerContainer:GetChildren() do
             if not table.find(flowers, flower) then

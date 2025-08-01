@@ -401,6 +401,8 @@ return function (self: { any })
                 }):Play()
             end
         end
+
+        Bindables.PlayAnimation:Fire("Dash")
     end)
 
 

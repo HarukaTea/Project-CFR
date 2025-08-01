@@ -161,6 +161,30 @@ local template = {
 
 				ValChanged = Signal.new()
 			},
+			TreeRenderDistance = {
+				OptionTitle = "Tree Render Distance",
+				Type = "Slider",
+				LayoutOrder = 9,
+				AllowDecimals = false,
+
+				Min = 159,
+				Max = 999,
+				DefaultValue = 888,
+
+				ValChanged = Signal.new()
+			},
+			FlowerRenderDistance = {
+				OptionTitle = "Flower Render Distance",
+				Type = "Slider",
+				LayoutOrder = 9,
+				AllowDecimals = false,
+
+				Min = 159,
+				Max = 999,
+				DefaultValue = 555,
+
+				ValChanged = Signal.new()
+			}
 		}
 	},
 	Game = {

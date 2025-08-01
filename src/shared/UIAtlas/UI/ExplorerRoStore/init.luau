@@ -8,6 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
 
@@ -96,13 +97,7 @@ return function (plr: Player)
                 CloseTab(scope, {
                     ViewShownValue = self.IsUIShown
                 }),
-
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                }),
+                FakeTopBGTex(scope),
 
 
                 Components.Frame(scope, {

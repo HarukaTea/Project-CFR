@@ -16,6 +16,8 @@ return function(scope: Fusion.Scope, props: {
     ItemSymbol: IntConstrainedValue,
     EquippingItems: Fusion.Value,
 
+    IsBackpack: boolean?,
+
     CurrentSelectedItemUniqueId: Fusion.Value,
     CurrentSelectedItem: Fusion.Value,
     CurrentSortOrderList: { Fusion.Value }
@@ -37,6 +39,7 @@ return function(scope: Fusion.Scope, props: {
     local amount = Value(1)
     local level = Value(1)
     local isNew = Value(false)
+    local isFav = Value(false)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
 
 
@@ -49,6 +52,9 @@ return function(scope: Fusion.Scope, props: {
         end,
         ["Attr-IsNew"] = function(val: boolean)
             isNew:set(val)
+        end,
+        ["Attr-IsFav"] = function(val: boolean)
+            isFav:set(val)
         end
     }))
 
@@ -79,6 +85,12 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            if use(isFav) and props.IsBackpack then
+                return -1
+            end
+            if use(isEquipping) then
+                return 0
+            end
             local AZSort = use(props.CurrentSortOrderList[1])
             local ZASort = use(props.CurrentSortOrderList[2])
 
@@ -96,7 +108,7 @@ return function(scope: Fusion.Scope, props: {
                     elseif charCode >= 97 and charCode <= 122 then
                         baseCode = 97
                     else
-                        return 0
+                        return 1
                     end
 
                     if AZSort then
@@ -105,7 +117,7 @@ return function(scope: Fusion.Scope, props: {
                         return 27 - (charCode - baseCode)
                     end
                 else
-                    return 0
+                    return 1
                 end
 
             elseif T1Sort or T5Sort then
@@ -184,6 +196,33 @@ return function(scope: Fusion.Scope, props: {
                     Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
                         return StarTierSymbol(scope)
                     end)
+                }
+            }),
+
+            Components.Frame(scope, {
+                Name = "FavButton",
+                AnchorPoint = Vector2.zero,
+                Position = UDim2.fromScale(0.05, 0.05),
+                Size = UDim2.fromScale(0.2, 0.2),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                BackgroundColor3 = Color3.fromRGB(),
+                BackgroundTransparency = 0,
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(isFav)
+                end),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.ImageLabel(scope, {
+                        Name = "Star",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(0.7, 0.7),
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                        Image = "rbxassetid://114302766654339",
+                        ImageColor3 = Color3.fromRGB(255, 204, 50)
+                    })
                 }
             }),
 

@@ -113,6 +113,7 @@ return function (plr: Player)
                                     return TargetingBar(scope, {
                                         Targeting = targeting,
                                         TargetingEnemy = self.TargetingEnemy,
+                                        TargetArrowPos = self.TargetArrowPos
                                     })
                                 end),
                             }

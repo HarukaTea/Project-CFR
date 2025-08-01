@@ -13,6 +13,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "CD(1)",
         "Tags": "Heal",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -29,6 +30,7 @@
         "SellPrice": "45",
         "ExtraStatInfo": "CD(10)",
         "Tags": "Heal,Buff",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -45,6 +47,7 @@
         "SellPrice": "150",
         "ExtraStatInfo": "Mana(70),CD(10)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -61,6 +64,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "CD(8)",
         "Tags": "Heal",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -77,6 +81,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "CD(10)",
         "Tags": "Buff",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -93,6 +98,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "CD(10)",
         "Tags": "Buff",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -109,6 +115,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "CD(8)",
         "Tags": "Combat",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -125,6 +132,7 @@
         "SellPrice": "75",
         "ExtraStatInfo": "CD(10)",
         "Tags": "Combat",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -141,6 +149,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
+        "ArtifactId": "Exploration",
         "Recipe": ""
     },
     {
@@ -157,6 +166,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
+        "ArtifactId": "Exploration",
         "Recipe": ""
     },
     {
@@ -173,6 +183,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "Exploration",
         "Recipe": ""
     },
     {
@@ -189,6 +200,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -205,6 +217,7 @@
         "SellPrice": "75",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "Exploration",
         "Recipe": ""
     },
     {
@@ -221,6 +234,7 @@
         "SellPrice": "150",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -237,6 +251,7 @@
         "SellPrice": "75",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -253,6 +268,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Slime",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -269,6 +285,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "",
         "Tags": "Slime",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -285,6 +302,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Wolf,Fox",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -301,6 +319,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "",
         "Tags": "Wolf,Fox",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -317,6 +336,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Bee",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -333,6 +353,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "",
         "Tags": "Slime,BossDrop",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -349,6 +370,7 @@
         "SellPrice": "1650",
         "ExtraStatInfo": "",
         "Tags": "BossDrop",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -365,6 +387,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "",
         "Tags": "Wolf,BossDrop",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -381,6 +404,7 @@
         "SellPrice": "1350",
         "ExtraStatInfo": "",
         "Tags": "BossDrop",
+        "ArtifactId": "WolfKing",
         "Recipe": ""
     },
     {
@@ -397,6 +421,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "",
         "Tags": "Dragon,BossDrop,Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -413,6 +438,7 @@
         "SellPrice": "300",
         "ExtraStatInfo": "",
         "Tags": "Dragon,BossDrop,Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -429,6 +455,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Mine",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -445,6 +472,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -461,6 +489,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "",
         "Tags": "Crafting,EnemyDrop",
+        "ArtifactId": "",
         "Recipe": "IronOre(10),SlimeGel(10),SlimeCore(5)"
     },
     {
@@ -477,6 +506,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "",
         "Tags": "Crafting,EnemyDrop",
+        "ArtifactId": "",
         "Recipe": "IronOre(10),BeeStinger(10)"
     },
     {
@@ -493,6 +523,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "",
         "Tags": "Crafting,EnemyDrop",
+        "ArtifactId": "",
         "Recipe": "IronOre(10),SpikyFur(10),SpikyQuills(5)"
     },
     {
@@ -509,6 +540,7 @@
         "SellPrice": "450",
         "ExtraStatInfo": "",
         "Tags": "Statue,NoRandom",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -525,6 +557,7 @@
         "SellPrice": "1950",
         "ExtraStatInfo": "",
         "Tags": "BossDrop,OldDrop",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -541,6 +574,7 @@
         "SellPrice": "1950",
         "ExtraStatInfo": "",
         "Tags": "Crafting,BossDrop",
+        "ArtifactId": "QueenBee",
         "Recipe": "IronOre(10),BeeStinger(25),HealthPotion(25)"
     },
     {
@@ -557,6 +591,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Statue,NoRandom",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -573,6 +608,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Statue,NoRandom",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -589,6 +625,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Statue,NoRandom",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -605,6 +642,7 @@
         "SellPrice": "2437",
         "ExtraStatInfo": "",
         "Tags": "BossDrop,Crafting",
+        "ArtifactId": "WolfKing",
         "Recipe": "SpikyQuills(50),IronOre(5)"
     },
     {
@@ -621,6 +659,7 @@
         "SellPrice": "2437",
         "ExtraStatInfo": "",
         "Tags": "BossDrop,Crafting",
+        "ArtifactId": "QueenBee",
         "Recipe": "GHoneyWings(50),IronOre(5)"
     },
     {
@@ -637,6 +676,7 @@
         "SellPrice": "2437",
         "ExtraStatInfo": "",
         "Tags": "BossDrop,Crafting",
+        "ArtifactId": "LeafDragon",
         "Recipe": "DragonScale(50),IronOre(5)"
     },
     {
@@ -653,6 +693,7 @@
         "SellPrice": "6750",
         "ExtraStatInfo": "",
         "Tags": "DevItem,Honkai",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -669,6 +710,7 @@
         "SellPrice": "5625",
         "ExtraStatInfo": "",
         "Tags": "Heaven,Sell",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -685,6 +727,7 @@
         "SellPrice": "30",
         "ExtraStatInfo": "CD(8)",
         "Tags": "Exploration",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -701,6 +744,7 @@
         "SellPrice": "75",
         "ExtraStatInfo": "CD(4)",
         "Tags": "Exploration",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -717,6 +761,7 @@
         "SellPrice": "562",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -733,6 +778,7 @@
         "SellPrice": "562",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -749,6 +795,7 @@
         "SellPrice": "562",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -765,6 +812,7 @@
         "SellPrice": "75",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -781,7 +829,8 @@
         "SellPrice": "1500",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
-        "Recipe": "CrimsonSlimeFang(1), CrimsonSlimeCore(35)"
+        "ArtifactId": "Crimson",
+        "Recipe": "CrimsonSlimeCore(35),IronOre(50)"
     },
     {
         "ItemId": "Lantern",
@@ -797,6 +846,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": "CoalOre(7),Wood(10),Glass(5)"
     },
     {
@@ -813,23 +863,8 @@
         "SellPrice": "562",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
-        "Recipe": "ManaCrystal(1),Lantern(1),ManaPotion(30),ManaLanternRecipe(1)"
-    },
-    {
-        "ItemId": "ManaLanternRecipe",
-        "Name": "Mana Lantern Recipe",
-        "Type": "Recipe",
-        "Tier": "1",
-        "Level": "1",
-        "Desc": "Despite being simply a magical lantern, you can feel the magic emanating from it being pulled by an unseen force―deep within the Corrupted Cavern",
-        "Stat": "",
-        "StatInfo": "",
-        "Icon": "139698715468743",
-        "Price": "15",
-        "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Recipe",
-        "Recipe": ""
+        "ArtifactId": "",
+        "Recipe": "CoalOre(10),Wood(15),Glass(10),ManaPotion(30)"
     },
     {
         "ItemId": "CrimsoniteOre",
@@ -845,6 +880,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "",
         "Tags": "Mine",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -861,6 +897,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Mine,Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -877,6 +914,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "",
         "Tags": "Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -893,6 +931,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -909,6 +948,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "",
         "Tags": "Mine,Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -925,6 +965,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Mine",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -941,6 +982,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -957,6 +999,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": "Glass(25),IronOre(40),ColdFlame(5)"
     },
     {
@@ -973,6 +1016,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Bee,Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -989,6 +1033,7 @@
         "SellPrice": "5625",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "QueenBee",
         "Recipe": "BeeStinger(150),GHoneyWings(150),GoldOre(150),ColdFlame(150),HealthPotion(500)"
     },
     {
@@ -1005,6 +1050,7 @@
         "SellPrice": "30",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1021,6 +1067,7 @@
         "SellPrice": "150",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1037,6 +1084,7 @@
         "SellPrice": "675",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1053,6 +1101,7 @@
         "SellPrice": "1125",
         "ExtraStatInfo": "CD(15),Mana(1000)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1069,6 +1118,7 @@
         "SellPrice": "1125",
         "ExtraStatInfo": "CD(15),Mana(1500)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1085,6 +1135,7 @@
         "SellPrice": "1500",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": "Sand(35),ManaCrystal(1)"
     },
     {
@@ -1101,6 +1152,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1117,6 +1169,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Crafting,Alchemy",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1133,7 +1186,8 @@
         "SellPrice": "2250",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
-        "Recipe": "ColdFlame(30),Wood(50),CrimsonSlimeCore(20),CrimsonSlimeFang(1)"
+        "ArtifactId": "Crimson",
+        "Recipe": "ColdFlame(30),Wood(50),CrimsonSlimeCore(40)"
     },
     {
         "ItemId": "ColdFlame",
@@ -1149,6 +1203,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Crafting,Abyss",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1165,6 +1220,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "CD(1)",
         "Tags": "EventItem",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1181,6 +1237,7 @@
         "SellPrice": "225",
         "ExtraStatInfo": "CD(10),Mana(600)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1197,6 +1254,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "SkyTower",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1213,6 +1271,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "CD(5)",
         "Tags": "Heal",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1229,6 +1288,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1245,6 +1305,7 @@
         "SellPrice": "450",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": "IronOre(45),ColdFlame(15)"
     },
     {
@@ -1261,6 +1322,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "CD(12),Mana(850)",
         "Tags": "Magic,Control",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1277,6 +1339,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "Burn,Physical",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1293,6 +1356,7 @@
         "SellPrice": "2250",
         "ExtraStatInfo": "CD(25),Mana(2000)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1309,6 +1373,7 @@
         "SellPrice": "1350",
         "ExtraStatInfo": "CD(12),Mana(1800)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1325,6 +1390,7 @@
         "SellPrice": "1350",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1341,6 +1407,7 @@
         "SellPrice": "2550",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "FireEmblem",
         "Recipe": "IronOre(100),ColdFlame(50)"
     },
     {
@@ -1357,6 +1424,7 @@
         "SellPrice": "1950",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1373,6 +1441,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1389,6 +1458,7 @@
         "SellPrice": "1462",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1405,6 +1475,7 @@
         "SellPrice": "1012",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1421,6 +1492,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1437,6 +1509,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1453,6 +1526,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1469,6 +1543,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Northern",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1485,6 +1560,7 @@
         "SellPrice": "1012",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1501,6 +1577,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "CD(12),Mana(1000)",
         "Tags": "Magic",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1517,6 +1594,7 @@
         "SellPrice": "900",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1533,6 +1611,7 @@
         "SellPrice": "675",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1549,6 +1628,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1565,6 +1645,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1581,6 +1662,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1597,6 +1679,7 @@
         "SellPrice": "7",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1613,6 +1696,7 @@
         "SellPrice": "2700",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1629,6 +1713,7 @@
         "SellPrice": "1125",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1645,6 +1730,7 @@
         "SellPrice": "525",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1661,6 +1747,7 @@
         "SellPrice": "15",
         "ExtraStatInfo": "",
         "Tags": "Chest",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1677,6 +1764,7 @@
         "SellPrice": "6937",
         "ExtraStatInfo": "",
         "Tags": "DevItem",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1693,6 +1781,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1709,6 +1798,7 @@
         "SellPrice": "300",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1725,6 +1815,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1741,6 +1832,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1757,6 +1849,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1773,6 +1866,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1789,6 +1883,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1805,6 +1900,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "",
         "Tags": "Chest,Exploration",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1821,6 +1917,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1837,6 +1934,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1853,6 +1951,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1869,6 +1968,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1885,6 +1985,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1901,6 +2002,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1917,6 +2019,7 @@
         "SellPrice": "75",
         "ExtraStatInfo": "CD(5)",
         "Tags": "Heal",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1933,6 +2036,7 @@
         "SellPrice": "375",
         "ExtraStatInfo": "CD(10),Mana(100)",
         "Tags": "Physical",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1949,6 +2053,7 @@
         "SellPrice": "1050",
         "ExtraStatInfo": "",
         "Tags": "BossDrop",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1965,6 +2070,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1981,6 +2087,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -1997,6 +2104,7 @@
         "SellPrice": "22",
         "ExtraStatInfo": "",
         "Tags": "Crafting,Alchemy",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2013,6 +2121,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2029,6 +2138,7 @@
         "SellPrice": "1575",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2045,6 +2155,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2061,6 +2172,7 @@
         "SellPrice": "150",
         "ExtraStatInfo": "",
         "Tags": "Chest,Exploration",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2077,6 +2189,7 @@
         "SellPrice": "5625",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2093,6 +2206,7 @@
         "SellPrice": "787",
         "ExtraStatInfo": "CD(12),Mana(150)",
         "Tags": "Physical",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2103,12 +2217,13 @@
         "Level": "150",
         "Desc": "abc",
         "Stat": "abc",
-        "StatInfo": "ForClass(Furioso),MagicEx(750),ShockingChanceEx(10)",
+        "StatInfo": "ForClass(Furioso),MagicEx(750)",
         "Icon": "0",
         "Price": "9000",
         "SellPrice": "4500",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2119,12 +2234,13 @@
         "Level": "185",
         "Desc": "Life and death are but a journey. When butterfly alights on the branch, what withers will bloom anew",
         "Stat": "The time for the promised departure is also nigh",
-        "StatInfo": "ForClass(Execution),ATK(1000),PoisonChanceEx(10),",
+        "StatInfo": "ForClass(Execution),ATK(1000)",
         "Icon": "0",
         "Price": "13875",
         "SellPrice": "6937",
         "ExtraStatInfo": "",
         "Tags": "",
+        "ArtifactId": "",
         "Recipe": ""
     }
 ]

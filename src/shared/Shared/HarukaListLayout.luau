@@ -2,7 +2,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
-local TS = game:GetService("TweenService")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
@@ -150,7 +149,7 @@ function HarukaListLayout:_Refresh()
             offsetY = ( (i - 1) - (#elements - 1) / 2 ) * (paddingY + absSize.Y)
         end
 
-        if element:GetAttribute("OldElement") then
+        if element:GetAttribute("HarukaLL_OldElement") then
             local goalPos = UDim2.new(X, offsetX, Y, offsetY)
 
             if element.Position ~= goalPos then
@@ -158,7 +157,7 @@ function HarukaListLayout:_Refresh()
             end
         else
             element.Position = UDim2.new(X, offsetX, Y, offsetY)
-            element:SetAttribute("OldElement", true)
+            element:SetAttribute("HarukaLL_OldElement", true)
         end
 
         if fillDirection == Enum.FillDirection.Horizontal then

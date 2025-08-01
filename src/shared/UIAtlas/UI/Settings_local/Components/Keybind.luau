@@ -21,6 +21,7 @@ local KEY_NAMES = {
     PerkTree = "Perk Tree",
     Achievements = "Achievements",
     TutorialBook = "Tutorial Book",
+    Events = "Events",
     ClassUlt = "Class Ultimate",
     Active1 = "Active Skill 1",
     Active2 = "Active Skill 2",

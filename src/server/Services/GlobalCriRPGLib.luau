@@ -278,6 +278,8 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             })
 
         elseif prompt.Name == "Crafting" then
+            adornee:AddTag("CraftingPromptEntity")
+
             Events.OpenCraftingUI.Fire(plr)
 
 
@@ -1481,7 +1483,17 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
         end
 
 
-        --// TODO: distance check
+        local distanceCheck = false
+        for _, adornee: BasePart in CollectionService:GetTagged("CraftingPromptEntity") do
+            if plr:DistanceFromCharacter(adornee.Position) <= 25 then
+                distanceCheck = true
+                break
+            end
+        end
+        if not distanceCheck then
+            Events.CreateNotify.Fire(plr, "You are too far from the Crafting Station!")
+            return
+        end
 
 
         local materialCheck = true
@@ -1519,6 +1531,11 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
             end
 
             if materialInfo.Type == "Passive" then
+                materialCheck = false
+                Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
+                break
+            end
+            if materialInfo.Type == "Accessory" then
                 materialCheck = false
                 Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
                 break
@@ -1835,6 +1852,22 @@ function GlobalCriRPGLib:_ListenTutorialTeleportTracker()
         teleportOptions.ReservedServerAccessCode = code
 
         TeleportService:TeleportAsync(AssetBook.PlaceIds.Tutorial, { plr }, teleportOptions)
+    end)
+end
+
+
+function GlobalCriRPGLib:_ListenFavItemRequestsTracker()
+    Events.RequestToFavItem.SetCallback(function(plr: Player, data)
+        if not data.ItemSymbol then return end
+
+        local symbol = data.ItemSymbol :: IntConstrainedValue
+        if not symbol:IsDescendantOf(plr) then return end
+
+        local state = symbol:GetAttribute("IsFav")
+        state = state or false
+        state = not state
+
+        symbol:SetAttribute("IsFav", state)
     end)
 end
 

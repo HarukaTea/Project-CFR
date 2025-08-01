@@ -30,13 +30,11 @@ local function _initWind()
         LifeTime = 1.5,
         SpawnRate = 8,
     })
-
-    WindShake:SetDefaultSettings({
+    WindShake:Init({
         WindSpeed = 10,
         WindDirection = WIND_VECTOR,
         WindPower = 1
     })
-    WindShake:Init()
 end
 local function _updateTree(child: Model)
     if not child:IsA("Model") then return end

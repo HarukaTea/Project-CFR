@@ -15,11 +15,13 @@ local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.C
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
 local BKOptionBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKOptionBtn)
 
 local CraftItemMatSlot = require(script.Components.CraftItemMatSlot)
+local CraftGoldMatSlot = require(script.Components.CraftGoldMatSlot)
 local BKItemSlot = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemSlot)
 
 
@@ -235,12 +237,7 @@ return function (plr: Player)
                 }),
 
 
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBGTex(scope)
             }
         },
 
@@ -252,23 +249,11 @@ return function (plr: Player)
                     return BKItemDescView(scope, {
                         Item = use(self.CurrentSelectedItem),
                         ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                        EquippingItems = self.EquippingItems,
 
                         IsCrafting = true
                     })
-                end),
-
-
-                Components.TextLabel(scope, {
-                    Name = "WIPTitle",
-                    Text = "GEMSTONE FEATURE COMING SOON IN DEMO 1!",
-                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                    Size = UDim2.fromScale(1, 0.6),
-                    TextTransparency = 0.7,
-
-                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.CurrentCategory) == "Gemstone"
-                    end)
-                })
+                end)
             }
         },
 
@@ -326,19 +311,10 @@ return function (plr: Player)
                                 ButtonText = "Craft",
                                 ButtonType = "Confirm",
                                 ButtonClickFunc = function()
-                                    local result = Components:CreateConfirmPrompt(scope, {
-                                        Hint = "Are you sure you wish to craft this item?",
-                                        ConfirmText = "Craft",
-                                        CancelText = "Cancel",
-                                        ConfirmUniqueId = "ConfirmCrafting"..HttpService:GenerateGUID(false)
-                                    }):Wait()
-
-                                    if result == "YES" then
-                                        Events.RequestToCraftItem.Fire({
-                                            ItemId = item,
-                                            ItemUniqueId = itemUniqueId,
-                                        })
-                                    end
+                                    Events.RequestToCraftItem.Fire({
+                                        ItemId = item,
+                                        ItemUniqueId = itemUniqueId,
+                                    })
                                 end
                             })
                         end),
@@ -446,7 +422,7 @@ return function (plr: Player)
 
                             [Children] = {
                                 Components.UIListLayout(scope, {
-                                    Padding = UDim.new(0.004, 0),
+                                    Padding = UDim.new(0.01, 0),
                                     FillDirection = Enum.FillDirection.Horizontal,
                                     VerticalAlignment = Enum.VerticalAlignment.Center,
                                 }),
@@ -454,6 +430,7 @@ return function (plr: Player)
                                 Fusion.ForPairs(scope, self.CraftingMaterials, function(_, scope: Fusion.Scope, itemId: string, amount: number)
                                     return itemId, CraftItemMatSlot(scope, {
                                         ItemId = itemId,
+                                        Items = self.PlayerItems,
                                         Amount = amount
                                     })
                                 end),
@@ -462,8 +439,8 @@ return function (plr: Player)
                                     local price = use(self.CraftingPrice) :: number
 
                                     if price > 0 then
-                                        return CraftItemMatSlot(scope, {
-                                            ItemId = "GOLD",
+                                        return CraftGoldMatSlot(scope, {
+                                            GoldVal = self.Gold,
                                             Amount = price
                                         })
                                     else

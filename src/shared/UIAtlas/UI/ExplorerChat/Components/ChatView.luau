@@ -29,6 +29,14 @@ return function (scope: Fusion.Scope, props: {
 })
 
     local absDialogueSize = Fusion.Value(scope, Vector2.zero)
+    local uistrokeRatio = Fusion.Value(scope, workspace:GetAttribute("UIStrokeScreenRatio") or 1)
+
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-UIStrokeScreenRatio"] = function(val: number)
+            val = val or 1
+            uistrokeRatio:set(val)
+        end
+    }))
 
 
     local lastInputType = FusionComponents.useXboxControllerHotInput(scope)
@@ -120,7 +128,7 @@ return function (scope: Fusion.Scope, props: {
                 RichText = true,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return HarukaLib.RichTextFormatter.Stroke(`<u>{use(props.Speaker)}</u>`, "#000000", 1.6 * workspace:GetAttribute("UIStrokeScreenRatio"), "round", 0)
+                    return HarukaLib.RichTextFormatter.Stroke(`<u>{use(props.Speaker)}</u>`, "#000000", 1.6 * use(uistrokeRatio), "round", 0)
                 end)
             }),
             Components.TextLabel(scope, {
@@ -136,7 +144,7 @@ return function (scope: Fusion.Scope, props: {
                 [Fusion.Out("AbsoluteSize")] = absDialogueSize,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return HarukaLib.RichTextFormatter.Stroke(HarukaLib:RichTextify(use(props.Dialogue)), "#000000", 1.6 * workspace:GetAttribute("UIStrokeScreenRatio"), "round", 0)
+                    return HarukaLib.RichTextFormatter.Stroke(HarukaLib:RichTextify(use(props.Dialogue)), "#000000", 1.6 * use(uistrokeRatio), "round", 0)
                 end),
                 TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(absDialogueSize).Y / (68 / 21)
