@@ -3,8 +3,10 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-
 local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
+
+
+local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
 
 
 local Add, Empty = HarukaLib.Bin()
@@ -17,7 +19,7 @@ Add(HarukaLib.Clock(1, function()
     if not ServerLib:IsCharValid(char) then return end
     if not char:GetAttribute("IsInCombat") then return end
 
-    char.Humanoid:TakeDamage(10)
+    char.Humanoid:TakeDamage(math.ceil(char.Humanoid.MaxHealth * 0.01))
 end))
 
 
@@ -26,18 +28,8 @@ event.Name = "EnemyGotHit"
 event.Parent = script
 
 
-
-Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
-    DMG: number,
-    Attacker: string
-})
-    if script == nil then return end
-    if script.Parent == nil then return end
-    if attacker ~= char then return end
-    if not dmgProps then return end
-    if not dmgProps.DMG then return end
-    if not dmgProps.Attacker then return end
-    if dmgProps.Attacker ~= "ClassAttacks" then return end
+Add(AccessoryUniversal.RegisterEnemyOnHit(event, char, function(targeting, attacker, dmgProps)
+    if dmgProps.AttackType ~= "ClassAttacks" then return end
 
     local result = HarukaLib:RollLoot({
         ["Debuff"] = 3,
@@ -55,7 +47,4 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
     end
 end))
 
-
-
-script.Destroying:Connect(Empty)
-char.PlayerDied.Event:Connect(Empty)
+AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

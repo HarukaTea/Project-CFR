@@ -10,10 +10,14 @@ local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
+
+local Types = require(script.Parent.Parent.Types)
+
+
 local wait = task.wait
 
 
-return function (self: table)
+return function (self: Types.CastItemTable)
     local CastItemLib = self
 
     CastItemLib.HealthPotion = function(player: Player, char: Model) : number?

@@ -8,6 +8,9 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ClassAttackLib = require(ServerScriptService.HarukaServer.Library.ClassAttackLib)
 local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
 
+local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
+
+
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -21,18 +24,7 @@ event.Parent = script
 
 
 
-Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
-    DMG: number,
-    Attacker: string,
-
-    DMGType: string,
-})
-    if script == nil then return end
-    if script.Parent == nil then return end
-    if attacker ~= char then return end
-    if not dmgProps then return end
-    if not dmgProps.DMG then return end
-    if not dmgProps.Attacker then return end
+Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting, attacker, dmgProps)
     if dmgProps.Attacker ~= "ClassAttacks" then return end
 
 
@@ -72,6 +64,4 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
 end))
 
 
-
-script.Destroying:Connect(Empty)
-char.PlayerDied.Event:Connect(Empty)
+AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

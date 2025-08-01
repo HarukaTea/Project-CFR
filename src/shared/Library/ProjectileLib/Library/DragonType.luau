@@ -1,20 +1,17 @@
 --!nocheck
 
-local Debris = game:GetService("Debris")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-local TS = TweenService
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
+
+
+local Types = require(script.Parent.Parent.Types)
+
+
 
 local wait = task.wait
 
-return function (self)
+return function (self: Types.ProjectileTable)
     local ProjectileLib = self
 
     ProjectileLib.LeafDragonMove2 = function(projectile: Model, container: Folder)

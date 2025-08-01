@@ -13,10 +13,14 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
+
+local Types = require(script.Parent.Parent.Types)
+
+
 local wait = task.wait
 
 
-return function (self: table)
+return function (self: Types.CastItemTable)
     local CastItemLib = self
 
 

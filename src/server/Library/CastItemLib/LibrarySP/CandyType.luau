@@ -7,10 +7,13 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
+local Types = require(script.Parent.Parent.Types)
+
+
 local wait = task.wait
 
 
-return function (self: table)
+return function (self: Types.CastItemTable)
     local CastItemLib = self
 
     CastItemLib.HalloweenCandy = function(player: Player, char: Model) : number?

@@ -7,12 +7,16 @@ local RunService = game:GetService("RunService")
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
+local Types = require(script.Parent.Parent.Types)
+
+
 local wait = task.wait
 
 
 --// Main
 
-return function(self: table, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib:IsCharValid(char) then return end
 

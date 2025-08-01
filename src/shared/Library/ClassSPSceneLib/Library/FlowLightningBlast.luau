@@ -10,12 +10,16 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
+
+local Types = require(script.Parent.Parent.Types)
+
+
 local wait = task.wait
 
 
 --// Main
 
-return function(self: table, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib:IsCharValid(char) then return end
 
@@ -235,7 +239,7 @@ return function(self: table, char: Model, projectileUniqueId: string)
 
         local textureIds = {}
         for _, texture: Texture in textures do
-            table.insert(textureIds, texture.Texture)
+            Types.ClassSPSceneTable.insert(textureIds, texture.Texture)
         end
 
         while RunService.RenderStepped:Wait() do

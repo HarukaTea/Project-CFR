@@ -5,10 +5,13 @@ local SSS = game:GetService("ServerScriptService")
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
+
+local Types = require(script.Parent.Parent.Types)
+
 local wait = task.wait
 
 
-return function (self: table)
+return function (self: Types.CastItemTable)
     local CastItemLib = self
 
     CastItemLib.HealthyApple = function(player: Player, char: Model) : number?

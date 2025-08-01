@@ -8,6 +8,9 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
+
+local Types = require(script.Types)
+
 local CastItemLib = {}
 
 local wait = task.wait

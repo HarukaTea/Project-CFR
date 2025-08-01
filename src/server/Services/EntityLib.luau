@@ -28,6 +28,15 @@ local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
 
 
+
+export type EntityObj = {
+    new: (entity: Model) -> EntityObj,
+    Destroy: () -> nil,
+
+    DoAttackTasks: (resolveObj: () -> nil) -> nil
+}
+
+
 local PATH_COSTS = {
     Grass = 0,
     Plastic = 0,
@@ -778,8 +787,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             self.EntityObj = nil
         end
     end)
-    self.EntityObj = require(ServerScriptService.HarukaServer.Library.Entities:FindFirstChild(entity.Name, true)).new(entity)
-
+    self.EntityObj = require(ServerScriptService.HarukaServer.Library.Entities:FindFirstChild(entity.Name, true)).new(entity) :: EntityObj
 
     local hasPosVal = true
 

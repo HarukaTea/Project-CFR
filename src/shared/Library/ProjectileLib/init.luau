@@ -2,13 +2,14 @@
 
 local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
-local TS = TweenService
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaDebris = require(RepS.HarukaShared.Shared.HarukaDebris)
+
+
+local Types = require(script.Types)
 
 local ProjectileLib = {}
 

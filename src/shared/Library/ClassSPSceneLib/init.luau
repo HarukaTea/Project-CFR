@@ -5,10 +5,12 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
+local Types = require(script.Types)
+
 local ClassSPSceneLib = {}
 
 local wait = task.wait
-
 
 
 local function _tweenValue(start: number, duration: number, endTime: number, obj: Instance)

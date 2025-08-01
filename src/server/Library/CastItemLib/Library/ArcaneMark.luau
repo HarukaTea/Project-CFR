@@ -12,10 +12,14 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
 
+
+local Types = require(script.Parent.Parent.Types)
+
+
 local wait = task.wait
 
 
-return function(self: table, player: Player, char: Model, extraInfo: {
+return function(self: Types.CastItemTable, player: Player, char: Model, extraInfo: {
     CostManaFunc: () -> nil
 }) : number?
     local CastItemLib = self
