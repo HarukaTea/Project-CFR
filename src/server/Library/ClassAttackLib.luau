@@ -28,8 +28,8 @@ local function _getCharAndTargeting(plr: Player)
 end
 local function _charAndTargetingCheck(char: Model, targeting: Model)
     if char == nil or targeting == nil then return false end
-    if not ServerLib:IsCharValid(char) then return false end
-    if not ServerLib:IsCharValid(targeting) then return false end
+    if not ServerLib.IsCharValid(char) then return false end
+    if not ServerLib.IsCharValid(targeting) then return false end
 
     return true
 end
@@ -50,16 +50,16 @@ ClassAttackLib.Chain = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    ClassAttackLib:_AddClassUltCharge(plr, 15)
-    ClassAttackLib:_RestoreManaByOrb(char)
+    ClassAttackLib._AddClassUltCharge(plr, 15)
+    ClassAttackLib._RestoreManaByOrb(char)
 
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
 
     local combo = char:GetAttribute("ChainCombo") :: number
     if combo >= 2 then
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char) * combo),
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * combo),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
@@ -68,10 +68,10 @@ ClassAttackLib.Chain = function(plr: Player)
 		comboEff.Parent = targeting.PrimaryPart
 		Debris:AddItem(comboEff, 1)
 
-        ServerLib:ShowText(char, "COMBO!", ClassBook.Chain.Color)
+        ServerLib.ShowText(char, "COMBO!", ClassBook.Chain.Color)
     else
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = ClassAttackLib:_CalDMG("DMG", char),
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = ClassAttackLib._CalDMG("DMG", char),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
@@ -98,7 +98,7 @@ ClassAttackLib.Chain_Ult_None = function(plr: Player)
     Events.PlayAnimation.Fire(plr, {
         AnimId = "BurstSpinAttack"
     })
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "ChainSlash",
         Caster = char,
         ProjectileUniqueId = uniqueId
@@ -110,7 +110,7 @@ ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib:_CalCastingTime(char, 1)
+    local castTime = ClassAttackLib._CalCastingTime(char, 1)
 
 
     Events.OpenCastTimeBar.Fire(plr, {
@@ -135,7 +135,7 @@ ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
     Events.FaceToTargetingEnemy.Fire(plr)
 
 
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "ChainSwordAstral",
         Caster = char,
         ProjectileUniqueId = uniqueId
@@ -151,8 +151,8 @@ ClassAttackLib.Burst = function(plr: Player)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    ClassAttackLib:_AddClassUltCharge(plr, 20)
-    ClassAttackLib:_RestoreManaByOrb(char)
+    ClassAttackLib._AddClassUltCharge(plr, 20)
+    ClassAttackLib._RestoreManaByOrb(char)
 
 
     ServerBindables.RToSpawnOrb:Fire(char.Name, "ArrowOrb")
@@ -168,24 +168,24 @@ ClassAttackLib.Burst = function(plr: Player)
     local arrows = char:GetAttribute("BurstArrow") :: number
 
     if arrows == nil or arrows <= 0 then
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = ClassAttackLib:_CalDMG("DMG", char),
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = ClassAttackLib._CalDMG("DMG", char),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
     else
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = ClassAttackLib:_CalDMG("DMG", char),
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = ClassAttackLib._CalDMG("DMG", char),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char) * arrows),
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * arrows),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
 
-        ServerLib:ShowText(char, "BURST!", ClassBook.Burst.Color)
+        ServerLib.ShowText(char, "BURST!", ClassBook.Burst.Color)
 
         char:SetAttribute("BurstArrow", 0)
     end
@@ -205,7 +205,7 @@ ClassAttackLib.Burst_Ult_None = function(plr: Player)
 
 
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "ChainJump",
         Caster = char,
         ProjectileUniqueId = "nil"
@@ -213,7 +213,7 @@ ClassAttackLib.Burst_Ult_None = function(plr: Player)
     Events.PlayAnimation.Fire(plr, {
         AnimId = "BurstSpinAttack"
     })
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "BurstArrowsSplit",
         Caster = char,
         ProjectileUniqueId = "nil"
@@ -221,8 +221,8 @@ ClassAttackLib.Burst_Ult_None = function(plr: Player)
 
     Promise.delay(0.9):andThen(function()
         for _ = 1, 3 do
-            ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-                DMG = ClassAttackLib:_CalDMG("DMG", char),
+            ClassAttackLib._DealDamageToEnemy(char, targeting, {
+                DMG = ClassAttackLib._CalDMG("DMG", char),
                 DMGType = "Physical",
                 Attacker = "SkillProjectile"
             })
@@ -248,8 +248,8 @@ ClassAttackLib.Reverberation = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    ClassAttackLib:_AddClassUltCharge(plr, 15)
-    ClassAttackLib:_RestoreManaByOrb(char)
+    ClassAttackLib._AddClassUltCharge(plr, 15)
+    ClassAttackLib._RestoreManaByOrb(char)
 
     local resonateNum = math.random(1, 9)
     if char:FindFirstChild("ReverberationEcho") then
@@ -261,23 +261,23 @@ ClassAttackLib.Reverberation = function(plr: Player)
     })
 
 
-    ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib:_CalDMG(ClassBook.Reverberation.Type, char),
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = ClassAttackLib._CalDMG(ClassBook.Reverberation.Type, char),
         DMGType = "Physical",
         Attacker = "ClassAttacks"
     })
 
     local thatResonateNum = targeting:GetAttribute("ReverResonateNum_"..plr.UserId) :: number
     if thatResonateNum and resonateNum == thatResonateNum then
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char, {
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char, {
                 ForceMaxDMG = true
             }) * 3),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
 
-        ServerLib:ShowText(char, "ECHOED!", Color3.fromHex('#81ecec'))
+        ServerLib.ShowText(char, "ECHOED!", Color3.fromHex('#81ecec'))
     end
 end
 ClassAttackLib.Reverberation_Ult_None = function(plr: Player)
@@ -289,7 +289,7 @@ ClassAttackLib.Reverberation_Ult_None = function(plr: Player)
     Events.PlayAnimation.Fire(plr, {
         AnimId = "BurstSpinAttack"
     })
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "BlueEchoUlt",
         Caster = char,
         ProjectileUniqueId = "nil"
@@ -302,8 +302,8 @@ ClassAttackLib.Reverberation_Ult_None = function(plr: Player)
             if not _charAndTargetingCheck(char, targeting) then break end
 
 
-            ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-                DMG = ClassAttackLib:_CalDMG("DMG", char, {
+            ClassAttackLib._DealDamageToEnemy(char, targeting, {
+                DMG = ClassAttackLib._CalDMG("DMG", char, {
                     ForceMaxDMG = true
                 }),
                 DMGType = "Physical",
@@ -337,8 +337,8 @@ ClassAttackLib.Flow = function(plr: Player)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    ClassAttackLib:_AddClassUltCharge(plr, 15)
-    ClassAttackLib:_RestoreManaByOrb(char)
+    ClassAttackLib._AddClassUltCharge(plr, 15)
+    ClassAttackLib._RestoreManaByOrb(char)
 
 
     local heat = char:GetAttribute("FlowHeat") :: number
@@ -347,16 +347,16 @@ ClassAttackLib.Flow = function(plr: Player)
     char:SetAttribute("FlowHeat", nextHeat)
 
 
-    ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib:_CalDMG("Magic", char),
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = ClassAttackLib._CalDMG("Magic", char),
         DMGType = "Magic",
         Attacker = "ClassAttacks"
     })
     if nextHeat >= 100 then
         char:SetAttribute("FlowHeat", 0)
 
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib:_CalDMG("Magic", char) * 3),
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib._CalDMG("Magic", char) * 3),
             DMGType = "Magic",
             Attacker = "ClassAttacks"
         })
@@ -371,7 +371,7 @@ ClassAttackLib.Flow = function(plr: Player)
         burnObj:Activate()
 
 
-        ServerLib:ShowText(char, "FLOW!", ClassBook.Flow.Color)
+        ServerLib.ShowText(char, "FLOW!", ClassBook.Flow.Color)
     end
 end
 ClassAttackLib.Flow_Ult_None = function(plr: Player)
@@ -380,7 +380,7 @@ ClassAttackLib.Flow_Ult_None = function(plr: Player)
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib:_CalCastingTime(char, 1)
+    local castTime = ClassAttackLib._CalCastingTime(char, 1)
 
 
     Events.OpenCastTimeBar.Fire(plr, {
@@ -404,7 +404,7 @@ ClassAttackLib.Flow_Ult_None = function(plr: Player)
     })
     Events.FaceToTargetingEnemy.Fire(plr)
 
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "FlowAyakaUlt",
         Caster = char,
         ProjectileUniqueId = uniqueId
@@ -416,7 +416,7 @@ ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib:_CalCastingTime(char, 3)
+    local castTime = ClassAttackLib._CalCastingTime(char, 3)
 
     local uniqueId2 = HttpService:GenerateGUID(false)
 
@@ -451,12 +451,12 @@ ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
     })
     Events.FaceToTargetingEnemy.Fire(plr)
 
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "FlowGanyuUlt",
         Caster = char,
         ProjectileUniqueId = uniqueId
     })
-    Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
         SceneId = "FlowLightningBlast",
         Caster = char,
         ProjectileUniqueId = uniqueId2
@@ -471,17 +471,17 @@ ClassAttackLib.Rise = function(plr: Player)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    ClassAttackLib:_AddClassUltCharge(plr, 15)
-    ClassAttackLib:_RestoreManaByOrb(char)
+    ClassAttackLib._AddClassUltCharge(plr, 15)
+    ClassAttackLib._RestoreManaByOrb(char)
 
 
-    ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib:_CalDMG("DMG", char),
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = ClassAttackLib._CalDMG("DMG", char),
         DMGType = "Physical",
         Attacker = "ClassAttacks"
     })
-    ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib:_CalDMG("Magic", char),
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = ClassAttackLib._CalDMG("Magic", char),
         DMGType = "Physical",
         Attacker = "ClassAttacks"
     })
@@ -493,8 +493,7 @@ ClassAttackLib.HEAL_ATTACK_Rise = ClassAttackLib.HEAL_ATTACK
 
 --// Private Methods
 
-
-function ClassAttackLib:_CalCastingTime(char: Model, baseTime: number) : number
+function ClassAttackLib._CalCastingTime(char: Model, baseTime: number) : number
     baseTime = baseTime or 1
 
     local intensity = char:GetAttribute("Intensity") or 0
@@ -508,7 +507,7 @@ function ClassAttackLib:_CalCastingTime(char: Model, baseTime: number) : number
 end
 
 
-function ClassAttackLib:_CalDMG(dmgType: string, char: Model, props: {
+function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
     ForceMaxDMG: boolean?,
     ForceDMG: number?,
 }) : number
@@ -523,7 +522,7 @@ function ClassAttackLib:_CalDMG(dmgType: string, char: Model, props: {
     isCrit = result == "Crit"
 
     if isCrit then
-        ServerLib:ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
+        ServerLib.ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
     end
 
 
@@ -565,35 +564,35 @@ function ClassAttackLib:_CalDMG(dmgType: string, char: Model, props: {
 end
 
 
-function ClassAttackLib:_RestoreManaByOrb(char: Model)
+function ClassAttackLib._RestoreManaByOrb(char: Model)
     if char:GetAttribute("Mana") < char:GetAttribute("MaxMana") then
         StatusLib:RestoreManaPercentage(char, char:GetAttribute("ManaRegen"))
     end
 end
 
-function ClassAttackLib:_AddClassUltCharge(plr: Player, amount: number)
+function ClassAttackLib._AddClassUltCharge(plr: Player, amount: number)
     local char = plr.Character
 
     HarukaLib:AddAttr(char, "ClassUltProgress", math.ceil(amount * char:GetAttribute("ClassUltCharge") / 100))
 end
 
 
-function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgProps: {
+function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgProps: {
     DMG: number,
     DMGType: string,
     Attacker: string
 })
-    if not ServerLib:IsCharValid(targeting) then return end
+    if not ServerLib.IsCharValid(targeting) then return end
 
     if targeting:FindFirstChild("AttackImmune") then
         dmgProps.DMG /= 2
         dmgProps.DMG = math.ceil(dmgProps.DMG)
 
-        ServerLib:ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
+        ServerLib.ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
     end
     if dmgProps.DMG <= 0 then
-        ServerLib:ShowText(targeting, "MISS!", Color3.fromHex('#ffffff'))
-        ServerLib:ApplyHitStatus(targeting)
+        ServerLib.ShowText(targeting, "MISS!", Color3.fromHex('#ffffff'))
+        ServerLib.ApplyHitStatus(targeting)
         return
     end
 
@@ -624,8 +623,8 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 
         local class = player:GetAttribute("Class") :: string
 
-        ServerLib:ShowNumber(targeting, dmgProps.DMG, ClassBook[class].Color)
-        ServerLib:ApplyHitStatus(targeting)
+        ServerLib.ShowNumber(targeting, dmgProps.DMG, ClassBook[class].Color)
+        ServerLib.ApplyHitStatus(targeting)
 
 	end):catch(function(err)
         if RunService:IsStudio() then warn(tostring(err)) end
@@ -654,6 +653,10 @@ function ClassAttackLib:_DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         end
     end
 end
+
+
+
+shared.ClassAttackLib = ClassAttackLib
 
 
 return ClassAttackLib

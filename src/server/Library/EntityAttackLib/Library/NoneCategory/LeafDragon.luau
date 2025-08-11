@@ -1,20 +1,13 @@
 --!nocheck
 
-local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
-local RepS = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local TweenService = game:GetService("TweenService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
-local UniversalEntity = require(script.Parent.UniversalEntity)
+local Types = require(script.Parent.Parent.Parent.Types)
+local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 
 
 local wait = task.wait
@@ -53,8 +46,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib:IsCharValid(entity) then return false end
-        if not ServerLib:IsCharValid(target) then return false end
+        if not ServerLib.IsCharValid(entity) then return false end
+        if not ServerLib.IsCharValid(target) then return false end
 
         return true
     end
@@ -62,7 +55,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
     local function _spike(target)
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
         Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -75,7 +68,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
     local function _allAreaBurnCombo()
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position)
+        local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position)
 
         Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -88,7 +81,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
     local function _allAreaBurnCombo2(target: Model)
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
         Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -145,4 +138,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity
+return Entity :: Types.EntityAttackLib

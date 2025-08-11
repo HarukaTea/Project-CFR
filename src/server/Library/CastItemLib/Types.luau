@@ -1,6 +1,6 @@
 
 
-export type CastItemTable = {
+export type CastItemLib = {
     _preCheck: (props: {
         ReqCombat: boolean,
         ReqEnemy: boolean

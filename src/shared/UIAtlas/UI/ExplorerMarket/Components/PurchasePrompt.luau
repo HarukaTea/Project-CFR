@@ -78,7 +78,7 @@ return function(scope: Fusion.Scope, props: {
             Components.UIPadding(scope, {})
         }
     })
-    local amount = ClientLib:TrackInputTextbox({
+    local amount = ClientLib.TrackInputTextbox({
         Scope = scope,
         TextBox = inputTextbox,
 

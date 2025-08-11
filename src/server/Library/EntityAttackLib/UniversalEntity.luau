@@ -12,9 +12,15 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
+
+local Types = require(script.Parent.Types)
+
+
+export type UniversalEntity = Types.UniversalEntity
+
 local wait = task.wait
 
-local UniversalEntity = {}
+local UniversalEntity = {} :: Types.UniversalEntity
 
 
 --// Helper functions
@@ -23,7 +29,7 @@ local function _getCharsByRadius(pos: Vector3, radius: number)
     local charList = {}
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
-        if not ServerLib:IsCharValid(char) then continue end
+        if not ServerLib.IsCharValid(char) then continue end
         if not char:GetAttribute("_CharDataInited") then continue end
 
         local plr = Players:GetPlayerFromCharacter(char)
@@ -51,7 +57,7 @@ end
 
 UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ())
     local function _checkIsValid()
-        if not ServerLib:IsModelValid(entity) then
+        if not ServerLib.IsModelValid(entity) then
             resolveObj()
         end
     end
@@ -116,7 +122,7 @@ UniversalEntity.InitAttackTasks = function(_, self: { any }, resolveObj: () -> (
         end
         lastFunc = rFunc
 
-        if not ServerLib:IsCharValid(rTarget) then continue end
+        if not ServerLib.IsCharValid(rTarget) then continue end
 
 
         self.AttackFuncs[rFunc](rTarget)
@@ -177,11 +183,11 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
 end
 
 
-UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, string)
+UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
     end
-    if not ServerLib:IsCharValid(entity) then
+    if not ServerLib.IsCharValid(entity) then
         return false, "Dead"
     end
 
@@ -205,4 +211,8 @@ UniversalEntity.DeadTask = function(_, self: { any })
 end
 
 
-return UniversalEntity
+
+shared.UniversalEntity = UniversalEntity
+
+
+return UniversalEntity :: UniversalEntity

@@ -125,7 +125,7 @@ return {
     },
 
     Execution = {
-        Icon = "rbxassetid://128714575176870",
+        Icon = "rbxassetid://126361803830043",
         Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 

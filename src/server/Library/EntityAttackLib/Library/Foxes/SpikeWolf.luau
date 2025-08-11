@@ -2,18 +2,18 @@
 
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local TweenService = game:GetService("TweenService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
-local UniversalEntity = require(script.Parent.Parent.UniversalEntity)
+local Types = require(script.Parent.Parent.Parent.Types)
+local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
+
+local FoxUniversal = require(script.Parent.FoxUniversal)
 
 
 local wait = task.wait
@@ -51,23 +51,9 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     UniversalEntity:InitAttackTables(self)
 
 
-
-    --// init
-    do
-        entity.PrimaryPart.CFrame *= CFrame.new(0, 7, 0)
-
-
-        local linearVel = Instance.new("LinearVelocity")
-        linearVel.ForceLimitsEnabled = false
-        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("AlignMoverAttachment")
-        linearVel.VectorVelocity = Vector3.zero
-        linearVel.Parent = entity.PrimaryPart
-    end
-
-
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib:IsCharValid(entity) then return false end
-        if not ServerLib:IsCharValid(target) then return false end
+        if not ServerLib.IsCharValid(entity) then return false end
+        if not ServerLib.IsCharValid(target) then return false end
 
         return true
     end
@@ -78,48 +64,34 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _moving()
-        local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
+        local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
             Vector3.new(math.random(-32, 32), 0, math.random(-32, 32)))
 
-        entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, 7, 0) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
-    end
-    local function _spike(target: Model)
-        _lookAt(target)
-
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
-            Entity = entity,
-            AnimId = "SpikeAttack"
-        })
-
-
-        local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
-
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
-            ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = "BeeMove1",
-            ProjectileCF = CFrame.new(projectilePos),
-            ProjectileOwner = entity
-        })
-
-        UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
+        entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
     end
     local function _spikeShot(target: Model)
         _lookAt(target)
 
+        FoxUniversal.SpikeShot(entity, target)
+    end
+    local function _spikeRain(target: Model)
+        FoxUniversal.SpikeRain(entity, target)
+    end
+    local function _wolfBite(target: Model)
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
-            AnimId = "SpikeAttack"
+            AnimId = "WolfBite"
         })
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = entity.PrimaryPart.CFrame
+        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-        projectilePos = CFrame.lookAt(projectilePos.Position, target.PrimaryPart.Position)
+        projectilePos = HarukaLib:CFLookAt(projectilePos, entity.PrimaryPart.Position)
+
 
         Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
-            ProjectileId = "BeeMove2",
+            ProjectileId = "WolfMove4",
             ProjectileCF = projectilePos,
             ProjectileOwner = entity
         })
@@ -127,24 +99,28 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
 
+
+
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
-        for _ = 1, math.random(1, 3) do
+        for _ = 1, math.random(2, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-            _spike(target)
-            wait(1)
+
+            _spikeRain(target)
+            wait(0.8)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
-        for _ = 1, math.random(1, 3) do
+        for _ = 1, math.random(2, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
 
-            _spikeShot(target)
-            wait(0.5)
+            _wolfBite(target)
+            wait(0.8)
         end
     end)
+
 
     --// combo attack functions
     table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
@@ -157,10 +133,21 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             end
         end
     end)
+    table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
+        if comboR == 1 then
+            for _ = 1, math.random(1, 2) do
+                if not _checkIsTargetOrEntityValid(target) then break end
+
+
+                _spikeShot(target)
+                wait(0.8)
+            end
+        end
+    end)
 
 
     --// attack loop
-    wait(1)
+    wait(0.5)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
 
@@ -173,4 +160,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity
+return Entity :: Types.EntityAttackLib

@@ -32,3 +32,7 @@ for _, player: Player in Players:GetPlayers() do
     Promise.try(initPlayer, player)
 end
 Players.PlayerAdded:Connect(initPlayer)
+
+
+
+workspace:SetAttribute("Haruka_ServerPlayerLibInited", true)

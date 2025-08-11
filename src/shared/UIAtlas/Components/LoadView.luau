@@ -32,12 +32,12 @@ return function (scope: Fusion.Scope, props: {
     })
     local texEmblem = Components.ImageLabel(scope, {
         Name = "Emblem",
-        AnchorPoint = Vector2.new(1, 1),
+        AnchorPoint = Vector2.new(0.5, 1),
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
-        Position = UDim2.fromScale(0.99, 0),
-        Size = UDim2.fromScale(2.5, 2.5),
-        Image = "rbxassetid://72405016863286",
-        ImageTransparency = 0.94,
+        Position = UDim2.fromScale(0.5, -1),
+        Size = UDim2.fromScale(1.5, 1.5),
+        Image = "rbxassetid://109494337237105",
+        ImageTransparency = 0.25,
     })
 
 

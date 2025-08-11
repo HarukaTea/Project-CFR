@@ -38,7 +38,7 @@ return function (UI: ScreenGui, self: { any })
 
 
     --// track effect list
-    ClientLib:TrackEffectListToUI({
+    ClientLib.TrackEffectListToUI({
         Target = self.char,
         Scope = scope,
         GuiContainer = bottom.CharacterStats.Div.Main

@@ -49,7 +49,7 @@ return function (scope: Fusion.Scope, props: {
             Fusion.ForValues(scope, targeting, function(_, scope: Fusion.Scope, target: ObjectValue)
                 local HP = Fusion.Value(scope, 100)
 
-                if not ClientLib:IsCharValid(target.Value) then return nil end
+                if not ClientLib.IsCharValid(target.Value) then return nil end
 
                 table.insert(scope, HarukaLib:Hydrate(target.Value.Humanoid, {
                     ["Prop-Health"] = function(newHP: number)

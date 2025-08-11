@@ -10,6 +10,8 @@ local SoundService = game:GetService("SoundService")
 
 
 local ServerWorldLib = {}
+ServerWorldLib.Funcs = {}
+
 
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -31,12 +33,10 @@ function ServerWorldLib:Init()
     end
 
 
-    for funcId: string, func: (self) -> nil in ServerWorldLib do
-        if string.find(funcId, "_Do") and typeof(func) == "function" then
-            Promise.try(func, self):catch(function(err)
-                warn(tostring(err))
-            end):await()
-        end
+    for _, func: () -> nil in ServerWorldLib.Funcs do
+        Promise.try(func):catch(function(err)
+            warn(tostring(err))
+        end):await()
     end
 end
 
@@ -45,7 +45,7 @@ end
 
 
 
-function ServerWorldLib:_DoCreateEssentialFolders()
+table.insert(ServerWorldLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
     projectileContainer.Name = "ProjectileSymbolContainer"
     projectileContainer.Parent = ServerStorage
@@ -77,10 +77,10 @@ function ServerWorldLib:_DoCreateEssentialFolders()
     local partyHolderContainer = Instance.new("Folder")
     partyHolderContainer.Name = "PartyHolder"
     partyHolderContainer.Parent = workspace.MapComponents
-end
+end)
 
 
-function ServerWorldLib:_DoCreateCraftingProductEntities()
+table.insert(ServerWorldLib.Funcs, function()
     for _, product in ItemBook:GetAllItems() do
         local info = ItemBook:GetItemInfo(product)
 
@@ -98,10 +98,10 @@ function ServerWorldLib:_DoCreateCraftingProductEntities()
 
         productVal.Parent = workspace.CraftingProductContainer
     end
-end
+end)
 
 
-function ServerWorldLib:_DoTrees()
+table.insert(ServerWorldLib.Funcs, function()
     local pathModifier = Instance.new("PathfindingModifier")
     pathModifier.Label = "DangerZone"
     pathModifier.PassThrough = false
@@ -138,10 +138,10 @@ function ServerWorldLib:_DoTrees()
 
         pathModifier:Clone().Parent = part
     end
-end
+end)
 
 
-function ServerWorldLib:_DoMapOptimization()
+table.insert(ServerWorldLib.Funcs, function()
     for _, pathLink: PackageLink in ReplicatedStorage:GetDescendants() do
         if pathLink:IsA("PackageLink") then
             pathLink:Destroy()
@@ -172,10 +172,10 @@ function ServerWorldLib:_DoMapOptimization()
     end
     _optimize(workspace)
     _optimize(ReplicatedStorage)
-end
+end)
 
 
-function ServerWorldLib:_DoPlayerBorderInit()
+table.insert(ServerWorldLib.Funcs, function()
     local function _updateBorder(border: Model)
         for _, child: Instance in border.Border:GetChildren() do
             if child:IsA("BasePart") and child.Name == "Part" then
@@ -193,10 +193,10 @@ function ServerWorldLib:_DoPlayerBorderInit()
     for _, border: Model in CollectionService:GetTagged("EncounterBorder") do
         _updateBorder(border)
     end
-end
+end)
 
 
-function ServerWorldLib:_DoPlayerOrbInit()
+table.insert(ServerWorldLib.Funcs, function()
     for _, orb: Model in ReplicatedStorage.Packages.ClassAttacks:GetDescendants() do
         if not orb:HasTag("OrbEntity") then continue end
 
@@ -237,10 +237,10 @@ function ServerWorldLib:_DoPlayerOrbInit()
 
         orb.Hitbox.CanTouch = true
     end
-end
+end)
 
 
-function ServerWorldLib:_DoTerrainTag()
+table.insert(ServerWorldLib.Funcs, function()
     local terrainFolders = {}
 
     for _, folder: Folder in workspace.Maps:GetDescendants() do
@@ -267,10 +267,10 @@ function ServerWorldLib:_DoTerrainTag()
             end
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoInitSoundGroups()
+table.insert(ServerWorldLib.Funcs, function()
     for _, material in Enum.Material:GetEnumItems() do
         if not ReplicatedStorage.Packages.Audio.FS_SFXs:FindFirstChild(material.Name) then
             local airReplacement = ReplicatedStorage.Packages.Audio.FS_SFXs.Air:Clone()
@@ -303,10 +303,10 @@ function ServerWorldLib:_DoInitSoundGroups()
             end
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoInitCollision()
+table.insert(ServerWorldLib.Funcs, function()
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.CombatBorder, CollisionBook.Group.Hitbox)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.EncounterBorder, CollisionBook.Group.NoCollision)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyModels, CollisionBook.Group.EnemyBodyPart)
@@ -319,11 +319,11 @@ function ServerWorldLib:_DoInitCollision()
     CollectionService:GetInstanceAddedSignal("NPCEntity"):Connect(function(npc: Model)
         HarukaLib:SetCollisionGroup(npc, CollisionBook.Group.NPCBodyPart)
     end)
-end
+end)
 
 
 
-function ServerWorldLib:_DoMarketNPCOptimizeInit()
+table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Markets") then return end
 
 
@@ -364,10 +364,10 @@ function ServerWorldLib:_DoMarketNPCOptimizeInit()
             end
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoInitNPCs()
+table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("NPCs") then return end
 
 
@@ -392,10 +392,10 @@ function ServerWorldLib:_DoInitNPCs()
             animTrack:Play()
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoZoneAreasInit()
+table.insert(ServerWorldLib.Funcs, function()
     local areaZones = Instance.new("Folder")
     areaZones.Name = "AreaZones"
 
@@ -417,13 +417,13 @@ function ServerWorldLib:_DoZoneAreasInit()
         end
     end
     areaZones.Parent = workspace:FindFirstChild("MapComponents") or workspace
-end
+end)
 
 
 
 
 
-function ServerWorldLib:_DoFlowerBushCastShadowInit()
+table.insert(ServerWorldLib.Funcs, function()
     local flowerContainer = Instance.new("Folder")
     flowerContainer.Name = "FlowerContainer"
     flowerContainer.Parent = workspace
@@ -464,11 +464,11 @@ function ServerWorldLib:_DoFlowerBushCastShadowInit()
             end
         end
     end
-end
+end)
 
 
 
-function ServerWorldLib:_DoTagPrompts()
+table.insert(ServerWorldLib.Funcs, function()
 	local function _updatePrompt(prompt: ProximityPrompt)
 		if not prompt:IsA("ProximityPrompt") then return end
 
@@ -494,20 +494,20 @@ function ServerWorldLib:_DoTagPrompts()
 		_updatePrompt(child)
 	end
 	workspace.DescendantAdded:Connect(_updatePrompt)
-end
+end)
 
 
-function ServerWorldLib:_DoTrashcanServerStorageClear()
+table.insert(ServerWorldLib.Funcs, function()
     if ServerStorage:FindFirstChild("Trashcan") then
         ServerStorage.Trashcan:Destroy()
     end
     if ServerStorage:FindFirstChild("Brushtool2_Plugin_Storage") then
         ServerStorage.Brushtool2_Plugin_Storage:Destroy()
     end
-end
+end)
 
 
-function ServerWorldLib:_DoShutdownTracker()
+table.insert(ServerWorldLib.Funcs, function()
     local function shutdownSetup(closeReason: Enum.CloseReason)
         if RunService:IsStudio() then return end
         if closeReason ~= Enum.CloseReason.DeveloperUpdate then return end
@@ -515,10 +515,10 @@ function ServerWorldLib:_DoShutdownTracker()
         Events.CreateFSNotify.FireList(Players:GetPlayers(), string.upper("CF is updating, please wait..."), 15)
     end
     game:BindToClose(shutdownSetup)
-end
+end)
 
 
-function ServerWorldLib:_DoChests()
+table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Chests") then return end
 
 
@@ -527,10 +527,10 @@ function ServerWorldLib:_DoChests()
             chest:AddTag("ChestEntity")
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoTrusses()
+table.insert(ServerWorldLib.Funcs, function()
     for _, truss: TrussPart in workspace:GetDescendants() do
         if truss.ClassName == "TrussPart" and not truss:GetAttribute("IgnoreCriRPGReq") then
             truss:AddTag("TrussEntity")
@@ -538,16 +538,16 @@ function ServerWorldLib:_DoTrusses()
             truss.CanTouch = true
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoMobInit()
+table.insert(ServerWorldLib.Funcs, function()
     for _, mob: Model in ReplicatedStorage.Packages.EnemyModels:GetDescendants() do
         if not mob:IsA("Model") then continue end
 
         for _, child: Instance in mob:GetChildren() do
             if child:IsA("BasePart") and mob:FindFirstChild(child.Name .. "Model") then
-                ServerLib:WeldModel(child, mob[child.Name .. "Model"])
+                ServerLib.WeldModel(child, mob[child.Name .. "Model"])
             end
         end
     end
@@ -560,10 +560,10 @@ function ServerWorldLib:_DoMobInit()
             mob.CustomPhysicalProperties = PhysicalProperties.new(100, 2, 1)
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoStatuesInit()
+table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Statues") then return end
 
     for _, statue: Model in workspace.MapComponents.Statues:GetChildren() do
@@ -571,10 +571,10 @@ function ServerWorldLib:_DoStatuesInit()
             statue:AddTag("StatueEntity")
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoInitMaterials()
+table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Materials") then return end
 
 
@@ -594,16 +594,15 @@ function ServerWorldLib:_DoInitMaterials()
             giver:FindFirstChildOfClass("ProximityPrompt").Enabled = true
         end
     end):catch(function() end)
-end
+end)
 
 
-function ServerWorldLib:_DoInitOceanWaves()
+table.insert(ServerWorldLib.Funcs, function()
     local oceans = workspace.Maps:FindFirstChild("Oceans") :: Folder
     if not oceans then return end
 
     local boneIniter = Instance.new("AnimationController")
     boneIniter.Parent = oceans
-
 
     for _, ocean: MeshPart in oceans:GetDescendants() do
         if ocean:IsA("MeshPart") then
@@ -623,23 +622,16 @@ function ServerWorldLib:_DoInitOceanWaves()
             end
         end
     end
-end
+end)
 
 
-function ServerWorldLib:_DoInitFloatables()
-    local floatableContainer = Instance.new("Folder")
-    floatableContainer.Name = "FloatableContainer"
-    floatableContainer.Parent = workspace
-end
-
-
-function ServerWorldLib:_DoInitCASkyAtmosphere()
+table.insert(ServerWorldLib.Funcs, function()
     if Lighting:FindFirstChild("_Archived") then
         for _, sky: Sky in Lighting._Archived:GetChildren() do
             sky.Parent = Lighting
         end
     end
-end
+end)
 
 
 return ServerWorldLib

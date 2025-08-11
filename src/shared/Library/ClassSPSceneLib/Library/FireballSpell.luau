@@ -21,11 +21,11 @@ local wait = task.wait
 
 return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
-    if not ClientLib:IsCharValid(char) then return end
+    if not ClientLib.IsCharValid(char) then return end
 
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib:IsCharValid(targetingEnemy) then return end
+    if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
     local fireball = RepS.Packages.SkillProjectiles:FindFirstChild("Fireball", true):Clone() :: BasePart
@@ -54,7 +54,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
             local pos = fireball.Position
 
             for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
-                if not ClientLib:IsCharValid(symbol.Value) then continue end
+                if not ClientLib.IsCharValid(symbol.Value) then continue end
 
                 local entity = symbol.Value :: Model
                 local enemyPos = entity.PrimaryPart.Position

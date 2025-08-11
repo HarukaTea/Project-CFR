@@ -28,7 +28,7 @@ AccessoryUniversal.RegisterEnemyOnHit = function(
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
-        if not ServerLib:IsCharValid(targeting) then return end
+        if not ServerLib.IsCharValid(targeting) then return end
         if not dmgProps then return end
         if not dmgProps.DMG then return end
         if not dmgProps.AttackType then return end

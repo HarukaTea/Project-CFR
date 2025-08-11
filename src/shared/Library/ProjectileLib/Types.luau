@@ -1,6 +1,6 @@
 
 
-export type ProjectileTable = {
+export type ProjectileLib = {
     _incomingCylinderAtt: (projectileBase: BasePart) -> nil,
     _rotateAttentionPoint: (projectileBase: BasePart, container: Folder, props: {
         ShouldDetail: boolean,

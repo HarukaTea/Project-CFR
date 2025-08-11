@@ -1,6 +1,6 @@
 
 
-export type ClassSPSceneTable = {
+export type ClassSPSceneLib = {
     _tweenValue: (start: number, duration: number, endTime: number, obj: Instance) -> NumberValue,
     _createMarkContainer: () -> Folder,
 

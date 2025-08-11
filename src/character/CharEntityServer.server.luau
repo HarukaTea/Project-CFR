@@ -171,7 +171,7 @@ end
 
 function CharLib:_ListenZoneInTracker()
     Add(HarukaLib.Clock(0.5, function()
-		if not ServerLib:IsModelValid(char) then return end
+		if not ServerLib.IsModelValid(char) then return end
 		if not plr then return end
 
 
@@ -199,7 +199,7 @@ function CharLib:_ListenBadgesCompletionsTracker()
 		if not plr:GetAttribute("BADGE_"..badgeId) then
 			plr:SetAttribute("BADGE_"..badgeId, true)
 
-			ServerLib:GiveBadge(badgeId, plr)
+			ServerLib.GiveBadge(badgeId, plr)
 		end
 	end
 

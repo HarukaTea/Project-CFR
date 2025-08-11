@@ -48,7 +48,7 @@ end
 
 
 function HarukaDoT:Activate()
-    if not ServerLib:IsCharValid(self.Target) then return end
+    if not ServerLib.IsCharValid(self.Target) then return end
 
     local effectSymbol = Instance.new("StringValue")
     effectSymbol.Name = "EffectSymbol"
@@ -83,7 +83,7 @@ function HarukaDoT:Activate()
 
     for i = 1, self.Duration do
         table.insert(self.Tasks, GlobalTimer:AddTask(i, function()
-            if not ServerLib:IsCharValid(self.Target) then return end
+            if not ServerLib.IsCharValid(self.Target) then return end
 
             if StatusLib[self.Type] then
                 StatusLib[self.Type](StatusLib, self.Target, self)

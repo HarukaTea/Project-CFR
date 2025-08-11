@@ -357,7 +357,7 @@ return function (scope: Fusion.Scope, props: {
                             weapon = weapon:Clone()
                             weapon:AddTag("ClassWeapon")
 
-                            ClientLib:WeldWeapon(weapon, charClone)
+                            ClientLib.WeldWeapon(weapon, charClone)
                         end
 
                         repeat wait() until vpFrame.Parent

@@ -120,7 +120,7 @@ function ClientWorldLib:_DoDefaultEventTracker()
         if part.Name == "ResetCamera" then
             camera.CameraType = Enum.CameraType.Custom
 
-            if not ClientLib:IsCharValid(plr.Character) then return end
+            if not ClientLib.IsCharValid(plr.Character) then return end
             camera.CameraSubject = plr.Character.Humanoid
             return
         end
@@ -265,18 +265,18 @@ function ClientWorldLib:_ListenOrbTracker()
 
             local lifeTime = orb:GetAttribute("Duration") :: number
             Promise.delay(lifeTime - 5):andThen(function()
-                if not ClientLib:IsModelValid(orb) then return end
+                if not ClientLib.IsModelValid(orb) then return end
 
                 local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
                 countdown.Transparency = 1
-                countdown.BillboardGui.TextLabel.TextColor3 = Color3.fromHex('#81ecec')
+                countdown.BillboardGui.TextLabel.TextColor3 = Color3.fromHex('#ffffff')
                 countdown.CFrame = orb.PrimaryPart.CFrame
                 countdown.Parent = orb
                 Debris:AddItem(countdown, 5)
 
                 Promise.try(function()
                     for i = 5, 1, -1 do
-                        if not ClientLib:IsModelValid(orb) then break end
+                        if not ClientLib.IsModelValid(orb) then break end
                         if countdown == nil then break end
 
                         countdown.BillboardGui.TextLabel.Text = tostring(i)
@@ -286,7 +286,7 @@ function ClientWorldLib:_ListenOrbTracker()
 
             end):catch(function() end)
             Promise.delay(lifeTime - 0.5):andThen(function()
-                if not ClientLib:IsModelValid(orb) then return end
+                if not ClientLib.IsModelValid(orb) then return end
 
                 orb:RemoveTag("OrbEntity")
 
@@ -324,7 +324,7 @@ end
 
 function ClientWorldLib:_ListenDMGNumberTracker()
     local function _spawnDMGNumber(entity: Model, text: string, color: Color3)
-        if not ClientLib:IsModelValid(entity) then return end
+        if not ClientLib.IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
@@ -385,7 +385,7 @@ end
 
 function ClientWorldLib:_ListenTextTracker()
     local function _spawnText(entity: Model, text: string, color: Color3)
-        if not ClientLib:IsModelValid(entity) then return end
+        if not ClientLib.IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
@@ -441,7 +441,7 @@ end
 
 function ClientWorldLib:_ListenHitStatusTracker()
     local function _onHit(entity: Model)
-        if not ClientLib:IsModelValid(entity) then return end
+        if not ClientLib.IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
@@ -538,7 +538,7 @@ function ClientWorldLib:_ListenItemDisplayTracker()
         location += Vector3.new(
             math.random(-4, 4), 0, math.random(-4, 4)
         )
-        location = ClientLib:FindGroundByRay(location)
+        location = ClientLib.FindGroundByRay(location)
 
         for _ = 1, data.ItemAmount do
             local itemSphere = ReplicatedStorage.Packages.Effects.ItemDisplay:Clone() :: BasePart
@@ -637,7 +637,7 @@ end
 function ClientWorldLib:_ListenChestOpenVFXTracker()
     Events.OpenChestClientTween.On(function(data)
         local chest = data.Chest :: Model
-        if not ClientLib:IsModelValid(chest) then return end
+        if not ClientLib.IsModelValid(chest) then return end
 
         SoundService.SFXs.ChestDrop:Play()
 

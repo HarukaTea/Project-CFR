@@ -42,7 +42,7 @@ return function (self: Types.CastItemTable)
 
 
         local uniqueId = HttpService:GenerateGUID(false)
-        local castTime = ClassAttackLib:_CalCastingTime(char, 1)
+        local castTime = ClassAttackLib._CalCastingTime(char, 1)
 
 
         Events.OpenCastTimeBar.Fire(player, {
@@ -68,7 +68,7 @@ return function (self: Types.CastItemTable)
             Events.FaceToTargetingEnemy.Fire(player)
 
 
-            Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
                 SceneId = "FireballSpell",
                 Caster = char,
                 ProjectileUniqueId = uniqueId,
@@ -125,7 +125,7 @@ return function (self: Types.CastItemTable)
 
         Events.Spell_ExtraJumpSupport.Fire(player)
 
-        Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "ChainJump",
             Caster = char,
             ProjectileUniqueId = "nil"

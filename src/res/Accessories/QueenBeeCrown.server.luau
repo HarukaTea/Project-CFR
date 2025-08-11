@@ -33,8 +33,8 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
         ["None"] = 99
     })
     if result == "Execution" then
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib:_CalDMG("DMG", char, {
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char, {
                 ForceMaxDMG = true
             }) * 3),
             DMGType = "Physical",
@@ -52,8 +52,8 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
             debuffObj:Activate()
         end
 
-        ServerLib:ShowText(char, "EXECUTION!", Color3.fromRGB(255, 0, 0))
-        ServerLib:ShowText(targeting, "EXECUTION!", Color3.fromRGB(255, 0, 0))
+        ServerLib.ShowText(char, "EXECUTION!", Color3.fromRGB(255, 0, 0))
+        ServerLib.ShowText(targeting, "EXECUTION!", Color3.fromRGB(255, 0, 0))
     end
 
 

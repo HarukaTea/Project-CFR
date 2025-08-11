@@ -9,6 +9,9 @@ local TeleportService = game:GetService("TeleportService")
 
 
 local AbyssWorldLib = {}
+AbyssWorldLib.Funcs = {}
+AbyssWorldLib.ListenFuncs = {}
+
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
@@ -28,18 +31,13 @@ local wait = task.wait
 
 
 function AbyssWorldLib:Init()
-    for funcId: string, func: (self) -> nil in AbyssWorldLib do
-        if string.find(funcId, "_Do") and typeof(func) == "function" then
-            Promise.try(func, self):catch(function(err)
-                warn(tostring(err))
-            end):await()
-        end
+    for _, func: () -> nil in AbyssWorldLib.Funcs do
+        Promise.try(func, AbyssWorldLib):catch(function(err)
+            warn(tostring(err))
+        end):await()
     end
-
-    for funcId: string, func: (self) -> nil in AbyssWorldLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
-        end
+    for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
+        func()
     end
 end
 
@@ -47,7 +45,7 @@ end
 --// Private functions
 
 
-function AbyssWorldLib:_DoInitAbyssInfo()
+table.insert(AbyssWorldLib.Funcs, function(self)
     if not workspace:GetAttribute("AbyssId") then return end
 
     repeat wait() until Players:FindFirstChildOfClass("Player")
@@ -94,13 +92,13 @@ function AbyssWorldLib:_DoInitAbyssInfo()
     end
 
     workspace:SetAttribute("DungeonStarted", false)
-end
+end)
 
 
 
 
 
-function AbyssWorldLib:_ListenAbyssRequestsTracker()
+table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.DUNGEON_RequestToStartDungeon.SetCallback(function(plr: Player)
         workspace:SetAttribute("DungeonStarted", true)
 
@@ -129,12 +127,12 @@ function AbyssWorldLib:_ListenAbyssRequestsTracker()
 
         if clockDisconnect then clockDisconnect() end
     end)
-end
+end)
 
 
 
 
-function AbyssWorldLib:_ListenBossEndTracker()
+table.insert(AbyssWorldLib.ListenFuncs, function(self)
     local folder = workspace.Enemies:FindFirstChild("_DUNGEON_BOSS") :: Folder
     if not folder then
         warn("Did you forget to add the _BOSS folder to the Enemies folder?")
@@ -166,7 +164,7 @@ function AbyssWorldLib:_ListenBossEndTracker()
         Promise.try(function()
             local char = player.Character
             local luck = 1
-            if ServerLib:IsCharValid(char) then
+            if ServerLib.IsCharValid(char) then
                 luck = char:GetAttribute("Luck") / 100 or 1
             end
             luck = math.max(1, luck)
@@ -177,7 +175,7 @@ function AbyssWorldLib:_ListenBossEndTracker()
 
                 local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot(), luck)
 
-                ServerLib:GiveItemDrop(player, result, self.AbyssId * 5)
+                ServerLib.GiveItemDrop(player, result, self.AbyssId * 5)
                 wait(0.15)
             end
 
@@ -186,7 +184,7 @@ function AbyssWorldLib:_ListenBossEndTracker()
             if weaponDrop ~= "None" then
                 local itemInfo = ItemBook:GetItemInfo(weaponDrop)
 
-                ServerLib:GiveItemDrop(player, weaponDrop, 1)
+                ServerLib.GiveItemDrop(player, weaponDrop, 1)
 
                 Events.CreateSystemNotify.FireList(
                     CollectionService:GetTagged("PlayerEntity"),
@@ -219,7 +217,7 @@ function AbyssWorldLib:_ListenBossEndTracker()
 
     wait(1)
     TeleportService:TeleportAsync(AssetBook.PlaceIds.Mainworld, Players:GetPlayers(), teleportOptions)
-end
+end)
 
 
 

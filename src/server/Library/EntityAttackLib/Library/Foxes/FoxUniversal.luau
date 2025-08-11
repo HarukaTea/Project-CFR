@@ -1,20 +1,17 @@
 --!nocheck
 
-local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local TweenService = game:GetService("TweenService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
-local UniversalEntity = require(script.Parent.Parent.UniversalEntity)
+local Types = require(script.Parent.Parent.Parent.Types)
+local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 
 
 local wait = task.wait
@@ -56,7 +53,7 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
 
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+    local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
     Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
@@ -77,7 +74,7 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
             if i == 1 then
                 random = Vector3.zero
             end
-            local post = ServerLib:FindGroundByRay(projectilePos + random)
+            local post = ServerLib.FindGroundByRay(projectilePos + random)
 
             Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
                 ProjectileUniqueId = projectileUniqueId,

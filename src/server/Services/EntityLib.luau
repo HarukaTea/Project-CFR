@@ -23,18 +23,10 @@ local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
+local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityAttackLib)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
-
-
-
-export type EntityObj = {
-    new: (entity: Model) -> EntityObj,
-    Destroy: () -> nil,
-
-    DoAttackTasks: (resolveObj: () -> nil) -> nil
-}
 
 
 local PATH_COSTS = {
@@ -63,7 +55,7 @@ local function _getCharsByRadius(pos: Vector3, radius: number)
     local charList = {}
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
-        if not ServerLib:IsCharValid(char) then continue end
+        if not ServerLib.IsCharValid(char) then continue end
         if not char:GetAttribute("_CharDataInited") then continue end
 
         if (char.PrimaryPart.Position - pos).Magnitude < radius then
@@ -89,14 +81,14 @@ local joinCombatSignal = Signal.new()
 local destroyEntityObjSignal = Signal.new()
 
 enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: string)
-    if not ServerLib:IsCharValid(entity) then return end
+    if not ServerLib.IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
 
     if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then return end
 
 
-    if not ServerLib:IsCharValid(target) then return end
+    if not ServerLib.IsCharValid(target) then return end
     if target:GetAttribute("IsInCombat") then return end
 
 
@@ -108,12 +100,12 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: str
     end
 end)
 joinCombatSignal:Connect(function(entity: Model, target: Model)
-    if not ServerLib:IsCharValid(entity) then return end
+    if not ServerLib.IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
     if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") < 3 then return end
 
-    if not ServerLib:IsCharValid(target) then return end
+    if not ServerLib.IsCharValid(target) then return end
 
     for _, entityObj in allEntityPool do
         if entityObj.Entity == entity then
@@ -178,10 +170,10 @@ Events.RequestToStartCombat.SetCallback(function(plr: Player, data)
     if not combatMode then return end
 
 
-    if not ServerLib:IsCharValid(entity) then return end
+    if not ServerLib.IsCharValid(entity) then return end
 
     local char = plr.Character
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     enterCombatSignal:Fire(entity, char, combatMode)
 end)
@@ -269,7 +261,7 @@ function EntityLib:EntityInit()
         local targetingList = self.Entity.TargetingList
 
         for _, targetObj: ObjectValue in targetingList:GetChildren() do
-            if not ServerLib:IsCharValid(targetObj.Value) then
+            if not ServerLib.IsCharValid(targetObj.Value) then
                 targetObj:Destroy()
             end
         end
@@ -338,7 +330,7 @@ end
 
 
 function EntityLib:_SpawnModel()
-    if ServerLib:IsModelValid(self.Entity) then return end
+    if ServerLib.IsModelValid(self.Entity) then return end
 
     _enemyVariant(self.Locator)
 
@@ -597,7 +589,7 @@ function EntityLib:_RoamTask()
         local AREA_MAG = 15.99
 
         while wait(1.5 + math.random(10) / 10) do
-            if not ServerLib:IsCharValid(entity) then break end
+            if not ServerLib.IsCharValid(entity) then break end
             if entity:GetAttribute("IsInCombat") then break end
 
             if self.NearestChar then continue end
@@ -614,11 +606,11 @@ function EntityLib:_RoamTask()
 
                 local isValid = false
                 local repeatTimes = 0
-                local rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
+                local rPos = ServerLib.FindGroundByRayForOrb(randomScatterPos)
                 while repeatTimes <= 15 do
                     if isValid then break end
 
-                    rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
+                    rPos = ServerLib.FindGroundByRayForOrb(randomScatterPos)
 
                     isValid = path:IsPathValid(rPos)
                     repeatTimes += 1
@@ -640,7 +632,7 @@ function EntityLib:_RoamTask()
 
 
         while wait(0.07) do
-            if not ServerLib:IsCharValid(entity) then break end
+            if not ServerLib.IsCharValid(entity) then break end
 
 
             if entity:GetAttribute("IsInCombat") then break end
@@ -657,7 +649,7 @@ function EntityLib:_RoamTask()
                 local nearestDist = 999
 
                 for _, char: Model in nearestChars do
-                    if not ServerLib:IsCharValid(char) then continue end
+                    if not ServerLib.IsCharValid(char) then continue end
 
                     if char:GetAttribute("IsInCombat") then continue end
                     if char:FindFirstChild("CombatCooldown") then continue end
@@ -665,7 +657,7 @@ function EntityLib:_RoamTask()
 
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
-                    if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
+                    if mag > 0 and mag < nearestDist and ServerLib.IsCharValid(char) then
                         if path:IsPathValid(char.PrimaryPart.Position) then
                             nearestDist = mag
                             nearestChar = char
@@ -673,7 +665,7 @@ function EntityLib:_RoamTask()
                     end
                 end
 
-                if nearestChar and ServerLib:IsCharValid(nearestChar) then
+                if nearestChar and ServerLib.IsCharValid(nearestChar) then
                     local targetPos = nearestChar.PrimaryPart.Position :: Vector3
                     if (targetPos - locator.CFrame.Position).Magnitude > 80 then
                         path:Run(locator.CFrame.Position)
@@ -683,11 +675,11 @@ function EntityLib:_RoamTask()
 
                     local lastNearestChar = self.NearestChar
                     if lastNearestChar == nil then
-                        Events.ApplyFoundStatusToEnemy.FireList(ServerLib:GetNearbyPlayers(curPos), {
+                        Events.ApplyFoundStatusToEnemy.FireList(ServerLib.GetNearbyPlayers(curPos), {
                             Enemy = entity
                         })
 
-                        ServerLib:PlayWorldSound(SoundService.SFXs.Found, curPos)
+                        ServerLib.PlayWorldSound(SoundService.SFXs.Found, curPos)
                     end
 
                     self.NearestChar = nearestChar:GetAttribute("HarukaUniqueId")
@@ -710,7 +702,7 @@ function EntityLib:_RoamTask()
     --// encountering
     self.RoamAdd(task.spawn(function()
         while wait(2) do
-            if not ServerLib:IsCharValid(entity) then break end
+            if not ServerLib.IsCharValid(entity) then break end
 
             if entity:GetAttribute("IsInCombat") then break end
             if self.CombatInfo.IsInCombat then break end
@@ -724,7 +716,7 @@ function EntityLib:_RoamTask()
                 local nearestDist = 999
 
                 for _, char: Model in nearestChars do
-                    if not ServerLib:IsCharValid(char) then continue end
+                    if not ServerLib.IsCharValid(char) then continue end
 
                     if char:GetAttribute("IsInCombat") then continue end
                     if char:FindFirstChild("CombatCooldown") then continue end
@@ -732,13 +724,13 @@ function EntityLib:_RoamTask()
 
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
-                    if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
+                    if mag > 0 and mag < nearestDist and ServerLib.IsCharValid(char) then
                         nearestDist = mag
                         nearestChar = char
                     end
                 end
 
-                if nearestChar and ServerLib:IsCharValid(nearestChar) then
+                if nearestChar and ServerLib.IsCharValid(nearestChar) then
                     local player = Players:GetPlayerFromCharacter(nearestChar)
                     if not player then
                         resolve()
@@ -787,7 +779,8 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             self.EntityObj = nil
         end
     end)
-    self.EntityObj = require(ServerScriptService.HarukaServer.Library.Entities:FindFirstChild(entity.Name, true)).new(entity) :: EntityObj
+    self.EntityObj = EntityAttackLib[entity.Name].new(entity)
+
 
     local hasPosVal = true
 
@@ -813,7 +806,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 hasPosVal = false
 
                 self.CombatInfo.CombatTriggererUniqueId = self.CombatInfo.CombatStarterUniqueId
-                self.CombatInfo.CombatLocation = CFrame.new(ServerLib:FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
+                self.CombatInfo.CombatLocation = CFrame.new(ServerLib.FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
             else
                 self.CombatInfo.CombatLocation = location
             end
@@ -836,7 +829,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             if nearbyCount >= 5 then break end
 
             local thatEntity = entityObj.Entity :: Model
-            if not ServerLib:IsCharValid(thatEntity) then continue end
+            if not ServerLib.IsCharValid(thatEntity) then continue end
 
             if entityObj.CombatInfo.IsInCombat then continue end
 
@@ -908,7 +901,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
 
     --- check again!
-    if not ServerLib:IsCharValid(target) then self:_ErrorAndRespawn(1) return end
+    if not ServerLib.IsCharValid(target) then self:_ErrorAndRespawn(1) return end
 
     target = nil
 
@@ -918,7 +911,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             break
         end
     end
-    if not ServerLib:IsCharValid(target) then self:_ErrorAndRespawn(2) return end
+    if not ServerLib.IsCharValid(target) then self:_ErrorAndRespawn(2) return end
 
 
     --// we will check starter enemy
@@ -931,7 +924,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 if thatEntityObj.CombatInfo.IsDead then continue end
 
                 if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
-                    resolve(ServerLib:IsCharValid(thatEntityObj.Entity))
+                    resolve(ServerLib.IsCharValid(thatEntityObj.Entity))
                     break
                 end
             end
@@ -949,7 +942,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
 
     --// finally!
-    local rLocation = ServerLib:FindGroundByRayForOrb(combatLocation.Position
+    local rLocation = ServerLib.FindGroundByRayForOrb(combatLocation.Position
         + Vector3.new(math.random(-15, 15), 0, math.random(-15, 15)))
 
     entity:PivotTo(CFrame.new(rLocation) * CFrame.new(0, self.BoundingSize.Y / 2, 0) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0))
@@ -992,7 +985,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             if combatMode == "Public" then
                 for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
                     if nearbyChar.Name == target.Name then continue end
-                    if not ServerLib:IsCharValid(nearbyChar) then continue end
+                    if not ServerLib.IsCharValid(nearbyChar) then continue end
 
                     if nearbyChar:GetAttribute("IsInCombat") then continue end
                     if nearbyChar:FindFirstChild("CombatCooldown") then continue end
@@ -1012,7 +1005,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 if partyContainer then
                     for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
                         if nearbyChar.Name == target.Name then continue end
-                        if not ServerLib:IsCharValid(nearbyChar) then continue end
+                        if not ServerLib.IsCharValid(nearbyChar) then continue end
                         if not partyContainer:FindFirstChild(nearbyChar.Name) then continue end
 
                         if nearbyChar:GetAttribute("IsInCombat") then continue end
@@ -1036,7 +1029,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
             if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
                 for _, thatEntitySymbol: ObjectValue in thatEntityObj.Entity.TargetingList:GetChildren() do
-                    if not ServerLib:IsCharValid(thatEntitySymbol.Value) then continue end
+                    if not ServerLib.IsCharValid(thatEntitySymbol.Value) then continue end
 
                     local char = thatEntitySymbol.Value :: Model
                     _addInCombat(char, true)
@@ -1171,10 +1164,10 @@ function EntityLib:_CombatEnd()
 
         local result, _, _ = HarukaLib:RollLoot(drops)
 
-        if not ServerLib:IsModelValid(entity) then
-            ServerLib:PlaceItemDropPart(plr, result, 1, self.Locator.Position)
+        if not ServerLib.IsModelValid(entity) then
+            ServerLib.PlaceItemDropPart(plr, result, 1, self.Locator.Position)
         else
-            ServerLib:PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position)
+            ServerLib.PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position)
         end
     end
     local function _giveBadge(entityInfo: { any }, char: Model)
@@ -1182,7 +1175,7 @@ function EntityLib:_CombatEnd()
         if not plr then return end
 
         if entityInfo.BadgeId then
-            ServerLib:GiveBadge(entityInfo.BadgeId, plr)
+            ServerLib.GiveBadge(entityInfo.BadgeId, plr)
         end
     end
 
@@ -1198,12 +1191,12 @@ function EntityLib:_CombatEnd()
         for _, charSymbol: ObjectValue in entity.TargetingList:GetChildren() do
             local thatChar = charSymbol.Value :: Model
 
-            if not ServerLib:IsCharValid(thatChar) then continue end
+            if not ServerLib.IsCharValid(thatChar) then continue end
 
 
             local charTargetingList = thatChar.TargetingList :: Folder
             for _, targetingSymbol: ObjectValue in charTargetingList:GetChildren() do
-                if not ServerLib:IsCharValid(targetingSymbol.Value) then
+                if not ServerLib.IsCharValid(targetingSymbol.Value) then
                     targetingSymbol:Destroy()
                     continue
                 end
@@ -1269,10 +1262,10 @@ function EntityLib:_CombatEnd()
 
                     local plr = Players:GetPlayerFromCharacter(thatChar)
                     if plr then
-                        ServerLib:GiveEXPRewards(plr, totalEXP)
+                        ServerLib.GiveEXPRewards(plr, totalEXP)
 
                         HarukaLib:AddAttr(plr, "Gold", totalGold)
-                        ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
+                        ServerLib.ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
 
                         HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
                     end
@@ -1285,5 +1278,9 @@ function EntityLib:_CombatEnd()
     end):await()
 end
 
+
+
+
+shared.EntityLib = EntityLib
 
 return EntityLib

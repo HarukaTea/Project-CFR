@@ -20,11 +20,11 @@ local wait = task.wait
 
 return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
-    if not ClientLib:IsCharValid(char) then return end
+    if not ClientLib.IsCharValid(char) then return end
 
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib:IsCharValid(targetingEnemy) then return end
+    if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
     local angles = {
@@ -33,7 +33,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
         CFrame.new(0, math.random(5, 10), 0)
     }
     local function _impact()
-        if not ClientLib:IsCharValid(targetingEnemy) then return end
+        if not ClientLib.IsCharValid(targetingEnemy) then return end
 
         local impact = RepS.Packages.SkillProjectiles:FindFirstChild("BurstArrowUltImpact", true):Clone() :: BasePart
         impact.CFrame = targetingEnemy.PrimaryPart.CFrame

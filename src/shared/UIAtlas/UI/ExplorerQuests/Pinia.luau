@@ -38,7 +38,7 @@ return function (self: { any })
 
     --// track char position
     table.insert(scope, RunService.Heartbeat:Connect(function()
-        if not ClientLib:IsModelValid(char) then return end
+        if not ClientLib.IsModelValid(char) then return end
 
         self.CharPosition:set(char.PrimaryPart.Position)
     end))

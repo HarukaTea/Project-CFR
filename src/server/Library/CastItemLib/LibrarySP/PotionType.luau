@@ -35,7 +35,7 @@ return function (self: Types.CastItemTable)
         CastItemLib._drinkSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 20)
 
-            ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+            ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
     end
 

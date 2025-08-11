@@ -77,7 +77,7 @@ return function (self: Types.ProjectileTable)
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
         end
 
-        local postR = ClientLib:FindGroundByRay(projectile.PrimaryPart.Position)
+        local postR = ClientLib.FindGroundByRay(projectile.PrimaryPart.Position)
 
         ProjectileLib._spawnProjectile(projectile, container, 5, function(sProjectile: Model)
             sProjectile:PivotTo(CFrame.new(postR) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
@@ -123,7 +123,7 @@ return function (self: Types.ProjectileTable)
         for i = 1, 2 do
             for _, part: BasePart in projectile:GetDescendants() do
                 if part.Name == "Position"..i then
-                    local pos = ClientLib:FindGroundByRay(part.Position)
+                    local pos = ClientLib.FindGroundByRay(part.Position)
 
                     ProjectileLib._spawnProjectile(projectile, container, 5, function(sProjectile: Model)
                         sProjectile:PivotTo(CFrame.new(pos, pos + part.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))

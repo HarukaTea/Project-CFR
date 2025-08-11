@@ -1,5 +1,6 @@
 --!nocheck
 
+local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
@@ -12,11 +13,14 @@ repeat task.wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 9
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 local PreloadSceneLib = require(script.Parent:WaitForChild("Services", 999):WaitForChild("PreloadSceneLib", 999))
-PreloadSceneLib:_LoadPreloadAssets()
-PreloadSceneLib:_LoadTeleportEvents()
-PreloadSceneLib:_LoadScreenMouseFollower()
+PreloadSceneLib._LoadPreloadAssets()
+PreloadSceneLib._LoadTeleportEvents()
+PreloadSceneLib._LoadScreenMouseFollower()
 
 repeat task.wait() until workspace:GetAttribute("Haruka_TitlescreenDestroying")
 
-PreloadSceneLib:Destroy()
+PreloadSceneLib.Cleanup()
 
+
+
+Debris:AddItem(script, 15)

@@ -2,7 +2,6 @@
 
 local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
-local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -21,25 +20,39 @@ local ServerLib = {}
 
 --// Helper functions
 
-ServerLib.WeldModel = function(_, part: Part, welded: Model)
-	ClientLib:WeldModel(part, welded)
+function ServerLib.WeldModel(part: Part, welded: Model)
+	ClientLib.WeldModel(part, welded)
 end
 
-ServerLib.FindGroundByRay = function(_, givenPos: Vector3)
-	return ClientLib:FindGroundByRay(givenPos)
+function ServerLib.FindGroundByRay(givenPos: Vector3)
+	return ClientLib.FindGroundByRay(givenPos)
 end
 
-ServerLib.FindGroundByRayForOrb = function(_, givenPos: Vector3)
-	return ClientLib:FindGroundByRayForOrb(givenPos)
+function ServerLib.FindGroundByRayForOrb(givenPos: Vector3)
+	return ClientLib.FindGroundByRayForOrb(givenPos)
 end
 
-
-ServerLib.WeldWeapon = function(_, weapon: Model, char: Model)
-	ClientLib:WeldWeapon(weapon, char)
+function ServerLib.WeldWeapon(weapon: Model, char: Model)
+	ClientLib.WeldWeapon(weapon, char)
 end
 
+function ServerLib.IsModelValid(model: Model)
+	return ClientLib.IsModelValid(model)
+end
 
-function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
+function ServerLib.IsCharValid(char: Model)
+	return ClientLib.IsCharValid(char)
+end
+
+function ServerLib.GetPlayerByUniqueId(uniqueId: string)
+	return ClientLib.GetPlayerByUniqueId(uniqueId)
+end
+
+function ServerLib.PlayWorldSound(sound: Sound, pos: Vector3)
+	ClientLib.PlayWorldSound(sound, pos)
+end
+
+function ServerLib.FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
 	local rParams = RaycastParams.new()
 	rParams.RespectCanCollide = false
 	rParams.IgnoreWater = true
@@ -56,29 +69,12 @@ function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
 end
 
 
-ServerLib.IsModelValid = function(_, model: Model)
-	return ClientLib:IsModelValid(model)
-end
-
-ServerLib.IsCharValid = function(_, char: Model)
-	return ClientLib:IsCharValid(char)
-end
-
-ServerLib.GetPlayerByUniqueId = function(_, uniqueId: string)
-	return ClientLib:GetPlayerByUniqueId(uniqueId)
-end
-
-ServerLib.PlayWorldSound = function(_, sound: Sound, pos: Vector3)
-	ClientLib:PlayWorldSound(sound, pos)
-end
-
-
-function ServerLib:GetNearbyPlayers(position: Vector3)
+function ServerLib.GetNearbyPlayers(position: Vector3)
 	local players = {}
 
 	for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
 		if not player then continue end
-		if not ServerLib:IsCharValid(player.Character) then continue end
+		if not ServerLib.IsCharValid(player.Character) then continue end
 
 		local distance = player:DistanceFromCharacter(position)
 		if distance > 0 and distance <= 159 * 2.599 then
@@ -90,13 +86,13 @@ function ServerLib:GetNearbyPlayers(position: Vector3)
 end
 
 
-function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
+function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
 	local MAGNITUDE = 25
 
 	Promise.new(function(resolve)
 		local repeatedTimes = 0
-		local pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
+		local pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
 
 		while repeatedTimes <= 15 do
 			-- we gonna try to find a valid position, if we can't, we'll try again
@@ -107,7 +103,7 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 				break
 			end
 
-			pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
+			pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
 			repeatedTimes += 1
 		end
 
@@ -126,11 +122,11 @@ end
 
 
 
-function ServerLib:ShowNumber(target: Model, number: number, color: Color3?)
-	if not ServerLib:IsCharValid(target) then return end
+function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
+	if not ServerLib.IsCharValid(target) then return end
 
 
-	Events.ShowDMGNumber.FireList(ServerLib:GetNearbyPlayers(target.PrimaryPart.Position), {
+	Events.ShowDMGNumber.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		DMGTarget = target,
 		DMGNumber = tostring(number),
 		DMGColor = color or Color3.new(1, 1, 1)
@@ -138,11 +134,11 @@ function ServerLib:ShowNumber(target: Model, number: number, color: Color3?)
 end
 
 
-function ServerLib:ShowText(target: Model, text: string, color: Color3?)
-	if not ServerLib:IsCharValid(target) then return end
+function ServerLib.ShowText(target: Model, text: string, color: Color3?)
+	if not ServerLib.IsCharValid(target) then return end
 
 
-	Events.ShowText.FireList(ServerLib:GetNearbyPlayers(target.PrimaryPart.Position), {
+	Events.ShowText.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		Target = target,
 		Text = text,
 		TextColor = color or Color3.new(1, 1, 1)
@@ -150,17 +146,17 @@ function ServerLib:ShowText(target: Model, text: string, color: Color3?)
 end
 
 
-function ServerLib:ApplyHitStatus(target: Model)
-	if not ServerLib:IsCharValid(target) then return end
+function ServerLib.ApplyHitStatus(target: Model)
+	if not ServerLib.IsCharValid(target) then return end
 
 
-	Events.PlayHitStatusVFX.FireList(ServerLib:GetNearbyPlayers(target.PrimaryPart.Position), {
+	Events.PlayHitStatusVFX.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		Target = target
 	})
 end
 
 
-function ServerLib:PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3)
+function ServerLib.PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3)
 	local itemUniqueId = HttpService:GenerateGUID(false)
 	local container = ServerStorage.ItemSphereSymbolContainer :: Folder
 
@@ -183,7 +179,7 @@ end
 
 
 
-function ServerLib:GiveRandomStatForItem(itemId: string) : string
+function ServerLib.GiveRandomStatForItem(itemId: string) : string
 	if not ItemBook:GetItemInfo(itemId) then return "" end
 
 	local itemInfo = ItemBook:GetItemInfo(itemId)
@@ -218,7 +214,7 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
 end
 
 
-function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
+function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 	if not ItemBook:GetItemInfo(itemId) then return end
 
 
@@ -226,7 +222,7 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 	local itemInfo = ItemBook:GetItemInfo(itemId)
 
 	local function _createNewSymbol(forcedAmount: number?)
-		local randomStat = ServerLib:GiveRandomStatForItem(itemId)
+		local randomStat = ServerLib.GiveRandomStatForItem(itemId)
 
 		local itemVal = Instance.new("IntConstrainedValue")
 		itemVal.MinValue = 0
@@ -262,7 +258,7 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 	--// dev item checks
 	if itemInfo.ItemId == "Dawnbreak" then
 		local whiteList = { 304008764, 503716687, 1030029371 }
-		if not table.find(whiteList, self.Player.UserId) and plr:GetAttribute("Rank") < 2 then
+		if not table.find(whiteList, plr.UserId) and plr:GetAttribute("Rank") < 2 then
 			HarukaLib:BanPlayerByUserId(plr.UserId, {
 				Duration = 60 * 60 * 24,
 				DisplayReason = "DevItem Detected",
@@ -302,7 +298,7 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 end
 
 
-function ServerLib:GiveEXPRewards(plr: Player, exp: number)
+function ServerLib.GiveEXPRewards(plr: Player, exp: number)
 	exp = exp or 0
 	if exp <= 0 then return end
 
@@ -319,7 +315,7 @@ function ServerLib:GiveEXPRewards(plr: Player, exp: number)
 end
 
 
-function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
+function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	method = method or "Equip"
 
 	local itemSymbol = nil
@@ -336,7 +332,7 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	end
 
 	local char = plr.Character :: Model
-	if not ServerLib:IsCharValid(char) then
+	if not ServerLib.IsCharValid(char) then
 		Events.CreateNotify.Fire(plr, "[Error] Cannot equip item, character not found")
 		return
 	end
@@ -371,13 +367,13 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	end
 end
 
-function ServerLib:UnequipItem(plr: Player, itemUniqueId: string)
-	ServerLib:EquipItem(plr, itemUniqueId, "Unequip")
+function ServerLib.UnequipItem(plr: Player, itemUniqueId: string)
+	ServerLib.EquipItem(plr, itemUniqueId, "Unequip")
 end
 
 
 
-function ServerLib:CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -> ()?, failureHandler: () -> ()?)
+function ServerLib.CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -> ()?, failureHandler: () -> ()?)
 	Promise.new(function()
 		local hasBadge = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
 		if hasBadge and callBack then callBack() end
@@ -387,7 +383,7 @@ function ServerLib:CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -
 		if RunService:IsStudio() then warn(tostring(err)) end
 	end)
 end
-function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
+function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 	Promise.new(function()
 		local hasBadge = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
 
@@ -408,5 +404,9 @@ function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 		if RunService:IsStudio() then warn(tostring(err)) end
 	end)
 end
+
+
+shared.ServerLib = ServerLib
+
 
 return ServerLib

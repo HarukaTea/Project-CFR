@@ -1,21 +1,16 @@
 --!nocheck
 
-local Debris = game:GetService("Debris")
-local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local TweenService = game:GetService("TweenService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local Events = require(SSS.HarukaServer.Library.ServerEvents)
+
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 
+local Types = require(script.Parent.Parent.Parent.Types)
+local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 
-local UniversalEntity = require(script.Parent.Parent.UniversalEntity)
-local SlimeUniversal = require(script.Parent.SlimeUniversal)
+local FoxUniversal = require(script.Parent.FoxUniversal)
 
 
 local wait = task.wait
@@ -53,10 +48,9 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     UniversalEntity:InitAttackTables(self)
 
 
-
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib:IsCharValid(entity) then return false end
-        if not ServerLib:IsCharValid(target) then return false end
+        if not ServerLib.IsCharValid(entity) then return false end
+        if not ServerLib.IsCharValid(target) then return false end
 
         return true
     end
@@ -65,48 +59,57 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _lookAt(target: Model)
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
-    local function _slimeShot(target: Model)
-        _lookAt(target)
+    local function _moving()
+        local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
+            Vector3.new(math.random(-32, 32), 0, math.random(-32, 32)))
 
-        SlimeUniversal.SlimeShot(entity, target)
+        entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
     end
-    local function _slimeWave(target: Model)
+    local function _spikeShot(target: Model)
         _lookAt(target)
 
-        SlimeUniversal.SlimeWave(entity, target)
+        FoxUniversal.SpikeShot(entity, target)
+    end
+    local function _spikeRain(target: Model)
+        FoxUniversal.SpikeRain(entity, target)
     end
 
 
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
-        for _ = 1, math.random(1, 2) do
-            for _ = 1, 3 do
-                if not _checkIsTargetOrEntityValid(target) then break end
+        for _ = 1, math.random(2, 3) do
+            if not _checkIsTargetOrEntityValid(target) then break end
 
-                _slimeShot(target)
-                wait(1.5)
-            end
+
+            _spikeRain(target)
+            wait(1)
         end
     end)
     table.insert(self.AttackFuncs, function(target: Model)
-        for _ = 1, math.random(1, 3) do
-            if not _checkIsTargetOrEntityValid(target) then break end
+        if not _checkIsTargetOrEntityValid(target) then return end
 
-            _slimeWave(target)
-            wait(1.5)
-        end
+
+        _spikeShot(target)
+        wait(1)
     end)
 
     --// combo attack functions
-    table.insert(self.ComboAttackFuncs, function(target: Model, attackR: number, comboR: number)
-        if attackR == 2 then return end
+    table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
+        if comboR == 2 then
+            for _ = 1, math.random(1, 2) do
+                if not _checkIsTargetOrEntityValid(target) then break end
+
+                _moving()
+                wait(0.5)
+            end
+        end
+    end)
+    table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
         if comboR == 1 then
             if not _checkIsTargetOrEntityValid(target) then return end
 
-
-
-            _slimeWave(target)
-            wait(1.2)
+            _spikeShot(target)
+            wait(1)
         end
     end)
 
@@ -125,4 +128,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity
+return Entity :: Types.EntityAttackLib

@@ -23,9 +23,9 @@ return function (scope: Fusion.Scope, props: {
     local jumpHeight = Fusion.Value(scope, char.Humanoid.JumpHeight)
 
     table.insert(scope, RunService.Heartbeat:Connect(function()
-        if not ClientLib:IsModelValid(char) then return end
+        if not ClientLib.IsModelValid(char) then return end
 
-        local rayResult = ClientLib:FindGroundByRay(char.PrimaryPart.Position)
+        local rayResult = ClientLib.FindGroundByRay(char.PrimaryPart.Position)
 
         rayCastHeight:set((rayResult + Vector3.yAxis * 4.5 - char.PrimaryPart.Position).Magnitude)
     end))

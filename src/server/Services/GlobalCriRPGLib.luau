@@ -29,6 +29,7 @@ local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
 
 
 local GlobalCriRPGLib = {}
+GlobalCriRPGLib.Funcs = {}
 
 local wait = task.wait
 
@@ -36,10 +37,8 @@ local wait = task.wait
 --// Constructor
 
 function GlobalCriRPGLib:Init()
-    for funcId: string, func: (self) -> nil in GlobalCriRPGLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
-        end
+    for _, func: () -> nil in GlobalCriRPGLib.Funcs do
+        func()
     end
 end
 
@@ -47,7 +46,7 @@ end
 --// Private Methods
 
 
-function GlobalCriRPGLib:_ListenDefaultEventsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToForceReset.SetCallback(function(plr: Player)
         local char = plr.Character
 
@@ -66,10 +65,10 @@ function GlobalCriRPGLib:_ListenDefaultEventsTracker()
             TeleportService:Teleport(game.PlaceId, plr)
         end
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenCharSpawnTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     ServerBindables.RToSpawnChar:Connect(function(plr: Player)
         if not plr then return end
         if not plr:IsDescendantOf(Players) then return end
@@ -170,10 +169,10 @@ function GlobalCriRPGLib:_ListenCharSpawnTracker()
             thatScript:Clone().Parent = r6Char
         end
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPromptRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     local function _sitGalleon(galleon: Model, plr: Player)
         local seat = galleon:FindFirstChildOfClass("Seat")
         if not seat then return end
@@ -209,7 +208,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             return
         end
 
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         local distance = plr:DistanceFromCharacter(adornee.Position)
         if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
@@ -229,7 +228,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             if not npc then return end
             if not npc:FindFirstChild("Dialogues") then return end
 
-            if not ServerLib:IsCharValid(char) then return end
+            if not ServerLib.IsCharValid(char) then return end
 
             if char:GetAttribute("IsChatting") then
                Events.CreateNotify.Fire(plr, "You are already in a conversation with another NPC!")
@@ -260,7 +259,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
                 Chest = chest
             })
 
-            ServerLib:GiveItemDrop(plr, chest.Name, chest:GetAttribute("Amount") or 1)
+            ServerLib.GiveItemDrop(plr, chest.Name, chest:GetAttribute("Amount") or 1)
 
         elseif prompt.Name == "Market" then
             local products = {}
@@ -336,7 +335,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
             local items = plr.Items :: Folder
             if not items:FindFirstChild(statue.Weapon.Value) then
-                ServerLib:GiveItemDrop(plr, statue.Weapon.Value, 1)
+                ServerLib.GiveItemDrop(plr, statue.Weapon.Value, 1)
             else
                 Events.CreateNotify.Fire(plr, " You've already received the Goddess's blessing!")
             end
@@ -348,7 +347,7 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
 
             if itemInfo == nil then return end
             if not prompt:IsDescendantOf(workspace) then return end
-            if not ServerLib:IsCharValid(char) then return end
+            if not ServerLib.IsCharValid(char) then return end
 
 
             if material:GetAttribute("Profession") then
@@ -382,10 +381,10 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             Debris:AddItem(tempModel, 5)
 
 
-            Events.PlayHitStatusVFX.FireList(ServerLib:GetNearbyPlayers(adornee.Position), {
+            Events.PlayHitStatusVFX.FireList(ServerLib.GetNearbyPlayers(adornee.Position), {
                 Target = tempModel,
             })
-            ServerLib:PlaceItemDropPart(plr, finalMaterial, amount, adornee.Position + Vector3.new(
+            ServerLib.PlaceItemDropPart(plr, finalMaterial, amount, adornee.Position + Vector3.new(
                 math.random(-8, 8), 0, math.random(-8, 8)
             ))
 
@@ -396,11 +395,11 @@ function GlobalCriRPGLib:_ListenPromptRequestsTracker()
             end)
         end
     end)
-end
+end)
 
 
 
-function GlobalCriRPGLib:_ListenEnemyDMGTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToDMGPlayer.SetCallback(function(plr: Player, data)
         if data.ProjectileUniqueId == nil then return end
         if data.IsPierce == nil then return end
@@ -411,7 +410,7 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
         local projectileList = ServerStorage.ProjectileSymbolContainer :: Folder
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
         if not projectileList:FindFirstChild(projectileUniqueId) then return end
         if not char:GetAttribute("IsInCombat") then return end
 
@@ -420,7 +419,7 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
         local projectileDMG = symbol:GetAttribute("Damage") :: number
 
         local owner = symbol.Owner.Value :: Model
-        if not ServerLib:IsCharValid(owner) then return end
+        if not ServerLib.IsCharValid(owner) then return end
 
 
         Promise.new(function(resolve)
@@ -431,7 +430,7 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
             if result == "Dodge" then
                 projectileDMG = 0
 
-                ServerLib:ShowText(char, "DODGE!", Color3.fromHex('#ffffff'))
+                ServerLib.ShowText(char, "DODGE!", Color3.fromHex('#ffffff'))
             end
             resolve()
 
@@ -458,8 +457,8 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
         if projectileDMG <= 0 then return end
 
 
-        ServerLib:ShowNumber(char, projectileDMG, Color3.fromRGB(255, 0, 0))
-        ServerLib:ApplyHitStatus(char)
+        ServerLib.ShowNumber(char, projectileDMG, Color3.fromRGB(255, 0, 0))
+        ServerLib.ApplyHitStatus(char)
 
 
         if char:GetAttribute("Shield") > 0 and not data.IsPierce then
@@ -487,7 +486,7 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
             end
         else
             if data.IsPierce then
-                ServerLib:ShowText(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
+                ServerLib.ShowText(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
             end
 
             char.Humanoid:TakeDamage(projectileDMG)
@@ -496,15 +495,16 @@ function GlobalCriRPGLib:_ListenEnemyDMGTracker()
             Events.PlayGotHitScreenFX.Fire(plr)
         end
     end)
-end
+end)
 
-function GlobalCriRPGLib:_ListenPlayerDMGTracker()
+
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToDMGEnemy.SetCallback(function(plr: Player, data)
         local orbUniqueId = data.OrbUniqueId
         if orbUniqueId == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then
+        if not ServerLib.IsCharValid(char) then
             Events.CreateNotify.Fire(plr, "[Error] Invalid Character")
             return
         end
@@ -582,17 +582,17 @@ function GlobalCriRPGLib:_ListenPlayerDMGTracker()
             warn(tostring(err))
         end)
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToCastItem_Request.SetCallback(function(plr: Player, data)
         local slotId = data.SlotId
         if slotId == nil then return end
 
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then
+        if not ServerLib.IsCharValid(char) then
             Events.CreateNotify.Fire(plr, "[Error] Invalid Character")
             Events.RequestToCastItem_Response.Fire(plr, {
                 SlotId = slotId,
@@ -775,10 +775,10 @@ function GlobalCriRPGLib:_ListenCastItemRequestsTracker()
             CooldownTime = realCD
         })
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPickupItemRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToPickupItemDrops.SetCallback(function(plr: Player, data)
         local itemUniqueId = data.ItemUniqueId
         if itemUniqueId == nil then return end
@@ -791,19 +791,19 @@ function GlobalCriRPGLib:_ListenPickupItemRequestsTracker()
 
 
         itemSymbol.Value -= 1
-        ServerLib:GiveItemDrop(plr, itemSymbol:GetAttribute("ItemId"), 1)
+        ServerLib.GiveItemDrop(plr, itemSymbol:GetAttribute("ItemId"), 1)
 
 
         if itemSymbol.Value <= 0 then itemSymbol:Destroy() end
     end)
-end
+end)
 
 
 
-function GlobalCriRPGLib:_ListenCastClassUltRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToCastClassUlt.SetCallback(function(plr: Player)
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
         if not char:GetAttribute("IsInCombat") then return end
 
 
@@ -829,10 +829,10 @@ function GlobalCriRPGLib:_ListenCastClassUltRequestsTracker()
             end)
         end
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenNPCChatEndedTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToEndNPCChat.SetCallback(function(plr: Player, data)
         if data.NPCId == nil then return end
         if data.SeriesId == nil then return end
@@ -848,7 +848,7 @@ function GlobalCriRPGLib:_ListenNPCChatEndedTracker()
         if not npcModel then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         char:SetAttribute("IsChatting", nil)
 
@@ -865,16 +865,16 @@ function GlobalCriRPGLib:_ListenNPCChatEndedTracker()
             end
         end
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToEquipItem.SetCallback(function(plr: Player, data)
         if data.ItemId == nil then return end
         if data.ItemUniqueId == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't equip item in combat!")
@@ -924,14 +924,14 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
                 weapon1Symbol.Name = "Weapon1"
             end
 
-            ServerLib:UnequipItem(plr, weapon1Symbol:GetAttribute("HarukaUniqueId"))
+            ServerLib.UnequipItem(plr, weapon1Symbol:GetAttribute("HarukaUniqueId"))
 
             weapon1Symbol:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
             weapon1Symbol.Value = data.ItemId
             weapon1Symbol.Parent = plr.EquippingItems
 
             _refresh()
-            ServerLib:EquipItem(plr, data.ItemUniqueId)
+            ServerLib.EquipItem(plr, data.ItemUniqueId)
 
             Events.PlaySound.Fire(plr, SoundService.SFXs.EXP)
             return
@@ -947,7 +947,7 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
                 equipCheck = false
 
                 symbol:Destroy()
-                ServerLib:UnequipItem(plr, data.ItemUniqueId)
+                ServerLib.UnequipItem(plr, data.ItemUniqueId)
 
                 Events.PlaySound.Fire(plr, SoundService.SFXs.EquipItem)
                 break
@@ -998,7 +998,7 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
                 itemVal.Parent = plr.EquippingItems
 
                 _refresh()
-                ServerLib:EquipItem(plr, data.ItemUniqueId)
+                ServerLib.EquipItem(plr, data.ItemUniqueId)
 
 
                 Events.PlaySound.Fire(plr, SoundService.SFXs.EquipItem)
@@ -1010,10 +1010,10 @@ function GlobalCriRPGLib:_ListenPlayerItemEquipRequestsTracker()
             return
         end
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToPurchaseItem.SetCallback(function(plr: Player, data)
         local product, purchaseAmount = data.ProductId, data.PurchaseAmount
         if product == nil then return end
@@ -1026,7 +1026,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
@@ -1062,7 +1062,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
         HarukaLib:AddAttr(plr, "Gold", -totalPrice)
         Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
 
-        ServerLib:GiveItemDrop(plr, product, purchaseAmount)
+        ServerLib.GiveItemDrop(plr, product, purchaseAmount)
     end)
     Events.RequestToSellItem.SetCallback(function(plr: Player, data)
         local item, sellAmount = data.ItemId, data.SellAmount
@@ -1079,7 +1079,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
         --// cant sell items in combat
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't sell items in combat!")
@@ -1197,7 +1197,7 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
         --// cant sell items in combat
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
@@ -1302,16 +1302,16 @@ function GlobalCriRPGLib:_ListenPlayerPurchaseAndSellItemRequestsTracker()
 
         HarukaLib:AddAttr(plr, "Gold", totalGold)
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPlayerAddPointRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToAddPoint.SetCallback(function(plr: Player, data)
         if data.PointId == nil then return end
         if data.PointAmount == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't change your perk in combat!")
@@ -1366,7 +1366,7 @@ function GlobalCriRPGLib:_ListenPlayerAddPointRequestsTracker()
     end)
     Events.RequestToResetPoint.SetCallback(function(plr: Player)
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't change your perk in combat!")
@@ -1382,18 +1382,18 @@ function GlobalCriRPGLib:_ListenPlayerAddPointRequestsTracker()
         plr:SetAttribute("INTPoints", 0)
         plr:SetAttribute("VITPoints", 0)
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToDMGEnemyBySkillProjectile.SetCallback(function(plr: Player, data)
         local projectileId = data.ProjectileUniqueId
         if projectileId == nil then return end
         if data.EnemyEntity == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
-        if not ServerLib:IsCharValid(data.EnemyEntity) then return end
+        if not ServerLib.IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(data.EnemyEntity) then return end
 
         local projectileList = ServerStorage.SkillProjectileContainer:FindFirstChild("SkillProjectiles_"..char:GetAttribute("HarukaUniqueId")) :: Folder?
 
@@ -1430,8 +1430,8 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
         local trueDMGBonus = symbol:GetAttribute("DMGBonus") or 1
 
 
-        ClassAttackLib:_DealDamageToEnemy(char, data.EnemyEntity, {
-            DMG = math.ceil(ClassAttackLib:_CalDMG(style, char, {
+        ClassAttackLib._DealDamageToEnemy(char, data.EnemyEntity, {
+            DMG = math.ceil(ClassAttackLib._CalDMG(style, char, {
                 ForceMaxDMG = true
             }) * trueDMGBonus),
             Attacker = "SkillProjectile",
@@ -1448,17 +1448,17 @@ function GlobalCriRPGLib:_ListenPlayerDMGBySkillProjectileTracker()
             debuffObj:Activate()
         end
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToCraftItem.SetCallback(function(plr: Player, data)
         local item, itemUniqueId = data.ItemId, data.ItemUniqueId
         if item == nil then return end
         if itemUniqueId == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
             Events.CreateNotify.Fire(plr, "You can't craft items in combat!")
@@ -1568,13 +1568,13 @@ function GlobalCriRPGLib:_ListenCraftingRequestsTracker()
         Events.CreateNotify.Fire(plr, "Craft successful! Welcome back!")
 
 
-        ServerLib:GiveItemDrop(plr, item, 1)
+        ServerLib.GiveItemDrop(plr, item, 1)
     end)
-end
+end)
 
 
 
-function GlobalCriRPGLib:_ListenPlayerPartyRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     local function partyInvite(plr: Player, option: string, newMember: string)
         if option == "Invite" then
             --- check character exists
@@ -1762,10 +1762,10 @@ function GlobalCriRPGLib:_ListenPlayerPartyRequestsTracker()
         partyInvite(plr, option, newMember)
     end)
     ServerBindables.PartyInvite:Connect(partyInvite)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPlayerAbyssChallengeRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToChallengeAbyss.SetCallback(function(plr: Player, data)
         if not data.AbyssId then return end
 
@@ -1789,11 +1789,11 @@ function GlobalCriRPGLib:_ListenPlayerAbyssChallengeRequestsTracker()
 
         Events.CreateFSNotify.Fire(plr, "Teleporting to Abyss...", 15)
     end)
-end
+end)
 
 
 
-function GlobalCriRPGLib:_ListenSkyGalleonReplicationTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToSetSkyGalleonPos.SetCallback(function(plr: Player, data)
         if not data.Galleon then return end
         if not data.Position then return end
@@ -1813,10 +1813,10 @@ function GlobalCriRPGLib:_ListenSkyGalleonReplicationTracker()
 
         galleon.Humanoid:MoveTo(targetPoint)
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenPlayerSaveSettingTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToSaveSettings.SetCallback(function(plr: Player, data)
         if data.SettingId == nil then return end
         if data.SettingValue == nil then return end
@@ -1841,10 +1841,10 @@ function GlobalCriRPGLib:_ListenPlayerSaveSettingTracker()
 
         valueSymbol.Value = val
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenTutorialTeleportTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToPlayTutorial.SetCallback(function(plr: Player)
         local teleportOptions = Instance.new("TeleportOptions")
 
@@ -1853,10 +1853,10 @@ function GlobalCriRPGLib:_ListenTutorialTeleportTracker()
 
         TeleportService:TeleportAsync(AssetBook.PlaceIds.Tutorial, { plr }, teleportOptions)
     end)
-end
+end)
 
 
-function GlobalCriRPGLib:_ListenFavItemRequestsTracker()
+table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToFavItem.SetCallback(function(plr: Player, data)
         if not data.ItemSymbol then return end
 
@@ -1869,7 +1869,7 @@ function GlobalCriRPGLib:_ListenFavItemRequestsTracker()
 
         symbol:SetAttribute("IsFav", state)
     end)
-end
+end)
 
 
 return GlobalCriRPGLib

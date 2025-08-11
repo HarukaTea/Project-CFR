@@ -158,14 +158,14 @@ function CriRPGLib:_AutoEquipItems()
             continue
         end
 
-        ServerLib:EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
+        ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
     end
     for _, item: IntConstrainedValue in plr.Items:GetChildren() do
         local itemInfo = ItemBook:GetItemInfo(item.Name)
         if not itemInfo then continue end
 
         if itemInfo.Type == "Passive" then
-            ServerLib:EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
+            ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
         end
     end
 end
@@ -220,7 +220,7 @@ function CriRPGLib:_ListenClassTracker()
                 weapon = weapon:Clone()
 			    weapon:AddTag("ClassWeapon")
 
-			    ServerLib:WeldWeapon(weapon, char)
+			    ServerLib.WeldWeapon(weapon, char)
             end)
 		end
 	end
@@ -254,7 +254,7 @@ function CriRPGLib:_ListenOrbTracker()
 
         extraProps = extraProps or {}
 
-        if ServerLib:IsCharValid(enemy) and char.Humanoid.Health > 0 then
+        if ServerLib.IsCharValid(enemy) and char.Humanoid.Health > 0 then
             local orb = orbResContainer:FindFirstChild(orbName, true) :: Model
             if not orb then
                 warn("Invalid Orb Id: "..orbName)
@@ -262,7 +262,7 @@ function CriRPGLib:_ListenOrbTracker()
             end
 
             local orbUniqueId = HttpService:GenerateGUID(false)
-            local orbPos = extraProps.ForceLocation or ServerLib:GenerateOrbPos(char:GetAttribute("CombatLocation"))
+            local orbPos = extraProps.ForceLocation or ServerLib.GenerateOrbPos(char:GetAttribute("CombatLocation"))
             local orbFadeTime = char:GetAttribute("OrbFadeTime") or 12 :: number
 
             if orbName == "BuffOrb" or orbName == "HealOrb" then
@@ -426,7 +426,7 @@ function CriRPGLib:_ListenPlayerLevelTracker()
 
                 Events.PlaySound.Fire(plr, SoundService.SFXs.LevelUp)
 
-                ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
+                ServerLib.ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
 
 
                 local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
@@ -908,7 +908,7 @@ function CriRPGLib:_ListenPassiveAutoEquipTracker()
         if not itemInfo then return end
 
         if itemInfo.Type == "Passive" then
-            ServerLib:EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
+            ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
         end
     end))
 end
@@ -997,7 +997,7 @@ Add(HarukaLib.Clock(5, function()
 
 
 	for _, obj: ObjectValue in char.TargetingList:GetChildren() do
-		if not ServerLib:IsCharValid(obj.Value) then
+		if not ServerLib.IsCharValid(obj.Value) then
 			obj:Destroy()
 		end
 	end
@@ -1012,7 +1012,7 @@ Add(HarukaLib.Clock(5, function()
 	end
 
 	local targetingEnemy = char.TargetingEnemy.Value
-	if not ServerLib:IsCharValid(targetingEnemy) then
+	if not ServerLib.IsCharValid(targetingEnemy) then
 		char.TargetingEnemy.Value = nil
     end
     if char.TargetingEnemy.Value == nil then

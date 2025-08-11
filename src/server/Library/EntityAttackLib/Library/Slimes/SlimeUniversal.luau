@@ -1,10 +1,8 @@
 local HttpService = game:GetService("HttpService")
-local ServerScriptService = game:GetService("ServerScriptService")
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local TweenService = game:GetService("TweenService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
@@ -13,7 +11,8 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
-local UniversalEntity = require(script.Parent.Parent.UniversalEntity)
+local Types = require(script.Parent.Parent.Parent.Types)
+local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 
 local SlimeUniversal = {}
 
@@ -27,7 +26,7 @@ SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
     })
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+    local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
     Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
@@ -42,7 +41,7 @@ end
 
 SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
     local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("SlimeMove2", true):Clone() :: Model
-    local post = ServerLib:FindGroundByRay(entity.PrimaryPart.Position)
+    local post = ServerLib.FindGroundByRay(entity.PrimaryPart.Position)
 
     projectileSupport:PivotTo(CFrame.new(post, post + entity.PrimaryPart.CFrame.LookVector))
 
@@ -82,7 +81,7 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
         for _, child: BasePart in projectileSupport:GetDescendants() do
             if child.Name ~= "Position"..hasProjectiles then continue end
 
-            local postR = ServerLib:FindGroundByRay(child.Position)
+            local postR = ServerLib.FindGroundByRay(child.Position)
 
             HarukaLib:Tween(entity, AssetBook.TweenInfos.twiceHalfOne, {
                 Pivot = CFrame.new(postR) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0)
@@ -105,7 +104,7 @@ SlimeUniversal.SlimeBarrageShot = function(entity: Model, target: Model)
     })
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(
+    local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(
         math.random(-32, 32), 0,
         math.random(-32, 32)
     ))
@@ -138,7 +137,7 @@ end
 
 SlimeUniversal.SlimeBomb = function(entity: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(
+    local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(
         math.random(-32, 32), 0,
         math.random(-32, 32)
     ))
@@ -170,7 +169,7 @@ end
 
 SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+    local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
     local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
 
@@ -211,7 +210,7 @@ end
 
 SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
+    local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
     local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
 

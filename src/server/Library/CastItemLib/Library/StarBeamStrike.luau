@@ -24,8 +24,8 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
     local CastItemLib = self
 
     local check = CastItemLib._preCheck({
-        ReqCombat = false,
-        ReqEnemy = false
+        ReqCombat = true,
+        ReqEnemy = true
     }, {
         ItemId = "StarBeamStrike",
         Player = player,
@@ -38,7 +38,7 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib:_CalCastingTime(char, 3)
+    local castTime = ClassAttackLib._CalCastingTime(char, 3)
 
 
     Events.OpenCastTimeBar.Fire(player, {
@@ -64,7 +64,7 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
         Events.FaceToTargetingEnemy.Fire(player)
 
 
-        Events.PlayClassSPScene.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "StarBeamStrike",
             Caster = char,
             ProjectileUniqueId = uniqueId,

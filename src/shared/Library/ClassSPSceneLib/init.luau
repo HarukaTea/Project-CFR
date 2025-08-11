@@ -8,7 +8,11 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Types = require(script.Types)
 
-local ClassSPSceneLib = {}
+
+export type ClassSPSceneLib = Types.ClassSPSceneLib
+
+
+local ClassSPSceneLib = {} :: ClassSPSceneLib
 
 local wait = task.wait
 
@@ -49,4 +53,4 @@ for _, module: ModuleScript in script.Library:GetChildren() do
 end
 
 
-return ClassSPSceneLib
+return ClassSPSceneLib :: ClassSPSceneLib

@@ -44,7 +44,7 @@ return function (self: { any })
 
     local function _enableShiftLock()
         RS:BindToRenderStep("ShiftLockUpdate", Enum.RenderPriority.Camera.Value, function()
-            if not ClientLib:IsCharValid(self.char) then return end
+            if not ClientLib.IsCharValid(self.char) then return end
 
             self.char.Humanoid.AutoRotate = false
 

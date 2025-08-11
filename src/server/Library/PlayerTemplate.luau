@@ -19,6 +19,7 @@ local playerStats = {
             PlayTime = 0,
             Class = "Chain",
             ClassVariant = "None",
+            StarterClass = "Chain",
             LastSeen = "InitusBay",
 
             LastJoinedDateTime = DateTime.now():ToIsoDate(),

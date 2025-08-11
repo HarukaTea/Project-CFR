@@ -27,7 +27,7 @@ local Add, Empty = HarukaLib.Bin()
 
 local PreloadSceneLib = {}
 
-function PreloadSceneLib:_LoadPreloadAssets()
+function PreloadSceneLib._LoadPreloadAssets()
     local placeHolderGui = Instance.new("ScreenGui")
     placeHolderGui.Name = "PlaceHolderGui_Preload"
     placeHolderGui.ResetOnSpawn = false
@@ -56,13 +56,13 @@ function PreloadSceneLib:_LoadPreloadAssets()
 end
 
 
-function PreloadSceneLib:_LoadTeleportEvents()
+function PreloadSceneLib._LoadTeleportEvents()
     TeleportService:SetTeleportGui(ReplicatedStorage.Packages.Unloads.TeleportUI)
 end
 
 
 
-function PreloadSceneLib:_LoadScreenMouseFollower()
+function PreloadSceneLib._LoadScreenMouseFollower()
     local thread = task.spawn(function()
         if workspace:GetAttribute("NoRequiresTitlescreen") then return end
 
@@ -124,7 +124,7 @@ end
 
 
 
-function PreloadSceneLib:Destroy()
+function PreloadSceneLib.Cleanup()
     Empty()
 
     local camera = workspace.CurrentCamera

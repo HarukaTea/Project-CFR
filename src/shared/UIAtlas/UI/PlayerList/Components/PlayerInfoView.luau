@@ -290,7 +290,7 @@ return function (scope: Fusion.Scope, props: {
                                             if not criRPGSettings then return end
 
                                             local character = thatPlr.Character
-                                            if not ClientLib:IsCharValid(character) then
+                                            if not ClientLib.IsCharValid(character) then
                                                 Bindables.CreateNotify:Fire("Player is dead!")
                                                 return
                                             end

@@ -205,7 +205,7 @@ do
         SoundService.Musics.Titlescreen:Play()
 
         local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-        ClientLib:LoadLightingPreset("Titlescreen")
+        ClientLib.LoadLightingPreset("Titlescreen")
 
         Lighting:SetAttribute("RainLevel", 6)
     end
@@ -230,7 +230,7 @@ do
             local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
             local worldId = workspace:GetAttribute("WorldId") or "InitusWorld"
-            ClientLib:LoadLightingPreset(worldId)
+            ClientLib.LoadLightingPreset(worldId)
 
             Lighting:SetAttribute("RainLevel", 0)
         end
@@ -254,4 +254,8 @@ do
         Debris:AddItem(SoundService.Musics.Titlescreen, 5)
     end
     workspace:SetAttribute("Haruka_GameEntered", true)
+
+
+    Debris:AddItem(script.Parent.Services, 10)
+    Debris:AddItem(script, 15)
 end

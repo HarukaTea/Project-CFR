@@ -76,7 +76,7 @@ local allEntityPool = {}
 
 Add(Events.ApplyFoundStatusToEnemy.On(function(data)
     local entity = data.Enemy
-    if not ClientLib:IsCharValid(entity) then return end
+    if not ClientLib.IsCharValid(entity) then return end
 
     local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
     if distance <= 0 or distance >= 155 then return end
@@ -111,7 +111,7 @@ Add(Events.ApplyFoundStatusToEnemy.On(function(data)
     }):Play()
 end))
 Add(Events.PlayAnimForEnemy.On(function(data)
-    if not ClientLib:IsCharValid(data.Entity) then return end
+    if not ClientLib.IsCharValid(data.Entity) then return end
 
 
     for _, entityObj in allEntityPool do
@@ -124,7 +124,7 @@ Add(Events.PlayAnimForEnemy.On(function(data)
     end
 end))
 Add(Events.ApplyHighlightForEntity.On(function(data)
-    if not ClientLib:IsModelValid(data.Entity) then return end
+    if not ClientLib.IsModelValid(data.Entity) then return end
 
     local highlight = Instance.new("Highlight")
     highlight.Parent = data.Entity
@@ -139,7 +139,7 @@ Add(HarukaLib.Clock(1, function()
     local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
 
     for _, entityObj in allEntityPool do
-        if not ClientLib:IsModelValid(entityObj.Entity) then continue end
+        if not ClientLib.IsModelValid(entityObj.Entity) then continue end
 
         pcall(function()
             local distance = player:DistanceFromCharacter(entityObj.Entity.PrimaryPart.Position)
@@ -167,7 +167,7 @@ Add(HarukaLib.Clock(0.5, function()
     for _, entityObj in allEntityPool do
         local entity = entityObj.Entity
 
-        if not ClientLib:IsCharValid(entity) then continue end
+        if not ClientLib.IsCharValid(entity) then continue end
         if entity:GetAttribute("IsInCombat") then continue end
         if entity:GetAttribute("IsDead") then continue end
         if entity:GetAttribute("EnteringCombat") then continue end
@@ -215,7 +215,7 @@ Add(HarukaLib.Clock(1.2, function()
             local direction = math.random(-2, 2)
 
             for _ = 1, rotating do
-                if not ClientLib:IsModelValid(entity) then break end
+                if not ClientLib.IsModelValid(entity) then break end
                 if entity:GetAttribute("NearestChar") then break end
 
                 entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
@@ -239,7 +239,7 @@ function EntityLib.new(enemy: Model)
     local self = setmetatable({}, EntityLib)
 
     Promise.new(function(resolve)
-        repeat wait() until ClientLib:IsModelValid(enemy)
+        repeat wait() until ClientLib.IsModelValid(enemy)
 
         resolve(true)
 
@@ -366,7 +366,7 @@ function EntityLib:_LoadAnims()
     end
 
     local animContainer = ReplicatedStorage.Packages.Anims.EnemyAnims:FindFirstChild(entity.Name, true) :: Folder
-    if not ClientLib:IsCharValid(entity) then return end
+    if not ClientLib.IsCharValid(entity) then return end
 
     if not entity.Humanoid:FindFirstChild("Animator") then
         Instance.new("Animator", entity.Humanoid)
@@ -408,7 +408,7 @@ function EntityLib:_MakeModel()
 	if self.HasModel then return end
 
     local entity = self.Entity :: Model
-    if not ClientLib:IsModelValid(entity) then return end
+    if not ClientLib.IsModelValid(entity) then return end
 
     -- already has model
     if entity:FindFirstChild("Torso") then return end
@@ -449,7 +449,7 @@ function EntityLib:_MakeModel()
 
     self.HasModel = true
 
-    if not ClientLib:IsCharValid(entity) then return end
+    if not ClientLib.IsCharValid(entity) then return end
 
     self:PlayAnim("Idle")
 end
@@ -467,7 +467,7 @@ function EntityLib:_ListenAttributeTracker()
             if not state then return end
             if not self.HasModel then return end
             if alreadyAttributeEnteringCombat then return end
-            if not ClientLib:IsCharValid(entity) then return end
+            if not ClientLib.IsCharValid(entity) then return end
 
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
             if distance >= 159 or distance <= 0 then return end
@@ -491,7 +491,7 @@ function EntityLib:_ListenAttributeTracker()
             if not state then return end
             if not self.HasModel then return end
             if alreadyAttributeEnteredCombat then return end
-            if not ClientLib:IsCharValid(entity) then return end
+            if not ClientLib.IsCharValid(entity) then return end
 
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
             if distance >= 159 or distance <= 0 then return end
@@ -527,7 +527,7 @@ function EntityLib:_ListenAttributeTracker()
             if not state then return end
             if not self.HasModel then return end
             if alreadyAttributeIsDead then return end
-            if not ClientLib:IsModelValid(entity) then return end
+            if not ClientLib.IsModelValid(entity) then return end
 
 
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
@@ -561,7 +561,7 @@ function EntityLib:_ListenAttributeTracker()
 
                 Debris:AddItem(deathEffect, 2)
 
-                ClientLib:PlayWorldSound(SoundService.SFXs.EnemyCorpsed, deathEffect.Position)
+                ClientLib.PlayWorldSound(SoundService.SFXs.EnemyCorpsed, deathEffect.Position)
 
             end):catch(function() end)
         end
@@ -572,7 +572,7 @@ end
 function EntityLib:_ListenMobWalkingTracker()
     local entity = self.Entity :: Model
 
-    if not ClientLib:IsCharValid(entity) then return end
+    if not ClientLib.IsCharValid(entity) then return end
 
     local humanoid = entity.Humanoid :: Humanoid
 
@@ -597,7 +597,7 @@ end
 
 function EntityLib:_SpawnHighlightIndicator()
     if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") <= 15 then return end
-    if not ClientLib:IsModelValid(self.Entity) then return end
+    if not ClientLib.IsModelValid(self.Entity) then return end
 
 
     local distance = player:DistanceFromCharacter(self.Entity.PrimaryPart.Position)

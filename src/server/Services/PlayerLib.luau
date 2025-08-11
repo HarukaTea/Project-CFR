@@ -6,7 +6,6 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 
 
 local PlayerLib = {}
@@ -42,99 +41,6 @@ local allPlayerObjPool = {}
 
 
 local wait = task.wait
-
-
-
-
---// Dev products purchase callback
-local productFunctions = {}
-
-for _, productId in AssetBook.DevProductIds do
-    productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: ProfileStore.Profile)
-        local productInfo = MarketplaceService:GetProductInfo(receipt.ProductId, Enum.InfoType.Product)
-        assert(productInfo)
-
-        table.insert(profile.Data.DevProductsPurchaseLogs, {
-            Purchased = true,
-            PurchaseDateTime = DateTime.now():ToIsoDate(),
-            PurchasedPrice = productInfo.PriceInRobux,
-        })
-
-        profile:Save()
-        PlayerLib:_RequestToCalculateTotalDonationAndSave(profile, player)
-    end
-end
-local function processReceipt(receiptInfo: {[string]: any})
-    local userId = receiptInfo.PlayerId
-    local productId = receiptInfo.ProductId
-
-    local player = Players:GetPlayerByUserId(userId)
-    if player then
-        while player:GetAttribute("HarukaUniqueId") == nil and player.Parent == Players do
-            wait()
-        end
-        wait()
-
-        if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
-            local playerObj = allPlayerObjPool[player:GetAttribute("HarukaUniqueId")]
-            if playerObj then
-                local profile = playerObj.Profile
-
-                if profile and profile:IsActive() then
-                    local handler = productFunctions[tostring(productId)]
-                    local success, result = pcall(handler, receiptInfo, player, profile)
-
-                    if success then
-                        Events.CreateNotify.Fire(player, "You have successfully purchased the product!")
-                        return Enum.ProductPurchaseDecision.PurchaseGranted
-                    else
-                        Events.CreateNotify.Fire(player, "Failed to process receipt!")
-                        Events.CreateNotify.Fire(player, "But you didnt lose your Robux!")
-                        warn(`Failed to process receipt: `, receiptInfo, result)
-                    end
-                end
-            end
-        end
-    end
-
-    return Enum.ProductPurchaseDecision.NotProcessedYet
-end
-MarketplaceService.ProcessReceipt = processReceipt
-
-
-
-MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Player, gamePassId: number, wasPurchased: boolean)
-    if not wasPurchased then return end
-    if not player then return end
-    if player.Parent ~= Players then return end
-
-    local stringifyGamepassId = tostring(gamePassId)
-
-    local playerObj = allPlayerObjPool[player:GetAttribute("HarukaUniqueId")]
-    if not playerObj then return end
-
-    local profile = playerObj.Profile
-    if not profile then return end
-
-
-    pcall(function()
-        local gamepassInfo = MarketplaceService:GetProductInfo(gamePassId, Enum.InfoType.GamePass)
-        if not gamepassInfo then return end
-        if not gamepassInfo.IsForSale then return end
-
-        profile.Data.GamepassPurchaseLogs[stringifyGamepassId] = {
-            PurchaseDateTime = DateTime.now():ToIsoDate(),
-            Purchased = true,
-            PurchasedPrice = gamepassInfo.PriceInRobux
-        }
-    end)
-
-    profile:Save()
-    PlayerLib:_RequestToCalculateTotalDonationAndSave(profile, player)
-
-
-    Events.CreateNotify.Fire(player, "You have successfully purchased the gamepass!")
-end)
 
 
 local attrWhiteList = {}
@@ -185,6 +91,11 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             plr:SetAttribute(attr, val)
         end
 
+        local starterClass = netData.ClassChosen
+        if starterClass then
+            data.StarterClass = starterClass
+        end
+
 
         --// validate
         local validatedData = self:_ValidateSaveData(data)
@@ -199,16 +110,6 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
             plr:SetAttribute(attr, val)
         end
-
-        --// load class chosen
-        local classChosen = netData.ClassChosen
-        if classChosen then
-            validatedData = self:_RevalidateClassData(validatedData, classChosen)
-            if validatedData == nil then return end
-
-            profile.Data[slot].Attrs = validatedData
-        end
-
 
 
         local itemFolder, equippingFolder, questFolder, settingsFolder =
@@ -379,12 +280,12 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             end
 
 
-            self:_RequestToCalculateTotalDonationAndSave(profile, plr)
+            PlayerLib.CalDonationAndSave(profile, plr)
         end)
 
 
         --// FIXME: PT3 Badge, remove this when ended
-        ServerLib:GiveBadge(2853156407323188, plr)
+        ServerLib.GiveBadge(2853156407323188, plr)
 
 
 
@@ -404,12 +305,9 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
         ServerBindables.RToSpawnChar:Fire(plr)
 
-        --// TODO: turn on when in debug mode
-        --self:_ListenLeadDevDebuggerToolsTracker()
-
-        self:_RequestToGetCurrentRankOnDonations()
+        self:UpdateDonationRank()
         self.Add(HarukaLib.Clock(77, function()
-            self:_RequestToGetCurrentRankOnDonations()
+            self:UpdateDonationRank()
         end))
 
         if plr:FindFirstChild("ProfileContainer") then
@@ -599,6 +497,14 @@ function PlayerLib:Init()
 end
 
 
+
+function PlayerLib.GetPlayerObjByUniqueId(uniqueId: string) : PlayerLib
+    return allPlayerObjPool[uniqueId]
+end
+
+
+
+
 function PlayerLib:Destroy()
     allPlayerObjPool[self.UniqueId] = nil
 
@@ -610,7 +516,6 @@ end
 
 
 --// Private functions
-
 
 function PlayerLib:_Remove()
     local success, err = pcall(function()
@@ -725,7 +630,7 @@ function PlayerLib:_SaveData()
     profileAttrs.Settings = criSettingsSQL
 
 
-    self:_RequestToCalculateTotalDonationAndSave(self.Profile, self.Player)
+    PlayerLib.CalDonationAndSave(self.Profile, self.Player)
 end
 
 
@@ -736,8 +641,6 @@ function PlayerLib:_RemoveChestAcquire()
         end
     end)
 end
-
-
 function PlayerLib:_RemoveFromParty()
     pcall(function()
         local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name) :: ObjectValue?
@@ -747,6 +650,7 @@ function PlayerLib:_RemoveFromParty()
         end
     end)
 end
+
 
 
 
@@ -795,11 +699,11 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
 
         if not itemInfo.ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
+            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
             data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = true
         end
         if not itemInfo.IsV2ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
+            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
             data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = true
         end
         if not itemInfo.Level then
@@ -815,6 +719,9 @@ function PlayerLib:_ValidateSaveData(data: { any })
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
                 data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
             end
+        end
+        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") then
+            data.ItemsSQL[itemInfo.UniqueId] = nil
         end
         if table.find(trueItemInfo.TagsDesync, "Chest") then
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
@@ -838,7 +745,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
                         Amount = 1,
                         UniqueId = itemUniqueId,
                         Level = itemInfo.Level,
-                        ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId),
+                        ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId),
                         IsFav = false
                     }
                 end
@@ -968,7 +875,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
             UniqueId = itemUniqueIdForEmptyWeapon,
             Level = 1,
             IsV2ItemStat = true,
-            ItemStat = ServerLib:GiveRandomStatForItem(weaponId),
+            ItemStat = ServerLib.GiveRandomStatForItem(weaponId),
             IsFav = false
         }
     end
@@ -1059,75 +966,7 @@ end
 
 
 
-function PlayerLib:_RevalidateClassData(data: { any }, classChosen: string)
-    data = table.clone(data)
-
-
-    local weaponIds = {
-        Chain = "WoodenSword",
-        Burst = "WoodenBow",
-        Flow = "WoodenStaff"
-    }
-
-    local targetItemObj = nil
-    for _, itemObj in data.ItemsSQL do
-        if itemObj.ItemId == weaponIds[classChosen] then
-            targetItemObj = itemObj
-            break
-        end
-    end
-    if targetItemObj == nil then
-        local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
-
-        data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = weaponIds[classChosen],
-            Amount = 1,
-            UniqueId = itemUniqueIdForEmptyWeapon,
-            Level = 1,
-            IsV2ItemStat = true,
-            ItemStat = ServerLib:GiveRandomStatForItem(weaponIds[classChosen])
-        }
-
-        targetItemObj = data.ItemsSQL[itemUniqueIdForEmptyWeapon]
-    end
-
-
-    data.EquippingItemsSQL["Weapon1"] = {
-        ItemId = targetItemObj.ItemId,
-        UniqueId = targetItemObj.UniqueId
-    }
-
-    return data
-end
-
-
-function PlayerLib:_ListenLeadDevDebuggerToolsTracker()
-    if self.Player.UserId ~= 304008764 then return end
-    if not ServerStorage:FindFirstChild("Packages") then return end
-    if not ServerStorage.Packages:FindFirstChild("DebugTools") then return end
-
-
-    local devPackages = ServerStorage.Packages.DebugTools :: Folder
-
-    if devPackages:FindFirstChild("PacketProfiler") then
-        local packetProfilerContainer = Instance.new("ScreenGui")
-        packetProfilerContainer.Name = "_PacketProfiler"
-        packetProfilerContainer.ResetOnSpawn = false
-        packetProfilerContainer.Parent = self.Player.PlayerGui
-
-        devPackages.PacketProfiler:Clone().Parent = packetProfilerContainer
-    end
-
-    if devPackages:FindFirstChild("InGameExplorer") then
-        if not ServerScriptService:FindFirstChild("InGameExplorer") then
-            devPackages.InGameExplorer.Parent = ServerScriptService
-        end
-    end
-end
-
-
-
-function PlayerLib:_GetCurrentDonation(profile: ProfileStore.Profile) : number
+function PlayerLib._GetCurrentDonation(profile: ProfileStore.Profile) : number
     local totalRobuxGained = 0
     for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
         if purchaseInfo.Purchased then
@@ -1142,10 +981,8 @@ function PlayerLib:_GetCurrentDonation(profile: ProfileStore.Profile) : number
 
     return totalRobuxGained
 end
-
-
-function PlayerLib:_RequestToCalculateTotalDonationAndSave(profile: ProfileStore.Profile, plr: Player) : number
-    local totalRobuxGained = self:_GetCurrentDonation(profile)
+function PlayerLib.CalDonationAndSave(profile: ProfileStore.Profile, plr: Player) : number
+    local totalRobuxGained = PlayerLib._GetCurrentDonation(profile)
     if totalRobuxGained <= 0 then return 0 end
 
     ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..tostring(plr.UserId), totalRobuxGained, "Donation")
@@ -1153,7 +990,7 @@ end
 
 
 
-function PlayerLib:_RequestToGetCurrentRankOnDonations()
+function PlayerLib:UpdateDonationRank()
     local profile = self.Profile
     if profile == nil then return end
 
@@ -1164,6 +1001,9 @@ function PlayerLib:_RequestToGetCurrentRankOnDonations()
     ServerBindables.RToCheckLeaderboardRank:Fire(self.Player, "Donation")
 end
 
+
+
+shared.PlayerLib = PlayerLib
 
 
 return PlayerLib

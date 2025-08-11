@@ -50,4 +50,7 @@ end
 
 
 
+shared.ClassOrbSpawnAlgoLib = ClassOrbSpawnAlgoLib
+
+
 return ClassOrbSpawnAlgoLib

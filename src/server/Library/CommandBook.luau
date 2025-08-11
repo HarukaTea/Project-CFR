@@ -44,7 +44,7 @@ local commands = {
         Callback = function(props: CallbackProps)
             for _, thatPlr: Player in props.Args[1] do
                 if not thatPlr then continue end
-                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
                 local noclip = RepS.Packages.Unloads.Noclip:Clone() :: Tool
                 noclip.Parent = thatPlr.Backpack
@@ -70,7 +70,7 @@ local commands = {
         Callback = function(props: CallbackProps)
             for _, thatPlr: Player in props.Args[1] do
                 if not thatPlr then continue end
-                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
                 thatPlr.Character.Humanoid.Health = -1
             end
@@ -106,8 +106,8 @@ local commands = {
 
 
                 local thatChar = thatPlr.Character
-                if not ServerLib:IsCharValid(thatChar) then continue end
-                if not ServerLib:IsCharValid(destinationPlayer.Character) then break end
+                if not ServerLib.IsCharValid(thatChar) then continue end
+                if not ServerLib.IsCharValid(destinationPlayer.Character) then break end
 
                 thatChar:PivotTo(destinationPlayer.Character.PrimaryPart.CFrame)
             end
@@ -132,7 +132,7 @@ local commands = {
         Callback = function(props: CallbackProps)
             for _, thatPlr: Player in props.Args[1] do
                 if not thatPlr then continue end
-                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
                 thatPlr.Character:SetAttribute("ClassUltProgress", thatPlr.Character:GetAttribute("MaxClassUltProgress"))
             end
@@ -173,7 +173,7 @@ local commands = {
         Callback = function(props: CallbackProps)
             for _, thatPlr: Player in props.Args[1] do
                 if not thatPlr then continue end
-                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
                 thatPlr.Character:SetAttribute(props.Args[2], props.Args[3])
             end
@@ -219,10 +219,10 @@ local commands = {
                     end
 
                     for _, itemId: string in allItems do
-                        ServerLib:GiveItemDrop(thatPlr, itemId, props.Args[3])
+                        ServerLib.GiveItemDrop(thatPlr, itemId, props.Args[3])
                     end
                 else
-                    ServerLib:GiveItemDrop(thatPlr, item, props.Args[3])
+                    ServerLib.GiveItemDrop(thatPlr, item, props.Args[3])
                 end
             end
 
@@ -441,12 +441,12 @@ local commands = {
 
         Callback = function(props: CallbackProps)
             local char = props.Executor.Character
-            if not ServerLib:IsCharValid(char) then
+            if not ServerLib.IsCharValid(char) then
                 props.ResolveObj()
                 return
             end
 
-            local pos = ServerLib:FindGroundByRay(char.PrimaryPart.Position)
+            local pos = ServerLib.FindGroundByRay(char.PrimaryPart.Position)
 
             Events.CreateNotify.Fire(props.Executor, "Spawning Entity...")
 

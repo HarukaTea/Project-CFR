@@ -39,11 +39,11 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
         local bonusDMG = char.Humanoid.MaxHealth * 0.1
         bonusDMG = math.floor(bonusDMG)
 
-        local dmg = ClassAttackLib:_CalDMG("Physical", char, {
+        local dmg = ClassAttackLib._CalDMG("Physical", char, {
             ForceDMG = bonusDMG
         })
 
-        ClassAttackLib:_DealDamageToEnemy(char, targeting, {
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
             DMG = dmg,
             DMGType = "Physical",
             Attacker = "VITBonusAttack"

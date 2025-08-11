@@ -20,11 +20,11 @@ local wait = task.wait
 
 return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
-    if not ClientLib:IsCharValid(char) then return end
+    if not ClientLib.IsCharValid(char) then return end
 
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib:IsCharValid(targetingEnemy) then return end
+    if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
     local charge = RepS.Packages.SkillProjectiles:FindFirstChild("ChainSlashCharge", true):Clone() :: BasePart
@@ -58,7 +58,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
             local pos = vortex.Blade.Position
 
             for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
-                if not ClientLib:IsCharValid(symbol.Value) then continue end
+                if not ClientLib.IsCharValid(symbol.Value) then continue end
                 if tempMarkedContainer:FindFirstChild(symbol.Value:GetAttribute("HarukaUniqueId")) then continue end
 
 
@@ -87,8 +87,8 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
 
     Promise.new(function(resolve)
         while RunService.RenderStepped:Wait() do
-            if not ClientLib:IsModelValid(vortex) then break end
-            if not ClientLib:IsModelValid(char) then break end
+            if not ClientLib.IsModelValid(vortex) then break end
+            if not ClientLib.IsModelValid(char) then break end
 
 
             vortex.PrimaryPart.Position = char.PrimaryPart.Position

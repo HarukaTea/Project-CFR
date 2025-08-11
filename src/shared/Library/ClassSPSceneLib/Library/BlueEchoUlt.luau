@@ -21,11 +21,11 @@ local wait = task.wait
 
 return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
-    if not ClientLib:IsCharValid(char) then return end
+    if not ClientLib.IsCharValid(char) then return end
 
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib:IsCharValid(targetingEnemy) then return end
+    if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
     local centerPos = char:GetAttribute("CombatLocation").Position :: Vector3
@@ -72,7 +72,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
         while true do
             RunService.Heartbeat:Wait()
 
-            local post = ClientLib:FindGroundByRayForOrb(echoRay.Position)
+            local post = ClientLib.FindGroundByRayForOrb(echoRay.Position)
 
             HarukaLib:CreateTween(echoRay, normalInfo, {
                 Position = targetingEnemy.PrimaryPart.Position + Vector3.yAxis * 30

@@ -17,7 +17,7 @@ return function(scope: Fusion.Scope, props: {
     Char: Model,
     Player: Player
 })
-    if not ClientLib:IsCharValid(props.Char) then return nil end
+    if not ClientLib.IsCharValid(props.Char) then return nil end
     if props.Player == nil then return nil end
     if props.Player.Name == Players.LocalPlayer.Name then return nil end
 

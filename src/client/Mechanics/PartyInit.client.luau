@@ -41,7 +41,7 @@ end
 
 mouse.Button1Down:Connect(function()
     local char = plr.Character
-    if not ClientLib:IsCharValid(char) then return end
+    if not ClientLib.IsCharValid(char) then return end
     if char:GetAttribute("IsInCombat") then return end
 
     local target = mouse.Target

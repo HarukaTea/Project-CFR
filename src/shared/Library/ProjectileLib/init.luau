@@ -11,7 +11,10 @@ local HarukaDebris = require(RepS.HarukaShared.Shared.HarukaDebris)
 
 local Types = require(script.Types)
 
-local ProjectileLib = {}
+
+export type ProjectileLib = Types.ProjectileLib
+
+local ProjectileLib = {} :: ProjectileLib
 
 local wait = task.wait
 
@@ -122,4 +125,4 @@ for _, module: ModuleScript in script.Library:GetChildren() do
 end
 
 
-return ProjectileLib
+return ProjectileLib :: ProjectileLib

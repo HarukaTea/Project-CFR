@@ -22,7 +22,7 @@ return function(scope: Fusion.Scope, props: {
 
     TargetArrowPos: Fusion.Value
 })
-    if not ClientLib:IsCharValid(props.Targeting.Value) then return nil end
+    if not ClientLib.IsCharValid(props.Targeting.Value) then return nil end
 
     local targeting = props.Targeting.Value :: Model
 
@@ -214,7 +214,7 @@ return function(scope: Fusion.Scope, props: {
 
 
     --// track effect list
-    ClientLib:TrackEffectListToUI({
+    ClientLib.TrackEffectListToUI({
         Target = targeting,
         Scope = scope,
         GuiContainer = bar2

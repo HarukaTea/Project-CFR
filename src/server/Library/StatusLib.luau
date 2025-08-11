@@ -19,7 +19,7 @@ local StatusLib = {}
 --// Helper functions
 
 StatusLib.Heal = function(_, char: Model, healAmount: number) : number
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     local plr = Players:GetPlayerFromCharacter(char)
     if plr == nil then return end
@@ -32,14 +32,14 @@ StatusLib.Heal = function(_, char: Model, healAmount: number) : number
 	healEff.Parent = char
 	Debris:AddItem(healEff, 1.5)
 
-    ServerLib:PlayWorldSound(SoundService.SFXs.Healing, char.PrimaryPart.Position)
+    ServerLib.PlayWorldSound(SoundService.SFXs.Healing, char.PrimaryPart.Position)
 
     Events.PlayHealScreenFX.Fire(plr)
 
     return healAmount
 end
 StatusLib.HealPercentage = function(_, char: Model, percentage: number) : number
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     return StatusLib:Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
 end
@@ -47,7 +47,7 @@ end
 
 
 StatusLib.RestoreMana = function(_, char: Model, manaAmount: number) : number
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     char:SetAttribute("Mana", math.clamp(char:GetAttribute("Mana") + manaAmount, 0, char:GetAttribute("MaxMana")))
 
@@ -65,7 +65,7 @@ end
 StatusLib.CreateCustomEffect = function(_, eff: string, char: Model, props: {
     Duration: number,
 })
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     local effectSymbol = Instance.new("StringValue")
     effectSymbol.Name = "EffectSymbol"
@@ -89,7 +89,7 @@ StatusLib.NormalBoostForEntity = function(_, eff: string, char: Model, props: {
 
     Duration: number,
 })
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     local power = props.Power or 0
     local ex = props.Ex or 0
@@ -112,7 +112,7 @@ StatusLib.NormalBoostForEntity = function(_, eff: string, char: Model, props: {
 
 
     local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         HarukaLib:AddAttr(char, exAttr, -ex)
         HarukaLib:AddAttr(char, powerAttr, -power)
@@ -141,7 +141,7 @@ StatusLib.DMGBoost = function(_, char: Model, props: {
 
     Duration: number,
 })
-    if not ServerLib:IsCharValid(char) then return end
+    if not ServerLib.IsCharValid(char) then return end
 
     local plr = Players:GetPlayerFromCharacter(char)
     if plr == nil then return end
@@ -160,7 +160,7 @@ StatusLib.DMGBoost = function(_, char: Model, props: {
 
 
     local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
-        if not ServerLib:IsCharValid(char) then return end
+        if not ServerLib.IsCharValid(char) then return end
 
         HarukaLib:AddAttr(char, "MaxDMGEx", -ex)
         HarukaLib:AddAttr(char, "MinDMGEx", -ex)
@@ -214,7 +214,7 @@ StatusLib.Burn = function(_, target: Model, info: {
     dmg = math.floor(dmg)
 
     target.Humanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
+    ServerLib.ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
 end
 
 
@@ -231,7 +231,7 @@ StatusLib.Bleed = function(_, target: Model, info: {
     dmg = math.floor(dmg)
 
     target.Humanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
+    ServerLib.ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
 end
 
 
@@ -248,8 +248,12 @@ StatusLib.Poison = function(_, target: Model, info: {
     dmg = math.floor(dmg)
 
     target.Humanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
+    ServerLib.ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
 end
+
+
+
+shared.StatusLib = StatusLib
 
 
 return StatusLib
