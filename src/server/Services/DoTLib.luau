@@ -4,8 +4,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
-local HarukaDoT = {}
-HarukaDoT.__index = HarukaDoT
+local DoTLib = {}
+DoTLib.__index = DoTLib
 
 
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
@@ -15,22 +15,22 @@ local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 
-HarukaDoT.OnEffectActivated = Signal.new()
-HarukaDoT.OnEffectCancelled = Signal.new()
+DoTLib.OnEffectActivated = Signal.new()
+DoTLib.OnEffectCancelled = Signal.new()
 
 
 local allDoTObjs = {}
 
 
 --// Constructor
-function HarukaDoT.new(info: {
+function DoTLib.new(info: {
     Target: Model,
     Type: string,
     Creator: Model,
     Power: number,
     Duration: number,
 })
-    local self = setmetatable({}, HarukaDoT)
+    local self = setmetatable({}, DoTLib)
 
     self.Target = info.Target
     self.Type = info.Type
@@ -47,7 +47,7 @@ function HarukaDoT.new(info: {
 end
 
 
-function HarukaDoT:Activate()
+function DoTLib:Activate()
     if not ServerLib.IsCharValid(self.Target) then return end
 
     local effectSymbol = Instance.new("StringValue")
@@ -77,7 +77,7 @@ function HarukaDoT:Activate()
     end
 
 
-    HarukaDoT.OnEffectActivated:Fire(self)
+    DoTLib.OnEffectActivated:Fire(self)
 
     self.Tasks = {}
 
@@ -94,7 +94,7 @@ function HarukaDoT:Activate()
 end
 
 
-function HarukaDoT:Cancel()
+function DoTLib:Cancel()
     if self.Cancelled then return end
 
     self.Cancelled = true
@@ -115,14 +115,16 @@ function HarukaDoT:Cancel()
     end
 
 
-    HarukaDoT.OnEffectCancelled:Fire(self)
+    DoTLib.OnEffectCancelled:Fire(self)
 
 
     allDoTObjs[self.UniqueId] = nil
 end
 
 
-function HarukaDoT:GetEffectsByTarget(target: Model)
+
+
+function DoTLib.GetEffectsByTarget(target: Model)
     local objs = {}
 
     for _, thatObj in allDoTObjs do
@@ -135,8 +137,7 @@ function HarukaDoT:GetEffectsByTarget(target: Model)
     return objs
 end
 
-
-function HarukaDoT:GetAffectedTargetsByEffectId(effectId: string)
+function DoTLib.GetAffectedTargetsByEffectId(effectId: string)
     local objs = {}
 
     for _, thatObj in allDoTObjs do
@@ -149,4 +150,7 @@ function HarukaDoT:GetAffectedTargetsByEffectId(effectId: string)
 end
 
 
-return HarukaDoT
+shared.DoTLib = DoTLib
+
+
+return DoTLib

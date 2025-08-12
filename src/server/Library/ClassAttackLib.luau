@@ -15,7 +15,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
-local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
+local DoTLib = require(SSS.HarukaServer.Shared.DoTLib)
 
 local wait = task.wait
 
@@ -361,7 +361,7 @@ ClassAttackLib.Flow = function(plr: Player)
             Attacker = "ClassAttacks"
         })
 
-        local burnObj = HarukaDoT.new({
+        local burnObj = DoTLib.new({
             Target = targeting,
             Type = "Burn",
             Duration = 8,
@@ -642,7 +642,7 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         })
         if result == "Debuff" then
             local id = string.match(debuff, "^(.-)Chance")
-            local debuffObj = HarukaDoT.new({
+            local debuffObj = DoTLib.new({
                 Target = targeting,
                 Type = id,
                 Duration = 5,

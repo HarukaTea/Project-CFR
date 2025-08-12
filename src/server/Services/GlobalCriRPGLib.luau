@@ -25,7 +25,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
-local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
+local DoTLib = require(SSS.HarukaServer.Shared.DoTLib)
 
 
 local GlobalCriRPGLib = {}
@@ -1438,7 +1438,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             DMGType = trueDMGStyle
         })
         if projectileDoTType ~= "None" then
-            local debuffObj = HarukaDoT.new({
+            local debuffObj = DoTLib.new({
                 Target = data.EnemyEntity,
                 Type = projectileDoTType,
                 Duration = 5,

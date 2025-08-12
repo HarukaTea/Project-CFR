@@ -3,7 +3,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
+local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 
 
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
@@ -36,7 +36,7 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(event, char, function(targeting, attac
         ["NoEffect"] = 100 - 3
     })
     if result == "Debuff" then
-        local debuffObj = HarukaDoT.new({
+        local debuffObj = DoTLib.new({
             Target = targeting,
             Type = "Poison",
             Duration = 5,

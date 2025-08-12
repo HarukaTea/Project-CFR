@@ -10,7 +10,7 @@ local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local HarukaDoT = require(SSS.HarukaServer.Shared.HarukaDoT)
+local DoTLib = require(SSS.HarukaServer.Shared.DoTLib)
 
 
 local Types = require(script.Parent.Parent.Types)
@@ -81,7 +81,7 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
             ["NoEffect"] = 100 - 5
         })
         if result == "Debuff" then
-            local debuffObj = HarukaDoT.new({
+            local debuffObj = DoTLib.new({
                 Target = targeting,
                 Type = "Burn",
                 Duration = 5,

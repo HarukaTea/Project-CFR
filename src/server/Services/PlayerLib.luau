@@ -23,7 +23,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
-local HarukaQuest = require(ServerScriptService.HarukaServer.Shared.HarukaQuest)
+local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 
 local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
@@ -161,7 +161,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             itemVal.Parent = equippingFolder
         end
         for questId: string, questInfo: { any } in validatedData.QuestsV2 do
-            HarukaQuest:GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
+            QuestLib.GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
         end
         for settingsId: string, settingsVal: any in validatedData.Settings do
             local val = nil

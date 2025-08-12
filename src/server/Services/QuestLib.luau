@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local HarukaQuest = {}
-HarukaQuest.__index = HarukaQuest
+local QuestLib = {}
+QuestLib.__index = QuestLib
 
 
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
@@ -19,7 +19,7 @@ end
 
 
 
-function HarukaQuest:CanGiveQuest(questId: string, plr: Player)
+function QuestLib.CanGiveQuest(questId: string, plr: Player)
     if not QuestBook[questId] then return false end
     if not plr:FindFirstChild("Quests") then return false end
 
@@ -42,14 +42,14 @@ function HarukaQuest:CanGiveQuest(questId: string, plr: Player)
 end
 
 
-function HarukaQuest:GetQuestState(questId: string, plr: Player) : string
+function QuestLib.GetQuestState(questId: string, plr: Player) : string
     if not _isValidQuestForPlayer(questId, plr) then return "Invalid" end
 
     return plr.Quests[questId].Value
 end
 
 
-function HarukaQuest:CompleteQuest(questId: string, plr: Player)
+function QuestLib.CompleteQuest(questId: string, plr: Player)
     if not _isValidQuestForPlayer(questId, plr) then return end
 
     local state = QuestBook[questId].DeliverType
@@ -59,14 +59,14 @@ function HarukaQuest:CompleteQuest(questId: string, plr: Player)
 end
 
 
-function HarukaQuest:DeliverQuest(questId: string, plr: Player)
+function QuestLib.DeliverQuest(questId: string, plr: Player)
     if not _isValidQuestForPlayer(questId, plr) then return end
 
     plr.QuestBook[questId].Value = "Delivered"
 end
 
 
-function HarukaQuest:GetDeliveredQuests(plr: Player) : { string }
+function QuestLib.GetDeliveredQuests(plr: Player) : { string }
     if not plr:FindFirstChild("Quests") then return {} end
 
     local deliveredQuests = {}
@@ -80,7 +80,7 @@ function HarukaQuest:GetDeliveredQuests(plr: Player) : { string }
 end
 
 
-function HarukaQuest:GetInProgressQuests(plr: Player) : { string }
+function QuestLib.GetInProgressQuests(plr: Player) : { string }
     if not plr:FindFirstChild("Quests") then return {} end
 
     local inProgressQuests = {}
@@ -94,8 +94,8 @@ function HarukaQuest:GetInProgressQuests(plr: Player) : { string }
 end
 
 
-function HarukaQuest:GiveQuest(plr: Player, questId: string, progressVals: { number }?, progressState: string?)
-    if not HarukaQuest:CanGiveQuest(questId, plr) then return end
+function QuestLib.GiveQuest(plr: Player, questId: string, progressVals: { number }?, progressState: string?)
+    if not QuestLib:CanGiveQuest(questId, plr) then return end
     if plr.Quests:FindFirstChild(questId) then return end
 
     progressVals = progressVals or {}
@@ -114,7 +114,7 @@ function HarukaQuest:GiveQuest(plr: Player, questId: string, progressVals: { num
 end
 
 
-function HarukaQuest:AddObjective(plr: Player, questId: string, objectiveId: string, amount: number)
+function QuestLib.AddObjective(plr: Player, questId: string, objectiveId: string, amount: number)
     if not _isValidQuestForPlayer(questId, plr) then return end
 
     local hasObjectiveCheck = false
@@ -147,8 +147,10 @@ function HarukaQuest:AddObjective(plr: Player, questId: string, objectiveId: str
     if not completed then return end
 
 
-    HarukaQuest:CompleteQuest(questId, plr)
+    QuestLib:CompleteQuest(questId, plr)
 end
 
 
-return HarukaQuest
+shared.QuestLib = QuestLib
+
+return QuestLib

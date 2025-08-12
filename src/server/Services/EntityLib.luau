@@ -22,7 +22,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
+local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityAttackLib)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
@@ -1081,7 +1081,7 @@ end
 
 
 function EntityLib:_ClearEffectListTask()
-    for _, effectTask in HarukaDoT:GetEffectsByTarget(self.Entity) do
+    for _, effectTask in DoTLib.GetEffectsByTarget(self.Entity) do
         effectTask:Cancel()
     end
 end

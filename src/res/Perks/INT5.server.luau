@@ -3,7 +3,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
-local HarukaDoT = require(ServerScriptService.HarukaServer.Shared.HarukaDoT)
+local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 
 
 local Add, Empty = HarukaLib.Bin()
@@ -36,7 +36,7 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: {
     })
     if result == "Debuff" then
         --//  TODO: slow debuff
-        local debuffObj = HarukaDoT.new({
+        local debuffObj = DoTLib.new({
             Target = targeting,
             Type = "Burn",
             Duration = 5,
