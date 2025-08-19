@@ -230,4 +230,7 @@ AssetBook.PlaceIds = {
 	Tutorial = 1043446942,
 }
 
+
+AssetBook.CFUniverseId = 7037847546
+
 return AssetBook

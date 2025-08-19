@@ -8,12 +8,14 @@ local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
 local CriRPGLib = {}
-
+CriRPGLib.Funcs = {}
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
 
+local ArtifactBook = require(ReplicatedStorage.HarukaShared.Library.ArtifactBook)
+local ArtifactLib = require(ServerScriptService.HarukaServer.Library.ArtifactLib)
 local ClassBook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
@@ -70,10 +72,8 @@ function CriRPGLib:Init()
     self:_InitAttrs()
     self:_SpawnToLastLocation()
 
-    for funcId: string, func: (self) -> nil in CriRPGLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
-        end
+    for _, func: () -> nil in CriRPGLib.Funcs do
+        func()
     end
 
     self:_AutoEquipItems()
@@ -174,7 +174,7 @@ end
 
 
 
-function CriRPGLib:_ListenLightTracker()
+table.insert(CriRPGLib.Funcs, function()
     local light = Instance.new("PointLight")
     light.Range = 28
     light.Brightness = 2.5
@@ -197,10 +197,10 @@ function CriRPGLib:_ListenLightTracker()
             blueLight.Enabled = state or false
         end
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenClassTracker()
+table.insert(CriRPGLib.Funcs, function()
 	local function _equipWeapon()
 		for _, weapon: Model in char:GetChildren() do
 			if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
@@ -230,13 +230,11 @@ function CriRPGLib:_ListenClassTracker()
     Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
         ["Prop-Value"] = _equipWeapon
     }))
-end
+end)
 
 
 
-function CriRPGLib:_ListenOrbTracker()
-
-    local plr = plr :: Player
+table.insert(CriRPGLib.Funcs, function()
     local orbResContainer = ReplicatedStorage.Packages.ClassAttacks :: Folder
 
     local orbSymbolContainer = Instance.new("Folder")
@@ -346,11 +344,11 @@ function CriRPGLib:_ListenOrbTracker()
     end))
 
     orbSpawnEmpty()
-end
+end)
 
 
 
-function CriRPGLib:_ListenSkillProjectileTracker()
+table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
     projectileContainer.Name = "SkillProjectiles_"..char:GetAttribute("HarukaUniqueId")
     projectileContainer.Parent = ServerStorage.SkillProjectileContainer
@@ -382,10 +380,10 @@ function CriRPGLib:_ListenSkillProjectileTracker()
         symbol.Parent = projectileContainer
         Debris:AddItem(symbol, props.Duration)
     end))
-end
+end)
 
 
-function CriRPGLib:_ListenPlayerLevelTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-EXP"] = function(exp: number)
             local level = plr:GetAttribute("Level") :: number
@@ -451,12 +449,12 @@ function CriRPGLib:_ListenPlayerLevelTracker()
             end
         end
     }))
-end
+end)
 
 
 
 
-function CriRPGLib:_ListenStatsTracker()
+table.insert(CriRPGLib.Funcs, function()
     --- class base
     local function _updateClassBase(class: string)
         if not class then return end
@@ -488,7 +486,7 @@ function CriRPGLib:_ListenStatsTracker()
         local speedExBuff = char:GetAttribute("SpeedExPower") :: number
         local finalSpeed = if char:GetAttribute("IsInCombat") then char:GetAttribute("BaseSpeedCombat") else char:GetAttribute("BaseSpeed")
 
-        local final = finalSpeed * speedExBuff + speedBuff
+        local final = math.ceil((finalSpeed + speedBuff) * speedExBuff)
 
         char.Humanoid.WalkSpeed = final
     end
@@ -505,7 +503,7 @@ function CriRPGLib:_ListenStatsTracker()
         local jumpExBuff = char:GetAttribute("JumpExPower") :: number
         local baseJump = char:GetAttribute("BaseJumpPower") :: number
 
-        local final = baseJump * jumpExBuff + jumpBuff
+        local final = math.ceil((baseJump + jumpBuff) * jumpExBuff)
 
         char.Humanoid.JumpPower = final
     end
@@ -526,7 +524,7 @@ function CriRPGLib:_ListenStatsTracker()
             DMGPoints = plr:GetAttribute("STRPoints")
         })
 
-        char:SetAttribute("MinDMG", math.ceil(baseMinDMG * minDMGExBuff + minDMGBuff))
+        char:SetAttribute("MinDMG", math.ceil((baseMinDMG + minDMGBuff) * minDMGExBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMinDMG"] = _updateMinDMG,
@@ -550,7 +548,7 @@ function CriRPGLib:_ListenStatsTracker()
             ATKType = "Max"
         })
 
-        char:SetAttribute("MaxDMG", math.ceil(baseMaxDMG * maxDMGExBuff + maxDMGBuff))
+        char:SetAttribute("MaxDMG", math.ceil((baseMaxDMG + maxDMGBuff) * maxDMGExBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMaxDMG"] = _updateMaxDMG,
@@ -572,7 +570,7 @@ function CriRPGLib:_ListenStatsTracker()
             MagicPoints = plr:GetAttribute("INTPoints")
         })
 
-        char:SetAttribute("Magic", math.ceil(baseMagic * magicExBuff + magicBuff))
+        char:SetAttribute("Magic", math.ceil((baseMagic + magicBuff)) * magicExBuff)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMagic"] = _updateMagic,
@@ -590,11 +588,11 @@ function CriRPGLib:_ListenStatsTracker()
         local healthExBuff = char:GetAttribute("MaxHealthExPower") :: number
 
 
-        char.Humanoid.MaxHealth = math.ceil(FormulaBook.PlayerHealthCurveCal({
+        char.Humanoid.MaxHealth = math.ceil((FormulaBook.PlayerHealthCurveCal({
             BaseHealth = baseHealth,
             HealthPoints = plr:GetAttribute("VITPoints")
 
-        }) * healthExBuff + healthBuff)
+        }) + healthBuff) * healthExBuff)
 
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
@@ -625,7 +623,7 @@ function CriRPGLib:_ListenStatsTracker()
             Level = plr:GetAttribute("Level"),
         })
 
-        char:SetAttribute("MaxShield", math.ceil(baseShield * shieldExBuff + shieldBuff))
+        char:SetAttribute("MaxShield", math.ceil((baseShield + shieldBuff) * shieldExBuff))
 
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
@@ -684,7 +682,7 @@ function CriRPGLib:_ListenStatsTracker()
             ManaPoints = plr:GetAttribute("INTPoints")
         })
 
-        char:SetAttribute("MaxMana", math.ceil(baseMana * mpExBuff + mpBuff))
+        char:SetAttribute("MaxMana", math.ceil((baseMana + mpBuff) * mpExBuff))
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
             char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
@@ -730,7 +728,7 @@ function CriRPGLib:_ListenStatsTracker()
             DexPoints = plr:GetAttribute("DEXPoints")
         })
 
-        char:SetAttribute("CriChance", math.floor(final * critChanceExBuff + critChanceBuff))
+        char:SetAttribute("CriChance", math.floor((final + critChanceBuff) * critChanceExBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseCriChance"] = _updateCriChance,
@@ -752,7 +750,7 @@ function CriRPGLib:_ListenStatsTracker()
             DexPoints = plr:GetAttribute("DEXPoints")
         })
 
-        char:SetAttribute("DodgeChance", math.floor(final * dodgeChanceExBuff + dodgeChanceBuff))
+        char:SetAttribute("DodgeChance", math.floor((final + dodgeChanceBuff) * dodgeChanceExBuff))
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseDodgeChance"] = _updateDodgeChance,
@@ -797,10 +795,10 @@ function CriRPGLib:_ListenStatsTracker()
             ["Attr-"..statWithoutBase.."ExPower"] = __track
         }))
     end
-end
+end)
 
 
-function CriRPGLib:_ListenHealTracker()
+table.insert(CriRPGLib.Funcs, function()
     local healAdd, healEmpty = HarukaLib.Bin()
     Add(healEmpty)
 
@@ -839,12 +837,10 @@ function CriRPGLib:_ListenHealTracker()
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-VITPoints"] = _healthRecover,
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenShieldRepairTracker()
-
-
+table.insert(CriRPGLib.Funcs, function()
     local repairAdd, repairEmpty = HarukaLib.Bin()
     Add(repairEmpty)
 
@@ -880,10 +876,10 @@ function CriRPGLib:_ListenShieldRepairTracker()
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-Level"] = _shieldRecover
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenClassChangeTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
         ["Prop-Value"] = function(weapon: string)
             weapon = weapon or ""
@@ -899,10 +895,10 @@ function CriRPGLib:_ListenClassChangeTracker()
             plr:SetAttribute("ClassVariant", variant or "None")
         end
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenPassiveAutoEquipTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(plr.Items.ChildAdded:Connect(function(item: IntConstrainedValue)
         local itemInfo = ItemBook:GetItemInfo(item.Name)
         if not itemInfo then return end
@@ -911,10 +907,10 @@ function CriRPGLib:_ListenPassiveAutoEquipTracker()
             ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
         end
     end))
-end
+end)
 
 
-function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
+table.insert(CriRPGLib.Funcs, function()
     local perkContainer = Instance.new("Folder")
     perkContainer.Name = "Perks"
     perkContainer.Parent = char
@@ -939,9 +935,8 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
         end
         for _, perk: BoolValue in perkContainer[id]:GetChildren() do
             if not table.find(passed, perk.Name) then
-                if PerkLib[perk.Name] then
-                    PerkLib[perk.Name](char, -1)
-                end
+                PerkLib[perk.Name](char, -1)
+
                 if char:FindFirstChild(perk.Name) then
                     char[perk.Name]:Destroy()
                 end
@@ -956,9 +951,8 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
             perk.Value = true
             perk.Parent = perkContainer[id]
 
-            if PerkLib[perk.Name] then
-                PerkLib[perk.Name](char, 1)
-            end
+            PerkLib[perk.Name](char, 1)
+
             if ReplicatedStorage.HarukaRes.Perks:FindFirstChild(perk.Name) then
                 ReplicatedStorage.HarukaRes.Perks[perk.Name]:Clone().Parent = char
             end
@@ -983,7 +977,68 @@ function CriRPGLib:_ListenPlayerAutoPerkEquipTracker()
             _listenToPerk("VIT", point)
         end
     }))
-end
+end)
+
+
+
+table.insert(CriRPGLib.Funcs, function()
+    local artifactContainer = Instance.new("Folder")
+    artifactContainer.Name = "Artifacts"
+    artifactContainer.Parent = char
+    Add(artifactContainer)
+
+
+    local function _equipArtifact()
+        local artifactSetCount = {}
+        for _, artifactId: string in ArtifactBook:GetAllArtifactIds() do
+            artifactSetCount[artifactId] = 0
+        end
+        for _, equipSymbol: StringValue in plr.EquippingItems:GetChildren() do
+            local itemInfo = ItemBook:GetItemInfo(equipSymbol.Value)
+            local artifactInfo = ArtifactBook:GetArtifactInfo(itemInfo.ArtifactId)
+
+            if artifactInfo.ArtifactId == nil then continue end
+
+            artifactSetCount[artifactInfo.ArtifactId] += 1
+        end
+        for artifactId: string, count: number in artifactSetCount do
+            if count < 2 then
+                if artifactContainer:FindFirstChild(artifactId.."2") then
+                    artifactContainer[artifactId.."2"]:Destroy()
+
+                    ArtifactLib[artifactId.."2"](char, -1)
+                end
+                if artifactContainer:FindFirstChild(artifactId.."3") then
+                    artifactContainer[artifactId.."3"]:Destroy()
+
+                    ArtifactLib[artifactId.."3"](char, -1)
+                end
+                continue
+            end
+
+            if count >= 2 then
+                if not artifactContainer:FindFirstChild(artifactId.."2") then
+                    ArtifactLib[artifactId.."2"](char, 1)
+
+                    if ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."2") then
+                        ReplicatedStorage.HarukaRes.Artifacts[artifactId.."2"]:Clone().Parent = artifactContainer
+                    end
+                end
+            end
+            if count >= 3 then
+                if not artifactContainer:FindFirstChild(artifactId.."3") then
+                    ArtifactLib[artifactId.."3"](char, 1)
+
+                    if ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."3") then
+                        ReplicatedStorage.HarukaRes.Artifacts[artifactId.."3"]:Clone().Parent = artifactContainer
+                    end
+                end
+            end
+        end
+    end
+    Add(plr.EquippingItems.ChildAdded:Connect(_equipArtifact))
+    Add(plr.EquippingItems.ChildRemoved:Connect(_equipArtifact))
+end)
 
 
 CriRPGLib:Init()

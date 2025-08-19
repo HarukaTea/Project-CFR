@@ -1262,9 +1262,9 @@ function EntityLib:_CombatEnd()
 
                     local plr = Players:GetPlayerFromCharacter(thatChar)
                     if plr then
-                        ServerLib.GiveEXPRewards(plr, totalEXP)
+                        ServerLib.GiveEXPRewards(plr, math.floor(totalEXP))
 
-                        HarukaLib:AddAttr(plr, "Gold", totalGold)
+                        HarukaLib:AddAttr(plr, "Gold", math.floor(totalGold))
                         ServerLib.ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
 
                         HarukaLib:AddAttr(plr, "CombatWonTimes", 1)

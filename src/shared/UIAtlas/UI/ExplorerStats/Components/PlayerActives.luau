@@ -18,9 +18,6 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    Mana: Fusion.Value,
-    MaxMana: Fusion.Value,
-
     ClassUltProgress: Fusion.Value,
     MaxClassUltProgress: Fusion.Value,
 
@@ -43,24 +40,7 @@ return function(scope: Fusion.Scope, props: {
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)
 
-        if input == "Keyboard" then
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.ClassUlt.Name] or KeybindsBook.PC.ClassUlt.Name,
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0.25, 0.4),
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                ZIndex = 2,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
-            })
-
-        elseif input == "Controller" then
+        if input == "Controller" then
             local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.ClassUlt.Name] or KeybindsBook.Console.ClassUlt.Name
 
             return Components.TextLabel(scope, {
@@ -81,7 +61,21 @@ return function(scope: Fusion.Scope, props: {
                 }
             })
         else
-            return nil
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.ClassUlt.Name] or KeybindsBook.PC.ClassUlt.Name,
+                AutomaticSize = Enum.AutomaticSize.X,
+                Size = UDim2.fromScale(0.25, 0.4),
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+                ZIndex = 2,
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
         end
     end)
 
@@ -93,7 +87,7 @@ return function(scope: Fusion.Scope, props: {
 
         [Children] = {
             Components.UIScale(scope, {
-                Scale = 0.95
+                Scale = 1
             }),
 
             Components.Frame(scope, {
@@ -103,99 +97,6 @@ return function(scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(0.33, 1),
 
                 [Children] = {
-                    Components.Frame(scope, {
-                        Name = "ManaSection",
-                        AnchorPoint = Vector2.zero,
-                        Position = UDim2.fromScale(0, -2),
-
-                        [Children] = {
-                            Components.IconImageLabel(scope, {
-                                Name = "ManaSymbol",
-                                AnchorPoint = Vector2.one,
-                                Position = UDim2.fromScale(1, 1),
-                                Size = UDim2.fromScale(1.2, 1.2),
-
-                                Image = "rbxassetid://131740194041023",
-                                ZIndex = 10
-                            }),
-
-                            Components.Frame(scope, {
-                                Name = "Main",
-                                BackgroundTransparency = 0,
-                                AnchorPoint = Vector2.one,
-                                Position = UDim2.fromScale(1, 0.9),
-                                Size = UDim2.fromScale(0.6, 0.8),
-
-                                [Children] = {
-                                    Components.RoundUICorner(scope),
-
-                                    Components.Frame(scope, {
-                                        Name = "CornerTex",
-                                        BackgroundTransparency = 0,
-                                        AnchorPoint = Vector2.zero,
-                                        Position = UDim2.fromScale(0, 0),
-                                        Size = UDim2.fromScale(0.1, 0.5)
-                                    }),
-
-                                    Components.TextLabel(scope, {
-                                        Name = "ManaStats",
-                                        Position = UDim2.fromScale(0.05, 0.1),
-                                        Size = UDim2.fromScale(0.675, 0.4),
-                                        RichText = true,
-                                        FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                                        TextColor3 = Color3.fromRGB(0, 255, 255),
-                                        TextXAlignment = Enum.TextXAlignment.Right,
-
-                                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            local mana = use(props.Mana)
-                                            local maxMana = use(props.MaxMana)
-
-                                            if mana > maxMana then mana = maxMana end
-
-                                            return `{mana}<font color="#9f9f9f"> / {maxMana}</font>`
-                                        end)
-                                    }),
-
-                                    Components.Frame(scope, {
-                                        Name = "ManaBar",
-                                        BackgroundTransparency = 0,
-                                        BackgroundColor3 = Color3.new(),
-                                        AnchorPoint = Vector2.zero,
-                                        Position = UDim2.fromScale(0.05, 0.6),
-                                        Size = UDim2.fromScale(0.7, 0.2),
-
-                                        [Children] = {
-                                            Components.RoundUICorner(scope),
-
-                                            Components.Frame(scope, {
-                                                Name = "Bar",
-                                                AnchorPoint = Vector2.xAxis,
-                                                Position = UDim2.fromScale(1, 0),
-                                                BackgroundTransparency = 0,
-                                                BackgroundColor3 = Color3.fromRGB(30, 144, 255),
-
-                                                Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                                    local Mana, maxMana = use(props.Mana) :: number, use(props.MaxMana) :: number
-                                                    local x = Mana / maxMana
-
-                                                    if x ~= x then x = 0 end
-                                                    x = math.clamp(x, 0, 1)
-
-                                                    return UDim2.fromScale(x, 1)
-                                                end), AssetBook.TweenInfos.half),
-
-                                                [Children] = {
-                                                    Components.RoundUICorner(scope)
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    }),
-
-
                     Components.Frame(scope, {
                         Name = "PlayerControls",
 
@@ -283,6 +184,13 @@ return function(scope: Fusion.Scope, props: {
 
                                             if classInfo == nil then return Color3.new(1, 1, 1) end
 
+                                            local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
+                                            local x = charge / maxCharge
+
+                                            if x ~= x then x = 0 end
+                                            x = math.clamp(x, 0, 0.999)
+                                            if x < 0.999 then return Color3.new(1, 1, 1) end
+
                                             return if classInfo.Skills["UltSkill"..variant.."_WithoutRecolor"] then
                                                 Color3.new(1, 1, 1)
                                             else classInfo.Color
@@ -299,6 +207,40 @@ return function(scope: Fusion.Scope, props: {
                                                     NumberSequenceKeypoint.new(1, 1)
                                                 })
                                             }),
+                                        }
+                                    }),
+
+                                    Components.TextLabel(scope, {
+                                        Name = "UltReady",
+                                        AnchorPoint = Vector2.new(0.5, 0),
+                                        Position = UDim2.fromScale(0.5, -0.25),
+                                        Size = UDim2.fromScale(1, 0.25),
+                                        Text = "READY",
+
+
+                                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                            local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
+                                            local x = charge / maxCharge
+
+                                            if x ~= x then x = 0 end
+                                            x = math.clamp(x, 0, 0.999)
+
+                                            if x >= 0.999 then return true end
+
+                                            return false
+                                        end),
+                                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                            local classInfo = ClassBook[use(props.Class)]
+
+                                            if classInfo == nil then return Color3.new(1, 1, 1) end
+
+                                            return classInfo.Color
+                                        end),
+
+                                        [Children] = {
+                                            Components.TextUIStroke(scope, {
+                                                Thickness = 2.5
+                                            })
                                         }
                                     }),
 

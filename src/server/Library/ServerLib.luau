@@ -9,6 +9,7 @@ local SSS = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
@@ -248,7 +249,6 @@ function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 
 		itemVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 		itemVal:SetAttribute("ItemStat", randomStat)
-		itemVal:SetAttribute("Level", itemInfo.Level)
 		itemVal:SetAttribute("IsNew", true)
 
 		itemVal.Parent = items
@@ -384,6 +384,9 @@ function ServerLib.CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -
 	end)
 end
 function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
+	if game.GameId ~= AssetBook.CFUniverseId then return end
+
+
 	Promise.new(function()
 		local hasBadge = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
 

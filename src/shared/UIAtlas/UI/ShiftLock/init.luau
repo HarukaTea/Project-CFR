@@ -34,17 +34,32 @@ return function(plr: Player)
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ShiftLock",
 		DisplayOrder = UIPriorityBook.Normal,
-		ScreenInsets = Enum.ScreenInsets.None,
 		Parent = plr.PlayerGui,
 
 	}, {
 		CenterProps = {
 			[Children] = {
+				Components.ImageLabel(scope, {
+					Name = "Lock",
+					Position = UDim2.fromScale(0.5, 0.5),
+					AnchorPoint = Vector2.new(0.5, 0.5),
+					Size = UDim2.fromOffset(32, 32),
+
+					Image = "rbxasset://textures/MouseLockedCursor.png",
+
+					Visible = Fusion.Computed(scope, function(use: Fusion.Use)
+						return use(self.LockEnabled) and isPC
+					end)
+				})
+			}
+		},
+		BottomProps = {
+			[Children] = {
 				Components.HoverImageButton(scope, {
 					Name = "ShiftLock",
 					Size = UDim2.fromScale(0.8, 0.8),
 					SizeConstraint = Enum.SizeConstraint.RelativeYY,
-					Position = UDim2.fromScale(0.99, 0),
+					Position = UDim2.fromScale(0.7, 0),
 					AnchorPoint = Vector2.xAxis,
 
 					Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -60,19 +75,6 @@ return function(plr: Player)
 						end
 					end,
 				}),
-
-				Components.ImageLabel(scope, {
-					Name = "Lock",
-					Position = UDim2.fromScale(0.5, 0.5),
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Size = UDim2.fromOffset(32, 32),
-
-					Image = "rbxasset://textures/MouseLockedCursor.png",
-
-					Visible = Fusion.Computed(scope, function(use: Fusion.Use)
-						return use(self.LockEnabled) and isPC
-					end)
-				})
 			}
 		}
 	})

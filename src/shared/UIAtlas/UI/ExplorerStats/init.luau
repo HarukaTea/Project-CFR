@@ -68,6 +68,7 @@ return function(plr: Player)
                     IsHPRecovering = self.IsHPRecovering,
 
                     Shield = self.Shield, MaxShield = self.MaxShield,
+                    Mana = self.Mana, MaxMana = self.MaxMana,
 
                     MinDMG = self.MinDMG, MaxDMG = self.MaxDMG,
                     Magic = self.Magic
@@ -75,14 +76,29 @@ return function(plr: Player)
 
 
                 PlayerActive(scope, {
-                    Mana = self.Mana, MaxMana = self.MaxMana,
-
                     ClassUltProgress = self.ClassUltProgress,
                     MaxClassUltProgress = self.MaxClassUltProgress,
 
                     Class = self.Class,
                     ClassVariant = self.ClassVariant
                 }, self),
+
+
+                Components.Frame(scope, {
+                    Name = "EffectList",
+                    AnchorPoint = Vector2.new(0.5, 1),
+                    Position = UDim2.fromScale(0.5, 0.3),
+                    Size = UDim2.fromScale(1, 0.7),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            Padding = UDim.new(0.005, 0),
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            SortOrder = Enum.SortOrder.Name,
+                        })
+                    }
+                }),
 
 
                 Components.TextLabel(scope, {
@@ -230,7 +246,7 @@ return function(plr: Player)
 
 
                         Fusion.ForPairs(scope, {
-                            "Events", "Backpack", "Character", "PerkTree", "Settings"
+                            "Backpack", "Character", "PerkTree", "Settings"
                         }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,
@@ -264,8 +280,8 @@ return function(plr: Player)
                             Size = UDim2.fromScale(0.15, 0.65),
                             Text = "START",
                             BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.GREEN_COLOR,
-                            TextColor3 = Color3.new(),
+                            BackgroundColor3 = Components.BLUE_COLOR,
+                            TextColor3 = Components.BLACK_TEXT_COLOR,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
                                 Events.DUNGEON_RequestToStartDungeon.Fire()
@@ -283,7 +299,7 @@ return function(plr: Player)
                 Components.Frame(scope, {
                     Name = "TimerFrame",
                     AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 1.25),
+                    Position = UDim2.fromScale(0.5, 2),
 
                     [Children] = {
                         Components.UIListLayout(scope, {

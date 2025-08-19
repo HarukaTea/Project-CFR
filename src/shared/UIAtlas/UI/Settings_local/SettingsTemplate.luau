@@ -130,13 +130,6 @@ local template = {
 
 				DefaultValue = true,
 			},
-			WaveEffect = {
-				OptionTitle = "Ocean Wave Effect",
-				Type = "Switcher",
-				LayoutOrder = 6,
-
-				DefaultValue = true,
-			},
 			EntityRenderDistance = {
 				OptionTitle = "Enemy Render Distance",
 				Type = "Slider",

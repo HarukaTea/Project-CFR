@@ -33,25 +33,7 @@ return function(scope: Fusion.Scope, props: {
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)
 
-        if input == "Keyboard" then
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.Dash.Name] or KeybindsBook.PC.Dash.Name,
-                Size = UDim2.fromScale(0.4, 0.4),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                ZIndex = 10,
-                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
-            })
-
-        elseif input == "Controller" then
+        if input == "Controller" then
             local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.Dash.Name] or KeybindsBook.Console.Dash.Name
 
 
@@ -72,7 +54,22 @@ return function(scope: Fusion.Scope, props: {
                 }
             })
         else
-            return nil
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.Dash.Name] or KeybindsBook.PC.Dash.Name,
+                Size = UDim2.fromScale(0.4, 0.4),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+                ZIndex = 10,
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
         end
     end)
 

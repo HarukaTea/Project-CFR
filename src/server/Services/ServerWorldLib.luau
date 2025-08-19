@@ -93,7 +93,6 @@ table.insert(ServerWorldLib.Funcs, function()
         productVal:AddTag("CraftingProductEntity")
 
         productVal:SetAttribute("ItemStat", info.StatInfo)
-        productVal:SetAttribute("Level", info.Level)
         productVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
         productVal.Parent = workspace.CraftingProductContainer
@@ -360,7 +359,6 @@ table.insert(ServerWorldLib.Funcs, function()
                 product:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
                 product:SetAttribute("ItemStat", ItemBook:GetItemInfo(product.Name).StatInfo)
-                product:SetAttribute("Level", ItemBook:GetItemInfo(product.Name).Level)
             end
         end
     end

@@ -84,28 +84,6 @@ return {
         }
     },
 
-    Rise = {
-        Icon = "rbxassetid://120613067089872",
-        Color = Color3.fromHex('#34ace0'),
-		Type = "DMG",
-
-        Desc = "",
-        Hint = "",
-        DevClass = true,
-
-
-        Skills = {
-            UltSkillIcon_None = "rbxassetid://117298958380190",
-            UltSkillNone_WithoutRecolor = true
-        },
-
-
-        BaseStats = {
-            MaxHealth = 1599,
-        }
-    },
-
-
     Furioso = {
         Icon = "rbxassetid://128714575176870",
         Color = Color3.fromHex('#ffffff'),

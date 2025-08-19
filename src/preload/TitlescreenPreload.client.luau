@@ -98,6 +98,7 @@ do
     repeat wait() until RepS.HarukaShared:WaitForChild("UIAtlas", 999)
     repeat wait() until RepS.HarukaShared:WaitForChild("Library", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("Components", 999)
+    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas.Components:WaitForChild("LoadView", 999)
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Fusion", 999)
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
@@ -111,6 +112,7 @@ do
     --// Load view
     local Fusion = require(RepS.HarukaShared.Shared.Fusion)
     local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+    local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 
     local LoadView = require(RepS.HarukaShared.UIAtlas.Components.LoadView)
 
@@ -177,6 +179,13 @@ do
     end
 
     repeat wait() until plr:GetAttribute("_PlayerProfileInited")
+
+
+    local result = Components:CreateInfoPrompt(scope, {
+        Hint = "You acknowledge that this is <yellow>PT4</font>, and is <red>extremely lack of content</font>.",
+        ConfirmText = "Continue",
+        ConfirmUniqueId = "ConfirmTitlescreen01"
+    }):Wait()
 
     isAlreadyLoaded = true
 

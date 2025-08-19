@@ -23,6 +23,8 @@ HarukaComponents.WHITE_COLOR = WHITE_COLOR
 HarukaComponents.GREEN_COLOR = Color3.fromRGB(123, 217, 159)
 HarukaComponents.RED_COLOR = Color3.fromRGB(255, 118, 117)
 HarukaComponents.DARKER_WHITE_COLOR = Color3.fromRGB(202, 196, 185)
+HarukaComponents.BLACK_TEXT_COLOR = Color3.fromHex('#333333')
+HarukaComponents.BLUE_COLOR = Color3.fromHex('7ce4f8')
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
 
 --// Init once only
@@ -537,6 +539,28 @@ function HarukaComponents:CreateConfirmPrompt(scope: Fusion.Scope, data: {
 	end))
 
 	Bindables.CreateConfirmPrompt:Fire(data)
+
+	return waitSignal
+end
+function HarukaComponents:CreateInfoPrompt(scope: Fusion.Scope, data: {
+	Hint: string,
+	ConfirmText: string,
+	ConfirmUniqueId: string
+})
+	local innerScope = Fusion.innerScope(scope)
+	local waitSignal = Signal.new()
+	table.insert(innerScope, waitSignal)
+
+	table.insert(innerScope, Bindables.ConfirmPromptChosen:Connect(function(uniqueId: string, result: "YES" | "NO")
+		if uniqueId ~= data.ConfirmUniqueId then return end
+
+		waitSignal:Fire(result)
+
+		Fusion.doCleanup(innerScope)
+	end))
+
+
+	Bindables.CreateInfoPrompt:Fire(data)
 
 	return waitSignal
 end

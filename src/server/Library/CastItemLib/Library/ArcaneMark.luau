@@ -10,7 +10,7 @@ local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local DoTLib = require(SSS.HarukaServer.Shared.DoTLib)
+local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
 
 local Types = require(script.Parent.Parent.Types)

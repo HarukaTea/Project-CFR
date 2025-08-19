@@ -142,11 +142,20 @@ end)
 ServerBindables.RToCheckLeaderboardRank:Connect(function(plr: Player, storeName: string)
     if storeName == "Donation" then
         donationStore:GetOrderedPositionAsync("Player_"..plr.UserId, true):andThen(function(data)
-            if data then
-                if data[1] <= 3 and data[1] > 0 then
-                    ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
-                end
-            end
+            if not data then return end
+            if not data[1] then return end
+            if not data[2] then return end
+
+            if data[1] <= 0 then return end
+            if data[1] > 3 then return end
+
+            if not data[2].key then return end
+            if not data[2].value then return end
+
+            if data[2].value <= 0 then return end
+
+            ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
+
         end):catch(function() end)
     end
 end)

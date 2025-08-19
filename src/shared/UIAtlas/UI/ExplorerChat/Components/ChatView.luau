@@ -122,7 +122,7 @@ return function (scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Speaker",
                 AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, -2.6),
+                Position = UDim2.fromScale(0.5, -2.2),
                 Size = UDim2.fromScale(0.6, 0.55),
                 TextColor3 = Color3.fromRGB(255, 231, 187),
                 RichText = true,
@@ -147,7 +147,7 @@ return function (scope: Fusion.Scope, props: {
                     return HarukaLib.RichTextFormatter.Stroke(HarukaLib:RichTextify(use(props.Dialogue)), "#000000", 1.6 * use(uistrokeRatio), "round", 0)
                 end),
                 TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(absDialogueSize).Y / (68 / 21)
+                    return use(absDialogueSize).Y / (68 / 23)
                 end),
                 MaxVisibleGraphemes = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(props.MaxUTFShown)
@@ -175,9 +175,20 @@ return function (scope: Fusion.Scope, props: {
 
 
 
+            Components.HoverImageButton(scope, {
+                AnchorPoint = Vector2.new(0.5, 1),
+                Position = UDim2.fromScale(0.5, 1),
+                Size = UDim2.fromScale(1, 5),
+
+                [Fusion.OnEvent("MouseButton1Click")] = function()
+                    props.ProcessedToNextDialogueSignal:Fire()
+                end
+            }),
+
+
             Components.Frame(scope, {
                 Name = "ChoicesFrame",
-                ZIndex = 2,
+                ZIndex = 12,
                 AnchorPoint = Vector2.zero,
                 Position = UDim2.fromScale(0.65, -3),
                 Size = UDim2.fromScale(0.3, 0.65),
@@ -205,7 +216,7 @@ return function (scope: Fusion.Scope, props: {
                         end
 
 
-                        return Components.Frame(scope, {
+                        return index, Components.Frame(scope, {
                             Name = "Choice"..index,
                             BackgroundTransparency = 0,
                             Size = UDim2.fromScale(0.9, 1),

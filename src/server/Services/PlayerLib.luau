@@ -28,7 +28,9 @@ local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
-local EXTRA_TEMPLATE = require(ServerScriptService.HarukaServer.Library.PlayerExtraAttrs)
+local EXTRA_TEMPLATE = {
+    Rank = 0
+}
 
 
 local profileStoreMain = ProfileStore.New(
@@ -59,6 +61,11 @@ Players.PlayerRemoving:Connect(function(player)
     local playerObj = allPlayerObjPool[player:GetAttribute("HarukaUniqueId")]
     if playerObj then
         playerObj:Destroy()
+    end
+
+    --- this is equal to `PlayerDestroyBehavior` property to true in workspace
+    if player.Character then
+        player.Character:Destroy()
     end
 end)
 Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
@@ -98,8 +105,14 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
 
         --// validate
-        local validatedData = self:_ValidateSaveData(data)
-        if validatedData == nil then return end
+        local validatedMainData = self:_ValidateMainData(profile.Data)
+        if validatedMainData == nil then reject() return end
+
+        profile.Data = validatedMainData
+
+
+        local validatedData = self:_ValidateSaveData(validatedMainData[slot].Attrs)
+        if validatedData == nil then reject() return end
 
         profile.Data[slot].Attrs = validatedData
 
@@ -145,9 +158,9 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             itemVal.Name = itemInfo.ItemId
 
             itemVal:SetAttribute("HarukaUniqueId", itemInfo.UniqueId)
-            itemVal:SetAttribute("Level", itemInfo.Level)
             itemVal:SetAttribute("ItemStat", itemInfo.ItemStat)
             itemVal:SetAttribute("IsFav", itemInfo.IsFav or false)
+            itemVal:SetAttribute("IsLocked", itemInfo.IsLocked or false)
 
             itemVal.Parent = itemFolder
         end
@@ -163,7 +176,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         for questId: string, questInfo: { any } in validatedData.QuestsV2 do
             QuestLib.GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
         end
-        for settingsId: string, settingsVal: any in validatedData.Settings do
+        for settingsId: string, settingsVal: any in validatedMainData.Settings do
             local val = nil
 
             if type(settingsVal) == "number" then
@@ -567,9 +580,8 @@ function PlayerLib:_SaveData()
         if item:IsA("IntConstrainedValue") then
             local uniqueId = item:GetAttribute("HarukaUniqueId") :: string
             local amount = item.Value
-            local level = item:GetAttribute("Level") :: number
 
-            if not uniqueId or not amount or not level then
+            if not uniqueId or not amount then
                 continue
             end
             if amount <= 0 then continue end
@@ -578,10 +590,9 @@ function PlayerLib:_SaveData()
                 ItemId = item.Name,
                 Amount = amount,
                 UniqueId = uniqueId,
-                Level = level,
                 ItemStat = item:GetAttribute("ItemStat"),
-                IsV2ItemStat = true,
-                IsFav = item:GetAttribute("IsFav")
+                IsFav = item:GetAttribute("IsFav"),
+                IsLocked = item:GetAttribute("IsLocked")
             }
         end
     end
@@ -627,8 +638,8 @@ function PlayerLib:_SaveData()
     profileAttrs.ItemsSQL = itemSQL
     profileAttrs.EquippingItemsSQL = equippingItemsSQL
     profileAttrs.QuestsV2 = questsV2
-    profileAttrs.Settings = criSettingsSQL
 
+    self.Profile.Data.Settings = criSettingsSQL
 
     PlayerLib.CalDonationAndSave(self.Profile, self.Player)
 end
@@ -666,6 +677,13 @@ function PlayerLib:_ValidateSaveData(data: { any })
     if not Classbook[data.Class] then
         data.Class = "Chain"
     end
+    local starterClass = data.StarterClass
+    if starterClass == nil then
+        data.StarterClass = "Chain"
+    end
+    if not Classbook[data.StarterClass] then
+        data.StarterClass = "Chain"
+    end
 
 
 
@@ -698,30 +716,31 @@ function PlayerLib:_ValidateSaveData(data: { any })
         end
 
 
-        if not itemInfo.ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
-            data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = true
+        --- clear up old data to save data storage space
+        if itemInfo.IsV2ItemStat then
+            data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = nil
         end
-        if not itemInfo.IsV2ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
-            data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = true
+        if itemInfo.Level then
+            data.ItemsSQL[itemInfo.UniqueId].Level = nil
         end
-        if not itemInfo.Level then
-            data.ItemsSQL[itemInfo.UniqueId].Level = trueItemInfo.Level
-        end
+
+
+        --- migration from old code
         if not itemInfo.IsFav then
             data.ItemsSQL[itemInfo.UniqueId].IsFav = false
         end
-        if itemInfo.Level ~= trueItemInfo.Level then
-            data.ItemsSQL[itemInfo.UniqueId].Level = trueItemInfo.Level
+        if not itemInfo.IsLocked then
+            data.ItemsSQL[itemInfo.UniqueId].IsLocked = false
+        end
+
+
+        if not itemInfo.ItemStat then
+            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
         end
         if table.find(trueItemInfo.TagsDesync, "NoRandom") then
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
                 data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
             end
-        end
-        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") then
-            data.ItemsSQL[itemInfo.UniqueId] = nil
         end
         if table.find(trueItemInfo.TagsDesync, "Chest") then
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
@@ -744,9 +763,9 @@ function PlayerLib:_ValidateSaveData(data: { any })
                         ItemId = itemInfo.ItemId,
                         Amount = 1,
                         UniqueId = itemUniqueId,
-                        Level = itemInfo.Level,
                         ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId),
-                        IsFav = false
+                        IsFav = false,
+                        IsLocked = false
                     }
                 end
 
@@ -771,6 +790,32 @@ function PlayerLib:_ValidateSaveData(data: { any })
             end
         end
     end
+
+
+    --// check "NoDuplicate" tag item
+    local noDuplicateUniqueIds = {}
+    for _, itemInfo: { any } in data.ItemsSQL do
+        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
+
+        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") then
+            if noDuplicateUniqueIds[trueItemInfo.ItemId] == nil then
+                noDuplicateUniqueIds[trueItemInfo.ItemId] = {}
+            end
+
+            table.insert(noDuplicateUniqueIds[trueItemInfo.ItemId], itemInfo.UniqueId)
+        end
+    end
+    for _, uniqueIds: { string } in noDuplicateUniqueIds do
+        if #uniqueIds > 1 then
+            for i = 2, #uniqueIds do
+                data.ItemsSQL[uniqueIds[i]] = nil
+            end
+        end
+    end
+
+
+    --// clean up old settings
+    data.Settings = nil
 
 
     --// check valid equipping items
@@ -835,13 +880,18 @@ function PlayerLib:_ValidateSaveData(data: { any })
             data.EquippingItemsSQL[thatSlot] = nil
             continue
         end
+        local trueItemObjItemInfo = ItemBook:GetItemInfo(itemObj.ItemId)
+        if trueItemObjItemInfo == nil then
+            data.EquippingItemsSQL[thatSlot] = nil
+            continue
+        end
 
         local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
         if not table.find(whiteList, ItemBook:GetItemInfo(itemObj.ItemId).Type) then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
         end
-        if data.Level < itemObj.Level then
+        if data.Level < trueItemObjItemInfo.Level then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
         end
@@ -850,63 +900,34 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
 
     --// check valid weapon equipping
-    local woodenSword = nil
-    local woodenBow = nil
-    local woodenStaff = nil
-
+    local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
+    local starterClassWeapons = {
+        Chain = "WoodenSword",
+        Burst = "WoodenBow",
+        Flow = "WoodenStaff"
+    }
+    local woodenWeapon = nil
     for _, itemObj in data.ItemsSQL do
-        if itemObj.ItemId == "WoodenSword" then
-            woodenSword = itemObj
-        end
-        if itemObj.ItemId == "WoodenBow" then
-            woodenBow = itemObj
-        end
-        if itemObj.ItemId == "WoodenStaff" then
-            woodenStaff = itemObj
+        if itemObj.ItemId == starterClassWeapons[data.StarterClass] then
+            woodenWeapon = itemObj
+            break
         end
     end
-
-    local function _checkIfHasWeapon(weaponId: string)
-        local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
-
+    if not woodenWeapon then
         data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = weaponId,
+            ItemId = starterClassWeapons[data.StarterClass],
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
-            Level = 1,
-            IsV2ItemStat = true,
-            ItemStat = ServerLib.GiveRandomStatForItem(weaponId),
-            IsFav = false
+            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons[data.StarterClass]),
+            IsFav = false,
+            IsLocked = false
         }
-    end
-    if not woodenSword then _checkIfHasWeapon("WoodenSword") end
-    if not woodenBow then _checkIfHasWeapon("WoodenBow") end
-    if not woodenStaff then _checkIfHasWeapon("WoodenStaff") end
-
-
-
-    local function _checkIfHasWeaponEquipped()
-        local weaponFound = nil
-        for _, itemInfo: { any } in data.ItemsSQL do
-            if ItemBook:GetItemInfo(itemInfo.ItemId).Type == "Weapon" then
-                weaponFound = {
-                    ItemId = itemInfo.ItemId,
-                    UniqueId = itemInfo.UniqueId
-                }
-                break
-            end
-        end
-
-        data.EquippingItemsSQL["Weapon1"] = {
-            ItemId = weaponFound.ItemId,
-            UniqueId = weaponFound.UniqueId
-        }
-    end
-    if next(data.EquippingItemsSQL) == nil then
-        _checkIfHasWeaponEquipped()
     end
     if not data.EquippingItemsSQL["Weapon1"] then
-        _checkIfHasWeaponEquipped()
+        data.EquippingItemsSQL["Weapon1"] = {
+            ItemId = starterClassWeapons[data.StarterClass],
+            UniqueId = itemUniqueIdForEmptyWeapon
+        }
     end
 
 
@@ -966,6 +987,31 @@ end
 
 
 
+function PlayerLib:_ValidateMainData(data: { any })
+    data = table.clone(data)
+
+    --// check gamepass purchase logs
+    for gamepassId: string, _ in data.GamepassPurchaseLogs do
+        if tonumber(gamepassId) then
+            --// was saved incorrectly
+            local gamepassName = nil
+            for gpName: string, gpId: number in AssetBook.GamepassIds do
+                if gpId == tonumber(gamepassId) then
+                    gamepassName = gpName
+                    break
+                end
+            end
+            if not gamepassName then continue end
+
+            data.GamepassPurchaseLogs[gamepassName] = data.GamepassPurchaseLogs[gamepassId]
+            data.GamepassPurchaseLogs[gamepassId] = nil
+        end
+    end
+
+    return data
+end
+
+
 function PlayerLib._GetCurrentDonation(profile: ProfileStore.Profile) : number
     local totalRobuxGained = 0
     for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
@@ -995,7 +1041,7 @@ function PlayerLib:UpdateDonationRank()
     if profile == nil then return end
 
 
-    local totalRobuxGained = self:_GetCurrentDonation(profile)
+    local totalRobuxGained = PlayerLib._GetCurrentDonation(profile)
     if totalRobuxGained <= 0 then return end
 
     ServerBindables.RToCheckLeaderboardRank:Fire(self.Player, "Donation")

@@ -28,7 +28,7 @@ return function (scope: Fusion.Scope, props: {
         ZIndex = 2,
         AnchorPoint = Vector2.zero,
         Position = UDim2.fromScale(0.125, 0.6),
-        Size = UDim2.fromScale(0.8, 0.25),
+        Size = UDim2.fromScale(0.825, 0.25),
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -82,7 +82,7 @@ return function (scope: Fusion.Scope, props: {
                     return UDim2.fromScale(x, 1)
 
                 end), AssetBook.TweenInfos.one),
-                BackgroundColor3 = Color3.fromRGB(193, 61, 57):Lerp(Color3.new(), 0.5),
+                BackgroundColor3 = Color3.fromRGB(193, 61, 57):Lerp(Color3.new(), 0.65),
 
                 [Children] = {
                     Components.RoundUICorner(scope)
@@ -111,7 +111,7 @@ return function (scope: Fusion.Scope, props: {
         Name = "HPBarFade",
         AnchorPoint = Vector2.zero,
         Position = UDim2.fromScale(0.125, 0.6),
-        Size = UDim2.fromScale(0.8, 0.25),
+        Size = UDim2.fromScale(0.825, 0.25),
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -119,7 +119,7 @@ return function (scope: Fusion.Scope, props: {
             Components.UIStroke(scope, {
                 Name = "Shield",
                 Thickness = 2.5,
-                Color = Color3.fromRGB(255, 234, 167):Lerp(Color3.new(), 0.5),
+                Color = Color3.fromRGB(255, 234, 167):Lerp(Color3.new(), 0.65),
 
                 [Children] = {
                     Components.UIGradient(scope, {

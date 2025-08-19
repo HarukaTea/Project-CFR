@@ -101,7 +101,7 @@ return function (scope: Fusion.Scope, props: {
     barDiv = Components.Frame(scope, {
         Name = "ReverberationStyle",
         AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.fromScale(0.5, -1),
+        Position = UDim2.fromScale(0.5, -1.7),
         Size = UDim2.fromScale(0.9, 1),
 
 
@@ -110,7 +110,7 @@ return function (scope: Fusion.Scope, props: {
                 FillDirection = Enum.FillDirection.Horizontal,
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 VerticalAlignment = Enum.VerticalAlignment.Center,
-                Padding = UDim.new(0.015, 0)
+                Padding = UDim.new(0.01, 0)
             })
         }
     })

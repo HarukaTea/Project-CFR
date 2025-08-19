@@ -57,6 +57,7 @@ return function(scope: Fusion.Scope, props: {
                 BackgroundTransparency = 0,
                 AnchorPoint = Vector2.xAxis,
                 Size = UDim2.fromScale(0.1, 0.5),
+                ZIndex = 0,
 
                 Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return UDim2.new(1.05, use(absContentSize).X * -1, 0, 0)
@@ -216,8 +217,7 @@ return function(scope: Fusion.Scope, props: {
     --// track effect list
     ClientLib.TrackEffectListToUI({
         Target = targeting,
-        Scope = scope,
-        GuiContainer = bar2
+        GuiContainer = bar2.EffectList
     })
 
 

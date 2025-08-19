@@ -38,6 +38,11 @@ return function (scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(1.5, 1.5),
         Image = "rbxassetid://109494337237105",
         ImageTransparency = 0.25,
+        BackgroundTransparency = 0.25,
+
+        [Children] = {
+            Components.RoundUICorner(scope)
+        }
     })
 
 
@@ -52,7 +57,15 @@ return function (scope: Fusion.Scope, props: {
             BackgroundTransparency = 0,
 
             [Children] = {
-                texFrame
+                texFrame,
+
+                Components.ImageLabel(scope, {
+                    Name = "NoctuaryBorder",
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    Position = UDim2.fromScale(0.5, 0.5),
+                    Image = "rbxassetid://113507506875113",
+                    ZIndex = 2
+                })
             }
         },
 

@@ -17,7 +17,6 @@ keybinds.PC.Backpack = Enum.KeyCode.B
 keybinds.PC.CharSelfView = Enum.KeyCode.C
 keybinds.PC.Settings = Enum.KeyCode.N
 keybinds.PC.PerkTree = Enum.KeyCode.Z
-keybinds.PC.Events = Enum.KeyCode.U
 
 keybinds.PC.ClassUlt = Enum.KeyCode.Q
 keybinds.PC.Active1 = Enum.KeyCode.One

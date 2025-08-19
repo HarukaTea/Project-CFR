@@ -1,9 +1,9 @@
 --!nocheck
 
 local RepS = game:GetService("ReplicatedStorage")
-local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
@@ -28,7 +28,7 @@ return function (self: { any })
 
     self.Speaker = Value("None")
     self.Dialogue = Value("None")
-    self.Quests = FusionComponents.useFolder(scope, self.plr.Quests)
+    self.Quests = FusionComponents.useFolder(scope, self.plr:WaitForChild("Quests", 999))
 
     self.MaxUTFShown = Value(-1)
 
@@ -57,8 +57,6 @@ return function (self: { any })
     typewriterObj.OnUTFUpdated:Connect(function(index: number)
         self.MaxUTFShown:set(index)
         self.IsTypewriting:set(index > -1)
-
-        SoundService.SFXs.ChatBubble:Play()
     end)
     typewriterObj.OnTyperFinished:Connect(function()
         self.MaxUTFShown:set(-1)
@@ -72,7 +70,6 @@ return function (self: { any })
     local currentDialoguesChatting: { string } = {}
     local currentDialogueIndexChatting: number = 1
     local dialogueIndexChatting: number = 1
-    local currentChoiceIndex: number = 0
     local dialoguesChatting: { string } = {}
     local seriesId: string = "Else"
 
@@ -160,13 +157,24 @@ return function (self: { any })
             currentDialoguesChatting = dialoguesChatting
             currentDialogueIndexChatting = nextIndex
             dialogue = currentDialoguesChatting[currentDialogueIndexChatting] :: string
+
+            if currentDialogueIndexChatting > #currentDialoguesChatting then
+                __endChatting()
+                return
+            end
         end
         if string.find(dialogue, "JUMPBACKBRANCH") then
             local originalIndex = dialogueIndexChatting
+            local nextIndex = originalIndex + 1
 
             currentDialoguesChatting = dialoguesChatting
-            currentDialogueIndexChatting = originalIndex
+            currentDialogueIndexChatting = nextIndex
             dialogue = currentDialoguesChatting[currentDialogueIndexChatting] :: string
+
+            if currentDialogueIndexChatting > #currentDialoguesChatting then
+                __endChatting()
+                return
+            end
         end
         if string.find(dialogue, "CHOICEBRANCH") then
             currentDialogueIndexChatting -= 1
@@ -184,6 +192,43 @@ return function (self: { any })
             else
                 __endChatting()
             end
+        end
+
+        -- world market patterns?
+        if string.find(dialogue, "WORLDMARKET") then
+            local _, marketId = string.match(dialogue, "^(.-)%((.-)%)$")
+
+            local market = workspace.MapComponents.Markets:FindFirstChild(marketId, true)
+            if market and market:IsA("Model") then
+                local adornee = market:FindFirstChild("Prompt")
+                if not adornee then Bindables.CreateNotify:Fire("[Error] Invalid Market Adornee") return end
+
+                local prompt = adornee:FindFirstChild("Market") :: ProximityPrompt
+                if not prompt then Bindables.CreateNotify:Fire("[Error] Invalid Market Prompt") return end
+
+                prompt:InputHoldBegin()
+            else
+                Bindables.CreateNotify:Fire("[Error] Invalid Market Id")
+            end
+
+            __endChatting()
+            return
+        end
+        if string.find(dialogue, "WORLDCRAFTING") then
+            local _, craftingStationId = string.match(dialogue, "^(.-)%((.-)%)$")
+
+            local station = workspace.MapComponents.CraftingStations:FindFirstChild(craftingStationId, true)
+            if station then
+                local prompt = station:FindFirstChild("Crafting") :: ProximityPrompt
+                if not prompt then Bindables.CreateNotify:Fire("[Error] Invalid Crafting Prompt") return end
+
+                prompt:InputHoldBegin()
+            else
+                Bindables.CreateNotify:Fire("[Error] Invalid Crafting Id")
+            end
+
+            __endChatting()
+            return
         end
 
 
@@ -208,11 +253,6 @@ return function (self: { any })
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            if Fusion.peek(self.IsChatShown) then
-                self.ProcessedToNextDialogueSignal:Fire()
-            end
-        end
         if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonY then
             if Fusion.peek(self.IsChatShown) then
                 self.ProcessedToNextDialogueSignal:Fire()
@@ -228,6 +268,8 @@ return function (self: { any })
 
     local function _startChatting(npc: Model)
         if npc == nil then return end
+        if not npc:FindFirstChild("Dialogues") then return end
+        if not npc.Dialogues:FindFirstChild("Main") then return end
 
         npcChatting = npc
         npcDialogues = require(npc.Dialogues.Main)

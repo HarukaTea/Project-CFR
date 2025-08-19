@@ -22,6 +22,7 @@ repeat wait() until char:HasTag("PlayerCharEntity")
 
 
 local CharLib = {}
+CharLib.Funcs = {}
 
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
@@ -38,10 +39,8 @@ end))
 
 
 function CharLib:Init()
-    for funcId: string, func: (self) -> nil in CharLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
-        end
+    for _, func: () -> nil in CharLib.Funcs do
+        func()
     end
 
 
@@ -152,11 +151,14 @@ end
 
 
 
-function CharLib:_ListenAnimateTracker()
+table.insert(CharLib.Funcs, function()
     local humanoid = char.Humanoid :: Humanoid
     local animator = humanoid:WaitForChild("Animator") :: Animator
     local animationsClass = ReplicatedStorage.Packages.Anims.ClassAnims :: Folder
     local animationsChar = ReplicatedStorage.Packages.Anims.CharAnims :: Folder
+
+
+    local self = {}
 
     self.Animator = animator
 
@@ -310,10 +312,10 @@ function CharLib:_ListenAnimateTracker()
             _playAnim(charAnims[emote], 0.1)
         end
     end))
-end
+end)
 
 
-function CharLib:_ListenFootstepTracker()
+table.insert(CharLib.Funcs, function()
     local humanoid = char.Humanoid :: Humanoid
 
     local isWalking = false
@@ -355,7 +357,7 @@ function CharLib:_ListenFootstepTracker()
             sound.Playing = false
         end
     end)
-end
+end)
 
 
 function CharLib:_TriggerRagdoll()

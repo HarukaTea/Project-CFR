@@ -12,7 +12,7 @@ function ArtifactBook:GetArtifactInfo(artifactId: string) : {
     ArtifactId: string,
     ArtifactTitle: string,
     TwoPieceEff: string,
-    FourPieceEff: string,
+    ThreePieceEff: string,
 }
     artifactId = artifactId or "none"
     local info = {}
@@ -25,6 +25,19 @@ function ArtifactBook:GetArtifactInfo(artifactId: string) : {
     end
 
     return info
+end
+
+
+function ArtifactBook:GetAllArtifactIds() : { string }
+    local ids = {}
+
+    for _, artifactInfo in ArtifactRawBook do
+        if not table.find(ids, artifactInfo.ArtifactId) then
+            table.insert(ids, artifactInfo.ArtifactId)
+        end
+    end
+
+    return ids
 end
 
 

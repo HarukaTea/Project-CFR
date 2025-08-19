@@ -25,7 +25,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
-local DoTLib = require(SSS.HarukaServer.Shared.DoTLib)
+local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
 
 local GlobalCriRPGLib = {}
@@ -892,7 +892,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local amount = itemSymbol.Value or 0 :: number
         if amount <= 0 then return end
 
-        local level = itemSymbol:GetAttribute("Level") or 999 :: number
+        local level = itemInfo.Level
         if level > plr:GetAttribute("Level") then
             Events.CreateNotify.Fire(plr, "You don't meet the level requirement to equip this item!")
             return
@@ -1868,6 +1868,19 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         state = not state
 
         symbol:SetAttribute("IsFav", state)
+    end)
+
+    Events.RequestToLockItem.SetCallback(function(plr: Player, data)
+        if not data.ItemSymbol then return end
+
+        local symbol = data.ItemSymbol :: IntConstrainedValue
+        if not symbol:IsDescendantOf(plr) then return end
+
+        local state = symbol:GetAttribute("IsLocked")
+        state = state or false
+        state = not state
+
+        symbol:SetAttribute("IsLocked", state)
     end)
 end)
 

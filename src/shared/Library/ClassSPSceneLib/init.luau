@@ -49,7 +49,7 @@ ClassSPSceneLib._createMarkContainer = _createMarkContainer
 
 
 for _, module: ModuleScript in script.Library:GetChildren() do
-    ClassSPSceneLib[module.Name] = require(module)(ClassSPSceneLib, ...)
+    ClassSPSceneLib[module.Name] = require(module)
 end
 
 

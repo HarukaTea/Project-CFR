@@ -222,7 +222,7 @@ return function (scope: Fusion.Scope, props: {
 			}),
 
             CFEmblemTex(scope, {
-                Transparency = 0.915,
+                Transparency = 0.92,
                 Position = UDim2.fromScale(0.42, 0.5),
                 Size = UDim2.fromScale(4, 4),
 

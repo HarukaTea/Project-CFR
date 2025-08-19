@@ -29,6 +29,7 @@ local Add, Empty = HarukaLib.Bin()
 
 
 local CriRPGLib = {}
+CriRPGLib.Funcs = {}
 
 
 local wait = task.wait
@@ -80,10 +81,8 @@ end
 
 
 function CriRPGLib:Init()
-    for funcId: string, func: (self) -> nil in CriRPGLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            func(self)
-        end
+    for _, func: () -> nil in CriRPGLib.Funcs do
+        func()
     end
 
 
@@ -113,7 +112,7 @@ end
 
 --// Private Methods
 
-function CriRPGLib:_ListenCombatTracker()
+table.insert(CriRPGLib.Funcs, function()
     local isInCombat = false
 
     local function _destroyCombatBorder()
@@ -210,10 +209,10 @@ function CriRPGLib:_ListenCombatTracker()
     end)
 
     _destroyCombatBorder()
-end
+end)
 
 
-function CriRPGLib:_ListenAreaTracker()
+table.insert(CriRPGLib.Funcs, function()
     local areaAdd, areaEmpty = HarukaLib.Bin()
 
     local areaQueue = HarukaLib.Queue()
@@ -262,13 +261,14 @@ function CriRPGLib:_ListenAreaTracker()
 
                     wait(0.3)
                     overworldMusic.SoundId = targetSoundOW.SoundId
+                    overworldMusic.PlaybackSpeed = targetSoundOW.PlaybackSpeed
 
                     if combatMusic.Playing then return end
 
                     overworldMusic:Play()
 
                     HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.half, {
-                        Volume = LocationBook[location].MusicVolume
+                        Volume = targetSoundOW.Volume
                     }):Play()
                 end
                 if combatMusic.SoundId ~= targetSoundCB.SoundId then
@@ -277,7 +277,8 @@ function CriRPGLib:_ListenAreaTracker()
                     if overworldMusic.Playing then return end
 
                     combatMusic:Play()
-                    combatMusic.Volume = LocationBook[location].CombatMusicVolume
+                    combatMusic.PlaybackSpeed = targetSoundCB.PlaybackSpeed
+                    combatMusic.Volume = targetSoundCB.Volume
                 end
             end))
 
@@ -320,16 +321,14 @@ function CriRPGLib:_ListenAreaTracker()
             areaQueue:Push(region)
         end
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenOrbSpawnTracker()
+table.insert(CriRPGLib.Funcs, function()
     local orbContainer = Instance.new("Folder")
     orbContainer.Name = "OrbContainer_"..plr.UserId
     orbContainer.Parent = ServerStorage
     Add(orbContainer)
-
-    self.OrbContainer = orbContainer
 
     Add(Events.PlaceOrb.On(function(data)
         if not char:GetAttribute("IsInCombat") then return end
@@ -373,10 +372,10 @@ function CriRPGLib:_ListenOrbSpawnTracker()
     Add(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _checkCombatState
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenHumanoidTouchedTracker()
+table.insert(CriRPGLib.Funcs, function()
     --[[
         I've used workspce:GetPartBoundsInRadius before, but then
         players in community complain about the hitbox and its poor performance.
@@ -514,10 +513,10 @@ function CriRPGLib:_ListenHumanoidTouchedTracker()
             })
         end
     end))
-end
+end)
 
 
-function CriRPGLib:_ListenProjectileSpawnTracker()
+table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
     projectileContainer.Name = "ProjectileContainer_"..plr.UserId
     projectileContainer.Parent = ServerStorage
@@ -584,10 +583,10 @@ function CriRPGLib:_ListenProjectileSpawnTracker()
     Add(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _checkCombatState
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenUniProjectileSpawnTracker()
+table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
     projectileContainer.Name = "UniProjectileContainer_"..plr.UserId
     projectileContainer.Parent = workspace
@@ -628,10 +627,10 @@ function CriRPGLib:_ListenUniProjectileSpawnTracker()
         projectile:AddTag("EnemyProjectile")
         projectile.Parent = projectileContainer
     end))
-end
+end)
 
 
-function CriRPGLib:_ListenTrussTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(char, {
         ["Attr-CanClimb"] = function(state: boolean)
             state = state or false
@@ -641,10 +640,10 @@ function CriRPGLib:_ListenTrussTracker()
             end
         end
     }))
-end
+end)
 
 
-function CriRPGLib:_ListenClassSPSceneTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(Events.PlayClassSPScene.On(function(data)
         local sceneId = data.SceneId
 
@@ -658,10 +657,10 @@ function CriRPGLib:_ListenClassSPSceneTracker()
             warn(err)
         end
     end))
-end
+end)
 
 
-function CriRPGLib:_ListenEnemyFacingTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(Events.FaceToTargetingEnemy.On(function()
         local targeting = char.TargetingEnemy :: ObjectValue?
 
@@ -677,11 +676,11 @@ function CriRPGLib:_ListenEnemyFacingTracker()
             char.Humanoid.AutoRotate = true
         end
     end))
-end
+end)
 
 
 
-function CriRPGLib:_ListenCombatStateTreesTracker()
+table.insert(CriRPGLib.Funcs, function()
     local function _clearAnyTransparentTrees()
         for _, tree: Model in CollectionService:GetTagged("TreeEntity_Transparent") do
             tree:RemoveTag("TreeEntity_Transparent")
@@ -725,10 +724,10 @@ function CriRPGLib:_ListenCombatStateTreesTracker()
         end
     }))
     Add(_clearAnyTransparentTrees)
-end
+end)
 
 
-function CriRPGLib:_ListenSpellExtraJumpOnlyTracker()
+table.insert(CriRPGLib.Funcs, function()
     Add(Events.Spell_ExtraJumpSupport.On(function()
         SoundService.SFXs.EXP:Play()
 
@@ -752,10 +751,10 @@ function CriRPGLib:_ListenSpellExtraJumpOnlyTracker()
         linearVelocity.Parent = char.PrimaryPart
         Debris:AddItem(linearVelocity, 0.05)
     end))
-end
+end)
 
 
-function CriRPGLib:_ListenDungeonStarterTracker()
+table.insert(CriRPGLib.Funcs, function()
     if not workspace:GetAttribute("DungeonId") then return end
 
 
@@ -783,7 +782,7 @@ function CriRPGLib:_ListenDungeonStarterTracker()
 
         _playOverworldMusic(SoundService.Musics.Victory.SoundId)
     end))
-end
+end)
 
 
 CriRPGLib:Init()

@@ -9,8 +9,22 @@ local RepS = game:GetService("ReplicatedStorage")
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local ClientLib = {}
+
+
+
+local terrainPartRaycastParams = RaycastParams.new()
+terrainPartRaycastParams.FilterType = Enum.RaycastFilterType.Include
+terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+terrainPartRaycastParams.IgnoreWater = true
+
+local function _updateParams()
+	terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+end
+CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(_updateParams)
+CollectionService:GetInstanceRemovedSignal("TerrainPart"):Connect(_updateParams)
 
 
 function ClientLib.WeldModel(part: Part, welded: Model)
@@ -52,16 +66,7 @@ end
 
 
 function ClientLib.FindGroundByRay(givenPos: Vector3) : Vector3
-	local rParams = RaycastParams.new()
-	rParams.RespectCanCollide = false
-	rParams.IgnoreWater = true
-	rParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-	rParams.FilterType = Enum.RaycastFilterType.Include
-
-
-	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 35, -Vector3.yAxis * 159, rParams)
-
-	rParams = nil --// I assume it needs to be destroyed
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 35, -Vector3.yAxis * 159, terrainPartRaycastParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos
@@ -85,16 +90,7 @@ end
 
 
 function ClientLib.FindGroundByRayForOrb(givenPos: Vector3) : Vector3
-	local rParams = RaycastParams.new()
-	rParams.RespectCanCollide = false
-	rParams.IgnoreWater = true
-	rParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-	rParams.FilterType = Enum.RaycastFilterType.Include
-
-
-	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 7, -Vector3.yAxis * (26 + 7), rParams)
-
-	rParams = nil --// I assume it needs to be destroyed
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 7, -Vector3.yAxis * (26 + 7), terrainPartRaycastParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos
@@ -158,7 +154,6 @@ end
 
 function ClientLib.TrackEffectListToUI(props: {
 	Target: Model,
-	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
 })
 
@@ -177,7 +172,7 @@ function ClientLib.TrackEffectListToUI(props: {
 	Fusion.Observer(props.Scope, containerVal):onBind(function()
 		local children = #effectListContainer:GetChildren()
 
-		props.GuiContainer.EffectList.Visible = children > 0
+		props.GuiContainer.Visible = children > 0
 	end)
 	Fusion.Observer(props.Scope, effectListEnemy):onBind(function()
 		local list = Fusion.peek(effectListEnemy) :: { StringValue }
@@ -201,9 +196,15 @@ function ClientLib.TrackEffectListToUI(props: {
 			symbol.Parent = effectListContainer
 			Debris:AddItem(symbol, endClock - nowClock)
 
-			local effectUI = EffectSlot(props.Scope, symbol)
-			effectUI.Parent = props.GuiContainer.EffectList
+			local newScope = Fusion.scoped()
+
+			local effectUI = EffectSlot(newScope, symbol)
+			effectUI.Parent = props.GuiContainer
 			Debris:AddItem(effectUI, endClock - nowClock)
+
+			Promise.delay(endClock - nowClock):andThen(function()
+				Fusion.doCleanup(newScope)
+			end):catch(function() end)
 
 
 			local effectUISymbol = Instance.new("ObjectValue")

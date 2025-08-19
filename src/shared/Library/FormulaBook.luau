@@ -6,11 +6,11 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
 local formulas = {
     ENEMY_MAX_LEVEL = 950,
-    PLAYER_MAX_LEVEL = 185,
+    PLAYER_MAX_LEVEL = 190,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_MAX_DEX_POINTS = 50,
 
-    EXPEvent = 1,
+    EXPEvent = 1.5,
 
 
     PlayerLevelCurveCal = function(props: {
@@ -115,7 +115,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 55) / 100)
+        local extra = 1 + ((props.MagicPoints * 60) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,
@@ -132,7 +132,7 @@ local formulas = {
         BaseMana: number,
         ManaPoints: number
     })
-        return math.floor(props.BaseMana + 25 * props.ManaPoints)
+        return math.floor(props.BaseMana + 20 * props.ManaPoints)
     end,
 
     PlayerCriChanceCurveCal = function(props: {

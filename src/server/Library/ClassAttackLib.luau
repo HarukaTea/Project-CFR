@@ -15,7 +15,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
-local DoTLib = require(SSS.HarukaServer.Shared.DoTLib)
+local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
 local wait = task.wait
 

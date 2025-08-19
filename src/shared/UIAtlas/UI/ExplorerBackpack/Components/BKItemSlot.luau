@@ -37,9 +37,9 @@ return function(scope: Fusion.Scope, props: {
 
 
     local amount = Value(1)
-    local level = Value(1)
     local isNew = Value(false)
     local isFav = Value(false)
+    local isLocked = Value(false)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
 
 
@@ -47,14 +47,14 @@ return function(scope: Fusion.Scope, props: {
         ["Prop-Value"] = function(val: number)
             amount:set(val)
         end,
-        ["Attr-Level"] = function(val: number)
-            level:set(val)
-        end,
         ["Attr-IsNew"] = function(val: boolean)
             isNew:set(val)
         end,
         ["Attr-IsFav"] = function(val: boolean)
             isFav:set(val)
+        end,
+        ["Attr-IsLocked"] = function(val: boolean)
+            isLocked:set(val)
         end
     }))
 
@@ -200,7 +200,7 @@ return function(scope: Fusion.Scope, props: {
             }),
 
             Components.Frame(scope, {
-                Name = "FavButton",
+                Name = "IsFav",
                 AnchorPoint = Vector2.zero,
                 Position = UDim2.fromScale(0.05, 0.05),
                 Size = UDim2.fromScale(0.2, 0.2),
@@ -225,6 +225,32 @@ return function(scope: Fusion.Scope, props: {
                     })
                 }
             }),
+            Components.Frame(scope, {
+                Name = "IsLocked",
+                AnchorPoint = Vector2.one,
+                Position = UDim2.fromScale(0.95, 0.65),
+                Size = UDim2.fromScale(0.2, 0.2),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                BackgroundColor3 = Color3.fromRGB(),
+                BackgroundTransparency = 0,
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(isLocked)
+                end),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.ImageLabel(scope, {
+                        Name = "Lock",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(0.7, 0.7),
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                        Image = "rbxassetid://118831261287451",
+                        ImageColor3 = Color3.fromRGB(231, 76, 60)
+                    })
+                }
+            }),
 
             Components.TextLabel(scope, {
                 Name = "Amount",
@@ -240,7 +266,7 @@ return function(scope: Fusion.Scope, props: {
                     local stackableList = { "Accessory", "Weapon", "Active", "Passive" }
 
                     if table.find(stackableList, info.Type) then
-                        return `Lv.{use(level)}`
+                        return `Lv.{info.Level}`
                     else
                         return `x{use(amount)}`
                     end

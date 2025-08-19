@@ -170,15 +170,6 @@ return function (self: { any })
 
 	--// track index for both PC and controller
 	local mouse = self.plr:GetMouse() :: Mouse
-	local gamepadInputs = { {}, {}, {}, {} }
-	local RThumbstick = { "None", "None", "None", "None" }
-
-	for i = 1, 4 do
-		for _, input: InputObject in UserInputService:GetGamepadState(Enum.UserInputType["Gamepad"..i]) do
-			gamepadInputs[i][input.KeyCode] = input
-		end
-	end
-
 	local function _setIndex(nextIndex: number)
 		local totalPrompts = #Fusion.peek(self.PromptList)
 
@@ -187,50 +178,11 @@ return function (self: { any })
 
 		self.CurrentPromptIndex:set(nextIndex)
 	end
-	local function covertDirection(angle: number, val: string, delta: Vector3) : string
-		if angle > 135 or angle < -135 and delta.Y <= 0 then
-			return "Down"
-		elseif angle <= 135 and angle >= 45 and delta.X >= 0 then
-			return "Right"
-		elseif angle >= -135 and angle <= -45 and delta.X <= 0 then
-			return "Left"
-		elseif angle < 45 and angle > -45 and delta.Y >= 0 then
-			return "Up"
-		end
-		return val
-	end
-
 	table.insert(scope, mouse.WheelBackward:Connect(function()
 		_setIndex(Fusion.peek(self.CurrentPromptIndex) + 1)
 	end))
 	table.insert(scope, mouse.WheelForward:Connect(function()
 		_setIndex(Fusion.peek(self.CurrentPromptIndex) - 1)
-	end))
-	table.insert(scope, task.spawn(function()
-		while wait(0.1) do
-			if table.find(RThumbstick, "Down") then
-				_setIndex(Fusion.peek(self.CurrentPromptIndex) + 1)
-			elseif table.find(RThumbstick, "Up") then
-				_setIndex(Fusion.peek(self.CurrentPromptIndex) - 1)
-			end
-		end
-	end))
-	table.insert(scope, RunService.Heartbeat:Connect(function()
-		for i = 1, 4 do
-			local thumbStick = gamepadInputs[i][Enum.KeyCode.Thumbstick2]
-			local angle = math.deg(math.atan2(thumbStick.Position.X, thumbStick.Position.Y))
-
-			if math.abs(thumbStick.Position.X) > 0.3 or math.abs(thumbStick.Position.Y) > 0.3 then
-				local dir = covertDirection(angle, RThumbstick[i], thumbStick.Delta)
-
-				if RThumbstick[i] ~= dir then
-					RThumbstick[i] = dir
-				end
-
-			elseif RThumbstick[i] ~= "None" then
-				RThumbstick[i] = "None"
-			end
-		end
 	end))
 	table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
 		if gpe then return end

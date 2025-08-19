@@ -18,5 +18,5 @@ if UIS.TouchEnabled then
 
     task.wait()
     jumpButton.AnchorPoint = Vector2.one
-    jumpButton.Position = UDim2.fromScale(0.97, 0.7)
+    jumpButton.Position = UDim2.fromScale(0.98, 0.85)
 end

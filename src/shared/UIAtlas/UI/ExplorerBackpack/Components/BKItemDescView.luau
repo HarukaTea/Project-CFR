@@ -109,6 +109,52 @@ return function (scope: Fusion.Scope, props: {
     end
 
 
+    local isLockedItem = Fusion.Value(scope, false)
+    local isLocked: ImageButton = nil
+    if props.IsMarket or props.IsCrafting then
+    else
+        table.insert(scope, HarukaLib:Hydrate(itemSymbol, {
+            ["Attr-IsLocked"] = function(state: boolean)
+                state = state or false
+
+                isLockedItem:set(state)
+            end
+        }))
+
+        isLocked =  Components.HoverImageButton(scope, {
+            Name = "LockedButton",
+            AnchorPoint = Vector2.zero,
+            Position = UDim2.fromScale(0.175, 0.1),
+            Size = UDim2.fromScale(0.1, 0.1),
+            SizeConstraint = Enum.SizeConstraint.RelativeXX,
+            BackgroundColor3 = Color3.fromRGB(),
+            BackgroundTransparency = 0,
+
+            [Fusion.OnEvent("MouseButton1Click")] = function()
+                Events.RequestToLockItem.Fire({
+                    ItemSymbol = itemSymbol
+                })
+            end,
+
+            [Children] = {
+                Components.RoundUICorner(scope),
+                Components.ImageLabel(scope, {
+                    Name = "Lock",
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    Position = UDim2.fromScale(0.5, 0.5),
+                    Size = UDim2.fromScale(0.7, 0.7),
+                    SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                    Image = "rbxassetid://118831261287451",
+
+                    ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return if use(isFavItem) then Color3.fromHex('#d63031') else Color3.fromRGB(159, 159, 159)
+                    end)
+                })
+            }
+        })
+    end
+
+
     local itemStat = itemSymbol:GetAttribute("ItemStat")
     if itemStat == nil then return nil end
 
@@ -121,7 +167,7 @@ return function (scope: Fusion.Scope, props: {
     local equippingObserver = Fusion.Observer(scope, props.EquippingItems)
     equippingObserver:onBind(function()
         local amount = 0
-        if not artifactInfo.ArtifactId then return end
+        if not artifactInfo then return end
 
         for _, equipping: StringValue in Fusion.peek(props.EquippingItems) do
             local thatItemInfo = ItemBook:GetItemInfo(equipping.Value)
@@ -144,7 +190,7 @@ return function (scope: Fusion.Scope, props: {
         local attr, val = properties.Attr, properties.Val
 
         return Components.Frame(scope, {
-            Name = "BBB_ItemEffect_"..attr,
+            Name = "CCC_ItemEffect_"..attr,
             Size = UDim2.fromScale(0.95, 0.17),
             LayoutOrder = 3,
             BackgroundTransparency = 0,
@@ -216,15 +262,15 @@ return function (scope: Fusion.Scope, props: {
 
                     Text = Fusion.Computed(scope, function()
                         if val == true or val == false then
-                            return `<font color="#81ecec">Ability: </font> `..string.sub(attr, 4)
+                            return `<font color="#e9cc9f">Ability: </font> `..string.sub(attr, 4)
 
                         elseif attr == "ForClass" then
-                            return `<font color="#81ecec">Class: </font> {val}`
+                            return `<font color="#e9cc9f">Class: </font> {val}`
 
                         elseif attr == "ForVariant" then
-                            return `<font color="#81ecec">Variant: </font> {val}`
+                            return `<font color="#e9cc9f">Variant: </font> {val}`
                         else
-                            return `<font color="#81ecec">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
+                            return `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
                         end
                     end),
 
@@ -246,8 +292,8 @@ return function (scope: Fusion.Scope, props: {
         if string.find(name, "2PieceDesc") and text ~= "" then
             text = "- 2 Piece: "..text
         end
-        if string.find(name, "4PieceDesc") and text ~= "" then
-            text = "- 4 Piece: "..text
+        if string.find(name, "3PieceDesc") and text ~= "" then
+            text = "- 3 Piece: "..text
         end
 
         return Components.TextLabel(scope, {
@@ -357,8 +403,8 @@ return function (scope: Fusion.Scope, props: {
                                 Size = UDim2.fromScale(0, 0.7),
                                 TextColor3 = Components.BLACK_COLOR,
 
-                                Text = `Req Lv.{itemSymbol:GetAttribute("Level")}`,
-                                Visible = itemSymbol:GetAttribute("Level") > 1 and info.Type ~= "Material",
+                                Text = `Req Lv.{info.Level}`,
+                                Visible = info.Type ~= "Material",
 
                                 [Children] = {
                                     Components.RoundUICorner(scope),
@@ -373,74 +419,75 @@ return function (scope: Fusion.Scope, props: {
                 }
             }),
 
-            Components.Frame(scope, {
-                Name = "ItemIcon",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 0,
-                Size = UDim2.fromScale(0.9, 0.25),
-                LayoutOrder = 3,
-                ClipsDescendants = true,
-
-                [Children] = {
-                    Components.UIAspectRatioConstraint(scope, 3.637),
-                    Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
-
-                    Components.UIGradient(scope, {
-                        Color = ColorSequence.new(
-                            AssetBook.ItemTierColors[info.Tier]:Lerp(Color3.new(1, 1, 1), 0.5),
-                            AssetBook.ItemTierColors[info.Tier]
-                        ),
-                        Rotation = 60,
-                        Transparency = NumberSequence.new({
-                            NumberSequenceKeypoint.new(0, 0.75),
-                            NumberSequenceKeypoint.new(1, 0.5)
-                        })
-                    }),
-
-                    Components.IconImageLabel(scope, {
-                        AnchorPoint = Vector2.new(0, 0.5),
-                        Position = UDim2.fromScale(0.75, 0.5),
-                        Size = UDim2.fromScale(0.2, 0.2),
-                        SizeConstraint = Enum.SizeConstraint.RelativeXX,
-
-                        Image = info.Icon
-                    }),
-
-                    Components.Frame(scope, {
-                        Name = "ItemTiers",
-                        AnchorPoint = Vector2.new(0.5, 1),
-                        Position = UDim2.fromScale(0.5, 0.9),
-                        Size = UDim2.fromScale(0.9, 0.22),
-
-                        [Children] = {
-                            Components.UIListLayout(scope, {
-                                FillDirection = Enum.FillDirection.Horizontal,
-                                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                                VerticalAlignment = Enum.VerticalAlignment.Center,
-                            }),
-
-                            Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
-                                return StarTierSymbol(scope)
-                            end)
-                        }
-                    }),
-
-                    isFav,
-
-                    CFEmblemTex(scope, {
-                        Transparency = 0.91,
-                        Position = UDim2.fromScale(0.3, 0.5)
-                    })
-                }
-            }),
-
             Components.ScrollingFrame(scope, {
                 Name = "ItemInfo",
                 LayoutOrder = 4,
-                Size = UDim2.fromScale(0.9, 0.525),
+                Size = UDim2.fromScale(0.9, 0.8),
 
                 [Children] = {
-                    ItemStatAutomaticY("AAA_ItemStats", 1, HarukaLib:RichTextify(info.Stat)),
+                    Components.Frame(scope, {
+                        Name = "AAA_ItemIcon",
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 0,
+                        Size = UDim2.fromScale(1, 0.3),
+                        LayoutOrder = 0,
+                        ClipsDescendants = true,
+
+                        [Children] = {
+                            Components.UIAspectRatioConstraint(scope, 3.844),
+                            Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
+
+                            Components.UIGradient(scope, {
+                                Color = ColorSequence.new(
+                                    AssetBook.ItemTierColors[info.Tier]:Lerp(Color3.new(1, 1, 1), 0.6),
+                                    AssetBook.ItemTierColors[info.Tier]
+                                ),
+                                Rotation = 60,
+                                Transparency = NumberSequence.new({
+                                    NumberSequenceKeypoint.new(0, 0.75),
+                                    NumberSequenceKeypoint.new(1, 0.5)
+                                })
+                            }),
+
+                            Components.IconImageLabel(scope, {
+                                AnchorPoint = Vector2.new(0, 0.5),
+                                Position = UDim2.fromScale(0.75, 0.5),
+                                Size = UDim2.fromScale(0.2, 0.2),
+                                SizeConstraint = Enum.SizeConstraint.RelativeXX,
+
+                                Image = info.Icon
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "ItemTiers",
+                                AnchorPoint = Vector2.new(0.5, 1),
+                                Position = UDim2.fromScale(0.5, 0.9),
+                                Size = UDim2.fromScale(0.9, 0.22),
+
+                                [Children] = {
+                                    Components.UIListLayout(scope, {
+                                        FillDirection = Enum.FillDirection.Horizontal,
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                                    }),
+
+                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
+                                        return StarTierSymbol(scope)
+                                    end)
+                                }
+                            }),
+
+                            isFav, isLocked,
+
+                            CFEmblemTex(scope, {
+                                Transparency = 0.91,
+                                Position = UDim2.fromScale(0.3, 0.5)
+                            })
+                        }
+                    }),
+
+
+                    ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichTextify(info.Stat)),
 
                     Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
@@ -455,11 +502,11 @@ return function (scope: Fusion.Scope, props: {
                         })
                     end),
 
-                    ItemStatAutomaticY("CCC_ItemDesc", 233, HarukaLib:RichTextify(info.Desc), Color3.fromRGB(159, 159, 159)),
+                    ItemStatAutomaticY("DDD_ItemDesc", 233, HarukaLib:RichTextify(info.Desc), Color3.fromRGB(159, 159, 159)),
 
 
                     Components.TextLabel(scope, {
-                        Name = "DDD_ArtifactTitle",
+                        Name = "EEE_ArtifactTitle",
                         Size = UDim2.fromScale(0.95, 0.125),
                         LayoutOrder = 234,
                         RichText = true,
@@ -479,17 +526,17 @@ return function (scope: Fusion.Scope, props: {
                         }
                     }),
 
-                    ItemStatAutomaticY("EEE_Artifact2PieceDesc", 235, artifactInfo.TwoPieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    ItemStatAutomaticY("FFF_Artifact2PieceDesc", 235, artifactInfo.TwoPieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return if use(artifactEquipped) >= 2 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)
                     end)),
-                    ItemStatAutomaticY("FFF_Artifact4PieceDesc", 236, artifactInfo.FourPieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return if use(artifactEquipped) >= 4 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)
+                    ItemStatAutomaticY("GGG_Artifact3PieceDesc", 236, artifactInfo.ThreePieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return if use(artifactEquipped) >= 3 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)
                     end)),
 
 
 
                     Components.Frame(scope, {
-                        Name = "GGG_HorizontalLine",
+                        Name = "HHH_HorizontalLine",
                         BackgroundColor3 = Color3.new(1, 1, 1),
                         BackgroundTransparency = 0.5,
                         Size = UDim2.fromScale(1, 0.015),
@@ -501,7 +548,7 @@ return function (scope: Fusion.Scope, props: {
                     }),
 
                     Components.Frame(scope, {
-                        Name = "HHH_ItemTags",
+                        Name = "III_ItemTags",
                         Size = UDim2.fromScale(0.95, 0.12),
                         LayoutOrder = 334,
 

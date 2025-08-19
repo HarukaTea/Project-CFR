@@ -7,6 +7,7 @@ local SoundService = game:GetService("SoundService")
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local GotHitFX = require(script.Parent.Components.GotHitShade)
 local GotHealFX = require(script.Parent.Components.GotHealShade)
@@ -32,11 +33,16 @@ return function (UI: ScreenGui, self: { any })
     table.insert(scope, Events.PlayGotHitScreenFX.On(function()
         if spawnClock then return end
 
+        local newScope = Fusion.scoped()
 
-        local gotHitFX = GotHitFX(scope)
+        local gotHitFX = GotHitFX(newScope)
         gotHitFX.Parent = self.UI
-
         Debris:AddItem(gotHitFX, 2)
+
+        Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
         HarukaLib:UITween(gotHitFX, "Out", { TweenTime = 0.5 } )
     end))
@@ -47,11 +53,17 @@ return function (UI: ScreenGui, self: { any })
     table.insert(scope, Events.PlayHealScreenFX.On(function()
         if spawnClock then return end
 
+        local newScope = Fusion.scoped()
 
-        local gotHealFX = GotHealFX(scope)
+        local gotHealFX = GotHealFX(newScope)
         gotHealFX.Parent = self.UI
-
         Debris:AddItem(gotHealFX, 2)
+
+
+        Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
         HarukaLib:UITween(gotHealFX, "Out", { TweenTime = 1.15 } )
     end))
@@ -62,10 +74,17 @@ return function (UI: ScreenGui, self: { any })
         if spawnClock then return end
 
 
-        local gotPoweredFX = GotPoweredFX(scope)
-        gotPoweredFX.Parent = self.UI
+        local newScope = Fusion.scoped()
 
+        local gotPoweredFX = GotPoweredFX(newScope)
+        gotPoweredFX.Parent = self.UI
         Debris:AddItem(gotPoweredFX, 2)
+
+
+        Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
         HarukaLib:UITween(gotPoweredFX, "Out", { TweenTime = 1.15 } )
     end))
@@ -73,14 +92,19 @@ return function (UI: ScreenGui, self: { any })
 
     --// track new items
     table.insert(scope, Events.PlayItemDropFX.On(function(data)
-        local itemDropBar = ItemDropBar(scope, {
+        local newScope = Fusion.scoped()
+
+        local itemDropBar = ItemDropBar(newScope, {
             ItemId = data.ItemId,
             Amount = data.Amount
         })
         itemDropBar.Parent = self.UI.Center.ItemDropsDiv.ItemDrops
-
-
         Debris:AddItem(itemDropBar, 3)
+
+
+        Promise.delay(3):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
 
 
         HarukaLib:UITween(itemDropBar, "In")
@@ -101,14 +125,18 @@ return function (UI: ScreenGui, self: { any })
 
 
         local exp = expDropQueue:Pop()
+        local newScope = Fusion.scoped()
 
-        local expBar = EXPBar(scope, {
+        local expBar = EXPBar(newScope, {
             AddedEXP = exp
         })
         expBar.Parent = self.UI.Top.LevelEXP
-
-
         Debris:AddItem(expBar, 2)
+
+
+        Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
 
 
         HarukaLib:UITween(expBar, "In")
@@ -138,16 +166,22 @@ return function (UI: ScreenGui, self: { any })
         if not self.UI then return end
         if not self.UI:FindFirstChild("Top") then return end
 
-        local nextRegion = regionQueue:Pop() :: string
-
         regionQueue:SetLockState(true)
 
-        local regionBar = RegionBar(scope, {
+        local nextRegion = regionQueue:Pop() :: string
+        local newScope = Fusion.scoped()
+
+        local regionBar = RegionBar(newScope, {
             AreaVal = nextRegion
         })
         regionBar.Parent = self.UI.Top
-
         Debris:AddItem(regionBar, 3.5)
+
+
+        Promise.delay(3.5):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
         HarukaLib:UITween(regionBar, "In")
         HarukaLib:UITween(regionBar, "Out", { TweenTime = 0.5, DelayTime = 2.5 })
@@ -169,12 +203,17 @@ return function (UI: ScreenGui, self: { any })
 
     --// track cast cd
     table.insert(scope, Events.OpenCastTimeBar.On(function(data)
-        local castingTimeBar = CastingTimeBar(scope, {
+        local newScope = Fusion.scoped()
+        local castingTimeBar = CastingTimeBar(newScope, {
             Time = data.Duration
         })
         castingTimeBar.Parent = self.UI.Bottom.CastTimeBars
-
         Debris:AddItem(castingTimeBar, data.Duration + 0.2)
+
+
+        Promise.delay(data.Duration + 1):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
 
 
         wait(data.Duration)
@@ -195,17 +234,21 @@ return function (UI: ScreenGui, self: { any })
 
 
         local data = achivementQueue:Pop()
+        local newScope = Fusion.scoped()
 
-        local expBar = BadgeAwarding(scope, {
+        local expBar = BadgeAwarding(newScope, {
             BadgeId = data.BadgeId,
         })
         expBar.Parent = UI.Bottom.BadgeAwarding
+        Debris:AddItem(expBar, 5)
+
+
+        Promise.delay(5):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
 
 
         SoundService.SFXs.QuestCompleted:Play()
-
-
-        Debris:AddItem(expBar, 5)
 
 
         HarukaLib:UITween(expBar, "In", { TweenTime = 0.6 })

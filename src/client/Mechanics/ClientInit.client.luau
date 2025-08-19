@@ -25,6 +25,7 @@ local plr = Players.LocalPlayer
 
 
 local ClientWorldLib = {}
+ClientWorldLib.Funcs = {}
 
 
 local focusRenderDistance = 486
@@ -38,18 +39,14 @@ HarukaLib:Hydrate(workspace, {
 
 
 function ClientWorldLib:Init()
-    for funcId: string, func: (self) -> nil in ClientWorldLib do
-        if typeof(func) == "function" then
-            if string.find(funcId, "_Listen") or string.find(funcId, "_Do") then
-                func(self)
-            end
-        end
+    for _, func: () -> nil in ClientWorldLib.Funcs do
+        func()
     end
 end
 
 
 
-function ClientWorldLib:_DoDefaultEventTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function playTween(data)
         local style, goal, objs, useHarukaTween = data.TweenInfo, data.Goal, data.Objs, data.UseHarukaTween
 
@@ -132,11 +129,11 @@ function ClientWorldLib:_DoDefaultEventTracker()
     end
     Events.PlayCameraCutscene.On(playCameraScene)
     Bindables.PlayCameraCutscene:Connect(playCameraScene)
-end
+end)
 
 
 
-function ClientWorldLib:_DoOpenChestsThatAlreadyOpened()
+table.insert(ClientWorldLib.Funcs, function()
     for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
         local prompt = chest:FindFirstChildWhichIsA("ProximityPrompt", true)
         if not prompt then continue end
@@ -158,11 +155,11 @@ function ClientWorldLib:_DoOpenChestsThatAlreadyOpened()
             prompt.Enabled = false
         end
     end
-end
+end)
 
 
 
-function ClientWorldLib:_ListenBorderTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function _updateBorder(border: Model)
         if not border:IsDescendantOf(workspace) then return end
 
@@ -227,10 +224,10 @@ function ClientWorldLib:_ListenBorderTracker()
     end
     CollectionService:GetInstanceAddedSignal("CombatBorder"):Connect(_updateBorder)
     CollectionService:GetInstanceAddedSignal("EncounterBorder"):Connect(_updateBorder)
-end
+end)
 
 
-function ClientWorldLib:_ListenOrbTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function _updateOrb(orb: Model)
         if not orb:IsDescendantOf(workspace) then return end
 
@@ -318,11 +315,11 @@ function ClientWorldLib:_ListenOrbTracker()
         end)
     end
     CollectionService:GetInstanceAddedSignal("OrbEntity"):Connect(_updateOrb)
-end
+end)
 
 
 
-function ClientWorldLib:_ListenDMGNumberTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function _spawnDMGNumber(entity: Model, text: string, color: Color3)
         if not ClientLib.IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
@@ -380,10 +377,10 @@ function ClientWorldLib:_ListenDMGNumberTracker()
     Events.ShowDMGNumber.On(function(data)
         _spawnDMGNumber(data.DMGTarget, data.DMGNumber, data.DMGColor)
     end)
-end
+end)
 
 
-function ClientWorldLib:_ListenTextTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function _spawnText(entity: Model, text: string, color: Color3)
         if not ClientLib.IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
@@ -435,11 +432,11 @@ function ClientWorldLib:_ListenTextTracker()
     Events.ShowText.On(function(data)
         _spawnText(data.Target, data.Text, data.TextColor)
     end)
-end
+end)
 
 
 
-function ClientWorldLib:_ListenHitStatusTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function _onHit(entity: Model)
         if not ClientLib.IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
@@ -480,11 +477,11 @@ function ClientWorldLib:_ListenHitStatusTracker()
     Events.PlayHitStatusVFX.On(function(data)
         _onHit(data.Target)
     end)
-end
+end)
 
 
 
-function ClientWorldLib:_ListenVFXTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local function _doSimpleVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
 
@@ -523,10 +520,10 @@ function ClientWorldLib:_ListenVFXTracker()
         holder.Enabled = false
     end
     CollectionService:GetInstanceAddedSignal("ParticleEntity"):Connect(_doParticleVFXEntity)
-end
+end)
 
 
-function ClientWorldLib:_ListenItemDisplayTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local itemDisplayContainer = Instance.new("Folder")
     itemDisplayContainer.Name = "ItemDisplayContainer"
     itemDisplayContainer.Parent = workspace
@@ -631,10 +628,10 @@ function ClientWorldLib:_ListenItemDisplayTracker()
         end)
     end
     CollectionService:GetInstanceAddedSignal("ItemDisplayEntity"):Connect(_doItemSphere)
-end
+end)
 
 
-function ClientWorldLib:_ListenChestOpenVFXTracker()
+table.insert(ClientWorldLib.Funcs, function()
     Events.OpenChestClientTween.On(function(data)
         local chest = data.Chest :: Model
         if not ClientLib.IsModelValid(chest) then return end
@@ -647,10 +644,10 @@ function ClientWorldLib:_ListenChestOpenVFXTracker()
             { Pivot = chest.Top.PrimaryPart.CFrame * CFrame.Angles(math.rad(50), 0, 0) }
         )
     end)
-end
+end)
 
 
-function ClientWorldLib:_DoMapComponentTracker()
+table.insert(ClientWorldLib.Funcs, function()
     local clientObjContainerAFK = Instance.new("Folder")
     clientObjContainerAFK.Name = "ClientObjsContainerAFK"
     clientObjContainerAFK.Parent = game:GetService("ServerStorage")
@@ -730,7 +727,7 @@ function ClientWorldLib:_DoMapComponentTracker()
             end)
         end
     end)
-end
+end)
 
 
 

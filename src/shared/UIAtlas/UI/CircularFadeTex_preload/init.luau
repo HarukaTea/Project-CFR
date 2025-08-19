@@ -8,6 +8,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local CircularFadeTex = require(script.Components.CircularFadeTex)
 
@@ -41,10 +42,17 @@ return function (plr: Player)
 		local nextCircularFade = self.cirularFadeQueue:Pop() :: {
 			Duration: number
 		}
+		local newScope = Fusion.scoped()
 
-        local UI = CircularFadeTex(scope)
+        local UI = CircularFadeTex(newScope)
 		UI.Parent = self.plr.PlayerGui
 		Debris:AddItem(UI, nextCircularFade.Duration + 2)
+
+
+		Promise.delay(nextCircularFade.Duration + 2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
 		HarukaLib:CreateTween(UI.Circle, AssetBook.TweenInfos.half, {
 			Size = UDim2.fromScale(0, 0)

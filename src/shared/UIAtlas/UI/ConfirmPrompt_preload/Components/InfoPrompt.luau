@@ -100,7 +100,7 @@ return function (scope: Fusion.Scope, props: {
                                     ButtonText = props.ConfirmText,
                                     ButtonType = "Info",
                                     ButtonClickFunc = function()
-                                        props.ResultSignal:Fire("INFO")
+                                        props.ResultSignal:Fire("YES")
                                     end
                                 }),
                             }

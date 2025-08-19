@@ -34,11 +34,7 @@ end))
 
 
 function ClassMechanicLib:Init()
-    for funcId: string, func: (self) -> nil in ClassMechanicLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
-        end
-    end
+    ClassMechanicLib:_ListenClassTracker()
 
 
     Add(char.Humanoid.HealthChanged:Connect(function(health: number)

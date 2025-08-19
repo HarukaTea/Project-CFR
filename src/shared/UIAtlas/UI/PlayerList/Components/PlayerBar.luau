@@ -75,7 +75,7 @@ return function (scope: Fusion.Scope, props: {
 
 
             CFEmblemTex(scope, {
-                Transparency = 0.91,
+                Transparency = 0.94,
                 Size = UDim2.fromScale(4, 4),
                 Position = UDim2.fromScale(0.3, 0.5),
 

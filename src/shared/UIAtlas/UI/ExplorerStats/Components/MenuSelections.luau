@@ -101,7 +101,7 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
         }
     })
 end
-local function Selections(scope: Fusion.Scope, order: number, children: table) : Frame
+local function Selections(scope: Fusion.Scope, order: number, children: Fusion.Children) : Frame
     return Components.Frame(scope, {
         Name = "Selections_"..order,
         Size = fromScale(1, 0.45),

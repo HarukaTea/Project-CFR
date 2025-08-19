@@ -10,6 +10,7 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local CircleFX = require(script.Parent.Components.CircleFX)
 local RevPKSlot = require(script.Parent.Components.GlobalClassPBars.ReverberationPK)
@@ -27,10 +28,19 @@ return function (UI: ScreenGui, self: { any })
         local slot = bottom:FindFirstChild(slotId, true) :: Frame?
         if not slot then return end
 
-        local circle = CircleFX(scope)
+
+        local newScope = Fusion.scoped()
+
+        local circle = CircleFX(newScope)
+        circle.Parent = slot
         Debris:AddItem(circle, 2)
 
-        circle.Parent = slot
+
+        Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
+
 
         HarukaLib:CreateTween(circle, AssetBook.TweenInfos.onceHalf, { Size = UDim2.fromScale(2, 2) }):Play()
         HarukaLib:UITween(circle, "Out", { DelayTime = 0.2 })
@@ -40,8 +50,7 @@ return function (UI: ScreenGui, self: { any })
     --// track effect list
     ClientLib.TrackEffectListToUI({
         Target = self.char,
-        Scope = scope,
-        GuiContainer = bottom.CharacterStats.Div.Main
+        GuiContainer = bottom.EffectList
     })
 
 
@@ -54,11 +63,19 @@ return function (UI: ScreenGui, self: { any })
         if not self.UI.Center.GlobalClassAbilityDiv:FindFirstChild("ReverberationStyle") then return end
 
 
-        local ReverberationPKSlot = RevPKSlot(scope, {
+
+        local newScope = Fusion.scoped()
+
+        local ReverberationPKSlot = RevPKSlot(newScope, {
             Num = data.ResonateNum
         })
         ReverberationPKSlot.Parent = self.UI.Center.GlobalClassAbilityDiv.ReverberationStyle
         Debris:AddItem(ReverberationPKSlot, 2)
+
+
+        Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
 
 
         HarukaLib:UITween(ReverberationPKSlot, "In")

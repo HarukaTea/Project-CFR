@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local CharLib = {}
+CharLib.Funcs = {}
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -32,10 +33,8 @@ end))
 function CharLib:Init()
 	self:_RagdollInit()
 
-    for funcId: string, func: (self) -> nil in CharLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
-        end
+	for _, func: () -> nil in CharLib.Funcs do
+        func()
     end
 
 	char:SetAttribute("Haruka_CharServerInited", true)
@@ -59,11 +58,11 @@ end
 --// Private functions
 
 
-function CharLib:_ListenCharDestroyTracker()
+table.insert(CharLib.Funcs, function()
 	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
-			self:Destroy()
-			pcall(self._TriggerRagdoll, self)
+			CharLib:Destroy()
+			pcall(CharLib._TriggerRagdoll, CharLib)
 
 			char.Humanoid.Health = -1
 		end
@@ -76,14 +75,14 @@ function CharLib:_ListenCharDestroyTracker()
                 return
             end
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-                self:Destroy()
+                CharLib:Destroy()
                 return
             end
         else
-            self:Destroy()
+            CharLib:Destroy()
         end
 	end))
-end
+end)
 
 
 
@@ -169,7 +168,7 @@ function CharLib:_TriggerRagdoll()
 end
 
 
-function CharLib:_ListenZoneInTracker()
+table.insert(CharLib.Funcs, function()
     Add(HarukaLib.Clock(0.5, function()
 		if not ServerLib.IsModelValid(char) then return end
 		if not plr then return end
@@ -186,11 +185,11 @@ function CharLib:_ListenZoneInTracker()
             char:SetAttribute("AreaIn", regionIn.Name)
         end
     end))
-end
+end)
 
 
 
-function CharLib:_ListenBadgesCompletionsTracker()
+table.insert(CharLib.Funcs, function()
 	local event = Instance.new("BindableEvent")
 	event.Name = "EnemyGotHit"
 	event.Parent = script
@@ -239,7 +238,7 @@ function CharLib:_ListenBadgesCompletionsTracker()
 			_checkAndAward(AssetBook.BadgeIds.StoneBreaker)
 		end
 	end))
-end
+end)
 
 
 CharLib:Init()

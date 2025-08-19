@@ -6,7 +6,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
@@ -37,8 +36,6 @@ return function(scope: Fusion.Scope, props: {
 }, self: { any })
 
     local isSelecting = Fusion.Value(scope, false)
-
-    local lastInputType = FusionComponents.useXboxControllerHotInput(scope)
     local key = nil
 
     local refreshBoolean = Fusion.Value(scope, false)
@@ -54,27 +51,22 @@ return function(scope: Fusion.Scope, props: {
 
     if KeybindsBook.PC[realSlot] then
         key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-            local input = use(lastInputType) :: string
             local boolean = use(refreshBoolean) :: boolean
 
-            if input == "Keyboard" then
-                return Components.TextLabel(scope, {
-                    Name = "Key",
-                    AnchorPoint = Vector2.one,
-                    AutomaticSize = Enum.AutomaticSize.X,
-                    Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name] or KeybindsBook.PC[realSlot].Name,
-                    Size = UDim2.fromScale(0.5, 0.5),
-                    Position = UDim2.fromScale(1.05, 1),
-                    BackgroundTransparency = 0,
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                AutomaticSize = Enum.AutomaticSize.X,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name] or KeybindsBook.PC[realSlot].Name,
+                Size = UDim2.fromScale(0.5, 0.5),
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
 
-                    [Children] = {
-                        Components.RoundUICorner(scope),
-                        Components.UIPadding(scope, {})
-                    }
-                })
-            else
-                return nil
-            end
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
+            })
         end)
     end
 

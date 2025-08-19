@@ -9,14 +9,13 @@ local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 
 
 local GlobalQuestFuncLib = {}
+GlobalQuestFuncLib.Funcs = {}
 
 
 
 function GlobalQuestFuncLib:Init()
-    for funcId: string, func: (self) -> nil in GlobalQuestFuncLib do
-        if string.find(funcId, "_Listen") and typeof(func) == "function" then
-            task.spawn(func, self)
-        end
+    for _, func: () -> nil in GlobalQuestFuncLib.Funcs do
+        func()
     end
 end
 
@@ -24,13 +23,13 @@ end
 --// Private Methods
 
 
-function GlobalQuestFuncLib:_ListenQuestBindables()
+table.insert(GlobalQuestFuncLib.Funcs, function()
     QuestBindables.InterSkyTowerQuest:Connect(function(plr: Player)
         if QuestLib.CanGiveQuest("SideTowerTheKey", plr) then
             QuestLib.GiveQuest(plr, "SideTowerTheKey")
         end
     end)
-end
+end)
 
 
 return GlobalQuestFuncLib

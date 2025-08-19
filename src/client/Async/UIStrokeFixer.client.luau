@@ -1,6 +1,10 @@
 --!nocheck
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 local plr = Players.LocalPlayer
 local plrGui = plr.PlayerGui
@@ -116,3 +120,4 @@ for _, child: Instance in plrGui:GetDescendants() do
 end
 plrGui.DescendantAdded:Connect(_strokeAdded)
 workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(_updateSize)
+HarukaLib.Clock(3, _updateSize)

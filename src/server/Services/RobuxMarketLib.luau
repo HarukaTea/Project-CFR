@@ -78,8 +78,6 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     if not player then return end
     if player.Parent ~= Players then return end
 
-    local stringifyGamepassId = tostring(gamePassId)
-
     local playerObj = shared.PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
     if not playerObj then return end
 
@@ -92,7 +90,16 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
         if not gamepassInfo then return end
         if not gamepassInfo.IsForSale then return end
 
-        profile.Data.GamepassPurchaseLogs[stringifyGamepassId] = {
+        local gamepassName = nil
+        for gpName: string, gpId: number in AssetBook.GamepassIds do
+            if gpId == gamePassId then
+                gamepassName = gpName
+                break
+            end
+        end
+        if not gamepassName then return end
+
+        profile.Data.GamepassPurchaseLogs[gamepassName] = {
             PurchaseDateTime = DateTime.now():ToIsoDate(),
             Purchased = true,
             PurchasedPrice = gamepassInfo.PriceInRobux

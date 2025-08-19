@@ -8,6 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local HintLabel = require(script.Parent.Components.HintLabel)
 local CenterHintLabel = require(script.Parent.Components.CenterHintLabel)
@@ -33,14 +34,20 @@ return function (self: { any })
 		order += 1
 		if order > 999 then order = 1 end
 
+		local newScope = Fusion.scoped()
 
-        local normalHint = HintLabel(scope, {
+        local normalHint = HintLabel(newScope, {
 			Text = text,
 			LayoutOrder = order,
 		})
 		normalHint.Parent = self.UI.Top.Hints
-
 		Debris:AddItem(normalHint, 3.2)
+
+
+		Promise.delay(3.2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
 		HarukaLib:UITween(normalHint, "In", { TweenTime = 0.5 })
 		HarukaLib:UITween(normalHint, "Out", { TweenTime = 0.5, DelayTime = 3 })
@@ -65,13 +72,20 @@ return function (self: { any })
 		local nextHint = self.fsHintsQueue:Pop() :: {
 			Text: string, Duration: number
 		}
-		local fullNotify = FullHintLabel(scope, {
+		local newScope = Fusion.scoped()
+
+
+		local fullNotify = FullHintLabel(newScope, {
 			Text = nextHint.Text,
 		})
 		fullNotify.Parent = self.UI
-
-
 		Debris:AddItem(fullNotify, nextHint.Duration + 1)
+
+
+		Promise.delay(nextHint.Duration + 1):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
 
 		HarukaLib:UITween(fullNotify, "In")
 		HarukaLib:UITween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
@@ -103,13 +117,20 @@ return function (self: { any })
 		local nextHint = self.centerHintsQueue:Pop() :: {
 			Text: string, ShowBar: boolean
 		}
-		local notifyBar = CenterHintLabel(scope, {
+		local newScope = Fusion.scoped()
+
+
+		local notifyBar = CenterHintLabel(newScope, {
 			Text = nextHint.Text,
 			ShowBar = nextHint.ShowBar,
 		})
 		notifyBar.Parent = self.UI
-
 		Debris:AddItem(notifyBar, 2)
+
+
+		Promise.delay(2):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
 
 
 		HarukaLib:UITween(notifyBar, "In", { TweenTime = 0.5 })

@@ -2,7 +2,6 @@ local ContentProvider = game:GetService("ContentProvider")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TeleportService = game:GetService("TeleportService")
 
 
 local wait = task.wait
@@ -54,12 +53,6 @@ function PreloadSceneLib._LoadPreloadAssets()
 
     print(`[PreloadLib] All assets preloaded, spent {string.format("%.2f", os.clock() - now)} seconds`)
 end
-
-
-function PreloadSceneLib._LoadTeleportEvents()
-    TeleportService:SetTeleportGui(ReplicatedStorage.Packages.Unloads.TeleportUI)
-end
-
 
 
 function PreloadSceneLib._LoadScreenMouseFollower()
