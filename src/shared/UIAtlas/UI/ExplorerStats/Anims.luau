@@ -50,6 +50,7 @@ return function (UI: ScreenGui, self: { any })
     --// track effect list
     ClientLib.TrackEffectListToUI({
         Target = self.char,
+        Scope = scope,
         GuiContainer = bottom.EffectList
     })
 

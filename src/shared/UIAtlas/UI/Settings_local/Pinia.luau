@@ -82,6 +82,11 @@ return function (self: { any })
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
 
+        local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
+        local isKeyboard = string.find(input.UserInputType.Name, "Keyboard")
+        if not isGamepad and not isKeyboard then return end
+
+
         if Fusion.peek(self.IsInKeybindMode) and validKeycodeNames[input.KeyCode.Name] then
             self.ValidInputBegan:Fire(input.KeyCode.Name)
         end
@@ -237,7 +242,7 @@ return function (self: { any })
                 part:SetAttribute("OriMaterial", part.Material)
                 part:SetAttribute("OriColor", part.Color)
 
-                part.Material = Enum.Material.SmoothPlastic
+                part.Material = Enum.Material.Plastic
                 part.Color = part.Color:Lerp(Color3.fromRGB(), 0.4)
 
                 part:AddTag("LDMTerrainPart")

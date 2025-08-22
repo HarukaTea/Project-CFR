@@ -252,11 +252,13 @@ return function (self: { any })
 
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
+        if not Fusion.peek(self.IsChatShown) then return end
 
-        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonY then
-            if Fusion.peek(self.IsChatShown) then
-                self.ProcessedToNextDialogueSignal:Fire()
-            end
+        local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
+        local isKeyboard = input.UserInputType == Enum.UserInputType.Keyboard
+
+        if (isGamepad and input.KeyCode == Enum.KeyCode.ButtonB) or (isKeyboard and input.KeyCode == Enum.KeyCode.Space) then
+            self.ProcessedToNextDialogueSignal:Fire()
         end
     end))
 

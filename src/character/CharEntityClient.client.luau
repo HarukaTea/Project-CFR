@@ -10,6 +10,7 @@ local SoundService = game:GetService("SoundService")
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
+local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
@@ -111,7 +112,7 @@ function CharLib:_InitUI()
         if string.find(module.Name, "_preload") then continue end
 
 
-        local success, err = pcall(function()
+        Promise.try(function()
             local clear = require(module)(plr)
             if clear == nil then
                 warn("Failed to load UI clear module: "..module.Name)
@@ -119,10 +120,9 @@ function CharLib:_InitUI()
             end
 
             self.UIAdd(clear)
+        end):catch(function(err)
+            warn(tostring(err))
         end)
-        if not success then
-            warn(err)
-        end
 	end
 end
 

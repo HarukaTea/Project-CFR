@@ -85,6 +85,7 @@ return function (scope: Fusion.Scope, props: {
     --// track effect list
     ClientLib.TrackEffectListToUI({
         Target = props.Enemy,
+        Scope = scope,
         GuiContainer = billboardGui.EffectList
     })
 

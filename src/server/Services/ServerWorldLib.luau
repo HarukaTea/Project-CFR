@@ -162,10 +162,6 @@ table.insert(ServerWorldLib.Funcs, function()
         for _, part: BasePart in container:GetDescendants() do
             if HarukaLib:IsBasePartType(part) then
                 part.EnableFluidForces = false
-
-                if part.Material == Enum.Material.Plastic then
-                    part.Material = Enum.Material.SmoothPlastic
-                end
             end
         end
     end

@@ -409,11 +409,10 @@ return function (self: { any })
 
     local uiButtons = {
         "Backpack", "CharSelfView", "PerkTree", "Settings",
-        "Store",
-        "Achievements", "TutorialBook", "Settings"
     }
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj: InputObject, gpe: boolean)
         if gpe then return end
+        if not inputObj.UserInputType == Enum.UserInputType.Keyboard then return end
 
         local isUIButtonCheck = false
         local isWhichUIButton = nil

@@ -154,6 +154,7 @@ end
 
 function ClientLib.TrackEffectListToUI(props: {
 	Target: Model,
+	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
 })
 

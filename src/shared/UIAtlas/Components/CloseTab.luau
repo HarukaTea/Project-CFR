@@ -32,6 +32,9 @@ return function (scope: Fusion.Scope, props: {
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
 
+        local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
+        if not isGamepad then return end
+
         if input.KeyCode == Enum.KeyCode.ButtonB and Fusion.peek(props.ViewShownValue) then
             _close()
         end

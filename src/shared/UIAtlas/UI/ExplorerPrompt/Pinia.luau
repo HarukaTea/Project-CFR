@@ -187,6 +187,9 @@ return function (self: { any })
 	table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
 		if gpe then return end
 
+		local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
+        if not isGamepad then return end
+
 		if input.KeyCode == Enum.KeyCode.DPadUp then
 			_setIndex(Fusion.peek(self.CurrentPromptIndex) - 1)
 		elseif input.KeyCode == Enum.KeyCode.DPadDown then

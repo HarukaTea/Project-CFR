@@ -1,2 +1,9 @@
+local RunService = game:GetService("RunService")
 
-return "CF_DEMO1_DEV_202508011942"
+
+if RunService:IsStudio() then
+    return "CF_DEMO1_DEV"..DateTime.now():ToIsoDate()
+end
+
+
+return "CF_REL_PT4_V0822_01"
