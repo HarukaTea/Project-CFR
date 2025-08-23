@@ -24,9 +24,7 @@ return function (self: Types.CastItemTable)
     local CastItemLib = self
 
 
-    CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {
-        CostManaFunc: () -> nil,
-    }) : number?
+    CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {}) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = true,
             ReqEnemy = true
@@ -36,9 +34,6 @@ return function (self: Types.CastItemTable)
             Char = char
         })
         if not check then return 0 end
-
-
-        extraInfo.CostManaFunc()
 
 
         local uniqueId = HttpService:GenerateGUID(false)
@@ -77,9 +72,7 @@ return function (self: Types.CastItemTable)
     end
 
 
-    CastItemLib.Agility = function(player: Player, char: Model, extraInfo: {
-        CostManaFunc: () -> nil,
-    }) : number?
+    CastItemLib.Agility = function(player: Player, char: Model, extraInfo: {}) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = false,
             ReqEnemy = false
@@ -110,9 +103,7 @@ return function (self: Types.CastItemTable)
     end
 
 
-    CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: {
-        CostManaFunc: () -> nil,
-    }) : number?
+    CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: {}) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = false,
             ReqEnemy = false

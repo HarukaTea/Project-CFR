@@ -46,21 +46,6 @@ end
 
 
 
-StatusLib.RestoreMana = function(_, char: Model, manaAmount: number) : number
-    if not ServerLib.IsCharValid(char) then return end
-
-    char:SetAttribute("Mana", math.clamp(char:GetAttribute("Mana") + manaAmount, 0, char:GetAttribute("MaxMana")))
-
-    local restoreEff = RepS.Packages.Effects.Restoring:Clone() :: BasePart
-    restoreEff.Parent = char
-
-    Debris:AddItem(restoreEff, 1.5)
-end
-StatusLib.RestoreManaPercentage = function(_, char: Model, percentage: number) : number
-    return StatusLib:RestoreMana(char, math.ceil(char:GetAttribute("MaxMana") * percentage / 100))
-end
-
-
 
 StatusLib.CreateCustomEffect = function(_, eff: string, char: Model, props: {
     Duration: number,

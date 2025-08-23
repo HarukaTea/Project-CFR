@@ -102,7 +102,7 @@ local formulas = {
 
         local baseFactor = 37
         if props.ATKType == "Max" then
-            baseFactor = 43
+            baseFactor = 45
         end
         local extra = 1 + ((props.DMGPoints * baseFactor) / 100)
 
@@ -126,13 +126,6 @@ local formulas = {
         Level: number,
     })
         return math.floor(props.BaseShield + 3 * math.log(props.Level + 1, LOG_E))
-    end,
-
-    PlayerManaCurveCal = function(props: {
-        BaseMana: number,
-        ManaPoints: number
-    })
-        return math.floor(props.BaseMana + 20 * props.ManaPoints)
     end,
 
     PlayerCriChanceCurveCal = function(props: {

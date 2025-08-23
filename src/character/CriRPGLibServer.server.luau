@@ -22,8 +22,6 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local PerkBook = require(ReplicatedStorage.HarukaShared.Library.PerkBook)
-local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLib)
-
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
 
@@ -670,54 +668,6 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 
 
-
-    local function _updateMana()
-        local baseMana = char:GetAttribute("BaseMaxMana") :: number
-        local mpBuff = char:GetAttribute("MaxManaEx") :: number
-        local mpExBuff = char:GetAttribute("MaxManaExPower") :: number
-
-
-        baseMana = FormulaBook.PlayerManaCurveCal({
-            BaseMana = baseMana,
-            ManaPoints = plr:GetAttribute("INTPoints")
-        })
-
-        char:SetAttribute("MaxMana", math.ceil((baseMana + mpBuff) * mpExBuff))
-
-        if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
-            char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
-        end
-        if char:GetAttribute("Mana") > char:GetAttribute("MaxMana") then
-            char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
-        end
-        if char:GetAttribute("Mana") < 0 then
-            char:SetAttribute("Mana", 0)
-        end
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-BaseMaxMana"] = _updateMana,
-        ["Attr-MaxManaEx"] = _updateMana,
-        ["Attr-MaxManaExPower"] = _updateMana,
-    }))
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-ManaPoints"] = _updateMana,
-    }))
-
-
-
-    local function _manaCheck()
-        if char:GetAttribute("Mana") > char:GetAttribute("MaxMana") then
-            char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
-        end
-        if char:GetAttribute("Mana") < 0 then
-            char:SetAttribute("Mana", 0)
-        end
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-Mana"] = _manaCheck
-    }))
-
-
     local function _updateCriChance()
         local baseCritChance = char:GetAttribute("BaseCriChance") :: number
         local critChanceBuff = char:GetAttribute("CriChanceEx") :: number
@@ -770,7 +720,7 @@ table.insert(CriRPGLib.Funcs, function()
     --// track rest stats
     local blackList = {
         "BaseMagic", "BaseMinDMG", "BaseMaxDMG", "BaseSpeed", "BaseSpeedCombat",
-        "BaseJumpPower", "BaseMaxShield", "BaseMaxMana",
+        "BaseJumpPower", "BaseMaxShield",
         "BaseCriChance", "BaseDodgeChance"
     }
     for stat: string, _ in table.clone(CharTemplate) do
@@ -935,7 +885,7 @@ table.insert(CriRPGLib.Funcs, function()
         end
         for _, perk: BoolValue in perkContainer[id]:GetChildren() do
             if not table.find(passed, perk.Name) then
-                PerkLib[perk.Name](char, -1)
+                --PerkLib[perk.Name](char, -1)
 
                 if char:FindFirstChild(perk.Name) then
                     char[perk.Name]:Destroy()
@@ -951,10 +901,10 @@ table.insert(CriRPGLib.Funcs, function()
             perk.Value = true
             perk.Parent = perkContainer[id]
 
-            PerkLib[perk.Name](char, 1)
+            --PerkLib[perk.Name](char, 1)
 
-            if ReplicatedStorage.HarukaRes.Perks:FindFirstChild(perk.Name) then
-                ReplicatedStorage.HarukaRes.Perks[perk.Name]:Clone().Parent = char
+            if ReplicatedStorage.HarukaRes.PerksV2:FindFirstChild(perk.Name) then
+                ReplicatedStorage.HarukaRes.PerksV2[perk.Name]:Clone().Parent = char
             end
         end
     end

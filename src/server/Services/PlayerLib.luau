@@ -814,6 +814,20 @@ function PlayerLib:_ValidateSaveData(data: { any })
     end
 
 
+    --// mirgration: check if there is mana stat in each item
+    for _, itemInfo: { any } in data.ItemsSQL do
+        local itemStat = itemInfo.ItemStat
+
+        local cleaned = string.gsub(itemStat, "MaxManaEx%b()", "")
+
+        cleaned = string.gsub(cleaned, ",+", ",")
+        cleaned = string.gsub(cleaned, "^,|,$", "")
+        cleaned = string.gsub(cleaned, ",,", ",")
+
+        data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
+    end
+
+
     --// clean up old settings
     data.Settings = nil
 

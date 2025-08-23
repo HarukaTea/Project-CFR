@@ -45,7 +45,7 @@
         "Icon": "12192842137",
         "Price": "300",
         "SellPrice": "150",
-        "ExtraStatInfo": "Mana(70),CD(10)",
+        "ExtraStatInfo": "CD(10)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -103,12 +103,12 @@
     },
     {
         "ItemId": "ManaPotion",
-        "Name": "Mana Potion",
+        "Name": "Speed Potion",
         "Type": "Consumable",
         "Tier": "1",
         "Level": "5",
         "Desc": "Invented with the cooperation of the Magic Guild and Life Guild's scientists and researchers to create an energy enhancing drink for people of all lifestyles",
-        "Stat": "Restores <blue>35% Mana</font>",
+        "Stat": "Gives you <yellow>1.75x Speed</font> buff for a decent amount of time",
         "StatInfo": "",
         "Icon": "85421931804228",
         "Price": "75",
@@ -238,14 +238,14 @@
         "Recipe": ""
     },
     {
-        "ItemId": "ManaCrystal",
-        "Name": "Mana Crystal",
+        "ItemId": "VolatileCrystal",
+        "Name": "Volatile Crystal",
         "Type": "Accessory",
         "Tier": "2",
         "Level": "5",
         "Desc": "A crystal of raw mana, rough and unpolished, containing only residual traces of energy within",
         "Stat": "",
-        "StatInfo": "MaxManaEx(50)",
+        "StatInfo": "MagicEx(45)",
         "Icon": "12119869276",
         "Price": "150",
         "SellPrice": "75",
@@ -364,7 +364,7 @@
         "Level": "55",
         "Desc": "It's unnervingly warm to the touch and hums with a viscous, destructive energy",
         "Stat": "",
-        "StatInfo": "MagicEx(220),MaxManaEx(550),CriDMGEx(27)",
+        "StatInfo": "MagicEx(220),CriDMGEx(27)",
         "Icon": "132200106050322",
         "Price": "3300",
         "SellPrice": "1650",
@@ -884,23 +884,6 @@
         "Recipe": "CoalOre(7),Wood(10),Glass(5)"
     },
     {
-        "ItemId": "ManaLantern",
-        "Name": "Mana Lantern",
-        "Type": "Accessory",
-        "Tier": "3",
-        "Level": "25",
-        "Desc": "Despite being simply a magical lantern, you can feel the magic emanating from it being pulled by an unseen force",
-        "Stat": "Emits <blue>bright</blue> light surrounding you.",
-        "StatInfo": "CanBlueLight",
-        "Icon": "118349633514173",
-        "Price": "1125",
-        "SellPrice": "562",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting",
-        "ArtifactId": "",
-        "Recipe": "CoalOre(10),Wood(15),Glass(10),ManaPotion(30)"
-    },
-    {
         "ItemId": "CrimsoniteOre",
         "Name": "Crimsonite Ore",
         "Type": "Material",
@@ -1105,14 +1088,14 @@
         "Recipe": ""
     },
     {
-        "ItemId": "AquaLapis",
-        "Name": "Aqua Lapis",
+        "ItemId": "AquaCrystal",
+        "Name": "Aqua Crystal",
         "Type": "Accessory",
         "Tier": "3",
         "Level": "30",
         "Desc": "It makes you wonder how they were able to make it so perfectly",
         "Stat": "",
-        "StatInfo": "MaxManaEx(350)",
+        "StatInfo": "MagicEx(110)",
         "Icon": "17515925140",
         "Price": "1350",
         "SellPrice": "675",
@@ -1133,7 +1116,7 @@
         "Icon": "18857805491",
         "Price": "2250",
         "SellPrice": "1125",
-        "ExtraStatInfo": "CD(15),Mana(1000)",
+        "ExtraStatInfo": "CD(15)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -1150,7 +1133,7 @@
         "Icon": "129838506946434",
         "Price": "2250",
         "SellPrice": "1125",
-        "ExtraStatInfo": "CD(15),Mana(1500)",
+        "ExtraStatInfo": "CD(15)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -1170,7 +1153,7 @@
         "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "",
-        "Recipe": "Sand(35),ManaCrystal(1)"
+        "Recipe": "Sand(35),IronOre(30)"
     },
     {
         "ItemId": "AdventurerBackpack",
@@ -1269,7 +1252,7 @@
         "Icon": "78303532528647",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "CD(10),Mana(600)",
+        "ExtraStatInfo": "CD(10)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -1354,7 +1337,7 @@
         "Icon": "140134594527233",
         "Price": "1575",
         "SellPrice": "787",
-        "ExtraStatInfo": "CD(12),Mana(850)",
+        "ExtraStatInfo": "CD(12)",
         "Tags": "Magic,Control",
         "ArtifactId": "",
         "Recipe": ""
@@ -1382,13 +1365,13 @@
         "Type": "Active",
         "Tier": "4",
         "Level": "75",
-        "Desc": "Mana can be utilised like a fuel, hence, with enough mana and control, you can spread out mana across a large area and then quickly change all of their trajectories into one converging point before setting them ablaze, creating a chemical reaction akin to an explosion.",
+        "Desc": "With enough MP and control, you can spread out mana across a large area and then quickly change all of their trajectories into one converging point before setting them ablaze, creating a chemical reaction akin to an explosion.",
         "Stat": "Long cast time, deals huge <purple>Magic</font> damage for all enemies in the area, inflict <red>Burn</font> and <yellow>Shocking</font>",
         "StatInfo": "",
         "Icon": "85417199893027",
         "Price": "4500",
         "SellPrice": "2250",
-        "ExtraStatInfo": "CD(25),Mana(2000)",
+        "ExtraStatInfo": "CD(25)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -1405,7 +1388,7 @@
         "Icon": "h",
         "Price": "2700",
         "SellPrice": "1350",
-        "ExtraStatInfo": "CD(12),Mana(1800)",
+        "ExtraStatInfo": "CD(12)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -1609,7 +1592,7 @@
         "Icon": "88237266177422",
         "Price": "2475",
         "SellPrice": "1237",
-        "ExtraStatInfo": "CD(12),Mana(1000)",
+        "ExtraStatInfo": "CD(12)",
         "Tags": "Magic",
         "ArtifactId": "",
         "Recipe": ""
@@ -1689,7 +1672,7 @@
         "Tier": "3",
         "Level": "55",
         "Desc": "A dark stone retrieved from the deepest trenches of the ocean",
-        "Stat": "",
+        "Stat": "All magic-based spells have a 10% chance to be re-casted but at 37% less damage",
         "StatInfo": "",
         "Icon": "73971437476492",
         "Price": "2475",
@@ -1751,8 +1734,8 @@
         "Recipe": ""
     },
     {
-        "ItemId": "ManaGauge",
-        "Name": "Mana Gauge",
+        "ItemId": "SpellGauge",
+        "Name": "Abyssal Gauge",
         "Type": "Accessory",
         "Tier": "2",
         "Level": "35",
@@ -2068,7 +2051,7 @@
         "Icon": "132533458519282",
         "Price": "750",
         "SellPrice": "375",
-        "ExtraStatInfo": "CD(10),Mana(100)",
+        "ExtraStatInfo": "CD(10)",
         "Tags": "Physical",
         "ArtifactId": "",
         "Recipe": ""
@@ -2238,7 +2221,7 @@
         "Icon": "93384862517537",
         "Price": "1575",
         "SellPrice": "787",
-        "ExtraStatInfo": "CD(12),Mana(150)",
+        "ExtraStatInfo": "CD(12)",
         "Tags": "Physical",
         "ArtifactId": "",
         "Recipe": ""

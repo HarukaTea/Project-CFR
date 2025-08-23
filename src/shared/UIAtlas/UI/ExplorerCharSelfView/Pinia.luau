@@ -60,7 +60,7 @@ return function (self: { any })
     }
 
     local statsList = {
-        "MAGIC", "MANA", "HP", "SHIELD", "SPD", "JMP",
+        "MAGIC", "HP", "SHIELD", "SPD", "JMP",
         "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE", "LUCK"
     }
     local baseStatsList = {}
@@ -155,9 +155,6 @@ return function (self: { any })
         ["Attr-Magic"] = function(val: number)
             _setVal("MAGIC", val)
         end,
-        ["Attr-MaxMana"] = function(val: number)
-            _setVal("MANA", val)
-        end,
         ["Attr-MaxShield"] = function(val: number)
             _setVal("SHIELD", val)
         end,
@@ -196,9 +193,6 @@ return function (self: { any })
         end,
         ["Attr-BaseMagic"] = function(val: number)
             _setBaseVal("MAGIC", val)
-        end,
-        ["Attr-BaseMaxMana"] = function(val: number)
-            _setBaseVal("MANA", val)
         end,
         ["Attr-BaseMaxShield"] = function(val: number)
             _setBaseVal("SHIELD", val)

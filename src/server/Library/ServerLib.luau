@@ -354,8 +354,8 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 		elseif string.find(attr, "ForClass") or string.find(attr, "ForVariant") then
 			--// do nothing
 		elseif attr == "ATK" then
-			HarukaLib:AddAttr(char, "MinDMGEx", value)
-			HarukaLib:AddAttr(char, "MaxDMGEx", value)
+			HarukaLib:AddAttr(char, "MinDMGEx", math.floor(value * 0.85))
+			HarukaLib:AddAttr(char, "MaxDMGEx", math.floor(value * 1.25))
 		else
 			HarukaLib:AddAttr(char, attr, value)
 		end

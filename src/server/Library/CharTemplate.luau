@@ -8,9 +8,6 @@ local charStats = {
     MinDMG = 8,
     MaxDMG = 15,
     Magic = 10,
-    Mana = 80,
-    MaxMana = 80,
-    ManaRegen = 15, --- percentage
 
     MaxHealth = 100,
     HealthRegenWaitTime = 15,
@@ -90,7 +87,7 @@ local charStats = {
 }
 
 local exAndExPowerList = {
-    "MinDMG", "MaxDMG", "Magic", "MaxMana", "ManaRegen",
+    "MinDMG", "MaxDMG", "Magic",
     "MaxHealth", "HealthRegenWaitTime", "MaxShield", "ShieldRegenWaitTime",
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge",

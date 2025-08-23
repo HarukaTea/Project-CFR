@@ -691,27 +691,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 equippingInfo:Destroy()
             end
         end
-        if itemInfo.ExtraStatInfoDesync.Mana then
-            local manaNeededToCost = itemInfo.ExtraStatInfoDesync.Mana :: number
-
-            --// perk bonus
-            local spellCostReduction = char:GetAttribute("SpellCostReduction") or 0 :: number
-            local reduction = manaNeededToCost * spellCostReduction / 100
-
-            manaNeededToCost -= reduction
-            manaNeededToCost = math.ceil(manaNeededToCost)
-
-            local curMana = char:GetAttribute("Mana") :: number
-
-            if curMana < manaNeededToCost then
-                Events.CreateNotify.Fire(plr, "You do not have enough Mana to cast this skill!")
-                Events.RequestToCastItem_Response.Fire(plr, {
-                    SlotId = slotId,
-                    CooldownTime = 0
-                })
-                return
-            end
-        end
         if not CastItemLib[itemInfo.ItemId] then
             warn("Invalid CastItemLib function")
 
@@ -726,22 +705,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local badStatus = false
         Promise.try(function()
-            local statusCode = CastItemLib[itemInfo.ItemId](plr, char, {
-                CostManaFunc = function()
-                    if itemInfo.ExtraStatInfoDesync.Mana then
-                        local manaNeededToCost = itemInfo.ExtraStatInfoDesync.Mana :: number
-
-                        --// perk bonus
-                        local spellCostReduction = char:GetAttribute("SpellCostReduction") or 0 :: number
-                        local reduction = manaNeededToCost * spellCostReduction / 100
-
-                        manaNeededToCost -= reduction
-                        manaNeededToCost = math.ceil(manaNeededToCost)
-
-                        HarukaLib:AddAttr(char, "Mana", -manaNeededToCost)
-                    end
-                end
-            }) :: number?
+            local statusCode = CastItemLib[itemInfo.ItemId](plr, char, {}) :: number?
 
             if statusCode and statusCode == 0 then
                 badStatus = true
@@ -957,7 +921,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
 
-        --// already equipped same item id?
+        --// already equipped same item id? (Crimson1 != Crimson2)
         local sameItemCheck = false
         for _, symbol: StringValue in equipping:GetChildren() do
             if symbol.Value == data.ItemId then

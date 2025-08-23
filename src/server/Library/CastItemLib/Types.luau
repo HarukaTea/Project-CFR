@@ -13,9 +13,7 @@ export type CastItemLib = {
     _eatSoundFunc: (char: Model, func: () -> nil) -> nil,
     _drinkSoundFunc: (char: Model, func: () -> nil) -> nil,
 
-    [string]: (player: Player, char: Model, extraInfo: {
-        CostManaFunc: () -> nil
-    }) -> number?
+    [string]: (player: Player, char: Model, extraInfo: {}) -> number?
 }
 
 

@@ -37,9 +37,6 @@ return function (self: { any })
     self.Shield = Value(0)
     self.MaxShield = Value(10)
 
-    self.Mana = Value(50)
-    self.MaxMana = Value(50)
-
     self.EXP = Value(50)
     self.MaxEXP = Value(100)
 
@@ -535,17 +532,6 @@ return function (self: { any })
             self.MaxHP:set(newMaxHP)
         end
     }))
-
-    --// track mana
-    table.insert(scope, HarukaLib:Hydrate(self.char, {
-        ["Attr-Mana"] = function(val: number)
-            self.Mana:set(val)
-        end,
-        ["Attr-MaxMana"] = function(val: number)
-            self.MaxMana:set(val)
-        end,
-    }))
-
 
 
     --// track cd

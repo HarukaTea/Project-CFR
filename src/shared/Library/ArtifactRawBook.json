@@ -44,13 +44,13 @@
     {
         "ArtifactId": "ForestDweller",
         "ArtifactTitle": "Forest Dweller",
-        "TwoPieceEff": "abc",
-        "ThreePieceEff": "ab"
+        "TwoPieceEff": "ATK +18%",
+        "ThreePieceEff": "Increases DMG by 30% against enemies with more than 50% HP"
     },
     {
         "ArtifactId": "Northerner",
         "ArtifactTitle": "The Northerner",
-        "TwoPieceEff": "abc",
-        "ThreePieceEff": "ab"
+        "TwoPieceEff": "Class Ult Recharge +20%",
+        "ThreePieceEff": "Gaining recharge from Orbs gives 3 more energy to all party members. Can only occur once every 3s"
     }
 ]

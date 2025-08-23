@@ -81,8 +81,12 @@ do
             end
         end
 
-    end):catch(function()
+    end):catch(function(err)
         warn("Failed to fetch Server Location.")
+
+        if RunService:IsStudio() then
+            warn(tostring(err))
+        end
     end)
 end
 

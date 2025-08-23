@@ -56,7 +56,6 @@ AssetBook.ItemEffectIcons = {
 	CanClimb = "rbxassetid://119170658838472",
 
 	CD = "rbxassetid://81749788783510",
-	MaxMana = "rbxassetid://131740194041023",
 	CriChance = "rbxassetid://73146024586376",
 	ATK = "rbxassetid://2965862892",
 	Speed = "rbxassetid://128019227796527",
@@ -78,7 +77,6 @@ AssetBook.ItemEffectIcons = {
 
 	Luck = "rbxassetid://109627611842021"
 }
-AssetBook.ItemEffectIcons.Mana = AssetBook.ItemEffectIcons.MaxMana
 AssetBook.ItemEffectIcons.CanLight = AssetBook.ItemEffectIcons.CanYellowLight
 
 
@@ -90,8 +88,6 @@ AssetBook.ItemEffectIconColors = {
 }
 AssetBook.ItemEffectNames = {
 	CD = "CD Time",
-	Mana = "Mana Cost",
-	MaxManaEx = "Mana",
 	CriChanceEx = "Critical Chance",
 	CriDMGEx = "Critical DMG",
 	ATK = "ATK",
@@ -130,7 +126,6 @@ AssetBook.CharStatIcons = {
 	HP = "rbxassetid://104142948728530",
 	JMP = "rbxassetid://89411498131129",
 	MAGIC = "rbxassetid://2965863231",
-	MANA = "rbxassetid://131740194041023",
 	SHIELD = "rbxassetid://139807236835811",
 	SPD = "rbxassetid://128019227796527",
 	LUCK = "rbxassetid://109627611842021"

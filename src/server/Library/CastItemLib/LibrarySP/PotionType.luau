@@ -84,29 +84,6 @@ return function (self: Types.CastItemTable)
     end
 
 
-    CastItemLib.ManaPotion = function(player: Player, char: Model) : number?
-        local check = CastItemLib._preCheck({
-            ReqCombat = false,
-            ReqEnemy = false
-        }, {
-            ItemId = "ManaPotion",
-            Player = player,
-            Char = char
-        })
-        if not check then return 0 end
-
-
-        CastItemLib._drinkSoundFunc(char, function()
-            HarukaLib:AddAttr(char, "Mana", math.floor(char:GetAttribute("MaxMana") * 0.35))
-
-            local restoreEff = RepS.Packages.Effects.Restoring:Clone() :: BasePart
-            restoreEff.Parent = char
-
-            Debris:AddItem(restoreEff, 1.5)
-        end)
-    end
-
-
     CastItemLib.EndurancePotion = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = false,

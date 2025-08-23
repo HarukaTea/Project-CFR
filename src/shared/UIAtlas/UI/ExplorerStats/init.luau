@@ -68,7 +68,6 @@ return function(plr: Player)
                     IsHPRecovering = self.IsHPRecovering,
 
                     Shield = self.Shield, MaxShield = self.MaxShield,
-                    Mana = self.Mana, MaxMana = self.MaxMana,
 
                     MinDMG = self.MinDMG, MaxDMG = self.MaxDMG,
                     Magic = self.Magic

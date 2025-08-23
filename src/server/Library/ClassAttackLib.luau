@@ -51,8 +51,6 @@ ClassAttackLib.Chain = function(plr: Player)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
-    ClassAttackLib._RestoreManaByOrb(char)
-
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
 
@@ -152,8 +150,6 @@ ClassAttackLib.Burst = function(plr: Player)
 
 
     ClassAttackLib._AddClassUltCharge(plr, 20)
-    ClassAttackLib._RestoreManaByOrb(char)
-
 
     ServerBindables.RToSpawnOrb:Fire(char.Name, "ArrowOrb")
 
@@ -249,7 +245,6 @@ ClassAttackLib.Reverberation = function(plr: Player)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
-    ClassAttackLib._RestoreManaByOrb(char)
 
     local resonateNum = math.random(1, 9)
     if char:FindFirstChild("ReverberationEcho") then
@@ -338,8 +333,6 @@ ClassAttackLib.Flow = function(plr: Player)
 
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
-    ClassAttackLib._RestoreManaByOrb(char)
-
 
     local heat = char:GetAttribute("FlowHeat") :: number
     local nextHeat = math.clamp(heat + 35, 0, 100)
@@ -472,7 +465,6 @@ ClassAttackLib.Rise = function(plr: Player)
 
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
-    ClassAttackLib._RestoreManaByOrb(char)
 
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
@@ -563,12 +555,6 @@ function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
     return 0
 end
 
-
-function ClassAttackLib._RestoreManaByOrb(char: Model)
-    if char:GetAttribute("Mana") < char:GetAttribute("MaxMana") then
-        StatusLib:RestoreManaPercentage(char, char:GetAttribute("ManaRegen"))
-    end
-end
 
 function ClassAttackLib._AddClassUltCharge(plr: Player, amount: number)
     local char = plr.Character

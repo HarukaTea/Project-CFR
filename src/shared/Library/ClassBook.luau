@@ -58,9 +58,7 @@ return {
         },
 
 
-        BaseStats = {
-            MaxMana = 300,
-        }
+        BaseStats = {}
     },
 
 
