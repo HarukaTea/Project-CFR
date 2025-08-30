@@ -250,7 +250,7 @@ return function(plr: Player)
 
 
                         Fusion.ForPairs(scope, {
-                            "Backpack", "Character", "PerkTree", "Settings"
+                            "Backpack", "Character", "Settings"
                         }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,

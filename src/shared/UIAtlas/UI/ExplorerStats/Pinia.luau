@@ -406,7 +406,7 @@ return function (self: { any })
 
 
     local uiButtons = {
-        "Backpack", "CharSelfView", "PerkTree", "Settings",
+        "Backpack", "CharSelfView", "Settings",
     }
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj: InputObject, gpe: boolean)
         if gpe then return end
