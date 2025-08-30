@@ -6,10 +6,13 @@ local ArtifactLib = {}
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 
---// STR
+ArtifactLib.Blessing2 = function(char: Model, factor: number)
+    HarukaLib:AddAttr(char, "HealBonus", 0.1 * factor)
+end
 
-ArtifactLib.STR1 = function(char: Model, factor: number)
-    HarukaLib:AddAttr(char, "ClassAttackBonusDMGExPower", 0.05 * factor)
+
+ArtifactLib.Exploration2 = function(char: Model, factor: number)
+    HarukaLib:AddAttr(char, "MaxHealthEx", 200 * factor)
 end
 
 

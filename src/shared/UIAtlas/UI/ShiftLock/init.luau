@@ -28,6 +28,11 @@ return function(plr: Player)
 	require(script.Pinia)(self)
 
 
+	if plr.PlayerGui:FindFirstChild("ShiftLock") then
+        plr.PlayerGui.ShiftLock:Destroy()
+    end
+
+
 	local scope = self.scope :: Fusion.Scope
 
 
@@ -50,17 +55,13 @@ return function(plr: Player)
 					Visible = Fusion.Computed(scope, function(use: Fusion.Use)
 						return use(self.LockEnabled) and isPC
 					end)
-				})
-			}
-		},
-		BottomProps = {
-			[Children] = {
+				}),
 				Components.HoverImageButton(scope, {
 					Name = "ShiftLock",
 					Size = UDim2.fromScale(0.8, 0.8),
 					SizeConstraint = Enum.SizeConstraint.RelativeYY,
-					Position = UDim2.fromScale(0.7, 0),
-					AnchorPoint = Vector2.xAxis,
+					Position = UDim2.fromScale(0.99, 0.5),
+					AnchorPoint = Vector2.new(1, 0.5),
 
 					Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
 						return use(self.LastInputType) ~= "Keyboard"

@@ -40,6 +40,11 @@ return function(plr: Player)
 	require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerStats") then
+        plr.PlayerGui.ExplorerStats:Destroy()
+    end
+
+
     local scope = self.scope :: Fusion.Scope
     local isSelectingMenuSelection = Fusion.Value(scope, false)
 

@@ -92,6 +92,11 @@ return function (self: { any })
     end))
 
 
+    table.insert(scope, function()
+        HarukaLib:FreezePlayerControls("Unfreeze")
+    end)
+
+
     --// track ui blur
     local blur = Components.BlurFS(scope, {
         Name = "UIBlur_Crafting",

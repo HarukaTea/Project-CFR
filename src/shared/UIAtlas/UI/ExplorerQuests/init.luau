@@ -25,6 +25,11 @@ return function(plr: Player)
 	require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerQuests") then
+        plr.PlayerGui.ExplorerQuests:Destroy()
+    end
+
+
 	local scope = self.scope :: Fusion.Scope
 
 	local UI; UI = Components.HarukaScreenGui(scope, {

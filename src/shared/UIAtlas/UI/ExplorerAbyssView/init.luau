@@ -35,6 +35,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerAbyssView") then
+        plr.PlayerGui.ExplorerAbyssView:Destroy()
+    end
+
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerAbyssView",
         DisplayOrder = UIPriorityBook.Z3,

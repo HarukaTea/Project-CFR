@@ -28,12 +28,14 @@ CharLib.Funcs = {}
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
 	if player == plr then
-		CharLib:__Destroy()
+		pcall(CharLib.__Destroy, CharLib)
+
         CharLib:Destroy()
 	end
 end))
 Add(script.Destroying:Connect(function()
-    CharLib:__Destroy()
+    pcall(CharLib.__Destroy, CharLib)
+
     CharLib:Destroy()
 end))
 
@@ -41,7 +43,7 @@ end))
 
 function CharLib:Init()
     for _, func: () -> nil in CharLib.Funcs do
-        func()
+        task.spawn(func)
     end
 
 
@@ -104,8 +106,6 @@ end
 
 
 function CharLib:_InitUI()
-    self.UIAdd, self.UIEmpty = HarukaLib.Bin()
-
     for _, module: ModuleScript in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
 		if string.find(module.Name, ".spec") then warn(module.Name) continue end
         if string.find(module.Name, "_local") then continue end
@@ -119,7 +119,7 @@ function CharLib:_InitUI()
                 return
             end
 
-            self.UIAdd(clear)
+            Add(clear)
         end):catch(function(err)
             warn(tostring(err))
         end)
@@ -127,8 +127,6 @@ function CharLib:_InitUI()
 end
 
 function CharLib:__Destroy()
-    self.UIEmpty()
-
     Events.RequestToForceReset.Fire()
 
     Bindables.PlayCameraCutscene:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
@@ -230,31 +228,54 @@ table.insert(CharLib.Funcs, function()
     Add(self.CLASS_ANIMS)
 
 
+    self.RawAnimations = {}
+    for _, anim: Animation in ReplicatedStorage.Packages.Anims.CFMechanics:GetDescendants() do
+        self.RawAnimations[anim.Name] = animator:LoadAnimation(anim)
+        self.RawAnimations[anim.Name].Priority = Enum.AnimationPriority.Action3
+    end
+    Add(self.RawAnimations)
+
+
     self.OldAnim = nil :: AnimationTrack?
 
 
-    local function _playAnim(anim: AnimationTrack, transitionTime: number)
-        if self.OldAnim ~= anim then
-            if self.OldAnim then self.OldAnim:Stop(transitionTime) end
-            if anim then anim:Play(transitionTime) end
-
-            self.OldAnim = anim
-	    end
-    end
-    local function playAnim(anim: string)
+    local function _playAnim(anim: string)
         if not self.ClassAttackAnims[anim] then warn(`Can't found animation: {anim} !`) return end
 
         self.ClassAttackAnims[anim]:Play()
     end
-    Add(Bindables.PlayAnimation:Connect(playAnim))
+    Add(Bindables.PlayAnimation:Connect(_playAnim))
     Add(Events.PlayAnimation.On(function(data)
-        playAnim(data.AnimId)
+        _playAnim(data.AnimId)
     end))
+
+
+    local function _playRawAnim(animId: string)
+        if not self.RawAnimations[animId] then warn(`Can't found raw animation: {animId} !`) return end
+
+        self.RawAnimations[animId]:Play()
+    end
+    local function _cancelRawAnim(animId: string)
+        if not self.RawAnimations[animId] then warn(`Can't found raw animation: {animId} !`) return end
+
+        self.RawAnimations[animId]:Stop()
+    end
+    Add(Bindables.PlayRawAnimation:Connect(_playRawAnim))
+    Add(Bindables.CancelRawAnimation:Connect(_cancelRawAnim))
 
 
 
 
     local charAnims = self.CharAnims
+
+    local function _playCharAnim(anim: AnimationTrack)
+        if self.OldAnim ~= anim then
+            if self.OldAnim then self.OldAnim:Stop() end
+            if anim then anim:Play() end
+
+            self.OldAnim = anim
+	    end
+    end
 	Add(humanoid.Running:Connect(function()
         local class = plr:GetAttribute("Class") :: string
         local isInCombat = char:GetAttribute("IsInCombat") :: boolean
@@ -262,33 +283,33 @@ table.insert(CharLib.Funcs, function()
 
 		if humanoid.MoveDirection.Magnitude > 0 then
             if isInCombat then
-                _playAnim(CLASS_ANIMS[class].Run, 0.1)
+                _playCharAnim(CLASS_ANIMS[class].Run)
             else
-                _playAnim(charAnims.Run, 0.1)
+                _playCharAnim(charAnims.Run)
             end
 		else
-            _playAnim(charAnims.Idle, 0.1)
+            _playCharAnim(charAnims.Idle)
 		end
 	end))
 	Add(humanoid.Climbing:Connect(function(vel)
 		if vel ~= 0 then
-			_playAnim(charAnims.Climb, 0.1)
+			_playCharAnim(charAnims.Climb)
 		else
 			charAnims.Climb:AdjustSpeed(0)
 		end
 	end))
 	Add(humanoid.Jumping:Connect(function()
-        _playAnim(charAnims.Jump, 0.1)
+        _playCharAnim(charAnims.Jump)
 	end))
 	Add(humanoid.FreeFalling:Connect(function()
-        _playAnim(charAnims.Fall, 0.1)
+        _playCharAnim(charAnims.Fall)
 	end))
 	Add(humanoid.Seated:Connect(function()
-		_playAnim(charAnims.Sit, 0.1)
+		_playCharAnim(charAnims.Sit)
 	end))
 
 
-	_playAnim(charAnims.Idle, 0.1)
+	_playCharAnim(charAnims.Idle)
 
 
 
@@ -309,7 +330,7 @@ table.insert(CharLib.Funcs, function()
         local whiteList = { "dance1", "dance2", "dance3", "cheer", "point", "wave", "laugh" }
 
         if (charAnims.Idle.IsPlaying and table.find(whiteList, emote)) then
-            _playAnim(charAnims[emote], 0.1)
+            _playCharAnim(charAnims[emote], 0.1)
         end
     end))
 end)

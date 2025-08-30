@@ -37,7 +37,7 @@ function AbyssWorldLib:Init()
         end):await()
     end
     for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
-        func()
+        task.spawn(func)
     end
 end
 

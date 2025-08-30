@@ -27,6 +27,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+
+    if plr.PlayerGui:FindFirstChild("ExplorerTutorialBook") then
+        plr.PlayerGui.ExplorerTutorialBook:Destroy()
+    end
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerTutorialBook",
         DisplayOrder = UIPriorityBook.Z3,

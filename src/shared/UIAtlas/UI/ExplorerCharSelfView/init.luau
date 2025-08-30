@@ -28,6 +28,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerCharSelfView") then
+        plr.PlayerGui.ExplorerCharSelfView:Destroy()
+    end
+
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerCharSelfView",
         DisplayOrder = UIPriorityBook.Z3,

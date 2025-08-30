@@ -16,8 +16,6 @@ local FriendListView = require(script.Parent.FriendListView)
 local ClassSelectionView = require(script.Parent.ClassSelectionView)
 
 
-local Haruka3DifyUI = require(RepS.HarukaShared.Shared.Haruka3DifyUI)
-
 local Children = Fusion.Children
 
 local wait = task.wait
@@ -191,18 +189,6 @@ return function (scope: Fusion.Scope, props: {
             })
         end
     end)
-
-
-
-    local screen3DObj = Haruka3DifyUI.new(UI2, 5)
-    local part2D_classSelection = screen3DObj:GetPart2D(UI2.ClassSelection)
-
-    part2D_classSelection:SetOffsetY(4)
-    part2D_classSelection:Enable()
-
-
-    table.insert(scope, screen3DObj)
-
 
 
 

@@ -34,7 +34,7 @@ function CharLib:Init()
 	self:_RagdollInit()
 
 	for _, func: () -> nil in CharLib.Funcs do
-        func()
+        task.spawn(func)
     end
 
 	char:SetAttribute("Haruka_CharServerInited", true)

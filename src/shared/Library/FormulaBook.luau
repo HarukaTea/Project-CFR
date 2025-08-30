@@ -8,6 +8,7 @@ local formulas = {
     ENEMY_MAX_LEVEL = 950,
     PLAYER_MAX_LEVEL = 190,
     PLAYER_POINT_PER_LEVEL = 2,
+    PLAYER_TALENT_POINT_PER_LEVEL = 1,
     PLAYER_MAX_DEX_POINTS = 50,
 
     EXPEvent = 1.5,
@@ -134,14 +135,6 @@ local formulas = {
     })
         return math.floor(props.BaseCritChance + math.min(40, math.floor(props.DexPoints * 0.8)))
     end,
-
-    PlayerDodgeChanceCurveCal = function(props: {
-        BaseDodgeChance: number,
-        DexPoints: number
-    })
-        return math.floor(props.BaseDodgeChance + math.min(18, math.floor(props.DexPoints / 2.75)))
-    end,
-
 
 
     --// items

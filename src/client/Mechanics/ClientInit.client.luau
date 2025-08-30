@@ -4,6 +4,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
@@ -40,7 +41,7 @@ HarukaLib:Hydrate(workspace, {
 
 function ClientWorldLib:Init()
     for _, func: () -> nil in ClientWorldLib.Funcs do
-        func()
+        task.spawn(func)
     end
 end
 
@@ -533,14 +534,14 @@ table.insert(ClientWorldLib.Funcs, function()
         local location = data.ItemDropLocationPos :: Vector3
 
         location += Vector3.new(
-            math.random(-4, 4), 0, math.random(-4, 4)
+            math.random(-5, 5), 0, math.random(-5, 5)
         )
         location = ClientLib.FindGroundByRay(location)
 
         for _ = 1, data.ItemAmount do
             local itemSphere = ReplicatedStorage.Packages.Effects.ItemDisplay:Clone() :: BasePart
 
-            itemSphere.CFrame = CFrame.new(location)
+            itemSphere.CFrame = CFrame.new(location) * CFrame.new(0, itemSphere.Size.Y / 2, 0)
             itemSphere:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
             itemSphere:AddTag("ItemDisplayEntity")
             itemSphere.Anchored = true
@@ -725,6 +726,39 @@ table.insert(ClientWorldLib.Funcs, function()
                     wing.Parent = clientObjContainer
                 end
             end)
+        end
+    end)
+end)
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, player: Player)
+        if plr ~= player then return end
+
+        local adornee = prompt.Parent :: BasePart
+        local char = plr.Character
+
+        if not adornee:IsA("BasePart") then
+            warn("Invalid adornee for proximity prompt")
+            return
+        end
+        if not ClientLib.IsCharValid(char) then return end
+
+        local distance = plr:DistanceFromCharacter(adornee.Position)
+        if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
+
+
+        if plr:FindFirstChild("PromptTriggerCDClient") then return end
+
+        local promptCDSymbol = Instance.new("BoolValue")
+        promptCDSymbol.Value = true
+        promptCDSymbol.Name = "PromptTriggerCDClient"
+        promptCDSymbol.Parent = plr
+        Debris:AddItem(promptCDSymbol, 0.3)
+
+
+        if prompt.Name == "Slide" then
+            Bindables.ActionSlide:Fire()
         end
     end)
 end)

@@ -101,6 +101,14 @@ ClassAttackLib.Chain_Ult_None = function(plr: Player)
         Caster = char,
         ProjectileUniqueId = uniqueId
     })
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Chain",
+        ClassVariant = "None",
+        DMGType = "Physical",
+        Target = targeting
+    })
 end
 ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
@@ -137,6 +145,14 @@ ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
         SceneId = "ChainSwordAstral",
         Caster = char,
         ProjectileUniqueId = uniqueId
+    })
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Chain",
+        ClassVariant = "Combo",
+        DMGType = "Physical",
+        Target = targeting
     })
 end
 ClassAttackLib.HEAL_ATTACK_Chain = ClassAttackLib.HEAL_ATTACK
@@ -215,6 +231,14 @@ ClassAttackLib.Burst_Ult_None = function(plr: Player)
         ProjectileUniqueId = "nil"
     })
 
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Burst",
+        ClassVariant = "None",
+        DMGType = "Physical",
+        Target = targeting
+    })
+
     Promise.delay(0.9):andThen(function()
         for _ = 1, 3 do
             ClassAttackLib._DealDamageToEnemy(char, targeting, {
@@ -288,6 +312,14 @@ ClassAttackLib.Reverberation_Ult_None = function(plr: Player)
         SceneId = "BlueEchoUlt",
         Caster = char,
         ProjectileUniqueId = "nil"
+    })
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Reverberation",
+        ClassVariant = "None",
+        DMGType = "Physical",
+        Target = targeting
     })
 
 
@@ -402,6 +434,14 @@ ClassAttackLib.Flow_Ult_None = function(plr: Player)
         Caster = char,
         ProjectileUniqueId = uniqueId
     })
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Flow",
+        ClassVariant = "None",
+        DMGType = "Magical",
+        Target = targeting
+    })
 end
 ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
@@ -454,32 +494,16 @@ ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
         Caster = char,
         ProjectileUniqueId = uniqueId2
     })
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Flow",
+        ClassVariant = "Focus",
+        DMGType = "Magical",
+        Target = targeting
+    })
 end
 ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
-
-
-
-ClassAttackLib.Rise = function(plr: Player)
-    local char, targeting = _getCharAndTargeting(plr)
-    if not _charAndTargetingCheck(char, targeting) then return end
-
-
-    ClassAttackLib._AddClassUltCharge(plr, 15)
-
-
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib._CalDMG("DMG", char),
-        DMGType = "Physical",
-        Attacker = "ClassAttacks"
-    })
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib._CalDMG("Magic", char),
-        DMGType = "Physical",
-        Attacker = "ClassAttacks"
-    })
-end
-ClassAttackLib.Rise_Ult_None = ClassAttackLib.Chain_Ult_Combo
-ClassAttackLib.HEAL_ATTACK_Rise = ClassAttackLib.HEAL_ATTACK
 
 
 
@@ -496,6 +520,17 @@ function ClassAttackLib._CalCastingTime(char: Model, baseTime: number) : number
     castingTime = math.max(0, castingTime)
 
     return castingTime
+end
+
+
+function ClassAttackLib._FireClassUltCasted(char: Model, props: {
+
+})
+    for _, event: BindableEvent in char:GetChildren() do
+        if event:IsA("BindableEvent") and event.Name == "PlayerClassUltCasted" then
+            event:Fire(char, props)
+        end
+    end
 end
 
 

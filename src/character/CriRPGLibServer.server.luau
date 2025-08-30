@@ -21,7 +21,7 @@ local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-local PerkBook = require(ReplicatedStorage.HarukaShared.Library.PerkBook)
+local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLib)
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
 
@@ -71,7 +71,7 @@ function CriRPGLib:Init()
     self:_SpawnToLastLocation()
 
     for _, func: () -> nil in CriRPGLib.Funcs do
-        func()
+        task.spawn(func)
     end
 
     self:_AutoEquipItems()
@@ -417,7 +417,7 @@ table.insert(CriRPGLib.Funcs, function()
                 end
 
                 HarukaLib:AddAttr(plr, "Level", totalLevelShouldGive)
-                HarukaLib:AddAttr(plr, "EXP", -maxEXPGained)
+                HarukaLib:AddAttr(plr, "EXP", -math.ceil(maxEXPGained))
                 HarukaLib:AddAttr(plr, "PerkPoints", FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
 
                 Events.PlaySound.Fire(plr, SoundService.SFXs.LevelUp)
@@ -690,38 +690,12 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 
 
-    local function _updateDodgeChance()
-        local baseDodgeChance = char:GetAttribute("BaseDodgeChance") :: number
-        local dodgeChanceBuff = char:GetAttribute("DodgeChanceEx") :: number
-        local dodgeChanceExBuff = char:GetAttribute("DodgeChanceExPower") :: number
-
-        local final = FormulaBook.PlayerDodgeChanceCurveCal({
-            BaseDodgeChance = baseDodgeChance,
-            DexPoints = plr:GetAttribute("DEXPoints")
-        })
-
-        char:SetAttribute("DodgeChance", math.floor((final + dodgeChanceBuff) * dodgeChanceExBuff))
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-BaseDodgeChance"] = _updateDodgeChance,
-        ["Attr-DodgeChanceEx"] = _updateDodgeChance,
-        ["Attr-DodgeChanceExPower"] = _updateDodgeChance,
-    }))
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-DEXPoints"] = _updateDodgeChance,
-    }))
-
-
-
-
-
 
 
     --// track rest stats
     local blackList = {
         "BaseMagic", "BaseMinDMG", "BaseMaxDMG", "BaseSpeed", "BaseSpeedCombat",
-        "BaseJumpPower", "BaseMaxShield",
-        "BaseCriChance", "BaseDodgeChance"
+        "BaseJumpPower", "BaseMaxShield", "BaseCriChance"
     }
     for stat: string, _ in table.clone(CharTemplate) do
         if table.find(blackList, stat) then continue end
@@ -857,6 +831,14 @@ table.insert(CriRPGLib.Funcs, function()
             ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
         end
     end))
+    Add(plr.Items.ChildRemoved:Connect(function(item: IntConstrainedValue)
+        local itemInfo = ItemBook:GetItemInfo(item.Name)
+        if not itemInfo then return end
+
+        if itemInfo.Type == "Passive" then
+            ServerLib.UnequipItem(plr, item:GetAttribute("HarukaUniqueId"))
+        end
+    end))
 end)
 
 
@@ -866,67 +848,35 @@ table.insert(CriRPGLib.Funcs, function()
     perkContainer.Parent = char
     Add(perkContainer)
 
-    local points = { "STR", "INT", "VIT" }
-    for _, pointId: string in points do
-        local folder = Instance.new("Folder")
-        folder.Name = pointId
-        folder.Parent = perkContainer
-    end
 
+    local function _equipPerk()
+        local perkHave = plr.Talents:GetChildren() :: { BoolValue }
 
-    local function _listenToPerk(id: string, point: number)
-        if point == nil then return end
-
-        local passed = {}
-        for _, perkInfo in PerkBook[id] do
-            if point >= perkInfo.Req then
-                table.insert(passed, perkInfo.PerkId)
-            end
-        end
-        for _, perk: BoolValue in perkContainer[id]:GetChildren() do
-            if not table.find(passed, perk.Name) then
-                --PerkLib[perk.Name](char, -1)
-
-                if char:FindFirstChild(perk.Name) then
-                    char[perk.Name]:Destroy()
-                end
+        -- clear unequipped perks
+        for _, perk: Script in perkContainer:GetChildren() do
+            if not plr.Talents:FindFirstChild(perk.Name) then
+                PerkLib[perk.Name](char, -1)
                 perk:Destroy()
             end
         end
-        for _, perkId: string in passed do
-            if perkContainer[id]:FindFirstChild(perkId) then continue end
+        --- equip new perks
+        for _, perk: BoolValue in perkHave do
+            if not perkContainer:FindFirstChild(perk.Name) then
+                PerkLib[perk.Name](char, 1)
 
-            local perk = Instance.new("BoolValue")
-            perk.Name = perkId
-            perk.Value = true
-            perk.Parent = perkContainer[id]
-
-            --PerkLib[perk.Name](char, 1)
-
-            if ReplicatedStorage.HarukaRes.PerksV2:FindFirstChild(perk.Name) then
-                ReplicatedStorage.HarukaRes.PerksV2[perk.Name]:Clone().Parent = char
+                if ReplicatedStorage.HarukaRes.PerksV2:FindFirstChild(perk.Name) then
+                    ReplicatedStorage.HarukaRes.PerksV2[perk.Name]:Clone().Parent = perkContainer
+                else
+                    local symbol = Instance.new("BoolValue")
+                    symbol.Name = perk.Name
+                    symbol.Value = true
+                    symbol.Parent = perkContainer
+                end
             end
         end
     end
-
-
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-STRPoints"] = function(point: number)
-            if point == nil then return end
-
-            _listenToPerk("STR", point)
-        end,
-        ["Attr-INTPoints"] = function(point: number)
-            if point == nil then return end
-
-            _listenToPerk("INT", point)
-        end,
-        ["Attr-VITPoints"] = function(point: number)
-            if point == nil then return end
-
-            _listenToPerk("VIT", point)
-        end
-    }))
+    Add(plr.Talents.ChildAdded:Connect(_equipPerk))
+    Add(plr.Talents.ChildRemoved:Connect(_equipPerk))
 end)
 
 

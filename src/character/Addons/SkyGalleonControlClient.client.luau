@@ -17,6 +17,12 @@ local plr = Players.LocalPlayer
 local currentGalleon: Model = nil
 
 
+repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
+
+--// TODO: we haven't enabled sky galleon driving feature yet
+if true then return end
+
+
 local wait = task.wait
 
 

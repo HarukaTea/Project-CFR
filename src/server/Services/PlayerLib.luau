@@ -125,18 +125,24 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end
 
 
-        local itemFolder, equippingFolder, questFolder, settingsFolder =
-            Instance.new("Folder"), Instance.new("Folder"), Instance.new("Folder"), Instance.new("Configuration")
+        local itemFolder, equippingFolder, questFolder, settingsFolder, talentFolder =
+            Instance.new("Folder"),
+            Instance.new("Folder"),
+            Instance.new("Folder"),
+            Instance.new("Configuration"),
+            Instance.new("Folder")
 
         itemFolder.Name = "Items"
         equippingFolder.Name = "EquippingItems"
         questFolder.Name = "Quests"
         settingsFolder.Name = "CriRPGSettings"
+        talentFolder.Name = "Talents"
 
         itemFolder.Parent = plr
         equippingFolder.Parent = plr
         questFolder.Parent = plr
         settingsFolder.Parent = plr
+        talentFolder.Parent = plr
 
 
         for _, itemInfo: { any } in validatedData.ItemsSQL do
@@ -191,6 +197,13 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
                 val.Value = settingsVal
                 val.Parent = settingsFolder
             end
+        end
+        for _, talentId: string in validatedData.Talents do
+            local talentVal = Instance.new("BoolValue")
+            talentVal.Name = talentId
+            talentVal.Value = true
+
+            talentVal.Parent = talentFolder
         end
 
 
@@ -570,11 +583,13 @@ function PlayerLib:_SaveData()
     local equippingItems = self.Player.EquippingItems :: Folder
     local quests = self.Player.Quests :: Folder
     local criSettings = self.Player.CriRPGSettings :: Configuration
+    local talents = self.Player.Talents :: Folder
 
     local itemSQL = {}
     local equippingItemsSQL = {}
     local questsV2 = {}
     local criSettingsSQL = {}
+    local talentsSQL = {}
 
     for _, item: IntConstrainedValue in items:GetChildren() do
         if item:IsA("IntConstrainedValue") then
@@ -634,10 +649,14 @@ function PlayerLib:_SaveData()
     for _, symbol: any in criSettings:GetChildren() do
         criSettingsSQL[symbol.Name] = symbol.Value
     end
+    for _, symbol: BoolValue in talents:GetChildren() do
+        table.insert(talentsSQL, symbol.Name)
+    end
 
     profileAttrs.ItemsSQL = itemSQL
     profileAttrs.EquippingItemsSQL = equippingItemsSQL
     profileAttrs.QuestsV2 = questsV2
+    profileAttrs.Talents = talentsSQL
 
     self.Profile.Data.Settings = criSettingsSQL
 
@@ -971,6 +990,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
     totalPoints += data.INTPoints
     totalPoints += data.STRPoints
     totalPoints += data.DEXPoints
+    totalPoints += data.DEFPoints
 
     if totalPoints ~= shouldPoint then
         data.PerkPoints = shouldPoint
@@ -978,6 +998,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
         data.INTPoints = 0
         data.STRPoints = 0
         data.DEXPoints = 0
+        data.DEFPoints = 0
     end
 
     local shouldReset = false
@@ -985,6 +1006,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
     if data.INTPoints < 0 then shouldReset = true end
     if data.STRPoints < 0 then shouldReset = true end
     if data.DEXPoints < 0 then shouldReset = true end
+    if data.DEFPoints < 0 then shouldReset = true end
     if data.DEXPoints > FormulaBook.PLAYER_MAX_DEX_POINTS then shouldReset = true end
 
     if shouldReset then
@@ -993,8 +1015,24 @@ function PlayerLib:_ValidateSaveData(data: { any })
         data.INTPoints = 0
         data.STRPoints = 0
         data.DEXPoints = 0
+        data.DEFPoints = 0
     end
 
+
+    --// check invalid talent points
+    local totalTalentPoints = data.TalentPoints :: number
+    local shouldTalentPoint = FormulaBook.PLAYER_TALENT_POINT_PER_LEVEL * level
+
+    totalTalentPoints += #data.Talents * 15
+
+    if totalTalentPoints ~= shouldTalentPoint then
+        data.TalentPoints = shouldTalentPoint
+        data.Talents = {}
+    end
+    if data.TalentPoints < 0 then
+        data.TalentPoints = shouldTalentPoint
+        data.Talents = {}
+    end
 
     return data
 end

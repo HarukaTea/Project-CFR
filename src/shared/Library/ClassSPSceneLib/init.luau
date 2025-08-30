@@ -49,8 +49,8 @@ ClassSPSceneLib._createMarkContainer = _createMarkContainer
 
 
 for _, module: ModuleScript in script.Library:GetChildren() do
-    ClassSPSceneLib[module.Name] = function(...)
-		require(module)(ClassSPSceneLib, ...)
+    ClassSPSceneLib[module.Name] = function(caster: Model, uniqueId: string)
+		require(module)(ClassSPSceneLib, caster, uniqueId)
 	end
 end
 

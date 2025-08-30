@@ -1,5 +1,6 @@
 --!nocheck
 
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
@@ -26,6 +27,15 @@ export type CallbackProps = {
 
     ResolveObj: () -> nil
 }
+
+
+
+local LOCATION_SPAWNPOINTS = CollectionService:GetTagged("SpawnPointsEntity")
+local LOCATIONS = {}
+
+for _, spawnPoints: Configuration in LOCATION_SPAWNPOINTS do
+    table.insert(LOCATIONS, spawnPoints.Parent.Name)
+end
 
 
 local commands = {
@@ -259,6 +269,7 @@ local commands = {
                 thatPlr:SetAttribute("DEXPoints", 0)
                 thatPlr:SetAttribute("INTPoints", 0)
                 thatPlr:SetAttribute("VITPoints", 0)
+                thatPlr:SetAttribute("DEFPoints", 0)
                 thatPlr:SetAttribute("Level", props.Args[2])
             end
 
@@ -463,6 +474,43 @@ local commands = {
             locator:SetAttribute("Level", props.Args[2])
 
             locator.Parent = workspace.Enemies
+
+            props.ResolveObj()
+        end
+    },
+
+    {
+        Name = "TPLocation",
+        Alias = "/tp_location",
+
+        RankReq = testerRank,
+        Args = {
+            {
+                Name = "location_id",
+                Type = "enum",
+                EnumItems = LOCATIONS
+            },
+            {
+                Name = "player_id",
+                Type = "players"
+            },
+        },
+
+        Callback = function(props: CallbackProps)
+            for _, thatPlr: Player in props.Args[2] do
+                if not thatPlr then continue end
+
+                local char = props.Executor.Character
+                if not ServerLib.IsCharValid(char) then continue end
+
+                local map = workspace.Maps:FindFirstChild(props.Args[1], true)
+                if not map then break end
+
+                local spawnPoint = map:FindFirstChild("SpawnPoints")
+                if not spawnPoint then break end
+
+                char:PivotTo(spawnPoint:GetChildren()[1].CFrame)
+            end
 
             props.ResolveObj()
         end

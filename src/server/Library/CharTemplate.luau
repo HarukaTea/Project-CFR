@@ -12,6 +12,8 @@ local charStats = {
     MaxHealth = 100,
     HealthRegenWaitTime = 15,
 
+    HealBonus = 0,
+
     Shield = 0,
     MaxShield = 1,
     ShieldRegenWaitTime = 10,
@@ -88,7 +90,7 @@ local charStats = {
 
 local exAndExPowerList = {
     "MinDMG", "MaxDMG", "Magic",
-    "MaxHealth", "HealthRegenWaitTime", "MaxShield", "ShieldRegenWaitTime",
+    "MaxHealth", "HealthRegenWaitTime", "MaxShield", "ShieldRegenWaitTime", "HealBonus",
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",

@@ -29,6 +29,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("EntityStats") then
+        plr.PlayerGui.EntityStats:Destroy()
+    end
+
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "EntityStats",
         DisplayOrder = UIPriorityBook.Normal,

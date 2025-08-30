@@ -6,73 +6,47 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local PerkNode = require(script.Parent.PerkNode)
 
-local Children = Fusion.Children
+
+local NODE_POS = {
+    root1 = UDim2.fromScale(0.052, 0.458),
+
+    phy1 = UDim2.fromScale(0.17, 0.235),
+    phy2 = UDim2.fromScale(0.37, 0.235),
+    phy3 = UDim2.fromScale(0.57, 0.235),
+    phy4 = UDim2.fromScale(0.77, 0.235),
+    phy1_branch = UDim2.fromScale(0.079, 0.11),
+    phy2_branch = UDim2.fromScale(0.305, 0.088),
+    phy3_branch = UDim2.fromScale(0.856, 0.088),
+
+    magic1 = UDim2.fromScale(0.17, 0.746),
+    magic2 = UDim2.fromScale(0.37, 0.746),
+    magic3 = UDim2.fromScale(0.57, 0.746),
+    magic4 = UDim2.fromScale(0.77, 0.746),
+    magic1_branch = UDim2.fromScale(0.091, 0.877),
+    magic2_branch = UDim2.fromScale(0.449, 0.907),
+    magic3_branch = UDim2.fromScale(0.874, 0.907),
+
+    universal1 = UDim2.fromScale(0.267, 0.468),
+    universal2 = UDim2.fromScale(0.467, 0.468),
+    universal3 = UDim2.fromScale(0.667, 0.468),
+}
+
 
 return function (scope: Fusion.Scope, props: {
-    CurrentCategory: Fusion.Value,
     CurrentSelectedPerk: Fusion.Value,
-
-    PerkList: { [string]: Fusion.Value }
+    Talents: Fusion.Value
 })
-    local STR_Nodes = {
-        UDim2.fromScale(0.182, 0.185),
-        UDim2.fromScale(0.143, 0.459),
-        UDim2.fromScale(0.191, 0.828),
-        UDim2.fromScale(0.81, 0.162),
-        UDim2.fromScale(0.855, 0.469),
-        UDim2.fromScale(0.811, 0.808)
-    }
-    local INT_NODES = {
-        UDim2.fromScale(0.506, 0.113),
-        UDim2.fromScale(0.281, 0.492),
-        UDim2.fromScale(0.507, 0.854),
-        UDim2.fromScale(0.757, 0.469),
-        UDim2.fromScale(0.634, 0.234),
-        UDim2.fromScale(0.506, 0.469)
-    }
-    local VIT_NODES = {
-        UDim2.fromScale(0.085, 0.368),
-        UDim2.fromScale(0.192, 0.661),
-        UDim2.fromScale(0.38, 0.332),
-        UDim2.fromScale(0.566, 0.661),
-        UDim2.fromScale(0.747, 0.332),
-        UDim2.fromScale(0.91, 0.629)
-    }
+    return Fusion.ForPairs(scope, NODE_POS, function(_, scope: Fusion.Scope, perkId: string, nodePos: UDim2)
+        local isSelecting = Fusion.Value(scope, false)
 
-
-    local NODES = {
-        STR = STR_Nodes,
-        INT = INT_NODES,
-        VIT = VIT_NODES
-    }
-
-
-    return {
-        Fusion.ForValues(scope, { "STR", "INT", "VIT" }, function(_, scope: Fusion.Scope, category: string)
-            return Components.Frame(scope, {
-                Name = category,
-
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(props.CurrentCategory) == category
-                end),
-
-                [Children] = {
-                    Fusion.ForPairs(scope, NODES[category], function(_, scope: Fusion.Scope, index: number, nodePos: UDim2)
-                        local isSelecting = Fusion.Value(scope, false)
-
-                        return index, PerkNode(scope, {
-                            IsSelecting = isSelecting,
-                            NodePos = nodePos,
-                            Index = index,
-                            Category = category
-                        }, {
-                            CurrentSelectedPerk = props.CurrentSelectedPerk,
-                            PerkPoints = props.PerkList
-                        })
-                    end)
-                }
-            })
-        end)
-    }
+        return perkId, PerkNode(scope, {
+            IsSelecting = isSelecting,
+            NodePos = nodePos,
+            PerkId = perkId
+        }, {
+            CurrentSelectedPerk = props.CurrentSelectedPerk,
+            Talents = props.Talents
+        })
+    end)
 end
 

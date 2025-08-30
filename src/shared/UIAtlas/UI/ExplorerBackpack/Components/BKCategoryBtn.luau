@@ -26,14 +26,8 @@ return function(scope: Fusion.Scope, props: {
         Material = "rbxassetid://132557711412384",
         Misc = "rbxassetid://139698715468743",
 
-
         Market = "rbxassetid://118291405899454",
         Sell = "rbxassetid://18421784947",
-
-        STR = "rbxassetid://134445989246357",
-        DEX = "rbxassetid://123194426967050",
-        INT = "rbxassetid://81020560446846",
-        VIT = "rbxassetid://106075217220023",
 
         Crafting = "rbxassetid://105673885617491",
         Gemstone = "rbxassetid://139698715468743",

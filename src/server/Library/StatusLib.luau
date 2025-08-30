@@ -26,6 +26,9 @@ StatusLib.Heal = function(_, char: Model, healAmount: number) : number
 
     if char:FindFirstChild("AntiHeal") then return end
 
+    local healBonus = char:GetAttribute("HealBonus") or 100
+    healAmount = math.ceil(healAmount * healBonus / 100)
+
     char.Humanoid.Health += healAmount
 
     local healEff = RepS.Packages.Effects.Healing:Clone() :: BasePart

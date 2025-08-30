@@ -82,7 +82,7 @@ end
 
 function CriRPGLib:Init()
     for _, func: () -> nil in CriRPGLib.Funcs do
-        func()
+        task.spawn(func)
     end
 
 
@@ -652,10 +652,11 @@ table.insert(CriRPGLib.Funcs, function()
             return
         end
 
-        local success, err = pcall(ClassSPSceneLib[sceneId], data.Caster, data.ProjectileUniqueId)
-        if not success and RunService:IsStudio() then
-            warn(err)
-        end
+        Promise.try(ClassSPSceneLib[sceneId], data.Caster, data.ProjectileUniqueId):catch(function(err)
+            if RunService:IsStudio() then
+                warn(tostring(err))
+            end
+        end)
     end))
 end)
 

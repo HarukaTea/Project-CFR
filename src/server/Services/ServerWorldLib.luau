@@ -111,7 +111,7 @@ table.insert(ServerWorldLib.Funcs, function()
     treeContainer.Parent = workspace
 
 
-    for _, tree: Model in workspace:GetDescendants() do
+    for _, tree: Model in workspace.Maps:GetDescendants() do
         if tree:IsA("Model") and string.find(string.lower(tree.Name), "tree") then
             tree:AddTag("TreeEntity")
             tree.Parent = treeContainer
@@ -146,10 +146,8 @@ table.insert(ServerWorldLib.Funcs, function()
             pathLink:Destroy()
         end
     end
-    for _, part: BasePart in workspace:GetDescendants() do
+    for _, part: BasePart in workspace.Maps:GetDescendants() do
         if HarukaLib:IsBasePartType(part) then
-            if part:HasTag("ZoneEntity") then continue end
-
             part.EnableFluidForces = false
             part.CanTouch = false
             part.Massless = true

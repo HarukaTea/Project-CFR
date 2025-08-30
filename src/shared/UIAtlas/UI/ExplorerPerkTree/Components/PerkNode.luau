@@ -3,32 +3,47 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local PerkBook = require(RepS.HarukaShared.Library.PerkBook)
+local PerkBook = require(RepS.HarukaShared.Library.PerkBookV2)
 
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 
 local Children = Fusion.Children
 
+
+
+local NODE_SYMBOLS = {
+    root1 = "",
+
+    phy1 = "",
+    phy2 = "",
+    phy3 = "",
+    phy4 = "",
+    phy1_branch = "",
+    phy2_branch = "",
+    phy3_branch = "",
+
+    magic1 = "",
+    magic2 = "",
+    magic3 = "",
+    magic4 = "",
+    magic1_branch = "",
+    magic2_branch = "",
+    magic3_branch = "",
+
+    universal1 = "",
+    universal2 = "",
+    universal3 = "",
+}
+
 return function (scope: Fusion.Scope, info: {
     IsSelecting: Fusion.Value,
     NodePos: UDim2,
-    Index: number,
-
-    Category: string,
+    PerkId: string
 }, props: {
     CurrentSelectedPerk: Fusion.Value,
-    PerkPoints: { [string]: Fusion.Value }
+    Talents: Fusion.Value
 })
-    local NODE_SYMBOLS = {
-        STR = "rbxassetid://134445989246357",
-        INT = "rbxassetid://81020560446846",
-        VIT = "rbxassetid://106075217220023",
-    }
-
-
-    local perkId = info.Category..info.Index :: string
-    local perkInfo = PerkBook[info.Category][perkId]
-
+    local perkInfo = PerkBook.FindPerk(info.PerkId)
     if not perkInfo then return nil end
 
 
@@ -45,14 +60,21 @@ return function (scope: Fusion.Scope, info: {
             Components.RoundUICorner(scope),
 
             Components.IconImageLabel(scope, {
-                Image = NODE_SYMBOLS[info.Category] or "",
+                Image = NODE_SYMBOLS[info.PerkId] or "",
 
                 ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local isSelecting = use(info.IsSelecting)
-                    local isEnough = use(props.PerkPoints[info.Category]) >= perkInfo.Req
+                    local isUnlocked = false
+
+                    for _, talent: BoolValue in use(props.Talents) do
+                        if talent.Name == info.PerkId then
+                            isUnlocked = true
+                            break
+                        end
+                    end
 
                     if isSelecting then return Color3.fromRGB(0, 255, 255) end
-                    if isEnough then return Components.WHITE_COLOR end
+                    if isUnlocked then return Components.WHITE_COLOR end
 
                     return Color3.fromRGB(50, 50, 50)
                 end)
@@ -63,34 +85,20 @@ return function (scope: Fusion.Scope, info: {
 
                 Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local isSelecting = use(info.IsSelecting)
-                    local isEnough = use(props.PerkPoints[info.Category]) >= perkInfo.Req
+                    local isUnlocked = false
+
+                    for _, talent: BoolValue in use(props.Talents) do
+                        if talent.Name == info.PerkId then
+                            isUnlocked = true
+                            break
+                        end
+                    end
 
                     if isSelecting then return Color3.fromRGB(0, 255, 255) end
-                    if isEnough then return Components.WHITE_COLOR end
+                    if isUnlocked then return Components.WHITE_COLOR end
 
                     return Color3.fromRGB(50, 50, 50)
                 end)
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "Index",
-                BackgroundColor3 = Components.WHITE_COLOR,
-                BackgroundTransparency = 0,
-                TextColor3 = Components.BLACK_COLOR,
-                Text = info.Index,
-                AnchorPoint = Vector2.one,
-                Position = UDim2.fromScale(1, 1),
-                Size = UDim2.fromScale(0.5, 0.5),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                AutoLocalize = false,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIStroke(scope, {
-                        Color = Components.BLACK_COLOR,
-                        Thickness = 3
-                    })
-                }
             }),
 
             Components.HoverImageButton(scope, {
@@ -102,12 +110,12 @@ return function (scope: Fusion.Scope, info: {
                 end,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                    if Fusion.peek(props.CurrentSelectedPerk) == perkId then
+                    if Fusion.peek(props.CurrentSelectedPerk) == info.PerkId then
                         props.CurrentSelectedPerk:set(nil)
                         return
                     end
 
-                    props.CurrentSelectedPerk:set(perkId)
+                    props.CurrentSelectedPerk:set(info.PerkId)
                 end,
             })
         }

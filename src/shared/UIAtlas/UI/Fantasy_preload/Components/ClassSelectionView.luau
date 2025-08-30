@@ -40,8 +40,8 @@ return function (scope: Fusion.Scope, props: {
     local frame = Components.Frame(scope, {
         Name = "ClassSelection",
         BackgroundTransparency = 0,
-        AnchorPoint = Vector2.new(0, 0.5),
-        Position = UDim2.fromScale(0.03, 0.5),
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.fromScale(0.97, 0.5),
         Size = UDim2.fromScale(0.28, 0.7),
 
 
@@ -66,7 +66,7 @@ return function (scope: Fusion.Scope, props: {
                         AnchorPoint = Vector2.new(0.5, 0),
                         Position = UDim2.fromScale(0.5, 1.06),
                         Size = UDim2.fromScale(0.55, 0.1),
-                        ButtonText = "READY",
+                        ButtonText = "SELECT",
                         ButtonClickFunc = function()
                             SoundService.SFXs.QuestCompleted:Play()
 

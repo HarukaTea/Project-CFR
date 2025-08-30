@@ -35,6 +35,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerBackpack") then
+        plr.PlayerGui.ExplorerBackpack:Destroy()
+    end
+
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerBackpack",
         DisplayOrder = UIPriorityBook.Z3,

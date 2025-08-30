@@ -15,6 +15,10 @@ local playerStats = {
             INTPoints = 0,
             VITPoints = 0,
             DEXPoints = 0,
+            DEFPoints = 0,
+
+            TalentPoints = 1,
+            Talents = {},
 
             PlayTime = 0,
             Class = "Chain",

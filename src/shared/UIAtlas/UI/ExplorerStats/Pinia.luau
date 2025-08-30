@@ -358,6 +358,7 @@ return function (self: { any })
         if info.CastCD then
             return
         end
+        if plr:GetAttribute("IsChatting") then return end
         info.CastCD = true
 
         _createCooldownAnim(5, info)

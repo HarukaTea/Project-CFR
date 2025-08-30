@@ -31,6 +31,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerRoStore") then
+        plr.PlayerGui.ExplorerRoStore:Destroy()
+    end
+
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerRoStore",
         DisplayOrder = UIPriorityBook.Z3,

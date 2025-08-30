@@ -7,14 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
-
-local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
+local FakeTopBG = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local PerkListView = require(script.Components.PerkListView)
-local PerkDescView = require(script.Components.PerkDescView)
-
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
 
 local Children = Fusion.Children
 
@@ -31,6 +26,11 @@ return function (plr: Player)
     require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerPerkTree") then
+        plr.PlayerGui.ExplorerPerkTree:Destroy()
+    end
+
+
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerPerkTree",
         DisplayOrder = UIPriorityBook.Z3,
@@ -44,8 +44,8 @@ return function (plr: Player)
         [Children] = {
             Components.Frame(scope, {
                 Name = "CenterLeft",
-                AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromScale(0.03, 0.52),
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.fromScale(0.5, 0.52),
                 Size = UDim2.fromScale(0.65, 0.66),
 
                 [Children] = {
@@ -56,10 +56,9 @@ return function (plr: Player)
 
                         [Children] = {
                             PerkListView(scope, {
-                                CurrentCategory = self.CurrentCategory,
                                 CurrentSelectedPerk = self.CurrentSelectedPerk,
-
-                                PerkList = self.Points
+                                TalentPoints = self.TalentPoints,
+                                Talents = self.Talents,
                             })
                         }
                     })
@@ -77,55 +76,12 @@ return function (plr: Player)
             Position = UDim2.fromScale(0.5, 0.02),
 
             [Children] = {
-                Components.Frame(scope, {
-                    Name = "Categories",
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            Padding = UDim.new(0.015, 0),
-                        }),
-
-                        Fusion.ForPairs(scope, { "STR", "INT", "VIT" }, function(_, scope: Fusion.Scope, index: number, category: string)
-                            return index, BKCategoryBtn(scope, {
-                                Category = category,
-                                Index = index,
-
-                                CurrentSelectedItem = self.CurrentSelectedPerk,
-                                CurrentSelectedItemUniqueId = Fusion.Value(scope, ""),
-                                CurrentCategory = self.CurrentCategory,
-                            })
-                        end)
-                    }
-                }),
-
-
                 CloseTab(scope, {
                     ViewShownValue = self.IsUIShown
                 }),
-
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBG(scope),
             }
         },
-
-        CenterProps = {
-            ZIndex = 2,
-
-            [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                    return PerkDescView(scope, {
-                        PerkId = use(self.CurrentSelectedPerk),
-                    })
-                end),
-            }
-        }
     })
     self.UI = UI
 
@@ -134,17 +90,13 @@ return function (plr: Player)
     local perkPackage = syncUIPackage:WaitForChild("PerkListPath2Ds", 999)
 
 
-    for _, container: Folder in perkPackage:GetChildren() do
-        for _, path2d: Path2D in container:GetChildren() do
-            local path = path2d:Clone()
-            path.Visible = true
-            path.Parent = UI.CenterLeft.PerkList[container.Name]
-        end
+    for _, path2d: Path2D in perkPackage:GetChildren() do
+        local path = path2d:Clone()
+        path.Visible = true
+        path.Parent = UI.CenterLeft.PerkList
     end
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

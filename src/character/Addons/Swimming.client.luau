@@ -1,0 +1,185 @@
+--!nocheck
+
+local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
+local RepS = game:GetService("ReplicatedStorage")
+local RS = game:GetService("RunService")
+
+
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
+
+local Add, Empty = HarukaLib.Bin()
+
+local char = script:FindFirstAncestorOfClass("Model")
+local plr = Players.LocalPlayer
+
+
+repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
+
+
+
+Add(Players.PlayerRemoving:Connect(function(player: Player)
+	if player == plr then
+		Empty()
+	end
+end))
+Add(script.Destroying:Connect(Empty))
+Add(char.Humanoid.HealthChanged:Connect(function(health: number)
+    if health <= 0 then
+        Empty()
+    end
+end))
+Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+    local newParent = char
+    if newParent then
+        if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+            Empty()
+            return
+        end
+    else
+        Empty()
+    end
+end))
+
+
+
+local animState = nil
+local isSwimming = false
+local swimVel: BodyVelocity = nil
+
+local watersIn: { BasePart } = {}
+local swimUp = false
+
+local function playSwimAnim(newAnim: string)
+    local oldAnim = animState
+
+    if newAnim ~= oldAnim then
+        if oldAnim then
+            Bindables.CancelRawAnimation:Fire(oldAnim)
+        end
+        if newAnim then
+            Bindables.PlayRawAnimation:Fire(newAnim)
+        end
+
+        animState = newAnim
+    end
+end
+local function swimIn()
+	if not isSwimming then
+        isSwimming = true
+        char:SetAttribute("IsSwimming", true)
+
+		char.Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+        char.Humanoid.HipHeight = -3
+
+        local rootVel = char.PrimaryPart.AssemblyLinearVelocity
+
+        local diveVel = Instance.new("BodyVelocity")
+        diveVel.Name = "DiveVelocity"
+        diveVel.MaxForce = Vector3.new(0, 8000, 0)
+        diveVel.Velocity = Vector3.new(rootVel.X, rootVel.Y, rootVel.Z)
+        diveVel.Parent = char.Head
+
+        if not swimVel then
+            swimVel = Instance.new("BodyVelocity")
+            swimVel.Name = "SwimVelocity"
+            swimVel.P = 8000
+            swimVel.Velocity = Vector3.new()
+            swimVel.MaxForce = Vector3.new(rootVel.X, 8000, rootVel.Z)
+            swimVel.Parent = char.PrimaryPart
+        end
+
+
+        HarukaLib:CreateTween(diveVel, TweenInfo.new(0.2), {
+            Velocity = Vector3.new(rootVel.X, 0, rootVel.Z)
+        }):Play()
+        Debris:AddItem(diveVel, 0.2)
+
+
+        playSwimAnim("SwimIdle")
+	end
+end
+local function swimOut()
+	if isSwimming then
+		isSwimming = false
+        swimUp = false
+
+        char:SetAttribute("IsSwimming", false)
+
+        if swimVel then
+            swimVel:Destroy()
+            swimVel = nil
+        end
+
+        local rootVel = char.PrimaryPart.AssemblyLinearVelocity
+
+        char.Humanoid.HipHeight = 0
+        char.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
+            rootVel.X, char.Humanoid.JumpPower * 1.2, rootVel.Z
+        )
+
+        playSwimAnim(nil)
+	end
+end
+
+Add(char.PrimaryPart.Touched:Connect(function(water: BasePart)
+    if water:IsA("BasePart") and string.find(water.Name, "_Liquid") then
+        swimIn()
+        if not table.find(watersIn, water) then
+            table.insert(watersIn, water)
+        end
+    end
+end))
+Add(char.PrimaryPart.TouchEnded:Connect(function(water: BasePart)
+    if water:IsA("BasePart") and string.find(water.Name, "_Liquid") then
+        if table.find(watersIn, water) then
+            table.remove(watersIn, table.find(watersIn, water))
+        end
+        if #watersIn <= 0 then
+            swimOut()
+        end
+    end
+end))
+Add(char.Humanoid.Changed:Connect(function()
+    if char.Humanoid.Jump and isSwimming then
+        swimUp = true
+
+    elseif not char.Humanoid.Jump and isSwimming then
+        swimUp = false
+
+    elseif char.Humanoid.Jump and not isSwimming then
+        swimUp = false
+
+    elseif not char.Humanoid.Jump and not isSwimming then
+        swimUp = false
+    end
+end))
+Add(RS.Heartbeat:Connect(function()
+    if isSwimming then
+        local swimVelocity = 0
+
+        if swimUp then
+            swimVelocity = char.Humanoid.WalkSpeed
+
+        elseif not swimUp then
+            swimVelocity = 0
+        end
+
+        local swimmingVel = char.PrimaryPart:WaitForChild("SwimVelocity") :: BodyVelocity
+        local direction = swimmingVel.Velocity
+
+        if direction.Magnitude > 0.2 then
+            playSwimAnim("Swim")
+        else
+            playSwimAnim("SwimIdle")
+        end
+
+        swimmingVel.Velocity = Vector3.new(
+            char.Humanoid.MoveDirection.X * char.Humanoid.WalkSpeed,
+            swimVelocity,
+            char.Humanoid.MoveDirection.Z * char.Humanoid.WalkSpeed
+        )
+    end
+end))

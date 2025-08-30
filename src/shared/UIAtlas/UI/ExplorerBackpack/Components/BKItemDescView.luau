@@ -147,7 +147,7 @@ return function (scope: Fusion.Scope, props: {
                     Image = "rbxassetid://118831261287451",
 
                     ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return if use(isFavItem) then Color3.fromHex('#d63031') else Color3.fromRGB(159, 159, 159)
+                        return if use(isLockedItem) then Color3.fromHex('#d63031') else Color3.fromRGB(159, 159, 159)
                     end)
                 })
             }

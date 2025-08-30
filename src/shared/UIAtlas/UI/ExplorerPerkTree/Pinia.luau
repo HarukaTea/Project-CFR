@@ -4,9 +4,8 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
-local PerkBook = require(RepS.HarukaShared.Library.PerkBook)
 
 local wait = task.wait
 
@@ -18,27 +17,17 @@ return function (self: { any })
 
     self.IsUIShown = Value(false)
 
-    self.CurrentCategory = Value("STR")
     self.CurrentSelectedPerk = Value(nil)
+    self.TalentPoints = Value(0)
 
-    self.Points = {
-        STR = Value(0),
-        INT = Value(0),
-        VIT = Value(0),
-    }
+    self.Talents = FusionComponents.useFolder(scope, self.plr:WaitForChild("Talents", 999))
 
 
     --// track points
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
-        ["Attr-STRPoints"] = function(val: number)
-            self.Points.STR:set(val)
+        ["Attr-TalentPoints"] = function(val: number)
+            self.TalentPoints:set(val)
         end,
-        ["Attr-INTPoints"] = function(val: number)
-            self.Points.INT:set(val)
-        end,
-        ["Attr-VITPoints"] = function(val: number)
-            self.Points.VIT:set(val)
-        end
     }))
 
 

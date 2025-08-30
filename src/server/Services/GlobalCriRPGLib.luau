@@ -38,7 +38,7 @@ local wait = task.wait
 
 function GlobalCriRPGLib:Init()
     for _, func: () -> nil in GlobalCriRPGLib.Funcs do
-        func()
+        task.spawn(func)
     end
 end
 
@@ -1278,7 +1278,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't change your perk in combat!")
+            Events.CreateNotify.Fire(plr, "You can't change your skill points in combat!")
             return
         end
 
@@ -1333,7 +1333,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't change your perk in combat!")
+            Events.CreateNotify.Fire(plr, "You can't change your skill points in combat!")
             return
         end
 
@@ -1345,6 +1345,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         plr:SetAttribute("DEXPoints", 0)
         plr:SetAttribute("INTPoints", 0)
         plr:SetAttribute("VITPoints", 0)
+        plr:SetAttribute("DEFPoints", 0)
     end)
 end)
 
@@ -1848,5 +1849,17 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.RequestToWallClimb.SetCallback(function(plr: Player, data)
+        if not data.State then return end
+
+        local char = plr.Character
+        if not ServerLib.IsCharValid(char) then return end
+
+        char.PrimaryPart.Anchored = data.State
+    end)
+end)
 
 return GlobalCriRPGLib

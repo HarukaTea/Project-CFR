@@ -128,7 +128,7 @@ return function (scope: Fusion.Scope, props: {
                 RichText = true,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return HarukaLib.RichTextFormatter.Stroke(`<u>{use(props.Speaker)}</u>`, "#000000", 1.6 * use(uistrokeRatio), "round", 0)
+                    return HarukaLib.RichTextFormatter().Stroke(`<u>{use(props.Speaker)}</u>`, "#000000", 1.6 * use(uistrokeRatio), "round", 0)
                 end)
             }),
             Components.TextLabel(scope, {
@@ -144,7 +144,7 @@ return function (scope: Fusion.Scope, props: {
                 [Fusion.Out("AbsoluteSize")] = absDialogueSize,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return HarukaLib.RichTextFormatter.Stroke(HarukaLib:RichTextify(use(props.Dialogue)), "#000000", 1.6 * use(uistrokeRatio), "round", 0)
+                    return HarukaLib.RichTextFormatter().Stroke(HarukaLib:RichTextify(use(props.Dialogue)), "#000000", 1.6 * use(uistrokeRatio), "round", 0)
                 end),
                 TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(absDialogueSize).Y / (68 / 23)
@@ -178,7 +178,8 @@ return function (scope: Fusion.Scope, props: {
             Components.HoverImageButton(scope, {
                 AnchorPoint = Vector2.new(0.5, 1),
                 Position = UDim2.fromScale(0.5, 1),
-                Size = UDim2.fromScale(1, 5),
+                Size = UDim2.fromScale(1, 6),
+                ZIndex = 1,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     props.ProcessedToNextDialogueSignal:Fire()

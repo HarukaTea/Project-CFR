@@ -140,6 +140,9 @@ return function (self: { any })
 			if not chest then return end
 
 			if chest:GetAttribute("Receiver_"..self.plr.Name) then return end
+		elseif thatPrompt.Name == "Climb" then
+			--// do nothing
+			return
 		else
 			wait(0.5)
 		end

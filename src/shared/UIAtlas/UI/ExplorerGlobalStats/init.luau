@@ -21,6 +21,11 @@ return function(plr: Player)
 	require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("ExplorerStatsGlobal") then
+        plr.PlayerGui.ExplorerStatsGlobal:Destroy()
+    end
+
+
 	local scope = self.scope :: Fusion.Scope
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
@@ -85,7 +90,7 @@ return function(plr: Player)
 
                     [Children] = {
                         Components.UIScale(scope, {
-                            Scale = 0.95
+                            Scale = 1
                         }),
 
                         Components.Frame(scope, {

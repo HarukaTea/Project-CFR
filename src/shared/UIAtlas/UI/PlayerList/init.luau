@@ -29,6 +29,11 @@ return function(plr: Player)
 	require(script.Pinia)(self)
 
 
+    if plr.PlayerGui:FindFirstChild("PlayerList") then
+        plr.PlayerGui.PlayerList:Destroy()
+    end
+
+
 	local scope = self.scope :: Fusion.Scope
 
 
