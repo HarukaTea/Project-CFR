@@ -20,11 +20,15 @@ terrainPartRaycastParams.FilterType = Enum.RaycastFilterType.Include
 terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
 terrainPartRaycastParams.IgnoreWater = true
 
-local function _updateParams()
+CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function()
 	terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-end
-CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(_updateParams)
-CollectionService:GetInstanceRemovedSignal("TerrainPart"):Connect(_updateParams)
+end)
+CollectionService:GetInstanceAddedSignal("CombatBorder"):Connect(function(ins: Instance)
+	terrainPartRaycastParams:AddToFilter(ins:GetDescendants())
+end)
+CollectionService:GetInstanceAddedSignal("CombatBorderServer"):Connect(function(ins: Instance)
+	terrainPartRaycastParams:AddToFilter(ins:GetDescendants())
+end)
 
 
 function ClientLib.WeldModel(part: Part, welded: Model)

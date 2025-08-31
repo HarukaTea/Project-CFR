@@ -140,9 +140,6 @@ if not RunService:IsRunning() then
 		SetSkyGalleon = table.freeze({
 			On = noop
 		}),
-		RequestToWallClimb = table.freeze({
-			Fire = noop
-		}),
 		RequestToStartCombat = table.freeze({
 			Fire = noop
 		}),
@@ -300,6 +297,12 @@ if not RunService:IsRunning() then
 			On = noop
 		}),
 		DUNGEON_RequestToStartDungeon = table.freeze({
+			Fire = noop
+		}),
+		DUNGEON_RequestToRestartDungeon = table.freeze({
+			Fire = noop
+		}),
+		DUNGEON_RequestToLeaveDungeon = table.freeze({
 			Fire = noop
 		}),
 		DUNGEON_EndDungeon = table.freeze({
@@ -502,6 +505,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 12 then
 			local value
+			local bool_2 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_3 = buffer.readu16(incoming_buff, read(2))
 			value["ItemUniqueId"] = buffer.readstring(incoming_buff, read(len_3), len_3)
@@ -509,6 +513,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["ItemId"] = buffer.readstring(incoming_buff, read(len_4), len_4)
 			value["ItemAmount"] = buffer.readu8(incoming_buff, read(1))
 			value["ItemDropLocationPos"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
+			value["AllowAutoPickUp"] = bit32.btest(bool_2, 0b0000000000000001)
 			if reliable_events[12][1] then
 				for _, cb in reliable_events[12] do
 					task.spawn(cb, value)
@@ -521,7 +526,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 14 then
 			local value
-			local bool_2 = buffer.readu8(incoming_buff, read(1))
+			local bool_3 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_5 = buffer.readu16(incoming_buff, read(2))
 			value["ProjectileId"] = buffer.readstring(incoming_buff, read(len_5), len_5)
@@ -535,7 +540,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value["ProjectileCF"] = CFrame.new(pos_2)
 			end
-			if bit32.btest(bool_2, 0b0000000000000001) then
+			if bit32.btest(bool_3, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["ProjectileOwner"] = incoming_inst[incoming_ipos]
 				assert(value["ProjectileOwner"] == nil or value["ProjectileOwner"]:IsA("Model"), "received instance is not of the Model class!")
@@ -554,9 +559,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 10 then
 			local value
-			local bool_3 = buffer.readu8(incoming_buff, read(1))
+			local bool_4 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_3, 0b0000000000000001) then
+			if bit32.btest(bool_4, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Target"] = incoming_inst[incoming_ipos]
 				assert(value["Target"] == nil or value["Target"]:IsA("Model"), "received instance is not of the Model class!")
@@ -578,9 +583,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 9 then
 			local value
-			local bool_4 = buffer.readu8(incoming_buff, read(1))
+			local bool_5 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_4, 0b0000000000000001) then
+			if bit32.btest(bool_5, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["DMGTarget"] = incoming_inst[incoming_ipos]
 				assert(value["DMGTarget"] == nil or value["DMGTarget"]:IsA("Model"), "received instance is not of the Model class!")
@@ -602,9 +607,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 28 then
 			local value
-			local bool_5 = buffer.readu8(incoming_buff, read(1))
+			local bool_6 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_5, 0b0000000000000001) then
+			if bit32.btest(bool_6, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Galleon"] = incoming_inst[incoming_ipos]
 				assert(value["Galleon"] == nil or value["Galleon"]:IsA("Model"), "received instance is not of the Model class!")
@@ -651,15 +656,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 35 then
 			local value, value2
-			local bool_6 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_6, 0b0000000000000001) then
+			local bool_7 = buffer.readu8(incoming_buff, read(1))
+			if bit32.btest(bool_7, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value = incoming_inst[incoming_ipos]
 				assert(value == nil or value:IsA("Sound"), "received instance is not of the Sound class!")
 			else
 				value = nil
 			end
-			if bit32.btest(bool_6, 0b0000000000000010) then
+			if bit32.btest(bool_7, 0b0000000000000010) then
 				value2 = buffer.readu8(incoming_buff, read(1))
 			else
 				value2 = nil
@@ -692,9 +697,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 11 then
 			local value
-			local bool_7 = buffer.readu8(incoming_buff, read(1))
+			local bool_8 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_7, 0b0000000000000001) then
+			if bit32.btest(bool_8, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Target"] = incoming_inst[incoming_ipos]
 				assert(value["Target"] == nil or value["Target"]:IsA("Model"), "received instance is not of the Model class!")
@@ -737,14 +742,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 36 then
 			local value
-			local bool_9 = buffer.readu8(incoming_buff, read(1))
+			local bool_10 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_11 = buffer.readu16(incoming_buff, read(2))
 			value["Objs"] = table.create(len_11)
 			for i_1 = 1, len_11 do
-				local bool_8 = buffer.readu8(incoming_buff, read(1))
+				local bool_9 = buffer.readu8(incoming_buff, read(1))
 				local val_1
-				if bit32.btest(bool_8, 0b0000000000000001) then
+				if bit32.btest(bool_9, 0b0000000000000001) then
 					incoming_ipos = incoming_ipos + 1
 					val_1 = incoming_inst[incoming_ipos]
 					assert(val_1 == nil or val_1:IsA("BasePart"), "received instance is not of the BasePart class!")
@@ -754,14 +759,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				value["Objs"][i_1] = val_1
 			end
 			value["Goal"] = {  }
-			if not bit32.btest(bool_9, 0b0000000000000001) then
+			if not bit32.btest(bool_10, 0b0000000000000001) then
 				for _ = 1, buffer.readu16(incoming_buff, read(2)) + 1 do
-					local bool_10 = buffer.readu8(incoming_buff, read(1))
+					local bool_11 = buffer.readu8(incoming_buff, read(1))
 					local key_1
 					local val_2
 					local len_12 = buffer.readu16(incoming_buff, read(2))
 					key_1 = buffer.readstring(incoming_buff, read(len_12), len_12)
-					if bit32.btest(bool_10, 0b0000000000000001) then
+					if bit32.btest(bool_11, 0b0000000000000001) then
 						incoming_ipos = incoming_ipos + 1
 						val_2 = incoming_inst[incoming_ipos]
 					else
@@ -772,7 +777,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 			local len_13 = buffer.readu16(incoming_buff, read(2))
 			value["TweenInfo"] = buffer.readstring(incoming_buff, read(len_13), len_13)
-			value["UseHarukaTween"] = bit32.btest(bool_9, 0b0000000000000010)
+			value["UseHarukaTween"] = bit32.btest(bool_10, 0b0000000000000010)
 			if reliable_events[36][1] then
 				for _, cb in reliable_events[36] do
 					task.spawn(cb, value)
@@ -785,11 +790,11 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 17 then
 			local value
-			local bool_11 = buffer.readu8(incoming_buff, read(1))
+			local bool_12 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_14 = buffer.readu16(incoming_buff, read(2))
 			value["SceneId"] = buffer.readstring(incoming_buff, read(len_14), len_14)
-			if bit32.btest(bool_11, 0b0000000000000001) then
+			if bit32.btest(bool_12, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Caster"] = incoming_inst[incoming_ipos]
 				assert(value["Caster"] == nil or value["Caster"]:IsA("Model"), "received instance is not of the Model class!")
@@ -810,8 +815,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 37 then
 			local value
-			local bool_12 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_12, 0b0000000000000001) then
+			local bool_13 = buffer.readu8(incoming_buff, read(1))
+			if bit32.btest(bool_13, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value = incoming_inst[incoming_ipos]
 				assert(value == nil or value:IsA("BasePart"), "received instance is not of the BasePart class!")
@@ -845,9 +850,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 21 then
 			local value
-			local bool_13 = buffer.readu8(incoming_buff, read(1))
+			local bool_14 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_13, 0b0000000000000001) then
+			if bit32.btest(bool_14, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Entity"] = incoming_inst[incoming_ipos]
 				assert(value["Entity"] == nil or value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
@@ -954,9 +959,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 13 then
 			local value
-			local bool_14 = buffer.readu8(incoming_buff, read(1))
+			local bool_15 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_14, 0b0000000000000001) then
+			if bit32.btest(bool_15, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Chest"] = incoming_inst[incoming_ipos]
 				assert(value["Chest"] == nil or value["Chest"]:IsA("Model"), "received instance is not of the Model class!")
@@ -1013,9 +1018,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 2 then
 			local value
-			local bool_15 = buffer.readu8(incoming_buff, read(1))
+			local bool_16 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_15, 0b0000000000000001) then
+			if bit32.btest(bool_16, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["NPCModel"] = incoming_inst[incoming_ipos]
 				assert(value["NPCModel"] == nil or value["NPCModel"]:IsA("Model"), "received instance is not of the Model class!")
@@ -1049,9 +1054,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 26 then
 			local value
-			local bool_16 = buffer.readu8(incoming_buff, read(1))
+			local bool_17 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_16, 0b0000000000000001) then
+			if bit32.btest(bool_17, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["BadgeId"] = incoming_inst[incoming_ipos]
 			else
@@ -1161,10 +1166,10 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 40 then
 			local value, value2
-			local bool_17 = buffer.readu8(incoming_buff, read(1))
+			local bool_18 = buffer.readu8(incoming_buff, read(1))
 			local len_29 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_29), len_29)
-			value2 = bit32.btest(bool_17, 0b0000000000000001)
+			value2 = bit32.btest(bool_18, 0b0000000000000001)
 			if reliable_events[40][1] then
 				for _, cb in reliable_events[40] do
 					task.spawn(cb, value, value2)
@@ -1191,9 +1196,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 33 then
 			local value
-			local bool_18 = buffer.readu8(incoming_buff, read(1))
+			local bool_19 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_18, 0b0000000000000001) then
+			if bit32.btest(bool_19, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Entity"] = incoming_inst[incoming_ipos]
 				assert(value["Entity"] == nil or value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
@@ -1213,9 +1218,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 23 then
 			local value
-			local bool_19 = buffer.readu8(incoming_buff, read(1))
+			local bool_20 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_19, 0b0000000000000001) then
+			if bit32.btest(bool_20, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Entity"] = incoming_inst[incoming_ipos]
 				assert(value["Entity"] == nil or value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
@@ -1235,9 +1240,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 0 then
 			local value
-			local bool_20 = buffer.readu8(incoming_buff, read(1))
+			local bool_21 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_20, 0b0000000000000001) then
+			if bit32.btest(bool_21, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Enemy"] = incoming_inst[incoming_ipos]
 				assert(value["Enemy"] == nil or value["Enemy"]:IsA("Model"), "received instance is not of the Model class!")
@@ -1299,6 +1304,7 @@ local returns = {
 			["ItemId"]: (string),
 			["ItemAmount"]: (number),
 			["ItemDropLocationPos"]: (Vector3),
+			["AllowAutoPickUp"]: (boolean),
 		})) -> ())
 			table.insert(reliable_events[12], Callback)
 			for _, value in reliable_event_queue[12] do
@@ -1371,23 +1377,6 @@ local returns = {
 			return function()
 				table.remove(reliable_events[28], table.find(reliable_events[28], Callback))
 			end
-		end,
-	},
-	RequestToWallClimb = {
-		Fire = function(Value: ({
-			["State"]: ((boolean)?),
-		}))
-			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 24)
-			local bool_21 = 0
-			local bool_21_pos_1 = alloc(1)
-			if Value["State"] ~= nil then
-				bool_21 = bit32.bor(bool_21, 0b0000000000000001)
-				if Value["State"] then
-					bool_21 = bit32.bor(bool_21, 0b0000000000000010)
-				end
-			end
-			buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 		end,
 	},
 	RequestToStartCombat = {
@@ -1533,7 +1522,7 @@ local returns = {
 	RequestToRejoinGame = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 		end,
 	},
 	RequestToPurchaseItem = {
@@ -1633,7 +1622,7 @@ local returns = {
 	RequestToForceReset = {
 		Fire = function()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
 		end,
 	},
 	RequestToFavItem = {
@@ -2293,7 +2282,19 @@ local returns = {
 	DUNGEON_RequestToStartDungeon = {
 		Fire = function()
 			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 24)
+		end,
+	},
+	DUNGEON_RequestToRestartDungeon = {
+		Fire = function()
+			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
+		end,
+	},
+	DUNGEON_RequestToLeaveDungeon = {
+		Fire = function()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 26)
 		end,
 	},
 	DUNGEON_EndDungeon = {

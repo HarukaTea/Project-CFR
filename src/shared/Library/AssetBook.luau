@@ -1,7 +1,6 @@
 --!nocheck
 
 local newTweenInfo = TweenInfo.new
-local fromRGB = Color3.fromRGB
 local fromHex = Color3.fromHex
 
 local AssetBook = {}
@@ -52,6 +51,7 @@ AssetBook.QuestTypeColors = {
 AssetBook.ItemEffectIcons = {
 	CanYellowLight = "rbxassetid://2965771738",
 	CanBlueLight = "rbxassetid://2965771738",
+	CanLight = "rbxassetid://2965771738",
 	CanMine = "rbxassetid://12118509077",
 	CanClimb = "rbxassetid://119170658838472",
 
@@ -67,6 +67,7 @@ AssetBook.ItemEffectIcons = {
 	BurnChance = "rbxassetid://74588474308433",
 	BleedChance = "rbxassetid://101337562500575",
 	JumpPower = "rbxassetid://89411498131129",
+	JumpEx = "rbxassetid://89411498131129",
 
 	Intensity = "rbxassetid://128019227796527",
 	CriDMG = "rbxassetid://73146024586376",
@@ -77,7 +78,6 @@ AssetBook.ItemEffectIcons = {
 
 	Luck = "rbxassetid://109627611842021"
 }
-AssetBook.ItemEffectIcons.CanLight = AssetBook.ItemEffectIcons.CanYellowLight
 
 
 AssetBook.ItemEffectIconColors = {
@@ -220,9 +220,11 @@ AssetBook.PlaceIds = {
 	TutorialTest = 0,
 	TutorialReal = 1043446942,
 
-	AbyssLevel = 18331795211,
-	Mainworld = 124519565742104,
-	Tutorial = 1043446942,
+	["7037847546"] = {
+		AbyssLevel = 18331795211,
+		Mainworld = 124519565742104,
+		Tutorial = 1043446942,
+	}
 }
 
 

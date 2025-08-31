@@ -50,7 +50,8 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
             ProjectileUniqueId = uniqueId,
             DMGType = "Magic",
             DoTType = "Burn",
-            DMGBonus = 2
+            DMGBonus = 2,
+            IsClassUlt = false
         })
         Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
         Events.PlayAnimation.Fire(player, {

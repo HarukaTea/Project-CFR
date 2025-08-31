@@ -310,8 +310,8 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end)
 
 
-        --// FIXME: PT3 Badge, remove this when ended
-        ServerLib.GiveBadge(2853156407323188, plr)
+        --// FIXME: PT4 Badge, remove this when ended
+        ServerLib.GiveBadge(2015177958272323, plr)
 
 
 

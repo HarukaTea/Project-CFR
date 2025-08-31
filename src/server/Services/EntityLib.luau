@@ -145,7 +145,13 @@ enemyDiedSignal:Connect(function(uniqueId: string)
 
     allEntityPool[uniqueId] = nil
 
-    Promise.delay(12):andThen(function()
+
+    local respawnTime = 12
+    if workspace:GetAttribute("AbyssId") then
+        respawnTime = 1
+    end
+
+    Promise.delay(respawnTime):andThen(function()
         entityObj:EntityInit()
     end)
 
@@ -153,10 +159,10 @@ enemyDiedSignal:Connect(function(uniqueId: string)
     countdown.Transparency = 1
     countdown.CFrame = entityObj.Locator.CFrame
     countdown.Parent = workspace
-    Debris:AddItem(countdown, 12)
+    Debris:AddItem(countdown, respawnTime)
 
     Promise.try(function()
-        for i = 12, 1, -1 do
+        for i = respawnTime, 1, -1 do
             if countdown == nil then break end
 
             countdown.BillboardGui.TextLabel.Text = tostring(i)
@@ -1165,9 +1171,9 @@ function EntityLib:_CombatEnd()
         local result, _, _ = HarukaLib:RollLoot(drops)
 
         if not ServerLib.IsModelValid(entity) then
-            ServerLib.PlaceItemDropPart(plr, result, 1, self.Locator.Position)
+            ServerLib.PlaceItemDropPart(plr, result, 1, self.Locator.Position, true)
         else
-            ServerLib.PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position)
+            ServerLib.PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position, false)
         end
     end
     local function _giveBadge(entityInfo: { any }, char: Model)
@@ -1186,6 +1192,11 @@ function EntityLib:_CombatEnd()
         local isEnemyDeadCheck = false
         if entity.Humanoid.Health <= 0 then
             isEnemyDeadCheck = true
+        end
+
+        --// FIX: there was a bug if enemy fall into void it would die
+        if not ServerLib.IsModelValid(entity) then
+            isEnemyDeadCheck = false
         end
 
         for _, charSymbol: ObjectValue in entity.TargetingList:GetChildren() do
@@ -1218,7 +1229,7 @@ function EntityLib:_CombatEnd()
             --- give loots and badges, combat won!
             local success, err = pcall(function()
                 if not foundTeamUpEnemies and isEnemyDeadCheck then
-                    if workspace:GetAttribute("DungeonId") then
+                    if workspace:GetAttribute("DungeonId") or workspace:GetAttribute("AbyssId") then
                         self.Locator:SetAttribute("NoRespawn", true)
                     end
 
@@ -1229,6 +1240,10 @@ function EntityLib:_CombatEnd()
 
                     for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
                         local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
+
+                        if workspace:GetAttribute("DungeonId") or workspace:GetAttribute("AbyssId") then
+                            diedEntitySymbol.Value:SetAttribute("NoRespawn", true)
+                        end
 
                         _giveLoot(diedEntityInfo.Drops, thatChar)
                         _giveBadge(diedEntityInfo, thatChar)

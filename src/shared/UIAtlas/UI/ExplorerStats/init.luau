@@ -301,6 +301,68 @@ return function(plr: Player)
 
 
                 Components.Frame(scope, {
+                    Name = "DungeonEndActions",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 1.5),
+                    ZIndex = 5,
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.DungeonId) ~= nil and use(self.DungeonStarted) and use(self.DungeonFinished) and use(self.DungeonEndActionsClicked) == false
+                    end),
+
+                    [Children] = {
+                        Components.UIScale(scope, {
+                            Scale = 1
+                        }),
+                        Components.UIListLayout(scope, {
+                            Padding = UDim.new(0.5, 0),
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                        }),
+
+                        Components.TextButton(scope, {
+                            Name = "DungeonRestart",
+                            Size = UDim2.fromScale(0.2, 0.65),
+                            Text = "RESTART",
+                            BackgroundTransparency = 0,
+                            BackgroundColor3 = Components.BLUE_COLOR,
+                            TextColor3 = Components.BLACK_TEXT_COLOR,
+
+                            [Fusion.OnEvent("MouseButton1Click")] = function()
+                                Events.DUNGEON_RequestToRestartDungeon.Fire()
+
+                                self.DungeonEndActionsClicked:set(true)
+                            end,
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.UIPadding(scope, {})
+                            }
+                        }),
+                        Components.TextButton(scope, {
+                            Name = "DungeonLeave",
+                            Size = UDim2.fromScale(0.2, 0.65),
+                            Text = "BACK TO INITUS",
+                            BackgroundTransparency = 0,
+                            BackgroundColor3 = Components.RED_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
+
+                            [Fusion.OnEvent("MouseButton1Click")] = function()
+                                Events.DUNGEON_RequestToLeaveDungeon.Fire()
+
+                                self.DungeonEndActionsClicked:set(true)
+                            end,
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.UIPadding(scope, {})
+                            }
+                        })
+                    }
+                }),
+
+
+                Components.Frame(scope, {
                     Name = "TimerFrame",
                     AnchorPoint = Vector2.new(0.5, 0),
                     Position = UDim2.fromScale(0.5, 2),

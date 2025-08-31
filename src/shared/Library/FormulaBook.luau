@@ -1,7 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local LOG_E = 2.71828
-
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
 local formulas = {
@@ -11,7 +9,7 @@ local formulas = {
     PLAYER_TALENT_POINT_PER_LEVEL = 1,
     PLAYER_MAX_DEX_POINTS = 50,
 
-    EXPEvent = 1.5,
+    EXPEvent = 1,
 
 
     PlayerLevelCurveCal = function(props: {
@@ -49,7 +47,7 @@ local formulas = {
     EnemyEXPCurveCal = function(props: {
         Level: number
     })
-        return math.floor(35 * props.Level)
+        return math.floor(35 * props.Level + 15 * props.Level)
     end,
 
 
@@ -71,9 +69,9 @@ local formulas = {
         EnvironmentBonus: number?
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
-        props.EnvironmentBonus = math.min(1.75, props.EnvironmentBonus)
+        props.EnvironmentBonus = math.min(2, props.EnvironmentBonus)
 
-        local f = 3.5 * props.Level * props.EnvironmentBonus
+        local f = 4 * props.Level * props.EnvironmentBonus
 
         return math.ceil(f)
     end,
@@ -124,9 +122,9 @@ local formulas = {
 
     PlayerShieldCurveCal = function(props: {
         BaseShield: number,
-        Level: number,
+        DEFPoints: number
     })
-        return math.floor(props.BaseShield + 3 * math.log(props.Level + 1, LOG_E))
+        return math.floor(props.BaseShield + 20 * props.DEFPoints)
     end,
 
     PlayerCriChanceCurveCal = function(props: {

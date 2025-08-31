@@ -9,7 +9,7 @@
         "ArtifactId": "Exploration",
         "ArtifactTitle": "The Explorer",
         "TwoPieceEff": "Max HP increased by 200",
-        "ThreePieceEff": "Defeating an enemy regenerates 30% Max HP over 5s"
+        "ThreePieceEff": "Winning a combat regenerates 30% Max HP"
     },
     {
         "ArtifactId": "FireEmblem",
@@ -33,7 +33,7 @@
         "ArtifactId": "QueenBee",
         "ArtifactTitle": "The Queen Bee",
         "TwoPieceEff": "Class Ult DMG +20%",
-        "ThreePieceEff": "Using an Class Ult increases all nearby combat members' ATK by 20% for 12s. This effect cannot stack"
+        "ThreePieceEff": "Using an Class Ult increases your ATK by 40% for 12s. This effect cannot stack"
     },
     {
         "ArtifactId": "Library",
@@ -51,6 +51,6 @@
         "ArtifactId": "Northerner",
         "ArtifactTitle": "The Northerner",
         "TwoPieceEff": "Class Ult Recharge +20%",
-        "ThreePieceEff": "Gaining recharge from Orbs gives 3 more energy to all party members. Can only occur once every 3s"
+        "ThreePieceEff": "Gaining recharge from Orbs gives extra 10% energy. Can only occur once every 3s. This effect can not be affected by any bonuses"
     }
 ]

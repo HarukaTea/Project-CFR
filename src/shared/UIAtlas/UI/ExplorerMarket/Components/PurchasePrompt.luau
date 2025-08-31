@@ -93,6 +93,7 @@ return function(scope: Fusion.Scope, props: {
 
             if curAmount < 1 then _setColor(Color3.fromHex('#ff6b81')) return end
             if curAmount > 99 then _setColor(Color3.fromHex('#ff6b81')) return end
+            if curAmount > Fusion.peek(itemAmount) then _setColor(Color3.fromHex('#ff6b81')) return end
 
             _setColor(Color3.fromRGB(255, 255, 255))
         end

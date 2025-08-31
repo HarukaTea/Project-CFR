@@ -18,7 +18,7 @@ event.Parent = script
 Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting, attacker, dmgProps)
     if dmgProps.AttackType ~= "ClassAttacks" then return end
 
-    char.Humanoid:TakeDamage(math.ceil(char.Humanoid.MaxHealth * 0.05))
+    char.Humanoid:TakeDamage(math.ceil(char.Humanoid.MaxHealth * 0.25))
 end))
 
 

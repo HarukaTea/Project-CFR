@@ -1,9 +1,7 @@
+local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
-
 
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
 
@@ -19,17 +17,19 @@ event.Name = "EnemyGotHit"
 event.Parent = script
 
 
+
 Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting, attacker, dmgProps)
     if dmgProps.Attacker ~= "ClassAttacks" then return end
+    if char:FindFirstChild("Northerner3ArtifactCooldown") then return end
 
-    local debuffObj = DoTLib.new({
-        Target = targeting,
-        Type = "BloodButchered",
-        Duration = 9,
-        Creator = char,
-        Power = 1,
-    })
-    debuffObj:Activate()
+    local symbol = Instance.new("BoolValue")
+    symbol.Name = "Northerner3ArtifactCooldown"
+    symbol.Value = true
+    symbol.Parent = char
+    Debris:AddItem(symbol, 2.5)
+
+
+    HarukaLib:AddAttr(char, "ClassUltProgress", math.ceil(char:GetAttribute("MaxClassUltProgress") * 0.1))
 end))
 
 AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

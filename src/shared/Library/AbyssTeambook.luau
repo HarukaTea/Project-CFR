@@ -3,11 +3,15 @@ local abyss = {}
 
 
 abyss[1] = {
-    Icon = "rbxassetid://71574854293599",
+    Icon = "rbxassetid://107792957022135",
     Team = {
         KingSlime = {
             Level = 50,
             EnvironmentBonus = 2
+        },
+        BlueSlime = {
+            Level = 25,
+            EnvironmentBonus = 1
         }
     }
 }
@@ -18,7 +22,11 @@ abyss[2] = {
         QueenBee = {
             Level = 75,
             EnvironmentBonus = 4
-        }
+        },
+        Bee = {
+            Level = 60,
+            EnvironmentBonus = 2
+        },
     }
 }
 
@@ -28,6 +36,10 @@ abyss[3] = {
         CrimsonSlime = {
             Level = 100,
             EnvironmentBonus = 8
+        },
+        PurpleSlime = {
+            Level = 95,
+            EnvironmentBonus = 4
         }
     }
 }
@@ -38,7 +50,11 @@ abyss[4] = {
         HardmodeWolf = {
             Level = 150,
             EnvironmentBonus = 12
-        }
+        },
+        SpikeFox = {
+            Level = 145,
+            EnvironmentBonus = 6
+        },
     }
 }
 

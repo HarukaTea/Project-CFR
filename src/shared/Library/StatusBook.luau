@@ -46,6 +46,10 @@ return {
         Icon = "rbxassetid://101337562500575",
         Color = Color3.fromHex('#c0392b'),
     },
+    BloodButcheredDebuff = {
+        Icon = "rbxassetid://129041452735731",
+        Color = Color3.fromHex('#c0392b'),
+    },
     PoisonDebuff = {
         Icon = "rbxassetid://137874332790885",
         Color = Color3.fromHex('#845ef7'),

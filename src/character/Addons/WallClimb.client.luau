@@ -145,10 +145,6 @@ function WallClimb:Init()
     char.PrimaryPart.Anchored = true
     humanoid:ChangeState(Enum.HumanoidStateType.Physics)
 
-    Events.RequestToWallClimb.Fire({
-        State = true
-    })
-
     climbingAnim:Play()
     climbingAnim:AdjustSpeed(0.4)
 end
@@ -205,10 +201,6 @@ function WallClimb:Stop()
     self.IsClimbing = false
 
     char.PrimaryPart.Anchored = false
-
-    Events.RequestToWallClimb.Fire({
-        State = false
-    })
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
 
     climbingAnim:Stop()

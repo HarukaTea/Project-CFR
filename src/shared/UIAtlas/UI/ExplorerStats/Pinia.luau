@@ -77,7 +77,9 @@ return function (self: { any })
 
     self.DungeonId = Value(nil)
     self.DungeonStarted = Value(nil)
+    self.DungeonFinished = Value(nil)
     self.DungeonLeftTime = Value(0)
+    self.DungeonEndActionsClicked = Value(false)
 
     self.MenuSelectionShown = Value(false)
 
@@ -358,7 +360,7 @@ return function (self: { any })
         if info.CastCD then
             return
         end
-        if plr:GetAttribute("IsChatting") then return end
+        if self.char:GetAttribute("IsChatting") then return end
         info.CastCD = true
 
         _createCooldownAnim(5, info)
@@ -577,6 +579,9 @@ return function (self: { any })
         end,
         ["Attr-DungeonStarted"] = function(state: boolean)
             self.DungeonStarted:set(state)
+        end,
+        ["Attr-DungeonFinished"] = function(state: boolean)
+            self.DungeonFinished:set(state)
         end,
         ["Attr-DungeonLeftTime"] = function(val: number)
             val = val or 0

@@ -18,7 +18,7 @@ local StatusLib = {}
 
 --// Helper functions
 
-StatusLib.Heal = function(_, char: Model, healAmount: number) : number
+StatusLib.Heal = function(char: Model, healAmount: number) : number
     if not ServerLib.IsCharValid(char) then return end
 
     local plr = Players:GetPlayerFromCharacter(char)
@@ -41,16 +41,16 @@ StatusLib.Heal = function(_, char: Model, healAmount: number) : number
 
     return healAmount
 end
-StatusLib.HealPercentage = function(_, char: Model, percentage: number) : number
+StatusLib.HealPercentage = function(char: Model, percentage: number) : number
     if not ServerLib.IsCharValid(char) then return end
 
-    return StatusLib:Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
+    return StatusLib.Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
 end
 
 
 
 
-StatusLib.CreateCustomEffect = function(_, eff: string, char: Model, props: {
+StatusLib.CreateCustomEffect = function(eff: string, char: Model, props: {
     Duration: number,
 })
     if not ServerLib.IsCharValid(char) then return end
@@ -71,7 +71,7 @@ end
 
 
 
-StatusLib.NormalBoostForEntity = function(_, eff: string, char: Model, props: {
+StatusLib.NormalBoostForEntity = function(eff: string, char: Model, props: {
     Power: number?,
     Ex: number?,
 
@@ -123,7 +123,7 @@ end
 
 
 
-StatusLib.DMGBoost = function(_, char: Model, props: {
+StatusLib.DMGBoost = function(char: Model, props: {
     DMGPower: number?,
     DMG: number?,
 
@@ -189,7 +189,7 @@ local function _calDoTDMG(char: Model, dmgType: string)
 end
 
 
-StatusLib.Burn = function(_, target: Model, info: {
+StatusLib.Burn = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,
@@ -206,7 +206,7 @@ StatusLib.Burn = function(_, target: Model, info: {
 end
 
 
-StatusLib.Bleed = function(_, target: Model, info: {
+StatusLib.Bleed = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,
@@ -221,9 +221,24 @@ StatusLib.Bleed = function(_, target: Model, info: {
     target.Humanoid:TakeDamage(dmg)
     ServerLib.ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
 end
+StatusLib.BloodButchered = function(target: Model, info: {
+    Type: string,
+    Creator: Model,
+    Power: number,
+    Duration: number,
+})
+    local dmg = _calDoTDMG(info.Creator, "DMG")
+
+    dmg *= info.Power
+    dmg *= 0.05
+    dmg = math.floor(dmg)
+
+    target.Humanoid:TakeDamage(dmg)
+    ServerLib.ShowNumber(target, dmg, StatusBook.BloodButcheredDebuff.Color)
+end
 
 
-StatusLib.Poison = function(_, target: Model, info: {
+StatusLib.Poison = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,

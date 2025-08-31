@@ -127,7 +127,7 @@ table.insert(CriRPGLib.Funcs, function()
             if isInCombat then return end
             isInCombat = true
 
-            _destroyCombatBorder()
+            pcall(_destroyCombatBorder)
             Bindables.CreateCenterNotify:Fire("COMBAT START!", true)
 
             local border = RepS.Packages.Unloads.CombatBorder:Clone() :: Model
@@ -731,6 +731,8 @@ end)
 table.insert(CriRPGLib.Funcs, function()
     Add(Events.Spell_ExtraJumpSupport.On(function()
         SoundService.SFXs.EXP:Play()
+
+        if char:GetAttribute("IsChatting") then return end
 
         local vel = char.PrimaryPart.AssemblyLinearVelocity
         vel = vel.Y

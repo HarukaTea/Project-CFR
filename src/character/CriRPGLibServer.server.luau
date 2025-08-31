@@ -1,3 +1,4 @@
+local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -21,7 +22,7 @@ local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLib)
+local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLibV2)
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
 
@@ -361,6 +362,7 @@ table.insert(CriRPGLib.Funcs, function()
         DMGType: string,
         DoTType: string,
         DMGBonus: number,
+        IsClassUlt: boolean
     })
         if charId ~= char.Name then return end
 
@@ -374,6 +376,7 @@ table.insert(CriRPGLib.Funcs, function()
         symbol:SetAttribute("Owner", charId)
         symbol:SetAttribute("DoTType", props.DoTType)
         symbol:SetAttribute("DMGBonus", props.DMGBonus)
+        symbol:SetAttribute("IsClassUlt", props.IsClassUlt)
 
         symbol.Parent = projectileContainer
         Debris:AddItem(symbol, props.Duration)
@@ -618,7 +621,7 @@ table.insert(CriRPGLib.Funcs, function()
 
         baseShield = FormulaBook.PlayerShieldCurveCal({
             BaseShield = baseShield,
-            Level = plr:GetAttribute("Level"),
+            DEFPoints = plr:GetAttribute("DEFPoints")
         })
 
         char:SetAttribute("MaxShield", math.ceil((baseShield + shieldBuff) * shieldExBuff))
@@ -823,21 +826,23 @@ end)
 
 
 table.insert(CriRPGLib.Funcs, function()
-    Add(plr.Items.ChildAdded:Connect(function(item: IntConstrainedValue)
+    local function _handleItem(item: IntConstrainedValue, method: string)
         local itemInfo = ItemBook:GetItemInfo(item.Name)
         if not itemInfo then return end
 
         if itemInfo.Type == "Passive" then
-            ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
+            if method == "Equip" then
+                ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
+            elseif method == "Unequip" then
+                ServerLib.UnequipItem(plr, item:GetAttribute("HarukaUniqueId"))
+            end
         end
+    end
+    Add(plr.Items.ChildAdded:Connect(function(item: IntConstrainedValue)
+        _handleItem(item, "Equip")
     end))
     Add(plr.Items.ChildRemoved:Connect(function(item: IntConstrainedValue)
-        local itemInfo = ItemBook:GetItemInfo(item.Name)
-        if not itemInfo then return end
-
-        if itemInfo.Type == "Passive" then
-            ServerLib.UnequipItem(plr, item:GetAttribute("HarukaUniqueId"))
-        end
+        _handleItem(item, "Unequip")
     end))
 end)
 
@@ -895,6 +900,8 @@ table.insert(CriRPGLib.Funcs, function()
         end
         for _, equipSymbol: StringValue in plr.EquippingItems:GetChildren() do
             local itemInfo = ItemBook:GetItemInfo(equipSymbol.Value)
+            if not itemInfo then continue end
+
             local artifactInfo = ArtifactBook:GetArtifactInfo(itemInfo.ArtifactId)
 
             if artifactInfo.ArtifactId == nil then continue end
@@ -938,6 +945,51 @@ table.insert(CriRPGLib.Funcs, function()
     end
     Add(plr.EquippingItems.ChildAdded:Connect(_equipArtifact))
     Add(plr.EquippingItems.ChildRemoved:Connect(_equipArtifact))
+end)
+
+
+table.insert(CriRPGLib.Funcs, function()
+    local isInCombat = false
+
+    local function _destroyCombatBorder()
+        for _, border: Model in CollectionService:GetTagged("CombatBorderServer") do
+            if border:IsDescendantOf(workspace) then
+                if border:GetAttribute("OwnerUniqueId") == plr:GetAttribute("HarukaUniqueId") then
+                    border:Destroy()
+                end
+            end
+        end
+    end
+    local function _checkCombatState(state: boolean)
+        if state == nil then return end
+
+        if state then
+            if isInCombat then return end
+            isInCombat = true
+
+            pcall(_destroyCombatBorder)
+
+            local border = ReplicatedStorage.Packages.Unloads.CombatBorderServer:Clone() :: Model
+            local entityPos = char:GetAttribute("CombatLocation") :: CFrame
+
+            border:SetAttribute("OwnerUniqueId", plr:GetAttribute("HarukaUniqueId"))
+
+            border:PivotTo(entityPos)
+            border.Parent = workspace
+        else
+            if not isInCombat then return end
+
+            isInCombat = false
+
+            _destroyCombatBorder()
+        end
+    end
+    Add(HarukaLib:Hydrate(char, {
+        ["Attr-IsInCombat"] = _checkCombatState
+    }))
+    Add(_destroyCombatBorder)
+
+    _destroyCombatBorder()
 end)
 
 

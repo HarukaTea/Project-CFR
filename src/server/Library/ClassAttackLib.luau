@@ -40,7 +40,7 @@ ClassAttackLib.HEAL_ATTACK = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    StatusLib:Heal(char, math.ceil(char.Humanoid.MaxHealth * 0.12))
+    StatusLib.Heal(char, math.ceil(char.Humanoid.MaxHealth * 0.12))
 end
 
 
@@ -90,7 +90,8 @@ ClassAttackLib.Chain_Ult_None = function(plr: Player)
         ProjectileType = "OverTime",
         DMGType = "DMG",
         DoTType = "Burn",
-        DMGBonus = 1
+        DMGBonus = 1,
+        IsClassUlt = true
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -132,7 +133,8 @@ ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
         ProjectileUniqueId = uniqueId,
         DMGType = "DMG",
         DoTType = "None",
-        DMGBonus = 1.5
+        DMGBonus = 1.5,
+        IsClassUlt = true
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -345,7 +347,7 @@ ClassAttackLib.Reverberation_Echo = function(plr: Player)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    StatusLib:CreateCustomEffect("Reverberation", char, {
+    StatusLib.CreateCustomEffect("Reverberation", char, {
         Duration = 6
     })
 
@@ -421,7 +423,8 @@ ClassAttackLib.Flow_Ult_None = function(plr: Player)
         ProjectileUniqueId = uniqueId,
         DMGType = "Magic",
         DoTType = "None",
-        DMGBonus = 1
+        DMGBonus = 1,
+        IsClassUlt = true
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -467,7 +470,8 @@ ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
         ProjectileUniqueId = uniqueId,
         DMGType = "Magic",
         DoTType = "Burn",
-        DMGBonus = 3
+        DMGBonus = 3,
+        IsClassUlt = true
     })
     ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
         ProjectileId = "FlowLightningBlast",
@@ -476,7 +480,8 @@ ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
         ProjectileUniqueId = uniqueId2,
         DMGType = "Magic",
         DoTType = "Burn",
-        DMGBonus = 3
+        DMGBonus = 3,
+        IsClassUlt = true
     })
     Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.PlayAnimation.Fire(plr, {
@@ -617,15 +622,14 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         return
     end
 
-    --// perk bonus
-    if dmgProps.Attacker == "ClassAttacks" then
-        local bonus = char:GetAttribute("ClassAttackBonusDMG") or 100
-        dmgProps.DMG = math.ceil(dmgProps.DMG * bonus / 100)
-    end
-
     --// blood spellbook bonus
     if dmgProps.Attacker == "ClassAttacks" and char:FindFirstChild("BloodSpellbook") then
         dmgProps.DMG = math.ceil(dmgProps.DMG * 1.5)
+    end
+
+    --// class ult dmg bonus
+    if dmgProps.Attacker == "ClassUltProjectile" then
+        dmgProps.DMG = math.ceil(dmgProps.DMG * (char:GetAttribute("ClassUltDMGBonus") or 100) / 100)
     end
 
     targeting.Humanoid:TakeDamage(dmgProps.DMG)

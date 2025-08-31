@@ -22,14 +22,20 @@ event.Parent = script
 Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting, attacker, dmgProps)
     if dmgProps.Attacker ~= "ClassAttacks" then return end
 
-    local debuffObj = DoTLib.new({
-        Target = targeting,
-        Type = "BloodButchered",
-        Duration = 9,
-        Creator = char,
-        Power = 1,
+    local result = HarukaLib:RollLoot({
+        ["Debuff"] = 5,
+        ["NoEffect"] = 100 - 5
     })
-    debuffObj:Activate()
+    if result == "Debuff" then
+        local debuffObj = DoTLib.new({
+            Target = targeting,
+            Type = "Bleed",
+            Duration = 5,
+            Creator = char,
+            Power = 1,
+        })
+        debuffObj:Activate()
+    end
 end))
 
 AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

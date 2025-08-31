@@ -66,7 +66,7 @@ return function (plr: Player)
                 --// TODO: guild UI
                 Components.TextLabel(scope, {
                     Name = "WIPTitle",
-                    Text = "COMING SOON IN PT3!",
+                    Text = "COMING SOON IN THE FUTURE!",
                     FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
                     Size = UDim2.fromScale(1, 0.6),
                     TextTransparency = 0.7

@@ -54,7 +54,8 @@ return function (self: Types.CastItemTable)
                 ProjectileUniqueId = uniqueId,
                 DMGType = "Magic",
                 DoTType = "Burn",
-                DMGBonus = 1
+                DMGBonus = 1,
+                IsClassUlt = false
             })
             Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
             Events.PlayAnimation.Fire(player, {
@@ -86,7 +87,7 @@ return function (self: Types.CastItemTable)
 
         Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
 
-        StatusLib:NormalBoostForEntity("Speed", char, {
+        StatusLib.NormalBoostForEntity("Speed", char, {
             Power = 0.5,
             Duration = 6
         })

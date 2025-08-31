@@ -3,6 +3,7 @@
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local SG = game:GetService("StarterGui")
@@ -31,6 +32,8 @@ end
 
 --// Core ui init
 do
+    ReplicatedFirst:RemoveDefaultLoadingScreen()
+
     SG:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
     SG:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 end
@@ -245,7 +248,7 @@ do
         end
 
         for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do
-            if ins:IsA("Model") then
+            if ins:IsA("Folder") then
                 ins:Destroy()
             end
         end

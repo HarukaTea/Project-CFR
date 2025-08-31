@@ -27,7 +27,7 @@ return function (self: Types.CastItemTable)
 
 
         CastItemLib._eatSoundFunc(char, function()
-            local amount = StatusLib:HealPercentage(char, 5)
+            local amount = StatusLib.HealPercentage(char, 5)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
@@ -47,10 +47,10 @@ return function (self: Types.CastItemTable)
 
 
         CastItemLib._eatSoundFunc(char, function()
-            local amount = StatusLib:HealPercentage(char, 15)
+            local amount = StatusLib.HealPercentage(char, 15)
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
 
-            StatusLib:DMGBoost(char, {
+            StatusLib.DMGBoost(char, {
                 DMGPower = 0.5,
                 Duration = 6
             })

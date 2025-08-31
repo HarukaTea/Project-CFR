@@ -192,8 +192,6 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: { any }, li
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
-		Selectable = false,
-		SelectionOrder = -1,
 
 		CanvasSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
 			local target = props.ScrollingDirection.Name

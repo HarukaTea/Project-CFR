@@ -6,16 +6,11 @@ local ArtifactUniversal = require(ReplicatedStorage.HarukaRes.Artifacts.Artifact
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
+local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
 
 local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
-
-local event = Instance.new("BindableEvent")
-event.Name = "PlayerClassUltCasted"
-event.Parent = script
-
 
 local trueBefore = false
 
@@ -28,15 +23,7 @@ Add(HarukaLib:Hydrate(char, {
             trueBefore = false
 
             if not ServerLib.IsCharValid(char) then return end
-
-            local healDoT = DoTLib.new({
-                Target = char,
-                Type = "HealOverTime",
-                Creator = char,
-                Power = 1,
-                Duration = 5
-            })
-            healDoT:Activate()
+            StatusLib.HealPercentage(char, 30)
         end
     end
 }))

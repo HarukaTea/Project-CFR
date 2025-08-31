@@ -532,6 +532,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
     Events.SpawnItemDrop.On(function(data)
         local location = data.ItemDropLocationPos :: Vector3
+        local autoPickup = data.AllowAutoPickUp
 
         location += Vector3.new(
             math.random(-5, 5), 0, math.random(-5, 5)
@@ -546,6 +547,8 @@ table.insert(ClientWorldLib.Funcs, function()
             itemSphere:AddTag("ItemDisplayEntity")
             itemSphere.Anchored = true
             itemSphere.CanCollide = false
+
+            itemSphere:SetAttribute("AutoPickup", data.AllowAutoPickUp)
 
             local info = ItemBook:GetItemInfo(data.ItemId)
             if info == nil then
@@ -591,7 +594,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
             repeat wait(0.1)
                 timeout -= 0.1
-            until timeout <= 0 or plr:DistanceFromCharacter(itemSphere.Position) <= 10
+            until timeout <= 0 or plr:DistanceFromCharacter(itemSphere.Position) <= 10 or itemSphere:GetAttribute("AutoPickup")
 
 
             Events.RequestToPickupItemDrops.Fire({

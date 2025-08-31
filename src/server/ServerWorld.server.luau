@@ -68,11 +68,11 @@ do
     workspace:SetAttribute("ServerLocation", "Unknown")
 
     Promise.new(function()
-        local serverInfo = HttpService:GetAsync("https://api.ipinfo.io/lite/?token=d95b58fc1e9042", false)
+        local serverInfo = HttpService:GetAsync("https://ipapi.co/json/", false)
 
         if serverInfo then
             local realInfo = HttpService:JSONDecode(serverInfo) :: { any }
-            local serverLocation = realInfo["country_code"] :: string
+            local serverLocation = realInfo["country"] :: string
 
             if serverLocation then
                 workspace:SetAttribute("ServerLocation", serverLocation)

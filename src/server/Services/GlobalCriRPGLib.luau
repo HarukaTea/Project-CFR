@@ -231,8 +231,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if not ServerLib.IsCharValid(char) then return end
 
             if char:GetAttribute("IsChatting") then
-               Events.CreateNotify.Fire(plr, "You are already in a conversation with another NPC!")
-               return
+                Events.CreateNotify.Fire(plr, "You are already in a conversation with another NPC!")
+                return
             end
 
             char:SetAttribute("IsChatting", true)
@@ -386,7 +386,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             })
             ServerLib.PlaceItemDropPart(plr, finalMaterial, amount, adornee.Position + Vector3.new(
                 math.random(-8, 8), 0, math.random(-8, 8)
-            ))
+            ), true)
 
             Promise.delay(math.random(60, 100)):andThen(function()
                 material.Parent = workspace.MapComponents.Materials
@@ -435,23 +435,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             resolve()
 
         end):catch(function() end):await()
-
-
-        --// perk bonus
-        local DMGResistBonus = char:GetAttribute("DMGResistBonus") or 0 :: number
-        local resist = projectileDMG * DMGResistBonus / 100
-
-        projectileDMG -= resist
-        projectileDMG = math.floor(projectileDMG)
-
-
-        --// perk bonus by VIT
-        local DMGResistByVIT = char:GetAttribute("DMGResistByVIT") or 0 :: number
-        local resistByVIT = projectileDMG * DMGResistByVIT / 100
-
-        projectileDMG -= resistByVIT
-        projectileDMG = math.floor(projectileDMG)
-
 
 
         if projectileDMG <= 0 then return end
@@ -1119,6 +1102,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
+        --// cant sell locked item
+        if itemSymbol:GetAttribute("IsLocked") then
+            Events.CreateNotify.Fire(plr, "You can't sell locked item!")
+            return
+        end
+
 
         local totalItemHas = itemSymbol.Value or 0 :: number
         if totalItemHas < sellAmount then
@@ -1224,7 +1213,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local itemsWithThisId = {}
         for _, symbol: IntConstrainedValue in items:GetChildren() do
-            if symbol.Name == item then
+            if symbol.Name == item and symbol:GetAttribute("IsLocked") == false then
                 table.insert(itemsWithThisId, symbol)
             end
         end
@@ -1373,6 +1362,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local projectileType = symbol:GetAttribute("ProjectileType") :: string
         local projectileDoTType = symbol:GetAttribute("DoTType") :: string
+        local isClassUlt = symbol:GetAttribute("IsClassUlt") :: boolean
         local enemyUniqueId = data.EnemyEntity:GetAttribute("HarukaUniqueId") :: string
         if symbol:FindFirstChild(enemyUniqueId) then return end
 
@@ -1393,13 +1383,17 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
         local trueDMGBonus = symbol:GetAttribute("DMGBonus") or 1
+        local attacker = "SkillProjectile"
+        if isClassUlt then
+            attacker = "ClassUltProjectile"
+        end
 
 
         ClassAttackLib._DealDamageToEnemy(char, data.EnemyEntity, {
             DMG = math.ceil(ClassAttackLib._CalDMG(style, char, {
                 ForceMaxDMG = true
             }) * trueDMGBonus),
-            Attacker = "SkillProjectile",
+            Attacker = attacker,
             DMGType = trueDMGStyle
         })
         if projectileDoTType ~= "None" then
@@ -1731,7 +1725,9 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToChallengeAbyss.SetCallback(function(plr: Player, data)
+    local function _challengeAbyss(plr: Player, data: {
+        AbyssId: number
+    })
         if not data.AbyssId then return end
 
 
@@ -1746,14 +1742,16 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             SlotId = plr:GetAttribute("SlotChosen")
         })
 
-        local code = TeleportService:ReserveServer(AssetBook.PlaceIds.AbyssLevel)
+        local code = TeleportService:ReserveServer(AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel)
         teleportOptions.ReservedServerAccessCode = code
 
-        TeleportService:TeleportAsync(AssetBook.PlaceIds.AbyssLevel, { plr }, teleportOptions)
+        TeleportService:TeleportAsync(AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel, { plr }, teleportOptions)
 
 
         Events.CreateFSNotify.Fire(plr, "Teleporting to Abyss...", 15)
-    end)
+    end
+    Events.RequestToChallengeAbyss.SetCallback(_challengeAbyss)
+    ServerBindables.RToChallengeAbyss:Connect(_challengeAbyss)
 end)
 
 
@@ -1813,10 +1811,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     Events.RequestToPlayTutorial.SetCallback(function(plr: Player)
         local teleportOptions = Instance.new("TeleportOptions")
 
-        local code = TeleportService:ReserveServer(AssetBook.PlaceIds.Tutorial)
+        local code = TeleportService:ReserveServer(AssetBook.PlaceIds[tostring(game.GameId)].Tutorial)
         teleportOptions.ReservedServerAccessCode = code
 
-        TeleportService:TeleportAsync(AssetBook.PlaceIds.Tutorial, { plr }, teleportOptions)
+        TeleportService:TeleportAsync(AssetBook.PlaceIds[tostring(game.GameId)].Tutorial, { plr }, teleportOptions)
     end)
 end)
 
@@ -1846,19 +1844,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         state = not state
 
         symbol:SetAttribute("IsLocked", state)
-    end)
-end)
-
-
-
-table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToWallClimb.SetCallback(function(plr: Player, data)
-        if not data.State then return end
-
-        local char = plr.Character
-        if not ServerLib.IsCharValid(char) then return end
-
-        char.PrimaryPart.Anchored = data.State
     end)
 end)
 

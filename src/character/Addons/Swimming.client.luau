@@ -1,5 +1,6 @@
 --!nocheck
 
+local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
@@ -14,6 +15,7 @@ local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
+local camera = workspace.CurrentCamera
 
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
@@ -43,6 +45,22 @@ Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
     end
 end))
 
+if camera:FindFirstChild("WaterBlur") then camera.WaterBlur:Destroy() end
+if camera:FindFirstChild("WaterColor") then camera.WaterColor:Destroy() end
+
+
+local waterBlur = Instance.new("BlurEffect")
+waterBlur.Name = "WaterBlur"
+waterBlur.Size = 25
+waterBlur.Enabled = false
+waterBlur.Parent = camera
+Add(waterBlur)
+
+local waterColor = Instance.new("ColorCorrectionEffect")
+waterColor.Name = "WaterColor"
+waterColor.TintColor = Color3.fromRGB(34, 81, 138)
+waterColor.Parent = camera
+Add(waterColor)
 
 
 local animState = nil
@@ -181,5 +199,16 @@ Add(RS.Heartbeat:Connect(function()
             swimVelocity,
             char.Humanoid.MoveDirection.Z * char.Humanoid.WalkSpeed
         )
+    end
+end))
+Add(RS.Heartbeat:Connect(function()
+    local isInWater = HarukaLib:IsInRegion(workspace.CurrentCamera.CFrame.Position, CollectionService:GetTagged("WaterPart"))
+    isInWater = (isInWater ~= nil)
+
+    waterBlur.Enabled = isInWater
+    waterColor.Enabled = isInWater
+
+    for _, equalizer: EqualizerSoundEffect in CollectionService:GetTagged("WaterEqualizer") do
+        equalizer.Enabled = isInWater
     end
 end))

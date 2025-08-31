@@ -58,11 +58,8 @@ return function (self: Types.ProjectileTable)
     end
     ProjectileLib.GreenSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.WheatSlimeMove1_1 = ProjectileLib.SlimeMove1_1
-    ProjectileLib.IceSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.BlueSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.LapisSlimeMove1_1 = ProjectileLib.SlimeMove1_1
-    ProjectileLib.SandSlimeMove1_1 = ProjectileLib.SlimeMove1_1
-
 
 
 
@@ -88,9 +85,6 @@ return function (self: Types.ProjectileTable)
     ProjectileLib.BeeMove3_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.BlueSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.LapisSlimeMove2_2 = ProjectileLib.SlimeMove2_2
-    ProjectileLib.SandSlimeMove2_2 = ProjectileLib.SlimeMove2_2
-    ProjectileLib.IceSlimeMove2_2 = ProjectileLib.SlimeMove2_2
-
 
 
     ProjectileLib.CrimsonSlimeMove4 = function(projectile: Model, container: Folder)
@@ -133,7 +127,6 @@ return function (self: Types.ProjectileTable)
             wait(0.1)
         end
     end
-    ProjectileLib.IceSlimeMove3 = ProjectileLib.PurpleSlimeMove3
     ProjectileLib.WheatSlimeMove3 = ProjectileLib.PurpleSlimeMove3
     ProjectileLib.LapisSlimeMove3 = ProjectileLib.PurpleSlimeMove3
     ProjectileLib.EvolvedGreenSlimeMove3 = ProjectileLib.PurpleSlimeMove3
@@ -217,9 +210,7 @@ return function (self: Types.ProjectileTable)
     ProjectileLib.CrimsonSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.BlueSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.LapisSlimeBlast = ProjectileLib.SlimeBlast
-    ProjectileLib.SandSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.PurpleSlimeBlast = ProjectileLib.SlimeBlast
-    ProjectileLib.IceSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.EvolvedGreenSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.KingSlimeBlast = ProjectileLib.SlimeBlast
 

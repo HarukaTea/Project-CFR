@@ -10,6 +10,8 @@ local ServerBindables = {
     RToUpdateLeaderboardRank = Signal.new(),
     RToCheckLeaderboardRank = Signal.new(),
 
+    RToChallengeAbyss = Signal.new(),
+
     PlayerDied = Signal.new(),
 
     PartyInvite = Signal.new(),

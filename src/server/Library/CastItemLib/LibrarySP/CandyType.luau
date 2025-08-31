@@ -29,7 +29,7 @@ return function (self: Types.CastItemTable)
 
 
         CastItemLib._eatSoundFunc(char, function()
-            local amount = StatusLib:HealPercentage(char, 10)
+            local amount = StatusLib.HealPercentage(char, 10)
             HarukaLib:AddAttr(char, "LuckEx", 20)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
@@ -50,7 +50,7 @@ return function (self: Types.CastItemTable)
 
 
         CastItemLib._eatSoundFunc(char, function()
-            local amount = StatusLib:HealPercentage(char, 15)
+            local amount = StatusLib.HealPercentage(char, 15)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
@@ -70,7 +70,7 @@ return function (self: Types.CastItemTable)
 
 
         CastItemLib._eatSoundFunc(char, function()
-            local amount = StatusLib:HealPercentage(char, 20)
+            local amount = StatusLib.HealPercentage(char, 20)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)

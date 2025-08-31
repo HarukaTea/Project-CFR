@@ -12,7 +12,7 @@ local charStats = {
     MaxHealth = 100,
     HealthRegenWaitTime = 15,
 
-    HealBonus = 0,
+    HealBonus = 100, --- percentage
 
     Shield = 0,
     MaxShield = 1,
@@ -30,6 +30,7 @@ local charStats = {
     ClassUltProgress = 0,
     MaxClassUltProgress = 100,
     ClassUltCharge = 100, --- percentage
+    ClassUltDMGBonus = 100, --- percentage
 
 
     BurnChance = 0, --- percentage
@@ -79,24 +80,15 @@ local charStats = {
     PlayerCombatEnded = "_EVENT",
     PlayerDied = "_EVENT",
     PlayerTargetAdded = "_EVENT",
-
-
-    --- perk related
-    ClassAttackBonusDMG = 100, -- percentage,
-    DMGResistBonus = 0, -- percentage,
-    SpellCostReduction = 0, -- percentage,
-    DMGResistByVIT = 0, -- percentage,
 }
 
 local exAndExPowerList = {
     "MinDMG", "MaxDMG", "Magic",
     "MaxHealth", "HealthRegenWaitTime", "MaxShield", "ShieldRegenWaitTime", "HealBonus",
     "Speed", "Jump",
-    "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge",
+    "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge", "ClassUltDMGBonus",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",
     "OrbSpawnTimesAtStart", "OrbSpawnTime", "OrbFadeTime", "OrbBounce", "Intensity", "Warding", "Drawback", "Luck",
-
-    "ClassAttackBonusDMG", "DMGResistBonus", "SpellCostReduction"
 }
 for _, attr: string in exAndExPowerList do
     charStats[attr.."Ex"] = 0

@@ -19,6 +19,27 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ServerLib = {}
 
+
+local terrainParams = RaycastParams.new()
+terrainParams.IgnoreWater = true
+terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+terrainParams.FilterType = Enum.RaycastFilterType.Include
+
+local rawTerrainParams = RaycastParams.new()
+rawTerrainParams.IgnoreWater = true
+rawTerrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+rawTerrainParams.FilterType = Enum.RaycastFilterType.Include
+
+
+CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function()
+	terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+	rawTerrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+end)
+CollectionService:GetInstanceAddedSignal("CombatBorderServer"):Connect(function(ins: Instance)
+	terrainParams:AddToFilter(ins:GetDescendants())
+end)
+
+
 --// Helper functions
 
 function ServerLib.WeldModel(part: Part, welded: Model)
@@ -54,16 +75,7 @@ function ServerLib.PlayWorldSound(sound: Sound, pos: Vector3)
 end
 
 function ServerLib.FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
-	local rParams = RaycastParams.new()
-	rParams.RespectCanCollide = false
-	rParams.IgnoreWater = true
-	rParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-	rParams.FilterType = Enum.RaycastFilterType.Include
-
-
-	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 15, -Vector3.yAxis * (159 + 15), rParams)
-
-	rParams = nil --// I assume it needs to be destroyed
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 15, -Vector3.yAxis * 159, rawTerrainParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos
@@ -89,29 +101,38 @@ end
 
 function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
-	local MAGNITUDE = 25
 
 	Promise.new(function(resolve)
 		local repeatedTimes = 0
-		local pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
+		local combatPos = combatLocation.Position + Vector3.yAxis * 16
+		local finalLocation: CFrame
 
 		while repeatedTimes <= 15 do
+			local rx, rz = math.random(-40, 40), math.random(-40, 40)
+			local set = math.random(5, 40)
+			local dir = CFrame.new(combatPos, combatPos + Vector3.new(rx, 0, rz)).LookVector.Unit * set
+			local rayResult = workspace:Raycast(combatPos, dir, terrainParams) :: RaycastResult
+			local rayPos = if rayResult then rayResult.Position else combatPos + dir
+			local finalPos = CFrame.new(rayPos, rayPos + combatLocation.LookVector)
+
+			finalPos = ServerLib.FindGroundByRayForOrb(finalPos.Position)
+
 			-- we gonna try to find a valid position, if we can't, we'll try again
-			local isTheSame = pos:FuzzyEq(combatLocation.Position)
-			local isInsidePart = HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart"))
+			local isTheSame = finalPos:FuzzyEq(combatLocation.Position)
+			local isInsidePart = HarukaLib:IsInRegion(finalPos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart"))
 
 			if not isTheSame and not isInsidePart then
+				finalLocation = CFrame.new(finalPos)
 				break
 			end
 
-			pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
 			repeatedTimes += 1
 		end
 
-		resolve(pos)
+		resolve(finalLocation)
 
-	end):andThen(function(pos: Vector3)
-		orbLocation = CFrame.new(pos) * CFrame.new(0, math.random(9, 10), 0)
+	end):andThen(function(pos: CFrame)
+		orbLocation = pos * CFrame.new(0, 8, 0) * CFrame.new(0, 0, 2)
 
 	end):catch(function(err)
 		warn(tostring(err))
@@ -157,7 +178,7 @@ function ServerLib.ApplyHitStatus(target: Model)
 end
 
 
-function ServerLib.PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3)
+function ServerLib.PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3, autoPickup: boolean)
 	local itemUniqueId = HttpService:GenerateGUID(false)
 	local container = ServerStorage.ItemSphereSymbolContainer :: Folder
 
@@ -174,7 +195,8 @@ function ServerLib.PlaceItemDropPart(plr: Player, itemId: string, amount: number
 		ItemUniqueId = itemUniqueId,
 		ItemId = itemId,
 		ItemAmount = amount,
-		ItemDropLocationPos = location
+		ItemDropLocationPos = location,
+		AllowAutoPickUp = autoPickup
 	})
 end
 

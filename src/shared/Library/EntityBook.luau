@@ -36,8 +36,9 @@ return {
         Drops = {
             BeeStinger = 60,
             GHoneyWings = 10,
-            HoneyArmor2 = 10,
-            QueenBeeBow = 5
+            HoneyArmor2 = 4,
+            HoneyGreaves = 4,
+            HoneyHeadgear = 4
         }
     },
 
@@ -62,40 +63,6 @@ return {
     WheatSlime = {
         Name = "Wheat Slime",
         Icon = "rbxassetid://95488531429137",
-
-        Tier = 2,
-        BaseSpeed = 10,
-        BaseJumpPower = 0,
-        EnvironmentBonus = 0.8,
-
-        Species = "Slime",
-
-        Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
-        }
-    },
-    IceSlime = {
-        Name = "Ice Slime",
-        Icon = "rbxassetid://127989665826507",
-
-        Tier = 3,
-        BaseSpeed = 10,
-        BaseJumpPower = 0,
-        EnvironmentBonus = 0.9,
-
-        Species = "Slime",
-
-        Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
-        }
-    },
-    SandSlime = {
-        Name = "Sand Slime",
-        Icon = "rbxassetid://16483665012",
 
         Tier = 2,
         BaseSpeed = 10,
@@ -192,9 +159,9 @@ return {
         Tag = "The King of Slimes",
 
         Drops = {
-            SlimeKingCrown = 10,
             SlimeGel = 50,
             SlimeCore = 25,
+            SlimeKingCrown = 10,
         }
     },
     CrimsonSlime = {
@@ -322,7 +289,6 @@ return {
         Drops = {
             BlackFur = 65,
             BlackWolfNecklace = 10,
-            WolfKingSword = 10
         }
     },
 
@@ -344,8 +310,7 @@ return {
 
         Drops = {
             DragonScale = 65,
-            DragonFang = 10,
-            LeafDragonStaff = 10
+            DragonFang = 10
         }
     },
 
@@ -366,8 +331,7 @@ return {
 
         Drops = {
             DragonScale = 65,
-            DragonFang = 10,
-            LeafDragonStaff = 10
+            DragonFang = 10
         }
     }
 }

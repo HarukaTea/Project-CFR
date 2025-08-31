@@ -43,17 +43,21 @@ return function (self: { any })
 
 
     local function _enableShiftLock()
-        RS:BindToRenderStep("ShiftLockUpdate", Enum.RenderPriority.Camera.Value, function()
-            if not ClientLib.IsCharValid(self.char) then return end
+        local char = self.char
+        local humanoid = char.Humanoid :: Humanoid
+        local hrp = char.PrimaryPart
 
-            self.char.Humanoid.AutoRotate = false
+        RS:BindToRenderStep("ShiftLockUpdate", Enum.RenderPriority.Camera.Value + 1, function()
+            if not ClientLib.IsCharValid(char) then return end
 
-            if not self.char.Humanoid.Sit then
+            humanoid.AutoRotate = false
+
+            if not humanoid.Sit then
                 local lookVector = workspace.CurrentCamera.CFrame.LookVector
 
-                self.char.PrimaryPart.CFrame = CFrame.new(self.char.PrimaryPart.Position, Vector3.new(
+                hrp.CFrame = CFrame.new(hrp.Position, Vector3.new(
                     lookVector.X * MKK_NUMBER,
-                    self.char.PrimaryPart.Position.Y,
+                    hrp.Position.Y,
                     lookVector.Z * MKK_NUMBER
                 ))
             end
