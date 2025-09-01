@@ -9,6 +9,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
+local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
 local Types = require(script.Parent.Parent.Types)
@@ -78,6 +79,39 @@ return function (self: Types.CastItemTable)
                 Power = 0.75,
                 Duration = 8
             })
+
+            Events.PlayStatPoweredScreenFX.Fire(player)
+        end)
+    end
+
+    --// Mana potion is not mana potion, it's speed potion
+    CastItemLib.ManaPotion = function(player: Player, char: Model) : number?
+        local check = CastItemLib._preCheck({
+            ReqCombat = false,
+            ReqEnemy = false
+        }, {
+            ItemId = "ManaPotion",
+            Player = player,
+            Char = char
+        })
+        if not check then return 0 end
+
+
+        CastItemLib._drinkSoundFunc(char, function()
+            StatusLib.NormalBoostForEntity("Speed", char, {
+                Power = 0.5,
+                Duration = 6
+            })
+
+
+            local eff = RepS.Packages.Effects.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
+            eff.Parent = char.PrimaryPart
+            Debris:AddItem(eff, 6)
+
+
+            Promise.delay(5):andThen(function()
+                eff.Enabled = false
+            end):catch(function() end)
 
             Events.PlayStatPoweredScreenFX.Fire(player)
         end)

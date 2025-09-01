@@ -160,7 +160,10 @@ function ClientLib.TrackEffectListToUI(props: {
 	Target: Model,
 	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
+	EffectContainer: GuiObject?
 })
+
+	local effectContainer = props.EffectContainer or props.GuiContainer
 
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 
@@ -204,7 +207,7 @@ function ClientLib.TrackEffectListToUI(props: {
 			local newScope = Fusion.scoped()
 
 			local effectUI = EffectSlot(newScope, symbol)
-			effectUI.Parent = props.GuiContainer
+			effectUI.Parent = effectContainer
 			Debris:AddItem(effectUI, endClock - nowClock)
 
 			Promise.delay(endClock - nowClock):andThen(function()

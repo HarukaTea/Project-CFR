@@ -158,6 +158,7 @@ Add(HarukaLib.Clock(0.5, function()
     if encounterCD then return end
     if char:FindFirstChild("CombatCooldown") then return end
     if char:GetAttribute("IsInCombat") then return end
+    if char:GetAttribute("IsSwimming") then return end
 
 
     local nowClock = DateTime.now().UnixTimestamp

@@ -547,12 +547,19 @@ function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
     props = props or {}
 
     local isCrit = false
-    local result, _, _ = HarukaLib:RollLoot({
-        ["Crit"] = char:GetAttribute("CriChance"),
-        ["NoEffect"] = 100 - char:GetAttribute("CriChance")
-    })
-    isCrit = result == "Crit"
+    local criChance = char:GetAttribute("CriChance") or 1
 
+    criChance = math.min(criChance, 100)
+
+    if criChance >= 100 then
+        isCrit = true
+    else
+        local result, _, _ = HarukaLib:RollLoot({
+            ["Crit"] = criChance,
+            ["NoEffect"] = 100 - criChance
+        })
+        isCrit = result == "Crit"
+    end
     if isCrit then
         ServerLib.ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
     end

@@ -218,7 +218,8 @@ return function(scope: Fusion.Scope, props: {
     ClientLib.TrackEffectListToUI({
         Target = targeting,
         Scope = scope,
-        GuiContainer = bar2.EffectList
+        GuiContainer = bar2,
+        EffectContainer = bar2.EffectList
     })
 
 

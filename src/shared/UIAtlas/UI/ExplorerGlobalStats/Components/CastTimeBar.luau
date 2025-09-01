@@ -63,7 +63,7 @@ return function(scope: Fusion.Scope, props: {
                         BackgroundColor3 = Color3.fromRGB(129, 236, 236),
 
                         Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local x = props.Time - use(curTime) / props.Time
+                            local x = (props.Time - use(curTime)) / props.Time
 
                             if x ~= x then x = 0 end
                             x = math.clamp(x, 0, 1)
@@ -82,6 +82,7 @@ return function(scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "TimeLeft",
                 Size = UDim2.fromScale(1, 0.5),
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return `CASTING  /  {string.format("%.1f", props.Time - use(curTime))}s`

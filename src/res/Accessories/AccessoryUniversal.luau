@@ -7,8 +7,8 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
 export type DMGPropsMetaData = {
     DMG: number,
-    AttackType: string,
     DMGType: string,
+    Attacker: string,
 }
 
 local AccessoryUniversal = {}
@@ -31,7 +31,7 @@ AccessoryUniversal.RegisterEnemyOnHit = function(
         if not ServerLib.IsCharValid(attacker) then return end
         if not dmgProps then return end
         if not dmgProps.DMG then return end
-        if not dmgProps.AttackType then return end
+        if not dmgProps.Attacker then return end
 
         handler(targeting, attacker, dmgProps)
     end)

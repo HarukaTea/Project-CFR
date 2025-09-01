@@ -863,6 +863,8 @@ function HarukaLib:CommaifyNumber(num: number | string) : string
 		if (#num - i) % 3 == 0 and i ~= #num then result ..= "," end
 	end
 
+	result = string.format(result, "%.0f")
+
 	return result
 end
 

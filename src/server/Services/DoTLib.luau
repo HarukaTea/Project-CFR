@@ -86,7 +86,7 @@ function DoTLib:Activate()
             if not ServerLib.IsCharValid(self.Target) then return end
 
             if StatusLib[self.Type] then
-                StatusLib[self.Type](StatusLib, self.Target, self)
+                StatusLib[self.Type](self.Target, self)
             end
         end))
     end

@@ -229,9 +229,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if not npc:FindFirstChild("Dialogues") then return end
 
             if not ServerLib.IsCharValid(char) then return end
+            if char:GetAttribute("IsInCombat") then
+                Events.CreateNotify.Fire(plr, "You can't talk to NPCs while in combat!")
+                return
+            end
 
             if char:GetAttribute("IsChatting") then
-                Events.CreateNotify.Fire(plr, "You are already in a conversation with another NPC!")
+                Events.CreateNotify.Fire(plr, "You are already in a chat with another NPC!")
                 return
             end
 
@@ -1217,7 +1221,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 table.insert(itemsWithThisId, symbol)
             end
         end
-        if #itemsWithThisId <= 1 then return end
+        if #itemsWithThisId <= 0 then return end
 
 
         local hasEquipping, equipUniqueId = false, nil
@@ -1242,6 +1246,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             local eIndex = math.random(1, #itemsWithThisId)
             table.remove(itemsWithThisId, eIndex)
         end
+        if #itemsWithThisId <= 0 then return end
 
 
         local totalGold = 0

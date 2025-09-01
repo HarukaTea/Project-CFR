@@ -1,15 +1,13 @@
 --!nocheck
 
 local CollectionService = game:GetService("CollectionService")
+local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Events = require(RepS.HarukaShared.Library.Events)
-
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -156,7 +154,16 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
     if not rayResult then
         if key == Enum.KeyCode.W or key == "W" then
             self:Stop()
-            char.PrimaryPart:ApplyImpulse(char.PrimaryPart.CFrame.UpVector * 500)
+
+            if not char.PrimaryPart:FindFirstChild("WallClimbUpVel") then
+                local upVel = Instance.new("BodyVelocity")
+                upVel.Name = "WallClimbUpVel"
+                upVel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                upVel.Velocity = char.PrimaryPart.CFrame.UpVector * 66
+                upVel.Parent = char.PrimaryPart
+
+                Debris:AddItem(upVel, 0.01)
+            end
         else
             self:Stop()
         end
@@ -186,7 +193,7 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
         end
     end
 
-    char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 0.159
+    char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 0.159 * 1.599
 end
 
 

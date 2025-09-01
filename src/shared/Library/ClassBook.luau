@@ -109,7 +109,7 @@ return {
         Hint = "",
 
         Skills = {
-            UltSkillIcon_None = "rbxassetid://118519686473047",
+            UltSkillIcon_None = "rbxassetid://114059978330713",
             UltSkillNone_WithoutRecolor = true
         },
 

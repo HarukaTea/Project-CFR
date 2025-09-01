@@ -1,7 +1,6 @@
 --!nocheck
 
 local CollectionService = game:GetService("CollectionService")
-local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
@@ -94,12 +93,6 @@ local function swimIn()
 
         local rootVel = char.PrimaryPart.AssemblyLinearVelocity
 
-        local diveVel = Instance.new("BodyVelocity")
-        diveVel.Name = "DiveVelocity"
-        diveVel.MaxForce = Vector3.new(0, 8000, 0)
-        diveVel.Velocity = Vector3.new(rootVel.X, rootVel.Y, rootVel.Z)
-        diveVel.Parent = char.Head
-
         if not swimVel then
             swimVel = Instance.new("BodyVelocity")
             swimVel.Name = "SwimVelocity"
@@ -108,13 +101,6 @@ local function swimIn()
             swimVel.MaxForce = Vector3.new(rootVel.X, 8000, rootVel.Z)
             swimVel.Parent = char.PrimaryPart
         end
-
-
-        HarukaLib:CreateTween(diveVel, TweenInfo.new(0.2), {
-            Velocity = Vector3.new(rootVel.X, 0, rootVel.Z)
-        }):Play()
-        Debris:AddItem(diveVel, 0.2)
-
 
         playSwimAnim("SwimIdle")
 	end
