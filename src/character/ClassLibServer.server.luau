@@ -85,6 +85,10 @@ end
 ClassMechanicLib._CLASS_Chain = function(self)
     local function _classAbilityClear()
         char:SetAttribute("ChainCombo", 0)
+
+        if char.Head:FindFirstChild("ComboStyle") then
+            char.Head.ComboStyle:Destroy()
+        end
     end
     local function _airCheck(state: Enum.HumanoidStateType)
         if state == Enum.HumanoidStateType.Landed
@@ -107,6 +111,10 @@ end
 ClassMechanicLib._CLASS_Burst = function(self)
     local function _classAbilityClear()
         char:SetAttribute("BurstArrow", 0)
+
+        if char.Head:FindFirstChild("StackStyle") then
+            char.Head.StackStyle:Destroy()
+        end
     end
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear
@@ -137,6 +145,10 @@ end
 ClassMechanicLib._CLASS_Flow = function(self)
     local function _classAbilityClear()
         char:SetAttribute("FlowHeat", 0)
+
+        if char.Head:FindFirstChild("FocusStyle") then
+            char.Head.FocusStyle:Destroy()
+        end
     end
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear
@@ -146,6 +158,10 @@ ClassMechanicLib._CLASS_Flow = function(self)
     ClassAdd(HarukaLib.Clock(0.55, function()
         if char:GetAttribute("FlowHeat") > 0 then
             HarukaLib:AddAttr(char, "FlowHeat", -1)
+
+            if char.Head:FindFirstChild("FocusStyle") then
+                char.Head.FocusStyle.Text.Text = "FOCUS "..char:GetAttribute("FlowHeat").."%"
+            end
         end
     end))
 
@@ -154,7 +170,7 @@ ClassMechanicLib._CLASS_Flow = function(self)
 end
 
 
-ClassMechanicLib._CLASS_Rise = function(self)
+ClassMechanicLib._CLASS_Execution = function(self)
 
 end
 

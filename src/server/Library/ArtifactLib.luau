@@ -7,7 +7,7 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 
 ArtifactLib.Blessing2 = function(char: Model, factor: number)
-    HarukaLib:AddAttr(char, "HealBonus", 10 * factor)
+    HarukaLib:AddAttr(char, "HealBonusEx", 10 * factor)
 end
 ArtifactLib.Blessing3 = function()
 
@@ -36,6 +36,16 @@ end
 ArtifactLib.Crimson3 = function()
 
 end
+ArtifactLib.Crimson3Destroying = function(char: Model)
+    local state = char:GetAttribute("_PRIVATE_Crimson3") :: boolean
+    state = state or false
+
+    char:SetAttribute("_PRIVATE_Crimson3", false)
+
+    if state then
+        HarukaLib:AddAttr(char, "MagicExPower", -0.35)
+    end
+end
 
 
 ArtifactLib.WolfKing2 = function(char: Model, factor: number)
@@ -47,7 +57,7 @@ end
 
 
 ArtifactLib.QueenBee2 = function(char: Model, factor: number)
-    HarukaLib:AddAttr(char, "ClassUltDMGBonusEx", 20 * factor)
+    HarukaLib:AddAttr(char, "ClassUltDMGBonusExPower", 0.2 * factor)
 end
 ArtifactLib.QueenBee3 = function()
 

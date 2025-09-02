@@ -92,6 +92,10 @@ return function (UI: ScreenGui, self: { any })
 
     --// track new items
     table.insert(scope, Events.PlayItemDropFX.On(function(data)
+        if not self.UI then return end
+        if not self.UI:FindFirstChild("Center") then return end
+
+
         local newScope = Fusion.scoped()
 
         local itemDropBar = ItemDropBar(newScope, {
@@ -120,6 +124,9 @@ return function (UI: ScreenGui, self: { any })
     local function _onNewEXPAdded()
         if expDropQueue:IsLocked() then return end
         if expDropQueue:IsEmpty() then return end
+
+        if not self.UI then return end
+        if not self.UI:FindFirstChild("Top") then return end
 
         expDropQueue:SetLockState(true)
 
@@ -163,6 +170,7 @@ return function (UI: ScreenGui, self: { any })
         if regionQueue:IsEmpty() then return end
 
         if self == nil then return end
+
         if not self.UI then return end
         if not self.UI:FindFirstChild("Top") then return end
 
@@ -203,6 +211,10 @@ return function (UI: ScreenGui, self: { any })
 
     --// track cast cd
     table.insert(scope, Events.OpenCastTimeBar.On(function(data)
+        if not self.UI then return end
+        if not self.UI:FindFirstChild("Bottom") then return end
+
+
         local newScope = Fusion.scoped()
         local castingTimeBar = CastingTimeBar(newScope, {
             Time = data.Duration

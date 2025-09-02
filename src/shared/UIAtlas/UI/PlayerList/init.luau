@@ -7,7 +7,6 @@ local UserInputService = game:GetService("UserInputService")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local PlayerBar = require(script.Components.PlayerBar)
 local PlayerInfoView = require(script.Components.PlayerInfoView)
@@ -57,7 +56,6 @@ return function(plr: Player)
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "PlayerList",
-        DisplayOrder = UIPriorityBook.Normal,
 		Parent = plr.PlayerGui,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)

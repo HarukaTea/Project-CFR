@@ -525,7 +525,9 @@ table.insert(CriRPGLib.Funcs, function()
             DMGPoints = plr:GetAttribute("STRPoints")
         })
 
-        char:SetAttribute("MinDMG", math.ceil((baseMinDMG + minDMGBuff) * minDMGExBuff))
+        local final = math.ceil((baseMinDMG + minDMGBuff) * minDMGExBuff)
+
+        char:SetAttribute("MinDMG", final)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMinDMG"] = _updateMinDMG,
@@ -549,7 +551,9 @@ table.insert(CriRPGLib.Funcs, function()
             ATKType = "Max"
         })
 
-        char:SetAttribute("MaxDMG", math.ceil((baseMaxDMG + maxDMGBuff) * maxDMGExBuff))
+        local final = math.ceil((baseMaxDMG + maxDMGBuff) * maxDMGExBuff)
+
+        char:SetAttribute("MaxDMG", final)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMaxDMG"] = _updateMaxDMG,
@@ -571,7 +575,9 @@ table.insert(CriRPGLib.Funcs, function()
             MagicPoints = plr:GetAttribute("INTPoints")
         })
 
-        char:SetAttribute("Magic", math.ceil((baseMagic + magicBuff)) * magicExBuff)
+        local final = math.ceil((baseMagic + magicBuff) * magicExBuff)
+
+        char:SetAttribute("Magic", final)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseMagic"] = _updateMagic,
@@ -589,11 +595,14 @@ table.insert(CriRPGLib.Funcs, function()
         local healthExBuff = char:GetAttribute("MaxHealthExPower") :: number
 
 
-        char.Humanoid.MaxHealth = math.ceil((FormulaBook.PlayerHealthCurveCal({
+        local base = FormulaBook.PlayerHealthCurveCal({
             BaseHealth = baseHealth,
             HealthPoints = plr:GetAttribute("VITPoints")
+        })
+        local final = math.ceil((base + healthBuff) * healthExBuff)
 
-        }) + healthBuff) * healthExBuff)
+
+        char.Humanoid.MaxHealth = final
 
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
@@ -624,7 +633,9 @@ table.insert(CriRPGLib.Funcs, function()
             DEFPoints = plr:GetAttribute("DEFPoints")
         })
 
-        char:SetAttribute("MaxShield", math.ceil((baseShield + shieldBuff) * shieldExBuff))
+        local final = math.ceil((baseShield + shieldBuff) * shieldExBuff)
+
+        char:SetAttribute("MaxShield", final)
 
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
@@ -681,7 +692,9 @@ table.insert(CriRPGLib.Funcs, function()
             DexPoints = plr:GetAttribute("DEXPoints")
         })
 
-        char:SetAttribute("CriChance", math.floor((final + critChanceBuff) * critChanceExBuff))
+        final = math.floor((final + critChanceBuff) * critChanceExBuff)
+
+        char:SetAttribute("CriChance", final)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-BaseCriChance"] = _updateCriChance,
@@ -714,7 +727,9 @@ table.insert(CriRPGLib.Funcs, function()
             local ex = char:GetAttribute(statWithoutBase.."Ex")
             local exPower = char:GetAttribute(statWithoutBase.."ExPower")
 
-            char:SetAttribute(statWithoutBase, math.ceil(base * exPower + ex))
+            local final = math.ceil((base + ex) * exPower)
+
+            char:SetAttribute(statWithoutBase, final)
         end
         Add(HarukaLib:Hydrate(char, {
             ["Attr-"..stat] = __track,
@@ -882,6 +897,8 @@ table.insert(CriRPGLib.Funcs, function()
     end
     Add(plr.Talents.ChildAdded:Connect(_equipPerk))
     Add(plr.Talents.ChildRemoved:Connect(_equipPerk))
+
+    _equipPerk()
 end)
 
 
@@ -903,32 +920,51 @@ table.insert(CriRPGLib.Funcs, function()
             if not itemInfo then continue end
 
             local artifactInfo = ArtifactBook:GetArtifactInfo(itemInfo.ArtifactId)
-
             if artifactInfo.ArtifactId == nil then continue end
 
             artifactSetCount[artifactInfo.ArtifactId] += 1
         end
         for artifactId: string, count: number in artifactSetCount do
-            if count < 2 then
-                if artifactContainer:FindFirstChild(artifactId.."2") then
-                    artifactContainer[artifactId.."2"]:Destroy()
+            local pastCount = char:GetAttribute("_ARTIFACT_"..artifactId.."_SetCount") or 0 :: number
+
+            --// if the artifact set was unequipped
+            if count < 2 and pastCount >= 2 then
+                local twoPieceScript = artifactContainer:FindFirstChild(artifactId.."2") :: Script
+                if twoPieceScript then
+                    if twoPieceScript:GetAttribute("ReqDestroyingEvent") then
+                        ArtifactLib[artifactId.."2Destroying"](char)
+                    end
+                    twoPieceScript:Destroy()
 
                     ArtifactLib[artifactId.."2"](char, -1)
                 end
-                if artifactContainer:FindFirstChild(artifactId.."3") then
-                    artifactContainer[artifactId.."3"]:Destroy()
+            end
+            if count < 3 and pastCount >= 3 then
+                local threePieceScript = artifactContainer:FindFirstChild(artifactId.."3") :: Script
+                if threePieceScript then
+                    if threePieceScript:GetAttribute("ReqDestroyingEvent") then
+                        ArtifactLib[artifactId.."3Destroying"](char)
+                    end
+                    threePieceScript:Destroy()
 
                     ArtifactLib[artifactId.."3"](char, -1)
                 end
-                continue
             end
 
+
+            --// if the artifact set was equipped
             if count >= 2 then
                 if not artifactContainer:FindFirstChild(artifactId.."2") then
                     ArtifactLib[artifactId.."2"](char, 1)
 
-                    if ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."2") then
-                        ReplicatedStorage.HarukaRes.Artifacts[artifactId.."2"]:Clone().Parent = artifactContainer
+                    local twoPieceScript = ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."2") :: Script
+                    if twoPieceScript then
+                        twoPieceScript:Clone().Parent = artifactContainer
+                    else
+                        local symbol = Instance.new("BoolValue")
+                        symbol.Name = artifactId.."2"
+                        symbol.Value = true
+                        symbol.Parent = artifactContainer
                     end
                 end
             end
@@ -936,15 +972,25 @@ table.insert(CriRPGLib.Funcs, function()
                 if not artifactContainer:FindFirstChild(artifactId.."3") then
                     ArtifactLib[artifactId.."3"](char, 1)
 
-                    if ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."3") then
-                        ReplicatedStorage.HarukaRes.Artifacts[artifactId.."3"]:Clone().Parent = artifactContainer
+                    local threePieceScript = ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."3") :: Script
+                    if threePieceScript then
+                        threePieceScript:Clone().Parent = artifactContainer
+                    else
+                        local symbol = Instance.new("BoolValue")
+                        symbol.Name = artifactId.."3"
+                        symbol.Value = true
+                        symbol.Parent = artifactContainer
                     end
                 end
             end
+
+            char:SetAttribute("_ARTIFACT_"..artifactId.."_SetCount", count)
         end
     end
     Add(plr.EquippingItems.ChildAdded:Connect(_equipArtifact))
     Add(plr.EquippingItems.ChildRemoved:Connect(_equipArtifact))
+
+    _equipArtifact()
 end)
 
 

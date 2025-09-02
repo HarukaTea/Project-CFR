@@ -342,13 +342,8 @@ table.insert(CharLib.Funcs, function()
     local isWalking = false
     local lastMaterialStanding = nil
 
-
     Add(humanoid.Running:Connect(function(speed: number)
-        if speed > humanoid.WalkSpeed / 2 then
-            isWalking = true
-        else
-            isWalking = false
-        end
+        isWalking = speed > humanoid.WalkSpeed / 2
     end))
 
     local lastMaterialSFX = nil

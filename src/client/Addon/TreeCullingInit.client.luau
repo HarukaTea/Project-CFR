@@ -55,7 +55,7 @@ Promise.try(function()
     Bindables.Titlescreen_CameraCFrameChanged:Once(_execute)
 
 
-    HarukaLib.Clock(3, _execute)
+    HarukaLib.Clock(1.599, _execute)
 end)
 Promise.try(function()
     local function _execute()

@@ -44,8 +44,13 @@ ClassOrbSpawnAlgoLib.Flow = function(spawnCallback: (orbName: string) -> nil)
 end
 
 
-ClassOrbSpawnAlgoLib.Rise = function(spawnCallback: (orbName: string) -> nil)
-    spawnCallback("RiseOrb")
+ClassOrbSpawnAlgoLib.Furioso = function(spawnCallback: (orbName: string) -> nil)
+
+end
+
+
+ClassOrbSpawnAlgoLib.Execution = function(spawnCallback: (orbName: string) -> nil)
+    spawnCallback("ExecutionOrb")
 end
 
 

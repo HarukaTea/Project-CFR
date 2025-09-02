@@ -120,6 +120,7 @@ function HarukaLib:ClearAllAttributes(obj: Instance)
 end
 
 
+local abs = math.abs
 --[[
 	Detect if the given position is inside any of the given regions.
 ]]
@@ -127,13 +128,15 @@ function HarukaLib:IsInRegion(position: Vector3, regions: { BasePart }) : BasePa
 	local region: BasePart = nil
 
 	for _, child: BasePart in regions do
+		if child == nil then continue end
 		if not child:IsA("BasePart") then continue end
 
 		local point = child.CFrame:PointToObjectSpace(position)
+		local size = child.Size
 
-		if math.abs(point.X) < child.Size.X / 2
-			and math.abs(point.Y) < child.Size.Y / 2
-			and math.abs(point.Z) < child.Size.Z / 2 then
+		if abs(point.X) < size.X / 2
+			and abs(point.Y) < size.Y / 2
+			and abs(point.Z) < size.Z / 2 then
 
 			region = child
 			break
@@ -863,8 +866,6 @@ function HarukaLib:CommaifyNumber(num: number | string) : string
 		if (#num - i) % 3 == 0 and i ~= #num then result ..= "," end
 	end
 
-	result = string.format(result, "%.0f")
-
 	return result
 end
 
@@ -978,10 +979,10 @@ end
 function HarukaLib.Queue() : {
 	IsEmpty: () -> boolean,
 	GetItemsInQueue: () -> number,
-	SetLockState: (state: boolean) -> nil,
+	SetLockState: (_: any, state: boolean) -> nil,
 	IsLocked: () -> boolean,
 
-	Push: (value: any) -> nil,
+	Push: (_: any, value: any) -> nil,
 	Pop: () -> any?,
 	Destroy: () -> nil
 }

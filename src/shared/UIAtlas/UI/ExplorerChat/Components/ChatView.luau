@@ -49,12 +49,12 @@ return function (scope: Fusion.Scope, props: {
             return Components.TextLabel(scope, {
                 Name = "KeyTip",
                 AnchorPoint = Vector2.new(0.5, 0.5),
-                Text = "Y",
+                Text = "A",
                 Size = UDim2.fromScale(0.6, 0.6),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 Position = UDim2.fromScale(0.54, 0.5),
                 BackgroundTransparency = 0,
-                BackgroundColor3 = AssetBook.XboxControllerColors.Y,
+                BackgroundColor3 = AssetBook.XboxControllerColors.A,
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return not use(props.IsTypewriting)
@@ -172,20 +172,6 @@ return function (scope: Fusion.Scope, props: {
             }),
 
             key,
-
-
-
-            Components.HoverImageButton(scope, {
-                AnchorPoint = Vector2.new(0.5, 1),
-                Position = UDim2.fromScale(0.5, 1),
-                Size = UDim2.fromScale(1, 6),
-                ZIndex = 1,
-
-                [Fusion.OnEvent("MouseButton1Click")] = function()
-                    props.ProcessedToNextDialogueSignal:Fire()
-                end
-            }),
-
 
             Components.Frame(scope, {
                 Name = "ChoicesFrame",

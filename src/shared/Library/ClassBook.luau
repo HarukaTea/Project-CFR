@@ -32,8 +32,7 @@ return {
 
         Skills = {
             UltSkillIcon_None = "rbxassetid://119538556978639",
-            UltSkillIcon_Stack = "rbxassetid://112248243587928",
-            UltSkillStack_WithoutRecolor = true
+            UltSkillIcon_Stack = "rbxassetid://119538556978639",
         },
 
 

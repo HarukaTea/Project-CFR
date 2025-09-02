@@ -180,14 +180,36 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         galleon.PrimaryPart.Anchored = false
         galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
 
+
         seat:Sit(plr.Character.Humanoid)
         seat:GetPropertyChangedSignal("Occupant"):Connect(function()
             local occupant = seat.Occupant
             if occupant == nil then
+                if not ServerLib.IsModelValid(galleon) then return end
+
+                if galleon.PrimaryPart:FindFirstChild("AlignPosition") then
+                    galleon.PrimaryPart:FindFirstChild("AlignPosition"):Destroy()
+                end
                 galleon.PrimaryPart.Anchored = true
                 galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
             end
         end)
+
+
+        if galleon.PrimaryPart:FindFirstChild("AlignPosition") then
+            galleon.PrimaryPart:FindFirstChild("AlignPosition"):Destroy()
+        end
+
+        local alignPos = Instance.new("AlignPosition")
+        alignPos.Mode = Enum.PositionAlignmentMode.OneAttachment
+        alignPos.Attachment0 = Instance.new("Attachment", galleon.PrimaryPart)
+        alignPos.ForceLimitMode = Enum.ForceLimitMode.PerAxis
+        alignPos.ForceRelativeTo = Enum.ActuatorRelativeTo.Attachment0
+        alignPos.MaxAxesForce = Vector3.one * 5000000
+        alignPos.Responsiveness = 15
+        alignPos.Position = galleon.PrimaryPart.Position
+        alignPos.Parent = galleon.PrimaryPart
+
 
         pcall(function()
             galleon.PrimaryPart:SetNetworkOwner(nil)
@@ -306,7 +328,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             HarukaLib:SetCollisionGroup(galleon, "EnemyProjectile")
             galleon.PrimaryPart.CustomPhysicalProperties = PhysicalProperties.new(Enum.Material.Wood)
-            galleon.Humanoid.WalkSpeed = 50
+            galleon.Humanoid.WalkSpeed = 80
 
 
             local owner = Instance.new("ObjectValue")
@@ -343,6 +365,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             else
                 Events.CreateNotify.Fire(plr, " You've already received the Goddess's blessing!")
             end
+
+
+        elseif prompt.Name == "PurchaseTicket" then
+            local merchantId = adornee.Name
+
+            Events.OpenTicketPurchaseUI.Fire(plr, {
+                MerchantId = merchantId
+            })
 
         elseif prompt.Name == "Material" then
             local material = prompt:FindFirstAncestorOfClass("Model")
@@ -1771,6 +1801,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local galleon, pos, rotation = data.Galleon, data.Position, data.Rotation
         if not galleon:FindFirstChild("Owner") then return end
         if galleon.Owner.Value ~= plr then return end
+        if not ServerLib.IsModelValid(galleon) then return end
+        if not galleon.PrimaryPart:FindFirstChild("AlignPosition") then return end
 
         if not galleon.PrimaryPart.Position:FuzzyEq(pos) then
             galleon.PrimaryPart.AlignPosition.Position = pos
@@ -1851,5 +1883,57 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         symbol:SetAttribute("IsLocked", state)
     end)
 end)
+
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.RequestToEnterClimbingState.SetCallback(function(plr: Player, data)
+        if not data.State then return end
+
+        local char = plr.Character
+        if not ServerLib.IsCharValid(char) then return end
+
+        char:SetAttribute("IsClimbing", data.State)
+    end)
+    Events.RequestToEnterSwimmingState.SetCallback(function(plr: Player, data)
+        if not data.State then return end
+
+        local char = plr.Character
+        if not ServerLib.IsCharValid(char) then return end
+
+        char:SetAttribute("IsSwimming", data.State)
+    end)
+end)
+
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.RequestToPurchaseTicket.SetCallback(function(plr: Player, data)
+        if not data.MerchantId then return end
+
+        local merchant = workspace.MapComponents.TravelTickets:FindFirstChild(data.MerchantId)
+        if not merchant then return end
+
+        local goldAmount = plr:GetAttribute("Gold")
+        if goldAmount < 1599 then
+            Events.CreateNotify.Fire(plr, "You don't have enough gold to purchase a ticket!")
+            return
+        end
+
+        HarukaLib:AddAttr(plr, "Gold", -1599)
+
+        Events.CreateNotify.Fire(plr, "Have a safe journey!")
+        Events.CreateCircularFade.Fire(plr, 2)
+        Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
+
+        wait(1)
+        if not ServerLib.IsCharValid(plr.Character) then return end
+
+
+        plr.Character:PivotTo(merchant.Destination.Value.CFrame)
+    end)
+end)
+
+
 
 return GlobalCriRPGLib

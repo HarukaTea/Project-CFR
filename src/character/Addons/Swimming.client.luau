@@ -8,17 +8,30 @@ local RS = game:GetService("RunService")
 
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 
 local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
+local humanoid = char.Humanoid :: Humanoid
 local camera = workspace.CurrentCamera
 
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
+
+
+local waterParts = CollectionService:GetTagged("WaterPart")
+Add(CollectionService:GetInstanceAddedSignal("WaterPart"):Connect(function()
+    waterParts = CollectionService:GetTagged("WaterPart")
+end))
+
+local waterEqualizers = CollectionService:GetTagged("WaterEqualizer")
+Add(CollectionService:GetInstanceAddedSignal("WaterEqualizer"):Connect(function()
+    waterEqualizers = CollectionService:GetTagged("WaterEqualizer")
+end))
 
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
@@ -84,48 +97,57 @@ local function playSwimAnim(newAnim: string)
     end
 end
 local function swimIn()
-	if not isSwimming then
-        isSwimming = true
-        char:SetAttribute("IsSwimming", true)
+    if isSwimming then return end
 
-		char.Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
-        char.Humanoid.HipHeight = -3
+    isSwimming = true
+    char:SetAttribute("IsSwimming", true)
 
-        local rootVel = char.PrimaryPart.AssemblyLinearVelocity
+    char.Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+    char.Humanoid.HipHeight = -3
 
-        if not swimVel then
-            swimVel = Instance.new("BodyVelocity")
-            swimVel.Name = "SwimVelocity"
-            swimVel.P = 8000
-            swimVel.Velocity = Vector3.new()
-            swimVel.MaxForce = Vector3.new(rootVel.X, 8000, rootVel.Z)
-            swimVel.Parent = char.PrimaryPart
-        end
+    local rootVel = char.PrimaryPart.AssemblyLinearVelocity
 
-        playSwimAnim("SwimIdle")
-	end
+    if not swimVel then
+        swimVel = Instance.new("BodyVelocity")
+        swimVel.Name = "SwimVelocity"
+        swimVel.P = 8000
+        swimVel.Velocity = Vector3.new()
+        swimVel.MaxForce = Vector3.new(rootVel.X, 8000, rootVel.Z)
+        swimVel.Parent = char.PrimaryPart
+    end
+
+    playSwimAnim("SwimIdle")
+
+
+    Events.RequestToEnterSwimmingState.Fire({
+        State = true
+    })
 end
 local function swimOut()
-	if isSwimming then
-		isSwimming = false
-        swimUp = false
+    if not isSwimming then return end
 
-        char:SetAttribute("IsSwimming", false)
+    isSwimming = false
+    swimUp = false
 
-        if swimVel then
-            swimVel:Destroy()
-            swimVel = nil
-        end
+    char:SetAttribute("IsSwimming", false)
 
-        local rootVel = char.PrimaryPart.AssemblyLinearVelocity
+    if swimVel then
+        swimVel:Destroy()
+        swimVel = nil
+    end
 
-        char.Humanoid.HipHeight = 0
-        char.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
-            rootVel.X, char.Humanoid.JumpPower * 1.2, rootVel.Z
-        )
+    local rootVel = char.PrimaryPart.AssemblyLinearVelocity
 
-        playSwimAnim(nil)
-	end
+    char.Humanoid.HipHeight = 0
+    char.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
+        rootVel.X, char.Humanoid.JumpPower * 1.2, rootVel.Z
+    )
+
+    playSwimAnim(nil)
+
+    Events.RequestToEnterSwimmingState.Fire({
+        State = false
+    })
 end
 
 Add(char.PrimaryPart.Touched:Connect(function(water: BasePart)
@@ -147,54 +169,46 @@ Add(char.PrimaryPart.TouchEnded:Connect(function(water: BasePart)
     end
 end))
 Add(char.Humanoid.Changed:Connect(function()
-    if char.Humanoid.Jump and isSwimming then
+    if humanoid.Jump and isSwimming then
         swimUp = true
 
-    elseif not char.Humanoid.Jump and isSwimming then
+    elseif not humanoid.Jump and isSwimming then
         swimUp = false
 
-    elseif char.Humanoid.Jump and not isSwimming then
+    elseif humanoid.Jump and not isSwimming then
         swimUp = false
 
-    elseif not char.Humanoid.Jump and not isSwimming then
+    elseif not humanoid.Jump and not isSwimming then
         swimUp = false
     end
 end))
 Add(RS.Heartbeat:Connect(function()
-    if isSwimming then
-        local swimVelocity = 0
+    if not isSwimming then return end
+    if not swimVel then return end
 
-        if swimUp then
-            swimVelocity = char.Humanoid.WalkSpeed
+    local swimVelocity = if swimUp then humanoid.WalkSpeed else 0
+    local direction = swimVel.Velocity
 
-        elseif not swimUp then
-            swimVelocity = 0
-        end
-
-        local swimmingVel = char.PrimaryPart:WaitForChild("SwimVelocity") :: BodyVelocity
-        local direction = swimmingVel.Velocity
-
-        if direction.Magnitude > 0.2 then
-            playSwimAnim("Swim")
-        else
-            playSwimAnim("SwimIdle")
-        end
-
-        swimmingVel.Velocity = Vector3.new(
-            char.Humanoid.MoveDirection.X * char.Humanoid.WalkSpeed,
-            swimVelocity,
-            char.Humanoid.MoveDirection.Z * char.Humanoid.WalkSpeed
-        )
+    if direction.Magnitude > 0.2 then
+        playSwimAnim("Swim")
+    else
+        playSwimAnim("SwimIdle")
     end
+
+    swimVel.Velocity = Vector3.new(
+        humanoid.MoveDirection.X * humanoid.WalkSpeed,
+        swimVelocity,
+        humanoid.MoveDirection.Z * humanoid.WalkSpeed
+    )
 end))
 Add(RS.Heartbeat:Connect(function()
-    local isInWater = HarukaLib:IsInRegion(workspace.CurrentCamera.CFrame.Position, CollectionService:GetTagged("WaterPart"))
+    local isInWater = HarukaLib:IsInRegion(camera.CFrame.Position, waterParts)
     isInWater = (isInWater ~= nil)
 
     waterBlur.Enabled = isInWater
     waterColor.Enabled = isInWater
 
-    for _, equalizer: EqualizerSoundEffect in CollectionService:GetTagged("WaterEqualizer") do
+    for _, equalizer: EqualizerSoundEffect in waterEqualizers do
         equalizer.Enabled = isInWater
     end
 end))

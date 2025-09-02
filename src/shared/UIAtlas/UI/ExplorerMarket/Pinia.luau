@@ -49,7 +49,7 @@ return function (self: { any })
     for _ = 1, 4 do
         table.insert(self.SortMethodList, Value(false))
     end
-    self.SortMethodList[1]:set(true)
+    self.SortMethodList[4]:set(true)
 
 
     self.Currency = {
@@ -91,14 +91,7 @@ return function (self: { any })
     table.insert(scope, Events.OpenMarketUI.On(function(data)
         self.Products:set(data.Products)
         self.plr:SetAttribute("CurrentUIGroup", "Market")
-
-        HarukaLib:FreezePlayerControls("Freeze")
     end))
-
-
-    table.insert(scope, function()
-        HarukaLib:FreezePlayerControls("Unfreeze")
-    end)
 
 
     --// track ui blur

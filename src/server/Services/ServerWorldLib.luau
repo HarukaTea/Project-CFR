@@ -221,12 +221,15 @@ table.insert(ServerWorldLib.Funcs, function()
         angularVelocity.MaxTorque = math.huge
         angularVelocity.Parent = orb.PrimaryPart
 
-        orb.PrimaryPart.Beam1.Color = ColorSequence.new(
-            orb.PrimaryPart.Color, orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5)
-        )
-        orb.PrimaryPart.Beam2.Color = ColorSequence.new(
-            orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5), orb.PrimaryPart.Color
-        )
+
+        if not orb:GetAttribute("WithoutRecolor") then
+            orb.PrimaryPart.Beam1.Color = ColorSequence.new(
+                orb.PrimaryPart.Color, orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5)
+            )
+            orb.PrimaryPart.Beam2.Color = ColorSequence.new(
+                orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5), orb.PrimaryPart.Color
+            )
+        end
 
         orb.Hitbox.CanTouch = true
     end
@@ -517,17 +520,6 @@ table.insert(ServerWorldLib.Funcs, function()
     for _, chest: Model in workspace.MapComponents.Chests:GetChildren() do
         if chest:IsA("Model") and chest:FindFirstChild("Giver") then
             chest:AddTag("ChestEntity")
-        end
-    end
-end)
-
-
-table.insert(ServerWorldLib.Funcs, function()
-    for _, truss: TrussPart in workspace:GetDescendants() do
-        if truss.ClassName == "TrussPart" and not truss:GetAttribute("IgnoreCriRPGReq") then
-            truss:AddTag("TrussEntity")
-            truss.CanCollide = false
-            truss.CanTouch = true
         end
     end
 end)

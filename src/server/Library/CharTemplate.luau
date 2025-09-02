@@ -74,6 +74,8 @@ local charStats = {
     --- misc
     IsHPRecovering = false,
     IsShieldRepairing = false,
+    IsClimbing = false,
+    IsSwimming = false,
 
     --- events
     PlayerGotHit = "_EVENT",

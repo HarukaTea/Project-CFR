@@ -1,7 +1,6 @@
 --!nocheck
 
 local RepS = game:GetService("ReplicatedStorage")
-local RS = game:GetService("RunService")
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
@@ -35,7 +34,7 @@ function HarukaTypeWriter:TypeText(text: string)
 	text = string.gsub(text, "<[^<>]->", "")
 
 	local index = 0
-	for first, last in utf8.graphemes(text) do
+	for _, _ in utf8.graphemes(text) do
 		if self.Stopped then break end
 
 		index += 1
@@ -53,10 +52,6 @@ end
 function HarukaTypeWriter:Stop()
 	self.Paused = false
 	self.Stopped = true
-
-	while self.Running do
-		RS.Heartbeat:Wait()
-	end
 end
 
 
@@ -72,10 +67,6 @@ function HarukaTypeWriter:Destroy()
 
 	self.OnTyperFinished:Destroy()
 	self.OnUTFUpdated:Destroy()
-
-	while self.Running do
-		RS.Heartbeat:Wait()
-	end
 end
 
 return HarukaTypeWriter

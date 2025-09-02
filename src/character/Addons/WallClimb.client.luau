@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -23,6 +24,9 @@ local WallClimb = {}
 
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
+
+
+RunService:UnbindFromRenderStep("WallClimbSystem")
 
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
@@ -65,28 +69,20 @@ Add(climbingAnim)
 
 local MOVEMENT_KEYS = {
     [Enum.KeyCode.W] = true,
-    [Enum.KeyCode.A] = true,
     [Enum.KeyCode.S] = true,
-    [Enum.KeyCode.D] = true,
     [Enum.KeyCode.Space] = true
 }
 local function getKeyMovement(key: Enum.KeyCode): Vector3
     if key == Enum.KeyCode.W or key == "W" then
         return char.PrimaryPart.CFrame.UpVector
-    elseif key == Enum.KeyCode.A or key == "A" then
-        return -char.PrimaryPart.CFrame.RightVector
     elseif key == Enum.KeyCode.S or key == "S" then
         return -char.PrimaryPart.CFrame.UpVector
-    elseif key == Enum.KeyCode.D or key == "D" then
-        return char.PrimaryPart.CFrame.RightVector
     end
 end
 local function constructDirections() : { [string]: Vector3 }
     return {
         ["W"] = char.PrimaryPart.CFrame.LookVector,
-        ["A"] = -char.PrimaryPart.CFrame.RightVector,
         ["S"] = -char.PrimaryPart.CFrame.LookVector,
-        ["D"] = char.PrimaryPart.CFrame.RightVector
     }
 end
 local function getKeyFromMoveDirection()
@@ -104,15 +100,7 @@ local function climbFunction(key)
         elseif not WallClimb.IsClimbing then
             WallClimb:Init()
         end
-    elseif key == Enum.KeyCode.A or key == "A" then
-        if WallClimb.IsClimbing then
-            WallClimb:Cast(key)
-        end
     elseif key == Enum.KeyCode.S or key == "S" then
-        if WallClimb.IsClimbing then
-            WallClimb:Cast(key)
-        end
-    elseif key == Enum.KeyCode.D or key == "D" then
         if WallClimb.IsClimbing then
             WallClimb:Cast(key)
         end
@@ -126,12 +114,13 @@ end
 WallClimb.IsClimbing = false
 
 function WallClimb:Init()
+    if not char:GetAttribute("CanClimb") then return end
     if WallClimb.IsClimbing then return end
 
     local rayResult = workspace:Raycast(char.PrimaryPart.Position, char.PrimaryPart.CFrame.LookVector, wallClimbRaycastParams) :: RaycastResult
     if not rayResult then return end
 
-    local hit, pos, normal = rayResult.Instance, rayResult.Position, rayResult.Normal
+    local hit, pos = rayResult.Instance, rayResult.Position
     if not hit then return end
 
     local frontNormal: Vector3 = hit.CFrame.LookVector * 1
@@ -141,13 +130,22 @@ function WallClimb:Init()
     WallClimb.IsClimbing = true
 
     char.PrimaryPart.Anchored = true
+    char:SetAttribute("IsClimbing", true)
+
     humanoid:ChangeState(Enum.HumanoidStateType.Physics)
 
     climbingAnim:Play()
     climbingAnim:AdjustSpeed(0.4)
+
+
+    Events.RequestToEnterClimbingState.Fire({
+        State = true
+    })
 end
 
 function WallClimb:Cast(key: Enum.KeyCode | string)
+    if not WallClimb.IsClimbing then return end
+
     local rayResult = workspace:Raycast(char.PrimaryPart.Position, char.PrimaryPart.CFrame.LookVector, wallClimbRaycastParams) :: RaycastResult
     local movement = getKeyMovement(key)
 
@@ -159,7 +157,7 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
                 local upVel = Instance.new("BodyVelocity")
                 upVel.Name = "WallClimbUpVel"
                 upVel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                upVel.Velocity = char.PrimaryPart.CFrame.UpVector * 66
+                upVel.Velocity = char.PrimaryPart.CFrame.UpVector * 60
                 upVel.Parent = char.PrimaryPart
 
                 Debris:AddItem(upVel, 0.01)
@@ -169,36 +167,12 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
         end
         return
     end
-
     if key == Enum.KeyCode.S or key == "S" then
         local verticalCast = workspace:Raycast(char.PrimaryPart.Position, -char.PrimaryPart.CFrame.UpVector * (humanoid.HipHeight * 1.25), wallClimbRaycastParams)
         if verticalCast then self:Stop() return end
     end
-    if (key == Enum.KeyCode.A or key == "A") or (key == Enum.KeyCode.D or key == "D") then
-        local adjacentCast, perpendicularCast
 
-        if key == Enum.KeyCode.A or key == "A" then
-            adjacentCast = workspace:Raycast(char.PrimaryPart.Position + (char.PrimaryPart.CFrame.LookVector * 1.5) + -char.PrimaryPart.CFrame.RightVector, char.PrimaryPart.CFrame.RightVector, wallClimbRaycastParams)
-            perpendicularCast = workspace:Raycast(char.PrimaryPart.Position, -char.PrimaryPart.CFrame.RightVector, wallClimbRaycastParams)
-
-        elseif key == Enum.KeyCode.D or key == "D" then
-            adjacentCast = workspace:Raycast(char.PrimaryPart.Position + (char.PrimaryPart.CFrame.LookVector * 1.5) + char.PrimaryPart.CFrame.RightVector, -char.PrimaryPart.CFrame.RightVector, wallClimbRaycastParams)
-            perpendicularCast = workspace:Raycast(char.PrimaryPart.Position, char.PrimaryPart.CFrame.RightVector, wallClimbRaycastParams)
-        end
-
-        if adjacentCast and not perpendicularCast then
-            self:Switch(adjacentCast.Position, adjacentCast.Normal)
-        elseif perpendicularCast then
-            self:Switch(perpendicularCast.Position, perpendicularCast.Normal)
-        end
-    end
-
-    char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 0.159 * 1.599
-end
-
-
-function WallClimb:Switch(pos: Vector3, normal: Vector3)
-    char.PrimaryPart.CFrame = CFrame.lookAt(pos + (normal / 1.25), pos)
+    char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 0.159 * 2.3
 end
 
 
@@ -208,9 +182,16 @@ function WallClimb:Stop()
     self.IsClimbing = false
 
     char.PrimaryPart.Anchored = false
+    char:SetAttribute("IsClimbing", false)
+
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
 
     climbingAnim:Stop()
+
+
+    Events.RequestToEnterClimbingState.Fire({
+        State = false
+    })
 end
 
 
@@ -218,6 +199,7 @@ RunService:BindToRenderStep("WallClimbSystem", Enum.RenderPriority.Camera.Value,
     if IS_PC then
         for _, key in UserInputService:GetKeysPressed() do
             if not MOVEMENT_KEYS[key.KeyCode] then continue end
+
             climbFunction(key.KeyCode)
         end
     else

@@ -4,8 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local EnemyHPBar = require(script.Components.EnemyHPBar)
 local EnemyInfoBar = require(script.Components.EnemyInfoBar)
@@ -36,7 +34,6 @@ return function (plr: Player)
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "EntityStats",
-        DisplayOrder = UIPriorityBook.Normal,
         Parent = plr.PlayerGui,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)

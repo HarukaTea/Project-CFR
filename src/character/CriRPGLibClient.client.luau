@@ -377,7 +377,7 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     --[[
-        I've used workspce:GetPartBoundsInRadius before, but then
+        I've used `workspce:GetPartBoundsInRadius` before, but then
         players in community complain about the hitbox and its poor performance.
     ]]
     local orbCD = false
@@ -445,12 +445,18 @@ table.insert(CriRPGLib.Funcs, function()
 
                 bounceWeight *= bounceBuff
 
+
+                local vectorVelocity = char.Humanoid.MoveDirection * 10 + Vector3.yAxis * bounceWeight
+                if orb:GetAttribute("HorizontalVelocity") then
+                    vectorVelocity = char.Humanoid.MoveDirection * bounceWeight * 4.5 + Vector3.yAxis * 20
+                end
+
                 local linearVelocity = Instance.new("LinearVelocity")
                 linearVelocity.Name = "OrbBV"
                 linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
                 linearVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
                 linearVelocity.ForceLimitsEnabled = false
-                linearVelocity.VectorVelocity = char.Humanoid.MoveDirection * 10 + Vector3.yAxis * bounceWeight
+                linearVelocity.VectorVelocity = vectorVelocity
                 linearVelocity.Parent = char.PrimaryPart
                 Debris:AddItem(linearVelocity, 0.05)
 
@@ -627,19 +633,6 @@ table.insert(CriRPGLib.Funcs, function()
         projectile:AddTag("EnemyProjectile")
         projectile.Parent = projectileContainer
     end))
-end)
-
-
-table.insert(CriRPGLib.Funcs, function()
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-CanClimb"] = function(state: boolean)
-            state = state or false
-
-            for _, truss: TrussPart in CollectionService:GetTagged("TrussEntity") do
-                truss.CanCollide = state
-            end
-        end
-    }))
 end)
 
 

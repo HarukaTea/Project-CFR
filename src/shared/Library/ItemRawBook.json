@@ -1270,7 +1270,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "SkyTower",
+        "Tags": "SkyTower, Chest",
         "ArtifactId": "",
         "Recipe": ""
     },
@@ -1435,12 +1435,12 @@
         "Level": "65",
         "Desc": "A crown woven from ancient vines, hardened wood, and the rarest forest blooms",
         "Stat": "Whilst you still have Shield, become immune to getting inflicted by status effects by any external force. unless it is from a Piercing attack",
-        "StatInfo": "WardingEx(20), MaxHealthEx(775), MaxShieldEx(275), JumpEx(10)",
+        "StatInfo": "WardingEx(20), MaxHealthEx(775), MaxShieldEx(275)",
         "Icon": "93122935088756",
         "Price": "3900",
         "SellPrice": "1950",
         "ExtraStatInfo": "",
-        "Tags": "",
+        "Tags": "Chest",
         "ArtifactId": "ForestDweller",
         "Recipe": ""
     },

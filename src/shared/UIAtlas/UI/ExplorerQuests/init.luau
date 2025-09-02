@@ -6,7 +6,6 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
-local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local QuestBar = require(script.Components.QuestBar)
 local QuestIndicator = require(script.Components.QuestIndicator)
@@ -34,7 +33,6 @@ return function(plr: Player)
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerQuests",
-        DisplayOrder = UIPriorityBook.Normal,
 		Parent = plr.PlayerGui,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)

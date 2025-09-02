@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 
 local Titlescreen = require(script.Components.Titlescreen)
@@ -39,7 +38,6 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "Titlescreen",
-        DisplayOrder = UIPriorityBook.Normal,
         Parent = plr.PlayerGui,
 
         [Children] = {

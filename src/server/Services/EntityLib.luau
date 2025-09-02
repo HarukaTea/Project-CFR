@@ -726,6 +726,8 @@ function EntityLib:_RoamTask()
 
                     if char:GetAttribute("IsInCombat") then continue end
                     if char:FindFirstChild("CombatCooldown") then continue end
+                    if char:GetAttribute("IsClimbing") then continue end
+                    if char:GetAttribute("IsSwimming") then continue end
 
 
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude

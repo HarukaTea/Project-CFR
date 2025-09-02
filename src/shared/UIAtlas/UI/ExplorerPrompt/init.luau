@@ -33,7 +33,7 @@ return function(plr: Player)
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerPrompt",
-        DisplayOrder = UIPriorityBook.Normal,
+        DisplayOrder = -1,
 		Parent = plr.PlayerGui,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)

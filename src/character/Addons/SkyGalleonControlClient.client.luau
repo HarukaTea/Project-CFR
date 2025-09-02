@@ -19,9 +19,6 @@ local currentGalleon: Model = nil
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
---// TODO: we haven't enabled sky galleon driving feature yet
-if true then return end
-
 
 local wait = task.wait
 
@@ -79,9 +76,8 @@ Add(RunService.Heartbeat:Connect(function()
     local moveVector = ControlsModule:GetMoveVector() :: Vector3
 
     local currentCFrame = currentGalleon.PrimaryPart.CFrame
-    local forwardBackwardInput = -moveVector.Z
     local rotationInput = -moveVector.X
-    local targetVelocity = currentCFrame.LookVector * forwardBackwardInput * 38
+    local targetVelocity = currentCFrame.LookVector * -moveVector.Z * 66
     local newPosition = currentCFrame.Position + targetVelocity
 
     if moveVector.Z > 0 then
@@ -94,7 +90,7 @@ Add(RunService.Heartbeat:Connect(function()
 
     Events.RequestToSetSkyGalleonPos.Fire({
         Galleon = currentGalleon,
-        Position = Vector3.new(newPosition.X, 25, newPosition.Z),
+        Position = Vector3.new(newPosition.X, 140, newPosition.Z),
         Rotation = rotationInput * 15
     })
 end))

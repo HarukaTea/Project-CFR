@@ -32,7 +32,7 @@ return function (self: { any })
     for _ = 1, 4 do
         table.insert(self.SortMethodList, Value(false))
     end
-    self.SortMethodList[1]:set(true)
+    self.SortMethodList[4]:set(true)
 
 
     self.AvailableItems = Value(Vector2.zero)

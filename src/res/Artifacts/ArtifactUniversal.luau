@@ -52,21 +52,21 @@ ArtifactUniversal.RegisterClassUltCasted = function(
     source: Script,
     event: BindableEvent,
     char: Model,
-    handler: (target: Model, caster: Model, dmgProps: ClassUltMetaData) -> nil
+    handler: (target: Model, caster: Model, ultProps: ClassUltMetaData) -> nil
 ) : RBXScriptConnection
     local conn: RBXScriptConnection
 
-    event.Event:Connect(function(caster: Model, dmgProps: ClassUltMetaData)
+    event.Event:Connect(function(caster: Model, ultProps: ClassUltMetaData)
         if source == nil then return end
         if source.Parent == nil then return end
         if caster ~= char then return end
-        if not ServerLib.IsCharValid(dmgProps.Target) then return end
+        if not ServerLib.IsCharValid(ultProps.Target) then return end
         if not ServerLib.IsCharValid(caster) then return end
-        if not dmgProps then return end
-        if not dmgProps.DMG then return end
-        if not dmgProps.AttackType then return end
+        if not ultProps then return end
+        if not ultProps.ClassId then return end
+        if not ultProps.ClassVariant then return end
 
-        handler(dmgProps.Target, caster, dmgProps)
+        handler(ultProps.Target, caster, ultProps)
     end)
 
 

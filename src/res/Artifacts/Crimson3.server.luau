@@ -12,25 +12,38 @@ local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 
 
+script:SetAttribute("ReqDestroyingEvent", true)
+
 local added = false
 
 
 Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
     ["Prop-Value"] = function(weapon: string)
         weapon = weapon or ""
-        if not ItemBook:GetItemInfo(weapon) then
+
+        local info = ItemBook:GetItemInfo(weapon)
+        if not info and added then
             added = false
+            char:SetAttribute("_PRIVATE_Crimson3", false)
+
+
             HarukaLib:AddAttr(char, "MagicExPower", -0.35)
             return
         end
 
-        local info = ItemBook:GetItemInfo(weapon)
-        if string.find(info.ItemId, "Staff") and not added then
+        local hasStaff = string.find(info.ItemId, "Staff")
+        if hasStaff and not added then
             added = true
+            char:SetAttribute("_PRIVATE_Crimson3", true)
+
+
             HarukaLib:AddAttr(char, "MagicExPower", 0.35)
 
-        elseif not string.find(info.ItemId, "Staff") and added then
+        elseif not hasStaff and added then
             added = false
+            char:SetAttribute("_PRIVATE_Crimson3", false)
+
+
             HarukaLib:AddAttr(char, "MagicExPower", -0.35)
         end
     end

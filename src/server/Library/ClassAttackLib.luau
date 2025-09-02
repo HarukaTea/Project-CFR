@@ -55,6 +55,17 @@ ClassAttackLib.Chain = function(plr: Player)
     HarukaLib:AddAttr(char, "ChainCombo", 1)
 
     local combo = char:GetAttribute("ChainCombo") :: number
+
+    if char.Head:FindFirstChild("ComboStyle") then
+        char.Head.ComboStyle.Text.Text = "COMBO x"..combo
+    else
+        local comboStyle = RepS.Packages.ClassAttacks.ClassUIs.ComboStyle.ComboStyle:Clone() :: BillboardGui
+        comboStyle.Adornee = char.Head
+        comboStyle.Text.Text = "COMBO x"..combo
+        comboStyle.Parent = char.Head
+    end
+
+
     if combo >= 2 then
         ClassAttackLib._DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * combo),
@@ -172,15 +183,14 @@ ClassAttackLib.Burst = function(plr: Player)
     ServerBindables.RToSpawnOrb:Fire(char.Name, "ArrowOrb")
 
     local result, _, _ = HarukaLib:RollLoot({
-        Extra = 20,
-        None = 80
+        Extra = 10,
+        None = 90
     })
     if result == "Extra" then
         ServerBindables.RToSpawnOrb:Fire(char.Name, "ArrowOrb")
     end
 
     local arrows = char:GetAttribute("BurstArrow") :: number
-
     if arrows == nil or arrows <= 0 then
         ClassAttackLib._DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib._CalDMG("DMG", char),
@@ -202,6 +212,10 @@ ClassAttackLib.Burst = function(plr: Player)
         ServerLib.ShowText(char, "BURST!", ClassBook.Burst.Color)
 
         char:SetAttribute("BurstArrow", 0)
+
+        if char.Head:FindFirstChild("StackStyle") then
+            char.Head.StackStyle:Destroy()
+        end
     end
 end
 ClassAttackLib.Burst_Ult_None = function(plr: Player)
@@ -261,6 +275,16 @@ ClassAttackLib.Burst_BurstArrow = function(plr: Player)
 
     afterArrow = math.clamp(afterArrow + 1, 0, 10)
     char:SetAttribute("BurstArrow", afterArrow)
+
+
+    if char.Head:FindFirstChild("StackStyle") then
+        char.Head.StackStyle.Text.Text = afterArrow.." ARROWS"
+    else
+        local stackStyle = RepS.Packages.ClassAttacks.ClassUIs.StackStyle.StackStyle:Clone() :: BillboardGui
+        stackStyle.Adornee = char.Head
+        stackStyle.Text.Text = afterArrow.." ARROWS"
+        stackStyle.Parent = char.Head
+    end
 end
 ClassAttackLib.HEAL_ATTACK_Burst = ClassAttackLib.HEAL_ATTACK
 
@@ -374,6 +398,16 @@ ClassAttackLib.Flow = function(plr: Player)
     char:SetAttribute("FlowHeat", nextHeat)
 
 
+    if char.Head:FindFirstChild("FocusStyle") then
+        char.Head.FocusStyle.Text.Text = "FOCUS "..nextHeat.."%"
+    else
+        local focusStyle = RepS.Packages.ClassAttacks.ClassUIs.FocusStyle.FocusStyle:Clone() :: BillboardGui
+        focusStyle.Adornee = char.Head
+        focusStyle.Text.Text = "FOCUS "..nextHeat.."%"
+        focusStyle.Parent = char.Head
+    end
+
+
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
         DMG = ClassAttackLib._CalDMG("Magic", char),
         DMGType = "Magic",
@@ -381,6 +415,10 @@ ClassAttackLib.Flow = function(plr: Player)
     })
     if nextHeat >= 100 then
         char:SetAttribute("FlowHeat", 0)
+
+        if char.Head:FindFirstChild("FocusStyle") then
+            char.Head.FocusStyle:Destroy()
+        end
 
         ClassAttackLib._DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib._CalDMG("Magic", char) * 3),
@@ -512,6 +550,30 @@ ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
 
 
 
+ClassAttackLib.Execution = function(plr: Player)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+    if math.random(1, 3) == 2 then
+        local dmg = ClassAttackLib._CalDMG("DMG", char)
+        StatusLib.Heal(char, math.ceil(dmg / 3))
+    end
+
+
+
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * 3),
+        DMGType = "Physical",
+        Attacker = "ClassAttacks"
+    })
+end
+ClassAttackLib.Execution_Ult_None = function(plr: Player)
+
+end
+ClassAttackLib.HEAL_ATTACK_Execution = ClassAttackLib.HEAL_ATTACK
+
+
+
 --// Private Methods
 
 function ClassAttackLib._CalCastingTime(char: Model, baseTime: number) : number
@@ -529,9 +591,12 @@ end
 
 
 function ClassAttackLib._FireClassUltCasted(char: Model, props: {
-
+    ClassId: string,
+    ClassVariant: string,
+    DMGType: string,
+    Target: Model
 })
-    for _, event: BindableEvent in char:GetChildren() do
+    for _, event: BindableEvent in char:GetDescendants() do
         if event:IsA("BindableEvent") and event.Name == "PlayerClassUltCasted" then
             event:Fire(char, props)
         end

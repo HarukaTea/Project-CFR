@@ -14,6 +14,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local CircleFX = require(script.Parent.Components.CircleFX)
 local RevPKSlot = require(script.Parent.Components.GlobalClassPBars.ReverberationPK)
+local TicketPurchase = require(script.Parent.Components.TicketPurchase)
 
 local wait = task.wait
 
@@ -83,5 +84,32 @@ return function (UI: ScreenGui, self: { any })
         HarukaLib:UITween(ReverberationPKSlot, "Out", { DelayTime = 1.5, TweenTime = 0.5 })
 
         SoundService.SFXs.DiceRoll:Play()
+    end))
+
+
+    --// track ticket purchases
+    table.insert(scope, Events.OpenTicketPurchaseUI.On(function(data)
+        if not self.UI then return end
+        if not self.UI:FindFirstChild("Center") then return end
+
+        if self.UI.Center:FindFirstChild("TicketPurchase") then return end
+
+
+        local newScope = Fusion.scoped()
+
+        local TicketPurchaseDreamField, blur = TicketPurchase(scope, {
+            MerchantId = data.MerchantId
+        })
+        TicketPurchaseDreamField.Parent = self.UI.Center
+        Debris:AddItem(TicketPurchaseDreamField, 30)
+        Debris:AddItem(blur, 30)
+
+
+        Promise.delay(31):andThen(function()
+			Fusion.doCleanup(newScope)
+		end):catch(function() end)
+
+
+        HarukaLib:UITween(TicketPurchaseDreamField, "In")
     end))
 end

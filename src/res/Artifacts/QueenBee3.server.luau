@@ -27,7 +27,6 @@ Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(targe
     symbol.Parent = caster
     Debris:AddItem(symbol, 11)
 
-
     StatusLib.DMGBoost(caster, {
         DMGPower = 0.4,
         DMG = 0,

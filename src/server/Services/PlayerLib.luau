@@ -558,6 +558,7 @@ function PlayerLib:_Remove()
 
     self:_RemoveChestAcquire()
     self:_RemoveFromParty()
+    self:_RemoveSkyGalleon()
 end
 
 
@@ -677,6 +678,17 @@ function PlayerLib:_RemoveFromParty()
 
         if party then
             ServerBindables.PartyInvite:Fire(self.Player, "PlayerLeave", self.Player.Name)
+        end
+    end)
+end
+function PlayerLib:_RemoveSkyGalleon()
+    pcall(function()
+        for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
+            if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
+
+            if galleon.Owner.Value == self.Player then
+                galleon:Destroy()
+            end
         end
     end)
 end

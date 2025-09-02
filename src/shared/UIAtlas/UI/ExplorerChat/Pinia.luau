@@ -255,9 +255,15 @@ return function (self: { any })
         if not Fusion.peek(self.IsChatShown) then return end
 
         local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
-        local isKeyboard = input.UserInputType == Enum.UserInputType.Keyboard
+        if (isGamepad and input.KeyCode == Enum.KeyCode.ButtonA) then
+            self.ProcessedToNextDialogueSignal:Fire()
+        end
+    end))
+    table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+        if not Fusion.peek(self.IsChatShown) then return end
 
-        if (isGamepad and input.KeyCode == Enum.KeyCode.ButtonB) or (isKeyboard and input.KeyCode == Enum.KeyCode.Space) then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             self.ProcessedToNextDialogueSignal:Fire()
         end
     end))
