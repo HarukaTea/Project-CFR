@@ -35,7 +35,7 @@ abyss[3] = {
     Team = {
         CrimsonSlime = {
             Level = 100,
-            EnvironmentBonus = 8
+            EnvironmentBonus = 6
         },
         PurpleSlime = {
             Level = 95,
@@ -48,11 +48,11 @@ abyss[4] = {
     Icon = "rbxassetid://90390582857611",
     Team = {
         HardmodeWolf = {
-            Level = 150,
-            EnvironmentBonus = 12
+            Level = 125,
+            EnvironmentBonus = 8
         },
         SpikeFox = {
-            Level = 145,
+            Level = 100,
             EnvironmentBonus = 6
         },
     }
@@ -63,8 +63,8 @@ abyss[5] = {
     Icon = "rbxassetid://95284011272925",
     Team = {
         Sylvarion = {
-            Level = 200,
-            EnvironmentBonus = 16
+            Level = 150,
+            EnvironmentBonus = 10
         }
     }
 }

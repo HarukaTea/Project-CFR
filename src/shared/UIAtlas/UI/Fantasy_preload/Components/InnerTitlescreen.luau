@@ -194,10 +194,6 @@ return function (scope: Fusion.Scope, props: {
 
     --// change class scene request
     table.insert(scope, Bindables.Titlescreen_ChangeClassScene:Connect(function()
-        local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-
-        ClientLib.LoadLightingPreset("ClassSelection")
-
         workspace:SetAttribute("Titlescreen_ClassSelectionState", true)
         workspace:SetAttribute("Titlescreen_TempClass", "Chain")
     end))

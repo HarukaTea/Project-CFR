@@ -5,7 +5,6 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 return {
     CDEndTimeReached = Signal.new(),
-    RequestToResetItemCD = Signal.new(),
     ActionSlide = Signal.new(),
 
     PlayerChatted = Signal.new(),

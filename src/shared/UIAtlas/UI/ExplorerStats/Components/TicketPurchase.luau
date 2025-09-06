@@ -146,7 +146,7 @@ return function (scope: Fusion.Scope, props: {
                                 AutomaticSize = Enum.AutomaticSize.X,
                                 Size = UDim2.fromScale(0, 0.8),
                                 LayoutOrder = 3,
-                                Text = "1,599"
+                                Text = "599"
                             }),
                         }
                     }),

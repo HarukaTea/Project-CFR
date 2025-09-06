@@ -316,6 +316,15 @@ return function (plr: Player)
                                 ButtonText = "Craft",
                                 ButtonType = "Confirm",
                                 ButtonClickFunc = function()
+                                    local result = Components:CreateConfirmPrompt(scope, {
+                                        Hint = "Are you sure to craft this item?",
+                                        ConfirmText = "Craft",
+                                        CancelText = "Back",
+                                        ConfirmUniqueId = "CraftingConfirm_"..HttpService:GenerateGUID(false)
+                                    }):Wait()
+                                    if result ~= "YES" then return end
+
+
                                     Events.RequestToCraftItem.Fire({
                                         ItemId = item,
                                         ItemUniqueId = itemUniqueId,

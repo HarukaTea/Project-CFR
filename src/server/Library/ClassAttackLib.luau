@@ -696,7 +696,7 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 
     --// blood spellbook bonus
     if dmgProps.Attacker == "ClassAttacks" and char:FindFirstChild("BloodSpellbook") then
-        dmgProps.DMG = math.ceil(dmgProps.DMG * 1.5)
+        dmgProps.DMG = math.ceil(dmgProps.DMG * 2)
     end
 
     --// class ult dmg bonus
@@ -706,10 +706,8 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 
     targeting.Humanoid:TakeDamage(dmgProps.DMG)
     for _, event: BindableEvent in char:GetDescendants() do
-        if event:IsA("BindableEvent") then
-            if event.Name == "EnemyGotHit" then
-                event:Fire(targeting, char, dmgProps)
-            end
+        if event:IsA("BindableEvent") and event.Name == "EnemyGotHit" then
+            event:Fire(targeting, char, dmgProps)
         end
     end
 

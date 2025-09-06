@@ -105,7 +105,6 @@ do
     repeat wait() until RepS.HarukaShared.UIAtlas.Components:WaitForChild("LoadView", 999)
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Fusion", 999)
     repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
-    repeat wait() until RepS.HarukaShared.Shared:WaitForChild("AsyncClone", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
     repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("FusionComponents", 999)
     repeat wait() until RepS.HarukaShared.Library:WaitForChild("ClientLib", 999)
@@ -172,26 +171,12 @@ do
         repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
 
         wait()
-        local titlescreenModel = Instance.new("Model")
-        titlescreenModel.Name = "Titlescreen"
-        for _, child: Instance in RepS.Packages.Titlescreen:GetChildren() do
-            child.Parent = titlescreenModel
-        end
-
-        local cloneStart = os.clock()
-        titlescreenModel.Parent = workspace.MapComponents
+        RepS.Packages.Titlescreen.Parent = workspace.MapComponents
 
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
-
-        local cloneTime = os.clock() - cloneStart
-        if cloneTime > 10 then
-            warn("Titlescreen is about to Timeout!")
-        end
-        print("Titlescreen clone time: ".. (string.format("%.1f", tostring(cloneTime))).. " seconds")
-
-        repeat wait() until titlescreenModel:WaitForChild("Credits", 999)
-
-        titlescreenModel.Name = "Titlescreen"
+        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
+        repeat wait() until workspace.MapComponents.Titlescreen.CameraLocator.Value
+        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("Credits", 999)
     end
 
     repeat wait() until plr:GetAttribute("_PlayerProfileInited")
@@ -224,8 +209,6 @@ do
 
         local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
         ClientLib.LoadLightingPreset("Titlescreen")
-
-        Lighting:SetAttribute("RainLevel", 6)
     end
 
 
@@ -249,8 +232,6 @@ do
 
             local worldId = workspace:GetAttribute("WorldId") or "InitusWorld"
             ClientLib.LoadLightingPreset(worldId)
-
-            Lighting:SetAttribute("RainLevel", 0)
         end
 
         for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do

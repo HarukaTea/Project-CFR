@@ -313,7 +313,7 @@ return function (self: { any })
 
 
 
-    local function _createCooldownAnim(cdTime: nuamber, info: { any })
+    local function _createCooldownAnim(cdTime: number, info: { any })
         local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 
         local cdSymbol = info.CDSymbol :: NumberValue
@@ -346,8 +346,7 @@ return function (self: { any })
 
 
         if cdTime <= 0 then
-            _normalCancelCD(info)
-            Bindables.RequestToResetItemCD:Fire(slotId)
+            _createCooldownAnim(0, info)
             return
         end
 
@@ -412,7 +411,10 @@ return function (self: { any })
     }
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj: InputObject, gpe: boolean)
         if gpe then return end
-        if not inputObj.UserInputType == Enum.UserInputType.Keyboard then return end
+
+        local isGamepad = string.find(inputObj.UserInputType.Name, "Gamepad")
+        local isKeyboard = string.find(inputObj.UserInputType.Name, "Keyboard")
+        if not isGamepad and not isKeyboard then return end
 
         local isUIButtonCheck = false
         local isWhichUIButton = nil

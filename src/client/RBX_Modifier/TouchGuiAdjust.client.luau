@@ -11,11 +11,11 @@ if UIS.TouchEnabled then
     local touchGui = Players.LocalPlayer.PlayerGui:WaitForChild("TouchGui", 999) :: ScreenGui
 
     touchGui.DisplayOrder = UIPriorityBook.MobileRBLXCoreGui
-    touchGui.ScreenInsets = Enum.ScreenInsets.None
+    touchGui.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
     touchGui.IgnoreGuiInset = true
 
     local jumpButton = touchGui:WaitForChild("TouchControlFrame", 999):WaitForChild("JumpButton", 999) :: ImageButton
 
     task.wait()
-    jumpButton.AnchorPoint = Vector2.new(0.8, 0.8)
+    jumpButton.AnchorPoint = Vector2.new(0, 0.8)
 end

@@ -13,10 +13,34 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaComponents = {}
 
 
-local WHITE_COLOR = Color3.fromRGB(236, 229, 216)
-local BLACK_COLOR = Color3.fromRGB(28, 28, 37)
-
 local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
+
+HarukaComponents.COLOR_SERIES = {
+	Dark = {
+		Background = Color3.fromRGB(28, 28, 37),
+		Title = Color3.fromHex('D3BC8E'),
+		Text = Color3.fromHex('ECE5D8'),
+		Text2 = Color3.fromHex('F6F2EE'),
+		Text3 = Color3.fromHex('FFFFFF'),
+		KeyText = Color3.fromHex('FFCC33'),
+		KeyText2 = Color3.fromHex('37FFFF'),
+		WarnText = Color3.fromHex('FF5E41'),
+		WaterElement = Color3.fromHex('80C0FF'),
+		FireElement = Color3.fromHex('FF9999'),
+		WindElement = Color3.fromHex('80FFD7'),
+		ThunderElement = Color3.fromHex('FFACFF'),
+		GrassElement = Color3.fromHex('99FF88'),
+		IceElement = Color3.fromHex('99FFFF'),
+		EarthElement = Color3.fromHex('FFE699')
+	},
+	White = {
+		Background = Color3.fromRGB(236, 229, 216),
+		Text = Color3.fromHex('4A5366')
+	}
+}
+
+local WHITE_COLOR = HarukaComponents.COLOR_SERIES.White.Background
+local BLACK_COLOR = HarukaComponents.COLOR_SERIES.Dark.Background
 
 HarukaComponents.BLACK_COLOR = BLACK_COLOR
 HarukaComponents.WHITE_COLOR = WHITE_COLOR
@@ -24,7 +48,7 @@ HarukaComponents.GREEN_COLOR = Color3.fromRGB(123, 217, 159)
 HarukaComponents.RED_COLOR = Color3.fromRGB(255, 118, 117)
 HarukaComponents.DARKER_WHITE_COLOR = Color3.fromRGB(202, 196, 185)
 HarukaComponents.BLACK_TEXT_COLOR = Color3.fromHex('#333333')
-HarukaComponents.BLUE_COLOR = Color3.fromHex('7ce4f8')
+HarukaComponents.AZUR_BLUE_COLOR = Color3.fromHex('7ce4f8')
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
 
 --// Init once only

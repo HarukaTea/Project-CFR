@@ -143,10 +143,10 @@ return function (self: { any })
                 local choiceDialogues = require(npcChatting.Dialogues.Choices["Choice"..choiceIndex]) :: { string }
 
                 currentDialoguesChatting = choiceDialogues
-                currentDialogueIndexChatting = 1
-                dialogue = currentDialoguesChatting[currentDialogueIndexChatting] :: string
+                currentDialogueIndexChatting = 0
+                dialogue = currentDialoguesChatting[1] :: string
 
-                __setText(dialogue)
+                __nextText("Continue")
                 return
             end
         end
@@ -184,8 +184,12 @@ return function (self: { any })
                 local branch1, branch2 = string.match(branches, "^(.-)-(.*)$")
                 local choices = {}
 
-                for i = branch1, branch2 do
-                    choices[i] = npcDialogues["CHOICE"..i]
+                if branch1 == branch2 then
+                    choices[branch1] = npcDialogues["CHOICE"..branch1]
+                else
+                    for i = branch1, branch2 do
+                        choices[i] = npcDialogues["CHOICE"..i]
+                    end
                 end
                 self.Choices:set(choices)
                 return
@@ -232,7 +236,8 @@ return function (self: { any })
         end
 
 
-        --- is in choice dialogues state?
+        --- is not in choice dialogues state?
+        --- this ensures dialogueIndexChatting is always the main dialogues
         if currentDialoguesChatting[1] == dialoguesChatting[1] then
             dialogueIndexChatting = currentDialogueIndexChatting
         end
@@ -255,7 +260,7 @@ return function (self: { any })
         if not Fusion.peek(self.IsChatShown) then return end
 
         local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
-        if (isGamepad and input.KeyCode == Enum.KeyCode.ButtonA) then
+        if (isGamepad and input.KeyCode == Enum.KeyCode.ButtonY) then
             self.ProcessedToNextDialogueSignal:Fire()
         end
     end))

@@ -366,10 +366,16 @@ table.insert(CharLib.Funcs, function()
                 lastMaterialSFX.Playing = false
                 lastMaterialSFX = nil
             end
+
+            for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
+                if not sound:IsA("Sound") then continue end
+                sound.Playing = false
+            end
         end
     end))
     Add(function()
         for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
+            if not sound:IsA("Sound") then continue end
             sound.Playing = false
         end
     end)

@@ -214,12 +214,16 @@ table.insert(CriRPGLib.Funcs, function()
         if not weaponFolder then return end
         if not weaponFolder:FindFirstChild(targetFolder) then return end
 
+
+        for _, weapon: Model in char:GetChildren() do
+			if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
+		end
 		for _, weapon: Model in weaponFolder[targetFolder]:GetChildren() do
             task.defer(function()
-                weapon = weapon:Clone()
-			    weapon:AddTag("ClassWeapon")
+                local weaponE = weapon:Clone()
+			    weaponE:AddTag("ClassWeapon")
 
-			    ServerLib.WeldWeapon(weapon, char)
+			    ServerLib.WeldWeapon(weaponE, char)
             end)
 		end
 	end
@@ -628,12 +632,12 @@ table.insert(CriRPGLib.Funcs, function()
         local shieldExBuff = char:GetAttribute("MaxShieldExPower") :: number
 
 
-        baseShield = FormulaBook.PlayerShieldCurveCal({
+        local shield = FormulaBook.PlayerShieldCurveCal({
             BaseShield = baseShield,
             DEFPoints = plr:GetAttribute("DEFPoints")
         })
 
-        local final = math.ceil((baseShield + shieldBuff) * shieldExBuff)
+        local final = math.ceil((shield + shieldBuff) * shieldExBuff)
 
         char:SetAttribute("MaxShield", final)
 
@@ -654,7 +658,7 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-MaxShieldExPower"] = _updateShield,
     }))
     Add(HarukaLib:Hydrate(plr, {
-        ["Attr-Level"] = _updateShield,
+        ["Attr-DEFPoints"] = _updateShield,
     }))
 
 

@@ -366,10 +366,9 @@ table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("NPCs") then return end
 
 
-    for _, npc: Model in workspace.MapComponents.NPCs:GetDescendants() do
+    for _, npc: Model in workspace.MapComponents.NPCs:GetChildren() do
         if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
-            npc.PrimaryPart = npc.HumanoidRootPart
 
             if npc.PrimaryPart.Anchored then continue end
             if not npc:FindFirstChild("Humanoid") then continue end

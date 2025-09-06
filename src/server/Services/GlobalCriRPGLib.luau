@@ -396,8 +396,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             local finalMaterial = material.Name
             if material:GetAttribute("Rare") then
                 finalMaterial = HarukaLib:RollLoot({
-                    [material:GetAttribute("Rare")] = 30,
-                    [material.Name] = 70
+                    [material:GetAttribute("Rare")] = 35,
+                    [material.Name] = 65
                 })
             end
             material.Parent = game:GetService("ServerStorage")
@@ -545,7 +545,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local whiteList = { "HEAL_ATTACK" }
 
         Promise.new(function(resolve, reject)
-            local DISTANCE = 15
+            local DISTANCE = 25
 
             local distance1 = plr:DistanceFromCharacter(orbPos.Position)
             local distance2 = plr:DistanceFromCharacter(orbPos.Position + Vector3.yAxis * DISTANCE)
@@ -1915,12 +1915,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not merchant then return end
 
         local goldAmount = plr:GetAttribute("Gold")
-        if goldAmount < 1599 then
+        if goldAmount < 599 then
             Events.CreateNotify.Fire(plr, "You don't have enough gold to purchase a ticket!")
             return
         end
 
-        HarukaLib:AddAttr(plr, "Gold", -1599)
+        HarukaLib:AddAttr(plr, "Gold", -599)
 
         Events.CreateNotify.Fire(plr, "Have a safe journey!")
         Events.CreateCircularFade.Fire(plr, 2)
