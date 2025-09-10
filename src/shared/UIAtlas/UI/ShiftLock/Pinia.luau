@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
@@ -105,7 +109,7 @@ return function (self: { any })
     --// track shift key
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
-        if not input.UserInputType == Enum.UserInputType.Keyboard then return end
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
 
         if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
             _setLockState(if Fusion.peek(self.LockEnabled) then "Off" else "On")

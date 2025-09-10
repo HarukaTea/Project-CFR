@@ -1,11 +1,15 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
-local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
-
 
 local ClassMechanicLib = {}
 

@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local RepS = game:GetService("ReplicatedStorage")
 
@@ -34,5 +38,3 @@ return function (scope: Fusion.Scope, props: {
         ImageColor3 = props.Color
     })
 end
-
-

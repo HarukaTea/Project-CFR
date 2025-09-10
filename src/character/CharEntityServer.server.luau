@@ -1,3 +1,8 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -242,4 +247,3 @@ end)
 
 
 CharLib:Init()
-

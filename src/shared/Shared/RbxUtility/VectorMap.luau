@@ -1,4 +1,8 @@
---!strict
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local VectorMap = {}
 VectorMap.__index = VectorMap

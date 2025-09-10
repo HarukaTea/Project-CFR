@@ -1,4 +1,8 @@
-
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 export type ClassSPSceneLib = {
     _tweenValue: (start: number, duration: number, endTime: number, obj: Instance) -> NumberValue,

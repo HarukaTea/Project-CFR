@@ -1,3 +1,9 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")

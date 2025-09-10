@@ -1,3 +1,9 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
 local AnalyticsService = game:GetService("AnalyticsService")

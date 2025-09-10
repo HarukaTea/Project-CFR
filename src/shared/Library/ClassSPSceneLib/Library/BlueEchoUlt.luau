@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")

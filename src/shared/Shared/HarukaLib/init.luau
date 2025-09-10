@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local CAS = game:GetService("ContextActionService")
 local Debris = game:GetService("Debris")

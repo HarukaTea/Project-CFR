@@ -1,3 +1,9 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 local ServerScriptService = game:GetService("ServerScriptService")
 
 

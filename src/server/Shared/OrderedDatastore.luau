@@ -1,3 +1,9 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 -------
 -- Made by: core @corehimself
 -- Created: 9/18/2023

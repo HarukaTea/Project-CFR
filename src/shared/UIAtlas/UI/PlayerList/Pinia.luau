@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local RepS = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -46,7 +50,7 @@ return function (self: { any })
     --// track tab input
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
-        if not input.UserInputType == Enum.UserInputType.Keyboard then return end
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
 
         if input.KeyCode == Enum.KeyCode.Tab then
             self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))

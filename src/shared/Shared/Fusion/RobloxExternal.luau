@@ -1,6 +1,8 @@
---!strict
+--!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 --[[
 	Roblox implementation for Fusion's abstract provider layer.

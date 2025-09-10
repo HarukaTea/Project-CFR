@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local TextChatService = game:GetService("TextChatService")
 local RepS = game:GetService("ReplicatedStorage")

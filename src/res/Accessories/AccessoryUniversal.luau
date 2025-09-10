@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -21,9 +25,7 @@ AccessoryUniversal.RegisterEnemyOnHit = function(
     char: Model,
     handler: (targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData) -> nil
 ) : RBXScriptConnection
-    local conn: RBXScriptConnection
-
-    event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData)
+    return event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData)
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
@@ -35,9 +37,6 @@ AccessoryUniversal.RegisterEnemyOnHit = function(
 
         handler(targeting, attacker, dmgProps)
     end)
-
-
-    return conn
 end
 
 

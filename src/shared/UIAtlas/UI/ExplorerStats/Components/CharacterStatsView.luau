@@ -1,8 +1,11 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)

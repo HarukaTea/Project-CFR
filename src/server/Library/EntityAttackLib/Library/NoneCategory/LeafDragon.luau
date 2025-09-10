@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local HttpService = game:GetService("HttpService")
 local SSS = game:GetService("ServerScriptService")

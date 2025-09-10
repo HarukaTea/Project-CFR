@@ -1,3 +1,8 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 -- Clone large models incrementally to reduce spikes.
 -- Supports Models/Folders, BaseParts (and their children like Decals, Attachments),

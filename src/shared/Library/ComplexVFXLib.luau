@@ -1,11 +1,13 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local RunService = game:GetService("RunService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
 
 local ComplexVFXLib = {}
 

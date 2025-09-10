@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
@@ -78,6 +82,8 @@ local function getKeyMovement(key: Enum.KeyCode): Vector3
     elseif key == Enum.KeyCode.S or key == "S" then
         return -char.PrimaryPart.CFrame.UpVector
     end
+
+    return nil
 end
 local function constructDirections() : { [string]: Vector3 }
     return {
@@ -92,6 +98,8 @@ local function getKeyFromMoveDirection()
             return keyId
         end
     end
+
+    return nil
 end
 local function climbFunction(key)
     if key == Enum.KeyCode.W or key == "W" then

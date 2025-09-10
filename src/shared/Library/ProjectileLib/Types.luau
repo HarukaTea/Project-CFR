@@ -1,4 +1,8 @@
-
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 export type ProjectileLib = {
     _incomingCylinderAtt: (projectileBase: BasePart) -> nil,

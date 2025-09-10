@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
@@ -8,7 +12,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemDescView)
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemFilterView)

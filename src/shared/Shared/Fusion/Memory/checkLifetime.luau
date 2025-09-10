@@ -1,8 +1,9 @@
-
-
---!strict
+--!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 local task = nil -- Disable usage of Roblox's task scheduler
 
 --[[

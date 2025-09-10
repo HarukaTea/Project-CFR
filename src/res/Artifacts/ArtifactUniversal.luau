@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -28,9 +32,7 @@ ArtifactUniversal.RegisterEnemyOnHit = function(
     char: Model,
     handler: (targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData) -> nil
 ) : RBXScriptConnection
-    local conn: RBXScriptConnection
-
-    event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData)
+    return event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData)
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
@@ -42,9 +44,6 @@ ArtifactUniversal.RegisterEnemyOnHit = function(
 
         handler(targeting, attacker, dmgProps)
     end)
-
-
-    return conn
 end
 
 
@@ -54,9 +53,7 @@ ArtifactUniversal.RegisterClassUltCasted = function(
     char: Model,
     handler: (target: Model, caster: Model, ultProps: ClassUltMetaData) -> nil
 ) : RBXScriptConnection
-    local conn: RBXScriptConnection
-
-    event.Event:Connect(function(caster: Model, ultProps: ClassUltMetaData)
+    return event.Event:Connect(function(caster: Model, ultProps: ClassUltMetaData)
         if source == nil then return end
         if source.Parent == nil then return end
         if caster ~= char then return end
@@ -68,9 +65,6 @@ ArtifactUniversal.RegisterClassUltCasted = function(
 
         handler(ultProps.Target, caster, ultProps)
     end)
-
-
-    return conn
 end
 
 

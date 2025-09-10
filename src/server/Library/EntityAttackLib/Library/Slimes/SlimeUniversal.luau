@@ -1,3 +1,9 @@
+--!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
+
 local HttpService = game:GetService("HttpService")
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")

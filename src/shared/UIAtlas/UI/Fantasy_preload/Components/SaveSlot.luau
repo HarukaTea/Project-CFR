@@ -1,4 +1,8 @@
 --!nocheck
+--!nolint LocalUnused
+--!nolint LocalShadow
+--!nolint SameLineStatement
+--!nolint ImplicitReturn
 
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
@@ -13,7 +17,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
-local LocationBook = require(RepS.HarukaShared.Library.LocationBook)
 
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
