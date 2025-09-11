@@ -567,7 +567,7 @@ function EntityLib:_RoamTask()
     local entity = self.Entity :: Model
 
     local path = nil
-    if entity.Humanoid.WalkSpeed > 0 then
+    if entity.Humanoid.WalkSpeed > 0 and not locator:GetAttribute("NoEnemyRoaming") then
         path = PathCreator.new(entity, {
             Costs = PATH_COSTS,
             AgentCanJump = false,
@@ -596,6 +596,7 @@ function EntityLib:_RoamTask()
     --// roaming
     self.RoamAdd(task.spawn(function()
         if entity.Humanoid.WalkSpeed <= 0 then return end
+        if locator:GetAttribute("NoEnemyRoaming") then return end
 
         local AREA_MAG = 15.99
 
@@ -640,7 +641,7 @@ function EntityLib:_RoamTask()
     --// tracking
     self.RoamAdd(task.spawn(function()
         if entity.Humanoid.WalkSpeed <= 0 then return end
-
+        if locator:GetAttribute("NoEnemyRoaming") then return end
 
         while wait(0.07) do
             if not ServerLib.IsCharValid(entity) then break end

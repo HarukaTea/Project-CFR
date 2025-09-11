@@ -753,6 +753,9 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 
 
     --// apply debuffs
+    if dmgProps.Attacker ~= "ClassAttacks" then return end
+
+
     local debuffList = { "BurnChance", "PoisonChance", "BleedChance" }
     for _, debuff in debuffList do
         local chance = char:GetAttribute(debuff) or 0
