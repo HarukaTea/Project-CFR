@@ -94,7 +94,7 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.FoxSpike2 = function(projectile: Model, container: Folder)
-        projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
+        projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
 
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 30, 0))

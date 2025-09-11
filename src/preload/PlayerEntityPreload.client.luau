@@ -47,7 +47,7 @@ end
 
 function PreloadPlayerLib:_InitUI()
     for _, module in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
-        if string.find(module.Name, ".spec") then print(module.Name) continue end
+        if string.find(module.Name, ".spec") then continue end
         if not string.find(module.Name, "_preload") then continue end
 
         Promise.try(require(module), player):catch(function(err)

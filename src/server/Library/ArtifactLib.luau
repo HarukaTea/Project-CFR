@@ -82,8 +82,8 @@ ArtifactLib.ForestDweller2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "MinDMGExPower", 0.18 * factor)
     HarukaLib:AddAttr(char, "MaxDMGExPower", 0.18 * factor)
 end
-ArtifactLib.ForestDweller3 = function()
-
+ArtifactLib.ForestDweller3 = function(char: Model, factor: number)
+    char:SetAttribute("ForestDweller3Bonus", factor > 0)
 end
 
 

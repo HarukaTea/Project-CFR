@@ -78,24 +78,30 @@ end
 StatusLib.NormalBoostForEntity = function(eff: string, char: Model, props: {
     Power: number?,
     Ex: number?,
-
     Duration: number,
+
+    TrueEffectId: string?
 })
+    local effId = eff
+
+    if props.TrueEffectId then
+        effId = props.TrueEffectId
+    end
     if not ServerLib.IsCharValid(char) then return end
 
     local power = props.Power or 0
     local ex = props.Ex or 0
-    local exAttr = eff.."Ex"
-    local powerAttr = eff.."ExPower"
+    local exAttr = effId.."Ex"
+    local powerAttr = effId.."ExPower"
 
     if power == 0 and ex == 0 then return end
 
     if not char:GetAttribute(exAttr) then
-        warn("Invalid boost effect: "..eff)
+        warn("Invalid boost effect: "..effId)
         return
     end
     if not char:GetAttribute(powerAttr) then
-        warn("Invalid boost effect: "..eff)
+        warn("Invalid boost effect: "..effId)
         return
     end
 
@@ -112,7 +118,7 @@ StatusLib.NormalBoostForEntity = function(eff: string, char: Model, props: {
 
 
     local effectSymbol = Instance.new("StringValue")
-    effectSymbol.Name = "EffectSymbol"
+    effectSymbol.Name = eff
     effectSymbol.Value = eff.."Boost"
 
     effectSymbol:SetAttribute("Ex", ex)
@@ -162,7 +168,7 @@ StatusLib.DMGBoost = function(char: Model, props: {
 
 
     local effectSymbol = Instance.new("StringValue")
-    effectSymbol.Name = "EffectSymbol"
+    effectSymbol.Name = "ATK"
     effectSymbol.Value = "ATKBoost"
 
     effectSymbol:SetAttribute("Ex", ex)

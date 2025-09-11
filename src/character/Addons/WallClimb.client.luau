@@ -61,8 +61,15 @@ local wallClimbRaycastParams = RaycastParams.new()
 wallClimbRaycastParams.FilterType = Enum.RaycastFilterType.Include
 wallClimbRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("WallClimbPart")
 
+local terrainRaycastParams = RaycastParams.new()
+terrainRaycastParams.FilterType = Enum.RaycastFilterType.Include
+terrainRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+
 Add(CollectionService:GetInstanceAddedSignal("WallClimbPart"):Connect(function()
     wallClimbRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("WallClimbPart")
+end))
+Add(CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function()
+    terrainRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
 end))
 
 
@@ -157,10 +164,13 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
     local rayResult = workspace:Raycast(char.PrimaryPart.Position, char.PrimaryPart.CFrame.LookVector, wallClimbRaycastParams) :: RaycastResult
     local movement = getKeyMovement(key)
 
+    if climbingAnim.Speed <= 0 then
+        climbingAnim:AdjustSpeed(0.4)
+    end
     if not rayResult then
-        if key == Enum.KeyCode.W or key == "W" then
-            self:Stop()
+        self:Stop()
 
+        if key == Enum.KeyCode.W or key == "W" then
             if not char.PrimaryPart:FindFirstChild("WallClimbUpVel") then
                 local upVel = Instance.new("BodyVelocity")
                 upVel.Name = "WallClimbUpVel"
@@ -170,14 +180,15 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
 
                 Debris:AddItem(upVel, 0.01)
             end
-        else
-            self:Stop()
         end
         return
     end
     if key == Enum.KeyCode.S or key == "S" then
-        local verticalCast = workspace:Raycast(char.PrimaryPart.Position, -char.PrimaryPart.CFrame.UpVector * (humanoid.HipHeight * 1.25), wallClimbRaycastParams)
-        if verticalCast then self:Stop() return end
+        local verticalCast = workspace:Raycast(char.PrimaryPart.Position, -char.PrimaryPart.CFrame.UpVector * 4.5, terrainRaycastParams)
+        if verticalCast then
+            self:Stop()
+            return
+        end
     end
 
     char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 0.159 * 2.3
@@ -205,10 +216,15 @@ end
 
 RunService:BindToRenderStep("WallClimbSystem", Enum.RenderPriority.Camera.Value, function()
     if IS_PC then
-        for _, key in UserInputService:GetKeysPressed() do
+        local pressedKeys = UserInputService:GetKeysPressed()
+
+        for _, key in pressedKeys do
             if not MOVEMENT_KEYS[key.KeyCode] then continue end
 
             climbFunction(key.KeyCode)
+        end
+        if #pressedKeys <= 0 and WallClimb.IsClimbing then
+            climbingAnim:AdjustSpeed(0)
         end
     else
         local key = getKeyFromMoveDirection()

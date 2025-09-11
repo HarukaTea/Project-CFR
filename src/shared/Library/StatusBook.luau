@@ -41,6 +41,18 @@ return {
     },
 
 
+    --// special
+    FireEmblemBoost = {
+        Icon = "rbxassetid://74588474308433",
+        Color = Color3.fromRGB(255, 0, 0),
+    },
+    WolfHowlBoost = {
+        Icon = "rbxassetid://73146024586376",
+        Color = Color3.fromHex('#ffeaa7'),
+        IconColor = Color3.fromHex('#ffeaa7')
+    },
+
+
 
     --// Debuffs
     BurnDebuff = {

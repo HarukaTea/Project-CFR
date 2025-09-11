@@ -24,6 +24,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ServerLib = {}
 
 
+local RNG = Random.new()
+
+
 local terrainParams = RaycastParams.new()
 terrainParams.IgnoreWater = true
 terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
@@ -102,48 +105,21 @@ function ServerLib.GetNearbyPlayers(position: Vector3)
 	return players
 end
 
-
 function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
+	local combatPos = combatLocation.Position + Vector3.yAxis * 16
+	local finalLocation: CFrame
 
-	Promise.new(function(resolve)
-		local repeatedTimes = 0
-		local combatPos = combatLocation.Position + Vector3.yAxis * 16
-		local finalLocation: CFrame
+	local rx, rz = RNG:NextInteger(-40, 40), RNG:NextInteger(-40, 40)
+	local set = RNG:NextInteger(5, 40)
+	local dir = CFrame.new(combatPos, combatPos + Vector3.new(rx, 0, rz)).LookVector.Unit * set
+	local rayResult = workspace:Raycast(combatPos, dir, terrainParams) :: RaycastResult
+	local rayPos = if rayResult then rayResult.Position else combatPos + dir
+	local finalPos = CFrame.new(rayPos, rayPos + combatLocation.LookVector)
 
-		while repeatedTimes <= 15 do
-			local rx, rz = math.random(-40, 40), math.random(-40, 40)
-			local set = math.random(5, 40)
-			local dir = CFrame.new(combatPos, combatPos + Vector3.new(rx, 0, rz)).LookVector.Unit * set
-			local rayResult = workspace:Raycast(combatPos, dir, terrainParams) :: RaycastResult
-			local rayPos = if rayResult then rayResult.Position else combatPos + dir
-			local finalPos = CFrame.new(rayPos, rayPos + combatLocation.LookVector)
+	finalPos = ServerLib.FindGroundByRayForOrb(finalPos.Position)
 
-			finalPos = ServerLib.FindGroundByRayForOrb(finalPos.Position)
-
-			-- we gonna try to find a valid position, if we can't, we'll try again
-			local isTheSame = finalPos:FuzzyEq(combatLocation.Position)
-			local isInsidePart = HarukaLib:IsInRegion(finalPos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart"))
-
-			if not isTheSame and not isInsidePart then
-				finalLocation = CFrame.new(finalPos)
-				break
-			end
-
-			repeatedTimes += 1
-		end
-
-		resolve(finalLocation)
-
-	end):andThen(function(pos: CFrame)
-		orbLocation = pos * CFrame.new(0, 8, 0) * CFrame.new(0, 0, 2)
-
-	end):catch(function(err)
-		warn(tostring(err))
-	end):await()
-
-
-	return orbLocation
+	return CFrame.new(finalPos) * CFrame.new(0, 8, 2)
 end
 
 
@@ -229,7 +205,7 @@ function ServerLib.GiveRandomStatForItem(itemId: string) : string
 			if val > maxVal then
 				maxVal, val = val, maxVal
 			end
-			local randomVal = math.random(val, maxVal)
+			local randomVal = Random.new():NextInteger(val, maxVal)
 
 			finalDesync[attr] = randomVal
 		else

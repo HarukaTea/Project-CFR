@@ -464,8 +464,9 @@ function HarukaLib:RollLoot(loots: { [string]: number }, luck: number?) : (strin
 	end
 
 	--// roll
+	local RNG = Random.new()
 	local bestScore, bestItem, entry = math.huge, nil, nil
-	local value = math.max(lowestBound, totalWeight - math.floor(totalWeight * math.random() ^ luck))
+	local value = math.max(lowestBound, totalWeight - math.floor(totalWeight * RNG:NextNumber() ^ luck))
 	local upperBound = 0
 
 	for index = #items, 1, -1 do

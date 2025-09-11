@@ -5,6 +5,7 @@
 --!nolint ImplicitReturn
 
 local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -13,16 +14,10 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local DoTLib = {}
 DoTLib.__index = DoTLib
 
-
-local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local GlobalTimer = require(ServerScriptService.HarukaServer.Shared.GlobalTimer)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
-
-
-DoTLib.OnEffectActivated = Signal.new()
-DoTLib.OnEffectCancelled = Signal.new()
 
 
 local allDoTObjs = {}
@@ -83,8 +78,6 @@ function DoTLib:Activate()
     end
 
 
-    DoTLib.OnEffectActivated:Fire(self)
-
     self.Tasks = {}
 
     for i = 1, self.Duration do
@@ -97,6 +90,24 @@ function DoTLib:Activate()
         end))
     end
     Promise.delay(self.Duration + 0.1):andThenCall(self.Cancel, self):catch(function() end)
+
+
+    --// fire char bindable
+    if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then
+        local char = self.Creator :: Model
+
+        for _, bindable: BindableEvent in char:GetDescendants() do
+            if bindable:IsA("BindableEvent") and bindable.Name == "EnemyStatusApplied" then
+                bindable:Fire(self.Target, self.Creator, {
+                    Target = self.Target,
+                    Type = self.Type,
+                    Creator = self.Creator,
+                    Power = self.Power,
+                    Duration = self.Duration,
+                })
+            end
+        end
+    end
 end
 
 
@@ -121,10 +132,25 @@ function DoTLib:Cancel()
     end
 
 
-    DoTLib.OnEffectCancelled:Fire(self)
-
-
     allDoTObjs[self.UniqueId] = nil
+
+
+    --// fire char bindable
+    if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then
+        local char = self.Creator :: Model
+
+        for _, bindable: BindableEvent in char:GetDescendants() do
+            if bindable:IsA("BindableEvent") and bindable.Name == "EnemyStatusRemoved" then
+                bindable:Fire(self.Target, self.Creator, {
+                    Target = self.Target,
+                    Type = self.Type,
+                    Creator = self.Creator,
+                    Power = self.Power,
+                    Duration = self.Duration,
+                })
+            end
+        end
+    end
 end
 
 

@@ -130,12 +130,14 @@ end
 
 
 ClassMechanicLib._CLASS_Reverberation = function(self)
+    local RNG = Random.new()
+
     ClassAdd(char.PlayerTargetAdded.Event:Connect(function(charId: string, entity: Model)
         if char.Name ~= charId then return end
         if entity:GetAttribute("ReverResonateNum_"..plr.UserId) then return end
 
         local notOdd = { 2, 4, 6, 8 }
-        local resonateNum = notOdd[math.random(1, #notOdd)]
+        local resonateNum = notOdd[RNG:NextInteger(1, #notOdd)]
         entity:SetAttribute("ReverResonateNum_"..plr.UserId, resonateNum)
 
         Events.CLASS_RollNewResonateNumForEnemy.Fire(plr, {

@@ -292,8 +292,10 @@ return {
         Tag = "The Dire Howler",
 
         Drops = {
-            BlackFur = 65,
-            BlackWolfNecklace = 10,
+            BlackFur = 60,
+            WinterHowl = 4,
+            WolfKingAxe = 4,
+            BlackWolfNecklace = 4
         }
     },
 

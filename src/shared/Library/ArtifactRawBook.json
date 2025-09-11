@@ -15,7 +15,7 @@
         "ArtifactId": "FireEmblem",
         "ArtifactTitle": "Fire Emblem",
         "TwoPieceEff": "Increase 10% Burn Chance",
-        "ThreePieceEff": "Using Class Ult increases the 2-Piece Set Bonus by 50% of its starting value for 10s. Max 3 stacks"
+        "ThreePieceEff": "Using Class Ult gives 10% more Burn Chance for 10s. Max 3 stacks"
     },
     {
         "ArtifactId": "Crimson",
@@ -27,7 +27,7 @@
         "ArtifactId": "WolfKing",
         "ArtifactTitle": "Wolf Howl",
         "TwoPieceEff": "CRIT Chance +12%",
-        "ThreePieceEff": "When HP is below 50%, CRIT Chance increases by an additional 24%"
+        "ThreePieceEff": "When HP is below 50%, CRIT Chance increases by an additional 24% for 12s"
     },
     {
         "ArtifactId": "QueenBee",
@@ -45,7 +45,7 @@
         "ArtifactId": "ForestDweller",
         "ArtifactTitle": "Forest Dweller",
         "TwoPieceEff": "ATK +18%",
-        "ThreePieceEff": "Increases DMG by 30% against enemies with more than 50% HP"
+        "ThreePieceEff": "Increases physical damage by 30% against enemies with more than 50% HP"
     },
     {
         "ArtifactId": "Northerner",

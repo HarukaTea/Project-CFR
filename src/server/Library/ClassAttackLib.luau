@@ -298,12 +298,14 @@ ClassAttackLib.Reverberation = function(plr: Player)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
+    local RNG = Random.new()
+
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
-    local resonateNum = math.random(1, 9)
+    local resonateNum = RNG:NextInteger(1, 9)
     if char:FindFirstChild("ReverberationEcho") then
         local notOdd = { 2, 4, 6, 8 }
-        resonateNum = notOdd[math.random(1, #notOdd)]
+        resonateNum = notOdd[RNG:NextInteger(1, #notOdd)]
     end
     Events.CLASS_RollNewResonateNumForPlayer.Fire(plr, {
         ResonateNum = resonateNum
@@ -678,6 +680,32 @@ function ClassAttackLib._AddClassUltCharge(plr: Player, amount: number)
     HarukaLib:AddAttr(char, "ClassUltProgress", math.ceil(amount * char:GetAttribute("ClassUltCharge") / 100))
 end
 
+function ClassAttackLib:_DamageDealMiddler(char: Model, targeting: Model, dmgProps: {
+    DMG: number,
+    DMGType: string,
+    Attacker: string
+}) : number
+    local dmg = dmgProps.DMG
+
+    --// blood spellbook bonus
+    if dmgProps.Attacker == "ClassAttacks" and char:GetAttribute("BloodSpellbookBonus") then
+        dmg = math.ceil(dmg * 1.3)
+    end
+
+    --// class ult dmg bonus
+    if dmgProps.Attacker == "ClassUltProjectile" then
+        dmg = math.ceil(dmg * (char:GetAttribute("ClassUltDMGBonus") or 100) / 100)
+    end
+
+    --// forest dweller dmg bonus
+    if char:GetAttribute("ForestDweller3Bonus") then
+        dmg = math.ceil(dmg * 1.3)
+    end
+
+
+    return dmg
+end
+
 
 function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgProps: {
     DMG: number,
@@ -698,15 +726,9 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         return
     end
 
-    --// blood spellbook bonus
-    if dmgProps.Attacker == "ClassAttacks" and char:FindFirstChild("BloodSpellbook") then
-        dmgProps.DMG = math.ceil(dmgProps.DMG * 2)
-    end
+    --// middler
+    dmgProps.DMG = ClassAttackLib:_DamageDealMiddler(char, targeting, dmgProps)
 
-    --// class ult dmg bonus
-    if dmgProps.Attacker == "ClassUltProjectile" then
-        dmgProps.DMG = math.ceil(dmgProps.DMG * (char:GetAttribute("ClassUltDMGBonus") or 100) / 100)
-    end
 
     targeting.Humanoid:TakeDamage(dmgProps.DMG)
     for _, event: BindableEvent in char:GetDescendants() do

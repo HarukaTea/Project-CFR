@@ -535,13 +535,14 @@ table.insert(ClientWorldLib.Funcs, function()
     itemDisplayContainer.Name = "ItemDisplayContainer"
     itemDisplayContainer.Parent = workspace
 
+    local RNG = Random.new()
 
     Events.SpawnItemDrop.On(function(data)
         local location = data.ItemDropLocationPos :: Vector3
         local autoPickup = data.AllowAutoPickUp
 
         location += Vector3.new(
-            math.random(-5, 5), 0, math.random(-5, 5)
+            RNG:NextInteger(-6, 6), 0, RNG:NextInteger(-6, 6)
         )
         location = ClientLib.FindGroundByRay(location)
 

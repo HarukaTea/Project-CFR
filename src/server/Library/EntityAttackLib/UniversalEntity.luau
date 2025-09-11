@@ -101,22 +101,24 @@ UniversalEntity.InitAttackTasks = function(_, self: { any }, resolveObj: () -> (
     local lastFunc = 0
     local lastFuncCount = 0
 
+    local RNG = Random.new()
+
     while RunService.Stepped:Wait() do
         if UniversalEntity:CheckCombatState(self.Entity) == false then break end
 
         local rTarget = UniversalEntity:GetRandomTarget(self.Entity)
-        local rFunc = math.random(1, #self.AttackFuncs)
+        local rFunc = RNG:NextInteger(1, #self.AttackFuncs)
 
         if rFunc ~= lastFunc then
             lastFuncCount = 0
         else
             lastFuncCount += 1
             if lastFuncCount >= 3 then
-                rFunc = math.random(1, #self.AttackFuncs)
+                rFunc = RNG:NextInteger(1, #self.AttackFuncs)
 
                 local retry = 0
                 while rFunc ~= lastFunc and retry <= 3 do
-                    rFunc = math.random(1, #self.AttackFuncs)
+                    rFunc = RNG:NextInteger(1, #self.AttackFuncs)
                     if rFunc == lastFunc then
                         retry += 1
                     end
@@ -133,8 +135,8 @@ UniversalEntity.InitAttackTasks = function(_, self: { any }, resolveObj: () -> (
         if #self.ComboAttackFuncs > 0 then
             RunService.Heartbeat:Wait()
 
-            local rComboFunc = math.random(1, #self.ComboAttackFuncs)
-            self.ComboAttackFuncs[rComboFunc](rTarget, rFunc, math.random(1, 2))
+            local rComboFunc = RNG:NextInteger(1, #self.ComboAttackFuncs)
+            self.ComboAttackFuncs[rComboFunc](rTarget, rFunc, RNG:NextInteger(1, 2))
         end
 
         wait()
@@ -201,7 +203,7 @@ end
 
 UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
     local targetingList = entity.TargetingList:GetChildren()
-    local rIndex = math.random(1, #targetingList)
+    local rIndex = Random.new():NextInteger(1, #targetingList)
 
     return targetingList[rIndex].Value or nil
 end

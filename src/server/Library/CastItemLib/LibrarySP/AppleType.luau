@@ -36,6 +36,24 @@ return function (self: Types.CastItemTable)
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
     end
+    CastItemLib.Bread = function(player: Player, char: Model) : number?
+        local check = CastItemLib._preCheck({
+            ReqCombat = false,
+            ReqEnemy = false
+        }, {
+            ItemId = "Bread",
+            Player = player,
+            Char = char
+        })
+        if not check then return 0 end
+
+
+        CastItemLib._eatSoundFunc(char, function()
+            local amount = StatusLib.HealPercentage(char, 10)
+
+            ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+        end)
+    end
 
 
     CastItemLib.GoldenApple = function(player: Player, char: Model) : number?

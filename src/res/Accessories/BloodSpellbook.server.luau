@@ -22,6 +22,19 @@ event.Parent = script
 
 
 
+local function _giveATK()
+    local maxHealth = char.Humanoid.MaxHealth :: number
+    local health = char.Humanoid.Health :: number
+
+    char:SetAttribute("BloodSpellbookBonus", health > math.ceil(maxHealth * 0.05))
+end
+Add(HarukaLib:Hydrate(char.Humanoid, {
+    ["Prop-Health"] = _giveATK,
+    ["Prop-MaxHealth"] = _giveATK
+}))
+
+
+
 Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData)
     if script == nil then return end
     if script.Parent == nil then return end
@@ -32,7 +45,9 @@ Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DM
     if not dmgProps.Attacker then return end
     if dmgProps.Attacker ~= "ClassAttacks" then return end
 
-    char.Humanoid:TakeDamage(math.ceil(char.Humanoid.MaxHealth * 0.25))
+    if not char:GetAttribute("BloodSpellbookBonus") then return end
+
+    char.Humanoid:TakeDamage(math.ceil(char.Humanoid.MaxHealth * 0.05))
 end))
 
 

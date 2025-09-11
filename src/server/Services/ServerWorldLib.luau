@@ -372,7 +372,7 @@ table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("NPCs") then return end
 
 
-    for _, npc: Model in workspace.MapComponents.NPCs:GetChildren() do
+    for _, npc: Model in workspace.MapComponents.NPCs:GetDescendants() do
         if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
 

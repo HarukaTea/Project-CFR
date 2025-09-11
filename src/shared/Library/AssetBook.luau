@@ -70,6 +70,7 @@ AssetBook.ItemEffectIcons = {
 	PoisonChance = "rbxassetid://137874332790885",
 	BurnChance = "rbxassetid://74588474308433",
 	BleedChance = "rbxassetid://101337562500575",
+	FreezeChance = "rbxassetid://79241468928508",
 	JumpPower = "rbxassetid://89411498131129",
 	JumpEx = "rbxassetid://89411498131129",
 
@@ -89,6 +90,7 @@ AssetBook.ItemEffectIconColors = {
 	Luck = fromHex('#2ed573'),
 	MaxHealth = fromHex('#2ed573'),
 	MaxShield = fromHex('#ffeaa7'),
+	FreezeChance = fromHex('#81ecec')
 }
 AssetBook.ItemEffectNames = {
 	CD = "CD Time",
@@ -105,6 +107,7 @@ AssetBook.ItemEffectNames = {
 	PoisonChanceEx = "Poison Chance",
 	BurnChanceEx = "Burn Chance",
 	BleedChanceEx = "Bleed Chance",
+	FreezeChanceEx = "Freeze Chance",
 	JumpEx = "Jump",
 }
 AssetBook.ItemEffectIsPercentage = {
@@ -115,7 +118,8 @@ AssetBook.ItemEffectIsPercentage = {
 	WardingEx = true,
 	PoisonChanceEx = true,
 	BurnChanceEx = true,
-	BleedChanceEx = true
+	BleedChanceEx = true,
+	FreezeChanceEx = true,
 }
 
 

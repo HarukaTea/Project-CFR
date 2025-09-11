@@ -27,6 +27,8 @@ local player = Players.LocalPlayer
 local plr = player
 local char = script:FindFirstAncestorOfClass("Model")
 
+local RNG = Random.new()
+
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
@@ -217,9 +219,9 @@ Add(HarukaLib.Clock(1.2, function()
         if entity:GetAttribute("NearestChar") then continue end
 
         Promise.try(function()
-            wait(math.random(5) / 10)
-            local rotating = math.random(5, 20)
-            local direction = math.random(-2, 2)
+            wait(RNG:NextNumber() * RNG:NextInteger(1, 3))
+            local rotating = RNG:NextInteger(5, 20)
+            local direction = RNG:NextInteger(-2, 2)
 
             for _ = 1, rotating do
                 if not ClientLib.IsModelValid(entity) then break end

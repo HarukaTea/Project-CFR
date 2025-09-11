@@ -408,6 +408,40 @@
         "Recipe": ""
     },
     {
+        "ItemId": "WinterHowl",
+        "Name": "Winter Spirit",
+        "Type": "Accessory",
+        "Tier": "4",
+        "Level": "50",
+        "Desc": "Surprisingly you can tolerate its low temperature",
+        "Stat": "",
+        "StatInfo": "ATK(200),MaxHealthEx(500),FreezeChanceEx(2)",
+        "Icon": "99504742365990",
+        "Price": "3000",
+        "SellPrice": "1500",
+        "ExtraStatInfo": "",
+        "Tags": "BossDrop",
+        "ArtifactId": "WolfKing",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "WolfKingAxe",
+        "Name": "Volcanic Axe",
+        "Type": "Accessory",
+        "Tier": "4",
+        "Level": "50",
+        "Desc": "Surprisingly you can tolerate its high temperature",
+        "Stat": "",
+        "StatInfo": "ATK(280),BurnChanceEx(5)",
+        "Icon": "86033463991444",
+        "Price": "3000",
+        "SellPrice": "1500",
+        "ExtraStatInfo": "",
+        "Tags": "BossDrop",
+        "ArtifactId": "WolfKing",
+        "Recipe": ""
+    },
+    {
         "ItemId": "DragonFang",
         "Name": "Dragon Fang",
         "Type": "Material",
@@ -573,9 +607,9 @@
         "Price": "3900",
         "SellPrice": "1950",
         "ExtraStatInfo": "",
-        "Tags": "Crafting,BossDrop",
+        "Tags": "BossDrop",
         "ArtifactId": "QueenBee",
-        "Recipe": "IronOre(10),BeeStinger(25),HealthPotion(25)"
+        "Recipe": ""
     },
     {
         "ItemId": "HoneyGreaves",
@@ -590,9 +624,9 @@
         "Price": "3900",
         "SellPrice": "1950",
         "ExtraStatInfo": "",
-        "Tags": "Crafting,BossDrop",
+        "Tags": "BossDrop",
         "ArtifactId": "QueenBee",
-        "Recipe": "IronOre(10),BeeStinger(25),EndurancePotion(25)"
+        "Recipe": ""
     },
     {
         "ItemId": "HoneyHeadgear",
@@ -607,9 +641,9 @@
         "Price": "3900",
         "SellPrice": "1950",
         "ExtraStatInfo": "",
-        "Tags": "Crafting,BossDrop",
+        "Tags": "BossDrop",
         "ArtifactId": "QueenBee",
-        "Recipe": "IronOre(10),BeeStinger(25),GoldenApple(25)"
+        "Recipe": ""
     },
     {
         "ItemId": "WoodenSword",
@@ -880,7 +914,7 @@
         "SellPrice": "37",
         "ExtraStatInfo": "",
         "Tags": "Crafting",
-        "ArtifactId": "",
+        "ArtifactId": "Exploration",
         "Recipe": "CoalOre(7),Wood(10),Glass(5)"
     },
     {
@@ -1196,7 +1230,7 @@
         "Tier": "4",
         "Level": "100",
         "Desc": "This ancient tome thirsts for more than knowledge",
-        "Stat": "For every attack, you will deal more damage, <red>with the cost of</font> <green>25% Health</font>",
+        "Stat": "For every attack, you will deal more damage, <red>with the cost of</font> <green>5% Health</font> if you have enough health",
         "StatInfo": "MagicEx(400)",
         "Icon": "97143258197742",
         "Price": "6000",
@@ -1356,7 +1390,7 @@
         "SellPrice": "3000",
         "ExtraStatInfo": "",
         "Tags": "Burn,Physical,Chest",
-        "ArtifactId": "",
+        "ArtifactId": "FireEmblem",
         "Recipe": ""
     },
     {
@@ -1656,14 +1690,14 @@
         "Level": "25",
         "Desc": "These supple gloves are crafted from the magical fur of a Kitsune",
         "Stat": "",
-        "StatInfo": "MagicEx(85), ATK(115), CriDMGEx(20)",
+        "StatInfo": "MagicEx(65),ATK(105),CriDMGEx(10)",
         "Icon": "112196279261865",
         "Price": "750",
         "SellPrice": "375",
         "ExtraStatInfo": "",
-        "Tags": "",
-        "ArtifactId": "",
-        "Recipe": ""
+        "Tags": "Crafting",
+        "ArtifactId": "ForestDweller",
+        "Recipe": "SpikyFur(15),ColdFlame(2)"
     },
     {
         "ItemId": "LegendaryHeart",
@@ -1695,7 +1729,7 @@
         "Price": "15",
         "SellPrice": "7",
         "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Crafting,Abyss",
         "ArtifactId": "",
         "Recipe": ""
     },
@@ -2104,7 +2138,7 @@
         "SellPrice": "1237",
         "ExtraStatInfo": "",
         "Tags": "",
-        "ArtifactId": "ForestDweller",
+        "ArtifactId": "",
         "Recipe": ""
     },
     {
@@ -2120,7 +2154,7 @@
         "Price": "45",
         "SellPrice": "22",
         "ExtraStatInfo": "",
-        "Tags": "Crafting,Alchemy",
+        "Tags": "Crafting,Alchemy,Abyss",
         "ArtifactId": "",
         "Recipe": ""
     },
@@ -2155,7 +2189,7 @@
         "SellPrice": "1575",
         "ExtraStatInfo": "",
         "Tags": "",
-        "ArtifactId": "",
+        "ArtifactId": "ForestDweller",
         "Recipe": ""
     },
     {
@@ -2199,15 +2233,15 @@
         "Tier": "5",
         "Level": "150",
         "Desc": "A raw, unpolished gem that pulsates with energy",
-        "Stat": "Everytime you deal a status effect, deal an additional burst of 15% Magic Damage. and deal another burst of 5% Magic Damage once a status effect ends",
-        "StatInfo": "WardingEx(-20), IntensityEx(15), MagicEx(175), BurnChanceEx(10), PoisonChanceEx(10), FreezeChanceEx(5)",
+        "Stat": "Everytime you deal a status effect, deal an additional burst of <purple>15% Magic Damage</font>. and deal another burst of <purple>5% Magic Damage</font> once a status effect ends",
+        "StatInfo": "WardingEx(-20), IntensityEx(15), MagicEx(315), BurnChanceEx(10), PoisonChanceEx(10)",
         "Icon": "73935413417734",
         "Price": "11250",
         "SellPrice": "5625",
         "ExtraStatInfo": "",
-        "Tags": "",
-        "ArtifactId": "",
-        "Recipe": ""
+        "Tags": "Crafting",
+        "ArtifactId": "FireEmblem",
+        "Recipe": "Light(200),BeeStinger(100),SlimeGel(100),SpikyQuills(100),HealthyApple(100)"
     },
     {
         "ItemId": "WarriorsPride",
@@ -2258,6 +2292,23 @@
         "ExtraStatInfo": "",
         "Tags": "Castorice",
         "ArtifactId": "",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "Bread",
+        "Name": "Bread",
+        "Type": "Consumable",
+        "Tier": "1",
+        "Level": "1",
+        "Desc": "This is your breakfast",
+        "Stat": "Recover <green>10%</font> of your max health",
+        "StatInfo": "",
+        "Icon": "106010929981218",
+        "Price": "15",
+        "SellPrice": "7",
+        "ExtraStatInfo": "CD(1)",
+        "Tags": "Heal",
+        "ArtifactId": "Blessing",
         "Recipe": ""
     }
 ]

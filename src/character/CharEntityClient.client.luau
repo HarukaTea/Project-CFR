@@ -113,7 +113,7 @@ end
 
 function CharLib:_InitUI()
     for _, module: ModuleScript in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
-		if string.find(module.Name, ".spec") then print(module.Name) continue end
+		if string.find(module.Name, ".spec") then continue end
         if string.find(module.Name, "_local") then continue end
         if string.find(module.Name, "_preload") then continue end
 
