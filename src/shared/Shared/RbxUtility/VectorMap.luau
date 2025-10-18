@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -23,7 +22,7 @@ export type Class = typeof(setmetatable({} :: {
 }, VectorMap))
 
 
-function VectorMap.new(voxelSize: number?)
+function VectorMap.new(voxelSize: number?) : Class
 	return setmetatable({
 		_voxelSize = voxelSize or 50,
 		_voxels = {},

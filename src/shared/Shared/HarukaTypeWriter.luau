@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -8,11 +7,30 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
+
+export type HarukaWriter = {
+	__index: HarukaWriter,
+
+	Stopped: boolean,
+	Running: boolean,
+
+	OnTyperFinished: Signal.SignalClass,
+	OnUTFUpdated: Signal.SignalClass,
+
+	new: () -> HarukaWriter,
+	TypeText: (self: HarukaWriter, text: string) -> nil,
+	Stop: (self: HarukaWriter) -> nil,
+	IsTyping: (self: HarukaWriter) -> boolean,
+	Destroy: (self: HarukaWriter) -> nil
+}
+
+
+
 local HarukaTypeWriter = {}
 HarukaTypeWriter.__index = HarukaTypeWriter
 
 
-function HarukaTypeWriter.new()
+function HarukaTypeWriter.new() : HarukaWriter
 	local self = setmetatable({}, HarukaTypeWriter)
 
 	self.Stopped = false
@@ -73,4 +91,4 @@ function HarukaTypeWriter:Destroy()
 	self.OnUTFUpdated:Destroy()
 end
 
-return HarukaTypeWriter
+return HarukaTypeWriter :: HarukaWriter

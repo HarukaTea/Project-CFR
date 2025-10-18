@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -138,7 +137,7 @@ function class._evaluate<T>(
 	local tweenInfo = peek(self._tweenInfo) :: TweenInfo
 	-- Restart animation when the goal changes, or if the tween info changes
 	-- partway through another animation.
-	if 
+	if
 		self._activeTo ~= newTweenTo or
 		(self._activeElapsed < self._activeDuration and self._activeTweenInfo ~= tweenInfo)
 	then

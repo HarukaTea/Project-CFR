@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -79,7 +78,7 @@ return function(scope: Fusion.Scope, props: {
                     if use(isSelecting) then
                         return HarukaLib:CommaifyNumber(currency)
                     else
-                        return HarukaLib:NumberConvertToCurrencyString(currency, 1)
+                        return HarukaLib:ShortifyNumber(currency, 1)
                     end
                 end),
 

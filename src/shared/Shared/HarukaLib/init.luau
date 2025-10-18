@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -28,10 +27,10 @@ local HarukaLib = {}
 
     **Example:**
     ``````lua
-    HarukaLib:NumberConvertToCurrencyString(1000, 2) --- 1.00K
+    HarukaLib:ShortifyNumber(1000, 2) --- 1.00K
     ``````
 ]]
-function HarukaLib:NumberConvertToCurrencyString(number: number, decimalPlaces: number) : string
+function HarukaLib:ShortifyNumber(number: number, decimalPlaces: number) : string
 	local prefixes = { "", "K", "M", "B", "T", "Q", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd" }
 	local abbrFactor = math.floor(math.floor(math.log10(number)) / 3)
 
@@ -110,7 +109,8 @@ function HarukaLib:AddAttr(obj: Instance, attribute: string, val: number)
 		return
 	end
 
-	obj:SetAttribute(attribute, obj:GetAttribute(attribute) + val)
+	local attrVal = obj:GetAttribute(attribute) :: number
+	obj:SetAttribute(attribute, attrVal + val)
 end
 
 
@@ -178,7 +178,7 @@ local COLOR_LIST = {
 	["</pink>"] = [[</font>]],
 	["</gray>"] = [[</font>]],
 	["</grey>"] = [[</font>]],
-}
+} :: { [string]: string }
 
 
 --[[
@@ -222,8 +222,8 @@ function HarukaLib:PackData(method: "Pack" | "Unpack", val: any) : any
 
 	elseif method == "Unpack" then
 		if valType ~= "table" then return val end
-		valType = val[1] :: string
 
+		local valType: string = val[1]
 		if valType == "CFrame" then
 			return CFrame.new(unpack(val, 2, #val))
 
@@ -247,7 +247,7 @@ end
 
 	Return a function to destroy the tracker.
 ]]
-function HarukaLib:Hydrate(obj: Instance, props: { any })
+function HarukaLib:Hydrate(obj: Instance, props: { [string]: (val: any) -> nil }) : () -> nil
 	local Add, Empty = HarukaLib.Bin()
 
 	for prop: string, func: (val: any) -> nil in props do
@@ -376,7 +376,7 @@ end
 
 	Return a signal class, it will fire when the tween is completed.
 ]]
-function HarukaLib:Tween(obj: Instance, style: { any }, goal: any, needSignal: boolean)
+function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean) : Signal.SignalClass
 	return Tween(obj, style, goal, needSignal)
 end
 
@@ -384,11 +384,15 @@ end
 --[[
 	Inspired by `t`, it can typecheck any value in runtime
 ]]
-function HarukaLib:TypeCheck(checkTask: "Integer" | "Min" | "Max" | "MinMax", val: any, props: {
+function HarukaLib:TypeCheck(checkTask: string, val: any, props: {
 	Min: number?,
 	Max: number?
-}) : boolean
+}?) : boolean
 
+	local props = props or {
+		Min = 0,
+		Max = 0
+	}
 	local success = pcall(function()
 		if checkTask == "Integer" then
 			assert(type(val) == "number")
@@ -428,7 +432,7 @@ end
 	return a tuple of `(item, weight, entry)`
 ]]
 function HarukaLib:RollLoot(loots: { [string]: number }, luck: number?) : (string, number, number)
-	luck = luck or 1
+	local luck = luck or 1
 
 	local lowestBound = 1e-3
 	local weightAdjustment = 1e9
@@ -587,10 +591,12 @@ end
 --[[
 	Helper function to set the collision group of an object and its children
 ]]
-function HarukaLib:SetCollisionGroup(obj: Instance, group: string)
+function HarukaLib:SetCollisionGroup(obj: BasePart, group: string)
 	if HarukaLib:IsBasePartType(obj) then obj.CollisionGroup = group end
 
-	for _, child: Instance in obj:GetChildren() do HarukaLib:SetCollisionGroup(child, group) end
+	for _, child in obj:GetChildren() do
+		HarukaLib:SetCollisionGroup(child, group)
+	end
 end
 
 
@@ -664,11 +670,20 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 	FollowOriPropsWhenIn: boolean?,
 	TweenCallback: (clonedTweenOutUI: GuiObject) -> nil?,
 
-	PosTweenStyle: "FromB2T" | "FromT2B" | "FromL2R" | "FromR2L"?,
+	PosTweenStyle: string?,
 	PosTweenBaseElement: GuiObject?,
 	PosTweenOffset: number?
-}?)
-	props = props or {}
+})
+	props = props or {
+		DelayTime = nil,
+		TweenTime = nil,
+		SetOriPropsWhenOut = nil,
+		FollowOriPropsWhenIn = nil,
+		TweenCallback = nil,
+		PosTweenStyle = nil,
+		PosTweenBaseElement = nil,
+		PosTweenOffset = nil
+	}
 
 
 	if props.TweenCallback and style == "Out" then
@@ -692,9 +707,11 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 		Enum.EasingDirection.Out
 	)
 	local tweenObjs = ui:GetDescendants()
+	local tweenObjs: { GuiObject } = tweenObjs
+
 	table.insert(tweenObjs, ui)
 
-	local function _tweenGoal(obj: GuiObject, attr: string, tweenProps: { any })
+	local function _tweenGoal(obj: GuiObject, attr: string, tweenProps: { [string]: any })
 		if not obj then return end
 		if not obj.Parent then return end
 
@@ -724,7 +741,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 			obj.Interactable = false
 		end)
 	end
-	local function _startTween(obj: GuiObject, tweenProps: { any })
+	local function _startTween(obj: GuiObject, tweenProps: { [string]: any })
 		if not obj then return end
 		if not obj.Parent then return end
 
@@ -737,7 +754,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 	end
 
 
-	for _, obj: Instance in tweenObjs do
+	for _, obj in tweenObjs do
 		local tweenProps = {}
 
 		if not obj then continue end
@@ -775,6 +792,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 		elseif obj:IsA("UIStroke") then
 			if not obj.Enabled then continue end
 
+			local obj = obj :: UIStroke
 			_tweenGoal(obj, "Transparency", tweenProps)
 		else
 			continue
@@ -860,18 +878,18 @@ end
 	HarukaLib:CommaifyNumber(123456789) -- "123,456,789"
 	``````
 ]]
-function HarukaLib:CommaifyNumber(num: number | string) : string
+function HarukaLib:CommaifyNumber(num: number) : string
 	if not num then return "" end
 
-	num = tostring(num)
+	local formatted = tostring(math.floor(num))
+	while true do
+		local newFormatted, k = formatted:gsub("^(-?%d+)(%d%d%d)", "%1,%2")
+		formatted = newFormatted
 
-	local result = ""
-	for i = 1, #num do
-		result ..= string.sub(num, i, i)
-		if (#num - i) % 3 == 0 and i ~= #num then result ..= "," end
+		if k == 0 then break end
 	end
 
-	return result
+	return formatted
 end
 
 
@@ -913,68 +931,6 @@ end
 ]]
 function HarukaLib:GenerateUUID() : string
 	return string.sub(HttpService:GenerateGUID(false), 1, 8)
-end
-
-
---[[
-	Similar with `PartCache`, but a lot simpler and faster.
-
-	Returns:
-	```lua
-	local pool = HarukaLib:CreatePartPool(obj, initialAmount)
-
-	pool:Get()
-	pool:Return(obj)
-	```
-]]
-function HarukaLib:CreatePartPool(obj: Instance, initialAmount: number?, container: Folder?)
-	container = container or Instance.new("Folder")
-	container.Name = "PartPool_"..obj.Name.."_"..HarukaLib:GenerateUUID()
-	container.Parent = workspace
-
-
-	local DISTANT_CF = CFrame.new(Vector3.one * 1599 * 40)
-
-	initialAmount = initialAmount or 1
-	initialAmount = math.ceil(initialAmount)
-
-	obj = obj:Clone()
-	obj.Parent = container
-
-	local pool = {
-		Object = obj,
-		Available = {},
-	}
-	for _ = 1, initialAmount do
-		local clone = pool.Object:Clone()
-		clone.Parent = container
-
-		table.insert(pool.Available, clone)
-	end
-
-	function pool:Get()
-		local i = #pool.Available
-		local finalObj = pool.Available[i]
-		if finalObj then
-			finalObj = table.remove(pool.Available, i)
-			return finalObj
-		else
-			local newObj = pool.Object:Clone()
-			newObj.Parent = container
-
-			return newObj
-		end
-	end
-	function pool:Return(object: Instance)
-		object.CFrame = DISTANT_CF
-
-		table.insert(pool.Available, object)
-	end
-	function pool:Destroy()
-		container:Destroy()
-	end
-
-	return pool
 end
 
 
@@ -1065,13 +1021,13 @@ HarukaLib.TableUtils = TableUtils
 ]]
 function HarukaLib:EmitParticles(obj: Instance, childrenOnly: boolean?)
 	if childrenOnly then
-		for _, child: ParticleEmitter in obj:GetChildren() do
+		for _, child in obj:GetChildren() do
 			if not child:IsA("ParticleEmitter") then continue end
 
 			child:Emit(child:GetAttribute("EmitCount") or 0)
 		end
 	else
-		for _, child: ParticleEmitter in obj:GetDescendants() do
+		for _, child in obj:GetDescendants() do
 			if not child:IsA("ParticleEmitter") then continue end
 
 			child:Emit(child:GetAttribute("EmitCount") or 0)
@@ -1130,13 +1086,13 @@ end
 ]]
 function HarukaLib:SetParticleState(obj: Instance, state: boolean, childrenOnly: boolean?)
 	if childrenOnly then
-		for _, child: ParticleEmitter in obj:GetChildren() do
+		for _, child in obj:GetChildren() do
 			if not child:IsA("ParticleEmitter") then continue end
 
 			child.Enabled = state
 		end
 	else
-		for _, child: ParticleEmitter in obj:GetDescendants() do
+		for _, child in obj:GetDescendants() do
 			if not child:IsA("ParticleEmitter") then continue end
 
 			child.Enabled = state

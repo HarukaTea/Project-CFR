@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -44,7 +43,7 @@ local function ExternalTime(
 			lastChange = nil,
 			scope = scope,
 			validity = "invalid"
-		}, 
+		},
 		METATABLE
 	) :: any
 	local destroy = function()

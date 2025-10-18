@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -90,7 +89,7 @@ end
 
 function Particles:SetRainCastParticleRate(rate: number)
 	for _, part: BasePart in self.RainCastParts do
-		for _, particle: ParticleEmitter in part:GetDescendants() do
+		for _, particle in part:GetDescendants() do
 			if particle:IsA("ParticleEmitter") then
 				particle.Rate = rate
 			end

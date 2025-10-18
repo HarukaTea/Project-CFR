@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -531,7 +530,7 @@ return function (scope: Fusion.Scope, props: {
                     }),
 
                     ItemStatAutomaticY("FFF_Artifact2PieceDesc", 235, artifactInfo.TwoPieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return if use(artifactEquipped) >= 2 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)
+                        return if use(artifactEquipped) >= 2 then Color3.fromRGB(154, 255, 136) else Color3.fromRGB(159, 159, 159)
                     end)),
                     ItemStatAutomaticY("GGG_Artifact3PieceDesc", 236, artifactInfo.ThreePieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return if use(artifactEquipped) >= 3 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)

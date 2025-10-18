@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -10,19 +9,31 @@ local ServerStorage = game:GetService("ServerStorage")
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
+export type HarukaLayout = {
+    __index: HarukaLayout,
+
+    new: (listLayout: UIListLayout) -> HarukaLayout,
+    Enable: (self: HarukaLayout) -> nil,
+    Disable: (self: HarukaLayout) -> nil,
+    Destroy: (self: HarukaLayout) -> nil,
+
+    _Refresh: (self: HarukaLayout) -> nil,
+}
+
+
 local HarukaListLayout = {}
 HarukaListLayout.__index = HarukaListLayout
 
 
 
 --// Constructor
-function HarukaListLayout.new(listLayout: UIListLayout)
+function HarukaListLayout.new(listLayout: UIListLayout) : HarukaLayout
     local self = setmetatable({}, HarukaListLayout)
 
     self.Add, self.Empty = HarukaLib.Bin()
 
-    self.Layout = listLayout
-    self.Container = self.Layout.Parent :: GuiObject
+    self.UIListLayout = listLayout
+    self.Container = self.UIListLayout.Parent :: GuiObject
 
     self.Enabled = false
 
@@ -34,7 +45,7 @@ function HarukaListLayout:Enable()
     if self.Enabled then return end
 
     self.Enabled = true
-    self.Layout.Parent = ServerStorage
+    self.UIListLayout.Parent = ServerStorage
 
 
     self.Add(self.Container.ChildAdded:Connect(function(child: GuiObject)
@@ -57,7 +68,7 @@ end
 
 
 function HarukaListLayout:Disable()
-    self.Layout.Parent = self.Container
+    self.UIListLayout.Parent = self.Container
     self.Empty()
 
     self.Enabled = false
@@ -75,7 +86,7 @@ end
 
 
 function HarukaListLayout:_Refresh()
-    local listLayout = self.Layout :: UIListLayout
+    local listLayout = self.UIListLayout :: UIListLayout
     local container = self.Container :: GuiObject
 
 
@@ -190,4 +201,4 @@ function HarukaListLayout:_Refresh()
 end
 
 
-return HarukaListLayout
+return HarukaListLayout :: HarukaLayout
