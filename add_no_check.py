@@ -13,6 +13,7 @@ REMOVE_LINES = {
 }
 
 HEAD_LINES = [
+    "--!nocheck",
     "--!nolint LocalUnused",
     "--!nolint LocalShadow",
     "--!nolint SameLineStatement",
