@@ -12,47 +12,22 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
+local HarukaColorLab = require(RepS.HarukaShared.UIAtlas.HarukaColorLab)
 
 local HarukaComponents = {}
+HarukaComponents.HarukaColorLab = HarukaColorLab
 
 
-local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
-
-HarukaComponents.COLOR_SERIES = {
-	Dark = {
-		Background = Color3.fromRGB(28, 28, 37),
-		Title = Color3.fromHex('D3BC8E'),
-		Text = Color3.fromHex('ECE5D8'),
-		Text2 = Color3.fromHex('F6F2EE'),
-		Text3 = Color3.fromHex('FFFFFF'),
-		KeyText = Color3.fromHex('FFCC33'),
-		KeyText2 = Color3.fromHex('37FFFF'),
-		WarnText = Color3.fromHex('FF5E41'),
-		WaterElement = Color3.fromHex('80C0FF'),
-		FireElement = Color3.fromHex('FF9999'),
-		WindElement = Color3.fromHex('80FFD7'),
-		ThunderElement = Color3.fromHex('FFACFF'),
-		GrassElement = Color3.fromHex('99FF88'),
-		IceElement = Color3.fromHex('99FFFF'),
-		EarthElement = Color3.fromHex('FFE699')
-	},
-	White = {
-		Background = Color3.fromRGB(236, 229, 216),
-		Text = Color3.fromHex('4A5366')
-	}
-}
-
-local WHITE_COLOR = HarukaComponents.COLOR_SERIES.White.Background
-local BLACK_COLOR = HarukaComponents.COLOR_SERIES.Dark.Background
-
-HarukaComponents.BLACK_COLOR = BLACK_COLOR
-HarukaComponents.WHITE_COLOR = WHITE_COLOR
-HarukaComponents.GREEN_COLOR = Color3.fromRGB(123, 217, 159)
-HarukaComponents.RED_COLOR = Color3.fromRGB(255, 118, 117)
-HarukaComponents.DARKER_WHITE_COLOR = Color3.fromRGB(202, 196, 185)
-HarukaComponents.BLACK_TEXT_COLOR = Color3.fromHex('#333333')
-HarukaComponents.AZUR_BLUE_COLOR = Color3.fromHex('7ce4f8')
+local DESIGN_VP_SIZE = Vector2.new(1168, 462.4)
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
+
+
+local WHITE_BG_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Background
+local BLACK_BG_COLOR = HarukaColorLab.COLOR_SERIES.Genshin.Background
+
+
+export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
+
 
 --// Init once only
 local existingButtonElements = {}
@@ -61,8 +36,8 @@ local wait = task.wait
 
 --// Helper functions
 
-local function _reconcileProps(default: { any }, props: { any })
-	for prop: string, val: any in props do
+local function _reconcileProps(default: FusionPropsEntry, props: FusionPropsEntry)
+	for prop, val: any in props do
 		if prop == Fusion.Children and default[Fusion.Children] then
 			table.insert(default[Fusion.Children], val)
 			continue
@@ -71,21 +46,28 @@ local function _reconcileProps(default: { any }, props: { any })
 		default[prop] = val
 	end
 end
-local function _createNewCompoent(scope: Fusion.Scope, props: { any }, uiType: string, default: { any }) : GuiObject
+local function _createNewCompoent(scope: Fusion.Scope, props: FusionPropsEntry, uiType: string, default: FusionPropsEntry) : any
 	_reconcileProps(default, props or {})
 
-	return Fusion.New(scope, uiType)(default)
+	local instance = Fusion.New(scope, uiType)(default) :: GuiObject
+	return instance
 end
 
 
-function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: { any }?, childProps: {
-	TopProps: { any }?,
-	CenterProps: { any }?,
-	BottomProps: { any }?,
-	FullProps: { any }?
-}?) : ScreenGui
+function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionPropsEntry, childProps: {
+	TopProps: FusionPropsEntry,
+	CenterProps: FusionPropsEntry,
+	BottomProps: FusionPropsEntry,
+	FullProps: FusionPropsEntry
+}) : ScreenGui
 
-	childProps = childProps or {}
+	guiProps = guiProps or {}
+	childProps = childProps or {
+		TopProps = {},
+		CenterProps = {},
+		BottomProps = {},
+		FullProps = {}
+	}
 
 	local defaultTopProps = {
 		Name = "Top",
@@ -111,10 +93,10 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: { any }
 
 		[Fusion.Children] = {}
 	}
-	_reconcileProps(defaultTopProps, childProps.TopProps or {})
-	_reconcileProps(defaultCenterProps, childProps.CenterProps or {})
-	_reconcileProps(defaultBottomProps, childProps.BottomProps or {})
-	_reconcileProps(defaultFSProps, childProps.FullProps or {})
+	_reconcileProps(defaultTopProps, childProps.TopProps)
+	_reconcileProps(defaultCenterProps, childProps.CenterProps)
+	_reconcileProps(defaultBottomProps, childProps.BottomProps)
+	_reconcileProps(defaultFSProps, childProps.FullProps)
 
 
 	local top, center, bottom, full = nil, nil, nil, nil
@@ -132,7 +114,7 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: { any }
 	end
 
 
-	return _createNewCompoent(scope, guiProps or {}, "ScreenGui", {
+	return _createNewCompoent(scope, guiProps, "ScreenGui", {
 		ClipToDeviceSafeArea = false,
 		ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets,
 		IgnoreGuiInset = true,
@@ -147,12 +129,12 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: { any }
 end
 
 
-function HarukaComponents.Frame(scope: Fusion.Scope, props: { any }) : Frame
+function HarukaComponents.Frame(scope: Fusion.Scope, props: FusionPropsEntry) : Frame
 	return _createNewCompoent(scope, props, "Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
 		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = BLACK_COLOR,
+		BackgroundColor3 = BLACK_BG_COLOR,
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		Selectable = false,
@@ -161,7 +143,7 @@ function HarukaComponents.Frame(scope: Fusion.Scope, props: { any }) : Frame
 end
 
 
-function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: { any }, listProps: { any }) : ScrollingFrame
+function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: FusionPropsEntry, listProps: FusionPropsEntry) : ScrollingFrame
 	local absSize = Fusion.Value(scope, Vector2.zero)
 	local absContentSize = Fusion.Value(scope, Vector2.zero)
 	local VPSize = FusionComponents.useViewportSize(scope)
@@ -212,7 +194,7 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: { any }, li
 	end
 
 	return _createNewCompoent(scope, props, "ScrollingFrame", {
-		BackgroundColor3 = BLACK_COLOR,
+		BackgroundColor3 = BLACK_BG_COLOR,
 		BackgroundTransparency = 1,
 		ScrollBarThickness = 5,
 		ScrollBarImageColor3 = Color3.new(1, 1, 1),
@@ -251,13 +233,13 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: { any }, li
 end
 
 
-function HarukaComponents.TextLabel(scope: Fusion.Scope, props: { any }) : TextLabel
+function HarukaComponents.TextLabel(scope: Fusion.Scope, props: FusionPropsEntry) : TextLabel
 	return _createNewCompoent(scope, props, "TextLabel", {
-		BackgroundColor3 = BLACK_COLOR,
+		BackgroundColor3 = BLACK_BG_COLOR,
 		BackgroundTransparency = 1,
 		FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.Bold),
 		TextScaled = true,
-		TextColor3 = WHITE_COLOR,
+		TextColor3 = WHITE_BG_COLOR,
 		TextStrokeColor3 = Color3.new(),
 		TextStrokeTransparency = 1,
 		TextSize = 100,
@@ -269,15 +251,15 @@ function HarukaComponents.TextLabel(scope: Fusion.Scope, props: { any }) : TextL
 end
 
 
-function HarukaComponents.TextBox(scope: Fusion.Scope, props: { any }) : TextBox
+function HarukaComponents.TextBox(scope: Fusion.Scope, props: FusionPropsEntry) : TextBox
 	return _createNewCompoent(scope, props, "TextBox", {
-		BackgroundColor3 = BLACK_COLOR,
+		BackgroundColor3 = BLACK_BG_COLOR,
 		ClearTextOnFocus = false,
 		FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.Bold),
 		PlaceholderText = "",
 		PlaceholderColor3 = Color3.fromRGB(159, 159, 159),
 		Text = "",
-		TextColor3 = WHITE_COLOR,
+		TextColor3 = WHITE_BG_COLOR,
 		TextScaled = true,
 		TextSize = 100,
 		BorderSizePixel = 0,
@@ -286,7 +268,7 @@ function HarukaComponents.TextBox(scope: Fusion.Scope, props: { any }) : TextBox
 end
 
 
-function HarukaComponents.ImageLabel(scope: Fusion.Scope, props: { any }) : ImageLabel
+function HarukaComponents.ImageLabel(scope: Fusion.Scope, props: FusionPropsEntry) : ImageLabel
 	return _createNewCompoent(scope, props, "ImageLabel", {
 		BackgroundColor3 = Color3.new(),
 		BackgroundTransparency = 1,
@@ -299,7 +281,7 @@ function HarukaComponents.ImageLabel(scope: Fusion.Scope, props: { any }) : Imag
 end
 
 
-function HarukaComponents.IconImageLabel(scope: Fusion.Scope, props: { any }) : ImageLabel
+function HarukaComponents.IconImageLabel(scope: Fusion.Scope, props: FusionPropsEntry) : ImageLabel
 	local defaultProps = {
 		Name = "Icon",
 		BackgroundTransparency = 0,
@@ -319,7 +301,7 @@ function HarukaComponents.IconImageLabel(scope: Fusion.Scope, props: { any }) : 
 end
 
 
-function HarukaComponents.HoverImageButton(scope: Fusion.Scope, props: { any }) : ImageButton
+function HarukaComponents.HoverImageButton(scope: Fusion.Scope, props: FusionPropsEntry) : ImageButton
 	local hoverFunc, leaveFunc, clickFunc =
 		props[Fusion.OnEvent("MouseEnter")], props[Fusion.OnEvent("MouseLeave")], props[Fusion.OnEvent("MouseButton1Click")]
 
@@ -355,7 +337,7 @@ function HarukaComponents.HoverImageButton(scope: Fusion.Scope, props: { any }) 
 end
 
 
-function HarukaComponents.TextButton(scope: Fusion.Scope, props: { any }) : TextButton
+function HarukaComponents.TextButton(scope: Fusion.Scope, props: FusionPropsEntry) : TextButton
 	local hoverFunc, leaveFunc, clickFunc =
 		props[Fusion.OnEvent("MouseEnter")], props[Fusion.OnEvent("MouseLeave")], props[Fusion.OnEvent("MouseButton1Click")]
 
@@ -367,12 +349,12 @@ function HarukaComponents.TextButton(scope: Fusion.Scope, props: { any }) : Text
 	local uniqueId = HttpService:GenerateGUID(false)
 	local button = _createNewCompoent(scope, props, "TextButton", {
 		AutoButtonColor = true,
-		BackgroundColor3 = BLACK_COLOR,
+		BackgroundColor3 = BLACK_BG_COLOR,
 		FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.Bold),
-		TextColor3 = WHITE_COLOR,
+		TextColor3 = WHITE_BG_COLOR,
 		TextScaled = true,
 		BorderSizePixel = 0,
-		TextStrokeColor3 = BLACK_COLOR,
+		TextStrokeColor3 = BLACK_BG_COLOR,
 		TextStrokeTransparency = 1,
 		TextSize = 100,
 		Size = UDim2.fromScale(1, 1),
@@ -391,17 +373,17 @@ function HarukaComponents.TextButton(scope: Fusion.Scope, props: { any }) : Text
 end
 
 
-function HarukaComponents.UIStroke(scope: Fusion.Scope, props: { any }) : UIStroke
+function HarukaComponents.UIStroke(scope: Fusion.Scope, props: FusionPropsEntry) : UIStroke
 	return _createNewCompoent(scope, props, "UIStroke", {
 		Thickness = 1,
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-		Color = WHITE_COLOR,
+		Color = WHITE_BG_COLOR,
 		Transparency = 0
 	})
 end
 
 
-function HarukaComponents.TextUIStroke(scope: Fusion.Scope, props: { any }) : UIStroke
+function HarukaComponents.TextUIStroke(scope: Fusion.Scope, props: FusionPropsEntry) : UIStroke
 	return _createNewCompoent(scope, props, "UIStroke", {
 		Thickness = 1,
 		Transparency = 0,
@@ -409,7 +391,7 @@ function HarukaComponents.TextUIStroke(scope: Fusion.Scope, props: { any }) : UI
 end
 
 
-function HarukaComponents.UICorner(scope: Fusion.Scope, props: { any }) : UICorner
+function HarukaComponents.UICorner(scope: Fusion.Scope, props: FusionPropsEntry) : UICorner
 	return _createNewCompoent(scope, props, "UICorner", {
 		CornerRadius = UDim.new(0.5, 0)
 	})
@@ -421,7 +403,7 @@ function HarukaComponents.RoundUICorner(scope: Fusion.Scope) : UICorner
 end
 
 
-function HarukaComponents.UIPadding(scope: Fusion.Scope, props: { any }) : UIPadding
+function HarukaComponents.UIPadding(scope: Fusion.Scope, props: FusionPropsEntry) : UIPadding
 	return _createNewCompoent(scope, props, "UIPadding", {
 		PaddingTop = UDim.new(0.1, 0),
 		PaddingBottom = UDim.new(0.1, 0),
@@ -438,7 +420,7 @@ function HarukaComponents.UIAspectRatioConstraint(scope: Fusion.Scope, aspect: n
 end
 
 
-function HarukaComponents.UIListLayout(scope: Fusion.Scope, props: { any }) : UIListLayout
+function HarukaComponents.UIListLayout(scope: Fusion.Scope, props: FusionPropsEntry) : UIListLayout
 	return _createNewCompoent(scope, props, "UIListLayout", {
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		FillDirection = Enum.FillDirection.Vertical,
@@ -449,7 +431,7 @@ function HarukaComponents.UIListLayout(scope: Fusion.Scope, props: { any }) : UI
 end
 
 
-function HarukaComponents.UIGridLayout(scope: Fusion.Scope, props: { any }) : UIGridLayout
+function HarukaComponents.UIGridLayout(scope: Fusion.Scope, props: FusionPropsEntry) : UIGridLayout
 	return _createNewCompoent(scope, props, "UIGridLayout", {
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		FillDirection = Enum.FillDirection.Horizontal,
@@ -470,7 +452,7 @@ function HarukaComponents.PaddingFrame(scope: Fusion.Scope, name: string) : Fram
 end
 
 
-function HarukaComponents.HarukaFrame(scope: Fusion.Scope, props: { any }) : Frame
+function HarukaComponents.HarukaFrame(scope: Fusion.Scope, props: FusionPropsEntry) : Frame
 	table.insert(props[Fusion.Children], 1, HarukaComponents.UIAspectRatioConstraint(scope))
 
 	props.Size = UDim2.fromScale(1, 0.1)
@@ -479,7 +461,7 @@ function HarukaComponents.HarukaFrame(scope: Fusion.Scope, props: { any }) : Fra
 end
 
 
-function HarukaComponents.BillboardGui(scope: Fusion.Scope, props: { any }) : BillboardGui
+function HarukaComponents.BillboardGui(scope: Fusion.Scope, props: FusionPropsEntry) : BillboardGui
 	return _createNewCompoent(scope, props, "BillboardGui", {
 		LightInfluence = 0,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
@@ -491,7 +473,7 @@ function HarukaComponents.BillboardGui(scope: Fusion.Scope, props: { any }) : Bi
 end
 
 
-function HarukaComponents.BlurFS(scope: Fusion.Scope, props: { any }) : BlurEffect
+function HarukaComponents.BlurFS(scope: Fusion.Scope, props: FusionPropsEntry) : BlurEffect
 	return _createNewCompoent(scope, props, "BlurEffect", {
 		Enabled = true,
 		Name = "UIBlur"
@@ -500,12 +482,12 @@ end
 
 
 
-function HarukaComponents.ViewportFrame(scope: Fusion.Scope, props: { any }) : ViewportFrame
+function HarukaComponents.ViewportFrame(scope: Fusion.Scope, props: FusionPropsEntry) : ViewportFrame
 	return _createNewCompoent(scope, props, "ViewportFrame", {
-		Ambient = WHITE_COLOR,
-		LightColor = WHITE_COLOR,
+		Ambient = WHITE_BG_COLOR,
+		LightColor = WHITE_BG_COLOR,
 		LightDirection = Vector3.xAxis * -1,
-		BackgroundColor3 = BLACK_COLOR,
+		BackgroundColor3 = BLACK_BG_COLOR,
 		BackgroundTransparency = 1,
 		Selectable = false,
 		SelectionOrder = -1
@@ -514,9 +496,8 @@ end
 
 
 
-function HarukaComponents.UIScale(scope: Fusion.Scope, props: { any }?) : UIScale
+function HarukaComponents.UIScale(scope: Fusion.Scope, props: FusionPropsEntry) : UIScale
 	props = props or {}
-
 	props.Scale = props.Scale or 1
 	props.Scale *= workspace:GetAttribute("UIScaleFactor") or 1
 
@@ -530,7 +511,7 @@ function HarukaComponents.UIScale(scope: Fusion.Scope, props: { any }?) : UIScal
 end
 
 
-function HarukaComponents.UITextSizeConstraint(scope: Fusion.Scope, props: { any }) : UITextSizeConstraint
+function HarukaComponents.UITextSizeConstraint(scope: Fusion.Scope, props: FusionPropsEntry) : UITextSizeConstraint
 	return _createNewCompoent(scope, props, "UITextSizeConstraint", {
 		MaxTextSize = 36,
 		MinTextSize = 1
@@ -538,7 +519,7 @@ function HarukaComponents.UITextSizeConstraint(scope: Fusion.Scope, props: { any
 end
 
 
-function HarukaComponents.UIGradient(scope: Fusion.Scope, props: { any }) : UIGradient
+function HarukaComponents.UIGradient(scope: Fusion.Scope, props: FusionPropsEntry) : UIGradient
 	return _createNewCompoent(scope, props, "UIGradient", {})
 end
 
@@ -655,6 +636,8 @@ function HarukaComponents:TrackButtonEvents(scope: Fusion.Scope, button: GuiObje
 		end)
 	end
 	if clickFunc then
+		local button = button :: TextButton
+
 		button.MouseButton1Click:Connect(function()
 			if not screenGui or not screenGui.Enabled then return false end
 			if not button.Visible then return false end

@@ -41,10 +41,15 @@ export type Animatable =
 -- A task which can be accepted for cleanup.
 export type Task =
 	Instance |
+	thread |
 	RBXScriptConnection |
 	() -> () |
 	{destroy: (unknown) -> ()} |
 	{Destroy: (unknown) -> ()} |
+	{cancel: (unknown) -> ()} |
+	{Cancel: (unknown) -> ()} |
+	{prototype: {cancel: (unknown) -> ()}} |
+
 	{Task}
 
 -- A scope of tasks to clean up.
