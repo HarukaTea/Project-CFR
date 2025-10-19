@@ -17,8 +17,11 @@ local TutorialBook = require(RepS.HarukaShared.Library.TutorialBook)
 
 local Children = Fusion.Children
 
+
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
@@ -27,12 +30,12 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerTutorialBook") then
-        plr.PlayerGui.ExplorerTutorialBook:Destroy()
+        (plr.PlayerGui :: any).ExplorerTutorialBook:Destroy()
     end
 
     local UI; UI = Components.HarukaScreenGui(scope, {
@@ -66,7 +69,7 @@ return function (plr: Player)
                                 SortOrder = Enum.SortOrder.Name,
                             }),
 
-                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
+                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: TutorialBook.TutorialJSON)
                                 local isSelected = Fusion.Value(scope, false)
                                 if panelId == "Combat" then
                                     isSelected:set(true)
@@ -130,7 +133,7 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.7, 1),
 
                         [Children] = {
-                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
+                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: TutorialBook.TutorialJSON)
                                 return panelId, Components.Frame(scope, {
                                     Name = panelId,
                                     AnchorPoint = Vector2.zero,

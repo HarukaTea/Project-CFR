@@ -17,7 +17,7 @@ local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
-local currentGalleon: Model = nil
+local currentGalleon: Model? = nil
 
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
@@ -77,6 +77,7 @@ Add(RunService.Heartbeat:Connect(function()
 
 
     local moveVector = ControlsModule:GetMoveVector() :: Vector3
+    local currentGalleon = currentGalleon
 
     local currentCFrame = currentGalleon.PrimaryPart.CFrame
     local rotationInput = -moveVector.X

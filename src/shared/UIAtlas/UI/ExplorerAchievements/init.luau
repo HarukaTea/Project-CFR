@@ -20,8 +20,11 @@ local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
 
+
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
@@ -30,11 +33,11 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerAchievements") then
-        plr.PlayerGui.ExplorerAchievements:Destroy()
+        (plr.PlayerGui :: any).ExplorerAchievements:Destroy()
     end
 
 
@@ -120,7 +123,7 @@ return function (plr: Player)
                                     Name = badge,
                                     Size = UDim2.fromScale(0.97, 0.22),
                                     BackgroundTransparency = 0,
-                                    BackgroundColor3 = Components.DARKER_WHITE_COLOR,
+                                    BackgroundColor3 = Color3.fromHex('#cac4b9'),
 
                                     LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         local state = use(hasOwned)

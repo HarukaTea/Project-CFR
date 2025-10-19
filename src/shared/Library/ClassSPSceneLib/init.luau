@@ -20,19 +20,12 @@ local ClassSPSceneLib = {} :: ClassSPSceneLib
 local wait = task.wait
 
 
-local function _tweenValue(start: number, duration: number, endTime: number, obj: Instance)
+local function _tweenValue(start: number, duration: number, endTime: number)
 	local numVal = Instance.new('NumberValue')
 	numVal.Value = start
 
-
     HarukaLib:CreateTween(numVal, TweenInfo.new(duration), {Value = endTime}):Play()
 	Debris:AddItem(numVal, duration)
-
-	if obj then
-		numVal.Changed:Connect(function(New)
-			obj.Size = NumberSequence.new(New)
-		end)
-	end
 
 	return numVal
 end
@@ -58,4 +51,4 @@ for _, module: ModuleScript in script.Library:GetChildren() do
 end
 
 
-return ClassSPSceneLib :: ClassSPSceneLib
+return ClassSPSceneLib

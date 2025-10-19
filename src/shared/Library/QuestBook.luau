@@ -3,6 +3,15 @@
 --!nolint SameLineStatement
 --!nolint ImplicitReturn
 
+
+export type QuestObjectiveJSON = {
+    ObjectiveId: string,
+    Default: number,
+    Target: number,
+}
+
+
+
 local template = {
     Id = "",
     QuestType = "Main" :: "Main" | "Side" | "Town",

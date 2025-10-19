@@ -8,9 +8,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local CharLib = {}
-CharLib.Funcs = {}
-
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
@@ -22,6 +19,20 @@ local plr = Players:GetPlayerFromCharacter(char)
 local Add, Empty = HarukaLib.Bin()
 
 local isDead = false
+
+
+
+type CharLibClass = {
+    Funcs: { () -> nil },
+
+    Destroy: (self: CharLibClass) -> nil,
+    Init: (self: CharLibClass) -> nil,
+}
+
+
+local CharLib = {} :: CharLibClass
+CharLib.Funcs = {}
+
 
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
@@ -139,7 +150,7 @@ function CharLib:_TriggerRagdoll()
 			a0.Name = "RagdollAttachment"
 			a1.Name = "RagdollAttachment"
 
-			_createColliderPart(motor.Part1)
+			_createColliderPart((motor :: any).Part1)
 
 			local b = Instance.new("BallSocketConstraint")
 			b.Attachment0 = a0

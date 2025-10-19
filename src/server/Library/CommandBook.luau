@@ -19,7 +19,12 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
 
-local testerRank = if game.PlaceId == 88043509623826 or game.PlaceId == 17737750873 or game.PlaceId == 78011578174285 then 2 else 127
+local PLACE_IDS = {
+    ["88043509623826"] = 2,
+    ["17737750873"] = 2,
+    ["78011578174285"] = 2
+}
+local testerRank = PLACE_IDS[tostring(game.PlaceId)] or 127
 
 local wait = task.wait
 
@@ -36,7 +41,7 @@ export type CallbackProps = {
 local LOCATION_SPAWNPOINTS = CollectionService:GetTagged("SpawnPointsEntity")
 local LOCATIONS = {}
 
-for _, spawnPoints: Configuration in LOCATION_SPAWNPOINTS do
+for _, spawnPoints in LOCATION_SPAWNPOINTS do
     table.insert(LOCATIONS, spawnPoints.Parent.Name)
 end
 
@@ -55,7 +60,9 @@ local commands = {
         },
 
         Callback = function(props: CallbackProps)
-            for _, thatPlr: Player in props.Args[1] do
+            local players = props.Args[1] :: { Player }
+
+            for _, thatPlr in players do
                 if not thatPlr then continue end
                 if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
@@ -81,7 +88,9 @@ local commands = {
         },
 
         Callback = function(props: CallbackProps)
-            for _, thatPlr: Player in props.Args[1] do
+            local players = props.Args[1] :: { Player }
+
+            for _, thatPlr in players do
                 if not thatPlr then continue end
                 if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
@@ -143,7 +152,9 @@ local commands = {
         },
 
         Callback = function(props: CallbackProps)
-            for _, thatPlr: Player in props.Args[1] do
+            local players = props.Args[1] :: { Player }
+
+            for _, thatPlr in players do
                 if not thatPlr then continue end
                 if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
@@ -184,7 +195,9 @@ local commands = {
         },
 
         Callback = function(props: CallbackProps)
-            for _, thatPlr: Player in props.Args[1] do
+            local players = props.Args[1] :: { Player }
+
+            for _, thatPlr in players do
                 if not thatPlr then continue end
                 if not ServerLib.IsCharValid(thatPlr.Character) then continue end
 
@@ -345,7 +358,10 @@ local commands = {
                 return
             end
 
-            HarukaLib:BanPlayerByUserId(tonumber(props.Args[1]), {
+            local userid = props.Args[1] :: string
+            userid = tonumber(userid) :: number
+
+            HarukaLib:BanPlayerByUserId(userid, {
                 Duration = props.Args[2] * 60 * 60,
                 DisplayReason = "Banned by Shroomhaven Temple",
                 PrivateReason = "Banned by Shroomhaven Panel",
@@ -390,10 +406,13 @@ local commands = {
         },
 
         Callback = function(props: CallbackProps)
-            for _, thatPlr: Player in props.Args[1] do
+            local players = props.Args[1] :: { Player }
+
+            for _, thatPlr in players do
                 if not thatPlr then continue end
 
-                thatPlr.Quests:ClearAllChildren()
+                local quests = thatPlr.Quests :: Folder
+                quests:ClearAllChildren()
             end
 
             props.ResolveObj()
@@ -425,7 +444,10 @@ local commands = {
                 return
             end
 
-            HarukaLib:UnbanPlayerByUserId(tonumber(props.Args[1]))
+            local userid = props.Args[1] :: string
+            userid = tonumber(userid) :: number
+
+            HarukaLib:UnbanPlayerByUserId(userid)
             Events.CreateNotify.Fire(props.Executor, "[Haven] Unbanned successfully!")
 
             props.ResolveObj()

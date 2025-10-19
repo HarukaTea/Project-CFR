@@ -22,7 +22,7 @@ local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 local wait = task.wait
 
 
-local Entity = {}
+local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
 
 
@@ -62,6 +62,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
 
     local function _lookAt(target: Model)
+        local target = target
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _moving()
@@ -71,6 +72,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
     end
     local function _spikeShot(target: Model)
+        local target = target
         _lookAt(target)
 
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
@@ -95,6 +97,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
     local function _spikeRain(target: Model)
+        local target = target
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "SpikeRain"
@@ -136,6 +139,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         end):catch(function() end)
     end
     local function _wolfBite(target: Model)
+        local target = target
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "WolfBite"
@@ -246,4 +250,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity :: Types.EntityAttackLib
+return Entity

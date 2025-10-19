@@ -13,8 +13,18 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    StatList: { [string]: number },
-    BaseStatList: { [string]: number },
+    StatList: {
+        {
+            Id: string,
+            Val: { Fusion.Value<number> }
+        }
+    },
+    BaseStatList: {
+        {
+            Id: string,
+            Val: { Fusion.Value<number> }
+        }
+    },
 })
     return Components.ScrollingFrame(scope, {
         Name = "CharStatsPanel",
@@ -27,13 +37,10 @@ return function (scope: Fusion.Scope, props: {
         [Children] = {
             Components.PaddingFrame(scope, "AAA"),
 
-            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope, index: number, val: {
-                Id: string,
-                Val: Fusion.Value
-            })
+            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope, index: number, val)
 
                 local correspondingBaseStat = nil
-                for _, baseStatInfo: { any } in props.BaseStatList do
+                for _, baseStatInfo in props.BaseStatList do
                     if baseStatInfo.Id == val.Id then
                         correspondingBaseStat = baseStatInfo
                         break
@@ -92,22 +99,14 @@ return function (scope: Fusion.Scope, props: {
                                 if val.Id == "ATK" then
                                     return `{use(val.Val[1])}-{use(val.Val[2])}`
                                 else
-                                    return use(val.Val)..(if shouldUsePercent then "%" else "")
+                                    return use(val.Val[1])..(if shouldUsePercent then "%" else "")
                                 end
                             end),
                             TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                if val.Id == "ATK" then
-                                    if use(val.Val[1]) > use(correspondingBaseStat.Val[1]) then
-                                        return Color3.fromRGB(0, 255, 255)
-                                    else
-                                        return Color3.fromHex('#ffffff')
-                                    end
+                                if use(val.Val[1]) > use(correspondingBaseStat.Val[1]) then
+                                    return Color3.fromRGB(0, 255, 255)
                                 else
-                                    if use(val.Val) > use(correspondingBaseStat.Val) then
-                                        return Color3.fromRGB(0, 255, 255)
-                                    else
-                                        return Color3.fromHex('#ffffff')
-                                    end
+                                    return Color3.fromHex('#ffffff')
                                 end
                             end),
 

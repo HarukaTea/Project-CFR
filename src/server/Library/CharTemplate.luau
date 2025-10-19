@@ -109,7 +109,7 @@ local cloned = table.clone(charStats)
     for some reasons, the original table can not access Ex and ExPower sometimes
     so we need to manually clone one
 ]]
-for attr: string, val: any in charStats do
+for attr, val in charStats do
     if cloned[attr.."Ex"] and cloned[attr.."ExPower"] then
         cloned["Base"..attr] = val
     end

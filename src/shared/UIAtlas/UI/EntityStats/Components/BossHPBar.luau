@@ -16,17 +16,19 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    TargetingList: Fusion.Value
+    TargetingList: Fusion.Value<{ ObjectValue }>
 })
     return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
 
         local targetingBoss: ObjectValue = nil
 
-        for _, symbol: ObjectValue in use(props.TargetingList) do
-            if not ClientLib.IsCharValid(symbol.Value) then continue end
-            if not EntityBook[symbol.Value.Name] then continue end
+        for _, symbol in use(props.TargetingList) do
+            local model = symbol.Value :: Model
 
-            if EntityBook[symbol.Value.Name].IsBoss then
+            if not ClientLib.IsCharValid(model) then continue end
+            if not EntityBook[model.Name] then continue end
+
+            if EntityBook[model.Name].IsBoss then
                 targetingBoss = symbol
                 break
             end
@@ -41,7 +43,7 @@ return function (scope: Fusion.Scope, props: {
 
             local entityInfo = EntityBook[targeting.Name]
 
-            local function Value(val: any): Fusion.Value
+            local function Value<T>(val: T): Fusion.Value<T>
                 return Fusion.Value(scope, val)
             end
             local level = Value(1)

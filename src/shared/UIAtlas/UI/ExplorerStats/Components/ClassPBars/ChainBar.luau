@@ -17,7 +17,7 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    ClassVal: Fusion.Value,
+    ClassVal: Fusion.Value<number>,
     Char: Model
 })
 

@@ -19,12 +19,12 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    Class: Fusion.Value,
-    Level: Fusion.Value,
-    EXP: Fusion.Value,
-    PerkPoints: Fusion.Value,
+    Class: Fusion.Value<string>,
+    Level: Fusion.Value<number>,
+    EXP: Fusion.Value<number>,
+    PerkPoints: Fusion.Value<number>,
 
-    PointList: { [string]: Fusion.Value },
+    PointList: { [string]: Fusion.Value<number> },
 })
 
     local inputTextbox = Components.TextBox(scope, {

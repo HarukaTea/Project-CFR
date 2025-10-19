@@ -3,6 +3,15 @@
 --!nolint SameLineStatement
 --!nolint ImplicitReturn
 
+
+export type BoostDataJSON = {
+    Icon: string,
+    Color: Color3,
+
+    IconColor: Color3?
+}
+
+
 return {
     --// Boosts
     JumpPowerBoost = {

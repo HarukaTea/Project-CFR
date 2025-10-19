@@ -14,10 +14,11 @@ return function(scope: Fusion.Scope, props: {
     Size: UDim2?
 })
     props = props or {}
+    props.Size = props.Size or UDim2.fromScale(1, 1)
 
     return Components.Frame(scope, {
         Name = "Star",
-        Size = props.Size or UDim2.fromScale(1, 1),
+        Size = props.Size,
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
         [Children] = {

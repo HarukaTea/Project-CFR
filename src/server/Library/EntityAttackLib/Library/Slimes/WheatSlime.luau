@@ -21,7 +21,7 @@ local SlimeUniversal = require(script.Parent.SlimeUniversal)
 local wait = task.wait
 
 
-local Entity = {}
+local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
 
 
@@ -64,7 +64,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if not ServerLib.IsCharValid(entity) then return end
         if not ServerLib.IsCharValid(target) then return end
 
-        entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
+        entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, (target :: any).PrimaryPart.Position))
     end
     local function _slimeShotButBarrage()
         SlimeUniversal.SlimeBarrageShot(entity)
@@ -146,4 +146,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity :: Types.EntityAttackLib
+return Entity

@@ -17,15 +17,15 @@ local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
     ItemSymbol: IntConstrainedValue,
-    EquippingItems: Fusion.Value,
+    EquippingItems: Fusion.Value<{ StringValue }>,
 
     IsBackpack: boolean?,
 
-    CurrentSelectedItemUniqueId: Fusion.Value,
-    CurrentSelectedItem: Fusion.Value,
-    CurrentSortOrderList: { Fusion.Value }
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentSortOrderList: { Fusion.Value<boolean> }
 })
-    local function Value(val: any) : Fusion.Value
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
 
@@ -197,7 +197,7 @@ return function(scope: Fusion.Scope, props: {
                     }),
 
                     Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
-                        return StarTierSymbol(scope)
+                        return StarTierSymbol(scope, {})
                     end)
                 }
             }),

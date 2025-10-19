@@ -19,10 +19,12 @@ local Types = require(script.Parent.Parent.Types)
 
 local wait = task.wait
 
-return function (self: Types.ProjectileTable)
+return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
     ProjectileLib.SlimeMove1_1 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         local entity = projectile.Owner.Value :: Model
 
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
@@ -67,6 +69,8 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.SlimeMove2_2 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Small"
@@ -91,6 +95,8 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.CrimsonSlimeMove4 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         ProjectileLib.SlimeMove1_1(projectile, container)
 
         wait(0.9)
@@ -111,6 +117,8 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.PurpleSlimeMove3 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Big"
@@ -139,6 +147,8 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.SlimeSpin = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         HarukaLib:CreateTween(projectile.Blast1, AssetBook.TweenInfos.twiceHalf, {
             Size = Vector3.new(16, 16, 16),
             Transparency = 1
@@ -152,6 +162,8 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.SlimeBlast = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         local noSound = false
         if projectile:GetAttribute("NoSound") then
             noSound = true
@@ -220,6 +232,8 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.CrimsonSlimeBomb = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
         pcall(function()
             wait(1)
             projectile:FindFirstChildWhichIsA("Sound", true):Play()

@@ -16,7 +16,7 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    ViewShownValue: Fusion.Value
+    ViewShownValue: Fusion.Value<boolean>
 
 }) : Frame
 

@@ -22,16 +22,17 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
 
-    local targetingEnemy = char.TargetingEnemy.Value
+    local targetingEnemy = (char :: any).TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
-    local centerPos = char:GetAttribute("CombatLocation").Position :: Vector3
+    local combatLocation = char:GetAttribute("CombatLocation") :: CFrame
+    local centerPos = combatLocation.Position :: Vector3
 
     local normalInfo = TweenInfo.new(0.65)
 	local beamInfo = TweenInfo.new(0.3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true)

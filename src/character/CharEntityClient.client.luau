@@ -27,7 +27,18 @@ local wait = task.wait
 repeat wait() until char:HasTag("PlayerCharEntity")
 
 
-local CharLib = {}
+type CharLibClass = {
+    Funcs: { () -> nil },
+
+    Destroy: (self: CharLibClass) -> nil,
+    __Destroy: (self: CharLibClass) -> nil,
+    Init: (self: CharLibClass) -> nil,
+    _InitUI: (self: CharLibClass) -> nil,
+    __Init: (self: CharLibClass) -> nil,
+}
+
+
+local CharLib = {} :: CharLibClass
 CharLib.Funcs = {}
 
 
@@ -174,7 +185,7 @@ table.insert(CharLib.Funcs, function()
     self.ClassAttackAnims.MagicCasted1 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted1", true))
     self.ClassAttackAnims.MagicCasted2 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted2", true))
     self.ClassAttackAnims.Dash = animator:LoadAnimation(animationsClass:FindFirstChild("Dash", true))
-    for _, anim: ObjectValue in animationsClass:GetDescendants() do
+    for _, anim in animationsClass:GetDescendants() do
         if string.find(anim.Name, "Attack") and anim:IsA("ObjectValue") then
             self.ClassAttackAnims[anim.Name] = self.ClassAttackAnims[anim.Value.Name]
         end
@@ -220,10 +231,10 @@ table.insert(CharLib.Funcs, function()
 
         CLASS_ANIMS[class] = {}
         if animContainer:FindFirstChild("Run") then
-            if animContainer.Run:IsA("Animation") then
-                CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer.Run)
-            elseif animContainer.Run:IsA("ObjectValue") then
-                CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer.Run.Value)
+            if (animContainer :: any).Run:IsA("Animation") then
+                CLASS_ANIMS[class].Run = animator:LoadAnimation((animContainer :: any).Run)
+            elseif (animContainer :: any).Run:IsA("ObjectValue") then
+                CLASS_ANIMS[class].Run = animator:LoadAnimation((animContainer :: any).Run.Value)
             end
         else
             CLASS_ANIMS[class].Run = animator:LoadAnimation(animationsChar.Run)
@@ -335,7 +346,7 @@ table.insert(CharLib.Funcs, function()
         local whiteList = { "dance1", "dance2", "dance3", "cheer", "point", "wave", "laugh" }
 
         if (charAnims.Idle.IsPlaying and table.find(whiteList, emote)) then
-            _playCharAnim(charAnims[emote], 0.1)
+            _playCharAnim(charAnims[emote])
         end
     end))
 end)

@@ -10,7 +10,29 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
-local DoTLib = {}
+
+type DoTInfo = {
+    Target: Model,
+    Type: string,
+    Creator: Model,
+    Power: number,
+    Duration: number,
+}
+
+export type DoTLibClass = {
+    __index: DoTLibClass,
+
+    new: (info: DoTInfo) -> DoTLibClass,
+
+    Activate: (self: DoTLibClass) -> nil,
+    Cancel: (self: DoTLibClass) -> nil,
+
+    GetEffectsByTarget: (target: Model) -> { DoTLibClass },
+    GetAffectedTargetsByEffectId: (effectId: string) -> { DoTLibClass },
+}
+
+
+local DoTLib = {} :: DoTLibClass
 DoTLib.__index = DoTLib
 
 local GlobalTimer = require(ServerScriptService.HarukaServer.Shared.GlobalTimer)
@@ -23,13 +45,7 @@ local allDoTObjs = {}
 
 
 --// Constructor
-function DoTLib.new(info: {
-    Target: Model,
-    Type: string,
-    Creator: Model,
-    Power: number,
-    Duration: number,
-})
+function DoTLib.new(info: DoTInfo)
     local self = setmetatable({}, DoTLib)
 
     self.Target = info.Target
@@ -179,9 +195,6 @@ function DoTLib.GetAffectedTargetsByEffectId(effectId: string)
 
     return objs
 end
-
-
-shared.DoTLib = DoTLib
 
 
 return DoTLib

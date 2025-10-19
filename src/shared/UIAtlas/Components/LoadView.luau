@@ -20,7 +20,7 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    LoadingText: Fusion.Value,
+    LoadingText: Fusion.Value<string>,
 })
 
     local texFrame = Components.Frame(scope, {
@@ -92,24 +92,32 @@ return function (scope: Fusion.Scope, props: {
 
 
                         Components.Frame(scope, {
-                            Name = "AAA_AAALine",
+                            Name = "AAA_Line",
                             BackgroundTransparency = 0.9,
                             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                             Size = UDim2.fromScale(1, 0.1)
                         }),
                         Components.Frame(scope, {
-                            Name = "ZZZ_AAALine",
+                            Name = "ZZZ_Line",
                             BackgroundTransparency = 0.9,
                             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                             Size = UDim2.fromScale(1, 0.1)
                         }),
+                        Components.Frame(scope, {
+                            Name = "BBB_Padding",
+                            Size = UDim2.fromOffset(1, 1)
+                        }),
+                        Components.Frame(scope, {
+                            Name = "YYY_Padding",
+                            Size = UDim2.fromOffset(1, 1)
+                        }),
 
-                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: { any })
+                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: Classbook.ClassJSON)
                             if classInfo.DevClass then return classId, nil end
 
 
                             return classId, Components.IconImageLabel(scope, {
-                                Name = classId,
+                                Name = "GGG_"..classId,
                                 Image = classInfo.Icon,
                                 ImageColor3 = classInfo.Color
                             })

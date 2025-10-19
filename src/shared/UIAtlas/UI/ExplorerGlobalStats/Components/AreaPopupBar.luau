@@ -13,7 +13,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    AreaVal: Fusion.Value
+    AreaVal: Fusion.Value<string>
 })
 
     local absTextSize = Fusion.Value(scope, Vector2.zero)

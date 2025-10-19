@@ -18,7 +18,7 @@ return function(scope: Fusion.Scope, props: {
     OptionTitle: string,
     OptionDropdownOptions: { string },
 
-    DropdownValue: Fusion.Value
+    DropdownValue: Fusion.Value<string>
 })
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingDropdown = Fusion.Value(scope, false)

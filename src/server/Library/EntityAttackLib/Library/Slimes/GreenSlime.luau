@@ -21,7 +21,7 @@ local SlimeUniversal = require(script.Parent.SlimeUniversal)
 local wait = task.wait
 
 
-local Entity = {}
+local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
 
 
@@ -63,6 +63,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _lookAt(target: Model)
+        local target = target
+
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _slimeShot(target: Model)
@@ -125,4 +127,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity :: Types.EntityAttackLib
+return Entity

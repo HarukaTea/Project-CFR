@@ -12,26 +12,27 @@ local EnemyHPBar = require(script.Components.EnemyHPBar)
 local EnemyInfoBar = require(script.Components.EnemyInfoBar)
 local BossHPBar = require(script.Components.BossHPBar)
 
-local TargetingBar = require(script.Components.TargetingBar)
+local PlayerTargetingBar = require(script.Components.PlayerTargetingBar)
 
 local Children = Fusion.Children
 
+
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
 
-    local scope = self.scope :: Fusion.Scope
-
-
-    require(script.Pinia)(self)
+    local scope = self.scope
+    Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("EntityStats") then
-        plr.PlayerGui.EntityStats:Destroy()
+        (plr.PlayerGui :: any).EntityStats:Destroy()
     end
 
 
@@ -99,7 +100,7 @@ return function (plr: Player)
                     Position = UDim2.fromScale(1, 0),
 
                     [Children] = {
-                        Components.UIScale(scope),
+                        Components.UIScale(scope, {}),
 
                         Components.Frame(scope, {
                             Name = "TargetingList",
@@ -115,7 +116,7 @@ return function (plr: Player)
                                 }),
 
                                 Fusion.ForValues(scope, self.TargetingList, function(_, scope: Fusion.Scope, targeting: ObjectValue)
-                                    return TargetingBar(scope, {
+                                    return PlayerTargetingBar(scope, {
                                         Targeting = targeting,
                                         TargetingEnemy = self.TargetingEnemy,
                                         TargetArrowPos = self.TargetArrowPos
@@ -132,7 +133,5 @@ return function (plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

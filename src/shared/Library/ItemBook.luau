@@ -10,6 +10,47 @@ local ItemRawBook = require(RepS.HarukaShared.Library.ItemRawBook)
 local ItemBook = {}
 
 
+export type ItemBookRawJSON = {
+    ItemId: string,
+    Name: string,
+    Type: string,
+    Tier: string,
+    Level: string,
+    Desc: string,
+    Stat: string,
+    StatInfo: string,
+    Icon: string,
+    Price: string,
+    SellPrice: string,
+    ExtraStatInfo: string,
+    Recipe: string,
+    ArtifactId: string,
+    Tags: string,
+}
+export type ItemBookJSON = {
+    ItemId: string,
+    Name: string,
+    Type: string,
+    Tier: number,
+    Level: number,
+    Desc: string,
+    Stat: string,
+    StatInfo: string,
+    Icon: string,
+    Price: number,
+    SellPrice: number,
+    ExtraStatInfo: string,
+    Recipe: string,
+    ArtifactId: string,
+    Tags: string,
+
+    StatInfoDesync: { [string]: any },
+    ExtraStatInfoDesync: { [string]: any },
+    RecipeDesync: { [string]: any },
+    TagsDesync: { string },
+}
+
+
 ItemBook.PackItemAttrToTable = function(_, itemSymbol: IntValue) : { [string]: any }
     local attrs = {}
 
@@ -91,28 +132,7 @@ end
 
 
 
-ItemBook.GetItemInfo = function(_, itemId: string) : {
-    ItemId: string,
-    Name: string,
-    Type: string,
-    Tier: number,
-    Level: number,
-    Desc: string,
-    Stat: string,
-    StatInfo: string,
-    Icon: string,
-    Price: number,
-    SellPrice: number,
-    ExtraStatInfo: string,
-    Recipe: string,
-    ArtifactId: string,
-    Tags: string,
-
-    StatInfoDesync: { [string]: any },
-    ExtraStatInfoDesync: { [string]: any },
-    RecipeDesync: { [string]: any },
-    TagsDesync: { string },
-}
+ItemBook.GetItemInfo = function(_, itemId: string) : ItemBookJSON
     local itemInfo = nil
 
     for _, thatItemInfo in ItemRawBook do
@@ -170,13 +190,24 @@ end
 
 --// handle item book
 
-for index: number, itemInfo: { any } in ItemRawBook do
-    itemInfo = table.clone(itemInfo)
+for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
+    local itemInfo = table.clone(itemInfo)
 
     itemInfo.ExtraStatInfoDesync = {}
     itemInfo.StatInfoDesync = {}
     itemInfo.RecipeDesync = {}
     itemInfo.TagsDesync = {}
+
+
+    itemInfo.Tier = tonumber(itemInfo.Tier) or 1
+    itemInfo.Level = tonumber(itemInfo.Level) or 1
+    itemInfo.Icon = "rbxassetid://"..itemInfo.Icon
+    itemInfo.Price = tonumber(itemInfo.Price) or 1599
+    itemInfo.SellPrice = tonumber(itemInfo.SellPrice) or 1599
+
+
+    local itemInfo = itemInfo :: ItemBookJSON
+
 
     --// desync extra info
     if itemInfo.ExtraStatInfo ~= "" then
@@ -220,13 +251,6 @@ for index: number, itemInfo: { any } in ItemRawBook do
     if itemInfo.Type == "Passive" then
         itemInfo.Stat = "<yellow>(Passive will work without equipping)</font> <br/>"..itemInfo.Stat
     end
-
-
-    itemInfo.Tier = tonumber(itemInfo.Tier) or 1
-    itemInfo.Level = tonumber(itemInfo.Level) or 1
-    itemInfo.Icon = "rbxassetid://"..itemInfo.Icon
-    itemInfo.Price = tonumber(itemInfo.Price) or 1599
-    itemInfo.SellPrice = tonumber(itemInfo.SellPrice) or 1599
 
     ItemRawBook[index] = itemInfo
 end

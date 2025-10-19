@@ -22,13 +22,13 @@ return function (scope: Fusion.Scope, props: {
     if not EntityBook[props.Enemy.Name] then return nil end
 
 
-    local function Value(val: any): Fusion.Value
+    local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local HP = Value(100)
 
 
-    table.insert(scope, HarukaLib:Hydrate(props.Enemy.Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate((props.Enemy :: any).Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             HP:set(newHP)
         end,

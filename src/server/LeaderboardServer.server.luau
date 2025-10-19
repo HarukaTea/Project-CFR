@@ -56,8 +56,8 @@ local function _getTop50Players(store: OrderedDataStore) : {{
 
     local topList = {}
 
-    for rank: number, data: { any } in ipairs(top50) do
-        local key = data.key
+    for rank, data in ipairs(top50) do
+        local key: string = data.key
         local userId = tonumber(string.sub(key, 8))
 
         table.insert(topList, rank, {

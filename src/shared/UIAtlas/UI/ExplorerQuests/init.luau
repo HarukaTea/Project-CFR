@@ -16,19 +16,22 @@ local QuestIndicator = require(script.Components.QuestIndicator)
 local Children = Fusion.Children
 
 
+local Pinia = require(script.Pinia)
+
+
 return function(plr: Player)
-	local self = {}
+	local self = {} :: Pinia.Self
 
 	self.plr = plr
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
 
-	require(script.Pinia)(self)
+	Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerQuests") then
-        plr.PlayerGui.ExplorerQuests:Destroy()
+        (plr.PlayerGui :: any).ExplorerQuests:Destroy()
     end
 
 

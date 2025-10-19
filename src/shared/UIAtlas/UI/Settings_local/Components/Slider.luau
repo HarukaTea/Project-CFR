@@ -9,13 +9,27 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
+
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
 local Children = Fusion.Children
 
 
 return function(scope: Fusion.Scope, props: {
-	BarVal: Fusion.Value,
+	BarVal: Fusion.Value<number>,
 	LayoutOrder: number,
-	OptionInfo: { any },
+	OptionInfo: {
+		OptionTitle: string,
+		Type: string,
+		LayoutOrder: number,
+		AllowDecimals: boolean,
+
+		Min: number,
+		Max: number,
+		DefaultValue: number,
+
+		ValChanged: Signal.SignalClass
+	},
 
     OptionId: string,
     OptionTitle: string,
@@ -25,7 +39,7 @@ return function(scope: Fusion.Scope, props: {
 
 	local nodePosition = Fusion.Value(scope, UDim2.fromScale(1, 0.5))
 
-	local uiDragDetector: UIDragDetector = nil
+	local uiDragDetector = nil
 	uiDragDetector = Fusion.New(scope, "UIDragDetector")({
 		ResponseStyle = Enum.UIDragDetectorResponseStyle.Scale,
 		DragStyle = Enum.UIDragDetectorDragStyle.TranslateLine,
@@ -54,7 +68,7 @@ return function(scope: Fusion.Scope, props: {
 				SettingValue = val
 			})
 		end
-	})
+	}) :: UIDragDetector
 
 
 	--// Init

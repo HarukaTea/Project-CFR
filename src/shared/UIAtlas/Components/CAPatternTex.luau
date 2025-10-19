@@ -8,18 +8,21 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
+local Children = Fusion.Children
+
 
 return function (scope: Fusion.Scope, props: {
     Transparency: number?,
-    TileSize: UDim2,
+    TileSize: UDim2?,
 
-    [Fusion.Children]: { any }?,
+    [Fusion.SpecialKey]: Components.FusionPropsEntry,
 })
-
     props = props or {}
 
     props.Transparency = props.Transparency or 0.975
     props.TileSize = props.TileSize or UDim2.fromScale(0.15, 0.15)
+
+    props[Fusion.Children] = props[Fusion.Children] or {}
 
 
     return Components.ImageLabel(scope, {
@@ -34,6 +37,6 @@ return function (scope: Fusion.Scope, props: {
         ScaleType = Enum.ScaleType.Tile,
         TileSize = props.TileSize,
 
-        [Fusion.Children] = props[Fusion.Children] or {},
+        [Children] = props[Fusion.Children],
     })
 end

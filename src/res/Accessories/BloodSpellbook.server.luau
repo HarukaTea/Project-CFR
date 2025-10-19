@@ -34,7 +34,7 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
 
 
 
-Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: DMGPropsMetaData)
+Add(event.Event:Connect(function(targeting: Model, attacker: Model, dmgProps: AccessoryUniversal.DMGPropsMetaData)
     if script == nil then return end
     if script.Parent == nil then return end
     if attacker ~= char then return end

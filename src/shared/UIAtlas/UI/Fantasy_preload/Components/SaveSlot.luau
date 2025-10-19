@@ -69,7 +69,7 @@ return function (scope: Fusion.Scope, props: {
     local POS = {
         0.23, 0.5, 0.77
     }
-    local function Value(val: any) : Fusion.Value
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local isSelecting = Value(false)

@@ -23,7 +23,7 @@ export type UniversalEntity = Types.UniversalEntity
 
 local wait = task.wait
 
-local UniversalEntity = {} :: Types.UniversalEntity
+local UniversalEntity = {} :: UniversalEntity
 
 
 --// Helper functions
@@ -50,7 +50,7 @@ end
 
 
 
-UniversalEntity.InitTemplate = function(_, self: { any }, entity: Model)
+UniversalEntity.InitTemplate = function(_, self: Types.EntityAttackObj, entity: Model)
     self.EntityId = entity.Name
     self.Entity = entity
 
@@ -59,6 +59,8 @@ end
 
 
 UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ())
+    local entity = entity
+
     local function _checkIsValid()
         if not ServerLib.IsModelValid(entity) then
             resolveObj()
@@ -78,14 +80,14 @@ UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ()
 end
 
 
-UniversalEntity.InitAttackTables = function(_, self: { any })
+UniversalEntity.InitAttackTables = function(_, self: Types.EntityAttackObj)
     self.Anims = {}
     self.AttackFuncs = {}
     self.ComboAttackFuncs = {}
 end
 
 
-UniversalEntity.InitAttackTasks = function(_, self: { any }, resolveObj: () -> ())
+UniversalEntity.InitAttackTasks = function(_, self: Types.EntityAttackObj, resolveObj: () -> ())
     table.insert(self.Promises, Promise.try(function()
         while RunService.Stepped:Wait() do
             if UniversalEntity:CheckCombatState(self.Entity) == false then break end
@@ -145,6 +147,8 @@ end
 
 --- combat related functions
 UniversalEntity.GetTargets = function(_, entity: Model) : { Player }
+    local entity = entity
+
     local players = {}
     for _, targetingSymbol: ObjectValue in entity.TargetingList:GetChildren() do
         table.insert(players, Players:GetPlayerFromCharacter(targetingSymbol.Value))
@@ -155,6 +159,8 @@ end
 
 
 UniversalEntity.GetNearbyPlayers = function(_, entity: Model) : { Player }
+    local entity = entity
+
     local nearbyChars = _getCharsByRadius(entity.PrimaryPart.Position, 486)
     local players = {}
 
@@ -189,6 +195,8 @@ end
 
 
 UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
+    local entity = entity
+
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
     end
@@ -201,6 +209,8 @@ end
 
 
 UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
+    local entity = entity
+
     local targetingList = entity.TargetingList:GetChildren()
     local rIndex = Random.new():NextInteger(1, #targetingList)
 
@@ -208,11 +218,9 @@ UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
 end
 
 
-UniversalEntity.DeadTask = function(_, self: { any })
+UniversalEntity.DeadTask = function(_, self: Types.EntityAttackObj)
     self.Died = true
     self.Empty()
-
-    self = nil
 end
 
 
@@ -220,4 +228,4 @@ end
 shared.UniversalEntity = UniversalEntity
 
 
-return UniversalEntity :: UniversalEntity
+return UniversalEntity

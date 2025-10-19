@@ -37,7 +37,7 @@ return function(scope: Fusion.Scope, props: {
 	KeybindId: string,
     KeybindVal: Enum.KeyCode,
 
-    KeybindModeVal: Fusion.Value,
+    KeybindModeVal: Fusion.Value<boolean>,
     KeybindBegan: RBXScriptSignal
 })
 	local isSelecting = Fusion.Value(scope, false)

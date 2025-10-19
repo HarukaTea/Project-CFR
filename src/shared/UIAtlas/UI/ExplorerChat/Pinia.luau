@@ -16,8 +16,32 @@ local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+
+    IsChatShown: Fusion.Value<boolean>,
+    Choices: Fusion.Value<{ string }>,
+    IsTypewriting: Fusion.Value<boolean>,
+
+    NPCId: Fusion.Value<string>,
+
+    Speaker: Fusion.Value<string>,
+    Dialogue: Fusion.Value<string>,
+    Quests: Fusion.Value<{ StringValue }>,
+
+    MaxUTFShown: Fusion.Value<number>,
+
+    ProcessedToNextDialogueSignal: Signal.SignalClass,
+    ProcessedToNextDialogueByChoiceSignal: Signal.SignalClass,
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -31,7 +55,10 @@ return function (self: { any })
 
     self.Speaker = Value("None")
     self.Dialogue = Value("None")
-    self.Quests = FusionComponents.useFolder(scope, self.plr:WaitForChild("Quests", 999))
+
+
+    local quests = FusionComponents.useFolder(scope, (self.plr :: any):WaitForChild("Quests", 999))
+    self.Quests = quests :: Fusion.Value<{ StringValue }>
 
     self.MaxUTFShown = Value(-1)
 
@@ -68,8 +95,14 @@ return function (self: { any })
 
 
 
-    local npcChatting: Model = nil
-    local npcDialogues: { [string]: { string } } = {}
+    local npcChatting: Model? = nil
+    local npcDialogues: {
+        [string]: { string },
+
+        Extra: {
+            [string]: string
+        }?
+    } = {}
     local currentDialoguesChatting: { string } = {}
     local currentDialogueIndexChatting: number = 1
     local dialogueIndexChatting: number = 1
@@ -96,7 +129,8 @@ return function (self: { any })
                 SeriesId = seriesId
             })
 
-            local bindableId = npcDialogues.Extra[seriesId]
+            local extra = npcDialogues.Extra
+            local bindableId = extra[seriesId]
             if QuestBindables[bindableId] then
                 QuestBindables[bindableId]:Fire()
             end
@@ -136,9 +170,11 @@ return function (self: { any })
 
         local dialogue = forceDialogue or currentDialoguesChatting[currentDialogueIndexChatting] :: string
 
+        local npcChatting = npcChatting :: Model
+
         --- patterns
         if string.find(dialogue, "ENTERCHOICE") and npcChatting.Dialogues:FindFirstChild("Choices") then
-            local choiceIndex = string.match(dialogue, "%d+") :: number
+            local choiceIndex = string.match(dialogue, "%d+")
             if choiceIndex then
                 choiceIndex = tonumber(choiceIndex)
             end
@@ -285,13 +321,20 @@ return function (self: { any })
     local function _startChatting(npc: Model)
         if npc == nil then return end
         if not npc:FindFirstChild("Dialogues") then return end
+
+        local npc = npc :: Model
         if not npc.Dialogues:FindFirstChild("Main") then return end
 
         npcChatting = npc
         npcDialogues = require(npc.Dialogues.Main)
 
         self.NPCId:set(npc)
-        self.Speaker:set(string.gsub(npcChatting.Name, "%d+", ""))
+
+        local npcChatting = npcChatting :: Model
+        local npcName = npcChatting.Name
+        local afterNPCName = string.gsub(npcName, "%d+", "")
+
+        self.Speaker:set(afterNPCName)
         self.plr:SetAttribute("CurrentUIGroup", "Chat")
 
         HarukaLib:FreezePlayerControls("Freeze")

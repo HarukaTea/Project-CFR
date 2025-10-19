@@ -13,9 +13,9 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
-    FilterTierList: { Fusion.Value },
-    FilterItemText: Fusion.Value,
-    SortMethodList: { Fusion.Value },
+    FilterTierList: { Fusion.Value<boolean> },
+    FilterItemText: Fusion.Value<string>,
+    SortMethodList: { Fusion.Value<boolean> },
 })
 
     local function Title(text: string, order: number)
@@ -251,7 +251,7 @@ return function (scope: Fusion.Scope, props: {
                                     isSelecting:set(false)
                                 end,
                                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                                    for _, val: Fusion.Value in props.SortMethodList do
+                                    for _, val in props.SortMethodList do
                                         val:set(false)
                                     end
                                     props.SortMethodList[index]:set(true)
@@ -333,7 +333,7 @@ return function (scope: Fusion.Scope, props: {
                     ButtonText = "Reset",
                     ButtonType = "Cancel",
                     ButtonClickFunc = function()
-                        for _, tierStatus: Fusion.Value in props.FilterTierList do
+                        for _, tierStatus in props.FilterTierList do
                             tierStatus:set(true)
                         end
                         props.FilterItemText:set("")

@@ -14,22 +14,35 @@ local AbyssTeambook = require(RepS.HarukaShared.Library.AbyssTeambook)
 
 local wait = task.wait
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    IsUIShown: Fusion.Value<boolean>,
+    AbyssIndexSelected: Fusion.Value<number>,
+    AbyssInfo: Fusion.Value<AbyssTeambook.AbyssTeamJSON>,
+}
+
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(false)
 
-    self.AbyssIndexSelected = Value(nil)
+    self.AbyssIndexSelected = Value(-1)
     self.AbyssInfo = Value({})
 
 
     --// track abyss index selected
     Fusion.Observer(scope, self.AbyssIndexSelected):onBind(function()
         local index = Fusion.peek(self.AbyssIndexSelected)
-        if index == nil then self.AbyssInfo:set({}) return end
         if not AbyssTeambook[index] then self.AbyssInfo:set({}) return end
 
         self.AbyssInfo:set(AbyssTeambook[index].Team)

@@ -11,6 +11,30 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 
+export type IncludesJSON = {
+	OptionTitle: string,
+	Type: string,
+	LayoutOrder: number,
+	Min: number,
+	Max: number,
+	DefaultValue: any,
+	AllowDecimals: boolean,
+
+	ValChanged: Signal.SignalClass,
+}
+
+export type SettingsJSON = {
+	[string]: {
+		PanelTitle: string,
+		LayoutOrder: number,
+
+		Includes: {
+			[string]: IncludesJSON
+		}
+	}
+}
+
+
 local template = {
     Sounds = {
         PanelTitle = "Sounds",

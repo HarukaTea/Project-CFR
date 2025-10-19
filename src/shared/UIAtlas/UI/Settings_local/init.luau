@@ -19,16 +19,20 @@ local Keybind = require(script.Components.Keybind)
 
 local Children = Fusion.Children
 
+
+local Pinia = require(script.Pinia)
+local SettingsTemplate = require(script.SettingsTemplate)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.scope = Fusion.scoped()
 
-    self.INFO = require(script.SettingsTemplate)
+    self.INFO = require(script.SettingsTemplate) :: SettingsTemplate.SettingsJSON
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     local scope = self.scope :: Fusion.Scope
@@ -62,7 +66,14 @@ return function (plr: Player)
                                 Padding = UDim.new(0.04, 0),
                             }),
 
-                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
+                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
+                                PanelTitle: string,
+                                LayoutOrder: number,
+
+                                Includes: {
+                                    [string]: SettingsTemplate.IncludesJSON
+                                }
+                            })
                                 if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
                                     return panelId, nil
                                 end
@@ -132,7 +143,14 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.7, 1),
 
                         [Children] = {
-                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: { any })
+                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
+                                PanelTitle: string,
+                                LayoutOrder: number,
+
+                                Includes: {
+                                    [string]: SettingsTemplate.IncludesJSON
+                                }
+                            })
                                 if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
                                     return panelId, nil
                                 end
@@ -151,7 +169,7 @@ return function (plr: Player)
                                         Components.PaddingFrame(scope, "AAA"),
                                         Components.PaddingFrame(scope, "ZZZ"),
 
-                                        Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope, optionId: string, optionInfo: { any })
+                                        Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope, optionId: string, optionInfo)
                                             if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then
                                                 return optionId, Keybind(scope, {
                                                     Platfrom = if panelId == "KeybindsPC" then "PC" else "Console",

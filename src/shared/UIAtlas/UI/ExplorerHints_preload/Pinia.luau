@@ -20,7 +20,23 @@ local FullHintLabel = require(script.Parent.Components.FullHintLabel)
 
 local wait = task.wait
 
-return function (self: { any })
+
+
+export type Self = {
+	plr: Player,
+	char: Model,
+	scope: Fusion.Scope,
+
+	fsHintsQueue: HarukaLib.HarukaQueue,
+	centerHintsQueue: HarukaLib.HarukaQueue,
+
+	UI: ScreenGui
+}
+
+
+
+
+return function (self: Self)
 	local scope = self.scope :: Fusion.Scope
 
 
@@ -43,7 +59,7 @@ return function (self: { any })
 			Text = text,
 			LayoutOrder = order,
 		})
-		normalHint.Parent = self.UI.Top.Hints
+		normalHint.Parent = (self.UI :: any).Top.Hints
 		Debris:AddItem(normalHint, 3.2)
 
 
@@ -90,7 +106,7 @@ return function (self: { any })
 		end):catch(function() end)
 
 
-		HarukaLib:UITween(fullNotify, "In")
+		HarukaLib:UITween(fullNotify, "In", {})
 		HarukaLib:UITween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
 
 

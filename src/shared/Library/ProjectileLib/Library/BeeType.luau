@@ -17,7 +17,7 @@ local Types = require(script.Parent.Parent.Types)
 
 local wait = task.wait
 
-return function (self: Types.ProjectileTable)
+return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
 
@@ -28,6 +28,8 @@ return function (self: Types.ProjectileTable)
         })
         pcall(function()
             wait(0.5)
+            local projectile = projectile
+
             ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
                 sProjectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
             end)
@@ -38,6 +40,9 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.BeeSpike1 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
+
         if not projectile:GetAttribute("NoSound") then
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
         end

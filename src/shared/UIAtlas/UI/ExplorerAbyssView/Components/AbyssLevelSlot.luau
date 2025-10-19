@@ -17,8 +17,7 @@ local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
     Index: number,
-    AbyssIndexSelected: Fusion.Value,
-
+    AbyssIndexSelected: Fusion.Value<number>,
     IsInfoUI: boolean
 })
 

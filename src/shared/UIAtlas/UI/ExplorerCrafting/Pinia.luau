@@ -14,8 +14,38 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local wait = task.wait
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+
+    IsUIShown: Fusion.Value<boolean>,
+    Items: Fusion.Value<{ Instance }>,
+    PlayerItems: Fusion.Value<{ IntConstrainedValue }>,
+    EquippingItems: Fusion.Value<{ StringValue }>,
+
+    Gold: Fusion.Value<number>,
+
+    FilterViewShown: Fusion.Value<boolean>,
+    FilterTierList: { Fusion.Value<boolean> },
+    FilterItemText: Fusion.Value<string>,
+
+    SortMethodList: { Fusion.Value<boolean> },
+
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+    CurrentCategory: Fusion.Value<string>,
+
+    CraftingMaterials: Fusion.Value<{ Instance }>,
+    CraftingPrice: Fusion.Value<number>,
+    ItemListAbsSize: Fusion.Value<Vector2>
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -23,8 +53,12 @@ return function (self: { any })
     self.IsUIShown = Value(false)
 
     self.Items = FusionComponents.useTagged(scope, "CraftingProductEntity")
-    self.PlayerItems = FusionComponents.useFolder(scope, self.plr:WaitForChild("Items", 999))
-    self.EquippingItems = FusionComponents.useFolder(scope, self.plr:WaitForChild("EquippingItems", 999))
+
+
+    self.PlayerItems = FusionComponents.useFolder(scope, (self.plr :: any).Items)
+
+    local folder = FusionComponents.useFolder(scope, (self.plr :: any).EquippingItems)
+    self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
     self.Gold = Value(0)
 

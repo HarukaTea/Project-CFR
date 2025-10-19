@@ -21,9 +21,9 @@ local ORDER = 1
 
 return function(scope: Fusion.Scope, props: {
     Targeting: ObjectValue,
-    TargetingEnemy: Fusion.Value,
 
-    TargetArrowPos: Fusion.Value
+    TargetingEnemy: Fusion.Value<ObjectValue>,
+    TargetArrowPos: Fusion.Value<UDim2>
 })
     if not ClientLib.IsCharValid(props.Targeting.Value) then return nil end
 
@@ -35,7 +35,7 @@ return function(scope: Fusion.Scope, props: {
     ORDER += 2
 
 
-    local function Value(val: any): Fusion.Value
+    local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local level = Value(1)
@@ -63,7 +63,10 @@ return function(scope: Fusion.Scope, props: {
                 ZIndex = 0,
 
                 Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return UDim2.new(1.05, use(absContentSize).X * -1, 0, 0)
+                    local sizeCon = use(absContentSize).X
+                    sizeCon = math.clamp(sizeCon, 28, 999)
+
+                    return UDim2.new(1.05, sizeCon * -1, 0, 0)
                 end)
             }),
 
@@ -75,7 +78,10 @@ return function(scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(1, 0),
 
                 Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return UDim2.new(0.05, use(absContentSize).X, 1, 0)
+                    local sizeCon = use(absContentSize).X
+                    sizeCon = math.clamp(sizeCon, 28, 999)
+
+                    return UDim2.new(0.05, sizeCon, 1, 0)
                 end),
 
                 [Children] = {
@@ -84,8 +90,8 @@ return function(scope: Fusion.Scope, props: {
                     Components.TextLabel(scope, {
                         Name = "IsTargeting",
                         AnchorPoint = Vector2.new(0, 0.5),
-                        Size = UDim2.fromScale(1.5, 1.5),
-                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                        Size = UDim2.fromScale(0.15, 0.15),
+                        SizeConstraint = Enum.SizeConstraint.RelativeXX,
                         FontFace = Font.fromName("RobotoMono", Enum.FontWeight.Bold),
                         Text = ">",
 
@@ -239,7 +245,11 @@ return function(scope: Fusion.Scope, props: {
             NumberSequenceKeypoint.new(x + 0.001, 1),
             NumberSequenceKeypoint.new(1, 1)
         })
-        HarukaLib:Tween(bar.TitleSection.Icon.UIStroke.UIGradient, AssetBook.TweenInfos.half, { Transparency = result })
+        HarukaLib:Tween(
+            bar.TitleSection.Icon.UIStroke.UIGradient,
+            AssetBook.TweenInfos.half,
+            { Transparency = result }
+        )
     end
     table.insert(scope, HarukaLib:Hydrate(targeting.Humanoid, {
         ["Prop-Health"] = _updateHealth,

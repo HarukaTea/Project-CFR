@@ -15,8 +15,49 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local wait = task.wait
 
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    IsUIShown: Fusion.Value<boolean>,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentCategory: Fusion.Value<string>,
+    CurrentItemCategory: Fusion.Value<string>,
+
+    CurrentPurchaseAction: Fusion.Value<string>,
+
+    AvailableItems: Fusion.Value<Vector2>,
+
+    IsPurchasing: Fusion.Value<boolean>,
+
+    FilterViewShown: Fusion.Value<boolean>,
+    FilterTierList: { Fusion.Value<boolean> },
+    FilterItemText: Fusion.Value<string>,
+
+    SortMethodList: { Fusion.Value<boolean> },
+
+    Currency: {
+        Gold: Fusion.Value<number>,
+        Astra: Fusion.Value<number>
+    },
+
+    Products: Fusion.Value<{
+        ProductId: string,
+        ProductUniqueId: string,
+    } | {}>,
+
+    ItemListAbsSize: Fusion.Value<Vector2>,
+
+    Items: Fusion.Value<{ IntConstrainedValue }>,
+    EquippingItems: Fusion.Value<{ StringValue }>
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -61,12 +102,15 @@ return function (self: { any })
     }
 
 
-    self.Products = Value({})
+    self.Products = Fusion.Value(scope, {})
 
     self.ItemListAbsSize = Value(Vector2.zero)
 
-    self.Items = FusionComponents.useFolder(scope, self.plr.Items)
-    self.EquippingItems = FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    self.Items = FusionComponents.useFolder(scope, (self.plr :: any).Items)
+
+
+    local folder = FusionComponents.useFolder(scope, (self.plr :: any).EquippingItems)
+    self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
 
 

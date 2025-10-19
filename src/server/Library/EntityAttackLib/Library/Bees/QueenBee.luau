@@ -23,7 +23,7 @@ local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 local wait = task.wait
 
 
-local Entity = {}
+local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
 
 
@@ -77,7 +77,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
 
-    local function _lookAt(target)
+    local function _lookAt(target: Model)
+        local target = target
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _moving()
@@ -86,7 +87,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, 7, 0) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
     end
-    local function _spike(target)
+    local function _spike(target: Model)
+        local target = target
         _lookAt(target)
 
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
@@ -107,7 +109,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
-    local function _spikeShot(target)
+    local function _spikeShot(target: Model)
+        local target = target
         _lookAt(target)
 
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
@@ -129,7 +132,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
-    local function _beeRush(target)
+    local function _beeRush(target: Model)
+        local target = target
         _lookAt(target)
 
         local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("BeeMove3", true):Clone() :: Model
@@ -173,7 +177,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _, child: BasePart in projectileSupport:GetDescendants() do
                 if child.Name ~= "Position"..hasProjectiles then continue end
 
-                local postR = ServerLib.FindGroundByRay(child.Position, { projectileSupport })
+                local postR = ServerLib.FindGroundByRay(child.Position)
 
                 HarukaLib:Tween(entity, AssetBook.TweenInfos.twiceHalfOne, {
                     Pivot = CFrame.new(postR) * CFrame.new(0, 7, 0) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0)
@@ -246,4 +250,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity :: Types.EntityAttackLib
+return Entity

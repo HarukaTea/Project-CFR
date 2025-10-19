@@ -6,7 +6,7 @@
 local Types = require(script.Types)
 
 
-export type EntityAttackLib = Types.EntityAttackLibFreeze
+export type EntityAttackLib = Types.EntityAttackObj
 
 local EntityAttackLib = {} :: EntityAttackLib
 
@@ -23,7 +23,4 @@ for _, module: ModuleScript in script.Library:GetDescendants() do
 end
 
 
-shared.EntityAttackLib = EntityAttackLib
-
-
-return EntityAttackLib :: EntityAttackLib
+return EntityAttackLib

@@ -23,15 +23,16 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
-    local targetingEnemy = char.TargetingEnemy.Value
+    local targetingEnemy = (char :: any).TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
-    local centerPos = char:GetAttribute("CombatLocation").Position :: Vector3
+    local combatLocation = char:GetAttribute("CombatLocation") :: CFrame
+    local centerPos = combatLocation.Position :: Vector3
     local positions = {}
 
     local rMag = 12
@@ -65,7 +66,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
             HarukaLib:EmitParticles(astral)
 
 
-            for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
+            for _, symbol: ObjectValue in (char :: any).TargetingList:GetChildren() do
                 if not ClientLib.IsCharValid(symbol.Value) then continue end
 
                 local entity = symbol.Value :: Model

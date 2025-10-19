@@ -21,12 +21,12 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
 
-    local targetingEnemy = char.TargetingEnemy.Value
+    local targetingEnemy = (char :: any).TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
@@ -56,7 +56,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
 
         local arrow = RepS.Packages.SkillProjectiles:FindFirstChild("BurstArrowSplitUlt", true):Clone() :: BasePart
         arrow.Anchored = false
-        arrow.CFrame = char["Left Arm"].CFrame
+        arrow.CFrame = (char :: any)["Left Arm"].CFrame
         arrow.CFrame = CFrame.new(arrow.Position, endCF.Position)
         arrow.Parent = workspace
 

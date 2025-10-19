@@ -13,9 +13,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local SoundService = game:GetService("SoundService")
 
 
-local EntityLib = {}
-EntityLib.__index = EntityLib
-
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
@@ -31,6 +28,70 @@ local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityA
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
+
+
+
+
+export type EntityLibClass = {
+    __index: EntityLibClass,
+
+    new: (locator: BasePart) -> EntityLibClass,
+
+    Destroy: (self: EntityLibClass) -> nil,
+    Init: (self: EntityLibClass) -> nil,
+    EntityInit: (self: EntityLibClass) -> nil,
+    EntityDestroy: (self: EntityLibClass) -> nil,
+
+    _SpawnModel: (self: EntityLibClass) -> nil,
+    _ListenStatsTracker: (self: EntityLibClass) -> nil,
+    _RoamTask: (self: EntityLibClass) -> nil,
+    _ErrorAndRespawn: (self: EntityLibClass, step: number) -> nil,
+    _EnterCombat: (self: EntityLibClass, target: Model, combatMode: string?) -> nil,
+    _ClearEffectListTask: (self: EntityLibClass) -> nil,
+    _CombatEnd: (self: EntityLibClass) -> nil,
+
+
+    Locator: BasePart,
+    LocatorUniqueId: string,
+
+    WholeAdd: <T>(item: T) -> T,
+    RoamAdd: <T>(item: T) -> T,
+    Add: <T>(item: T) -> T,
+    WholeEmpty: () -> nil,
+    RoamEmpty: () -> nil,
+    Empty: () -> nil,
+
+    UniqueId: string,
+    Entity: Model,
+    BoundingSize: number,
+    NearestChar: Model?,
+
+
+    EntityObj: EntityAttackLib.EntityAttackLib,
+
+    CombatInfo: {
+        CombatStarterUniqueId: string,
+        CombatTriggererUniqueId: string?,
+
+        IsInCombat: boolean,
+        CombatLocation: CFrame,
+
+        EnteringCombat_Ready: boolean,
+        IsDead: boolean
+    },
+
+
+    EntityDestroyed: boolean,
+    Destroyed: boolean,
+}
+
+
+
+
+local EntityLib = {} :: EntityLibClass
+EntityLib.__index = EntityLib
+
+
 
 
 local PATH_COSTS = {
@@ -57,8 +118,9 @@ borderSize = borderSize.X
 
 local function _getCharsByRadius(pos: Vector3, radius: number)
     local charList = {}
+    local chars = CollectionService:GetTagged("PlayerCharEntity") :: { Model }
 
-    for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
+    for _, char in chars do
         if not ServerLib.IsCharValid(char) then continue end
         if not char:GetAttribute("_CharDataInited") then continue end
 
@@ -89,7 +151,8 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: str
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
 
-    if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then return end
+    local clock = entity:GetAttribute("SpawnClock") :: number
+    if DateTime.now().UnixTimestamp - clock <= 3 then return end
 
 
     if not ServerLib.IsCharValid(target) then return end
@@ -107,7 +170,9 @@ joinCombatSignal:Connect(function(entity: Model, target: Model)
     if not ServerLib.IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
-    if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") < 3 then return end
+
+    local clock = entity:GetAttribute("SpawnClock") :: number
+    if DateTime.now().UnixTimestamp - clock < 3 then return end
 
     if not ServerLib.IsCharValid(target) then return end
 
@@ -268,14 +333,14 @@ function EntityLib:EntityInit()
     self:_RoamTask()
 
     self.Add(HarukaLib.Clock(5, function()
-        local targetingList = self.Entity.TargetingList
+        local targetingList = self.Entity.TargetingList :: Folder
 
-        for _, targetObj: ObjectValue in targetingList:GetChildren() do
+        for _, targetObj in targetingList:GetChildren() do
             if not ServerLib.IsCharValid(targetObj.Value) then
                 targetObj:Destroy()
             end
         end
-        for _, targetObj: ObjectValue in targetingList:GetChildren() do
+        for _, targetObj in targetingList:GetChildren() do
             if not targetObj.Value:GetAttribute("IsInCombat") then
                 wait(1)
                 if not targetObj.Value:GetAttribute("IsInCombat") then
@@ -459,7 +524,7 @@ function EntityLib:_ListenStatsTracker()
     local entityInfo = EntityBook[entity.Name]
 
 
-    for attr: string, val: any in table.clone(EntityTemplate) do
+    for attr, val in table.clone(EntityTemplate) do
         if typeof(val) == "table" then
             local folder = Instance.new("Folder")
             folder.Name = attr
@@ -659,7 +724,7 @@ function EntityLib:_RoamTask()
                 local nearestChar = nil
                 local nearestDist = 999
 
-                for _, char: Model in nearestChars do
+                for _, char in nearestChars do
                     if not ServerLib.IsCharValid(char) then continue end
 
                     if char:GetAttribute("IsInCombat") then continue end
@@ -726,7 +791,7 @@ function EntityLib:_RoamTask()
                 local nearestChar = nil
                 local nearestDist = 999
 
-                for _, char: Model in nearestChars do
+                for _, char in nearestChars do
                     if not ServerLib.IsCharValid(char) then continue end
 
                     if char:GetAttribute("IsInCombat") then continue end
@@ -819,7 +884,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 hasPosVal = false
 
                 self.CombatInfo.CombatTriggererUniqueId = self.CombatInfo.CombatStarterUniqueId
-                self.CombatInfo.CombatLocation = CFrame.new(ServerLib.FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
+                self.CombatInfo.CombatLocation = CFrame.new(ServerLib.FindGroundByRayForCombatLocation((target :: any).PrimaryPart.Position))
             else
                 self.CombatInfo.CombatLocation = location
             end
@@ -838,7 +903,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     local encounterBorder: Model = nil
     local nearbyCount = 0
     local function _nearbyEnemyEnterCombat()
-        for _, entityObj: { any } in allEntityPool do
+        for _, entityObj: EntityLibClass in allEntityPool do
             if nearbyCount >= 5 then break end
 
             local thatEntity = entityObj.Entity :: Model
@@ -861,7 +926,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         Debris:AddItem(encounterBorder, 5)
 
 
-        if (target.PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
+        if ((target :: any).PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
             target:PivotTo(combatLocation * CFrame.new(0, 6, 0))
         end
 
@@ -916,6 +981,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     --- check again!
     if not ServerLib.IsCharValid(target) then self:_ErrorAndRespawn(1) return end
 
+    local target = target
     target = nil
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
@@ -967,6 +1033,8 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     --- make players into combat
     local nearbyCharCount = 1
     local function _addAndSetTargetingEnemy(char: Model)
+        local char = char :: Model
+
         local targetSymbol = Instance.new("ObjectValue")
         targetSymbol.Name = entity.Name
         targetSymbol.Value = entity
@@ -1041,7 +1109,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             if thatEntityObj.CombatInfo.IsDead then continue end
 
             if thatEntityObj.CombatInfo.CombatTriggererUniqueId == self.CombatInfo.CombatStarterUniqueId then
-                for _, thatEntitySymbol: ObjectValue in thatEntityObj.Entity.TargetingList:GetChildren() do
+                for _, thatEntitySymbol in thatEntityObj.Entity.TargetingList:GetChildren() do
                     if not ServerLib.IsCharValid(thatEntitySymbol.Value) then continue end
 
                     local char = thatEntitySymbol.Value :: Model
@@ -1121,14 +1189,16 @@ function EntityLib:_CombatEnd()
     Promise.new(function(resolve)
         local check = false
 
-        for _, thatEntityObj: { any } in allEntityPool do
+        for _, thatEntityObj: EntityLibClass in allEntityPool do
             if thatEntityObj.UniqueId == self.UniqueId then continue end
             if not thatEntityObj.CombatInfo.IsInCombat then continue end
             if not thatEntityObj.CombatInfo.CombatStarterUniqueId then continue end
             if thatEntityObj.CombatInfo.IsDead then continue end
 
             if thatEntityObj.CombatInfo.CombatStarterUniqueId == self.CombatInfo.CombatStarterUniqueId then
-                local alreadyAdded = thatEntityObj.Entity.TeamUpEnemies:FindFirstChild(self.UniqueId) ~= nil
+                local thatEntity = thatEntityObj.Entity :: Model
+
+                local alreadyAdded = thatEntity.TeamUpEnemies:FindFirstChild(self.UniqueId) ~= nil
                 if not alreadyAdded then
                     local teamUpEntitySymbol = Instance.new("ObjectValue")
                     teamUpEntitySymbol.Name = self.UniqueId
@@ -1136,7 +1206,7 @@ function EntityLib:_CombatEnd()
 
                     teamUpEntitySymbol:SetAttribute("Level", entity:GetAttribute("Level"))
 
-                    teamUpEntitySymbol.Parent = thatEntityObj.Entity.TeamUpEnemies
+                    teamUpEntitySymbol.Parent = thatEntity.TeamUpEnemies
                 end
 
                 check = true
@@ -1168,7 +1238,7 @@ function EntityLib:_CombatEnd()
     end):await()
 
 
-    local function _giveLoot(drops: { any }, char: Model)
+    local function _giveLoot(drops: { [string]: number }, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
 
@@ -1183,7 +1253,7 @@ function EntityLib:_CombatEnd()
             ServerLib.PlaceItemDropPart(plr, result, 1, entity.PrimaryPart.Position, false)
         end
     end
-    local function _giveBadge(entityInfo: { any }, char: Model)
+    local function _giveBadge(entityInfo: EntityBook.EntityJSON, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
 
@@ -1213,7 +1283,7 @@ function EntityLib:_CombatEnd()
 
 
             local charTargetingList = thatChar.TargetingList :: Folder
-            for _, targetingSymbol: ObjectValue in charTargetingList:GetChildren() do
+            for _, targetingSymbol in charTargetingList:GetChildren() do
                 if not ServerLib.IsCharValid(targetingSymbol.Value) then
                     targetingSymbol:Destroy()
                     continue
@@ -1245,7 +1315,7 @@ function EntityLib:_CombatEnd()
                     _giveLoot(entityInfo.Drops, thatChar)
                     _giveBadge(entityInfo, thatChar)
 
-                    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+                    for _, diedEntitySymbol in entity.TeamUpEnemies:GetChildren() do
                         local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
 
                         if workspace:GetAttribute("DungeonId") or workspace:GetAttribute("AbyssId") then
@@ -1301,8 +1371,5 @@ function EntityLib:_CombatEnd()
 end
 
 
-
-
-shared.EntityLib = EntityLib
 
 return EntityLib

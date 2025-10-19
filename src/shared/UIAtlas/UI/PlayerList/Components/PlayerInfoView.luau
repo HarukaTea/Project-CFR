@@ -30,7 +30,7 @@ local isInviting = false
 
 
 return function (scope: Fusion.Scope, props: {
-    PlayerSelecting: Fusion.Value,
+    PlayerSelecting: Fusion.Value<Player?>,
 })
 
     return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
@@ -41,7 +41,7 @@ return function (scope: Fusion.Scope, props: {
             local player = use(props.PlayerSelecting) :: Player
 
 
-            local function Value(val: any) : Fusion.Value
+            local function Value<T>(val: T) : Fusion.Value<T>
                 return Fusion.Value(scope, val)
             end
             local level = Value(1)
@@ -180,10 +180,7 @@ return function (scope: Fusion.Scope, props: {
                         Size = fromScale(0.63, 0.095),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         AutoLocalize = false,
-
-                        Text = Computed(scope, function(use: Fusion.Use)
-                            return use(props.PlayerSelecting).DisplayName
-                        end)
+                        Text = player.DisplayName,
                     }),
                     Components.TextLabel(scope, {
                         Name = "UserName",
@@ -193,9 +190,7 @@ return function (scope: Fusion.Scope, props: {
                         TextColor3 = fromRGB(193, 193, 193),
                         AutoLocalize = false,
 
-                        Text = Computed(scope, function(use: Fusion.Use)
-                            return `@{use(props.PlayerSelecting).Name}`
-                        end)
+                        Text = `@{player.Name}`
                     }),
                     Components.TextLabel(scope, {
                         Name = "LevelAndPlayTime",

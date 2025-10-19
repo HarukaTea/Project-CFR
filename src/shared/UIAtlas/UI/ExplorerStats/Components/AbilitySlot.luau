@@ -13,14 +13,33 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
+
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    ActiveInfo: { any }
+    ActiveInfo: {
+        Id: string,
+        CDSymbol: NumberValue,
+        Cooldown: Fusion.Value<string>,
+        CDRotation: Fusion.Value<number>,
 
-}, self: { any })
+        ItemId: Fusion.Value<string>,
+        ItemUniqueId: Fusion.Value<string>,
+
+        CastCD: boolean,
+        DisplayOrder: number,
+        KeyDisplay: string
+    }
+
+}, self: {
+    plr: Player,
+
+    RequestToDash: Signal.SignalClass
+})
 
     local isSelecting = Fusion.Value(scope, false)
 

@@ -12,6 +12,8 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
 
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
@@ -22,9 +24,25 @@ local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
     Index: number,
-    ActiveInfo: { any }
+    ActiveInfo: {
+        Id: string,
+        CDSymbol: NumberValue,
+        Cooldown: Fusion.Value<string>,
+        CDRotation: Fusion.Value<number>,
 
-}, self: { any })
+        ItemId: Fusion.Value<string>,
+        ItemUniqueId: Fusion.Value<string>,
+
+        CastCD: boolean,
+        DisplayOrder: number,
+        KeyDisplay: string
+    }
+
+}, self: {
+    plr: Player,
+
+    RequestToCastItem: Signal.SignalClass
+})
 
     local isSelecting = Fusion.Value(scope, false)
     local amount = Fusion.Value(scope, 1)
@@ -95,9 +113,12 @@ return function(scope: Fusion.Scope, props: {
         local item = Fusion.peek(props.ActiveInfo.ItemId) :: string
         local hasItem = ItemBook:GetItemInfo(item)
         if not hasItem then return end
-        if not self.plr.Items:FindFirstChild(item) then return end
 
-        subscribeAdd(HarukaLib:Hydrate(self.plr.Items[item], {
+
+        local plr = self.plr :: Player
+        if not plr.Items:FindFirstChild(item) then return end
+
+        subscribeAdd(HarukaLib:Hydrate(plr.Items[item], {
             ["Prop-Value"] = function(val: number)
                 amount:set(val)
             end

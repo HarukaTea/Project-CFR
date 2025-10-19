@@ -12,13 +12,16 @@ local ArtifactRawBook = require(ReplicatedStorage.HarukaShared.Library.ArtifactR
 local ArtifactBook = {}
 
 
-
-function ArtifactBook:GetArtifactInfo(artifactId: string) : {
+export type ArtifactJSON = {
     ArtifactId: string,
     ArtifactTitle: string,
     TwoPieceEff: string,
     ThreePieceEff: string,
 }
+
+
+
+function ArtifactBook:GetArtifactInfo(artifactId: string) : ArtifactJSON? | {}
     artifactId = artifactId or "none"
     local info = {}
 

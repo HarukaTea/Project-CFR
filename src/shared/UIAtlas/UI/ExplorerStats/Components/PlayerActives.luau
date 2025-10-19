@@ -12,6 +12,8 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
 
@@ -21,13 +23,17 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    ClassUltProgress: Fusion.Value,
-    MaxClassUltProgress: Fusion.Value,
+    ClassUltProgress: Fusion.Value<number>,
+    MaxClassUltProgress: Fusion.Value<number>,
 
-    Class: Fusion.Value,
-    ClassVariant: Fusion.Value
+    Class: Fusion.Value<string>,
+    ClassVariant: Fusion.Value<string>
 
-}, self: { any })
+}, self: {
+    RequestToCastClassUlt: Signal.SignalClass,
+    ActiveList: {},
+    CharAbilityList: {}
+})
 
     local isSelectingUlt = Fusion.Value(scope, false)
 

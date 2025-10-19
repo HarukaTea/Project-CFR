@@ -25,7 +25,7 @@ return function(scope: Fusion.Scope, props: {
     if props.Player.Name == Players.LocalPlayer.Name then return nil end
 
 
-    local function Value(val: any): Fusion.Value
+    local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local level = Value(1)
@@ -34,7 +34,7 @@ return function(scope: Fusion.Scope, props: {
     local role = Value("")
 
 
-    table.insert(scope, HarukaLib:Hydrate(props.Char.Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate((props.Char :: any).Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             HP:set(newHP)
         end,
@@ -56,8 +56,8 @@ return function(scope: Fusion.Scope, props: {
         Name = "PlayerInfoBar",
         Size = UDim2.fromScale(4.8, 1.2),
         MaxDistance = 65,
-        StudsOffset = Vector3.yAxis * 2,
-        Adornee = props.Char.Head,
+        StudsOffset = Vector3.yAxis * 3,
+        Adornee = props.Char.PrimaryPart,
 
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -129,8 +129,8 @@ return function(scope: Fusion.Scope, props: {
         Name = "PlayerInfoBar",
         Size = UDim2.fromScale(12, 1),
         MaxDistance = 65,
-        StudsOffset = Vector3.yAxis * 3.5,
-        Adornee = props.Char.Head,
+        StudsOffset = Vector3.yAxis * 4.5,
+        Adornee = props.Char.PrimaryPart,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0
@@ -153,8 +153,8 @@ return function(scope: Fusion.Scope, props: {
         Name = "PlayerRoleBar",
         Size = UDim2.fromScale(12, 0.7),
         MaxDistance = 65,
-        StudsOffset = Vector3.yAxis * 4.5,
-        Adornee = props.Char.Head,
+        StudsOffset = Vector3.yAxis * 5.5,
+        Adornee = props.Char.PrimaryPart,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0

@@ -11,8 +11,37 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+
+    IsUIShown: Fusion.Value<boolean>,
+    FilterViewShown: Fusion.Value<boolean>,
+    FilterTierList: { Fusion.Value<boolean> },
+    FilterItemText: Fusion.Value<string>,
+    SortMethodList: { Fusion.Value<boolean> },
+
+    AvailableItems: Fusion.Value<Vector2>,
+
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+    CurrentCategory: Fusion.Value<string>,
+
+    Currency: {
+        Gold: Fusion.Value<number>,
+        Astra: Fusion.Value<number>
+    },
+
+    ItemListAbsSize: Fusion.Value<Vector2>,
+    Items: Fusion.Value<{ IntConstrainedValue }>,
+    EquippingItems: Fusion.Value<{ StringValue }>,
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -52,8 +81,11 @@ return function (self: { any })
 
     self.ItemListAbsSize = Value(Vector2.zero)
 
-    self.Items = FusionComponents.useFolder(scope, self.plr.Items)
-    self.EquippingItems = FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    self.Items = FusionComponents.useFolder(scope, (self.plr :: any).Items)
+
+
+    local folder = FusionComponents.useFolder(scope, (self.plr :: any).EquippingItems)
+    self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
 
 

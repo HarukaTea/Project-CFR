@@ -21,8 +21,8 @@ local statIcons = {
 return function (scope: Fusion.Scope, props: {
     StatId: string,
 
-    StatValue: Fusion.Value,
-    StatValue2: Fusion.Value?,
+    StatValue: Fusion.Value<number>,
+    StatValue2: Fusion.Value<number>?,
 })
 
     return Components.Frame(scope, {

@@ -10,7 +10,34 @@ local RepS = game:GetService("ReplicatedStorage")
 local BezierAlgoBook = require(RepS.HarukaShared.Library.BezierAlgoBook)
 
 
-local TrailAlgoBook = {}
+
+export type TrailAlgoLibClass = {
+	__index: TrailAlgoLibClass,
+
+	new: () -> TrailAlgoLibClass,
+	Init: (self: TrailAlgoLibClass, part: BasePart, props: {
+		Origin: Vector3?,
+		Duration: number?,
+		radius: number?,
+		Interval: number?,
+		Index: number?,
+		CurveOffset: number?,
+		Projectile: BasePart?,
+		Size: number?,
+		Color: Color3?,
+		Transparency: number?,
+		Lifetime: number?
+	}) -> nil,
+	Disconnect: (self: TrailAlgoLibClass) -> nil,
+	Destroy: (self: TrailAlgoLibClass) -> nil,
+
+
+	Active: boolean
+}
+
+
+
+local TrailAlgoBook = {} :: TrailAlgoLibClass
 TrailAlgoBook.__index = TrailAlgoBook
 
 

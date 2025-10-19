@@ -36,7 +36,9 @@ return function(scope: Fusion.Scope, props: {
     Slot: string,
     Index: number,
 
-}, self: { any })
+}, self: {
+    plr: Player
+})
 
     local isSelecting = Fusion.Value(scope, false)
     local key = nil
@@ -140,14 +142,16 @@ return function(scope: Fusion.Scope, props: {
                     isSelecting:set(false)
                 end,
                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                    local curUIGroup = self.plr:GetAttribute("CurrentUIGroup") :: string
+                    local plr = self.plr :: Player
+
+                    local curUIGroup = plr:GetAttribute("CurrentUIGroup") :: string
 
                     if props.Slot == "Character" then
-                        self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "CharSelfView" or "None")
+                        plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and "CharSelfView" or "None")
                         return
                     end
 
-                    self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and props.Slot or "None")
+                    plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and props.Slot or "None")
                 end,
             })
         }

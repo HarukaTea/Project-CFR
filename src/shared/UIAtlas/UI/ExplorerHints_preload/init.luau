@@ -15,13 +15,17 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
+
+local Pinia = require(script.Pinia)
+
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.scope = Fusion.scoped()
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     local scope = self.scope :: Fusion.Scope
@@ -47,7 +51,7 @@ return function (plr: Player)
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         }),
 
-                        Components.UIScale(scope)
+                        Components.UIScale(scope, {})
                     }
                 })
             }

@@ -25,6 +25,8 @@ local FoxUniversal = {}
 
 
 FoxUniversal.SpikeShot = function(entity: Model, target: Model)
+    local entity, target = entity, target
+
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SpikeShot"
@@ -49,6 +51,8 @@ end
 
 
 FoxUniversal.SpikeRain = function(entity: Model, target: Model)
+    local target = target
+
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SpikeRain"

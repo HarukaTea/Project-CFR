@@ -31,7 +31,17 @@ local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
 
-local GlobalCriRPGLib = {}
+
+export type GlobalCriRPGLibClass = {
+    Funcs: { () -> nil },
+
+    Init: (self: GlobalCriRPGLibClass) -> nil
+}
+
+
+
+
+local GlobalCriRPGLib = {} :: GlobalCriRPGLibClass
 GlobalCriRPGLib.Funcs = {}
 
 local wait = task.wait
@@ -118,21 +128,30 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 end)
 
             end, 3, 6):andThen(function(humanoidDesc: HumanoidDescription)
-                r6Char.Humanoid:ApplyDescription(humanoidDesc)
+                local r6Char = r6Char :: Model
+                local r6Humanoid = r6Char.Humanoid :: Humanoid
+
+                r6Humanoid:ApplyDescription(humanoidDesc)
 
             end):catch(function()
 
             end)
         end
 
+        local r6Char = r6Char :: Model
+        local r6Humanoid = r6Char.Humanoid :: Humanoid
+
         r6Char.Archivable = true
         r6Char.Name = plr.Name
         r6Char:PivotTo(CFrame.new(Vector3.yAxis * 159))
-        r6Char.Humanoid.DisplayName = plr.DisplayName
-        r6Char.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-        r6Char.Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+
+        r6Humanoid.DisplayName = plr.DisplayName
+        r6Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        r6Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+        r6Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
+
         r6Char.Animate:Destroy()
-        r6Char.PrimaryPart = r6Char.Humanoid.RootPart
+        r6Char.PrimaryPart = r6Humanoid.RootPart
 
         r6Char:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
@@ -143,14 +162,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         HarukaLib:SetCollisionGroup(r6Char, "PlayerBodyPart")
 
         plr.Character = r6Char
-
-
-        local enumState = {
-            Enum.HumanoidStateType.Swimming,
-        }
-        for _, state: Enum.HumanoidStateType in enumState do
-            r6Char.Humanoid:SetStateEnabled(state, false)
-        end
 
 
         --// clear collision box
@@ -180,11 +191,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local seat = galleon:FindFirstChildOfClass("Seat")
         if not seat then return end
 
+        local galleon = galleon
+
         galleon.PrimaryPart.Anchored = false
         galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
 
 
-        seat:Sit(plr.Character.Humanoid)
+        seat:Sit((plr.Character :: any).Humanoid)
         seat:GetPropertyChangedSignal("Occupant"):Connect(function()
             local occupant = seat.Occupant
             if occupant == nil then
@@ -292,7 +305,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         elseif prompt.Name == "Market" then
             local products = {}
-            for _, product: Instance in prompt:FindFirstAncestorOfClass("Model").Products:GetChildren() do
+            local market = prompt:FindFirstAncestorOfClass("Model")
+            local productsFolder = market.Products :: Folder
+
+
+            for _, product: Instance in productsFolder:GetChildren() do
                 if ItemBook:GetItemInfo(product.Name) then
                     table.insert(products, {
                         ProductId = product.Name,
@@ -319,7 +336,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
                 if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
 
-                if galleon.Owner.Value == plr then
+                if (galleon :: any).Owner.Value == plr then
                     galleon:Destroy()
                     continue
                 end
@@ -356,12 +373,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         elseif prompt.Name == "DungeonPortal" then
-            char:PivotTo(prompt.Destination.Value.CFrame)
+            char:PivotTo((prompt :: any).Destination.Value.CFrame)
 
 
         elseif prompt.Name == "Class" then
             local statue = prompt:FindFirstAncestorOfClass("Model")
 
+            local plr = plr
             local items = plr.Items :: Folder
             if not items:FindFirstChild(statue.Weapon.Value) then
                 ServerLib.GiveItemDrop(plr, statue.Weapon.Value, 1)
@@ -406,7 +424,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             material.Parent = game:GetService("ServerStorage")
 
 
-            local amount = #material.Collectables:GetChildren() :: number
+            local amount = #material.Collectables:GetChildren()
             amount += math.random(-1, 1)
             amount /= 2
             amount = math.floor(amount)
@@ -621,6 +639,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
+        local plr = plr
         local equippingItems = plr.EquippingItems :: Folder
         local equippingInfo = equippingItems:FindFirstChild(slotId) :: StringValue
 
@@ -837,6 +856,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         char:SetAttribute("IsChatting", nil)
 
 
+        local npcModel = npcModel
         local dialogues = npcModel.Dialogues :: Configuration
 
         --// do signal
@@ -868,6 +888,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local itemInfo = ItemBook:GetItemInfo(data.ItemId)
         if not itemInfo then return end
 
+        local plr = plr
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(data.ItemId) :: IntConstrainedValue
 
@@ -1036,7 +1057,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         local totalPrice = itemInfo.Price * purchaseAmount
-        if plr:GetAttribute("Gold") < totalPrice then
+        local curGold = plr:GetAttribute("Gold") :: number
+
+        if curGold < totalPrice then
             Events.CreateNotify.Fire(plr, "You don't have enough Gold to purchase this item!")
             return
         end
@@ -1112,6 +1135,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         --// cant sell items that is not existed
+        local plr = plr
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
         if itemSymbol == nil then return end
@@ -1226,7 +1250,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if itemInfo.TagsDesync.Statue then
             if item == "Crescendo" then
                 local amount = 0
-                for _, itemSymbol: IntConstrainedValue in plr.Items:GetChildren() do
+                local plr = plr
+                local items = plr.Items :: Folder
+
+                for _, itemSymbol in items:GetChildren() do
                     if itemSymbol.Name == "Crescendo" then
                         amount += 1
                     end
@@ -1243,6 +1270,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         --// cant sell items that is not existed
+        local plr = plr
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
         if itemSymbol == nil then return end
@@ -1320,7 +1348,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
 
             if data.PointId == "DEX" then
-                if plr:GetAttribute("DEXPoints") >= FormulaBook.PLAYER_MAX_DEX_POINTS then
+                local dexPoints = plr:GetAttribute("DEXPoints") :: number
+
+                if dexPoints >= FormulaBook.PLAYER_MAX_DEX_POINTS then
                     plr:SetAttribute("DEXPoints", FormulaBook.PLAYER_MAX_DEX_POINTS)
 
                     Events.CreateNotify.Fire(plr, "DEX points have reached their limit!")
@@ -1333,7 +1363,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
             if data.PointId == "DEX" then
-                if plr:GetAttribute("DEXPoints") >= FormulaBook.PLAYER_MAX_DEX_POINTS then
+                local dexPoints = plr:GetAttribute("DEXPoints") :: number
+
+                if dexPoints >= FormulaBook.PLAYER_MAX_DEX_POINTS then
                     local maxOut = plr:GetAttribute("DEXPoints") - FormulaBook.PLAYER_MAX_DEX_POINTS
                     HarukaLib:AddAttr(plr, "PerkPoints", maxOut)
 
@@ -1344,7 +1376,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
 
         elseif pointAdd < 0 then
-            if plr:GetAttribute(data.PointId.."Points") <= 0 then return end
+            local thatPoints = plr:GetAttribute(data.PointId.."Points") :: number
+
+            if thatPoints <= 0 then return end
 
             local pointHave = plr:GetAttribute(data.PointId.."Points") :: number
             if pointAdd < -pointHave then
@@ -1494,8 +1528,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         local materialCheck = true
+        local plr = plr
         for material: string, amount: number in itemInfo.RecipeDesync do
-            local itemSymbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
+            local items = plr.Items :: Folder
+            local itemSymbol = items:FindFirstChild(material) :: IntConstrainedValue
             local materialInfo = ItemBook:GetItemInfo(material)
 
             if not materialInfo then
@@ -1584,7 +1620,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             --- check if player already have a party
             local pass = true
-            for _, child: Instance in workspace.MapComponents.PartyHolder:GetDescendants() do
+            for _, child in workspace.MapComponents.PartyHolder:GetDescendants() do
                 if child:IsA("ObjectValue") and child.Name == player.Name then
                     pass = false
                 elseif child:IsA("ObjectValue") and child.Name == plr.Name then
@@ -1595,7 +1631,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             --- check if player is in a request
             local foundTicket = false
-            for _, child: Instance in char:GetChildren() do
+            for _, child in char:GetChildren() do
                 if child.Name == "PartyInviteTicket" and child.Value == plr.Character then foundTicket = true break end
             end
             if foundTicket then Events.CreateNotify.Fire(plr, "Player already has an invitation!") return end
@@ -1632,7 +1668,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             --- get ticket
             local ticket: ObjectValue? = nil
-            for _, child: Instance in char:GetChildren() do
+            for _, child in char:GetChildren() do
                 if child.Name == "PartyInviteTicket" and child.Value == inviterChar then ticket = child break end
             end
             if ticket == nil then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
@@ -1704,7 +1740,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         elseif option == "PartyLeave" then
             local function _disbandPartyAction(partyFolder: Folder)
-                for _, symbol: ObjectValue in partyFolder:GetChildren() do
+                for _, symbol in partyFolder:GetChildren() do
                     if symbol:IsA("ObjectValue") and symbol.Value then
                         local memeber = Players:GetPlayerFromCharacter(symbol.Value)
                         if not memeber then continue end
@@ -1717,13 +1753,15 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
 
             local partyFolder: Folder? = nil
-            for _, child: Instance in workspace.MapComponents.PartyHolder:GetDescendants() do
+            for _, child in workspace.MapComponents.PartyHolder:GetDescendants() do
                 if child:IsA("ObjectValue") and child.Name == plr.Name then
                     partyFolder = child.Parent
                     child:Destroy()
 
+                    local thatPartyFolder = partyFolder :: Folder
+
                     plr:SetAttribute("IsInParty", false)
-                    for _, symbol: ObjectValue in partyFolder:GetChildren() do
+                    for _, symbol in thatPartyFolder:GetChildren() do
                         if symbol:IsA("ObjectValue") and symbol.Value then
                             local memeber = Players:GetPlayerFromCharacter(symbol.Value)
                             if not memeber then continue end
@@ -1732,10 +1770,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                         end
                     end
 
-                    if partyFolder.Name == plr.Name then
-                        _disbandPartyAction(partyFolder)
+                    if thatPartyFolder.Name == plr.Name then
+                        _disbandPartyAction(thatPartyFolder)
 
-                        partyFolder:Destroy()
+                        thatPartyFolder:Destroy()
                     end
                     break
                 end
@@ -1743,7 +1781,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if not partyFolder then return end
 
             local count = 0
-            for _, symbol: ObjectValue in partyFolder:GetChildren() do
+            for _, symbol in partyFolder:GetChildren() do
                 if symbol:IsA("ObjectValue") then count += 1 end
             end
             if count <= 0 then
@@ -1764,7 +1802,7 @@ end)
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     local function _challengeAbyss(plr: Player, data: {
-        AbyssId: number
+        AbyssId: number?
     })
         if not data.AbyssId then return end
 
@@ -1827,7 +1865,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local id, val = data.SettingId, data.SettingValue
         if id == "HideUI" then return end
 
-        local valueSymbol = plr.CriRPGSettings:FindFirstChild(id)
+        local plr = plr
+        local criSettings = plr.CriRPGSettings :: Configuration
+
+        local valueSymbol = criSettings:FindFirstChild(id)
         if not valueSymbol then
             if type(val) == "number" then
                 valueSymbol = Instance.new("NumberValue")
@@ -1839,7 +1880,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             valueSymbol.Name = id
             valueSymbol.Value = val
-            valueSymbol.Parent = plr.CriRPGSettings
+            valueSymbol.Parent = criSettings
         end
 
         valueSymbol.Value = val
@@ -1930,10 +1971,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
 
         wait(1)
-        if not ServerLib.IsCharValid(plr.Character) then return end
+        local char = plr.Character :: Model
+        if not ServerLib.IsCharValid(char) then return end
 
 
-        plr.Character:PivotTo(merchant.Destination.Value.CFrame)
+        char:PivotTo(merchant.Destination.Value.CFrame)
     end)
 end)
 

@@ -16,22 +16,28 @@ local DMGStat = require(script.Parent.DMGStat)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    Class: Fusion.Value,
+    Class: Fusion.Value<string>,
 
-    EquippingPassives: { any },
-    EquippingItems: { any },
+    EquippingPassives: {
+        {
+            Id: string,
+            ItemId: Fusion.Value<string>,
+            ItemUniqueId: Fusion.Value<string>,
+        }
+    },
+    EquippingItems: Fusion.Value<{ StringValue }>,
 
-    HP: Fusion.Value,
-    MaxHP: Fusion.Value,
+    HP: Fusion.Value<number>,
+    MaxHP: Fusion.Value<number>,
 
-    Shield: Fusion.Value,
-    MaxShield: Fusion.Value,
+    Shield: Fusion.Value<number>,
+    MaxShield: Fusion.Value<number>,
 
-    IsHPRecovering: Fusion.Value,
+    IsHPRecovering: Fusion.Value<boolean>,
 
-    MinDMG: Fusion.Value,
-    MaxDMG: Fusion.Value,
-    Magic: Fusion.Value
+    MinDMG: Fusion.Value<number>,
+    MaxDMG: Fusion.Value<number>,
+    Magic: Fusion.Value<number>
 })
 
     return Components.Frame(scope, {
@@ -120,7 +126,7 @@ return function(scope: Fusion.Scope, props: {
 
                                 Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     local state = false
-                                    for _, passive: { any } in props.EquippingPassives do
+                                    for _, passive in props.EquippingPassives do
                                         if ItemBook:GetItemInfo(use(passive.ItemId)) then
                                             state = true
                                             break

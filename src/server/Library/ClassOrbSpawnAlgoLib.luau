@@ -7,6 +7,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 local ClassOrbSpawnAlgoLib = {}
 
 
@@ -55,10 +56,6 @@ end
 ClassOrbSpawnAlgoLib.Execution = function(spawnCallback: (orbName: string) -> nil)
     spawnCallback("ExecutionOrb")
 end
-
-
-
-shared.ClassOrbSpawnAlgoLib = ClassOrbSpawnAlgoLib
 
 
 return ClassOrbSpawnAlgoLib

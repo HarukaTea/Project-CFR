@@ -16,7 +16,7 @@ local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
 local wait = task.wait
 
 
-local Entity = {}
+local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
 
 
@@ -56,7 +56,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
 
 
-    local function _spike(target)
+    local function _spike(target: Model)
+        local target = target
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
@@ -83,6 +84,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
     local function _allAreaBurnCombo2(target: Model)
+        local target = target
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
@@ -141,4 +143,4 @@ function Entity:Destroy()
     UniversalEntity:DeadTask(self)
 end
 
-return Entity :: Types.EntityAttackLib
+return Entity

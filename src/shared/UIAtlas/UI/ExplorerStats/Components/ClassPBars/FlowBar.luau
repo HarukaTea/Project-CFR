@@ -18,8 +18,8 @@ local clamp = math.clamp
 
 
 return function (scope: Fusion.Scope, props: {
-    ClassVal: Fusion.Value,
-    ClassVal2: Fusion.Value,
+    ClassVal: Fusion.Value<number>,
+    ClassVal2: Fusion.Value<number>,
 
     Char: Model
 })

@@ -7,7 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 
-local ServerBindables = {
+return {
     RToSpawnChar = Signal.new(),
     RToSpawnOrb = Signal.new(),
     RToCreateProjectileSymbol = Signal.new(),
@@ -21,5 +21,3 @@ local ServerBindables = {
 
     PartyInvite = Signal.new(),
 }
-
-return ServerBindables

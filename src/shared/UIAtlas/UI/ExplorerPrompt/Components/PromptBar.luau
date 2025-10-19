@@ -25,9 +25,11 @@ local fromScale = UDim2.fromScale
 return function (scope: Fusion.Scope, props: {
     PromptObject: ProximityPrompt,
     LayoutOrder: number,
-    CurrentPromptIndex: Fusion.Value,
+    CurrentPromptIndex: Fusion.Value<number>,
 
-}) : Frame
+    Platform: string?
+
+}) : Frame?
     if props.PromptObject == nil then return nil end
 
 

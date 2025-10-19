@@ -82,7 +82,7 @@ return function (plr: Player)
 		Bindables.ConfirmPromptChosen:Fire(nextPrompt.ConfirmUniqueId, finalResult)
 
 		HarukaLib:UITween(UI, "Out", {
-			TweenCallback = function(tweenOutUI: GuiObject)
+			TweenCallback = function(tweenOutUI)
 				Fusion.doCleanup(confirmScope)
 
 				tweenOutUI.Full:Destroy()
@@ -151,7 +151,7 @@ return function (plr: Player)
 		Bindables.ConfirmPromptChosen:Fire(nextPrompt.ConfirmUniqueId, finalResult)
 
 		HarukaLib:UITween(UI, "Out", {
-			TweenCallback = function(tweenOutUI: GuiObject)
+			TweenCallback = function(tweenOutUI)
 				Fusion.doCleanup(confirmScope)
 
 				tweenOutUI.Full:Destroy()

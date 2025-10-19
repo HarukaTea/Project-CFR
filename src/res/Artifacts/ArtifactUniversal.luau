@@ -18,7 +18,7 @@ export type ClassUltMetaData = {
     ClassId: string,
     ClassVariant: string,
     DMGType: string,
-    Target: Model?
+    Target: Model
 }
 
 local ArtifactUniversal = {}

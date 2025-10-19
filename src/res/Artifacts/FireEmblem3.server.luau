@@ -24,7 +24,7 @@ event.Name = "PlayerClassUltCasted"
 event.Parent = script
 
 
-Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target: Model, caster: Model, ultMetaData)
+Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target, caster, ultMetaData)
     local stack = 0
 
     for _, effSymbol: StringValue in char.EffectList:GetChildren() do

@@ -17,9 +17,8 @@ return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
     OptionTitle: string,
-	OptionInfo: { any },
 
-    BooleanValue: Fusion.Value
+    BooleanValue: Fusion.Value<boolean>
 })
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingSwitcher = Fusion.Value(scope, false)

@@ -19,11 +19,11 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
-    local targetingEnemy = char.TargetingEnemy.Value
+    local targetingEnemy = (char :: any).TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 

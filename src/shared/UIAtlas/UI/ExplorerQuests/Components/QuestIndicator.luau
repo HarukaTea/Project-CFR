@@ -15,7 +15,7 @@ return function (scope: Fusion.Scope, props: {
     QuestType: string,
     WorldPoint: Vector3,
 
-    CharPoint: Fusion.Value
+    CharPoint: Fusion.Value<Vector3>
 })
 
     return Components.Frame(scope, {

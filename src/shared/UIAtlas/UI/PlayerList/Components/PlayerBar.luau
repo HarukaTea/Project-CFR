@@ -22,21 +22,25 @@ local Children = Fusion.Children
 return function (scope: Fusion.Scope, props: {
     Player: Player,
 
-    PlayerSelecting: Fusion.Value,
-    PlayerSelected: Fusion.Value
+    PlayerSelecting: Fusion.Value<Player?>,
+    PlayerSelected: Fusion.Value<Player?>,
+
+    Index: number?,
 })
-    props.Index = props.Player:GetAttribute("JoinOrder") or 1
+
+    local joinOrder = props.Player:GetAttribute("JoinOrder") :: number
+    props.Index = joinOrder or 1
 
     if props.Player == Players.LocalPlayer then
         props.Index = 0
     end
 
 
-    local function Value(val: any) : Fusion.Value
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local thatClass = Value("Burst")
-    local thatRoles = FusionComponents.useFolder(scope, props.Player:WaitForChild("Roles"))
+    local thatRoles = FusionComponents.useFolder(scope, (props.Player :: any):WaitForChild("Roles"))
     local thatLevel = Value(1)
 
 

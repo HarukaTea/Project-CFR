@@ -76,7 +76,7 @@ DATA_TYPES.NumberRange = function(a, b, t)
 end
 
 
-return function (object: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean)
+return function (object: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?)
 	local properties = {}
 	local tweenSignal = nil
 

@@ -32,7 +32,15 @@ repeat task.wait() until char:GetAttribute("Haruka_CharClientInited")
 local Add, Empty = HarukaLib.Bin()
 
 
-local CriRPGLib = {}
+type CriRPGLibClass = {
+    Funcs: { () -> nil },
+
+    Init: (self: CriRPGLibClass) -> nil,
+    Destroy: (self: CriRPGLibClass) -> nil,
+}
+
+
+local CriRPGLib = {} :: CriRPGLibClass
 CriRPGLib.Funcs = {}
 
 
@@ -55,6 +63,7 @@ local function _fadeOrb(orb: Model)
 
     --// fade tween
     local orbMiddle = orb:FindFirstChild("Middle") or orb:FindFirstChild("Base") :: BasePart
+    local orb = orb :: any
 
     orb.Part.Anchored = false
     orb.ForceField.Anchored = false
@@ -683,7 +692,7 @@ table.insert(CriRPGLib.Funcs, function()
         for _, tree: Model in CollectionService:GetTagged("TreeEntity_Transparent") do
             tree:RemoveTag("TreeEntity_Transparent")
 
-            for _, part: BasePart in tree:GetDescendants() do
+            for _, part in tree:GetDescendants() do
                 if HarukaLib:IsBasePartType(part) then
                     part.LocalTransparencyModifier = 0
 
@@ -708,7 +717,7 @@ table.insert(CriRPGLib.Funcs, function()
                     if distance < 115.99 and distance > 0 then
                         tree:AddTag("TreeEntity_Transparent")
 
-                        for _, part: BasePart in tree:GetDescendants() do
+                        for _, part in tree:GetDescendants() do
                             if HarukaLib:IsBasePartType(part) then
                                 part.CanCollide = false
                                 part.LocalTransparencyModifier = 0.7

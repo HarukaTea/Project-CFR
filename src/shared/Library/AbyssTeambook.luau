@@ -6,6 +6,14 @@
 local abyss = {}
 
 
+export type AbyssTeamJSON = {
+    [string]: {
+        Level: number,
+        EnvironmentBonus: number
+    }
+}
+
+
 abyss[1] = {
     Icon = "rbxassetid://107792957022135",
     Team = {

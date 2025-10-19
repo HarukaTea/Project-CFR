@@ -14,6 +14,13 @@ local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
 
+export type ServerWorldLibClass = {
+    Funcs: { () -> nil },
+
+    Init: (self: ServerWorldLibClass) -> nil
+}
+
+
 local ServerWorldLib = {}
 ServerWorldLib.Funcs = {}
 
@@ -121,7 +128,7 @@ table.insert(ServerWorldLib.Funcs, function()
             tree:AddTag("TreeEntity")
             tree.Parent = treeContainer
 
-            for _, part: BasePart in tree:GetDescendants() do
+            for _, part in tree:GetDescendants() do
                 if HarukaLib:IsBasePartType(part) and part.Material == Enum.Material.Grass then
                     part.CanCollide = false
                     part.CastShadow = math.random(1, 2) == 1
@@ -162,7 +169,7 @@ table.insert(ServerWorldLib.Funcs, function()
 
 
     local function _optimize(container: Instance)
-        for _, part: BasePart in container:GetDescendants() do
+        for _, part in container:GetDescendants() do
             if HarukaLib:IsBasePartType(part) then
                 part.EnableFluidForces = false
             end
@@ -175,7 +182,7 @@ end)
 
 table.insert(ServerWorldLib.Funcs, function()
     local function _updateBorder(border: Model)
-        for _, child: Instance in border.Border:GetChildren() do
+        for _, child in (border :: any).Border:GetChildren() do
             if child:IsA("BasePart") and child.Name == "Part" then
                 local beam = child:FindFirstChildOfClass("Beam")
 
@@ -198,7 +205,7 @@ table.insert(ServerWorldLib.Funcs, function()
     for _, orb: Model in ReplicatedStorage.Packages.ClassAttacks:GetDescendants() do
         if not orb:HasTag("OrbEntity") then continue end
 
-        for _, part: BasePart in orb:GetDescendants() do
+        for _, part in orb:GetDescendants() do
             if not part:IsA("BasePart") then continue end
 
             part.CanTouch = false
@@ -227,16 +234,18 @@ table.insert(ServerWorldLib.Funcs, function()
         angularVelocity.Parent = orb.PrimaryPart
 
 
+        local orbPrimaryPart = orb.PrimaryPart :: BasePart
+
         if not orb:GetAttribute("WithoutRecolor") then
-            orb.PrimaryPart.Beam1.Color = ColorSequence.new(
-                orb.PrimaryPart.Color, orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5)
+            orbPrimaryPart.Beam1.Color = ColorSequence.new(
+                orbPrimaryPart.Color, orbPrimaryPart.Color:Lerp(Color3.new(), 0.5)
             )
-            orb.PrimaryPart.Beam2.Color = ColorSequence.new(
-                orb.PrimaryPart.Color:Lerp(Color3.new(), 0.5), orb.PrimaryPart.Color
+            orbPrimaryPart.Beam2.Color = ColorSequence.new(
+                orbPrimaryPart.Color:Lerp(Color3.new(), 0.5), orbPrimaryPart.Color
             )
         end
 
-        orb.Hitbox.CanTouch = true
+        (orb :: any).Hitbox.CanTouch = true
     end
 end)
 
@@ -283,7 +292,7 @@ table.insert(ServerWorldLib.Funcs, function()
         if sGroup:IsA("SoundGroup") then
             sGroup.Parent = SoundService
 
-            for _, sound: Sound in sGroup:GetChildren() do
+            for _, sound in sGroup:GetChildren() do
                 if sound:IsA("Sound") then
                     sound.SoundGroup = sGroup
                 end
@@ -332,14 +341,16 @@ table.insert(ServerWorldLib.Funcs, function()
         if npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid") then
             HarukaLib:SetCollisionGroup(npc, "NoCollision")
 
+            local npc = npc
+            local npcHumanoid = npc.Humanoid :: Humanoid
 
-            if not npc.Humanoid:FindFirstChildOfClass("Animator") then
+            if not npcHumanoid:FindFirstChildOfClass("Animator") then
                 local animator = Instance.new("Animator")
-                animator.Parent = npc.Humanoid
+                animator.Parent = npcHumanoid
             end
 
             local npcAnim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
-            local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[npcAnim]) :: AnimationTrack
+            local animTrack = npcHumanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[npcAnim]) :: AnimationTrack
 
             animTrack.Looped = true
             animTrack.Priority = Enum.AnimationPriority.Idle
@@ -375,16 +386,19 @@ table.insert(ServerWorldLib.Funcs, function()
         if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
 
+            local npc = npc
+            local npcHumanoid = npc.Humanoid :: Humanoid
+
             if npc.PrimaryPart.Anchored then continue end
             if not npc:FindFirstChild("Humanoid") then continue end
 
-            if not npc.Humanoid:FindFirstChildOfClass("Animator") then
+            if not npcHumanoid:FindFirstChildOfClass("Animator") then
                 local animator = Instance.new("Animator")
-                animator.Parent = npc.Humanoid
+                animator.Parent = npcHumanoid
             end
 
             local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
-            local animTrack = npc.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[anim]) :: AnimationTrack
+            local animTrack = npcHumanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[anim]) :: AnimationTrack
 
             animTrack.Looped = true
             animTrack.Priority = Enum.AnimationPriority.Idle
@@ -438,6 +452,8 @@ table.insert(ServerWorldLib.Funcs, function()
                     break
                 end
             end
+
+            local child = child
             if child.Parent:IsA("Model") then
                 for _, name in whiteList do
                     if string.find(child.Parent.Name, name) then
@@ -452,7 +468,7 @@ table.insert(ServerWorldLib.Funcs, function()
             child:AddTag("RaycastIgnoreEntity")
             child.Parent = flowerContainer
 
-            for _, meshPart: MeshPart in child:GetDescendants() do
+            for _, meshPart in child:GetDescendants() do
                 if HarukaLib:IsBasePartType(meshPart) then
                     meshPart.CastShadow = false
                     meshPart.CanCollide = false
@@ -468,7 +484,7 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-	local function _updatePrompt(prompt: ProximityPrompt)
+	local function _updatePrompt(prompt: Instance)
 		if not prompt:IsA("ProximityPrompt") then return end
 
 
@@ -535,7 +551,8 @@ table.insert(ServerWorldLib.Funcs, function()
 
         for _, child: Instance in mob:GetChildren() do
             if child:IsA("BasePart") and mob:FindFirstChild(child.Name .. "Model") then
-                ServerLib.WeldModel(child, mob[child.Name .. "Model"])
+                local model = mob[child.Name .. "Model"] :: Model
+                ServerLib.WeldModel(child, model)
             end
         end
     end
@@ -574,42 +591,16 @@ table.insert(ServerWorldLib.Funcs, function()
         end
     end
     for _, giver: BasePart in givers do
-        giver:FindFirstChildOfClass("ProximityPrompt").Enabled = false
+        local prompt = giver:FindFirstChildOfClass("ProximityPrompt")
+        prompt.Enabled = false
     end
 
     Promise.delay(math.random(5, 10)):andThen(function()
         for _, giver: BasePart in givers do
-            giver:FindFirstChildOfClass("ProximityPrompt").Enabled = true
+            local prompt = giver:FindFirstChildOfClass("ProximityPrompt")
+            prompt.Enabled = true
         end
     end):catch(function() end)
-end)
-
-
-table.insert(ServerWorldLib.Funcs, function()
-    local oceans = workspace.Maps:FindFirstChild("Oceans") :: Folder
-    if not oceans then return end
-
-    local boneIniter = Instance.new("AnimationController")
-    boneIniter.Parent = oceans
-
-    for _, ocean: MeshPart in oceans:GetDescendants() do
-        if ocean:IsA("MeshPart") then
-            ocean.CanCollide = false
-            ocean.CanQuery = false
-            ocean.CanTouch = true
-            ocean.EnableFluidForces = false
-
-            if ocean:FindFirstChild("Ocean") then
-                if ocean.Ocean:IsA("Bone") then
-                    for _, bone: Bone in ocean.Ocean:GetChildren() do
-                        bone.Parent = ocean
-                    end
-
-                    ocean.Ocean:Destroy()
-                end
-            end
-        end
-    end
 end)
 
 

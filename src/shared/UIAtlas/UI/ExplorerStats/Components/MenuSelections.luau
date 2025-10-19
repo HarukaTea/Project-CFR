@@ -39,7 +39,7 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
     SelectionId: string,
     Title: string,
 
-    MenuShownValue: Fusion.Value
+    MenuShownValue: Fusion.Value<boolean>?
 
 }) : Frame
 
@@ -104,7 +104,7 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
         }
     })
 end
-local function Selections(scope: Fusion.Scope, order: number, children: Fusion.Children) : Frame
+local function Selections(scope: Fusion.Scope, order: number, children: any) : Frame
     return Components.Frame(scope, {
         Name = "Selections_"..order,
         Size = fromScale(1, 0.45),
@@ -124,7 +124,7 @@ local function Selections(scope: Fusion.Scope, order: number, children: Fusion.C
 end
 
 return function (scope: Fusion.Scope, props: {
-    MenuShowValue: Fusion.Value,
+    MenuShowValue: Fusion.Value<boolean>,
 
 }) : Frame
     return Components.Frame(scope, {
@@ -163,21 +163,20 @@ return function (scope: Fusion.Scope, props: {
                         }),
                         SelectionSlot(scope, {
                             LayoutOrder = 2,
-                            SelectionId = "Guild",
-                            Title = "Guild",
-                            MenuShownValue = props.MenuShowValue
-                        }),
-                        SelectionSlot(scope, {
-                            LayoutOrder = 3,
                             SelectionId = "Achievements",
                             Title = "Badges",
                             MenuShownValue = props.MenuShowValue
                         }),
                         SelectionSlot(scope, {
-                            LayoutOrder = 4,
+                            LayoutOrder = 3,
                             SelectionId = "Store",
                             Title = "Donations",
                             MenuShownValue = props.MenuShowValue
+                        }),
+                        SelectionSlot(scope, {
+                            LayoutOrder = 4,
+                            SelectionId = "Empty",
+                            Title = "Empty"
                         }),
                     }),
                     Selections(scope, 2, {

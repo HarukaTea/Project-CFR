@@ -82,6 +82,8 @@ local function _fadeAwayAndDestroy(obj: Instance)
             Transparency = 1
         }):Play()
 
+        local obj = obj :: BasePart
+
         obj.CanTouch = false
     else
         for _, child: Instance in obj:GetDescendants() do
@@ -92,6 +94,8 @@ local function _fadeAwayAndDestroy(obj: Instance)
                 HarukaLib:CreateTween(child, AssetBook.TweenInfos.half, {
                     Transparency = 1
                 }):Play()
+
+                local child = child :: BasePart
 
                 child.CanTouch = false
             end
@@ -104,6 +108,9 @@ local function _spawnProjectile(
     duration: number,
     callback: (projectile: Model) -> nil
 )
+    local projectile = projectile :: Model
+
+
     local sProjectile = projectile.Projectile.Value:Clone() :: Model
     sProjectile:SetAttribute("HarukaUniqueId", projectile:GetAttribute("HarukaUniqueId"))
 

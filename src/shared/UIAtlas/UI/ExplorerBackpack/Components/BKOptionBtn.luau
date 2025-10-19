@@ -13,7 +13,9 @@ local Children = Fusion.Children
 return function(scope: Fusion.Scope, props: {
     Option: string,
     Index: number
-}, self: { any })
+}, self: {
+    FilterViewShown: Fusion.Value<boolean>
+})
 
     local isSelecting = Fusion.Value(scope, false)
 

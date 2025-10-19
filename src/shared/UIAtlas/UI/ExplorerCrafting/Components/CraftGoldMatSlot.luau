@@ -12,7 +12,7 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    GoldVal: Fusion.Value,
+    GoldVal: Fusion.Value<number>,
     Amount: number,
 })
 

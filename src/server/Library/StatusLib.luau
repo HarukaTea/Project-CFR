@@ -21,13 +21,15 @@ local StatusLib = {}
 
 --// Helper functions
 
-StatusLib.Heal = function(char: Model, healAmount: number) : number
+StatusLib.Heal = function(char: Model, healAmount: number) : number?
     if not ServerLib.IsCharValid(char) then return end
 
     local plr = Players:GetPlayerFromCharacter(char)
     if plr == nil then return end
 
     if char:FindFirstChild("AntiHeal") then return end
+
+    local char = char
 
     local healBonus = char:GetAttribute("HealBonus") or 100
     healAmount = math.ceil(healAmount * healBonus / 100)
@@ -44,10 +46,10 @@ StatusLib.Heal = function(char: Model, healAmount: number) : number
 
     return healAmount
 end
-StatusLib.HealPercentage = function(char: Model, percentage: number) : number
+StatusLib.HealPercentage = function(char: Model, percentage: number) : number?
     if not ServerLib.IsCharValid(char) then return end
 
-    return StatusLib.Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
+    return StatusLib.Heal(char, math.ceil((char :: any).Humanoid.MaxHealth * percentage / 100))
 end
 
 
@@ -68,7 +70,7 @@ StatusLib.CreateCustomEffect = function(eff: string, char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", HttpService:GenerateGUID(false))
 
-    effectSymbol.Parent = char.EffectList
+    effectSymbol.Parent = (char :: any).EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
 
@@ -126,7 +128,7 @@ StatusLib.NormalBoostForEntity = function(eff: string, char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
 
-    effectSymbol.Parent = char.EffectList
+    effectSymbol.Parent = (char :: any).EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
 
@@ -176,7 +178,7 @@ StatusLib.DMGBoost = function(char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
 
-    effectSymbol.Parent = char.EffectList
+    effectSymbol.Parent = (char :: any).EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
 
@@ -210,7 +212,11 @@ StatusLib.Burn = function(target: Model, info: {
     dmg /= 3
     dmg = math.floor(dmg)
 
-    target.Humanoid:TakeDamage(dmg)
+
+    local target = target
+    local targetHumanoid = target.Humanoid :: Humanoid
+
+    targetHumanoid:TakeDamage(dmg)
     ServerLib.ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
 end
 
@@ -227,7 +233,10 @@ StatusLib.Bleed = function(target: Model, info: {
     dmg /= 2.5
     dmg = math.floor(dmg)
 
-    target.Humanoid:TakeDamage(dmg)
+    local target = target
+    local targetHumanoid = target.Humanoid :: Humanoid
+
+    targetHumanoid:TakeDamage(dmg)
     ServerLib.ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
 end
 StatusLib.BloodButchered = function(target: Model, info: {
@@ -242,7 +251,10 @@ StatusLib.BloodButchered = function(target: Model, info: {
     dmg *= 0.05
     dmg = math.floor(dmg)
 
-    target.Humanoid:TakeDamage(dmg)
+    local target = target
+    local targetHumanoid = target.Humanoid :: Humanoid
+
+    targetHumanoid:TakeDamage(dmg)
     ServerLib.ShowNumber(target, dmg, StatusBook.BloodButcheredDebuff.Color)
 end
 
@@ -259,13 +271,12 @@ StatusLib.Poison = function(target: Model, info: {
     dmg /= 2.5
     dmg = math.floor(dmg)
 
-    target.Humanoid:TakeDamage(dmg)
+    local target = target
+    local targetHumanoid = target.Humanoid :: Humanoid
+
+    targetHumanoid:TakeDamage(dmg)
     ServerLib.ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
 end
-
-
-
-shared.StatusLib = StatusLib
 
 
 return StatusLib

@@ -6,6 +6,14 @@
 local tutorials = {}
 
 
+export type TutorialJSON = {
+    Id: string,
+    Title: string,
+    Desc: string,
+    Thumbnail: string
+}
+
+
 
 tutorials.Combat = {
     Id = "Combat",

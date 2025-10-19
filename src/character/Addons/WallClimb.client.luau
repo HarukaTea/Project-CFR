@@ -82,7 +82,7 @@ local MOVEMENT_KEYS = {
     [Enum.KeyCode.S] = true,
     [Enum.KeyCode.Space] = true
 }
-local function getKeyMovement(key: Enum.KeyCode): Vector3
+local function getKeyMovement(key: Enum.KeyCode | string): Vector3?
     if key == Enum.KeyCode.W or key == "W" then
         return char.PrimaryPart.CFrame.UpVector
     elseif key == Enum.KeyCode.S or key == "S" then

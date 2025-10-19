@@ -18,9 +18,8 @@ local clamp = math.clamp
 
 return function (scope: Fusion.Scope, props: {
     Direction: "Left" | "Right",
-    RotationVal: Fusion.Value,
+    RotationVal: Fusion.Value<number>,
     ZIndex: number?,
-
     Color: Color3?
 
 }) : Frame

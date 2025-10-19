@@ -130,6 +130,8 @@ do
     UI = LoadView(scope, {
         LoadingText = LoadingTextVal
     })
+
+    local UI = UI
     HarukaLib:UITween(UI, "In", {
         TweenCallback = function()
             Debris:AddItem(holderGui, 1)

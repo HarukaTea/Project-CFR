@@ -24,18 +24,18 @@ return function(scope: Fusion.Scope, props: {
     ProductId: string,
     UniqueId: string,
 
-    IsPurchasing: Fusion.Value,
+    IsPurchasing: Fusion.Value<boolean>,
     Action: string,
 
-    CurrentSelectedItem: Fusion.Value,
-    CurrentSelectedItemUniqueId: Fusion.Value
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>
 })
 
     local info = ItemBook:GetItemInfo(props.ProductId)
     if info == nil then return nil end
 
 
-    local function Value(val: any) : Fusion.Value
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local itemAmount = Value(0)
@@ -85,7 +85,7 @@ return function(scope: Fusion.Scope, props: {
         Scope = scope,
         TextBox = inputTextbox,
 
-        Callback = function(amount: Fusion.Value)
+        Callback = function(amount: Fusion.Value<number>)
             local function _setColor(color: Color3)
                 inputTextbox.TextColor3 = color
             end

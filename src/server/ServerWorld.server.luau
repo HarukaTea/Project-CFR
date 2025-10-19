@@ -50,6 +50,8 @@ do
     require(SSS.HarukaServer.Shared.GlobalTimer)
     require(SSS.HarukaServer.Services.GlobalCriRPGLib):Init()
     require(SSS.HarukaServer.Services.GlobalQuestFuncLib):Init()
+
+    require(RepS.HarukaShared.Shared.HarukaDebris)
 end
 
 

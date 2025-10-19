@@ -35,4 +35,12 @@ HarukaColorLab.COLOR_SERIES.AzurLane = {
 }
 
 
+--// legacy references
+HarukaColorLab.BLACK_COLOR = HarukaColorLab.COLOR_SERIES.Genshin.Background
+HarukaColorLab.WHITE_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Background
+HarukaColorLab.RED_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Red
+HarukaColorLab.GREEN_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Green
+HarukaColorLab.AZUR_BLUE_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Blue
+
+
 return HarukaColorLab

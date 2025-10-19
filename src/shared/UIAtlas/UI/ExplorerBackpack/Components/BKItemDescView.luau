@@ -23,7 +23,7 @@ local Children = Fusion.Children
 return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemUniqueId: string,
-    EquippingItems: Fusion.Value,
+    EquippingItems: Fusion.Value<{ StringValue }>,
 
     Items: { any }?,
     IsMarket: boolean?,
@@ -56,7 +56,9 @@ return function (scope: Fusion.Scope, props: {
             end
         end
     else
-        for _, symbol: IntConstrainedValue in props.Items do
+        local items = props.Items :: { IntConstrainedValue }
+
+        for _, symbol: IntConstrainedValue in items do
             if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
                 itemSymbol = symbol
                 break
@@ -289,7 +291,7 @@ return function (scope: Fusion.Scope, props: {
             }
         })
     end
-    local function ItemStatAutomaticY(name: string, order: number, text: string?, color: Color3 | Fusion.Computed?)
+    local function ItemStatAutomaticY(name: string, order: number, text: string, color: Color3 | Fusion.Computed<Color3>?)
         text = text or ""
 
         if string.find(name, "2PieceDesc") and text ~= "" then
@@ -475,7 +477,7 @@ return function (scope: Fusion.Scope, props: {
                                     }),
 
                                     Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
-                                        return StarTierSymbol(scope)
+                                        return StarTierSymbol(scope, {})
                                     end)
                                 }
                             }),

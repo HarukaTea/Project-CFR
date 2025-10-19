@@ -18,10 +18,29 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local MKK_NUMBER = 1599 * 40 ^ 2
 
 
-return function (self: { any })
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    LockConn: RBXScriptConnection?,
+    LockEnabled: Fusion.Value<boolean>,
+
+    Icon: Fusion.Value<string>,
+    OFFSET: CFrame,
+
+    ChangeShiftLockState: Signal.SignalClass,
+
+    CameraOffsetTweenVal: CFrameValue,
+
+    LastInputType: Fusion.Value<string>,
+}
+
+
+return function (self: Self)
     local scope = self.scope :: Fusion.Scope
 
-    self.LockConn = nil :: RBXScriptConnection
+    self.LockConn = nil
     self.LockEnabled = Fusion.Value(scope, false)
 
 	local ON_ICON, OFF_ICON = "rbxasset://textures/ui/mouseLock_on@2x.png", "rbxasset://textures/ui/mouseLock_off@2x.png"
@@ -90,7 +109,7 @@ return function (self: { any })
 
             if self.char then
                 if self.char:FindFirstChildOfClass("Humanoid") then
-                    self.char.Humanoid.AutoRotate = true
+                    (self.char :: any).Humanoid.AutoRotate = true
                 end
             end
 

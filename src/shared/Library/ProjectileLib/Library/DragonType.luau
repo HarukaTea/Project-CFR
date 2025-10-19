@@ -14,10 +14,13 @@ local Types = require(script.Parent.Parent.Types)
 
 local wait = task.wait
 
-return function (self: Types.ProjectileTable)
+return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
     ProjectileLib.LeafDragonMove2 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
+
         local r = if math.random(1, 2) == 1 then -90 else 0
 
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(r), 0))
@@ -40,6 +43,9 @@ return function (self: Types.ProjectileTable)
     end
 
     ProjectileLib.LeafDragonMove3 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
+
         Promise.delay(2):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 
 
@@ -64,6 +70,9 @@ return function (self: Types.ProjectileTable)
 
 
     ProjectileLib.LeafDragonSpike3 = function(projectile: Model, container: Folder)
+        local projectile = projectile
+
+
         Promise.delay(2):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 
         projectile.Part.Transparency = 0.8

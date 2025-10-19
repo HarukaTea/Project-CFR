@@ -13,10 +13,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
-local PlayerLib = {}
-PlayerLib.__index = PlayerLib
-
-
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Classbook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -30,9 +26,52 @@ local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 
-local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
+
+
+export type PlayerLibClass = {
+    __index: PlayerLibClass,
+
+    new: (player: Player) -> PlayerLibClass,
+
+    Destroy: (self: PlayerLibClass) -> nil,
+    Init: (self: PlayerLibClass) -> nil,
+
+    GetPlayerObjByUniqueId: (uniqueId: string) -> PlayerLibClass,
+    _GetCurrentDonation: (profile: ProfileStore.Profile<PlayerTemplate.JSON>) -> nil,
+
+    _Remove: (self: PlayerLibClass) -> nil,
+    _SaveData: (self: PlayerLibClass) -> nil,
+    _RemoveChestAcquire: (self: PlayerLibClass) -> nil,
+    _RemoveFromParty: (self: PlayerLibClass) -> nil,
+    _RemoveSkyGalleon: (self: PlayerLibClass) -> nil,
+    _ValidateSaveData: (self: PlayerLibClass, data: { PlayerTemplate.PlayerDataJSON }) -> { PlayerTemplate.PlayerDataJSON },
+    _ValidateMainData: (self: PlayerLibClass, data: { PlayerTemplate.PlayerMainDataJSON }) -> { PlayerTemplate.PlayerMainDataJSON },
+
+    CalDonationAndSave: (profile: ProfileStore.Profile<PlayerTemplate.JSON>, plr: Player) -> nil,
+    UpdateDonationRank: (self: PlayerLibClass) -> nil,
+
+
+    Player: Player,
+    UniqueId: string,
+    Profile: ProfileStore.Profile<PlayerTemplate.JSON>,
+    Slot: "Slot1" | "Slot2" | "Slot3",
+
+    Add: <T>(item: T) -> T,
+    Empty: () -> nil,
+}
+
+
+
+local PlayerLib = {} :: PlayerLibClass
+PlayerLib.__index = PlayerLib
+
+
+
+local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
+
+
 local EXTRA_TEMPLATE = {
     Rank = 0
 }
@@ -51,7 +90,7 @@ local wait = task.wait
 
 
 local attrWhiteList = {}
-for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
+for attr, val in table.clone(PlayerTemplate).Slot1.Attrs do
     if typeof(val) == "table" then
         continue
     end
@@ -99,7 +138,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         --// update join time
         data.LastJoinedDateTime = DateTime.now():ToIsoDate()
 
-        for attr: string, val: any in table.clone(EXTRA_TEMPLATE) do
+        for attr, val in table.clone(EXTRA_TEMPLATE) do
             plr:SetAttribute(attr, val)
         end
 
@@ -150,7 +189,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         talentFolder.Parent = plr
 
 
-        for _, itemInfo: { any } in validatedData.ItemsSQL do
+        for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in validatedData.ItemsSQL do
             local itemVal = Instance.new("IntConstrainedValue")
             itemVal.MinValue = 0
 
@@ -175,7 +214,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
             itemVal.Parent = itemFolder
         end
-        for thatSlot: string, itemInfo: { any } in validatedData.EquippingItemsSQL do
+        for thatSlot: string, itemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in validatedData.EquippingItemsSQL do
             local itemVal = Instance.new("StringValue")
             itemVal.Name = thatSlot
             itemVal.Value = itemInfo.ItemId
@@ -184,7 +223,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
             itemVal.Parent = equippingFolder
         end
-        for questId: string, questInfo: { any } in validatedData.QuestsV2 do
+        for questId: string, questInfo: PlayerTemplate.PlayerQuestDataJSON in validatedData.QuestsV2 do
             QuestLib.GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
         end
         for settingsId: string, settingsVal: any in validatedMainData.Settings do
@@ -253,7 +292,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
                 local bool = Instance.new("BoolValue")
                 bool.Value = true
                 bool.Name = role
-                bool.Parent = plr.Roles
+                bool.Parent = (plr :: any).Roles
             end
             if isPremium then
                 _createSymbol("Premium")
@@ -342,7 +381,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end))
 
         if plr:FindFirstChild("ProfileContainer") then
-            plr.ProfileContainer:Destroy()
+            (plr :: any).ProfileContainer:Destroy()
         end
 
         resolve()
@@ -378,12 +417,12 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
     end
 
 
-    for attr: string, value: any in table.clone(PlayerTemplate).Slot1.Attrs do
+    for attr, value in table.clone(PlayerTemplate).Slot1.Attrs do
         playerObj.Profile.Data[data.SlotId].Attrs[attr] = value
     end
 
-    local profileContainer = plr.ProfileContainer :: Folder
-    for attr: string, val: any in table.clone(PlayerTemplate).Slot1.Attrs do
+    local profileContainer = (plr :: any).ProfileContainer :: Folder
+    for attr, val in table.clone(PlayerTemplate).Slot1.Attrs do
         if not table.find(attrWhiteList, attr) then continue end
 
         profileContainer:SetAttribute(data.SlotId.."_"..attr, val)
@@ -529,7 +568,7 @@ end
 
 
 
-function PlayerLib.GetPlayerObjByUniqueId(uniqueId: string) : PlayerLib
+function PlayerLib.GetPlayerObjByUniqueId(uniqueId: string)
     return allPlayerObjPool[uniqueId]
 end
 
@@ -691,7 +730,7 @@ function PlayerLib:_RemoveSkyGalleon()
         for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
             if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
 
-            if galleon.Owner.Value == self.Player then
+            if (galleon :: any).Owner.Value == self.Player then
                 galleon:Destroy()
             end
         end
@@ -701,7 +740,7 @@ end
 
 
 
-function PlayerLib:_ValidateSaveData(data: { any })
+function PlayerLib:_ValidateSaveData(data: PlayerTemplate.PlayerDataJSON)
     data = table.clone(data)
 
 
@@ -724,7 +763,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
 
     --// check valid items
-    for uniqueId: string, itemInfo: { any } in data.ItemsSQL do
+    for uniqueId, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         if itemInfo.ItemId == nil then
             data.ItemsSQL[uniqueId] = nil
             continue
@@ -787,7 +826,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
 
     --// check valid item stacks
-    for _, itemInfo: { any } in data.ItemsSQL do
+    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         if itemInfo.Amount > 1 then
             local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
 
@@ -830,7 +869,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
     --// check "NoDuplicate" tag item
     local noDuplicateUniqueIds = {}
-    for _, itemInfo: { any } in data.ItemsSQL do
+    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
 
         if table.find(trueItemInfo.TagsDesync, "NoDuplicate") then
@@ -851,7 +890,7 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
 
     --// mirgration: check if there is mana stat in each item
-    for _, itemInfo: { any } in data.ItemsSQL do
+    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         local itemStat = itemInfo.ItemStat
 
         local cleaned = string.gsub(itemStat, "MaxManaEx%b()", "")
@@ -869,19 +908,19 @@ function PlayerLib:_ValidateSaveData(data: { any })
 
 
     --// check valid equipping items
-    for thatSlot: string, itemInfo: { any } in data.EquippingItemsSQL do
+    for thatSlot: string, itemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
         --// check if there are other same item id in equipping items
-        for slot: string, thatItemInfo: { any } in data.EquippingItemsSQL do
+        for slot: string, thatItemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
             if thatItemInfo.ItemId == itemInfo.ItemId and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
         end
-        for slot: string, thatItemInfo: { any } in data.EquippingItemsSQL do
+        for slot: string, thatItemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
             if string.match(thatItemInfo.ItemId, "^(%w+)%d*$") == string.match(itemInfo.ItemId, "^(%w+)%d*$") and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
         end
-        for slot: string, thatItemInfo: { any } in data.EquippingItemsSQL do
+        for slot: string, thatItemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
             if thatItemInfo.UniqueId == itemInfo.UniqueId and slot ~= thatSlot then
                 data.EquippingItemsSQL[slot] = nil
             end
@@ -1056,7 +1095,7 @@ end
 
 
 
-function PlayerLib:_ValidateMainData(data: { any })
+function PlayerLib:_ValidateMainData(data: PlayerTemplate.PlayerMainDataJSON)
     data = table.clone(data)
 
     --// check gamepass purchase logs
@@ -1081,7 +1120,7 @@ function PlayerLib:_ValidateMainData(data: { any })
 end
 
 
-function PlayerLib._GetCurrentDonation(profile: ProfileStore.Profile) : number
+function PlayerLib._GetCurrentDonation(profile: ProfileStore.Profile<PlayerTemplate.JSON>) : number
     local totalRobuxGained = 0
     for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
         if purchaseInfo.Purchased then
@@ -1096,11 +1135,13 @@ function PlayerLib._GetCurrentDonation(profile: ProfileStore.Profile) : number
 
     return totalRobuxGained
 end
-function PlayerLib.CalDonationAndSave(profile: ProfileStore.Profile, plr: Player) : number
+function PlayerLib.CalDonationAndSave(profile: ProfileStore.Profile<PlayerTemplate.JSON>, plr: Player) : number
     local totalRobuxGained = PlayerLib._GetCurrentDonation(profile)
     if totalRobuxGained <= 0 then return 0 end
 
     ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..tostring(plr.UserId), totalRobuxGained, "Donation")
+
+    return 1599
 end
 
 

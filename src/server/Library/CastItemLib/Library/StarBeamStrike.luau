@@ -21,7 +21,7 @@ local Types = require(script.Parent.Parent.Types)
 local wait = task.wait
 
 
-return function(self: Types.CastItemTable, player: Player, char: Model, extraInfo: {}) : number?
+return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo: {}) : number?
     local CastItemLib = self
 
     local check = CastItemLib._preCheck({
@@ -33,6 +33,8 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
         Char = char
     })
     if not check then return 0 end
+
+    local char = char :: Model
 
 
     local uniqueId = HttpService:GenerateGUID(false)
@@ -69,4 +71,6 @@ return function(self: Types.CastItemTable, player: Player, char: Model, extraInf
             ProjectileUniqueId = uniqueId,
         })
     end)
+
+    return nil
 end

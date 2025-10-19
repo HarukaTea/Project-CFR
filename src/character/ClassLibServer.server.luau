@@ -10,7 +10,6 @@ local SSS = game:GetService("ServerScriptService")
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 
-local ClassMechanicLib = {}
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -23,6 +22,25 @@ repeat wait() until char:HasTag("PlayerCharEntity")
 
 local ClassAdd, ClassEmpty = HarukaLib.Bin()
 local Add, Empty = HarukaLib.Bin()
+
+
+
+type ClassMechanicLibClass = {
+    Destroy: (self: ClassMechanicLibClass) -> nil,
+    Init: (self: ClassMechanicLibClass) -> nil,
+
+
+    _ListenClassTracker: (self: ClassMechanicLibClass) -> nil,
+
+
+    [string]: (self: ClassMechanicLibClass) -> nil
+}
+
+
+
+local ClassMechanicLib = {} :: ClassMechanicLibClass
+
+
 
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)

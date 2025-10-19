@@ -18,8 +18,8 @@ return function(scope: Fusion.Scope, props: {
     ProductId: string,
     UniqueId: string,
 
-    CurrentSelectedItem: Fusion.Value,
-    CurrentSelectedItemUniqueId: Fusion.Value
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>
 })
 
     local info = ItemBook:GetItemInfo(props.ProductId)

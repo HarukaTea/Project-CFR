@@ -74,9 +74,11 @@ local formulas = {
         EnvironmentBonus: number?
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
-        props.EnvironmentBonus = math.min(2, props.EnvironmentBonus)
 
-        local f = 4 * props.Level * props.EnvironmentBonus
+        local envir = props.EnvironmentBonus :: number
+        props.EnvironmentBonus = math.min(2, envir)
+
+        local f = 4 * props.Level * envir
 
         return math.ceil(f)
     end,
@@ -144,7 +146,8 @@ local formulas = {
 
     ItemUpgradeCurveCal = function(props: {
         Stat: string,
-        Val: number
+        Val: number,
+        Level: number,
     })
         local stat = props.Stat
         local level = props.Level

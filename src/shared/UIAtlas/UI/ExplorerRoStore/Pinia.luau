@@ -13,8 +13,22 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local wait = task.wait
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    IsUIShown: Fusion.Value<boolean>,
+    CurrentCategory: Fusion.Value<string>,
+    DonationRanks: Fusion.Value<{ IntValue }>,
+}
+
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -24,7 +38,9 @@ return function (self: { any })
 
     self.CurrentCategory = Value("RoStore")
 
-    self.DonationRanks = FusionComponents.useFolder(scope, workspace:WaitForChild("DonationRankContainer", 999))
+
+    local ranks = FusionComponents.useFolder(scope, workspace:WaitForChild("DonationRankContainer", 999))
+    self.DonationRanks = ranks :: Fusion.Value<{ IntValue }>
 
 
     --// track menu

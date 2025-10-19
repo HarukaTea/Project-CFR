@@ -22,7 +22,7 @@ event.Name = "PlayerClassUltCasted"
 event.Parent = script
 
 
-Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target: Model, caster: Model, ultMetaData: ClassUltMetaData)
+Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target, caster, ultMetaData)
     StatusLib.HealPercentage(char, 20)
 end))
 

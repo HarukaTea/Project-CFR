@@ -21,8 +21,114 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local wait = task.wait
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+    UI: ScreenGui,
+
+    ServerLocation: Fusion.Value<string>,
+
+    HP: Fusion.Value<number>,
+    MaxHP: Fusion.Value<number>,
+
+    EXP: Fusion.Value<number>,
+    MaxEXP: Fusion.Value<number>,
+
+    Shield: Fusion.Value<number>,
+    MaxShield: Fusion.Value<number>,
+
+    Level: Fusion.Value<number>,
+    Class: Fusion.Value<string>,
+    ClassUltProgress: Fusion.Value<number>,
+    ClassVariant: Fusion.Value<string>,
+    MaxClassUltProgress: Fusion.Value<number>,
+
+    MinDMG: Fusion.Value<number>,
+    MaxDMG: Fusion.Value<number>,
+    Magic: Fusion.Value<number>,
+
+    IsInCombat: Fusion.Value<boolean>,
+
+    ClassVals: { [string]: Fusion.Value<number> },
+    ClassVals2: { [string]: Fusion.Value<number> },
+
+    TargetingList: Fusion.Value<{ ObjectValue }>,
+    TargetingEnemy: Fusion.Value<Model?>,
+
+    IsHPRecovering: Fusion.Value<boolean>,
+    IsShieldRepairing: Fusion.Value<boolean>,
+
+    IsMenuShown: Fusion.Value<boolean>,
+    IsUIShown: Fusion.Value<boolean>,
+    IsUIShown2: Fusion.Value<boolean>,
+
+    PassiveBGAbsContentSize: Fusion.Value<Vector2>,
+
+    CurrentHoveringPassive: Fusion.Value<string>,
+
+    DungeonId: Fusion.Value<string?>,
+    DungeonStarted: Fusion.Value<boolean>,
+    DungeonFinished: Fusion.Value<boolean>,
+    DungeonLeftTime: Fusion.Value<number>,
+    DungeonEndActionsClicked: Fusion.Value<boolean>,
+
+    MenuSelectionShown: Fusion.Value<boolean>,
+
+    Items: Fusion.Value<{ IntConstrainedValue }>,
+    EquippingItems: Fusion.Value<{ StringValue }>,
+
+
+    ActiveList: {
+        {
+            Id: string,
+            CDSymbol: NumberValue,
+            Cooldown: Fusion.Value<string>,
+            CDRotation: Fusion.Value<number>,
+
+            ItemId: Fusion.Value<string>,
+            ItemUniqueId: Fusion.Value<string>,
+
+            CastCD: boolean,
+            DisplayOrder: number,
+            KeyDisplay: string
+        }
+    }?,
+    PassiveList: {
+        {
+            Id: string,
+            ItemId: Fusion.Value<string>,
+            ItemUniqueId: Fusion.Value<string>,
+        }
+    }?,
+    CharAbilityList: {
+        {
+            Id: string,
+            Cooldown: Fusion.Value<string>,
+            CDRotation: Fusion.Value<number>,
+
+            CastCD: boolean,
+            DisplayOrder: number,
+            KeyDisplay: string,
+
+            CDSymbol: NumberValue,
+        }
+    }?,
+
+
+    RequestToCastClassUlt: Signal.SignalClass,
+    RequestToCastItem: Signal.SignalClass,
+    RequestToDash: Signal.SignalClass,
+
+    ClassActiveCastCD: boolean,
+}
+
+
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -64,7 +170,9 @@ return function (self: { any })
         self.ClassVals2[class] = Value(0)
     end
 
-    self.TargetingList = FusionComponents.useFolder(scope, self.char:WaitForChild("TargetingList"))
+    local targeting = FusionComponents.useFolder(scope, (self.char :: any):WaitForChild("TargetingList"))
+
+    self.TargetingList = targeting :: Fusion.Value<{ ObjectValue }>
     self.TargetingEnemy = FusionComponents.useValue(scope, self.char:WaitForChild("TargetingEnemy"))
 
     self.IsHPRecovering = Value(false)
@@ -78,9 +186,9 @@ return function (self: { any })
 
     self.CurrentHoveringPassive = Value("")
 
-    self.DungeonId = Value(nil)
-    self.DungeonStarted = Value(nil)
-    self.DungeonFinished = Value(nil)
+    self.DungeonId = Fusion.Value(self.scope, nil)
+    self.DungeonStarted = Value(false)
+    self.DungeonFinished = Value(false)
     self.DungeonLeftTime = Value(0)
     self.DungeonEndActionsClicked = Value(false)
 
@@ -127,7 +235,8 @@ return function (self: { any })
             --CDRotation = Value(0),
         }, {}, {}
     }
-    for index, slot in self.ActiveList do
+    local list = self.ActiveList
+    for index, slot in list do
         local cdSymbol = Instance.new("NumberValue")
         cdSymbol.Name = "CDSymbol_"..tostring(index)
         cdSymbol.Parent = skillCDContainer
@@ -147,8 +256,8 @@ return function (self: { any })
         slot.CastCD = false
     end
     local order = 1
-    for i = #self.ActiveList, 1, -1 do
-        local slot = self.ActiveList[i]
+    for i = #list, 1, -1 do
+        local slot = list[i]
 
         slot.DisplayOrder = order
         slot.KeyDisplay = tostring(i)
@@ -167,7 +276,8 @@ return function (self: { any })
             KeyDisplay = "R"
         }
     }
-    for index, slot in self.CharAbilityList do
+    local list3 = self.CharAbilityList
+    for index, slot in list3 do
         local cdSymbol = Instance.new("NumberValue")
         cdSymbol.Name = "AbilityCDSymbol_"..tostring(index)
         cdSymbol.Parent = skillCDContainer
@@ -184,7 +294,8 @@ return function (self: { any })
     self.PassiveList = {
         {}, {}, {}
     }
-    for index, slot in self.PassiveList do
+    local list2 = self.PassiveList
+    for index, slot in list2 do
         slot.Id = "Passive"..tostring(index)
 
         slot.ItemId = Value("None")
@@ -192,14 +303,15 @@ return function (self: { any })
     end
 
 
-    self.EquippingItems = FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    local equipping = FusionComponents.useFolder(scope, (self.plr :: any):WaitForChild("EquippingItems", 999))
+    self.EquippingItems = equipping :: Fusion.Value<{ StringValue }>
 
     local function _handleItemEquip()
-        for _, slotInfo: { any } in self.ActiveList do
+        for _, slotInfo in list do
             slotInfo.ItemId:set("None")
             slotInfo.ItemUniqueId:set("None")
         end
-        for _, slotInfo: { any } in self.PassiveList do
+        for _, slotInfo in list2 do
             slotInfo.ItemId:set("None")
             slotInfo.ItemUniqueId:set("None")
         end
@@ -214,13 +326,13 @@ return function (self: { any })
 
 
             if string.find(index, "Active") then
-                local slotInfo = self.ActiveList[tonumber(string.sub(index, 7))]
+                local slotInfo = list[tonumber(string.sub(index, 7))]
 
                 slotInfo.ItemId:set(itemInfo.ItemId)
                 slotInfo.ItemUniqueId:set(uniqueId)
 
             elseif string.find(index, "Accessory") then
-                local slotInfo = self.PassiveList[tonumber(string.sub(index, 10))]
+                local slotInfo = list2[tonumber(string.sub(index, 10))]
 
                 slotInfo.ItemId:set(itemInfo.ItemId)
                 slotInfo.ItemUniqueId:set(uniqueId)
@@ -241,13 +353,13 @@ return function (self: { any })
     table.insert(scope, self.RequestToDash)
 
 
-    local function _normalCancelCD(info: { any })
+    local function _normalCancelCD(info: { [string]: any })
         task.delay(0.15, function()
             info.CastCD = false
         end)
     end
     self.RequestToCastItem:Connect(function(slotId: number)
-        local info = self.ActiveList[slotId]
+        local info = list[slotId]
 
         if info == nil then return end
         if info.CastCD then return end
@@ -260,11 +372,12 @@ return function (self: { any })
             return
         end
 
-        slotId = "Active"..slotId
+        local slotIdStr: string = tostring(slotId)
+        slotIdStr = "Active"..slotIdStr
 
         local equippingItems = plr.EquippingItems :: Folder
-        if equippingItems:FindFirstChild(slotId) then
-            local itemSymbol = equippingItems[slotId] :: StringValue
+        if equippingItems:FindFirstChild(slotIdStr) then
+            local itemSymbol = equippingItems[slotIdStr] :: StringValue
 
             local itemInfo = ItemBook:GetItemInfo(itemSymbol.Value)
             if not itemInfo then
@@ -295,7 +408,7 @@ return function (self: { any })
 
 
             Events.RequestToCastItem_Request.Fire({
-                SlotId = slotId
+                SlotId = slotIdStr
             })
         else
             _normalCancelCD(info)
@@ -316,7 +429,7 @@ return function (self: { any })
 
 
 
-    local function _createCooldownAnim(cdTime: number, info: { any })
+    local function _createCooldownAnim(cdTime: number, info: { [string]: any })
         local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 
         local cdSymbol = info.CDSymbol :: NumberValue
@@ -344,7 +457,7 @@ return function (self: { any })
 
         slotId = tonumber(slotId)
 
-        local info = self.ActiveList[slotId]
+        local info = list[slotId]
         if not info then return end
 
 
@@ -357,34 +470,36 @@ return function (self: { any })
         _createCooldownAnim(cdTime, info)
     end))
     self.RequestToDash:Connect(function()
-        local info = self.CharAbilityList[1]
+        local info = list3[1]
+
+        local char = self.char :: Model
 
         if info.CastCD then
             return
         end
-        if self.char:GetAttribute("IsChatting") then return end
+        if char:GetAttribute("IsChatting") then return end
         info.CastCD = true
 
         _createCooldownAnim(5, info)
 
 
-        local direction = self.char.Humanoid.MoveDirection :: Vector3
+        local direction = char.Humanoid.MoveDirection :: Vector3
         if direction.Magnitude <= 0 then
-            direction = self.char.PrimaryPart.CFrame.LookVector
+            direction = char.PrimaryPart.CFrame.LookVector
         end
 
 
         local linearVelo = Instance.new("LinearVelocity")
         linearVelo.Name = "Dash"
-        linearVelo.Attachment0 = self.char.PrimaryPart.AlignMoverAttachment
+        linearVelo.Attachment0 = char.PrimaryPart.AlignMoverAttachment
         linearVelo.RelativeTo = Enum.ActuatorRelativeTo.World
-        linearVelo.MaxForce = 1500 * self.char.PrimaryPart.AssemblyMass
+        linearVelo.MaxForce = 1500 * char.PrimaryPart.AssemblyMass
         linearVelo.VectorVelocity = direction * 100
-        linearVelo.Parent = self.char.PrimaryPart
+        linearVelo.Parent = char.PrimaryPart
         Debris:AddItem(linearVelo, 0.2)
 
 
-        for _, part: BasePart in self.char:GetChildren() do
+        for _, part: BasePart in char:GetChildren() do
             if HarukaLib:IsBasePartType(part) then
                 local clone = part:Clone()
                 clone.Transparency = 0.2
@@ -532,7 +647,7 @@ return function (self: { any })
 
 
     --// track hp
-    table.insert(scope, HarukaLib:Hydrate(self.char.Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate((self.char :: any).Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             self.HP:set(newHP)
         end,
@@ -551,7 +666,7 @@ return function (self: { any })
     local function _updateRotation(targetList: string, val: number, index: number)
         self[targetList][index].CDRotation:set(val)
     end
-    for index, slot in self.ActiveList do
+    for index, slot in list do
         table.insert(scope, HarukaLib:Hydrate(slot.CDSymbol, {
             ["Prop-Value"] = function(val: number)
                 _updateRotation("ActiveList", val, index)
@@ -563,7 +678,7 @@ return function (self: { any })
             end
         }))
     end
-    for index, slot in self.CharAbilityList do
+    for index, slot in list3 do
         table.insert(scope, HarukaLib:Hydrate(slot.CDSymbol, {
             ["Prop-Value"] = function(val: number)
                 _updateRotation("CharAbilityList", val, index)

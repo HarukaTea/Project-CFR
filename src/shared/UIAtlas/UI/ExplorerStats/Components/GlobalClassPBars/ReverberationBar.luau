@@ -18,9 +18,7 @@ local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
-
-})
+return function (scope: Fusion.Scope)
 
     local targetingContainer = Instance.new("Folder")
     targetingContainer.Name = "TargetingContainer_ReverberationBar"
@@ -52,9 +50,11 @@ return function (scope: Fusion.Scope, props: {
             Fusion.ForValues(scope, targeting, function(_, scope: Fusion.Scope, target: ObjectValue)
                 local HP = Fusion.Value(scope, 100)
 
-                if not ClientLib.IsCharValid(target.Value) then return nil end
+                local realTarget = target.Value :: Model
 
-                table.insert(scope, HarukaLib:Hydrate(target.Value.Humanoid, {
+                if not ClientLib.IsCharValid(realTarget) then return nil end
+
+                table.insert(scope, HarukaLib:Hydrate(realTarget.Humanoid, {
                     ["Prop-Health"] = function(newHP: number)
                         HP:set(newHP)
                     end,

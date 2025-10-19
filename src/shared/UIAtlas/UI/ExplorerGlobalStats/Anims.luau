@@ -22,11 +22,14 @@ local CastingTimeBar = require(script.Parent.Components.CastTimeBar)
 local BadgeAwarding = require(script.Parent.Components.BadgeAwarding)
 
 
+local Pinia = require(script.Parent.Pinia)
+
+
 local wait = task.wait
 
 
-return function (UI: ScreenGui, self: { any })
-    local scope = self.scope :: Fusion.Scope
+return function (UI: ScreenGui, self: Pinia.Self)
+    local scope = self.scope
 
     --// got hit anim
     local spawnClock = true
@@ -95,8 +98,10 @@ return function (UI: ScreenGui, self: { any })
 
     --// track new items
     table.insert(scope, Events.PlayItemDropFX.On(function(data)
-        if not self.UI then return end
-        if not self.UI:FindFirstChild("Center") then return end
+        local UI = self.UI
+
+        if not UI then return end
+        if not UI:FindFirstChild("Center") then return end
 
 
         local newScope = Fusion.scoped()
@@ -105,7 +110,7 @@ return function (UI: ScreenGui, self: { any })
             ItemId = data.ItemId,
             Amount = data.Amount
         })
-        itemDropBar.Parent = self.UI.Center.ItemDropsDiv.ItemDrops
+        itemDropBar.Parent = UI.Center.ItemDropsDiv.ItemDrops
         Debris:AddItem(itemDropBar, 3)
 
 
@@ -114,7 +119,7 @@ return function (UI: ScreenGui, self: { any })
 		end):catch(function() end)
 
 
-        HarukaLib:UITween(itemDropBar, "In")
+        HarukaLib:UITween(itemDropBar, "In", {})
         HarukaLib:UITween(itemDropBar, "Out", { TweenTime = 0.5, DelayTime = 3 - 0.5 })
     end))
 
@@ -128,8 +133,10 @@ return function (UI: ScreenGui, self: { any })
         if expDropQueue:IsLocked() then return end
         if expDropQueue:IsEmpty() then return end
 
-        if not self.UI then return end
-        if not self.UI:FindFirstChild("Top") then return end
+        local UI = self.UI
+
+        if not UI then return end
+        if not UI:FindFirstChild("Top") then return end
 
         expDropQueue:SetLockState(true)
 
@@ -140,7 +147,7 @@ return function (UI: ScreenGui, self: { any })
         local expBar = EXPBar(newScope, {
             AddedEXP = exp
         })
-        expBar.Parent = self.UI.Top.LevelEXP
+        expBar.Parent = UI.Top.LevelEXP
         Debris:AddItem(expBar, 2)
 
 
@@ -149,7 +156,7 @@ return function (UI: ScreenGui, self: { any })
 		end):catch(function() end)
 
 
-        HarukaLib:UITween(expBar, "In")
+        HarukaLib:UITween(expBar, "In", {})
         HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 1.5 })
 
         wait(2)
@@ -174,8 +181,10 @@ return function (UI: ScreenGui, self: { any })
 
         if self == nil then return end
 
-        if not self.UI then return end
-        if not self.UI:FindFirstChild("Top") then return end
+        local UI = self.UI
+
+        if not UI then return end
+        if not UI:FindFirstChild("Top") then return end
 
         regionQueue:SetLockState(true)
 
@@ -185,7 +194,7 @@ return function (UI: ScreenGui, self: { any })
         local regionBar = RegionBar(newScope, {
             AreaVal = nextRegion
         })
-        regionBar.Parent = self.UI.Top
+        regionBar.Parent = UI.Top
         Debris:AddItem(regionBar, 3.5)
 
 
@@ -194,7 +203,7 @@ return function (UI: ScreenGui, self: { any })
 		end):catch(function() end)
 
 
-        HarukaLib:UITween(regionBar, "In")
+        HarukaLib:UITween(regionBar, "In", {})
         HarukaLib:UITween(regionBar, "Out", { TweenTime = 0.5, DelayTime = 2.5 })
 
         wait(1.5)
@@ -214,15 +223,17 @@ return function (UI: ScreenGui, self: { any })
 
     --// track cast cd
     table.insert(scope, Events.OpenCastTimeBar.On(function(data)
-        if not self.UI then return end
-        if not self.UI:FindFirstChild("Bottom") then return end
+        local UI = self.UI
+
+        if not UI then return end
+        if not UI:FindFirstChild("Bottom") then return end
 
 
         local newScope = Fusion.scoped()
         local castingTimeBar = CastingTimeBar(newScope, {
             Time = data.Duration
         })
-        castingTimeBar.Parent = self.UI.Bottom.CastTimeBars
+        castingTimeBar.Parent = UI.Bottom.CastTimeBars
         Debris:AddItem(castingTimeBar, data.Duration + 0.2)
 
 
@@ -232,7 +243,7 @@ return function (UI: ScreenGui, self: { any })
 
 
         wait(data.Duration)
-        HarukaLib:UITween(castingTimeBar, "Out")
+        HarukaLib:UITween(castingTimeBar, "Out", {})
     end))
 
 
@@ -246,6 +257,9 @@ return function (UI: ScreenGui, self: { any })
         if achivementQueue:IsEmpty() then return end
 
         achivementQueue:SetLockState(true)
+
+
+        local UI = self.UI
 
 
         local data = achivementQueue:Pop()

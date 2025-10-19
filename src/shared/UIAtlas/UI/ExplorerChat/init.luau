@@ -13,8 +13,11 @@ local ChatView = require(script.Components.ChatView)
 
 local Children = Fusion.Children
 
+
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
@@ -23,11 +26,11 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerChat") then
-        plr.PlayerGui.ExplorerChat:Destroy()
+        (plr.PlayerGui :: any).ExplorerChat:Destroy()
     end
 
     local UI; UI = Components.HarukaScreenGui(scope, {

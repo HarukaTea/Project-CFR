@@ -31,16 +31,18 @@ TextChatService.OnIncomingMessage = function(message: TextChatMessage)
 
         if sender:GetAttribute("Role") then
             local role = sender:GetAttribute("Role") :: string
-            local roleInfo: { any }?
+            local roleInfo: RankBook.CustomRoleJSON = nil
 
-
-            for _, roleinfo: { any } in RankBook.RankRoleInfo do
+            for _, roleinfo in RankBook.RankRoleInfo do
                 if roleinfo.Role == role then roleInfo = roleinfo break end
             end
-            for _, roleinfo: { any } in RankBook.CustomRoleInfo do
+            for _, roleinfo in RankBook.CustomRoleInfo do
                 if roleinfo.Role == role then roleInfo = roleinfo break end
             end
 
+            if not roleInfo then
+                return properties
+            end
             if not roleInfo.ChatRole then
                 return properties
             end

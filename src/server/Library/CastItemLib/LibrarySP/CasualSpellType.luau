@@ -23,7 +23,7 @@ local Types = require(script.Parent.Parent.Types)
 local wait = task.wait
 
 
-return function (self: Types.CastItemTable)
+return function (self: Types.CastItemLib)
     local CastItemLib = self
 
 
@@ -67,12 +67,14 @@ return function (self: Types.CastItemTable)
             Events.FaceToTargetingEnemy.Fire(player)
 
 
-            Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+            Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers((char :: any).PrimaryPart.Position), {
                 SceneId = "FireballSpell",
                 Caster = char,
                 ProjectileUniqueId = uniqueId,
             })
         end)
+
+        return nil
     end
 
 
@@ -104,6 +106,8 @@ return function (self: Types.CastItemTable)
         Promise.delay(5):andThen(function()
             eff.Enabled = false
         end):catch(function() end)
+
+        return nil
     end
 
 
@@ -120,10 +124,12 @@ return function (self: Types.CastItemTable)
 
         Events.Spell_ExtraJumpSupport.Fire(player)
 
-        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers((char :: any).PrimaryPart.Position), {
             SceneId = "ChainJump",
             Caster = char,
             ProjectileUniqueId = "nil"
         })
+
+        return nil
     end
 end

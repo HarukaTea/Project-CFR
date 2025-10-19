@@ -13,7 +13,16 @@ local SoundService = game:GetService("SoundService")
 local TeleportService = game:GetService("TeleportService")
 
 
-local AbyssWorldLib = {}
+export type AbyssWorldLibClass = {
+    Funcs: { () -> nil },
+    ListenFuncs: { () -> nil },
+
+    Started: boolean,
+    AbyssId: number
+}
+
+
+local AbyssWorldLib = {} :: AbyssWorldLibClass
 AbyssWorldLib.Funcs = {}
 AbyssWorldLib.ListenFuncs = {}
 
@@ -37,7 +46,7 @@ local wait = task.wait
 
 function AbyssWorldLib:Init()
     for _, func: () -> nil in AbyssWorldLib.Funcs do
-        Promise.try(func, AbyssWorldLib):catch(function(err)
+        Promise.try(func):catch(function(err)
             warn(tostring(err))
         end):await()
     end

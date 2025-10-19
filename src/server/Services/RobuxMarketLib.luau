@@ -14,17 +14,24 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore)
 
 
+local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
+
+
 local RobuxMarketLib = {}
 
 
 local wait = task.wait
 
 
+local SharedTableTypes = require(ServerScriptService.HarukaServer.Library.SharedTableTypes)
+local shared = shared :: SharedTableTypes.SharedTable
+
+
 --// Dev products purchase callback
 local productFunctions = {}
 
 for _, productId in AssetBook.DevProductIds do
-    productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: ProfileStore.Profile)
+    productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: ProfileStore.Profile<PlayerTemplate.JSON>)
         local productInfo = MarketplaceService:GetProductInfo(receipt.ProductId, Enum.InfoType.Product)
         assert(productInfo)
 
@@ -52,7 +59,7 @@ local function processReceipt(receiptInfo: {[string]: any})
         if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
             local playerObj = shared.PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
             if playerObj then
-                local profile = playerObj.Profile :: ProfileStore.Profile
+                local profile = playerObj.Profile :: ProfileStore.Profile<PlayerTemplate.JSON>
 
                 if profile and profile:IsActive() then
                     local handler = productFunctions[tostring(productId)]
@@ -86,7 +93,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     local playerObj = shared.PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
     if not playerObj then return end
 
-    local profile = playerObj.Profile :: ProfileStore.Profile
+    local profile = playerObj.Profile :: ProfileStore.Profile<PlayerTemplate.JSON>
     if not profile then return end
 
 

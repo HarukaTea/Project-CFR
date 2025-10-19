@@ -32,19 +32,22 @@ for _, bar: ModuleScript in script.Components.GlobalClassPBars:GetChildren() do
 end
 
 
+local Pinia = require(script.Pinia)
+
+
 return function(plr: Player)
-	local self = {}
+	local self = {} :: Pinia.Self
 
 	self.plr = plr
 	self.char = plr.Character
     self.scope = Fusion.scoped()
 
 
-	require(script.Pinia)(self)
+	Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerStats") then
-        plr.PlayerGui.ExplorerStats:Destroy()
+        (plr.PlayerGui :: any).ExplorerStats:Destroy()
     end
 
 
@@ -133,7 +136,7 @@ return function(plr: Player)
                     Position = UDim2.fromScale(0, 1.5),
 
                     [Children] = {
-                        Components.UIScale(scope),
+                        Components.UIScale(scope, {}),
 
                         Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local class = use(self.Class) :: string
@@ -214,7 +217,7 @@ return function(plr: Player)
                             Padding = UDim.new(0.007, 0)
                         }),
 
-                        Components.UIScale(scope),
+                        Components.UIScale(scope, {}),
                         Components.PaddingFrame(scope, "ZZZ"),
 
 
@@ -288,7 +291,7 @@ return function(plr: Player)
                             Text = "START",
                             BackgroundTransparency = 0,
                             BackgroundColor3 = Components.AZUR_BLUE_COLOR,
-                            TextColor3 = Components.BLACK_TEXT_COLOR,
+                            TextColor3 = Components.HarukaColorLab.COLOR_SERIES.AzurLane.Text,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
                                 Events.DUNGEON_RequestToStartDungeon.Fire()
@@ -329,7 +332,7 @@ return function(plr: Player)
                             Text = "RESTART",
                             BackgroundTransparency = 0,
                             BackgroundColor3 = Components.AZUR_BLUE_COLOR,
-                            TextColor3 = Components.BLACK_TEXT_COLOR,
+                            TextColor3 = Components.HarukaColorLab.COLOR_SERIES.AzurLane.Text,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
                                 Events.DUNGEON_RequestToRestartDungeon.Fire()

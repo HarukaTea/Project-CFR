@@ -16,6 +16,10 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
+
+local Pinia = require(script.Pinia)
+
+
 return function (plr: Player)
     if workspace:GetAttribute("NoRequiresTitlescreen") then return nil end
 
@@ -29,13 +33,13 @@ return function (plr: Player)
 
     repeat wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.scope = Fusion.scoped()
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     local scope = self.scope :: Fusion.Scope

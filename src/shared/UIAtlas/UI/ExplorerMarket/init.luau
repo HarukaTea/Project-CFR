@@ -28,8 +28,11 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
+
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
@@ -38,11 +41,11 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerMarket") then
-        plr.PlayerGui.ExplorerMarket:Destroy()
+        (plr.PlayerGui :: any).ExplorerMarket:Destroy()
     end
 
 
@@ -80,7 +83,10 @@ return function (plr: Player)
                         ClipsDescendants = false,
 
                         [Children] = {
-                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope, itemInfo: string)
+                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope, itemInfo: {
+                                ProductId: string,
+                                ProductUniqueId: string,
+                            })
                                 return ProductBar(scope, {
                                     ProductId = itemInfo.ProductId,
                                     UniqueId = itemInfo.ProductUniqueId,
@@ -472,7 +478,7 @@ return function (plr: Player)
 
                             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local check = false
-                                for _, tierStatus: Fusion.Value in self.FilterTierList do
+                                for _, tierStatus in self.FilterTierList do
                                     if use(tierStatus) == false then
                                         check = true
                                         break

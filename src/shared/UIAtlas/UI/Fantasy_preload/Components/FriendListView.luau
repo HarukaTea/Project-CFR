@@ -31,7 +31,7 @@ return function (scope: Fusion.Scope, props: {
     SlotChosen: Fusion.Value
 })
 
-    local function Value(val: any) : Fusion.Value
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local isVisible = Value(false)

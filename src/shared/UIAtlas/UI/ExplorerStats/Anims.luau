@@ -22,9 +22,12 @@ local TicketPurchase = require(script.Parent.Components.TicketPurchase)
 local wait = task.wait
 
 
-return function (UI: ScreenGui, self: { any })
-    local scope = self.scope :: Fusion.Scope
-    local bottom = UI.Bottom :: Frame
+local Pinia = require(script.Parent.Pinia)
+
+
+return function (UI: ScreenGui, self: Pinia.Self)
+    local scope = self.scope
+    local bottom = (UI :: any).Bottom :: Frame
 
 
     --// cd anim
@@ -62,10 +65,14 @@ return function (UI: ScreenGui, self: { any })
 
     ---// track class: reverberation mechanic
     table.insert(scope, Events.CLASS_RollNewResonateNumForPlayer.On(function(data)
-        if not self.UI then return end
-        if not self.UI:FindFirstChild("Center") then return end
-        if not self.UI.Center:FindFirstChild("GlobalClassAbilityDiv") then return end
-        if not self.UI.Center.GlobalClassAbilityDiv:FindFirstChild("ReverberationStyle") then return end
+        local UI = self.UI
+
+        if not UI then return end
+        if not UI:FindFirstChild("Center") then return end
+
+
+        if not UI.Center:FindFirstChild("GlobalClassAbilityDiv") then return end
+        if not UI.Center.GlobalClassAbilityDiv:FindFirstChild("ReverberationStyle") then return end
 
 
 
@@ -74,7 +81,7 @@ return function (UI: ScreenGui, self: { any })
         local ReverberationPKSlot = RevPKSlot(newScope, {
             Num = data.ResonateNum
         })
-        ReverberationPKSlot.Parent = self.UI.Center.GlobalClassAbilityDiv.ReverberationStyle
+        ReverberationPKSlot.Parent = UI.Center.GlobalClassAbilityDiv.ReverberationStyle
         Debris:AddItem(ReverberationPKSlot, 2)
 
 
@@ -83,7 +90,7 @@ return function (UI: ScreenGui, self: { any })
 		end):catch(function() end)
 
 
-        HarukaLib:UITween(ReverberationPKSlot, "In")
+        HarukaLib:UITween(ReverberationPKSlot, "In", {})
         HarukaLib:UITween(ReverberationPKSlot, "Out", { DelayTime = 1.5, TweenTime = 0.5 })
 
         SoundService.SFXs.DiceRoll:Play()
@@ -92,10 +99,12 @@ return function (UI: ScreenGui, self: { any })
 
     --// track ticket purchases
     table.insert(scope, Events.OpenTicketPurchaseUI.On(function(data)
-        if not self.UI then return end
-        if not self.UI:FindFirstChild("Center") then return end
+        local UI = self.UI
 
-        if self.UI.Center:FindFirstChild("TicketPurchase") then return end
+        if not UI then return end
+        if not UI:FindFirstChild("Center") then return end
+
+        if UI.Center:FindFirstChild("TicketPurchase") then return end
 
 
         local newScope = Fusion.scoped()
@@ -103,7 +112,7 @@ return function (UI: ScreenGui, self: { any })
         local TicketPurchaseDreamField, blur = TicketPurchase(scope, {
             MerchantId = data.MerchantId
         })
-        TicketPurchaseDreamField.Parent = self.UI.Center
+        TicketPurchaseDreamField.Parent = UI.Center
         Debris:AddItem(TicketPurchaseDreamField, 30)
         Debris:AddItem(blur, 30)
 
@@ -113,6 +122,6 @@ return function (UI: ScreenGui, self: { any })
 		end):catch(function() end)
 
 
-        HarukaLib:UITween(TicketPurchaseDreamField, "In")
+        HarukaLib:UITween(TicketPurchaseDreamField, "In", {})
     end))
 end

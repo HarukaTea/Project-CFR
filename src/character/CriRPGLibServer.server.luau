@@ -13,9 +13,6 @@ local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
-local CriRPGLib = {}
-CriRPGLib.Funcs = {}
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
@@ -27,7 +24,6 @@ local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-local PerkLib = require(ServerScriptService.HarukaServer.Library.PerkLibV2)
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
 
@@ -41,6 +37,18 @@ local wait = task.wait
 repeat wait() until char:GetAttribute("Haruka_CharServerInited")
 
 local Add, Empty = HarukaLib.Bin()
+
+
+
+type CriRPGLibClass = {
+    Funcs: { () -> nil },
+
+    Init: (self: CriRPGLibClass) -> nil,
+    Destroy: (self: CriRPGLibClass) -> nil,
+}
+
+local CriRPGLib = {} :: CriRPGLibClass
+CriRPGLib.Funcs = {}
 
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
@@ -118,7 +126,7 @@ end
 
 
 function CriRPGLib:_InitAttrs()
-    for attr: string, val: any in table.clone(CharTemplate) do
+    for attr, val in table.clone(CharTemplate) do
         if typeof(val) == "table" then
             local folder = Instance.new("Folder")
             folder.Name = attr
@@ -162,7 +170,8 @@ function CriRPGLib:_AutoEquipItems()
             continue
         end
 
-        ServerLib.EquipItem(plr, item:GetAttribute("HarukaUniqueId"))
+        local uniqueId = item:GetAttribute("HarukaUniqueId") :: string
+        ServerLib.EquipItem(plr, uniqueId)
     end
     for _, item: IntConstrainedValue in plr.Items:GetChildren() do
         local itemInfo = ItemBook:GetItemInfo(item.Name)
@@ -253,12 +262,14 @@ table.insert(CriRPGLib.Funcs, function()
 
     local orbSpawnAdd, orbSpawnEmpty = HarukaLib.Bin()
     local function _spawnOrb_done(orbName: string, extraProps: {
-        Offset: Vector3,
-        ForceLocation: CFrame
-    })
+        Offset: Vector3?,
+        ForceLocation: CFrame?
+    }?)
         local enemy = char.TargetingEnemy.Value :: Model
-
-        extraProps = extraProps or {}
+        local extraProps = extraProps or {
+            ForceLocation = nil,
+            Offset = nil
+        }
 
         if ServerLib.IsCharValid(enemy) and char.Humanoid.Health > 0 then
             local orb = orbResContainer:FindFirstChild(orbName, true) :: Model
@@ -469,7 +480,7 @@ table.insert(CriRPGLib.Funcs, function()
     local function _updateClassBase(class: string)
         if not class then return end
 
-        for attr: string, val: any in table.clone(CharTemplate) do
+        for attr, val in table.clone(CharTemplate) do
             if string.find(attr, "Base") then
                 char:SetAttribute(attr, val)
             end
@@ -529,9 +540,12 @@ table.insert(CriRPGLib.Funcs, function()
         local minDMGBuff = char:GetAttribute("MinDMGEx") :: number
         local minDMGExBuff = char:GetAttribute("MinDMGExPower") :: number
 
+        local point = plr:GetAttribute("STRPoints") :: number
+
         baseMinDMG = FormulaBook.PlayerDMGCurveCal({
             BaseDMG = baseMinDMG,
-            DMGPoints = plr:GetAttribute("STRPoints")
+            DMGPoints = point,
+            ATKType = "Min"
         })
 
         local final = math.ceil((baseMinDMG + minDMGBuff) * minDMGExBuff)
@@ -722,7 +736,7 @@ table.insert(CriRPGLib.Funcs, function()
         "BaseMagic", "BaseMinDMG", "BaseMaxDMG", "BaseSpeed", "BaseSpeedCombat",
         "BaseJumpPower", "BaseMaxShield", "BaseCriChance"
     }
-    for stat: string, _ in table.clone(CharTemplate) do
+    for stat, _ in table.clone(CharTemplate) do
         if table.find(blackList, stat) then continue end
         if not string.find(stat, "Base") then continue end
         if not char:GetAttribute(stat) then
@@ -868,46 +882,6 @@ table.insert(CriRPGLib.Funcs, function()
     Add(plr.Items.ChildRemoved:Connect(function(item: IntConstrainedValue)
         _handleItem(item, "Unequip")
     end))
-end)
-
-
-table.insert(CriRPGLib.Funcs, function()
-    local perkContainer = Instance.new("Folder")
-    perkContainer.Name = "Perks"
-    perkContainer.Parent = char
-    Add(perkContainer)
-
-
-    local function _equipPerk()
-        local perkHave = plr.Talents:GetChildren() :: { BoolValue }
-
-        -- clear unequipped perks
-        for _, perk: Script in perkContainer:GetChildren() do
-            if not plr.Talents:FindFirstChild(perk.Name) then
-                PerkLib[perk.Name](char, -1)
-                perk:Destroy()
-            end
-        end
-        --- equip new perks
-        for _, perk: BoolValue in perkHave do
-            if not perkContainer:FindFirstChild(perk.Name) then
-                PerkLib[perk.Name](char, 1)
-
-                if ReplicatedStorage.HarukaRes.PerksV2:FindFirstChild(perk.Name) then
-                    ReplicatedStorage.HarukaRes.PerksV2[perk.Name]:Clone().Parent = perkContainer
-                else
-                    local symbol = Instance.new("BoolValue")
-                    symbol.Name = perk.Name
-                    symbol.Value = true
-                    symbol.Parent = perkContainer
-                end
-            end
-        end
-    end
-    Add(plr.Talents.ChildAdded:Connect(_equipPerk))
-    Add(plr.Talents.ChildRemoved:Connect(_equipPerk))
-
-    _equipPerk()
 end)
 
 
@@ -1058,7 +1032,7 @@ Add(HarukaLib.Clock(5, function()
     if not char:GetAttribute("IsInCombat") then return end
 
 
-	for _, obj: ObjectValue in char.TargetingList:GetChildren() do
+	for _, obj in char.TargetingList:GetChildren() do
 		if not ServerLib.IsCharValid(obj.Value) then
 			obj:Destroy()
 		end

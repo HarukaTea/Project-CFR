@@ -22,14 +22,47 @@ local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
 local wait = task.wait
 
-local ClassAttackLib = {}
+
+
+export type ClassAttackLibClass = {
+    [string]: (plr: Player) -> nil,
+
+    _CalCastingTime: (char: Model, baseTime: number) -> number,
+    _CalDMG: (dmgType: string, char: Model, props: {
+        ForceMaxDMG: boolean?,
+        ForceDMG: number?,
+    }?) -> number,
+    _AddClassUltCharge: (plr: Player, amount: number) -> nil,
+    _FireClassUltCasted: (char: Model, props: {
+        ClassId: string,
+        ClassVariant: string,
+        DMGType: string,
+        Target: Model
+    }) -> nil,
+    _DealDamageToEnemy: (char: Model, target: Model, dmgProps: {
+        DMG: number,
+        DMGType: string,
+        Attacker: string
+    }) -> nil,
+    _DamageDealMiddler: (char: Model, target: Model, dmgProps: {
+        DMG: number,
+        DMGType: string,
+        Attacker: string
+    }) -> nil,
+}
+
+
+
+
+
+local ClassAttackLib = {} :: ClassAttackLibClass
 
 --// Helper functions
 
-local function _getCharAndTargeting(plr: Player)
-    return plr.Character, plr.Character.TargetingEnemy.Value
+local function _getCharAndTargeting(plr: Player) : (Model?, Model?)
+    return plr.Character, (plr.Character :: any).TargetingEnemy.Value
 end
-local function _charAndTargetingCheck(char: Model, targeting: Model)
+local function _charAndTargetingCheck(char: Model, targeting: Model) : boolean
     if char == nil or targeting == nil then return false end
     if not ServerLib.IsCharValid(char) then return false end
     if not ServerLib.IsCharValid(targeting) then return false end
@@ -601,7 +634,7 @@ function ClassAttackLib._FireClassUltCasted(char: Model, props: {
     DMGType: string,
     Target: Model
 })
-    for _, event: BindableEvent in char:GetDescendants() do
+    for _, event in char:GetDescendants() do
         if event:IsA("BindableEvent") and event.Name == "PlayerClassUltCasted" then
             event:Fire(char, props)
         end
@@ -612,9 +645,9 @@ end
 function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
     ForceMaxDMG: boolean?,
     ForceDMG: number?,
-}) : number
+}?) : number
 
-    props = props or {}
+    local props = props or {}
 
     local isCrit = false
     local criChance = char:GetAttribute("CriChance") or 1
@@ -639,7 +672,9 @@ function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
         local finalDMG = props.ForceDMG
 
         if isCrit then
-            finalDMG = math.ceil(finalDMG * (100 + char:GetAttribute("CriDMG")) / 100)
+            local criDMGStat = char:GetAttribute("CriDMG") :: number
+
+            finalDMG = math.ceil(finalDMG * (100 + criDMGStat) / 100)
         end
         return finalDMG
     end
@@ -655,7 +690,9 @@ function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
         local rDMG = math.random(minDMG, maxDMG)
 
         if isCrit then
-            rDMG = math.ceil(maxDMG * (100 + char:GetAttribute("CriDMG")) / 100)
+            local criDMGStat = char:GetAttribute("CriDMG") :: number
+
+            rDMG = math.ceil(maxDMG * (100 + criDMGStat) / 100)
         end
 
         return rDMG
@@ -663,7 +700,9 @@ function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
         local magic = char:GetAttribute("Magic")
 
         if isCrit then
-            magic = math.ceil(magic * (100 + char:GetAttribute("CriDMG")) / 100)
+            local criDMGStat = char:GetAttribute("CriDMG") :: number
+
+            magic = math.ceil(magic * (100 + criDMGStat) / 100)
         end
 
         return magic
@@ -729,8 +768,10 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
     dmgProps.DMG = ClassAttackLib:_DamageDealMiddler(char, targeting, dmgProps)
 
 
-    targeting.Humanoid:TakeDamage(dmgProps.DMG)
-    for _, event: BindableEvent in char:GetDescendants() do
+    local targetingHumanoid = (targeting :: any).Humanoid :: Humanoid
+
+    targetingHumanoid:TakeDamage(dmgProps.DMG)
+    for _, event in char:GetDescendants() do
         if event:IsA("BindableEvent") and event.Name == "EnemyGotHit" then
             event:Fire(targeting, char, dmgProps)
         end
@@ -776,10 +817,6 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         end
     end
 end
-
-
-
-shared.ClassAttackLib = ClassAttackLib
 
 
 return ClassAttackLib

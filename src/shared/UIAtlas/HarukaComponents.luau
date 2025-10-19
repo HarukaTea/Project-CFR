@@ -16,14 +16,23 @@ local HarukaColorLab = require(RepS.HarukaShared.UIAtlas.HarukaColorLab)
 
 local HarukaComponents = {}
 HarukaComponents.HarukaColorLab = HarukaColorLab
+HarukaComponents.FusionComponents = FusionComponents
 
 
 local DESIGN_VP_SIZE = Vector2.new(1168, 462.4)
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
 
 
-local WHITE_BG_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Background
-local BLACK_BG_COLOR = HarukaColorLab.COLOR_SERIES.Genshin.Background
+local WHITE_BG_COLOR = HarukaColorLab.WHITE_COLOR
+local BLACK_BG_COLOR = HarukaColorLab.BLACK_COLOR
+
+
+--// legacy references
+HarukaComponents.BLACK_COLOR = HarukaColorLab.BLACK_COLOR
+HarukaComponents.WHITE_COLOR = HarukaColorLab.WHITE_COLOR
+HarukaComponents.RED_COLOR = HarukaColorLab.RED_COLOR
+HarukaComponents.GREEN_COLOR = HarukaColorLab.GREEN_COLOR
+HarukaComponents.AZUR_BLUE_COLOR = HarukaColorLab.AZUR_BLUE_COLOR
 
 
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
@@ -55,11 +64,11 @@ end
 
 
 function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionPropsEntry, childProps: {
-	TopProps: FusionPropsEntry,
-	CenterProps: FusionPropsEntry,
-	BottomProps: FusionPropsEntry,
-	FullProps: FusionPropsEntry
-}) : ScreenGui
+	TopProps: FusionPropsEntry?,
+	CenterProps: FusionPropsEntry?,
+	BottomProps: FusionPropsEntry?,
+	FullProps: FusionPropsEntry?
+}?) : ScreenGui
 
 	guiProps = guiProps or {}
 	childProps = childProps or {
@@ -68,6 +77,10 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 		BottomProps = {},
 		FullProps = {}
 	}
+
+	local childProps = childProps
+	local topProps, centerProps, bottomProps, fullProps =
+		childProps.TopProps or {}, childProps.CenterProps or {}, childProps.BottomProps or {}, childProps.FullProps or {}
 
 	local defaultTopProps = {
 		Name = "Top",
@@ -93,10 +106,10 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 
 		[Fusion.Children] = {}
 	}
-	_reconcileProps(defaultTopProps, childProps.TopProps)
-	_reconcileProps(defaultCenterProps, childProps.CenterProps)
-	_reconcileProps(defaultBottomProps, childProps.BottomProps)
-	_reconcileProps(defaultFSProps, childProps.FullProps)
+	_reconcileProps(defaultTopProps, topProps)
+	_reconcileProps(defaultCenterProps, centerProps)
+	_reconcileProps(defaultBottomProps, bottomProps)
+	_reconcileProps(defaultFSProps, fullProps)
 
 
 	local top, center, bottom, full = nil, nil, nil, nil

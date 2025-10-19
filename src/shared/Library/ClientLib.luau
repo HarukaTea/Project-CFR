@@ -34,11 +34,11 @@ CollectionService:GetInstanceAddedSignal("CombatBorderServer"):Connect(function(
 end)
 
 
-function ClientLib.WeldModel(part: Part, welded: Model)
+function ClientLib.WeldModel(part: BasePart, welded: Model)
 	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
 	local C = welded:GetChildren()
 	if welded:FindFirstChild("Meshes") then
-		C = welded.Meshes:GetChildren()
+		C = (welded :: any).Meshes:GetChildren()
 	end
 
 	if target == nil then
@@ -82,7 +82,7 @@ end
 
 function ClientLib.WeldWeapon(weapon: Model, char: Model)
 	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
-	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
+	local weldTarget = (weapon :: any).Handle:GetAttribute("Weld") :: string
 
 	if not motor6D then warn("No Motor6D found on weapon") return end
 	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
@@ -104,7 +104,9 @@ function ClientLib.FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 end
 
 
-function ClientLib.IsModelValid(model: Model) : boolean
+function ClientLib.IsModelValid(model: Instance?) : boolean
+	local model = model :: Model
+
 	if not model then return false end
     if not model.Parent then return false end
     if not model.PrimaryPart then return false end
@@ -113,7 +115,9 @@ function ClientLib.IsModelValid(model: Model) : boolean
 end
 
 
-function ClientLib.IsCharValid(char: Model) : boolean
+function ClientLib.IsCharValid(char: Instance?) : boolean
+	local char = char :: Model
+
 	if not ClientLib.IsModelValid(char) then return false end
 
 	local humanoid = char:FindFirstChild("Humanoid")
@@ -176,7 +180,7 @@ function ClientLib.TrackEffectListToUI(props: {
 	effectListContainer.Parent = props.Target
 	table.insert(props.Scope, effectListContainer)
 
-	local effectListEnemy = FusionComponents.useFolder(props.Scope, props.Target.EffectList)
+	local effectListEnemy = FusionComponents.useFolder(props.Scope, (props.Target :: any).EffectList)
 	local containerVal = FusionComponents.useFolder(props.Scope, effectListContainer)
 
 
@@ -256,8 +260,8 @@ function ClientLib.TrackInputTextbox(props: {
 	Scope: Fusion.Scope,
 	TextBox: TextBox,
 
-	Callback: (amountVal: Fusion.Value) -> nil
-}): Fusion.Value
+	Callback: (amountVal: Fusion.Value<number>) -> nil
+}): Fusion.Value<number>
 
 	local amount = Fusion.Value(props.Scope, 1)
 

@@ -10,6 +10,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
+
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 
 local Children = Fusion.Children
@@ -19,7 +22,7 @@ return function (scope: Fusion.Scope, props: {
     ConfirmText: string,
     Hint: string,
 
-    ResultSignal: RBXScriptSignal,
+    ResultSignal: Signal.SignalClass,
 })
 
     local absTextBGSize = Fusion.Value(scope, Vector2.zero)

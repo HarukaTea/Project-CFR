@@ -14,9 +14,15 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
-    Class: Fusion.Value,
-    EquippingPassives: { any },
-    EquippingItems: Fusion.Value,
+    Class: Fusion.Value<string>,
+    EquippingPassives: {
+        {
+            Id: string,
+            ItemId: Fusion.Value<string>,
+            ItemUniqueId: Fusion.Value<string>,
+        }
+    },
+    EquippingItems: Fusion.Value<{ StringValue }>,
 })
 
     local isSelecting = Fusion.Value(scope, false)
@@ -95,7 +101,7 @@ return function(scope: Fusion.Scope, props: {
                 Name = "Passives",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope, index: number, info: { any })
+                    Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope, index: number, info)
                         local RADIANS = { -40, -80, -120 }
                         local r = 0.8
 

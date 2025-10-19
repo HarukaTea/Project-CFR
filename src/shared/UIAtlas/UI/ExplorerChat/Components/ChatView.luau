@@ -11,24 +11,24 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
-local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
+local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    IsChatShown: Fusion.Value,
+    IsChatShown: Fusion.Value<boolean>,
 
-    ChoiceList: Fusion.Value,
-    Dialogue: Fusion.Value,
-    MaxUTFShown: Fusion.Value,
+    ChoiceList: Fusion.Value<{ string }>,
+    Dialogue: Fusion.Value<string>,
+    MaxUTFShown: Fusion.Value<number>,
 
-    Speaker: Fusion.Value,
-    NPCId: Fusion.Value,
-    IsTypewriting: Fusion.Value,
+    Speaker: Fusion.Value<string>,
+    NPCId: Fusion.Value<string>,
+    IsTypewriting: Fusion.Value<boolean>,
 
-    ProcessedToNextDialogueSignal: RBXScriptSignal,
-    ProcessedToNextDialogueByChoiceSignal: RBXScriptSignal,
+    ProcessedToNextDialogueSignal: Signal.SignalClass,
+    ProcessedToNextDialogueByChoiceSignal: Signal.SignalClass,
 })
 
     local absDialogueSize = Fusion.Value(scope, Vector2.zero)
@@ -105,8 +105,16 @@ return function (scope: Fusion.Scope, props: {
                 ZIndex = 0,
 
                 [Children] = {
-                    CAPatternTex(scope, {
-                        Transparency = 0.95,
+                    Components.ImageLabel(scope, {
+                        Name = "CAPatternTex",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        ZIndex = 0,
+
+                        Image = "rbxassetid://91666280221875",
+                        ImageTransparency = 0.95,
+
+                        ScaleType = Enum.ScaleType.Tile,
                         TileSize = UDim2.fromOffset(40, 40),
 
                         [Children] = {
@@ -118,7 +126,7 @@ return function (scope: Fusion.Scope, props: {
                                     NumberSequenceKeypoint.new(1, 1)
                                 })
                             })
-                        }
+                        },
                     })
                 }
             }),

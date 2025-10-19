@@ -21,7 +21,7 @@ local Types = require(script.Parent.Parent.Types)
 local wait = task.wait
 
 
-return function (self: Types.CastItemTable)
+return function (self: Types.CastItemLib)
     local CastItemLib = self
 
     CastItemLib.HealthPotion = function(player: Player, char: Model) : number?
@@ -41,6 +41,8 @@ return function (self: Types.CastItemTable)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
+
+        return nil
     end
 
 
@@ -62,6 +64,8 @@ return function (self: Types.CastItemTable)
                 Duration = 8
             })
         end)
+
+        return nil
     end
 
 
@@ -85,6 +89,8 @@ return function (self: Types.CastItemTable)
 
             Events.PlayStatPoweredScreenFX.Fire(player)
         end)
+
+        return nil
     end
 
     --// Mana potion is not mana potion, it's speed potion
@@ -118,6 +124,8 @@ return function (self: Types.CastItemTable)
 
             Events.PlayStatPoweredScreenFX.Fire(player)
         end)
+
+        return nil
     end
 
 
@@ -134,13 +142,17 @@ return function (self: Types.CastItemTable)
 
 
         CastItemLib._drinkSoundFunc(char, function()
-            HarukaLib:AddAttr(char, "Shield", math.floor(char:GetAttribute("MaxShield") * 0.5))
+            local maxShield = char:GetAttribute("MaxShield") :: number
+
+            HarukaLib:AddAttr(char, "Shield", math.floor(maxShield * 0.5))
 
             local repairingEff = RepS.Packages.Effects.Repairing:Clone() :: BasePart
             repairingEff.Parent = char
 
             Debris:AddItem(repairingEff, 1.5)
         end)
+
+        return nil
     end
 
 end

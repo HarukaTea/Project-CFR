@@ -12,19 +12,22 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
+
+local Pinia = require(script.Pinia)
+
 return function(plr: Player)
-	local self = {}
+	local self = {} :: Pinia.Self
 
 	self.plr = plr
 	self.char = plr.Character
     self.scope = Fusion.scoped()
 
 
-	require(script.Pinia)(self)
+	Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerStatsGlobal") then
-        plr.PlayerGui.ExplorerStatsGlobal:Destroy()
+        (plr.PlayerGui :: any).ExplorerStatsGlobal:Destroy()
     end
 
 

@@ -15,8 +15,22 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local wait = task.wait
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    IsUIShown: Fusion.Value<boolean>,
+    AbsTopicDescSize: Fusion.Value<Vector2>,
+    PanelSelected: Fusion.Value<string>,
+    PanelSwitched: Signal.SignalClass,
+}
+
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope

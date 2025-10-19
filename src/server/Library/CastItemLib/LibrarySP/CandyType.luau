@@ -16,7 +16,7 @@ local Types = require(script.Parent.Parent.Types)
 local wait = task.wait
 
 
-return function (self: Types.CastItemTable)
+return function (self: Types.CastItemLib)
     local CastItemLib = self
 
     CastItemLib.HalloweenCandy = function(player: Player, char: Model) : number?
@@ -37,6 +37,8 @@ return function (self: Types.CastItemTable)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
+
+        return nil
     end
 
 
@@ -57,6 +59,8 @@ return function (self: Types.CastItemTable)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
+
+        return nil
     end
 
 
@@ -77,5 +81,7 @@ return function (self: Types.CastItemTable)
 
             ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
+
+        return nil
     end
 end

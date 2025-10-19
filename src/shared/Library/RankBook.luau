@@ -3,6 +3,17 @@
 --!nolint SameLineStatement
 --!nolint ImplicitReturn
 
+export type RankRoleJSON = {
+    Role: string,
+    Color: string
+}
+export type CustomRoleJSON = {
+    Role: string,
+    Color: string,
+    ChatRole: string
+}
+
+
 local Ranks = {}
 
 Ranks.RankRoleInfo = {

@@ -3,6 +3,25 @@
 --!nolint SameLineStatement
 --!nolint ImplicitReturn
 
+export type ClassJSON = {
+    Icon: string,
+    Color: Color3,
+    Type: string,
+    Desc: string,
+    Hint: string,
+
+    Skills: {
+        [string]: string | boolean,
+    },
+    BaseStats: {
+        [string]: number
+    },
+
+    DevClass: boolean?
+}
+
+
+
 return {
 	Chain = {
 		Icon = "rbxassetid://125482694089319",

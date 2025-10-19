@@ -14,13 +14,13 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    HP: Fusion.Value,
-    MaxHP: Fusion.Value,
+    HP: Fusion.Value<number>,
+    MaxHP: Fusion.Value<number>,
 
-    Shield: Fusion.Value,
-    MaxShield: Fusion.Value,
+    Shield: Fusion.Value<number>,
+    MaxShield: Fusion.Value<number>,
 
-    IsHPRecovering: Fusion.Value
+    IsHPRecovering: Fusion.Value<boolean>
 
 }) : { Frame }
 
@@ -148,6 +148,9 @@ return function (scope: Fusion.Scope, props: {
         if x ~= x then x = 0 end
 
         x = math.clamp(x, 0, 0.999)
+
+        local bar1 = bar1
+        local bar2 = bar2
 
         HaurkaLib:Tween(bar1.Shield.UIGradient, AssetBook.TweenInfos.half, {
             Transparency = NumberSequence.new({

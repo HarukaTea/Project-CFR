@@ -25,6 +25,8 @@ local SlimeUniversal = {}
 local wait = task.wait
 
 SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
+    local target = target
+
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeBlast"
@@ -45,6 +47,8 @@ end
 
 
 SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
+    local entity, target = entity, target
+
     local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("SlimeMove2", true):Clone() :: Model
     local post = ServerLib.FindGroundByRay(entity.PrimaryPart.Position)
 
@@ -102,7 +106,9 @@ end
 
 
 
-SlimeUniversal.SlimeBarrageShot = function(entity: Model, target: Model)
+SlimeUniversal.SlimeBarrageShot = function(entity: Model)
+    local entity = entity
+
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeBlast"
@@ -126,6 +132,8 @@ end
 
 
 SlimeUniversal.SlimeSpin = function(entity: Model)
+    local entity = entity
+
     wait(0.35)
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
@@ -141,6 +149,8 @@ end
 
 
 SlimeUniversal.SlimeBomb = function(entity: Model)
+    local entity = entity
+
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(
         math.random(-32, 32), 0,
@@ -173,6 +183,8 @@ end
 
 
 SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
+    local entity, target = entity, target
+
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
@@ -214,6 +226,8 @@ end
 
 
 SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
+    local entity, target = entity, target
+
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 

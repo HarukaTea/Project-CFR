@@ -15,7 +15,7 @@ return function(scope: Fusion.Scope, props: {
     Currency: string,
     Index: number,
 
-    CurrencyVal: Fusion.Value
+    CurrencyVal: Fusion.Value<number>
 })
 
     local isSelecting = Fusion.Value(scope, false)

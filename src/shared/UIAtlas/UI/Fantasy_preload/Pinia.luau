@@ -14,7 +14,21 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local wait = task.wait
 
-return function (self: { any })
+
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    SlotUISignal: Signal.SignalClass,
+    CutsceneUISignal: Signal.SignalClass,
+
+    CharVals: { Fusion.Value<Model?> },
+}
+
+
+return function (self: Self)
 	local scope = self.scope :: Fusion.Scope
 
 
@@ -37,15 +51,20 @@ return function (self: { any })
             resolve(r6Char)
 
         end):andThen(function(r6Char: Model)
+            local r6Char = r6Char :: Model
+            local r6CharHumanoid = r6Char.Humanoid :: Humanoid
+
             r6Char.Name = "Rig"
-            r6Char.PrimaryPart = r6Char.Humanoid.RootPart
-            r6Char.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-            r6Char.Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+            r6Char.PrimaryPart = r6CharHumanoid.RootPart
+
+            r6CharHumanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+            r6CharHumanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+
             r6Char.Animate:Destroy()
             r6Char.Parent = workspace.MapComponents.Titlescreen
 
 
-            for _, val: Fusion.Value in self.CharVals do
+            for _, val in self.CharVals do
                 local clonedChar = r6Char:Clone()
                 clonedChar:PivotTo(workspace.MapComponents.Titlescreen.CharPreviewLocator.CFrame)
                 clonedChar.Parent = workspace.MapComponents.Titlescreen

@@ -14,21 +14,43 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local wait = task.wait
 
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    Players: Fusion.Value<{ Player }>,
+    Characters: Fusion.Value<{ Model }>,
+
+    IsUIShown: Fusion.Value<boolean>,
+    IsUIFolded: Fusion.Value<boolean>,
+
+    PlayerSelecting: Fusion.Value<Player?>,
+    PlayerSelected: Fusion.Value<Player?>,
+
+    PartyMembers: Fusion.Value<{ Model }>,
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
 
 
-    self.Players = FusionComponents.useTagged(scope, "PlayerEntity")
-    self.Characters = FusionComponents.useTagged(scope, "PlayerCharEntity")
+    local players, chars =
+        FusionComponents.useTagged(scope, "PlayerEntity"),
+        FusionComponents.useTagged(scope, "PlayerCharEntity")
+
+    self.Players = players
+    self.Characters = chars
 
     self.IsUIShown = Value(true)
     self.IsUIFolded = Value(false)
 
-    self.PlayerSelecting = Value(nil)
-    self.PlayerSelected = Value(nil)
+    self.PlayerSelecting = Fusion.Value(self.scope, nil)
+    self.PlayerSelected = Fusion.Value(self.scope, nil)
 
 
     self.PartyMembers = Value({})

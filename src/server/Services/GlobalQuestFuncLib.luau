@@ -11,7 +11,16 @@ local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 
 
-local GlobalQuestFuncLib = {}
+
+export type GlobalQuestFuncLibClass = {
+    Funcs: { () -> nil },
+
+    Init: (self: GlobalQuestFuncLibClass) -> nil
+}
+
+
+
+local GlobalQuestFuncLib = {} :: GlobalQuestFuncLibClass
 GlobalQuestFuncLib.Funcs = {}
 
 

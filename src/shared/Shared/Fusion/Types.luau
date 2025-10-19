@@ -44,12 +44,6 @@ export type Task =
 	thread |
 	RBXScriptConnection |
 	() -> () |
-	{destroy: (unknown) -> ()} |
-	{Destroy: (unknown) -> ()} |
-	{cancel: (unknown) -> ()} |
-	{Cancel: (unknown) -> ()} |
-	{prototype: {cancel: (unknown) -> ()}} |
-
 	{Task}
 
 -- A scope of tasks to clean up.

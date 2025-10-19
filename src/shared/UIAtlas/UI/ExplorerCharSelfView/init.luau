@@ -18,8 +18,10 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
@@ -28,11 +30,11 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerCharSelfView") then
-        plr.PlayerGui.ExplorerCharSelfView:Destroy()
+        (plr.PlayerGui :: any).ExplorerCharSelfView:Destroy()
     end
 
 

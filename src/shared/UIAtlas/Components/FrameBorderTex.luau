@@ -15,10 +15,12 @@ return function(scope: Fusion.Scope, props: {
 
     Size: UDim2?,
     Offset: number?,
-})
-    props.Size = props.Size or UDim2.fromScale(0.09, 0.09)
+}) : Frame
 
-    local offset = props.Offset or 15.99 / 2
+    props.Size = props.Size or UDim2.fromScale(0.09, 0.09)
+    props.Offset = props.Offset or 15.99
+
+    local offset = props.Offset
     local pattern = {
         TL = {
             AnchorPoint = Vector2.zero,
@@ -51,7 +53,12 @@ return function(scope: Fusion.Scope, props: {
         Name = "FrameBorderTex",
 
         [Children] = {
-            Fusion.ForPairs(scope, pattern, function(_, scope: Fusion.Scope, id: string, data: { any })
+            Fusion.ForPairs(scope, pattern, function(_, scope: Fusion.Scope, id: string, data: {
+                AnchorPoint: Vector2,
+                Position: UDim2,
+                InnerPosition: UDim2,
+                Image: string
+            })
                 return id, Components.ImageLabel(scope, {
                     Name = "Tex_"..id,
                     Size = props.Size,

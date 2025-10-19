@@ -13,7 +13,44 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
-local PathCreator = {}
+
+export type PathCreatorClass = {
+    __index: PathCreatorClass,
+
+    new: (npc: Model, pfsArgs: { any }) -> PathCreatorClass,
+
+    Run: (self: PathCreatorClass, targetPos: Vector3, previousAsyncResult: boolean) -> boolean,
+    Stop: (self: PathCreatorClass) -> nil,
+    Destroy: (self: PathCreatorClass) -> nil,
+    IsPathValid: (self: PathCreatorClass, targetPos: Vector3) -> boolean,
+
+    Visualize: boolean?,
+    Settings: {
+        TimeLimit: number,
+        ComparisonCheckTimes: number
+    },
+    Events: {
+        Errored: Signal.SignalClass
+    },
+    NPC: Model,
+    Humanoid: Humanoid,
+    PathObj: Path,
+    Status: "Idle" | "Active",
+    LastTick: number,
+    Target: Vector3?,
+    CurWaypoint: number,
+    Waypoints: { PathWaypoint },
+    VisualWaypoints: { BasePart },
+    Position: {
+        LastPos: Vector3,
+        StuckCount: number
+    },
+
+    moveConn: RBXScriptConnection?,
+}
+
+
+local PathCreator = {} :: PathCreatorClass
 PathCreator.__index = PathCreator
 
 
@@ -58,17 +95,19 @@ local function _setJumpState(humanoid: Humanoid)
 		end
 	end)
 end
-local function _disconnectMoveConns(self: { any })
-    self.moveConn:Disconnect()
-	self.moveConn = nil
+local function _disconnectMoveConns(self: PathCreatorClass)
+    if self.moveConn then
+        self.moveConn:Disconnect()
+        self.moveConn = nil
+    end
 end
-local function _moveNPC(self: { any })
+local function _moveNPC(self: PathCreatorClass)
     if self.Waypoints[self.CurWaypoint].Action == Enum.PathWaypointAction.Jump then
 		_setJumpState(self.Humanoid)
 	end
 	self.Humanoid:MoveTo(self.Waypoints[self.CurWaypoint].Position)
 end
-local function _moveToFinished(self: { any }, isReached: boolean)
+local function _moveToFinished(self: PathCreatorClass, isReached: boolean)
     if isReached and self.CurWaypoint + 1 <= #self.Waypoints then
         self.CurWaypoint += 1
 
@@ -88,11 +127,11 @@ local function _moveToFinished(self: { any }, isReached: boolean)
         self.VisualWaypoints = destroyVisualWaypoints(self.VisualWaypoints)
     end
 end
-local function _comparePosition(self: { any })
+local function _comparePosition(self: PathCreatorClass)
 	if self.CurWaypoint == #self.Waypoints then return end
 
-	self.Position.StuckCount = ((self.NPC.PrimaryPart.Position - self.Position.LastPos).Magnitude <= 0.07 and (self.Position.StuckCount + 1)) or 0
-	self.Position.LastPos = self.NPC.PrimaryPart.Position
+	self.Position.StuckCount = (((self.NPC :: any).PrimaryPart.Position - self.Position.LastPos).Magnitude <= 0.07 and (self.Position.StuckCount + 1)) or 0
+	self.Position.LastPos = (self.NPC :: any).PrimaryPart.Position
 
 	if self.Position.StuckCount >= self.Settings.ComparisonCheckTimes then
 		_setJumpState(self.Humanoid)
@@ -114,7 +153,7 @@ function PathCreator.new(npc: Model, pfsArgs: { any })
         },
 
         NPC = npc,
-        Humanoid = npc.Humanoid,
+        Humanoid = (npc :: any).Humanoid,
         PathObj = PFS:CreatePath(pfsArgs),
         Status = "Idle",
         LastTick = 0,

@@ -11,8 +11,43 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local wait = task.wait
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    IsUIShown: Fusion.Value<boolean>,
+    Class: Fusion.Value<string>,
+    Level: Fusion.Value<number>,
+    EXP: Fusion.Value<number>,
+
+    PerkPoints: Fusion.Value<number>,
+    Points: {
+        STR: Fusion.Value<number>,
+        DEX: Fusion.Value<number>,
+        INT: Fusion.Value<number>,
+        VIT: Fusion.Value<number>,
+        DEF: Fusion.Value<number>
+    },
+
+    Stats: {
+        {
+            Id: string,
+            Val: { Fusion.Value<number> }
+        }
+    },
+    BaseStats: {
+        {
+            Id: string,
+            Val: { Fusion.Value<number> }
+        }
+    }
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
@@ -51,15 +86,15 @@ return function (self: { any })
         },
         {
             Id = "HP",
-            Val = Value(100)
+            Val = { Value(100) }
         },
         {
             Id = "SPD",
-            Val = Value(40)
+            Val = { Value(40) }
         },
         {
             Id = "JMP",
-            Val = Value(50)
+            Val = { Value(50) }
         },
     }
 
@@ -71,12 +106,12 @@ return function (self: { any })
     for _, stat: string in statsList do
         table.insert(self.Stats, {
             Id = stat,
-            Val = Value(0),
+            Val = { Value(0) },
         })
         table.insert(baseStatsList, stat)
         table.insert(self.BaseStats, {
             Id = stat,
-            Val = Value(0),
+            Val = { Value(0) },
         })
     end
 
@@ -84,7 +119,7 @@ return function (self: { any })
     local function _setVal(stat: string, val: number)
         for _, s in self.Stats do
             if s.Id == stat then
-                s.Val:set(val)
+                s.Val[1]:set(val)
                 break
             end
         end
@@ -92,7 +127,7 @@ return function (self: { any })
     local function _setBaseVal(stat: string, val: number)
         for _, s in self.BaseStats do
             if s.Id == stat then
-                s.Val:set(val)
+                s.Val[1]:set(val)
                 break
             end
         end
@@ -144,12 +179,7 @@ return function (self: { any })
     --// track stats
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-MinDMG"] = function(val: number)
-            for _, s in self.Stats do
-                if s.Id == "ATK" then
-                    s.Val[1]:set(val)
-                    break
-                end
-            end
+            _setVal("ATK", val)
         end,
         ["Attr-MaxDMG"] = function(val: number)
             for _, s in self.Stats do
@@ -183,12 +213,7 @@ return function (self: { any })
     }))
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-BaseMinDMG"] = function(val: number)
-            for _, s in self.BaseStats do
-                if s.Id == "ATK" then
-                    s.Val[1]:set(val)
-                    break
-                end
-            end
+            _setBaseVal("ATK", val)
         end,
         ["Attr-BaseMaxDMG"] = function(val: number)
             for _, s in self.BaseStats do
@@ -223,7 +248,7 @@ return function (self: { any })
 
 
 
-    table.insert(scope, HarukaLib:Hydrate(self.char.Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate((self.char :: any).Humanoid, {
         ["Prop-MaxHealth"] = function(val: number)
             _setVal("HP", val)
         end,

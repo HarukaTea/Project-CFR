@@ -15,10 +15,9 @@ return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     Size: UDim2?,
     Position: UDim2?,
+    Color: Fusion.Computed<Color3>? | Color3?,
 
-    Color: Fusion.Computed?,
-
-    [Fusion.Children]: { any }?,
+    [Fusion.SpecialKey]: Components.FusionPropsEntry?,
 })
 
     props = props or {}
@@ -28,6 +27,7 @@ return function (scope: Fusion.Scope, props: {
     props.Position = props.Position or UDim2.fromScale(0.5, 0.5)
     props.Color = props.Color or Color3.new(1, 1, 1)
 
+    props[Fusion.Children] = props[Fusion.Children] or {}
 
     return Components.Frame(scope, {
         Name = "CFEmblemTexFrame",
@@ -48,7 +48,7 @@ return function (scope: Fusion.Scope, props: {
                 ImageColor3 = props.Color,
             }),
 
-            [Fusion.Children] = props[Fusion.Children] or {},
+            [Children] = props[Fusion.Children],
         }
     })
 end

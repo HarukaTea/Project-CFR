@@ -23,7 +23,7 @@ event.Name = "PlayerClassUltCasted"
 event.Parent = script
 
 
-Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target: Model, caster: Model, ultMetaData: ClassUltMetaData)
+Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target, caster, ultMetaData)
     if caster:FindFirstChild("QueenBee3ArtifactCooldown") then return end
 
     local symbol = Instance.new("BoolValue")

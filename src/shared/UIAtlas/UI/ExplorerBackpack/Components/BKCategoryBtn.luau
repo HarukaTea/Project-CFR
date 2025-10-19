@@ -16,9 +16,9 @@ return function(scope: Fusion.Scope, props: {
     Category: string,
     Index: number,
 
-    CurrentSelectedItemUniqueId: Fusion.Value,
-    CurrentSelectedItem: Fusion.Value,
-    CurrentCategory: Fusion.Value,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentCategory: Fusion.Value<string>,
 })
 
     local ICONS = {

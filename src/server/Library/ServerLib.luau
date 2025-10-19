@@ -48,7 +48,7 @@ end)
 
 --// Helper functions
 
-function ServerLib.WeldModel(part: Part, welded: Model)
+function ServerLib.WeldModel(part: BasePart, welded: Model)
 	ClientLib.WeldModel(part, welded)
 end
 
@@ -90,8 +90,9 @@ end
 
 function ServerLib.GetNearbyPlayers(position: Vector3)
 	local players = {}
+	local playerEntities = CollectionService:GetTagged("PlayerEntity") :: { Player }
 
-	for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+	for _, player in playerEntities do
 		if not player then continue end
 		if not ServerLib.IsCharValid(player.Character) then continue end
 
@@ -126,6 +127,8 @@ end
 function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
+	local target = target
+
 
 	Events.ShowDMGNumber.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		DMGTarget = target,
@@ -138,6 +141,7 @@ end
 function ServerLib.ShowText(target: Model, text: string, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
+	local target = target
 
 	Events.ShowText.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		Target = target,
@@ -150,6 +154,7 @@ end
 function ServerLib.ApplyHitStatus(target: Model)
 	if not ServerLib.IsCharValid(target) then return end
 
+	local target = target
 
 	Events.PlayHitStatusVFX.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		Target = target
@@ -219,7 +224,7 @@ end
 function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 	if not ItemBook:GetItemInfo(itemId) then return end
 
-
+	local plr = plr
 	local items = plr.Items :: Folder
 	local itemInfo = ItemBook:GetItemInfo(itemId)
 
@@ -320,8 +325,10 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	method = method or "Equip"
 
 	local itemSymbol = nil
+	local plr = plr
+	local items = plr.Items :: Folder
 
-	for _, item: IntConstrainedValue in plr.Items:GetChildren() do
+	for _, item in items:GetChildren() do
 		if item:GetAttribute("HarukaUniqueId") == itemUniqueId then
 			itemSymbol = item
 			break
@@ -412,9 +419,6 @@ function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 		if RunService:IsStudio() then warn(tostring(err)) end
 	end)
 end
-
-
-shared.ServerLib = ServerLib
 
 
 return ServerLib

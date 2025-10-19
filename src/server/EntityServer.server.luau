@@ -16,6 +16,8 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 local function initLocator(locator: BasePart)
     if not locator:IsA("BasePart") then return end
+
+    local locator = locator
     if locator.Parent:IsA("BasePart") then return end
 
     locator.Transparency = 1

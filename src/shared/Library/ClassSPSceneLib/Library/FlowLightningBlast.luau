@@ -22,9 +22,11 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: string)
+return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
+
+    local char = char :: Model
 
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
@@ -181,10 +183,13 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
 
             for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
                 if not ClientLib.IsCharValid(symbol.Value) then continue end
-                if tempMarkedContainer:FindFirstChild(symbol.Value:GetAttribute("HarukaUniqueId")) then continue end
+
+                local obj = symbol.Value :: Instance
+                local uniqueId = obj:GetAttribute("HarukaUniqueId") :: string
+                if tempMarkedContainer:FindFirstChild(uniqueId) then continue end
 
 
-                local entity = symbol.Value :: Model
+                local entity = obj :: Model
                 local enemyPos = entity.PrimaryPart.Position
                 local dist = (pos - enemyPos).Magnitude :: number
 
@@ -242,7 +247,7 @@ return function(self: Types.ClassSPSceneTable, char: Model, projectileUniqueId: 
 
         local textureIds = {}
         for _, texture: Texture in textures do
-            Types.ClassSPSceneTable.insert(textureIds, texture.Texture)
+            table.insert(textureIds, texture.Texture)
         end
 
         while RunService.RenderStepped:Wait() do

@@ -3,6 +3,23 @@
 --!nolint SameLineStatement
 --!nolint ImplicitReturn
 
+
+export type EntityJSON = {
+    Name: string,
+    Icon: string,
+    Tier: number,
+    BaseSpeed: number,
+    BaseJumpPower: number,
+    EnvironmentBonus: number,
+    Species: string,
+    Drops: {[string]: number},
+    BadgeId: number?,
+    IsBoss: boolean?,
+    Tag: string?,
+}
+
+
+
 return {
     --// Bee species
     Bee = {

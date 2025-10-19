@@ -3,8 +3,6 @@
 --!nolint SameLineStatement
 --!nolint ImplicitReturn
 
-if game:GetService("RunService"):IsServer() then return end
-
 local pi    = math.pi
 local abs   = math.abs
 local clamp = math.clamp

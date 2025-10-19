@@ -18,9 +18,35 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
+local SettingsTemplate = require(script.Parent.SettingsTemplate)
 
-return function (self: { any })
-    local function Value(val: any) : Fusion.Value
+
+export type Self = {
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+
+    SettingsFolder: Folder,
+    PanelSelected: Fusion.Value<string>,
+    IsSettingsShown: Fusion.Value<boolean>,
+
+    PanelSwitched: Signal.SignalClass,
+    ValidInputBegan: Signal.SignalClass,
+
+    SliderProgressVals: { [string]: { [string]: Fusion.Value<number> } },
+    SliderVals: { [string]: { [string]: Fusion.Value<number> } },
+
+    SwitcherVals: { [string]: { [string]: Fusion.Value<boolean> } },
+    DropdownVals: { [string]: { [string]: Fusion.Value<string> } },
+
+    IsInKeybindMode: Fusion.Value<boolean>,
+
+    INFO: SettingsTemplate.SettingsJSON
+}
+
+
+return function (self: Self)
+    local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
 
@@ -98,7 +124,7 @@ return function (self: { any })
 
     --// load saved keybinds
     if HarukaLib:GetDevice() ~= "Mobile" then
-        for _, symbol: StringValue in self.SettingsFolder:GetChildren() do
+        for _, symbol in self.SettingsFolder:GetChildren() do
             if symbol:IsA("StringValue") and string.find(symbol.Name, "KEYBIND") then
                 local keybind = symbol.Value
                 local platform = if string.find(symbol.Name, "Console") then "Console" else "PC"
@@ -127,19 +153,19 @@ return function (self: { any })
 
 
     --// track slider
-    for panelId: string, panelInfo: { any } in self.INFO do
+    for panelId, panelInfo in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
 
         self.SliderProgressVals[panelId] = {}
         self.SliderVals[panelId] = {}
 
-        for optionId: string, optionInfo: { any } in panelInfo.Includes do
+        for optionId, optionInfo in panelInfo.Includes do
             if optionInfo.Type ~= "Slider" then continue end
 
             local defaultValue = optionInfo.DefaultValue
             if self.SettingsFolder:FindFirstChild(optionId) then
-                defaultValue = self.SettingsFolder[optionId].Value
+                defaultValue = (self.SettingsFolder[optionId] :: any).Value
             end
             if not optionInfo.AllowDecimals then
                 defaultValue = math.floor(defaultValue)
@@ -154,36 +180,36 @@ return function (self: { any })
         end
     end
     --// track switcher
-    for panelId: string, panelInfo: { any } in self.INFO do
+    for panelId, panelInfo in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
 
         self.SwitcherVals[panelId] = {}
 
-        for optionId: string, optionInfo: { any } in panelInfo.Includes do
+        for optionId, optionInfo in panelInfo.Includes do
             if optionInfo.Type ~= "Switcher" then continue end
 
             local defaultValue = optionInfo.DefaultValue
             if self.SettingsFolder:FindFirstChild(optionId) then
-                defaultValue = self.SettingsFolder[optionId].Value
+                defaultValue = (self.SettingsFolder[optionId] :: any).Value
             end
 
             self.SwitcherVals[panelId][optionId] = Value(defaultValue)
         end
     end
     --// track dropdown
-    for panelId: string, panelInfo: { any } in self.INFO do
+    for panelId, panelInfo in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
 
         self.DropdownVals[panelId] = {}
 
-        for optionId: string, optionInfo: { any } in panelInfo.Includes do
+        for optionId, optionInfo in panelInfo.Includes do
             if optionInfo.Type ~= "Dropdown" then continue end
 
             local defaultValue = optionInfo.DefaultValue
             if self.SettingsFolder:FindFirstChild(optionId) then
-                defaultValue = self.SettingsFolder[optionId].Value
+                defaultValue = (self.SettingsFolder[optionId] :: any).Value
             end
 
             self.DropdownVals[panelId][optionId] = Value(defaultValue)
@@ -208,7 +234,7 @@ return function (self: { any })
     self.INFO.Interface.Includes.UIScale.ValChanged:Connect(function(val: number)
         workspace:SetAttribute("UIScaleFactor", val)
 
-        for _, ui: GuiObject in self.plr.PlayerGui:GetDescendants() do
+        for _, ui in self.plr.PlayerGui:GetDescendants() do
             if ui:IsA("UIScale") then
                 ui.Scale = (ui:GetAttribute("BaseScale") or 1) * val
             end
@@ -273,8 +299,12 @@ return function (self: { any })
                 if not part:GetAttribute("OriMaterial") then return end
                 if not part:GetAttribute("OriColor") then return end
 
-                part.Material = part:GetAttribute("OriMaterial")
-                part.Color = part:GetAttribute("OriColor")
+                local oriMaterial, oriColor =
+                    part:GetAttribute("OriMaterial") :: Enum.Material,
+                    part:GetAttribute("OriColor") :: Color3
+
+                part.Material = oriMaterial
+                part.Color = oriColor
 
                 part:RemoveTag("LDMTerrainPart")
             end

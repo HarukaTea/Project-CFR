@@ -15,7 +15,7 @@ local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
     ItemId: string,
-    Items: Fusion.Value,
+    Items: Fusion.Value<{ IntConstrainedValue }>,
     Amount: number,
 })
 

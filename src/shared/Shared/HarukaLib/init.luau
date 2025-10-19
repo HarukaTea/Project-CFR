@@ -376,7 +376,7 @@ end
 
 	Return a signal class, it will fire when the tween is completed.
 ]]
-function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean) : Signal.SignalClass
+function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : Signal.SignalClass
 	return Tween(obj, style, goal, needSignal)
 end
 
@@ -591,7 +591,7 @@ end
 --[[
 	Helper function to set the collision group of an object and its children
 ]]
-function HarukaLib:SetCollisionGroup(obj: BasePart, group: string)
+function HarukaLib:SetCollisionGroup(obj: any, group: string)
 	if HarukaLib:IsBasePartType(obj) then obj.CollisionGroup = group end
 
 	for _, child in obj:GetChildren() do
@@ -668,7 +668,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 
 	SetOriPropsWhenOut: boolean?,
 	FollowOriPropsWhenIn: boolean?,
-	TweenCallback: (clonedTweenOutUI: GuiObject) -> nil?,
+	TweenCallback: nil | (clonedTweenOutUI: GuiObject) -> nil,
 
 	PosTweenStyle: string?,
 	PosTweenBaseElement: GuiObject?,
@@ -937,16 +937,19 @@ end
 --[[
 	A simple function of Queue
 ]]
-function HarukaLib.Queue() : {
-	IsEmpty: () -> boolean,
-	GetItemsInQueue: () -> number,
-	SetLockState: (_: any, state: boolean) -> nil,
-	IsLocked: () -> boolean,
+export type HarukaQueue = {
+	IsEmpty: (self: HarukaQueue) -> boolean,
+	GetItemsInQueue: (self: HarukaQueue) -> number,
+	SetLockState: (self: HarukaQueue, state: boolean) -> nil,
+	IsLocked: (self: HarukaQueue) -> boolean,
 
-	Push: (_: any, value: any) -> nil,
-	Pop: () -> any?,
-	Destroy: () -> nil
+	Push: (self: HarukaQueue, value: any) -> nil,
+	Pop: (self: HarukaQueue) -> any?,
+	Destroy: (self: HarukaQueue) -> nil,
+
+	ElementAdded: Signal.SignalClass
 }
+function HarukaLib.Queue() : HarukaQueue
 	local Queue = {}
 	Queue.__index = Queue
 

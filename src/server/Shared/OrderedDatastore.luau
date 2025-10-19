@@ -22,7 +22,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local CACHE_EXPIRATION_TIME = 90
 local dataCache = {}
 
-local function retrieveFromCache(PlayerUserID: number, dName: string)
+local function retrieveFromCache(PlayerUserID: number?, dName: string)
 	if dataCache[PlayerUserID] then
 		return Promise.resolve(dataCache[PlayerUserID])
 	else

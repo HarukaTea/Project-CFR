@@ -13,6 +13,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Children = Fusion.Children
 
 
+local Pinia = require(script.Pinia)
+
+
 return function(plr: Player)
 	if HarukaLib:GetDevice() == "VR" then
 		return function () end
@@ -20,18 +23,18 @@ return function(plr: Player)
 	local isPC = HarukaLib:GetDevice() == "PC" or HarukaLib:GetDevice() == "Console"
 
 
-	local self = {}
+	local self = {} :: Pinia.Self
 
 	self.plr = plr
 	self.char = plr.Character
 
 	self.scope = Fusion.scoped()
 
-	require(script.Pinia)(self)
+	Pinia(self)
 
 
 	if plr.PlayerGui:FindFirstChild("ShiftLock") then
-        plr.PlayerGui.ShiftLock:Destroy()
+		(plr.PlayerGui :: any).ShiftLock:Destroy()
     end
 
 

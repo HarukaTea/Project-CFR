@@ -23,11 +23,26 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local wait = task.wait
 
 
-return function (self: { any })
+
+export type Self = {
+	plr: Player,
+	char: Model,
+	scope: Fusion.Scope,
+
+	CurrentPromptIndex: Fusion.Value<number>,
+	IsUIShown: Fusion.Value<boolean>,
+	PromptList: Fusion.Value<{ ObjectValue }>,
+}
+
+
+
+return function (self: Self)
 	local function Value(val: any)
 		return Fusion.Value(self.scope, val)
 	end
 	local scope = self.scope :: Fusion.Scope
+
+	local char = self.char :: Model
 
 
 	self.CurrentPromptIndex = Value(1)
@@ -52,7 +67,9 @@ return function (self: { any })
 	promptSymbolContainer.Parent = game:GetService("ServerStorage")
 	table.insert(scope, promptSymbolContainer)
 
-	self.PromptList = FusionComponents.useFolder(scope, promptSymbolContainer)
+
+	local promptSymbols = FusionComponents.useFolder(scope, promptSymbolContainer)
+	self.PromptList = promptSymbols
 
 
 	--// track prompts
@@ -86,8 +103,8 @@ return function (self: { any })
 
 	table.insert(scope, task.spawn(function()
 		while wait(0.1599) do
-			local isAlive = ClientLib.IsCharValid(self.char)
-			local sitting = self.char.Humanoid.SeatPart
+			local isAlive = ClientLib.IsCharValid(char)
+			local sitting = char.Humanoid.SeatPart
 
 			local nearbyPrompts = {}
 			if sitting == nil and isAlive then

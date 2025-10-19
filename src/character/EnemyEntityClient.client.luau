@@ -70,7 +70,27 @@ Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
 end))
 
 
-local EntityLib = {}
+
+type EntityLibClass = {
+    __index: EntityLibClass,
+
+    new: (enemy: Model) -> EntityLibClass,
+    Init: (self: EntityLibClass) -> nil,
+    Destroy: (self: EntityLibClass) -> nil,
+
+    PlayAnim: (self: EntityLibClass, animId: string) -> nil,
+    _ListenAttributeTracker: (self: EntityLibClass) -> nil,
+    _LoadAnims: (self: EntityLibClass) -> nil,
+    _MakeModel: (self: EntityLibClass) -> nil,
+    _ListenMobWalkingTracker: (self: EntityLibClass) -> nil,
+    _SpawnHighlightIndicator: (self: EntityLibClass) -> nil,
+    _DestroyModel: (self: EntityLibClass) -> nil,
+}
+
+
+
+
+local EntityLib = {} :: EntityLibClass
 EntityLib.__index = EntityLib
 
 
@@ -226,7 +246,7 @@ Add(HarukaLib.Clock(1.2, function()
                 if not ClientLib.IsModelValid(entity) then break end
                 if entity:GetAttribute("NearestChar") then break end
 
-                entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
+                (entity :: any).PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
                 wait(0.01)
             end
         end)
@@ -286,12 +306,12 @@ function EntityLib.new(enemy: Model)
     if not enemy:FindFirstChild("Humanoid") then return nil end
 
 
-    self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
+    self.Add((enemy :: any).Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
 			Promise.delay(1):andThenCall(self.Destroy, self):catch(function() end)
 		end
 	end))
-    self.Add(enemy.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+    self.Add((enemy :: any).PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
         local newParent = char
         if newParent then
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
@@ -481,7 +501,7 @@ function EntityLib:_ListenAttributeTracker()
             if distance >= 159 or distance <= 0 then return end
 
 
-            for _, child: Instance in entity:GetDescendants() do
+            for _, child in entity:GetDescendants() do
                 if child.Parent == entity then continue end
                 if child.Name == "Middle" then continue end
                 if child.Name == "Base" then continue end
@@ -542,7 +562,7 @@ function EntityLib:_ListenAttributeTracker()
             if distance >= 159 or distance <= 0 then return end
 
 
-            for _, child: Instance in entity:GetDescendants() do
+            for _, child in entity:GetDescendants() do
                 if child.Parent == entity then continue end
                 if child.Name == "Middle" then continue end
                 if child.Name == "Base" then continue end

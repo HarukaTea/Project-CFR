@@ -25,8 +25,11 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
+
+local Pinia = require(script.Pinia)
+
 return function (plr: Player)
-    local self = {}
+    local self = {} :: Pinia.Self
 
     self.plr = plr
     self.char = plr.Character
@@ -35,11 +38,11 @@ return function (plr: Player)
     local scope = self.scope :: Fusion.Scope
 
 
-    require(script.Pinia)(self)
+    Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerAbyssView") then
-        plr.PlayerGui.ExplorerAbyssView:Destroy()
+        (plr.PlayerGui :: any).ExplorerAbyssView:Destroy()
     end
 
 
@@ -97,7 +100,8 @@ return function (plr: Player)
                                 Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
                                         Index = index,
-                                        AbyssIndexSelected = self.AbyssIndexSelected
+                                        AbyssIndexSelected = self.AbyssIndexSelected,
+                                        IsInfoUI = false
                                     })
                                 end)
                             }
@@ -161,7 +165,10 @@ return function (plr: Player)
                                 }),
 
 
-                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: { any })
+                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: {
+                                    Level: number,
+                                    EnvironmentBonus: number
+                                })
                                     return mobId, AbyssEnemySlot(scope, {
                                         MobId = mobId,
                                         MobInfo = mobInfo

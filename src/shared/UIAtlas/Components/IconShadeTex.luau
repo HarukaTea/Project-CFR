@@ -10,10 +10,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 
 return function (scope: Fusion.Scope, props: {
-    Visible: Fusion.Computed? | boolean?,
-    Color: Fusion.Computed? | Color3?,
-
-    Transparency: Fusion.Computed? |number?,
+    Visible: Fusion.Computed<boolean>? | boolean?,
+    Color: Fusion.Computed<Color3>? | Color3?,
+    Transparency: Fusion.Computed<number>? | number?,
 })
 
     props = props or {}
