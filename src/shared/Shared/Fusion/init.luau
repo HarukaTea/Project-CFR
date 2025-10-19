@@ -1,4 +1,3 @@
---!nocheck
 --!nolint LocalUnused
 --!nolint LocalShadow
 --!nolint SameLineStatement
@@ -63,7 +62,6 @@ local Fusion: Fusion = table.freeze {
 	-- Roblox API
 	Attribute = require(script.Instances.Attribute),
 	Children = require(script.Instances.Children),
-	Hydrate = require(script.Instances.Hydrate),
 	New = require(script.Instances.New),
 	OnChange = require(script.Instances.OnChange),
 	OnEvent = require(script.Instances.OnEvent),
