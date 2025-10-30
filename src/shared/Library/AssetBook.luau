@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local newTweenInfo = TweenInfo.new
 local fromHex = Color3.fromHex

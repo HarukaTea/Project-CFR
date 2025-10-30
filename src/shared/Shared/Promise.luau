@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 --// types imports by https://github.com/lukadev-0/rbx-typed-promise
 

@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12,9 +8,14 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local plr = Players.LocalPlayer
 local plrGui = plr.PlayerGui
 
+
+type StrokedObject = Path2D | UIStroke
+type StrokeInfo = { Thickness: number, UIScale: UIScale? }
+
+
 local camera = workspace.CurrentCamera
-local normalUIStrokes = {}
-local billboardUIStrokes = {}
+local normalUIStrokes: { [StrokedObject]: StrokeInfo } = {}
+local billboardUIStrokes: { [StrokedObject]: StrokeInfo } = {}
 
 local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
 
@@ -48,7 +49,7 @@ local function _getInstancePosition(instance: Instance): Vector3
 
 	return Vector3.zero
 end
-local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal", info: {
+local function _updateStroke(stroke: StrokedObject, belongTo: "Billboard" | "Normal", info: {
 	Thickness: number,
 	UIScale: UIScale?
 })
@@ -72,17 +73,18 @@ local function _updateStroke(stroke: UIStroke, belongTo: "Billboard" | "Normal",
         finalThickness = math.clamp(finalThickness, 1, 999)
     end
 
+	local stroke = stroke :: StrokedObject
     stroke.Thickness = finalThickness
 end
 local function _updateSize()
-	for stroke: UIStroke, info: { any } in normalUIStrokes do
+	for stroke, info in normalUIStrokes do
 		if not stroke.Parent then
 			normalUIStrokes[stroke] = nil
 		else
 			_updateStroke(stroke, "Normal", info)
 		end
 	end
-	for stroke: UIStroke, info: { any } in billboardUIStrokes do
+	for stroke, info in billboardUIStrokes do
 		if not stroke.Parent then
 			billboardUIStrokes[stroke] = nil
 		else

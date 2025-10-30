@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -22,7 +18,7 @@ if localTeamworkPackages:FindFirstChild("LocationBook") then
     local RojoLocationBook = require(ReplicatedStorage.HarukaShared.Library.LocationBook)
 
 
-    for id: string, location: info in LocationBook do
+    for id: string, location: RojoLocationBook.LocationInfo in LocationBook do
         RojoLocationBook[id] = location
     end
 end

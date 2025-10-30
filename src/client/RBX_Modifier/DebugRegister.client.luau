@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 

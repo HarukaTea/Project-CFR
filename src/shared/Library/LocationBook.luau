@@ -1,6 +1,8 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
+
+export type LocationInfo = {
+    Name: string,
+}
+
+
 
 return {}

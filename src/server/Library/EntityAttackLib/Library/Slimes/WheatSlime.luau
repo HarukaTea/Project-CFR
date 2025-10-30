@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

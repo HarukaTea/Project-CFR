@@ -10,13 +10,8 @@ REMOVE_LINES = {
     "--!nolint SameLineStatement",
     "--!nolint ImplicitReturn"
 }
+HEAD_LINES = []
 
-HEAD_LINES = [
-    "--!nolint LocalUnused",
-    "--!nolint LocalShadow",
-    "--!nolint SameLineStatement",
-    "--!nolint ImplicitReturn"
-]
 
 def process_file(path: Path) -> bool:
     try:

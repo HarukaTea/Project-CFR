@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
@@ -42,7 +38,7 @@ end
 local function _updateTree(child: Model)
     if not child:IsA("Model") then return end
 
-    for _, treePart: BasePart in child:GetDescendants() do
+    for _, treePart in child:GetDescendants() do
         if not treePart:IsA("BasePart") then continue end
 
         if treePart.Material == Enum.Material.Grass then

@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")

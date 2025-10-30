@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -32,6 +28,8 @@ local function _targetCheck(target: BasePart) : Model | nil
     if target.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent end
     if target.Parent.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent.Parent end
     if target == plr.Character then return end
+
+    local target = target
 
     local thatPlr = Players:GetPlayerFromCharacter(target)
     if not thatPlr then return end

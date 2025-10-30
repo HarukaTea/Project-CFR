@@ -1,8 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
-
 
 export type BoostDataJSON = {
     Icon: string,

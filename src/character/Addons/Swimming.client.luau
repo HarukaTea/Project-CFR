@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -80,12 +76,12 @@ Add(waterColor)
 
 local animState = nil
 local isSwimming = false
-local swimVel: BodyVelocity = nil
+local swimVel = nil
 
 local watersIn: { BasePart } = {}
 local swimUp = false
 
-local function playSwimAnim(newAnim: string)
+local function playSwimAnim(newAnim: string?)
     local oldAnim = animState
 
     if newAnim ~= oldAnim then

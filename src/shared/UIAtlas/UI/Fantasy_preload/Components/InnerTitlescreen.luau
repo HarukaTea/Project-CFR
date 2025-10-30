@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")

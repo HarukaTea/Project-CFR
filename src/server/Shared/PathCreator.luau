@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 --// A simple pathfinding module for NPCs, inspired by SimplePath
 --// https://devforum.roblox.com/t/simplepath-pathfinding-module/1196762

@@ -1,7 +1,3 @@
---!nolint LocalUnused
---!nolint LocalShadow
---!nolint SameLineStatement
---!nolint ImplicitReturn
 
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
