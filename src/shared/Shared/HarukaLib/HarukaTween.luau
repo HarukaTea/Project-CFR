@@ -83,8 +83,6 @@ return function (object: Instance, style: TweenInfo, goal: { [string]: any }, ne
 
 	for name: string, _: any in goal do
 		if name == "Pivot" then
-            local object = object :: Model
-
 			properties[name] = {
                 Goal = object:GetPivot(),
                 Type = "V3"
@@ -118,7 +116,6 @@ return function (object: Instance, style: TweenInfo, goal: { [string]: any }, ne
 				local originalInfo = properties[name]
 
 				if name == "Pivot" then
-                    local object = object :: Model
 					object:PivotTo(DATA_TYPES.V3(originalInfo.Goal, val, lerp))
 				else
 					object[name] = DATA_TYPES[originalInfo.Type](originalInfo.Goal, val, lerp)

@@ -19,10 +19,6 @@ local RobuxMarketLib = {}
 local wait = task.wait
 
 
-local SharedTableTypes = require(ServerScriptService.HarukaServer.Library.SharedTableTypes)
-local shared = shared :: SharedTableTypes.SharedTable
-
-
 --// Dev products purchase callback
 local productFunctions = {}
 

@@ -788,7 +788,6 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 		elseif obj:IsA("UIStroke") then
 			if not obj.Enabled then continue end
 
-			local obj = obj :: UIStroke
 			_tweenGoal(obj, "Transparency", tweenProps)
 		else
 			continue

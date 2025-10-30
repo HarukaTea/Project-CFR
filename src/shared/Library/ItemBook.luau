@@ -202,9 +202,6 @@ for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
     itemInfo.SellPrice = tonumber(itemInfo.SellPrice) or 1599
 
 
-    local itemInfo = itemInfo :: ItemBookJSON
-
-
     --// desync extra info
     if itemInfo.ExtraStatInfo ~= "" then
         local extraInfo = itemInfo.ExtraStatInfo

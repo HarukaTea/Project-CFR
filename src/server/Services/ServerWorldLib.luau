@@ -337,7 +337,7 @@ table.insert(ServerWorldLib.Funcs, function()
         if npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid") then
             HarukaLib:SetCollisionGroup(npc, "NoCollision")
 
-            local npc = npc
+
             local npcHumanoid = npc.Humanoid :: Humanoid
 
             if not npcHumanoid:FindFirstChildOfClass("Animator") then
@@ -382,7 +382,7 @@ table.insert(ServerWorldLib.Funcs, function()
         if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
 
-            local npc = npc
+
             local npcHumanoid = npc.Humanoid :: Humanoid
 
             if npc.PrimaryPart.Anchored then continue end
@@ -449,7 +449,7 @@ table.insert(ServerWorldLib.Funcs, function()
                 end
             end
 
-            local child = child
+
             if child.Parent:IsA("Model") then
                 for _, name in whiteList do
                     if string.find(child.Parent.Name, name) then

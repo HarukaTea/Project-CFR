@@ -19,7 +19,7 @@ return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
     ProjectileLib.SlimeMove1_1 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         local entity = projectile.Owner.Value :: Model
 
@@ -65,7 +65,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.SlimeMove2_2 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
@@ -91,7 +91,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.CrimsonSlimeMove4 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         ProjectileLib.SlimeMove1_1(projectile, container)
 
@@ -113,7 +113,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.PurpleSlimeMove3 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
@@ -143,7 +143,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.SlimeSpin = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         HarukaLib:CreateTween(projectile.Blast1, AssetBook.TweenInfos.twiceHalf, {
             Size = Vector3.new(16, 16, 16),
@@ -158,7 +158,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.SlimeBlast = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         local noSound = false
         if projectile:GetAttribute("NoSound") then
@@ -228,7 +228,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.CrimsonSlimeBomb = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
         pcall(function()
             wait(1)

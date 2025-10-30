@@ -123,7 +123,7 @@ end
 function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
-	local target = target
+
 
 
 	Events.ShowDMGNumber.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
@@ -137,7 +137,7 @@ end
 function ServerLib.ShowText(target: Model, text: string, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
-	local target = target
+
 
 	Events.ShowText.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		Target = target,
@@ -150,7 +150,7 @@ end
 function ServerLib.ApplyHitStatus(target: Model)
 	if not ServerLib.IsCharValid(target) then return end
 
-	local target = target
+
 
 	Events.PlayHitStatusVFX.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
 		Target = target
@@ -220,7 +220,7 @@ end
 function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 	if not ItemBook:GetItemInfo(itemId) then return end
 
-	local plr = plr
+
 	local items = plr.Items :: Folder
 	local itemInfo = ItemBook:GetItemInfo(itemId)
 
@@ -321,7 +321,7 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	method = method or "Equip"
 
 	local itemSymbol = nil
-	local plr = plr
+
 	local items = plr.Items :: Folder
 
 	for _, item in items:GetChildren() do

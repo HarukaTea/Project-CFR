@@ -53,7 +53,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _spike(target: Model)
-        local target = target
+
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
@@ -80,7 +80,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
     local function _allAreaBurnCombo2(target: Model)
-        local target = target
+
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 

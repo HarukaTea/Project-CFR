@@ -24,7 +24,7 @@ return function (self: Types.ProjectileLib)
         })
         pcall(function()
             wait(0.5)
-            local projectile = projectile
+
 
             ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
                 sProjectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
@@ -36,7 +36,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.BeeSpike1 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
 
         if not projectile:GetAttribute("NoSound") then

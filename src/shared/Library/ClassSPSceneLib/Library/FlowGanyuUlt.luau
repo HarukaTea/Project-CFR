@@ -22,8 +22,6 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     if not ClientLib.IsCharValid(char) then return end
 
 
-    local char = char :: Model
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 

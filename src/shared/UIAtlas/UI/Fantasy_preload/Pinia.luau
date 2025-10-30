@@ -47,7 +47,6 @@ return function (self: Self)
             resolve(r6Char)
 
         end):andThen(function(r6Char: Model)
-            local r6Char = r6Char :: Model
             local r6CharHumanoid = r6Char.Humanoid :: Humanoid
 
             r6Char.Name = "Rig"

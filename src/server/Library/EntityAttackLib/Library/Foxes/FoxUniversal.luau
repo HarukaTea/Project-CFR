@@ -47,7 +47,7 @@ end
 
 
 FoxUniversal.SpikeRain = function(entity: Model, target: Model)
-    local target = target
+
 
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,

@@ -124,7 +124,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 end)
 
             end, 3, 6):andThen(function(humanoidDesc: HumanoidDescription)
-                local r6Char = r6Char :: Model
                 local r6Humanoid = r6Char.Humanoid :: Humanoid
 
                 r6Humanoid:ApplyDescription(humanoidDesc)
@@ -134,7 +133,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end)
         end
 
-        local r6Char = r6Char :: Model
         local r6Humanoid = r6Char.Humanoid :: Humanoid
 
         r6Char.Archivable = true
@@ -187,7 +185,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local seat = galleon:FindFirstChildOfClass("Seat")
         if not seat then return end
 
-        local galleon = galleon
+
 
         galleon.PrimaryPart.Anchored = false
         galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
@@ -375,7 +373,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         elseif prompt.Name == "Class" then
             local statue = prompt:FindFirstAncestorOfClass("Model")
 
-            local plr = plr
+
             local items = plr.Items :: Folder
             if not items:FindFirstChild(statue.Weapon.Value) then
                 ServerLib.GiveItemDrop(plr, statue.Weapon.Value, 1)
@@ -635,7 +633,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-        local plr = plr
+
         local equippingItems = plr.EquippingItems :: Folder
         local equippingInfo = equippingItems:FindFirstChild(slotId) :: StringValue
 
@@ -852,7 +850,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         char:SetAttribute("IsChatting", nil)
 
 
-        local npcModel = npcModel
+
         local dialogues = npcModel.Dialogues :: Configuration
 
         --// do signal
@@ -884,7 +882,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local itemInfo = ItemBook:GetItemInfo(data.ItemId)
         if not itemInfo then return end
 
-        local plr = plr
+
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(data.ItemId) :: IntConstrainedValue
 
@@ -1131,7 +1129,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         --// cant sell items that is not existed
-        local plr = plr
+
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
         if itemSymbol == nil then return end
@@ -1246,7 +1244,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if itemInfo.TagsDesync.Statue then
             if item == "Crescendo" then
                 local amount = 0
-                local plr = plr
+
                 local items = plr.Items :: Folder
 
                 for _, itemSymbol in items:GetChildren() do
@@ -1266,7 +1264,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         --// cant sell items that is not existed
-        local plr = plr
+
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
         if itemSymbol == nil then return end
@@ -1524,7 +1522,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         local materialCheck = true
-        local plr = plr
+
         for material: string, amount: number in itemInfo.RecipeDesync do
             local items = plr.Items :: Folder
             local itemSymbol = items:FindFirstChild(material) :: IntConstrainedValue
@@ -1861,7 +1859,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local id, val = data.SettingId, data.SettingValue
         if id == "HideUI" then return end
 
-        local plr = plr
+
         local criSettings = plr.CriRPGSettings :: Configuration
 
         local valueSymbol = criSettings:FindFirstChild(id)

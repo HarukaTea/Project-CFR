@@ -101,8 +101,6 @@ end
 
 
 function ClientLib.IsModelValid(model: Instance?) : boolean
-	local model = model :: Model
-
 	if not model then return false end
     if not model.Parent then return false end
     if not model.PrimaryPart then return false end
@@ -112,8 +110,6 @@ end
 
 
 function ClientLib.IsCharValid(char: Instance?) : boolean
-	local char = char :: Model
-
 	if not ClientLib.IsModelValid(char) then return false end
 
 	local humanoid = char:FindFirstChild("Humanoid")

@@ -73,7 +73,6 @@ local function _updateStroke(stroke: StrokedObject, belongTo: "Billboard" | "Nor
         finalThickness = math.clamp(finalThickness, 1, 999)
     end
 
-	local stroke = stroke :: StrokedObject
     stroke.Thickness = finalThickness
 end
 local function _updateSize()

@@ -145,8 +145,8 @@ return function (scope: Fusion.Scope<any>, props: {
 
         x = math.clamp(x, 0, 0.999)
 
-        local bar1 = bar1
-        local bar2 = bar2
+
+
 
         HaurkaLib:Tween(bar1.Shield.UIGradient, AssetBook.TweenInfos.half, {
             Transparency = NumberSequence.new({

@@ -73,7 +73,7 @@ Add(RunService.Heartbeat:Connect(function()
 
 
     local moveVector = ControlsModule:GetMoveVector() :: Vector3
-    local currentGalleon = currentGalleon
+
 
     local currentCFrame = currentGalleon.PrimaryPart.CFrame
     local rotationInput = -moveVector.X

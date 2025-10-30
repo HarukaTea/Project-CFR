@@ -74,7 +74,7 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope<any>, guiProps: Fu
 		FullProps = {}
 	}
 
-	local childProps = childProps
+
 	local topProps, centerProps, bottomProps, fullProps =
 		childProps.TopProps or {}, childProps.CenterProps or {}, childProps.BottomProps or {}, childProps.FullProps or {}
 
@@ -645,8 +645,6 @@ function HarukaComponents:TrackButtonEvents(scope: Fusion.Scope<any>, button: Gu
 		end)
 	end
 	if clickFunc then
-		local button = button :: TextButton
-
 		button.MouseButton1Click:Connect(function()
 			if not screenGui or not screenGui.Enabled then return false end
 			if not button.Visible then return false end

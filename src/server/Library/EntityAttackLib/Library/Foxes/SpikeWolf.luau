@@ -60,7 +60,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _lookAt(target: Model)
-        local target = target
+
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _moving()
@@ -78,7 +78,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         FoxUniversal.SpikeRain(entity, target)
     end
     local function _wolfBite(target: Model)
-        local target = target
+
         Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "WolfBite"

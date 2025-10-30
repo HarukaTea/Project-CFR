@@ -19,9 +19,6 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
-    local char = char :: Model
-
-
     local projectile = RepS.Packages.SkillProjectiles:FindFirstChild("ExtraJumpFade", true):Clone() :: Model
     projectile:PivotTo(char.PrimaryPart.CFrame * CFrame.new(0, -3, 0))
 

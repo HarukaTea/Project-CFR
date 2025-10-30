@@ -25,7 +25,7 @@ StatusLib.Heal = function(char: Model, healAmount: number) : number?
 
     if char:FindFirstChild("AntiHeal") then return end
 
-    local char = char
+
 
     local healBonus = char:GetAttribute("HealBonus") or 100
     healAmount = math.ceil(healAmount * healBonus / 100)
@@ -209,7 +209,7 @@ StatusLib.Burn = function(target: Model, info: {
     dmg = math.floor(dmg)
 
 
-    local target = target
+
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
@@ -229,7 +229,7 @@ StatusLib.Bleed = function(target: Model, info: {
     dmg /= 2.5
     dmg = math.floor(dmg)
 
-    local target = target
+
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
@@ -247,7 +247,7 @@ StatusLib.BloodButchered = function(target: Model, info: {
     dmg *= 0.05
     dmg = math.floor(dmg)
 
-    local target = target
+
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
@@ -267,7 +267,7 @@ StatusLib.Poison = function(target: Model, info: {
     dmg /= 2.5
     dmg = math.floor(dmg)
 
-    local target = target
+
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)

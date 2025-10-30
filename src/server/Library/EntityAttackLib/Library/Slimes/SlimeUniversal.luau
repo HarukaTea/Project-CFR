@@ -21,7 +21,7 @@ local SlimeUniversal = {}
 local wait = task.wait
 
 SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
-    local target = target
+
 
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
@@ -103,7 +103,7 @@ end
 
 
 SlimeUniversal.SlimeBarrageShot = function(entity: Model)
-    local entity = entity
+
 
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
@@ -128,7 +128,7 @@ end
 
 
 SlimeUniversal.SlimeSpin = function(entity: Model)
-    local entity = entity
+
 
     wait(0.35)
     Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
@@ -145,7 +145,7 @@ end
 
 
 SlimeUniversal.SlimeBomb = function(entity: Model)
-    local entity = entity
+
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(

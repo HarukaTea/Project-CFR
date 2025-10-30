@@ -30,8 +30,6 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
     })
     if not check then return 0 end
 
-    local char = char :: Model
-
 
     local uniqueId = HttpService:GenerateGUID(false)
     local castTime = ClassAttackLib._CalCastingTime(char, 3)

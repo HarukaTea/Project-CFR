@@ -59,7 +59,6 @@ local function _fadeOrb(orb: Model)
 
     --// fade tween
     local orbMiddle = orb:FindFirstChild("Middle") or orb:FindFirstChild("Base") :: BasePart
-    local orb = orb :: any
 
     orb.Part.Anchored = false
     orb.ForceField.Anchored = false

@@ -55,7 +55,7 @@ end
 
 
 UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ())
-    local entity = entity
+
 
     local function _checkIsValid()
         if not ServerLib.IsModelValid(entity) then
@@ -143,7 +143,7 @@ end
 
 --- combat related functions
 UniversalEntity.GetTargets = function(_, entity: Model) : { Player }
-    local entity = entity
+
 
     local players = {}
     for _, targetingSymbol: ObjectValue in entity.TargetingList:GetChildren() do
@@ -155,7 +155,7 @@ end
 
 
 UniversalEntity.GetNearbyPlayers = function(_, entity: Model) : { Player }
-    local entity = entity
+
 
     local nearbyChars = _getCharsByRadius(entity.PrimaryPart.Position, 486)
     local players = {}
@@ -191,7 +191,7 @@ end
 
 
 UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
-    local entity = entity
+
 
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
@@ -205,7 +205,7 @@ end
 
 
 UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
-    local entity = entity
+
 
     local targetingList = entity.TargetingList:GetChildren()
     local rIndex = Random.new():NextInteger(1, #targetingList)

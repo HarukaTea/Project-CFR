@@ -59,7 +59,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _lookAt(target: Model)
-        local target = target
+
 
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end

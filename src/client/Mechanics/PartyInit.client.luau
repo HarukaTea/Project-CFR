@@ -29,7 +29,7 @@ local function _targetCheck(target: BasePart) : Model | nil
     if target.Parent.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent.Parent end
     if target == plr.Character then return end
 
-    local target = target
+
 
     local thatPlr = Players:GetPlayerFromCharacter(target)
     if not thatPlr then return end

@@ -18,7 +18,6 @@ local function nameOf(
 		return nickname
 	end
 	if typeof(x) == "table" then
-		local x = x :: {[any]: any}
 		if typeof(x.name) == "string" then
 			return x.name
 		elseif typeof(x.kind) == "string" then

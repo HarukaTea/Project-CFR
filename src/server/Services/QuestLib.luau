@@ -11,7 +11,7 @@ local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 --// Helper functions
 
 local function _isValidQuestForPlayer(questId: string, plr: Player)
-    local plr = plr
+
 
     if not QuestBook[questId] then return false end
     if not plr:FindFirstChild("Quests") then return false end
@@ -27,7 +27,7 @@ function QuestLib.CanGiveQuest(questId: string, plr: Player)
     if not plr:FindFirstChild("Quests") then return false end
 
 
-    local plr = plr
+
 
 
     local reqQuests = QuestBook[questId].RequiredQuests
@@ -59,7 +59,7 @@ function QuestLib.CompleteQuest(questId: string, plr: Player)
     if not _isValidQuestForPlayer(questId, plr) then return end
 
     local state = QuestBook[questId].DeliverType
-    local plr = plr
+
 
     plr.Quests[questId].Value = if state == "Normal" then "Delivered" else "Completed"
 end
@@ -101,7 +101,7 @@ end
 
 
 function QuestLib.GiveQuest(plr: Player, questId: string, progressVals: { [string]: number }?, progressState: string?)
-    local plr = plr
+
 
     if not QuestLib.CanGiveQuest(questId, plr) then return end
     if plr.Quests:FindFirstChild(questId) then return end

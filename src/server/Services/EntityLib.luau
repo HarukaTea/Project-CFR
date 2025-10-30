@@ -977,7 +977,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     --- check again!
     if not ServerLib.IsCharValid(target) then self:_ErrorAndRespawn(1) return end
 
-    local target = target
+
     target = nil
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
@@ -1029,8 +1029,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     --- make players into combat
     local nearbyCharCount = 1
     local function _addAndSetTargetingEnemy(char: Model)
-        local char = char :: Model
-
         local targetSymbol = Instance.new("ObjectValue")
         targetSymbol.Name = entity.Name
         targetSymbol.Value = entity

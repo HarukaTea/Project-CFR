@@ -166,8 +166,6 @@ return function (self: Self)
 
         local dialogue = forceDialogue or currentDialoguesChatting[currentDialogueIndexChatting] :: string
 
-        local npcChatting = npcChatting :: Model
-
         --- patterns
         if string.find(dialogue, "ENTERCHOICE") and npcChatting.Dialogues:FindFirstChild("Choices") then
             local choiceIndex = string.match(dialogue, "%d+")
@@ -318,7 +316,6 @@ return function (self: Self)
         if npc == nil then return end
         if not npc:FindFirstChild("Dialogues") then return end
 
-        local npc = npc :: Model
         if not npc.Dialogues:FindFirstChild("Main") then return end
 
         npcChatting = npc
@@ -326,7 +323,6 @@ return function (self: Self)
 
         self.NPCId:set(npc)
 
-        local npcChatting = npcChatting :: Model
         local npcName = npcChatting.Name
         local afterNPCName = string.gsub(npcName, "%d+", "")
 

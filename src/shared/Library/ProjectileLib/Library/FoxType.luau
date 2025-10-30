@@ -17,7 +17,7 @@ return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
     ProjectileLib.FoxMove1 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
 
         wait(0.5)
@@ -52,7 +52,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.WolfMove4 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
 
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
@@ -79,7 +79,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.FoxSpike1 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
 
         projectile.Base.CFrame *= CFrame.new(0, 0, -80)
@@ -98,7 +98,7 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.FoxSpike2 = function(projectile: Model, container: Folder)
-        local projectile = projectile
+
 
 
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
