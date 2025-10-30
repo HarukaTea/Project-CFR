@@ -32,12 +32,12 @@ local function _reconcileProps(default: { any }, props: { any })
 		default[prop] = val
 	end
 end
-local function Label(scope: Fusion.Scope, props: { [string]: any }, emptyVal: Fusion.Value)
+local function Label(scope: Fusion.Scope<any>, props: { [string]: any }, emptyVal: Fusion.Value)
     local default = {
         AnchorPoint = Vector2.new(0.5, 0),
         TextXAlignment = Enum.TextXAlignment.Left,
 
-        Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+        Visible = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
             return not use(emptyVal)
         end)
     }
@@ -47,7 +47,7 @@ local function Label(scope: Fusion.Scope, props: { [string]: any }, emptyVal: Fu
 end
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     SlotId: number,
     CharacterModel: Fusion.Value,
 
@@ -128,7 +128,7 @@ return function (scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(0.23, 7),
         BackgroundTransparency = 0,
 
-        Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Scope, _)
+        Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
             return UDim2.fromScale(use(posX), 0.5)
         end), AssetBook.TweenInfos.half),
 
@@ -145,7 +145,7 @@ return function (scope: Fusion.Scope, props: {
             }),
 
 
-            Fusion.Computed(scope, function(use: Fusion.Scope, _)
+            Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                 if use(posX) == 0.2 then
                     return {
                         ExecuteButton(scope, {
@@ -213,7 +213,7 @@ return function (scope: Fusion.Scope, props: {
                     Components.UIStroke(scope, {
                         Thickness = 3,
 
-                        Enabled = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                        Enabled = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                             return use(isSelecting)
                         end),
                     }),
@@ -253,7 +253,7 @@ return function (scope: Fusion.Scope, props: {
                     return ClassBook[classId].Color
                 end),
 
-                Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                Visible = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                     return not use(isEmpty)
                 end)
             }),
@@ -265,7 +265,7 @@ return function (scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(0.5, 0.13),
                 Size = UDim2.fromScale(0.86, 0.06),
 
-                Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                Text = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                     return `Lv.{use(playerLevel)}`
                 end),
                 TextColor3 = Color3.fromHex('#ffeaa7'),
@@ -277,7 +277,7 @@ return function (scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(0.86, 0.06),
                 TextXAlignment = Enum.TextXAlignment.Right,
 
-                Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                Text = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                     local playTime = use(playerPlayTime) :: number
 
                     local convertedTime = playTime / 3600
@@ -299,7 +299,7 @@ return function (scope: Fusion.Scope, props: {
             }, isEmpty),
 
 
-            Fusion.Computed(scope, function(use: Fusion.Scope, scope: Fusion.Scope)
+            Fusion.Computed(scope, function(use: Fusion.Scope<any>, scope: Fusion.Scope<any>)
                 if use(props.CharacterModel) == nil then
                     return nil
                 elseif use(props.CharacterModel) and use(props.CharacterModel).ClassName == "Model" and not use(isEmpty) then
@@ -386,7 +386,7 @@ return function (scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(0.86, 0.06),
                 AutoLocalize = false,
 
-                Text = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                Text = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                     return `{use(playerLastJoined)}`
                 end),
                 TextTransparency = 0.5,
@@ -403,7 +403,7 @@ return function (scope: Fusion.Scope, props: {
                 Text = "EMPTY",
                 TextColor3 = Color3.fromRGB(159, 159, 159),
 
-                Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                Visible = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                     return use(isEmpty)
                 end)
             }),
@@ -427,7 +427,7 @@ return function (scope: Fusion.Scope, props: {
                     }),
 
 
-                    Fusion.ForPairs(scope, { "Erase" }, function(_, scope: Fusion.Scope, index: number, id: string)
+                    Fusion.ForPairs(scope, { "Erase" }, function(_, scope: Fusion.Scope<any>, index: number, id: string)
                         local thatIsSelecting = Fusion.Value(scope, false)
 
                         return index, Components.Frame(scope, {

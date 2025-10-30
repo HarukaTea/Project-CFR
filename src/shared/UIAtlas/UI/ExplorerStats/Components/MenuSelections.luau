@@ -30,7 +30,7 @@ local SELECTION_ICONS = {
 }
 
 
-local function SelectionSlot(scope: Fusion.Scope, props: {
+local function SelectionSlot(scope: Fusion.Scope<any>, props: {
     LayoutOrder: number,
     SelectionId: string,
     Title: string,
@@ -100,7 +100,7 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
         }
     })
 end
-local function Selections(scope: Fusion.Scope, order: number, children: any) : Frame
+local function Selections(scope: Fusion.Scope<any>, order: number, children: any) : Frame
     return Components.Frame(scope, {
         Name = "Selections_"..order,
         Size = fromScale(1, 0.45),
@@ -119,7 +119,7 @@ local function Selections(scope: Fusion.Scope, order: number, children: any) : F
     })
 end
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     MenuShowValue: Fusion.Value<boolean>,
 
 }) : Frame

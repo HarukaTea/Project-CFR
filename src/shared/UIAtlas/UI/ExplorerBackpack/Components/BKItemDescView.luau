@@ -16,7 +16,7 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     Item: string,
     ItemUniqueId: string,
     EquippingItems: Fusion.Value<{ StringValue }>,
@@ -184,7 +184,7 @@ return function (scope: Fusion.Scope, props: {
 
 
 
-    local function ItemEffectShowcase(scope: Fusion.Scope, properties: {
+    local function ItemEffectShowcase(scope: Fusion.Scope<any>, properties: {
         Attr: string,
         Val: any
     })
@@ -472,7 +472,7 @@ return function (scope: Fusion.Scope, props: {
                                         VerticalAlignment = Enum.VerticalAlignment.Center,
                                     }),
 
-                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
+                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope<any>, _)
                                         return StarTierSymbol(scope, {})
                                     end)
                                 }
@@ -490,13 +490,13 @@ return function (scope: Fusion.Scope, props: {
 
                     ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichTextify(info.Stat)),
 
-                    Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
+                    Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope<any>, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
                             Attr = attr,
                             Val = val
                         })
                     end),
-                    Fusion.ForPairs(scope, itemStatExtra, function(_, scope: Fusion.Scope, attr: string, val: any)
+                    Fusion.ForPairs(scope, itemStatExtra, function(_, scope: Fusion.Scope<any>, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
                             Attr = attr,
                             Val = val
@@ -562,7 +562,7 @@ return function (scope: Fusion.Scope, props: {
                                 VerticalAlignment = Enum.VerticalAlignment.Center,
                             }),
 
-                            Fusion.ForPairs(scope, info.TagsDesync, function(_, scope: Fusion.Scope, index: number, tag: string)
+                            Fusion.ForPairs(scope, info.TagsDesync, function(_, scope: Fusion.Scope<any>, index: number, tag: string)
                                 return index, Components.TextLabel(scope, {
                                     Name = "Tag",
                                     LayoutOrder = index,

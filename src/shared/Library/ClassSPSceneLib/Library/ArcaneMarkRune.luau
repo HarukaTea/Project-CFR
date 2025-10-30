@@ -19,7 +19,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
-    local targetingEnemy = (char :: any).TargetingEnemy.Value
+    local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 

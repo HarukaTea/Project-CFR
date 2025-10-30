@@ -126,8 +126,8 @@ end
 local function _comparePosition(self: PathCreatorClass)
 	if self.CurWaypoint == #self.Waypoints then return end
 
-	self.Position.StuckCount = (((self.NPC :: any).PrimaryPart.Position - self.Position.LastPos).Magnitude <= 0.07 and (self.Position.StuckCount + 1)) or 0
-	self.Position.LastPos = (self.NPC :: any).PrimaryPart.Position
+	self.Position.StuckCount = ((self.NPC.PrimaryPart.Position - self.Position.LastPos).Magnitude <= 0.07 and (self.Position.StuckCount + 1)) or 0
+	self.Position.LastPos = self.NPC.PrimaryPart.Position
 
 	if self.Position.StuckCount >= self.Settings.ComparisonCheckTimes then
 		_setJumpState(self.Humanoid)
@@ -149,7 +149,7 @@ function PathCreator.new(npc: Model, pfsArgs: { any })
         },
 
         NPC = npc,
-        Humanoid = (npc :: any).Humanoid,
+        Humanoid = npc.Humanoid,
         PathObj = PFS:CreatePath(pfsArgs),
         Status = "Idle",
         LastTick = 0,

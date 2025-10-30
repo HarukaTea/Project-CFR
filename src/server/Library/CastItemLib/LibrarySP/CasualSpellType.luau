@@ -63,7 +63,7 @@ return function (self: Types.CastItemLib)
             Events.FaceToTargetingEnemy.Fire(player)
 
 
-            Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers((char :: any).PrimaryPart.Position), {
+            Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
                 SceneId = "FireballSpell",
                 Caster = char,
                 ProjectileUniqueId = uniqueId,
@@ -120,7 +120,7 @@ return function (self: Types.CastItemLib)
 
         Events.Spell_ExtraJumpSupport.Fire(player)
 
-        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers((char :: any).PrimaryPart.Position), {
+        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "ChainJump",
             Caster = char,
             ProjectileUniqueId = "nil"

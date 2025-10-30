@@ -7,7 +7,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     Index: number,
     PlayerName: string,
     Value: number,

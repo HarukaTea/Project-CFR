@@ -18,7 +18,7 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Index: number,
     ActiveInfo: {
         Id: string,
@@ -54,7 +54,7 @@ return function(scope: Fusion.Scope, props: {
 
 
     local lastInput = FusionComponents.useXboxControllerHotInput(scope)
-    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)
 

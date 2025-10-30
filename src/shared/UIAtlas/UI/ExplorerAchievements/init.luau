@@ -26,14 +26,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerAchievements") then
-        (plr.PlayerGui :: any).ExplorerAchievements:Destroy()
+        plr.PlayerGui.ExplorerAchievements:Destroy()
     end
 
 
@@ -66,7 +66,7 @@ return function (plr: Player)
                             Components.PaddingFrame(scope, "ZZZ"),
 
 
-                            Fusion.ForPairs(scope, AssetBook.BadgeIds, function(_, scope: Fusion.Scope, badge: string, badgeId: number)
+                            Fusion.ForPairs(scope, AssetBook.BadgeIds, function(_, scope: Fusion.Scope<any>, badge: string, badgeId: number)
 
                                 local badgeInfo = Fusion.Value(scope, {})
                                 local hasOwned = Fusion.Value(scope, false)

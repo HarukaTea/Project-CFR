@@ -12,7 +12,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Char: Model,
     Player: Player
 })
@@ -30,7 +30,7 @@ return function(scope: Fusion.Scope, props: {
     local role = Value("")
 
 
-    table.insert(scope, HarukaLib:Hydrate((props.Char :: any).Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate(props.Char.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             HP:set(newHP)
         end,

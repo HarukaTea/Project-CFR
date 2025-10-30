@@ -11,7 +11,7 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
 	BarVal: Fusion.Value<number>,
 	LayoutOrder: number,
 	OptionInfo: {

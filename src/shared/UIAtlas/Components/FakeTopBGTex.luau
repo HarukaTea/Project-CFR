@@ -10,7 +10,7 @@ local Children = Fusion.Children
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 
-return function (scope: Fusion.Scope)
+return function (scope: Fusion.Scope<any>)
     return Components.Frame(scope, {
         Name = "FakeTopBG",
         BackgroundTransparency = 0.1,

@@ -17,7 +17,7 @@ local MKK_NUMBER = 1599 * 40 ^ 2
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
     LockConn: RBXScriptConnection?,
     LockEnabled: Fusion.Value<boolean>,
@@ -34,7 +34,7 @@ export type Self = {
 
 
 return function (self: Self)
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
     self.LockConn = nil
     self.LockEnabled = Fusion.Value(scope, false)
@@ -105,7 +105,7 @@ return function (self: Self)
 
             if self.char then
                 if self.char:FindFirstChildOfClass("Humanoid") then
-                    (self.char :: any).Humanoid.AutoRotate = true
+                    self.char.Humanoid.AutoRotate = true
                 end
             end
 

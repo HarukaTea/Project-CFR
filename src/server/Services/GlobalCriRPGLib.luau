@@ -193,7 +193,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
 
 
-        seat:Sit((plr.Character :: any).Humanoid)
+        seat:Sit(plr.Character.Humanoid)
         seat:GetPropertyChangedSignal("Occupant"):Connect(function()
             local occupant = seat.Occupant
             if occupant == nil then
@@ -332,7 +332,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
                 if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
 
-                if (galleon :: any).Owner.Value == plr then
+                if galleon.Owner.Value == plr then
                     galleon:Destroy()
                     continue
                 end
@@ -369,7 +369,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         elseif prompt.Name == "DungeonPortal" then
-            char:PivotTo((prompt :: any).Destination.Value.CFrame)
+            char:PivotTo(prompt.Destination.Value.CFrame)
 
 
         elseif prompt.Name == "Class" then

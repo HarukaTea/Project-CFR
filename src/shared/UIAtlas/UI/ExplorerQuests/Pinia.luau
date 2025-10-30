@@ -11,7 +11,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
     IsUIShown: Fusion.Value<boolean>,
     Quests: Fusion.Value<{ StringValue }>,
@@ -30,7 +30,7 @@ return function (self: Self)
     local char = self.char :: Model
     local plr = self.plr :: Player
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
     self.IsUIShown = Value(true)
 

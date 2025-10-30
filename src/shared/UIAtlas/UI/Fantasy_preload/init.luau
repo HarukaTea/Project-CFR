@@ -38,7 +38,7 @@ return function (plr: Player)
     Pinia(self)
 
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "Titlescreen",
         Parent = plr.PlayerGui,

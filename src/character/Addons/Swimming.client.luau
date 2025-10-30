@@ -76,7 +76,7 @@ Add(waterColor)
 
 local animState = nil
 local isSwimming = false
-local swimVel = nil
+local swimVel: BodyVelocity? = nil
 
 local watersIn: { BasePart } = {}
 local swimUp = false

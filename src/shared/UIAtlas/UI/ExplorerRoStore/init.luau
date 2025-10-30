@@ -27,14 +27,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerRoStore") then
-        (plr.PlayerGui :: any).ExplorerRoStore:Destroy()
+        plr.PlayerGui.ExplorerRoStore:Destroy()
     end
 
 
@@ -73,13 +73,13 @@ return function (plr: Player)
                             }),
 
 
-                            Fusion.ForPairs(scope, AssetBook.GamepassIds, function(_, scope: Fusion.Scope, gamepass: string, gamepassId: number)
+                            Fusion.ForPairs(scope, AssetBook.GamepassIds, function(_, scope: Fusion.Scope<any>, gamepass: string, gamepassId: number)
                                 return gamepass, DevProductSlot(scope, {
                                     Type = "GamePass",
                                     AssetId = gamepassId
                                 })
                             end),
-                            Fusion.ForPairs(scope, AssetBook.DevProductIds, function(_, scope: Fusion.Scope, devProduct: string, devProductId: number)
+                            Fusion.ForPairs(scope, AssetBook.DevProductIds, function(_, scope: Fusion.Scope<any>, devProduct: string, devProductId: number)
                                 return devProduct, DevProductSlot(scope, {
                                     Type = "Product",
                                     AssetId = devProductId
@@ -118,7 +118,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "RoStore", "RoLeaderboard" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                        Fusion.ForPairs(scope, { "RoStore", "RoLeaderboard" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
                             return index, BKCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -151,7 +151,7 @@ return function (plr: Player)
                     [Children] = {
                         Components.PaddingFrame(scope, "AAA"),
 
-                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: NumberValue)
+                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope<any>, index: number, val: NumberValue)
                             return index, DonationRankSlot(scope, {
                                 Index = val:GetAttribute("Order"),
                                 Value = val.Value,

@@ -14,7 +14,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
 
     IsUIShown: Fusion.Value<boolean>,
@@ -44,16 +44,16 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
     self.IsUIShown = Value(false)
 
     self.Items = FusionComponents.useTagged(scope, "CraftingProductEntity")
 
 
-    self.PlayerItems = FusionComponents.useFolder(scope, (self.plr :: any).Items)
+    self.PlayerItems = FusionComponents.useFolder(scope, self.plr.Items)
 
-    local folder = FusionComponents.useFolder(scope, (self.plr :: any).EquippingItems)
+    local folder = FusionComponents.useFolder(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
     self.Gold = Value(0)

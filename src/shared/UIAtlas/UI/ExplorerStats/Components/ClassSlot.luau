@@ -9,7 +9,7 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Class: Fusion.Value<string>,
     EquippingPassives: {
         {
@@ -97,7 +97,7 @@ return function(scope: Fusion.Scope, props: {
                 Name = "Passives",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope, index: number, info)
+                    Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, info)
                         local RADIANS = { -40, -80, -120 }
                         local r = 0.8
 

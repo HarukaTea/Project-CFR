@@ -10,7 +10,7 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     ProductId: string,
     UniqueId: string,
 
@@ -115,7 +115,7 @@ return function(scope: Fusion.Scope, props: {
                                         }
                                     }),
 
-                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
+                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope<any>, _)
                                         return StarTierSymbol(scope, {
                                             Size = UDim2.fromScale(0.8, 0.8)
                                         })

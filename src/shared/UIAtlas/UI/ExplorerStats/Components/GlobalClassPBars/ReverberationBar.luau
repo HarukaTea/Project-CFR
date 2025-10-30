@@ -14,7 +14,7 @@ local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope)
+return function (scope: Fusion.Scope<any>)
 
     local targetingContainer = Instance.new("Folder")
     targetingContainer.Name = "TargetingContainer_ReverberationBar"
@@ -43,7 +43,7 @@ return function (scope: Fusion.Scope)
         Name = "ResonateNums",
 
         [Children] = {
-            Fusion.ForValues(scope, targeting, function(_, scope: Fusion.Scope, target: ObjectValue)
+            Fusion.ForValues(scope, targeting, function(_, scope: Fusion.Scope<any>, target: ObjectValue)
                 local HP = Fusion.Value(scope, 100)
 
                 local realTarget = target.Value :: Model

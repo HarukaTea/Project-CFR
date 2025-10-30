@@ -11,7 +11,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
     IsUIShown2: Fusion.Value<boolean>,
     Enemies: Fusion.Value<{ Instance }>,
@@ -26,12 +26,12 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
     self.Enemies = FusionComponents.useTagged(scope, "EnemyEntity_Combat")
     self.EnemiesOverworld = FusionComponents.useTagged(scope, "EnemyEntity")
 
-    self.TargetingList = FusionComponents.useFolder(scope, (self.char :: any):WaitForChild("TargetingList", 999))
+    self.TargetingList = FusionComponents.useFolder(scope, self.char:WaitForChild("TargetingList", 999))
     self.TargetingEnemy = FusionComponents.useValue(scope, self.char:WaitForChild("TargetingEnemy", 999))
 
 

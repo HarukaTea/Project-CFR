@@ -1,4 +1,13 @@
 {
+    "robloxLsp.workspace.ignoreDir": [
+        ".vscode",
+        "**/_Index/**",
+    ],
+    "robloxLsp.diagnostics.disable": [
+        "undefined-type",
+        "redefined-type"
+    ],
+
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -12,5 +21,8 @@
         "src/shared/Shared/HarukaCMD": true,
         "src/shared/Library/LocationBook.luau": true,
         "src/DS_VERSION.luau": true
-    }
+    },
+    "robloxLsp.diagnostics.globals": [
+        "Path2DControlPoint"
+    ],
 }

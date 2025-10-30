@@ -27,11 +27,11 @@ return function(plr: Player)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerQuests") then
-        (plr.PlayerGui :: any).ExplorerQuests:Destroy()
+        plr.PlayerGui.ExplorerQuests:Destroy()
     end
 
 
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerQuests",
@@ -47,7 +47,7 @@ return function(plr: Player)
                 Name = "QuestMarkers",
 
                 [Children] = {
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: StringValue)
+                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope<any>, questSymbol: StringValue)
                         if not questSymbol.Value then return nil end
                         if questSymbol.Value == "Delivered" then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
@@ -87,7 +87,7 @@ return function(plr: Player)
                             }
                         })
                     end),
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: StringValue)
+                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope<any>, questSymbol: StringValue)
                         if not questSymbol.Value then return nil end
                         if questSymbol.Value == "Delivered" then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
@@ -157,7 +157,7 @@ return function(plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Bottom,
                         }),
 
-                        Fusion.ForValues(scope, self.Quests, function(_, scope: Fusion.Scope, questSymbol: StringValue)
+                        Fusion.ForValues(scope, self.Quests, function(_, scope: Fusion.Scope<any>, questSymbol: StringValue)
                             if not questSymbol.Value then return nil end
                             if questSymbol.Value == "Delivered" then return nil end
                             if not QuestBook[questSymbol.Name] then return nil end

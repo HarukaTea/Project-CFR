@@ -11,7 +11,7 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     SlotUISignal: RBXScriptSignal,
     CutsceneUISignal: RBXScriptSignal
 }) : ScreenGui
@@ -55,7 +55,7 @@ return function (scope: Fusion.Scope, props: {
                             Padding = UDim.new(0.5, 0)
                         }),
 
-                        Fusion.ForPairs(scope, { "Play", "Credits" }, function(_, scope: Fusion.Scope, index: number, panelId: string)
+                        Fusion.ForPairs(scope, { "Play", "Credits" }, function(_, scope: Fusion.Scope<any>, index: number, panelId: string)
                             local isSelecting = Fusion.Value(scope, false)
 
                             return index, Components.Frame(scope, {

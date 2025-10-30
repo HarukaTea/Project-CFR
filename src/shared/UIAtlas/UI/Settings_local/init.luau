@@ -31,7 +31,7 @@ return function (plr: Player)
     Pinia(self)
 
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "Settings",
@@ -62,7 +62,7 @@ return function (plr: Player)
                                 Padding = UDim.new(0.04, 0),
                             }),
 
-                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
+                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope<any>, panelId: string, panelInfo: {
                                 PanelTitle: string,
                                 LayoutOrder: number,
 
@@ -139,7 +139,7 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.7, 1),
 
                         [Children] = {
-                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
+                            Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope<any>, panelId: string, panelInfo: {
                                 PanelTitle: string,
                                 LayoutOrder: number,
 
@@ -165,7 +165,7 @@ return function (plr: Player)
                                         Components.PaddingFrame(scope, "AAA"),
                                         Components.PaddingFrame(scope, "ZZZ"),
 
-                                        Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope, optionId: string, optionInfo)
+                                        Fusion.ForPairs(scope, panelInfo.Includes, function(_, scope: Fusion.Scope<any>, optionId: string, optionInfo)
                                             if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then
                                                 return optionId, Keybind(scope, {
                                                     Platfrom = if panelId == "KeybindsPC" then "PC" else "Console",

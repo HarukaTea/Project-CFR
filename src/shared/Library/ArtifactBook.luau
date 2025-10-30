@@ -17,7 +17,7 @@ export type ArtifactJSON = {
 
 
 
-function ArtifactBook:GetArtifactInfo(artifactId: string) : ArtifactJSON? | {}
+function ArtifactBook:GetArtifactInfo(artifactId: string) : ArtifactJSON?
     artifactId = artifactId or "none"
     local info = {}
 

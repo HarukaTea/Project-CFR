@@ -23,7 +23,7 @@ local Pinia = require(script.Parent.Pinia)
 
 return function (UI: ScreenGui, self: Pinia.Self)
     local scope = self.scope
-    local bottom = (UI :: any).Bottom :: Frame
+    local bottom = UI.Bottom :: Frame
 
 
     --// cd anim

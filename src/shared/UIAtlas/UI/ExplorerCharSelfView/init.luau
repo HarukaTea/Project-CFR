@@ -23,14 +23,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerCharSelfView") then
-        (plr.PlayerGui :: any).ExplorerCharSelfView:Destroy()
+        plr.PlayerGui.ExplorerCharSelfView:Destroy()
     end
 
 

@@ -31,14 +31,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerAbyssView") then
-        (plr.PlayerGui :: any).ExplorerAbyssView:Destroy()
+        plr.PlayerGui.ExplorerAbyssView:Destroy()
     end
 
 
@@ -93,7 +93,7 @@ return function (plr: Player)
                                 Components.PaddingFrame(scope, "ZZZ"),
 
 
-                                Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope, index: number, _)
+                                Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope<any>, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
                                         Index = index,
                                         AbyssIndexSelected = self.AbyssIndexSelected,
@@ -161,7 +161,7 @@ return function (plr: Player)
                                 }),
 
 
-                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: {
+                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope<any>, mobId: string, mobInfo: {
                                     Level: number,
                                     EnvironmentBonus: number
                                 })

@@ -11,7 +11,7 @@ local DMGStat = require(script.Parent.DMGStat)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Class: Fusion.Value<string>,
 
     EquippingPassives: {

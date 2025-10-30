@@ -6,7 +6,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope)
+return function(scope: Fusion.Scope<any>)
     return Components.Frame(scope, {
         Name = "CircleFX",
         Size = UDim2.fromScale(0, 0),

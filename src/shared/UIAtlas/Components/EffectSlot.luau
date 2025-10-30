@@ -12,7 +12,7 @@ local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCirc
 
 local Children = Fusion.Children
 
-return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
+return function (scope: Fusion.Scope<any>, effect: StringValue) : ImageLabel
 
     local rotationVal = Fusion.Value(scope, 1)
 

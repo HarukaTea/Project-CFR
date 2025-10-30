@@ -30,11 +30,11 @@ return function(plr: Player)
 
 
 	if plr.PlayerGui:FindFirstChild("ShiftLock") then
-		(plr.PlayerGui :: any).ShiftLock:Destroy()
+		plr.PlayerGui.ShiftLock:Destroy()
     end
 
 
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 
 	local UI; UI = Components.HarukaScreenGui(scope, {

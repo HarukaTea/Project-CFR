@@ -11,7 +11,7 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     ItemSymbol: IntConstrainedValue,
     EquippingItems: Fusion.Value<{ StringValue }>,
 
@@ -192,7 +192,7 @@ return function(scope: Fusion.Scope, props: {
                         VerticalAlignment = Enum.VerticalAlignment.Center,
                     }),
 
-                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
+                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope<any>, _)
                         return StarTierSymbol(scope, {})
                     end)
                 }

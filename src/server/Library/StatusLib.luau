@@ -45,7 +45,7 @@ end
 StatusLib.HealPercentage = function(char: Model, percentage: number) : number?
     if not ServerLib.IsCharValid(char) then return end
 
-    return StatusLib.Heal(char, math.ceil((char :: any).Humanoid.MaxHealth * percentage / 100))
+    return StatusLib.Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
 end
 
 
@@ -66,7 +66,7 @@ StatusLib.CreateCustomEffect = function(eff: string, char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", HttpService:GenerateGUID(false))
 
-    effectSymbol.Parent = (char :: any).EffectList
+    effectSymbol.Parent = char.EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
 
@@ -124,7 +124,7 @@ StatusLib.NormalBoostForEntity = function(eff: string, char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
 
-    effectSymbol.Parent = (char :: any).EffectList
+    effectSymbol.Parent = char.EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
 
@@ -174,7 +174,7 @@ StatusLib.DMGBoost = function(char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
 
-    effectSymbol.Parent = (char :: any).EffectList
+    effectSymbol.Parent = char.EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
 

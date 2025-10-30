@@ -51,7 +51,7 @@ end
 function QuestLib.GetQuestState(questId: string, plr: Player) : string
     if not _isValidQuestForPlayer(questId, plr) then return "Invalid" end
 
-    return (plr :: any).Quests[questId].Value
+    return plr.Quests[questId].Value
 end
 
 
@@ -68,7 +68,7 @@ end
 function QuestLib.DeliverQuest(questId: string, plr: Player)
     if not _isValidQuestForPlayer(questId, plr) then return end
 
-    (plr :: any).QuestBook[questId].Value = "Delivered"
+    plr.QuestBook[questId].Value = "Delivered"
 end
 
 
@@ -76,7 +76,7 @@ function QuestLib.GetDeliveredQuests(plr: Player) : { string }
     if not plr:FindFirstChild("Quests") then return {} end
 
     local deliveredQuests = {}
-    for _, quest: StringValue in (plr :: any).Quests:GetChildren() do
+    for _, quest: StringValue in plr.Quests:GetChildren() do
         if quest.Value == "Delivered" then
             table.insert(deliveredQuests, quest.Name)
         end
@@ -90,7 +90,7 @@ function QuestLib.GetInProgressQuests(plr: Player) : { string }
     if not plr:FindFirstChild("Quests") then return {} end
 
     local inProgressQuests = {}
-    for _, quest: StringValue in (plr :: any).Quests:GetChildren() do
+    for _, quest: StringValue in plr.Quests:GetChildren() do
         if quest.Value == "Started" then
             table.insert(inProgressQuests, quest.Name)
         end
@@ -135,7 +135,7 @@ function QuestLib.AddObjective(plr: Player, questId: string, objectiveId: string
     if not hasObjectiveCheck then return end
 
 
-    local val = (plr :: any).Quests[questId] :: StringValue
+    local val = plr.Quests[questId] :: StringValue
     local curObjective = val:GetAttribute(objectiveId) :: number
 
     curObjective = curObjective or 0

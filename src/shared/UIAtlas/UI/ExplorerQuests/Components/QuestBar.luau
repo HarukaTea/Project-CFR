@@ -9,7 +9,7 @@ local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 
 local Children = Fusion.Children
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     QuestType: string,
     QuestId: string,
 

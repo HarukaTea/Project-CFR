@@ -19,7 +19,7 @@ return function (plr: Player)
 	self.plr = plr
 	self.scope = Fusion.scoped()
 
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 
 	self.cirularFadeQueue = HarukaLib.Queue()

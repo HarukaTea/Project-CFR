@@ -31,11 +31,11 @@ return function(plr: Player)
 
 
     if plr.PlayerGui:FindFirstChild("PlayerList") then
-        (plr.PlayerGui :: any).PlayerList:Destroy()
+        plr.PlayerGui.PlayerList:Destroy()
     end
 
 
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 
     local playerListHover = nil
@@ -70,7 +70,7 @@ return function(plr: Player)
                 Name = "PlayerInfoBar",
 
                 [Children] = {
-                    Fusion.ForValues(scope, self.Characters, function(_, scope: Fusion.Scope, char: Model)
+                    Fusion.ForValues(scope, self.Characters, function(_, scope: Fusion.Scope<any>, char: Model)
                         return PlayerInfoBar(scope, {
                             Char = char,
                             Player = Players:GetPlayerFromCharacter(char)
@@ -82,7 +82,7 @@ return function(plr: Player)
 				Name = "PartyMemberMarkers",
 
 				[Children] = {
-					Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope, member: ObjectValue)
+					Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope<any>, member: ObjectValue)
 						local player = Players:FindFirstChild(member.Name) :: Player?
 
 						if not player then return nil end
@@ -156,7 +156,7 @@ return function(plr: Player)
                             end), AssetBook.TweenInfos.half),
 
                             [Children] = {
-                                Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope, index: number, player: Player)
+                                Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope<any>, index: number, player: Player)
                                     return index, PlayerBar(scope, {
                                         Player = player,
 
@@ -220,7 +220,7 @@ return function(plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Bottom,
                         }),
 
-                        Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope, member: ObjectValue)
+                        Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope<any>, member: ObjectValue)
                             local player = Players:FindFirstChild(member.Name) :: Player?
                             if not player then return nil end
 

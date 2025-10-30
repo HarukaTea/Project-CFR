@@ -43,11 +43,11 @@ return function(plr: Player)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerStats") then
-        (plr.PlayerGui :: any).ExplorerStats:Destroy()
+        plr.PlayerGui.ExplorerStats:Destroy()
     end
 
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
     local isSelectingMenuSelection = Fusion.Value(scope, false)
 
 
@@ -134,7 +134,7 @@ return function(plr: Player)
                     [Children] = {
                         Components.UIScale(scope, {}),
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
                             local class = use(self.Class) :: string
 
                             local Bar = globalClassBars[class.."Bar"]
@@ -171,7 +171,7 @@ return function(plr: Player)
                             Scale = 0.95
                         }),
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
                             if use(self.IsInCombat) then
                                 local class = use(self.Class) :: string
 
@@ -253,7 +253,7 @@ return function(plr: Player)
 
                         Fusion.ForPairs(scope, {
                             "Backpack", "Character", "Settings"
-                        }, function(_, scope: Fusion.Scope, index: number, slot: string)
+                        }, function(_, scope: Fusion.Scope<any>, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,
                                 Index = index

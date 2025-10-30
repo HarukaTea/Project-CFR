@@ -21,7 +21,7 @@ local wait = task.wait
 export type Self = {
 	plr: Player,
 	char: Model,
-	scope: Fusion.Scope,
+	scope: Fusion.Scope<any>,
 
 	fsHintsQueue: HarukaLib.HarukaQueue,
 	centerHintsQueue: HarukaLib.HarukaQueue,
@@ -33,7 +33,7 @@ export type Self = {
 
 
 return function (self: Self)
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 
 	self.fsHintsQueue = HarukaLib.Queue()
@@ -55,7 +55,7 @@ return function (self: Self)
 			Text = text,
 			LayoutOrder = order,
 		})
-		normalHint.Parent = (self.UI :: any).Top.Hints
+		normalHint.Parent = self.UI.Top.Hints
 		Debris:AddItem(normalHint, 3.2)
 
 

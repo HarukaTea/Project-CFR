@@ -8,7 +8,7 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 
 local Children = Fusion.Children
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     FilterTierList: { Fusion.Value<boolean> },
     FilterItemText: Fusion.Value<string>,
     SortMethodList: { Fusion.Value<boolean> },
@@ -106,7 +106,7 @@ return function (scope: Fusion.Scope, props: {
                         Components.PaddingFrame(scope, "AAA"),
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, {"I", "II", "III", "IV", "V"}, function(_, scope: Fusion.Scope, index: number, tier: string)
+                        Fusion.ForPairs(scope, {"I", "II", "III", "IV", "V"}, function(_, scope: Fusion.Scope<any>, index: number, tier: string)
 
                             local isSelecting = Fusion.Value(scope, false)
 
@@ -209,7 +209,7 @@ return function (scope: Fusion.Scope, props: {
                         Components.PaddingFrame(scope, "AAA"),
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, {"AZ", "ZA", "T1", "T5"}, function(_, scope: Fusion.Scope, index: number, sortMethod: string)
+                        Fusion.ForPairs(scope, {"AZ", "ZA", "T1", "T5"}, function(_, scope: Fusion.Scope<any>, index: number, sortMethod: string)
 
                             local isSelecting = Fusion.Value(scope, false)
 

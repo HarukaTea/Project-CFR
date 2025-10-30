@@ -28,7 +28,7 @@ local KEY_NAMES = {
 }
 
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Platfrom: string,
 	KeybindId: string,
     KeybindVal: Enum.KeyCode,

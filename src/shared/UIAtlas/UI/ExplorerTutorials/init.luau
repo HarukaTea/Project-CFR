@@ -23,7 +23,7 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
@@ -31,7 +31,7 @@ return function (plr: Player)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerTutorialBook") then
-        (plr.PlayerGui :: any).ExplorerTutorialBook:Destroy()
+        plr.PlayerGui.ExplorerTutorialBook:Destroy()
     end
 
     local UI; UI = Components.HarukaScreenGui(scope, {
@@ -65,7 +65,7 @@ return function (plr: Player)
                                 SortOrder = Enum.SortOrder.Name,
                             }),
 
-                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: TutorialBook.TutorialJSON)
+                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope<any>, panelId: string, panelInfo: TutorialBook.TutorialJSON)
                                 local isSelected = Fusion.Value(scope, false)
                                 if panelId == "Combat" then
                                     isSelected:set(true)
@@ -129,7 +129,7 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.7, 1),
 
                         [Children] = {
-                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope, panelId: string, panelInfo: TutorialBook.TutorialJSON)
+                            Fusion.ForPairs(scope, TutorialBook, function(_, scope: Fusion.Scope<any>, panelId: string, panelInfo: TutorialBook.TutorialJSON)
                                 return panelId, Components.Frame(scope, {
                                     Name = panelId,
                                     AnchorPoint = Vector2.zero,

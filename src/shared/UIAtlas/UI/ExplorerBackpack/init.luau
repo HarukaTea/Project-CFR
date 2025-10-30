@@ -31,14 +31,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerBackpack") then
-        (plr.PlayerGui :: any).ExplorerBackpack:Destroy()
+        plr.PlayerGui.ExplorerBackpack:Destroy()
     end
 
 
@@ -71,7 +71,7 @@ return function (plr: Player)
                         [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
 
                         [Children] = {
-                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope, index: number, itemSymbol: IntConstrainedValue)
+                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
                                 local info = ItemBook:GetItemInfo(itemSymbol.Name)
                                 if not info then return nil end
 
@@ -249,7 +249,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
+                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope<any>, index: number, currency: string)
                             return index, BKEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,
@@ -443,7 +443,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
                             return index, BKCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -464,7 +464,7 @@ return function (plr: Player)
             ZIndex = 2,
 
             [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
                     return BKItemDescView(scope, {
                         Item = use(self.CurrentSelectedItem),
                         ItemUniqueId = use(self.CurrentSelectedItemUniqueId),

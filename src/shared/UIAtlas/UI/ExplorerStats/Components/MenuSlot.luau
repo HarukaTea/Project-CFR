@@ -28,7 +28,7 @@ local Icons = {
     Events = "rbxassetid://74645793775122",
 }
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Slot: string,
     Index: number,
 
@@ -51,7 +51,7 @@ return function(scope: Fusion.Scope, props: {
     end
 
     if KeybindsBook.PC[realSlot] then
-        key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+        key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
             local boolean = use(refreshBoolean) :: boolean
 
             return Components.TextLabel(scope, {

@@ -10,7 +10,7 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     Enemy: Model,
 })
     if not ClientLib.IsCharValid(props.Enemy) then return nil end
@@ -24,7 +24,7 @@ return function (scope: Fusion.Scope, props: {
     local HP = Value(100)
 
 
-    table.insert(scope, HarukaLib:Hydrate((props.Enemy :: any).Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate(props.Enemy.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             HP:set(newHP)
         end,

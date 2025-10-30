@@ -18,7 +18,7 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     ClassUltProgress: Fusion.Value<number>,
     MaxClassUltProgress: Fusion.Value<number>,
 
@@ -41,7 +41,7 @@ return function(scope: Fusion.Scope, props: {
     end))
 
 
-    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)
 

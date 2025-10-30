@@ -34,14 +34,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerMarket") then
-        (plr.PlayerGui :: any).ExplorerMarket:Destroy()
+        plr.PlayerGui.ExplorerMarket:Destroy()
     end
 
 
@@ -79,7 +79,7 @@ return function (plr: Player)
                         ClipsDescendants = false,
 
                         [Children] = {
-                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope, itemInfo: {
+                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope<any>, itemInfo: {
                                 ProductId: string,
                                 ProductUniqueId: string,
                             })
@@ -125,7 +125,7 @@ return function (plr: Player)
                         [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
 
                         [Children] = {
-                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope, index: number, itemSymbol: IntConstrainedValue)
+                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
                                 if not use(self.IsUIShown) then return nil end
                                 if use(self.CurrentCategory) ~= "Sell" then return nil end
 
@@ -228,7 +228,7 @@ return function (plr: Player)
                 [Children] = {
                     Components.UIAspectRatioConstraint(scope),
 
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
                         if use(self.CurrentCategory) == "Sell" then
                             return BKItemDescView(scope, {
                                 Item = use(self.CurrentSelectedItem),
@@ -440,7 +440,7 @@ return function (plr: Player)
                             Index = 1
                         }, self),
 
-                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
                             return index, BKCategoryBtn(scope, {
                                 Category = category,
                                 Index = index + 2,
@@ -518,7 +518,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Market", "Sell" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Market", "Sell" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
                             return index, BKCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -547,7 +547,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
+                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope<any>, index: number, currency: string)
                             return index, BKEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,

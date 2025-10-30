@@ -288,7 +288,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
                 local bool = Instance.new("BoolValue")
                 bool.Value = true
                 bool.Name = role
-                bool.Parent = (plr :: any).Roles
+                bool.Parent = plr.Roles
             end
             if isPremium then
                 _createSymbol("Premium")
@@ -377,7 +377,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end))
 
         if plr:FindFirstChild("ProfileContainer") then
-            (plr :: any).ProfileContainer:Destroy()
+            plr.ProfileContainer:Destroy()
         end
 
         resolve()
@@ -417,7 +417,7 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
         playerObj.Profile.Data[data.SlotId].Attrs[attr] = value
     end
 
-    local profileContainer = (plr :: any).ProfileContainer :: Folder
+    local profileContainer = plr.ProfileContainer :: Folder
     for attr, val in table.clone(PlayerTemplate).Slot1.Attrs do
         if not table.find(attrWhiteList, attr) then continue end
 
@@ -726,7 +726,7 @@ function PlayerLib:_RemoveSkyGalleon()
         for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
             if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
 
-            if (galleon :: any).Owner.Value == self.Player then
+            if galleon.Owner.Value == self.Player then
                 galleon:Destroy()
             end
         end

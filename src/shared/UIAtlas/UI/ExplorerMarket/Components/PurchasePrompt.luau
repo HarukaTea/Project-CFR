@@ -16,7 +16,7 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     ProductId: string,
     UniqueId: string,
 

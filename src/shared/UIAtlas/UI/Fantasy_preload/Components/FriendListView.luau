@@ -16,7 +16,7 @@ local fromRGB = Color3.fromRGB
 local wait = task.wait
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     SaveSlotClickedSignal: RBXScriptSignal,
     SaveSlotBackSignal: RBXScriptSignal,
     ReadyToTeleportSignal: RBXScriptSignal,
@@ -125,7 +125,7 @@ return function (scope: Fusion.Scope, props: {
                     Components.PaddingFrame(scope, "AAA"),
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.ForPairs(scope, friendsOnline, function(_, scope: Fusion.Scope, index: string, info: {
+                    Fusion.ForPairs(scope, friendsOnline, function(_, scope: Fusion.Scope<any>, index: string, info: {
                         IsAlreadyInInitus: boolean,
 
                         VisitorId: number,

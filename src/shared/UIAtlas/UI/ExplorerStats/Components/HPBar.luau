@@ -9,7 +9,7 @@ local HaurkaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     HP: Fusion.Value<number>,
     MaxHP: Fusion.Value<number>,
 

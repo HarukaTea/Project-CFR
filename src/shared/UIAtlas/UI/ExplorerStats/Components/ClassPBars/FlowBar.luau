@@ -13,7 +13,7 @@ local fromScale = UDim2.fromScale
 local clamp = math.clamp
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     ClassVal: Fusion.Value<number>,
     ClassVal2: Fusion.Value<number>,
 

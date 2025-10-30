@@ -20,7 +20,7 @@ local SettingsTemplate = require(script.Parent.SettingsTemplate)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
     SettingsFolder: Folder,
     PanelSelected: Fusion.Value<string>,
@@ -79,7 +79,7 @@ return function (self: Self)
 
     self.IsInKeybindMode = Value(false)
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     --// track visible
@@ -161,7 +161,7 @@ return function (self: Self)
 
             local defaultValue = optionInfo.DefaultValue
             if self.SettingsFolder:FindFirstChild(optionId) then
-                defaultValue = (self.SettingsFolder[optionId] :: any).Value
+                defaultValue = self.SettingsFolder[optionId].Value
             end
             if not optionInfo.AllowDecimals then
                 defaultValue = math.floor(defaultValue)
@@ -187,7 +187,7 @@ return function (self: Self)
 
             local defaultValue = optionInfo.DefaultValue
             if self.SettingsFolder:FindFirstChild(optionId) then
-                defaultValue = (self.SettingsFolder[optionId] :: any).Value
+                defaultValue = self.SettingsFolder[optionId].Value
             end
 
             self.SwitcherVals[panelId][optionId] = Value(defaultValue)
@@ -205,7 +205,7 @@ return function (self: Self)
 
             local defaultValue = optionInfo.DefaultValue
             if self.SettingsFolder:FindFirstChild(optionId) then
-                defaultValue = (self.SettingsFolder[optionId] :: any).Value
+                defaultValue = self.SettingsFolder[optionId].Value
             end
 
             self.DropdownVals[panelId][optionId] = Value(defaultValue)

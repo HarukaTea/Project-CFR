@@ -242,7 +242,7 @@ Add(HarukaLib.Clock(1.2, function()
                 if not ClientLib.IsModelValid(entity) then break end
                 if entity:GetAttribute("NearestChar") then break end
 
-                (entity :: any).PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
+                entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
                 wait(0.01)
             end
         end)
@@ -302,12 +302,12 @@ function EntityLib.new(enemy: Model)
     if not enemy:FindFirstChild("Humanoid") then return nil end
 
 
-    self.Add((enemy :: any).Humanoid.HealthChanged:Connect(function(health: number)
+    self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
 			Promise.delay(1):andThenCall(self.Destroy, self):catch(function() end)
 		end
 	end))
-    self.Add((enemy :: any).PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+    self.Add(enemy.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
         local newParent = char
         if newParent then
             if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then

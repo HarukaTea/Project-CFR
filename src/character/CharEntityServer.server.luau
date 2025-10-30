@@ -146,7 +146,7 @@ function CharLib:_TriggerRagdoll()
 			a0.Name = "RagdollAttachment"
 			a1.Name = "RagdollAttachment"
 
-			_createColliderPart((motor :: any).Part1)
+			_createColliderPart(motor.Part1)
 
 			local b = Instance.new("BallSocketConstraint")
 			b.Attachment0 = a0

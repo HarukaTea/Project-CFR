@@ -18,7 +18,7 @@ local Children = Fusion.Children
 local v2New = Vector2.new
 local fromScale = UDim2.fromScale
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     PromptObject: ProximityPrompt,
     LayoutOrder: number,
     CurrentPromptIndex: Fusion.Value<number>,
@@ -66,7 +66,7 @@ return function (scope: Fusion.Scope, props: {
     end))
 
 
-    local keyOrIcon = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+    local keyOrIcon = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean) :: boolean
 

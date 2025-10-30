@@ -11,7 +11,7 @@ local Children = Fusion.Children
 
 local fromScale = UDim2.fromScale
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     Member: ObjectValue
 })
     local member = props.Member.Value

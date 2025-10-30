@@ -19,14 +19,14 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     Pinia(self)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerChat") then
-        (plr.PlayerGui :: any).ExplorerChat:Destroy()
+        plr.PlayerGui.ExplorerChat:Destroy()
     end
 
     local UI; UI = Components.HarukaScreenGui(scope, {

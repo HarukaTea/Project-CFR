@@ -21,7 +21,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
     UI: ScreenGui,
 
     ServerLocation: Fusion.Value<string>,
@@ -127,7 +127,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
     local plr = self.plr :: Player
 
 
@@ -166,7 +166,7 @@ return function (self: Self)
         self.ClassVals2[class] = Value(0)
     end
 
-    local targeting = FusionComponents.useFolder(scope, (self.char :: any):WaitForChild("TargetingList"))
+    local targeting = FusionComponents.useFolder(scope, self.char:WaitForChild("TargetingList"))
 
     self.TargetingList = targeting :: Fusion.Value<{ ObjectValue }>
     self.TargetingEnemy = FusionComponents.useValue(scope, self.char:WaitForChild("TargetingEnemy"))
@@ -299,7 +299,7 @@ return function (self: Self)
     end
 
 
-    local equipping = FusionComponents.useFolder(scope, (self.plr :: any):WaitForChild("EquippingItems", 999))
+    local equipping = FusionComponents.useFolder(scope, self.plr:WaitForChild("EquippingItems", 999))
     self.EquippingItems = equipping :: Fusion.Value<{ StringValue }>
 
     local function _handleItemEquip()
@@ -643,7 +643,7 @@ return function (self: Self)
 
 
     --// track hp
-    table.insert(scope, HarukaLib:Hydrate((self.char :: any).Humanoid, {
+    table.insert(scope, HarukaLib:Hydrate(self.char.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             self.HP:set(newHP)
         end,

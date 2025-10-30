@@ -9,7 +9,7 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     ItemId: string,
     Items: Fusion.Value<{ IntConstrainedValue }>,
     Amount: number,

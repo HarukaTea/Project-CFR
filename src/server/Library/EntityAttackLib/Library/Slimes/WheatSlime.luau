@@ -60,7 +60,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if not ServerLib.IsCharValid(entity) then return end
         if not ServerLib.IsCharValid(target) then return end
 
-        entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, (target :: any).PrimaryPart.Position))
+        entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _slimeShotButBarrage()
         SlimeUniversal.SlimeBarrageShot(entity)

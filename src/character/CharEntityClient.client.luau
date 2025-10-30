@@ -227,10 +227,10 @@ table.insert(CharLib.Funcs, function()
 
         CLASS_ANIMS[class] = {}
         if animContainer:FindFirstChild("Run") then
-            if (animContainer :: any).Run:IsA("Animation") then
-                CLASS_ANIMS[class].Run = animator:LoadAnimation((animContainer :: any).Run)
-            elseif (animContainer :: any).Run:IsA("ObjectValue") then
-                CLASS_ANIMS[class].Run = animator:LoadAnimation((animContainer :: any).Run.Value)
+            if animContainer.Run:IsA("Animation") then
+                CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer.Run)
+            elseif animContainer.Run:IsA("ObjectValue") then
+                CLASS_ANIMS[class].Run = animator:LoadAnimation(animContainer.Run.Value)
             end
         else
             CLASS_ANIMS[class].Run = animator:LoadAnimation(animationsChar.Run)

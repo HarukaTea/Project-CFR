@@ -12,7 +12,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     ClassVal: Fusion.Value<number>,
     Char: Model
 })

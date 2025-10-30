@@ -16,7 +16,7 @@ local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
 
     IsChatShown: Fusion.Value<boolean>,
@@ -40,7 +40,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope
+    local scope = self.scope :: Fusion.Scope<any>
 
 
     self.IsChatShown = Value(false)
@@ -53,7 +53,7 @@ return function (self: Self)
     self.Dialogue = Value("None")
 
 
-    local quests = FusionComponents.useFolder(scope, (self.plr :: any):WaitForChild("Quests", 999))
+    local quests = FusionComponents.useFolder(scope, self.plr:WaitForChild("Quests", 999))
     self.Quests = quests :: Fusion.Value<{ StringValue }>
 
     self.MaxUTFShown = Value(-1)

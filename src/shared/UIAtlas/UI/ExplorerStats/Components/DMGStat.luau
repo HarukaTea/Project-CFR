@@ -14,7 +14,7 @@ local statIcons = {
     Magic = "rbxassetid://2965863231"
 }
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     StatId: string,
 
     StatValue: Fusion.Value<number>,

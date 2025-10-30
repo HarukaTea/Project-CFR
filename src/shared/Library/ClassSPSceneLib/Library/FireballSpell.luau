@@ -23,12 +23,12 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     if not ClientLib.IsCharValid(char) then return end
 
 
-    local targetingEnemy = (char :: any).TargetingEnemy.Value
+    local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
     local fireball = RepS.Packages.SkillProjectiles:FindFirstChild("Fireball", true):Clone() :: BasePart
-    fireball.CFrame = (char :: any)["Right Arm"].CFrame
+    fireball.CFrame = char["Right Arm"].CFrame
     fireball.CFrame = HarukaLib:CFLookAt(fireball.Position, targetingEnemy.PrimaryPart.Position)
     fireball.Anchored = true
     fireball.Parent = workspace
@@ -52,7 +52,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
             local pos = fireball.Position
 
-            for _, symbol: ObjectValue in (char :: any).TargetingList:GetChildren() do
+            for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
                 if not ClientLib.IsCharValid(symbol.Value) then continue end
 
                 local entity = symbol.Value :: Model

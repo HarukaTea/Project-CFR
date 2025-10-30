@@ -11,10 +11,10 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     TargetingList: Fusion.Value<{ ObjectValue }>
 })
-    return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+    return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
 
         local targetingBoss: ObjectValue = nil
 

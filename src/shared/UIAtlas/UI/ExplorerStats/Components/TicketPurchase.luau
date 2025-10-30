@@ -8,7 +8,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     MerchantId: string
 })
 

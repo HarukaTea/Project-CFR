@@ -8,7 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     StatList: {
         {
             Id: string,
@@ -33,7 +33,7 @@ return function (scope: Fusion.Scope, props: {
         [Children] = {
             Components.PaddingFrame(scope, "AAA"),
 
-            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope, index: number, val)
+            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope<any>, index: number, val)
 
                 local correspondingBaseStat = nil
                 for _, baseStatInfo in props.BaseStatList do

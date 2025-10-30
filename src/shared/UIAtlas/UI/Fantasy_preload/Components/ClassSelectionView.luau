@@ -17,7 +17,7 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     IsSelectingStartClass: Fusion.Value,
     ReadyToTeleportSignal: RBXScriptSignal,
     IsUIShown: Fusion.Value,
@@ -59,7 +59,7 @@ return function (scope: Fusion.Scope, props: {
                 BorderType = "Outer"
             }),
 
-            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
                 if not use(isClassSelected) then
                     return ExecuteButton(scope, {
                         AnchorPoint = Vector2.new(0.5, 0),
@@ -113,7 +113,7 @@ return function (scope: Fusion.Scope, props: {
                                 SortOrder = Enum.SortOrder.Name,
                             }),
 
-                            Fusion.ForPairs(scope, ClassBook, function(_, scope: Fusion.Scope, classId: string, info: { any })
+                            Fusion.ForPairs(scope, ClassBook, function(_, scope: Fusion.Scope<any>, classId: string, info: { any })
                                 local whiteList = { "Chain", "Burst", "Flow" }
                                 if not table.find(whiteList, classId) then return classId, nil end
 

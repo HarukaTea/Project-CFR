@@ -34,7 +34,7 @@ function ClientLib.WeldModel(part: BasePart, welded: Model)
 	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
 	local C = welded:GetChildren()
 	if welded:FindFirstChild("Meshes") then
-		C = (welded :: any).Meshes:GetChildren()
+		C = welded.Meshes:GetChildren()
 	end
 
 	if target == nil then
@@ -78,7 +78,7 @@ end
 
 function ClientLib.WeldWeapon(weapon: Model, char: Model)
 	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
-	local weldTarget = (weapon :: any).Handle:GetAttribute("Weld") :: string
+	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
 
 	if not motor6D then warn("No Motor6D found on weapon") return end
 	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
@@ -161,7 +161,7 @@ end
 
 function ClientLib.TrackEffectListToUI(props: {
 	Target: Model,
-	Scope: Fusion.Scope,
+	Scope: Fusion.Scope<any>,
 	GuiContainer: GuiObject,
 	EffectContainer: GuiObject?
 })
@@ -176,7 +176,7 @@ function ClientLib.TrackEffectListToUI(props: {
 	effectListContainer.Parent = props.Target
 	table.insert(props.Scope, effectListContainer)
 
-	local effectListEnemy = FusionComponents.useFolder(props.Scope, (props.Target :: any).EffectList)
+	local effectListEnemy = FusionComponents.useFolder(props.Scope, props.Target.EffectList)
 	local containerVal = FusionComponents.useFolder(props.Scope, effectListContainer)
 
 
@@ -253,7 +253,7 @@ end
 
 
 function ClientLib.TrackInputTextbox(props: {
-	Scope: Fusion.Scope,
+	Scope: Fusion.Scope<any>,
 	TextBox: TextBox,
 
 	Callback: (amountVal: Fusion.Value<number>) -> nil

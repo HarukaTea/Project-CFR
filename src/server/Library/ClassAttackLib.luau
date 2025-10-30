@@ -56,7 +56,7 @@ local ClassAttackLib = {} :: ClassAttackLibClass
 --// Helper functions
 
 local function _getCharAndTargeting(plr: Player) : (Model?, Model?)
-    return plr.Character, (plr.Character :: any).TargetingEnemy.Value
+    return plr.Character, plr.Character.TargetingEnemy.Value
 end
 local function _charAndTargetingCheck(char: Model, targeting: Model) : boolean
     if char == nil or targeting == nil then return false end
@@ -764,7 +764,7 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
     dmgProps.DMG = ClassAttackLib:_DamageDealMiddler(char, targeting, dmgProps)
 
 
-    local targetingHumanoid = (targeting :: any).Humanoid :: Humanoid
+    local targetingHumanoid = targeting.Humanoid :: Humanoid
 
     targetingHumanoid:TakeDamage(dmgProps.DMG)
     for _, event in char:GetDescendants() do

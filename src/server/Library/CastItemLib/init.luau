@@ -66,14 +66,14 @@ local function _preCheck(props: {
 end
 local function _eatSoundFunc(char: Model, func: () -> nil)
     local eatSound = SoundService.SFXs.EatSound :: Sound
-    ServerLib.PlayWorldSound(eatSound, (char :: any).PrimaryPart.Position)
+    ServerLib.PlayWorldSound(eatSound, char.PrimaryPart.Position)
 
 
     task.delay(eatSound.TimeLength / 2, func)
 end
 local function _drinkSoundFunc(char: Model, func: () -> nil)
     local drinkSound = SoundService.SFXs.DrinkSound :: Sound
-    ServerLib.PlayWorldSound(drinkSound, (char :: any).PrimaryPart.Position)
+    ServerLib.PlayWorldSound(drinkSound, char.PrimaryPart.Position)
 
 
     task.delay(drinkSound.TimeLength / 2, func)

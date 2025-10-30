@@ -15,7 +15,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope,
+    scope: Fusion.Scope<any>,
 
     SlotUISignal: Signal.SignalClass,
     CutsceneUISignal: Signal.SignalClass,
@@ -25,7 +25,7 @@ export type Self = {
 
 
 return function (self: Self)
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 
 	self.SlotUISignal = Signal.new()

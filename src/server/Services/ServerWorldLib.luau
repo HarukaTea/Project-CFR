@@ -178,7 +178,7 @@ end)
 
 table.insert(ServerWorldLib.Funcs, function()
     local function _updateBorder(border: Model)
-        for _, child in (border :: any).Border:GetChildren() do
+        for _, child in border.Border:GetChildren() do
             if child:IsA("BasePart") and child.Name == "Part" then
                 local beam = child:FindFirstChildOfClass("Beam")
 
@@ -241,7 +241,7 @@ table.insert(ServerWorldLib.Funcs, function()
             )
         end
 
-        (orb :: any).Hitbox.CanTouch = true
+        orb.Hitbox.CanTouch = true
     end
 end)
 

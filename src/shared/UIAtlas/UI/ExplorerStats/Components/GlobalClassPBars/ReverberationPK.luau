@@ -8,7 +8,7 @@ local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope, props: {
+return function(scope: Fusion.Scope<any>, props: {
     Num: number
 })
     return Components.Frame(scope, {

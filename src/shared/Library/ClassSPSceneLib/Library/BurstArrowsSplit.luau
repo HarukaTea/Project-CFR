@@ -22,7 +22,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     if not ClientLib.IsCharValid(char) then return end
 
 
-    local targetingEnemy = (char :: any).TargetingEnemy.Value
+    local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
@@ -52,7 +52,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
         local arrow = RepS.Packages.SkillProjectiles:FindFirstChild("BurstArrowSplitUlt", true):Clone() :: BasePart
         arrow.Anchored = false
-        arrow.CFrame = (char :: any)["Left Arm"].CFrame
+        arrow.CFrame = char["Left Arm"].CFrame
         arrow.CFrame = CFrame.new(arrow.Position, endCF.Position)
         arrow.Parent = workspace
 

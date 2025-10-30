@@ -880,7 +880,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 hasPosVal = false
 
                 self.CombatInfo.CombatTriggererUniqueId = self.CombatInfo.CombatStarterUniqueId
-                self.CombatInfo.CombatLocation = CFrame.new(ServerLib.FindGroundByRayForCombatLocation((target :: any).PrimaryPart.Position))
+                self.CombatInfo.CombatLocation = CFrame.new(ServerLib.FindGroundByRayForCombatLocation(target.PrimaryPart.Position))
             else
                 self.CombatInfo.CombatLocation = location
             end
@@ -922,7 +922,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         Debris:AddItem(encounterBorder, 5)
 
 
-        if ((target :: any).PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
+        if (target.PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
             target:PivotTo(combatLocation * CFrame.new(0, 6, 0))
         end
 

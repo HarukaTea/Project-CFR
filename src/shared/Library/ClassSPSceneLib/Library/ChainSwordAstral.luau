@@ -23,7 +23,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
-    local targetingEnemy = (char :: any).TargetingEnemy.Value
+    local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
@@ -62,7 +62,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             HarukaLib:EmitParticles(astral)
 
 
-            for _, symbol: ObjectValue in (char :: any).TargetingList:GetChildren() do
+            for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
                 if not ClientLib.IsCharValid(symbol.Value) then continue end
 
                 local entity = symbol.Value :: Model

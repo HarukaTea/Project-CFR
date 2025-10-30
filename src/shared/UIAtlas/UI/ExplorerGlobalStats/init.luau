@@ -23,11 +23,11 @@ return function(plr: Player)
 
 
     if plr.PlayerGui:FindFirstChild("ExplorerStatsGlobal") then
-        (plr.PlayerGui :: any).ExplorerStatsGlobal:Destroy()
+        plr.PlayerGui.ExplorerStatsGlobal:Destroy()
     end
 
 
-	local scope = self.scope :: Fusion.Scope
+	local scope = self.scope :: Fusion.Scope<any>
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerStatsGlobal",

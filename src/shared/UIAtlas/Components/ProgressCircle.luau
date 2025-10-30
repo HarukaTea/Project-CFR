@@ -12,7 +12,7 @@ local nsNew, nsKPNew = NumberSequence.new, NumberSequenceKeypoint.new
 local clamp = math.clamp
 
 
-return function (scope: Fusion.Scope, props: {
+return function (scope: Fusion.Scope<any>, props: {
     Direction: "Left" | "Right",
     RotationVal: Fusion.Value<number>,
     ZIndex: number?,
