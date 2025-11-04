@@ -25,6 +25,7 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
+local HarukaParty = require(SSS.HarukaServer.Shared.HarukaParty)
 
 
 
@@ -1603,186 +1604,23 @@ end)
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     local function partyInvite(plr: Player, option: string, newMember: string)
+        local target = Players:FindFirstChild(newMember)
+        if not target then return end
+
         if option == "Invite" then
-            --- check character exists
-            local char = workspace.EntitiesPlayerChar:FindFirstChild(newMember) :: Model?
-            if not char then Events.CreateNotify.Fire(plr, "Failed to invite!") return end
+            HarukaParty:Invite(plr, target)
 
-            --- check valid player
-            local player = Players:GetPlayerFromCharacter(char)
-            if not player then Events.CreateNotify.Fire(plr, "Failed to invite!") return end
+        elseif option == "Accept" then
+            HarukaParty:Accept(plr, target)
 
-            --- check if player already have a party
-            local pass = true
-            for _, child in workspace.MapComponents.PartyHolder:GetDescendants() do
-                if child:IsA("ObjectValue") and child.Name == player.Name then
-                    pass = false
-                elseif child:IsA("ObjectValue") and child.Name == plr.Name then
-                    if child.Parent.Name ~= plr.Name then pass = false end
-                end
-            end
-            if not pass then Events.CreateNotify.Fire(plr, "Player already has a party!") return end
+        elseif option == "Decline" then
+            HarukaParty:Decline(plr, target)
 
-            --- check if player is in a request
-            local foundTicket = false
-            for _, child in char:GetChildren() do
-                if child.Name == "PartyInviteTicket" and child.Value == plr.Character then foundTicket = true break end
-            end
-            if foundTicket then Events.CreateNotify.Fire(plr, "Player already has an invitation!") return end
+        elseif option == "Kick" then
+            HarukaParty:Kick(plr, target)
 
-            local ticket = Instance.new("ObjectValue")
-            ticket.Name = "PartyInviteTicket"
-            ticket.Value = plr.Character
-            ticket.Parent = char
-
-            Events.PartyInviteResult.Fire(player, { Option = "Invite", PlayerName = plr.Name })
-            Events.PlaySound.Fire(player, SoundService.SFXs.ChestDrop)
-
-        elseif option == "InviteAccept" or option == "InviteDecline" then
-            --- check if player is already in a party
-            local pass = true
-            for _, child: Instance in workspace.MapComponents.PartyHolder:GetDescendants() do
-                if child:IsA("ObjectValue") and child.Name == plr.Name then pass = false break end
-            end
-            if not pass then Events.CreateNotify.Fire(plr, "You are already in a party!") return end
-
-            --- check valid player
-            local char = plr.Character
-            if not char then Events.CreateNotify.Fire(plr, "Failed to do so!") return end
-
-            local inviterChar = workspace.EntitiesPlayerChar:FindFirstChild(newMember) :: Model?
-            if not inviterChar then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
-
-            --- check valid player
-            local player = Players:GetPlayerFromCharacter(char)
-            if not player then return end
-
-            local inviter = Players:GetPlayerFromCharacter(inviterChar)
-            if not inviter then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
-
-            --- get ticket
-            local ticket: ObjectValue? = nil
-            for _, child in char:GetChildren() do
-                if child.Name == "PartyInviteTicket" and child.Value == inviterChar then ticket = child break end
-            end
-            if ticket == nil then Events.CreateNotify.Fire(plr, "Failed to join/leave the party!") return end
-
-            --- join party
-            if option == "InviteAccept" then
-                if not workspace.MapComponents.PartyHolder:FindFirstChild(inviter.Name) then
-                    local partyFolder = Instance.new("Folder")
-                    partyFolder.Name = inviter.Name
-                    partyFolder.Parent = workspace.MapComponents.PartyHolder
-
-                    local leaderSymbol = Instance.new("ObjectValue")
-                    leaderSymbol.Name = inviter.Name
-                    leaderSymbol.Value = inviterChar
-                    leaderSymbol.Parent = partyFolder
-
-                    local memberSymbol = Instance.new("ObjectValue")
-                    memberSymbol.Name = plr.Name
-                    memberSymbol.Value = char
-                    memberSymbol.Parent = partyFolder
-
-                    plr:SetAttribute("IsInParty", true)
-                    inviter:SetAttribute("IsInParty", true)
-
-                    ticket:Destroy()
-
-                elseif workspace.MapComponents.PartyHolder:FindFirstChild(inviter.Name) then
-                    local count = 0
-                    for _, symbol: ObjectValue in workspace.MapComponents.PartyHolder[inviter.Name]:GetChildren() do
-                        if symbol:IsA("ObjectValue") then count += 1 end
-                    end
-                    if count >= 6 then
-                        Events.CreateNotify.Fire(plr, "Party is full!")
-                        Events.CreateNotify.Fire(inviter, "Party is full!")
-
-                        ticket:Destroy()
-                        return
-                    end
-
-                    local memberSymbol = Instance.new("ObjectValue")
-                    memberSymbol.Name = plr.Name
-                    memberSymbol.Value = char
-                    memberSymbol.Parent = workspace.MapComponents.PartyHolder[inviter.Name]
-
-                    plr:SetAttribute("IsInParty", true)
-
-                    ticket:Destroy()
-                end
-            elseif option == "InviteDecline" then
-                ticket:Destroy()
-
-                Events.CreateNotify.Fire(inviter, plr.DisplayName.." declined your invitation!")
-            end
-
-        elseif option == "PartyKick" then
-            if not workspace.MapComponents.PartyHolder:FindFirstChild(plr.Name) then
-                Events.CreateNotify.Fire(plr, "You are not a leader!")
-                return
-            end
-            if not workspace.MapComponents.PartyHolder[plr.Name]:FindFirstChild(newMember) then
-                Events.CreateNotify.Fire(plr, "Player is not in your party!")
-                return
-            end
-
-            workspace.MapComponents.PartyHolder[plr.Name][newMember]:Destroy()
-
-            if not Players[newMember] then return end
-            Players[newMember]:SetAttribute("IsInParty", false)
-
-        elseif option == "PartyLeave" then
-            local function _disbandPartyAction(partyFolder: Folder)
-                for _, symbol in partyFolder:GetChildren() do
-                    if symbol:IsA("ObjectValue") and symbol.Value then
-                        local memeber = Players:GetPlayerFromCharacter(symbol.Value)
-                        if not memeber then continue end
-
-                        memeber:SetAttribute("IsInParty", false)
-
-                        Events.CreateNotify.Fire(memeber, "Party has been disbanded!")
-                    end
-                end
-            end
-
-            local partyFolder: Folder? = nil
-            for _, child in workspace.MapComponents.PartyHolder:GetDescendants() do
-                if child:IsA("ObjectValue") and child.Name == plr.Name then
-                    partyFolder = child.Parent
-                    child:Destroy()
-
-                    local thatPartyFolder = partyFolder :: Folder
-
-                    plr:SetAttribute("IsInParty", false)
-                    for _, symbol in thatPartyFolder:GetChildren() do
-                        if symbol:IsA("ObjectValue") and symbol.Value then
-                            local memeber = Players:GetPlayerFromCharacter(symbol.Value)
-                            if not memeber then continue end
-
-                            Events.CreateNotify.Fire(memeber, `{plr.DisplayName} has left the party!`)
-                        end
-                    end
-
-                    if thatPartyFolder.Name == plr.Name then
-                        _disbandPartyAction(thatPartyFolder)
-
-                        thatPartyFolder:Destroy()
-                    end
-                    break
-                end
-            end
-            if not partyFolder then return end
-
-            local count = 0
-            for _, symbol in partyFolder:GetChildren() do
-                if symbol:IsA("ObjectValue") then count += 1 end
-            end
-            if count <= 0 then
-                _disbandPartyAction(partyFolder)
-
-                partyFolder:Destroy()
-            end
+        elseif option == "Leave" then
+            HarukaParty:Leave(plr)
         end
     end
     Events.RequestToPartyInvite.SetCallback(function(plr: Player, data)
@@ -1827,13 +1665,16 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
+    local GALLEON_POSY_LIMIT = 140
+
     Events.RequestToSetSkyGalleonPos.SetCallback(function(plr: Player, data)
         if not data.Galleon then return end
-        if not data.Position then return end
+        if not data.PosX then return end
+        if not data.PosZ then return end
         if not data.Rotation then return end
 
 
-        local galleon, pos, rotation = data.Galleon, data.Position, data.Rotation
+        local galleon, pos, rotation = data.Galleon, Vector3.new(data.PosX, GALLEON_POSY_LIMIT, data.PosZ), data.Rotation
         if not galleon:FindFirstChild("Owner") then return end
         if galleon.Owner.Value ~= plr then return end
         if not ServerLib.IsModelValid(galleon) then return end

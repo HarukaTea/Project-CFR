@@ -5,6 +5,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ArtifactLib = {}
 
 
+export type ArtifactCallback = (char: Model, factor: number) -> nil
+
+
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 
@@ -91,4 +94,6 @@ ArtifactLib.Northerner3 = function()
 end
 
 
-return ArtifactLib
+return ArtifactLib :: {
+    [string]: ArtifactCallback
+}

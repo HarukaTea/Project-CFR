@@ -57,6 +57,8 @@ local function _createNewCompoent(scope: Fusion.Scope<any>, props: FusionPropsEn
 	local instance = Fusion.New(scope, uiType)(default) :: GuiObject
 	return instance
 end
+HarukaComponents._reconcileProps = _reconcileProps
+HarukaComponents._createNewCompoent = _createNewCompoent
 
 
 function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope<any>, guiProps: FusionPropsEntry, childProps: {
@@ -109,16 +111,16 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope<any>, guiProps: Fu
 
 
 	local top, center, bottom, full = nil, nil, nil, nil
-	if childProps.TopProps then
+	if not HarukaLib.TableUtils.IsEmpty(topProps) then
 		top = HarukaComponents.HarukaFrame(scope, defaultTopProps)
 	end
-	if childProps.CenterProps then
+	if not HarukaLib.TableUtils.IsEmpty(centerProps) then
 		center = HarukaComponents.HarukaFrame(scope, defaultCenterProps)
 	end
-	if childProps.BottomProps then
+	if not HarukaLib.TableUtils.IsEmpty(bottomProps) then
 		bottom = HarukaComponents.HarukaFrame(scope, defaultBottomProps)
 	end
-	if childProps.FullProps then
+	if not HarukaLib.TableUtils.IsEmpty(fullProps) then
 		full = HarukaComponents.Frame(scope, defaultFSProps)
 	end
 

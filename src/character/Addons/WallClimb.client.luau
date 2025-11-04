@@ -63,8 +63,8 @@ terrainRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("T
 Add(CollectionService:GetInstanceAddedSignal("WallClimbPart"):Connect(function()
     wallClimbRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("WallClimbPart")
 end))
-Add(CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function()
-    terrainRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+Add(CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function(part)
+    terrainRaycastParams:AddToFilter(part)
 end))
 
 

@@ -6,11 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
-local wait = task.wait
-
-
 
 export type Self = {
     plr: Player,
@@ -69,17 +64,4 @@ return function (self: Self)
 
         end):catch(function() end)
     end))
-
-
-    table.insert(scope, HarukaLib:Hydrate(workspace, {
-        ["Attr-Titlescreen_TempClass"] = function(class: string)
-            class = class or "Chain"
-
-            if not workspace:GetAttribute("Titlescreen_ClassSelectionState") then return end
-
-            local cameraLocator = workspace.MapComponents.Titlescreen["CameraLocator2_"..class] :: BasePart
-
-            workspace.MapComponents.Titlescreen.CameraLocator.Value = cameraLocator
-        end
-    }))
 end

@@ -15,11 +15,10 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local PassiveLib = require(SSS.HarukaServer.Library.PassiveLib)
 
 local ServerLib = {}
 
-
-local RNG = Random.new()
 
 
 local terrainParams = RaycastParams.new()
@@ -27,18 +26,8 @@ terrainParams.IgnoreWater = true
 terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
 terrainParams.FilterType = Enum.RaycastFilterType.Include
 
-local rawTerrainParams = RaycastParams.new()
-rawTerrainParams.IgnoreWater = true
-rawTerrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-rawTerrainParams.FilterType = Enum.RaycastFilterType.Include
-
-
-CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function()
-	terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-	rawTerrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-end)
-CollectionService:GetInstanceAddedSignal("CombatBorderServer"):Connect(function(ins: Instance)
-	terrainParams:AddToFilter(ins:GetDescendants())
+CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function(part)
+	terrainParams:AddToFilter(part)
 end)
 
 
@@ -77,7 +66,7 @@ function ServerLib.PlayWorldSound(sound: Sound, pos: Vector3)
 end
 
 function ServerLib.FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
-	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 15, -Vector3.yAxis * 159, rawTerrainParams)
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 15, -Vector3.yAxis * 159, terrainParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos
@@ -103,19 +92,36 @@ end
 
 function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
-	local combatPos = combatLocation.Position + Vector3.yAxis * 16
-	local finalLocation: CFrame
+	local MAGNITUDE = 30
 
-	local rx, rz = RNG:NextInteger(-40, 40), RNG:NextInteger(-40, 40)
-	local set = RNG:NextInteger(5, 40)
-	local dir = CFrame.new(combatPos, combatPos + Vector3.new(rx, 0, rz)).LookVector.Unit * set
-	local rayResult = workspace:Raycast(combatPos, dir, terrainParams) :: RaycastResult
-	local rayPos = if rayResult then rayResult.Position else combatPos + dir
-	local finalPos = CFrame.new(rayPos, rayPos + combatLocation.LookVector)
+	Promise.new(function(resolve)
+		local repeatedTimes = 0
+		local pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
 
-	finalPos = ServerLib.FindGroundByRayForOrb(finalPos.Position)
+		while repeatedTimes <= 15 do
+			-- we gonna try to find a valid position, if we can't, we'll try again
+			local isTheSame = pos:FuzzyEq(combatLocation.Position)
+			local isInsidePart = HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart"))
 
-	return CFrame.new(finalPos) * CFrame.new(0, 8, 2)
+			if not isTheSame and not isInsidePart then
+				break
+			end
+
+			pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
+			repeatedTimes += 1
+		end
+
+		resolve(pos)
+
+	end):andThen(function(pos: Vector3)
+		orbLocation = CFrame.new(pos) * CFrame.new(0, math.random(9, 10), 2)
+
+	end):catch(function(err)
+		warn(tostring(err))
+	end):await()
+
+
+	return orbLocation
 end
 
 
@@ -369,7 +375,17 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 		end
 	end
 
-	if char:FindFirstChild(itemSymbol.Name) then char[itemSymbol.Name]:Destroy() end
+	if char:FindFirstChild(itemSymbol.Name) then
+		local itemScript = char[itemSymbol.Name] :: Script
+		local itemId = itemScript.Name
+		local needsDestroying = itemScript:GetAttribute("ReqDestroyingEvent")
+
+		char[itemSymbol.Name]:Destroy()
+
+		if needsDestroying then
+			if PassiveLib[itemId] then PassiveLib[itemId](char) end
+		end
+	end
 	if method == "Equip" and RepS.HarukaRes.Accessories:FindFirstChild(itemSymbol.Name, true) then
 		RepS.HarukaRes.Accessories:FindFirstChild(itemSymbol.Name, true):Clone().Parent = char
 	end

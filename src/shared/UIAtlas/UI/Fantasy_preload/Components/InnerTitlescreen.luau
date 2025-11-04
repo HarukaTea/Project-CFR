@@ -1,8 +1,6 @@
 
-local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")
 
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
@@ -12,8 +10,6 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 local SaveSlot = require(script.Parent.SaveSlot)
 
 local FriendListView = require(script.Parent.FriendListView)
-local ClassSelectionView = require(script.Parent.ClassSelectionView)
-
 
 local Children = Fusion.Children
 
@@ -45,17 +41,11 @@ return function (scope: Fusion.Scope<any>, props: {
 
     local whichSlotIsChosen = Fusion.Value(scope, "Slot1")
 
-    local isSelectingStartClass = Fusion.Value(scope, false)
-
     table.insert(scope, props.CutsceneUISignal:Connect(function()
         isShown:set(false)
     end))
     table.insert(scope, props.SlotUISignal:Connect(function()
         isShown:set(true)
-    end))
-    table.insert(scope, readyToTeleportSignal:Connect(function()
-        isShown:set(false)
-        isSelectingStartClass:set(false)
     end))
 
 
@@ -121,7 +111,6 @@ return function (scope: Fusion.Scope<any>, props: {
                                 ServerListClickedSignal = serverListClickedSignal,
 
                                 IsUIShown = isShown,
-                                IsSelectingClass = isSelectingStartClass,
                             })
                         end)
                     }
@@ -148,23 +137,6 @@ return function (scope: Fusion.Scope<any>, props: {
             }
         }
     })
-    local UI2; UI2 = Components.HarukaScreenGui(scope, {
-        Name = "InnerTitlescreen",
-        DisplayOrder = 233,
-
-        Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
-            return use(isSelectingStartClass)
-        end),
-
-        [Children] = {
-            ClassSelectionView(scope, {
-                IsSelectingStartClass = isSelectingStartClass,
-                ReadyToTeleportSignal = readyToTeleportSignal,
-                IsUIShown = isShown,
-                SlotId = whichSlotIsChosen,
-            })
-        }
-    }, {})
 
 
     --// anims
@@ -190,14 +162,5 @@ return function (scope: Fusion.Scope<any>, props: {
     end)
 
 
-
-    --// change class scene request
-    table.insert(scope, Bindables.Titlescreen_ChangeClassScene:Connect(function()
-        workspace:SetAttribute("Titlescreen_ClassSelectionState", true)
-        workspace:SetAttribute("Titlescreen_TempClass", "Chain")
-    end))
-
-
-
-    return { UI, UI2 }
+    return UI
 end

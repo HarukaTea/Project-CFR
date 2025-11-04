@@ -23,8 +23,8 @@ repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
 local waterParts = CollectionService:GetTagged("WaterPart")
-Add(CollectionService:GetInstanceAddedSignal("WaterPart"):Connect(function()
-    waterParts = CollectionService:GetTagged("WaterPart")
+Add(CollectionService:GetInstanceAddedSignal("WaterPart"):Connect(function(part)
+    table.insert(waterParts, part)
 end))
 
 local waterEqualizers = CollectionService:GetTagged("WaterEqualizer")

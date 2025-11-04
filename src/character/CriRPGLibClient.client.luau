@@ -690,15 +690,6 @@ table.insert(CriRPGLib.Funcs, function()
             for _, part in tree:GetDescendants() do
                 if HarukaLib:IsBasePartType(part) then
                     part.LocalTransparencyModifier = 0
-
-                    local material = part.Material
-                    local oriMaterial = part:GetAttribute("OriMaterial")
-
-                    material = oriMaterial or material
-
-                    if material ~= Enum.Material.Grass then
-                        part.CanCollide = true
-                    end
                 end
             end
         end
@@ -714,8 +705,7 @@ table.insert(CriRPGLib.Funcs, function()
 
                         for _, part in tree:GetDescendants() do
                             if HarukaLib:IsBasePartType(part) then
-                                part.CanCollide = false
-                                part.LocalTransparencyModifier = 0.7
+                                part.LocalTransparencyModifier = 0.5
                             end
                         end
                     end

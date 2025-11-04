@@ -18,20 +18,14 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
 local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
+
+local Signal = require(RepS.HarukaShared.Shared.Signal)
+
 local Children = Fusion.Children
 
 local wait = task.wait
 
-local function _reconcileProps(default: { any }, props: { any })
-	for prop: string, val: any in props do
-		if prop == Fusion.Children and default[Fusion.Children] then
-			table.insert(default[Fusion.Children], val)
-			continue
-		end
 
-		default[prop] = val
-	end
-end
 local function Label(scope: Fusion.Scope<any>, props: { [string]: any }, emptyVal: Fusion.Value)
     local default = {
         AnchorPoint = Vector2.new(0.5, 0),
@@ -41,7 +35,7 @@ local function Label(scope: Fusion.Scope<any>, props: { [string]: any }, emptyVa
             return not use(emptyVal)
         end)
     }
-    _reconcileProps(default, props or {})
+    Components._reconcileProps(default, props or {})
 
     return Components.TextLabel(scope, default)
 end
@@ -51,15 +45,14 @@ return function (scope: Fusion.Scope<any>, props: {
     SlotId: number,
     CharacterModel: Fusion.Value,
 
-    SaveSlotClickedSignal: RBXScriptSignal,
-    SaveSlotBackSignal: RBXScriptSignal,
-    ReadyToTeleportSignal: RBXScriptSignal,
+    SaveSlotClickedSignal: Signal.SignalClass,
+    SaveSlotBackSignal: Signal.SignalClass,
+    ReadyToTeleportSignal: Signal.SignalClass,
 
-    FriendListClickedSignal: RBXScriptSignal,
-    ServerListClickedSignal: RBXScriptSignal,
+    FriendListClickedSignal: Signal.SignalClass,
+    ServerListClickedSignal: Signal.SignalClass,
 
     IsUIShown: Fusion.Value,
-    IsSelectingClass: Fusion.Value,
 })
 
     local POS = {
@@ -164,25 +157,14 @@ return function (scope: Fusion.Scope<any>, props: {
                             Size = UDim2.fromScale(0.48, 0.095),
                             ButtonText = "PLAY",
                             ButtonClickFunc = function()
-                                if Fusion.peek(playerPlayTime) > 5 then
-                                    props.IsUIShown:set(false)
-                                    props.ReadyToTeleportSignal:Fire()
-                                    Bindables.CreateCircularFade:Fire(2)
+                                props.IsUIShown:set(false)
+                                props.ReadyToTeleportSignal:Fire()
+                                Bindables.CreateCircularFade:Fire(2)
 
-                                    wait(0.5)
-                                    Events.RequestToChooseWhichSlotToPlay.Fire({
-                                        SlotId = "Slot"..props.SlotId
-                                    })
-                                else
-                                    props.IsUIShown:set(false)
-                                    Bindables.CreateCircularFade:Fire(2)
-
-                                    wait(0.5)
-                                    Bindables.CreateNotify:Fire("Now, choose a start class...")
-
-                                    props.IsSelectingClass:set(true)
-                                    Bindables.Titlescreen_ChangeClassScene:Fire()
-                                end
+                                wait(0.5)
+                                Events.RequestToChooseWhichSlotToPlay.Fire({
+                                    SlotId = "Slot"..props.SlotId
+                                })
                             end,
                             ButtonType = "Confirm"
                         })

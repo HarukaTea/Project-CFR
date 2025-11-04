@@ -175,8 +175,7 @@ do
         RepS.Packages.Titlescreen.Parent = workspace.MapComponents
 
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
-        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
-        repeat wait() until workspace.MapComponents.Titlescreen.CameraLocator.Value
+        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("MainCamera", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("Credits", 999)
     end
 

@@ -23,7 +23,6 @@ return function (plr: Player)
 
     repeat wait() until workspace:WaitForChild("MapComponents", 999)
     repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
-    repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("TitleRoom", 999)
     repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CharPreviewLocator", 999)
 
 

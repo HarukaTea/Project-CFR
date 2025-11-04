@@ -9,6 +9,7 @@ local StarterPlayer = game:GetService("StarterPlayer")
 local SSS = game:GetService("ServerScriptService")
 
 local Promise = require(RepS.HarukaShared.Shared.Promise)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
 local nowClock = os.clock()
@@ -96,3 +97,20 @@ end
 
 print(`[ServerPreloadLib] HarukaServer Inited, Spent {string.format("%.2f", os.clock() - nowClock)} seconds`)
 workspace:SetAttribute("Haruka_ServerInited", true)
+
+
+
+--// server runtime too long
+do
+    Promise.delay(60 * 60 * 6):andThen(function()
+        warn("[Warn] Server has reached max runtime")
+
+        workspace:SetAttribute("Haruka_ServerLocked", true)
+
+        HarukaLib.Clock(5, function()
+            for _, plr: Player in Players:GetPlayers() do
+                plr:Kick("[Error] The server has been running for over 6 hours, please rejoin a new one!")
+            end
+        end)
+    end)
+end

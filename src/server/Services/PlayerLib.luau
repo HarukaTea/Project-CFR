@@ -138,12 +138,6 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             plr:SetAttribute(attr, val)
         end
 
-        local starterClass = netData.ClassChosen
-        if starterClass then
-            data.StarterClass = starterClass
-        end
-
-
         --// validate
         local validatedMainData = self:_ValidateMainData(profile.Data)
         if validatedMainData == nil then reject() return end
@@ -460,7 +454,7 @@ function PlayerLib:Init()
     local profileFailedTimes = 0
 
     while profile == nil do
-        wait(2)
+        wait(1.15)
         if not plr then break end
         if not plr.Parent then break end
         if profile ~= nil then break end
@@ -479,7 +473,7 @@ function PlayerLib:Init()
             end
 
             resolve(true)
-        end):timeout(8):catch(function(err)
+        end):timeout(6):catch(function(err)
             if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
                 Events.CreateNotify.Fire(plr, "Roblox server is running slower than usual, we're trying to load...")
                 warn("Roblox server is handling data requests slowly [Timeout]")
@@ -748,14 +742,6 @@ function PlayerLib:_ValidateSaveData(data: PlayerTemplate.PlayerDataJSON)
     if not Classbook[data.Class] then
         data.Class = "Chain"
     end
-    local starterClass = data.StarterClass
-    if starterClass == nil then
-        data.StarterClass = "Chain"
-    end
-    if not Classbook[data.StarterClass] then
-        data.StarterClass = "Chain"
-    end
-
 
 
     --// check valid items
@@ -993,24 +979,24 @@ function PlayerLib:_ValidateSaveData(data: PlayerTemplate.PlayerDataJSON)
     }
     local woodenWeapon = nil
     for _, itemObj in data.ItemsSQL do
-        if itemObj.ItemId == starterClassWeapons[data.StarterClass] then
+        if itemObj.ItemId == starterClassWeapons["Burst"] then
             woodenWeapon = itemObj
             break
         end
     end
     if not woodenWeapon then
         data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = starterClassWeapons[data.StarterClass],
+            ItemId = starterClassWeapons["Burst"],
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
-            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons[data.StarterClass]),
+            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons["Burst"]),
             IsFav = false,
             IsLocked = false
         }
     end
     if not data.EquippingItemsSQL["Weapon1"] then
         data.EquippingItemsSQL["Weapon1"] = {
-            ItemId = starterClassWeapons[data.StarterClass],
+            ItemId = starterClassWeapons["Burst"],
             UniqueId = itemUniqueIdForEmptyWeapon
         }
     end

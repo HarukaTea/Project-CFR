@@ -881,7 +881,6 @@ table.insert(CriRPGLib.Funcs, function()
 end)
 
 
-
 table.insert(CriRPGLib.Funcs, function()
     local artifactContainer = Instance.new("Folder")
     artifactContainer.Name = "Artifacts"
@@ -889,132 +888,79 @@ table.insert(CriRPGLib.Funcs, function()
     Add(artifactContainer)
 
 
-    local function _equipArtifact()
-        local artifactSetCount = {}
+    local setThreshold = { 2, 3 }
+
+    local function applyArtifactEff(artifactId: string, pieceCount: number)
+        local effName = artifactId..pieceCount
+        local effFunc = ArtifactLib[effName]
+        if not effFunc then return end
+
+        effFunc(char, 1)
+
+        local exScript = ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(effName) :: Script
+        local node
+        if exScript then
+            node = exScript:Clone()
+        else
+            node = Instance.new("BoolValue")
+            node.Value = true
+        end
+        node.Name = effName
+        node.Parent = artifactContainer
+    end
+    local function removeArtifactEff(artifactId: string, pieceCount: number)
+        local effName = artifactId..pieceCount
+        local node = artifactContainer:FindFirstChild(effName)
+        if not node then return end
+
+        if node:GetAttribute("ReqDestroyingEvent") then
+            local destroyFunc = ArtifactLib[effName.."Destroying"]
+            if destroyFunc then destroyFunc(char, -1) end
+        end
+
+        node:Destroy()
+
+        local effFunc = ArtifactLib[effName]
+        if effFunc then effFunc(char, -1) end
+    end
+    local function updateArtifactSet()
+        local artifactSetCount = {} :: {[string]: number}
+
         for _, artifactId: string in ArtifactBook:GetAllArtifactIds() do
             artifactSetCount[artifactId] = 0
         end
+
         for _, equipSymbol: StringValue in plr.EquippingItems:GetChildren() do
             local itemInfo = ItemBook:GetItemInfo(equipSymbol.Value)
             if not itemInfo then continue end
 
             local artifactInfo = ArtifactBook:GetArtifactInfo(itemInfo.ArtifactId)
-            if artifactInfo.ArtifactId == nil then continue end
+            if artifactInfo.ArtifactId then continue end
 
             artifactSetCount[artifactInfo.ArtifactId] += 1
         end
+
         for artifactId: string, count: number in artifactSetCount do
             local pastCount = char:GetAttribute("_ARTIFACT_"..artifactId.."_SetCount") or 0 :: number
 
-            --// if the artifact set was unequipped
-            if count < 2 and pastCount >= 2 then
-                local twoPieceScript = artifactContainer:FindFirstChild(artifactId.."2") :: Script
-                if twoPieceScript then
-                    if twoPieceScript:GetAttribute("ReqDestroyingEvent") then
-                        ArtifactLib[artifactId.."2Destroying"](char)
-                    end
-                    twoPieceScript:Destroy()
+            for _, threshold: number in setThreshold do
+                local hasNow = count >= threshold
+                local hasBefore = pastCount >= threshold
 
-                    ArtifactLib[artifactId.."2"](char, -1)
-                end
-            end
-            if count < 3 and pastCount >= 3 then
-                local threePieceScript = artifactContainer:FindFirstChild(artifactId.."3") :: Script
-                if threePieceScript then
-                    if threePieceScript:GetAttribute("ReqDestroyingEvent") then
-                        ArtifactLib[artifactId.."3Destroying"](char)
-                    end
-                    threePieceScript:Destroy()
-
-                    ArtifactLib[artifactId.."3"](char, -1)
-                end
-            end
-
-
-            --// if the artifact set was equipped
-            if count >= 2 then
-                if not artifactContainer:FindFirstChild(artifactId.."2") then
-                    ArtifactLib[artifactId.."2"](char, 1)
-
-                    local twoPieceScript = ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."2") :: Script
-                    if twoPieceScript then
-                        twoPieceScript:Clone().Parent = artifactContainer
-                    else
-                        local symbol = Instance.new("BoolValue")
-                        symbol.Name = artifactId.."2"
-                        symbol.Value = true
-                        symbol.Parent = artifactContainer
-                    end
-                end
-            end
-            if count >= 3 then
-                if not artifactContainer:FindFirstChild(artifactId.."3") then
-                    ArtifactLib[artifactId.."3"](char, 1)
-
-                    local threePieceScript = ReplicatedStorage.HarukaRes.Artifacts:FindFirstChild(artifactId.."3") :: Script
-                    if threePieceScript then
-                        threePieceScript:Clone().Parent = artifactContainer
-                    else
-                        local symbol = Instance.new("BoolValue")
-                        symbol.Name = artifactId.."3"
-                        symbol.Value = true
-                        symbol.Parent = artifactContainer
-                    end
+                if hasNow and not hasBefore then
+                    applyArtifactEff(artifactId, threshold)
+                elseif not hasNow and hasBefore then
+                    removeArtifactEff(artifactId, threshold)
                 end
             end
 
             char:SetAttribute("_ARTIFACT_"..artifactId.."_SetCount", count)
         end
     end
-    Add(plr.EquippingItems.ChildAdded:Connect(_equipArtifact))
-    Add(plr.EquippingItems.ChildRemoved:Connect(_equipArtifact))
+    Add(plr.EquippingItems.ChildAdded:Connect(updateArtifactSet))
+    Add(plr.EquippingItems.ChildRemoved:Connect(updateArtifactSet))
 
-    _equipArtifact()
-end)
-
-
-table.insert(CriRPGLib.Funcs, function()
-    local isInCombat = false
-
-    local function _destroyCombatBorder()
-        for _, border: Model in CollectionService:GetTagged("CombatBorderServer") do
-            if border:IsDescendantOf(workspace) then
-                if border:GetAttribute("OwnerUniqueId") == plr:GetAttribute("HarukaUniqueId") then
-                    border:Destroy()
-                end
-            end
-        end
-    end
-    local function _checkCombatState(state: boolean)
-        if state == nil then return end
-
-        if state then
-            if isInCombat then return end
-            isInCombat = true
-
-            pcall(_destroyCombatBorder)
-
-            local border = ReplicatedStorage.Packages.Unloads.CombatBorderServer:Clone() :: Model
-            local entityPos = char:GetAttribute("CombatLocation") :: CFrame
-
-            border:SetAttribute("OwnerUniqueId", plr:GetAttribute("HarukaUniqueId"))
-
-            border:PivotTo(entityPos)
-            border.Parent = workspace
-        else
-            if not isInCombat then return end
-
-            isInCombat = false
-
-            _destroyCombatBorder()
-        end
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-IsInCombat"] = _checkCombatState
-    }))
-    Add(_destroyCombatBorder)
-
-    _destroyCombatBorder()
+    updateArtifactSet()
 end)
 
 
@@ -1057,17 +1003,16 @@ Add(HarukaLib.Clock(5, function()
 	end
 end))
 Add(char.PlayerCombatEnded.Event:Connect(function(charId: string)
-	if charId == char.Name then
-		char.TargetingEnemy.Value = nil
+    if charId ~= char.Name then return end
 
-		char:SetAttribute("CombatLocation", nil)
-		char:SetAttribute("IsInCombat", false)
+    char.TargetingEnemy.Value = nil
 
+    char:SetAttribute("CombatLocation", nil)
+    char:SetAttribute("IsInCombat", false)
 
-		local cooldown = Instance.new("BoolValue")
-		cooldown.Name = "CombatCooldown"
-		cooldown.Value = true
-		cooldown.Parent = char
-		Debris:AddItem(cooldown, 1)
-	end
+    local cooldown = Instance.new("BoolValue")
+    cooldown.Name = "CombatCooldown"
+    cooldown.Value = true
+    cooldown.Parent = char
+    Debris:AddItem(cooldown, 1)
 end))

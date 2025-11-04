@@ -382,11 +382,10 @@ table.insert(ServerWorldLib.Funcs, function()
         if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
 
-
-            local npcHumanoid = npc.Humanoid :: Humanoid
-
             if npc.PrimaryPart.Anchored then continue end
             if not npc:FindFirstChild("Humanoid") then continue end
+
+            local npcHumanoid = npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")
 
             if not npcHumanoid:FindFirstChildOfClass("Animator") then
                 local animator = Instance.new("Animator")

@@ -19,14 +19,8 @@ terrainPartRaycastParams.FilterType = Enum.RaycastFilterType.Include
 terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
 terrainPartRaycastParams.IgnoreWater = true
 
-CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function()
-	terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
-end)
-CollectionService:GetInstanceAddedSignal("CombatBorder"):Connect(function(ins: Instance)
-	terrainPartRaycastParams:AddToFilter(ins:GetDescendants())
-end)
-CollectionService:GetInstanceAddedSignal("CombatBorderServer"):Connect(function(ins: Instance)
-	terrainPartRaycastParams:AddToFilter(ins:GetDescendants())
+CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function(part)
+	terrainPartRaycastParams:AddToFilter(part)
 end)
 
 

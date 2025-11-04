@@ -68,6 +68,8 @@ HarukaLib:Hydrate(workspace, {
             for treePart: BasePart, cf: CFrame in allTreeCFrames do
                 if treePart and treePart.Parent then
                     treePart.CFrame = cf
+                else
+                    allTreeCFrames[treePart] = nil
                 end
             end
 

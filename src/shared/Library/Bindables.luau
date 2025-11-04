@@ -27,7 +27,6 @@ return {
     ConfirmPromptChosen = Signal.new(),
 
 
-    Titlescreen_ChangeClassScene = Signal.new(),
     Titlescreen_CameraCFrameChanged = Signal.new(),
 
     DisplayTutorialTopic = Signal.new(),

@@ -901,23 +901,6 @@
         "Recipe": "CrimsonSlimeCore(35),IronOre(50)"
     },
     {
-        "ItemId": "Lantern",
-        "Name": "Lantern",
-        "Type": "Accessory",
-        "Tier": "1",
-        "Level": "5",
-        "Desc": "A reliable source of light, burns brighter than a torch.",
-        "Stat": "Emits <yellow>bright</yellow> light surrounding you.",
-        "StatInfo": "CanYellowLight",
-        "Icon": "123830008473157",
-        "Price": "75",
-        "SellPrice": "37",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting",
-        "ArtifactId": "Exploration",
-        "Recipe": "CoalOre(7),Wood(10),Glass(5)"
-    },
-    {
         "ItemId": "CrimsoniteOre",
         "Name": "Crimsonite Ore",
         "Type": "Material",

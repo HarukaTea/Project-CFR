@@ -14,7 +14,7 @@ return function(scope: Fusion.Scope<any>, props: {
 }) : Frame
 
     props.Size = props.Size or UDim2.fromScale(0.09, 0.09)
-    props.Offset = props.Offset or 15.99
+    props.Offset = props.Offset or 15.99 / 2
 
     local offset = props.Offset
     local pattern = {

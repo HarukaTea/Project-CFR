@@ -90,7 +90,8 @@ Add(RunService.Heartbeat:Connect(function()
 
     Events.RequestToSetSkyGalleonPos.Fire({
         Galleon = currentGalleon,
-        Position = Vector3.new(newPosition.X, 140, newPosition.Z),
+        PosX = newPosition.X,
+        PosZ = newPosition.Z,
         Rotation = rotationInput * 15
     })
 end))

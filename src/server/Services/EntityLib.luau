@@ -1236,9 +1236,6 @@ function EntityLib:_CombatEnd()
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
 
-        drops.HealthyApple = 10
-        drops.GoldenApple = 5
-
         local result, _, _ = HarukaLib:RollLoot(drops)
 
         if not ServerLib.IsModelValid(entity) then

@@ -63,9 +63,7 @@ function PreloadSceneLib._LoadScreenMouseFollower()
 
         repeat wait() until workspace:WaitForChild("MapComponents", 999)
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
-        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CameraLocator", 999)
-        repeat wait() until workspace.MapComponents.Titlescreen.CameraLocator.Value
-
+        repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("MainCamera", 999)
 
         local camera = workspace.CurrentCamera
         local XFloat, YFloat = 0, 0
@@ -87,7 +85,7 @@ function PreloadSceneLib._LoadScreenMouseFollower()
             if workspace:GetAttribute("Haruka_GameEntered") then return end
 
 
-            local locator = workspace.MapComponents.Titlescreen.CameraLocator.Value :: BasePart
+            local locator = workspace.MapComponents.Titlescreen.MainCamera :: BasePart
 
             camera.CameraType = Enum.CameraType.Scriptable
 
