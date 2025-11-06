@@ -12,7 +12,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local CircleFX = require(script.Parent.Components.CircleFX)
-local RevPKSlot = require(script.Parent.Components.GlobalClassPBars.ReverberationPK)
 local TicketPurchase = require(script.Parent.Components.TicketPurchase)
 
 local wait = task.wait
@@ -58,45 +57,8 @@ return function (UI: ScreenGui, self: Pinia.Self)
     })
 
 
-
-    ---// track class: reverberation mechanic
-    table.insert(scope, Events.CLASS_RollNewResonateNumForPlayer.On(function(data)
-        local UI = self.UI
-
-        if not UI then return end
-        if not UI:FindFirstChild("Center") then return end
-
-
-        if not UI.Center:FindFirstChild("GlobalClassAbilityDiv") then return end
-        if not UI.Center.GlobalClassAbilityDiv:FindFirstChild("ReverberationStyle") then return end
-
-
-
-        local newScope = Fusion.scoped()
-
-        local ReverberationPKSlot = RevPKSlot(newScope, {
-            Num = data.ResonateNum
-        })
-        ReverberationPKSlot.Parent = UI.Center.GlobalClassAbilityDiv.ReverberationStyle
-        Debris:AddItem(ReverberationPKSlot, 2)
-
-
-        Promise.delay(2):andThen(function()
-			Fusion.doCleanup(newScope)
-		end):catch(function() end)
-
-
-        HarukaLib:UITween(ReverberationPKSlot, "In", {})
-        HarukaLib:UITween(ReverberationPKSlot, "Out", { DelayTime = 1.5, TweenTime = 0.5 })
-
-        SoundService.SFXs.DiceRoll:Play()
-    end))
-
-
     --// track ticket purchases
     table.insert(scope, Events.OpenTicketPurchaseUI.On(function(data)
-        local UI = self.UI
-
         if not UI then return end
         if not UI:FindFirstChild("Center") then return end
 

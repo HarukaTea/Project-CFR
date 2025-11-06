@@ -85,6 +85,10 @@ table.insert(ServerWorldLib.Funcs, function()
     local partyHolderContainer = Instance.new("Folder")
     partyHolderContainer.Name = "PartyHolder"
     partyHolderContainer.Parent = workspace.MapComponents
+
+    local globalServersContainer = Instance.new("Folder")
+    globalServersContainer.Name = "GlobalServers"
+    globalServersContainer.Parent = workspace.MapComponents
 end)
 
 

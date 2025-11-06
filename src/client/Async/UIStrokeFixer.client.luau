@@ -124,4 +124,4 @@ for _, child: Instance in plrGui:GetDescendants() do
 end
 plrGui.DescendantAdded:Connect(_strokeAdded)
 workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(_updateSize)
-HarukaLib.Clock(3, _updateSize)
+HarukaLib.Clock(3, _updateSize, true)

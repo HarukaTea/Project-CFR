@@ -38,9 +38,27 @@ return {
         Color = Color3.fromHex('#7bed9f'),
         IconColor = Color3.fromHex('#2ed573')
     },
+
+
+    --// custom effects
     ReverberationBoost = {
         Icon = "rbxassetid://120613067089872",
         Color = Color3.fromHex('#34ace0'),
+    },
+    BurstUltBoost = {
+        Icon = "rbxassetid://76032666495313",
+		Color = Color3.fromHex('#7bed9f'),
+        IconColor = Color3.fromHex('#7bed9f')
+    },
+    ComboUltBoost = {
+        Icon = "rbxassetid://125482694089319",
+		Color = Color3.fromHex('#ffeaa7'),
+        IconColor = Color3.fromHex('#ffeaa7')
+    },
+    FlowUltBoost = {
+        Icon = "rbxassetid://100313471486816",
+		Color = Color3.fromHex('#a29bfe'),
+        IconColor = Color3.fromHex('#a29bfe')
     },
 
 

@@ -86,12 +86,9 @@ function ClassMechanicLib:_ListenClassTracker()
 
         local newClass = plr:GetAttribute("Class") :: string
 
-        if not self["_CLASS_"..newClass] then
-            warn("Invalid CLASS Func Id")
-            return
+        if self["_CLASS_"..newClass] then
+            self["_CLASS_"..newClass](self)
         end
-
-        self["_CLASS_"..newClass](self)
     end
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-Class"] = _classHandler
@@ -107,18 +104,19 @@ ClassMechanicLib._CLASS_Chain = function(self)
             char.Head.ComboStyle:Destroy()
         end
     end
-    local function _airCheck(state: Enum.HumanoidStateType)
-        if state == Enum.HumanoidStateType.Landed
-            or state ~= Enum.HumanoidStateType.Jumping
-            or state ~= Enum.HumanoidStateType.Freefall then
-
-            _classAbilityClear()
-        end
-    end
-    ClassAdd(char.Humanoid.StateChanged:Connect(_airCheck))
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear
     }))
+    ClassAdd(HarukaLib.Clock(3.2, function()
+        if char:FindFirstChild("IsInComboUltPeriod") then return end
+
+
+        HarukaLib:AddAttr(char, "ChainCombo", -1)
+
+        if char:GetAttribute("ChainCombo") <= 0 then
+            _classAbilityClear()
+        end
+    end))
 
 
     ClassAdd(_classAbilityClear)
@@ -147,50 +145,10 @@ ClassMechanicLib._CLASS_Reverberation = function(self)
 
     ClassAdd(char.PlayerTargetAdded.Event:Connect(function(charId: string, entity: Model)
         if char.Name ~= charId then return end
-        if entity:GetAttribute("ReverResonateNum_"..plr.UserId) then return end
+        if entity:GetAttribute("ReverberationPitch_"..plr.Name) then return end
 
-        local notOdd = { 2, 4, 6, 8 }
-        local resonateNum = notOdd[RNG:NextInteger(1, #notOdd)]
-        entity:SetAttribute("ReverResonateNum_"..plr.UserId, resonateNum)
-
-        Events.CLASS_RollNewResonateNumForEnemy.Fire(plr, {
-            Entity = entity,
-            ResonateNum = resonateNum
-        })
+        entity:SetAttribute("ReverberationPitch_"..plr.Name, RNG:NextInteger(1, 9))
     end))
-end
-
-
-ClassMechanicLib._CLASS_Flow = function(self)
-    local function _classAbilityClear()
-        char:SetAttribute("FlowHeat", 0)
-
-        if char.Head:FindFirstChild("FocusStyle") then
-            char.Head.FocusStyle:Destroy()
-        end
-    end
-    ClassAdd(HarukaLib:Hydrate(char, {
-        ["Attr-IsInCombat"] = _classAbilityClear
-    }))
-
-
-    ClassAdd(HarukaLib.Clock(0.55, function()
-        if char:GetAttribute("FlowHeat") > 0 then
-            HarukaLib:AddAttr(char, "FlowHeat", -1)
-
-            if char.Head:FindFirstChild("FocusStyle") then
-                char.Head.FocusStyle.Text.Text = "FOCUS "..char:GetAttribute("FlowHeat").."%"
-            end
-        end
-    end))
-
-
-    ClassAdd(_classAbilityClear)
-end
-
-
-ClassMechanicLib._CLASS_Execution = function(self)
-
 end
 
 

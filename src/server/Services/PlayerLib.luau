@@ -365,10 +365,9 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
         ServerBindables.RToSpawnChar:Fire(plr)
 
-        self:UpdateDonationRank()
         self.Add(HarukaLib.Clock(77, function()
             self:UpdateDonationRank()
-        end))
+        end, true))
 
         if plr:FindFirstChild("ProfileContainer") then
             plr.ProfileContainer:Destroy()

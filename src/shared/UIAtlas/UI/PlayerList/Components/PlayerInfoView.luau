@@ -8,7 +8,6 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
@@ -43,7 +42,7 @@ return function (scope: Fusion.Scope<any>, props: {
             local level = Value(1)
             local role = Value("")
             local class = Value("Burst")
-            local equippingItems = FusionComponents.useFolder(scope, player.EquippingItems)
+            local equippingItems = Components.FusionComponents.useFolder(scope, player.EquippingItems)
             local playTime = Value(0)
 
 

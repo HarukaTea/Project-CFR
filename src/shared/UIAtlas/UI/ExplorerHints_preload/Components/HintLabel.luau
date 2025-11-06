@@ -3,7 +3,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local Children = Fusion.Children
 
@@ -13,7 +12,7 @@ return function (scope: Fusion.Scope<any>, props: {
     LayoutOrder: number,
 })
 
-    local viewportSize = FusionComponents.useViewportSize(scope)
+    local viewportSize = Components.FusionComponents.useViewportSize(scope)
 
     return Components.TextLabel(scope, {
         Name = "HintLabel",

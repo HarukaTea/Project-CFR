@@ -109,18 +109,12 @@ local function refreshLeaderboard(store: OrderedDataStore, folder: Folder)
     end
 end
 
-
-
-refreshLeaderboard(skyTowerSpeedrunStore.orderedDataStore, skyTowerRankContainer)
-refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)
-
-
 HarukaLib.Clock(180, function()
     refreshLeaderboard(skyTowerSpeedrunStore.orderedDataStore, skyTowerRankContainer)
-end)
+end, true)
 HarukaLib.Clock(60, function()
     refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)
-end)
+end, true)
 
 
 

@@ -38,7 +38,6 @@ export type Self = {
     Level: Fusion.Value<number>,
     Class: Fusion.Value<string>,
     ClassUltProgress: Fusion.Value<number>,
-    ClassVariant: Fusion.Value<string>,
     MaxClassUltProgress: Fusion.Value<number>,
 
     MinDMG: Fusion.Value<number>,
@@ -46,9 +45,6 @@ export type Self = {
     Magic: Fusion.Value<number>,
 
     IsInCombat: Fusion.Value<boolean>,
-
-    ClassVals: { [string]: Fusion.Value<number> },
-    ClassVals2: { [string]: Fusion.Value<number> },
 
     TargetingList: Fusion.Value<{ ObjectValue }>,
     TargetingEnemy: Fusion.Value<Model?>,
@@ -148,7 +144,6 @@ return function (self: Self)
     self.Level = Value(1)
     self.Class = Value("Burst")
     self.ClassUltProgress = Value(0)
-    self.ClassVariant = Value("None")
     self.MaxClassUltProgress = Value(100)
 
     self.MinDMG = Value(0)
@@ -156,15 +151,6 @@ return function (self: Self)
     self.Magic = Value(0)
 
     self.IsInCombat = Value(false)
-
-    self.ClassVals = {}
-    self.ClassVals2 = {}
-    for class, _ in ClassBook do
-        self.ClassVals[class] = Value(0)
-    end
-    for class, _ in ClassBook do
-        self.ClassVals2[class] = Value(0)
-    end
 
     local targeting = FusionComponents.useFolder(scope, self.char:WaitForChild("TargetingList"))
 
@@ -571,11 +557,6 @@ return function (self: Self)
             val = val or "Burst"
 
             self.Class:set(val)
-        end,
-        ["Attr-ClassVariant"] = function(val: string)
-            val = val or "None"
-
-            self.ClassVariant:set(val)
         end
     }))
     table.insert(scope, HarukaLib:Hydrate(self.char, {
@@ -618,16 +599,6 @@ return function (self: Self)
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-IsInCombat"] = function(val: boolean)
             self.IsInCombat:set(val)
-        end,
-
-        ["Attr-ChainCombo"] = function(val: number)
-            self.ClassVals.Chain:set(val)
-        end,
-        ["Attr-BurstArrow"] = function(val: number)
-            self.ClassVals.Burst:set(val)
-        end,
-        ["Attr-FlowHeat"] = function(val: number)
-            self.ClassVals.Flow:set(val)
         end,
     }))
 

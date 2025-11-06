@@ -96,7 +96,10 @@ function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 
 	Promise.new(function(resolve)
 		local repeatedTimes = 0
-		local pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
+
+		local rng = Random.new()
+		local rX, rZ = rng:NextInteger(-MAGNITUDE, MAGNITUDE), rng:NextInteger(-MAGNITUDE, MAGNITUDE)
+		local pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(rX, 0, rZ))
 
 		while repeatedTimes <= 15 do
 			-- we gonna try to find a valid position, if we can't, we'll try again
@@ -107,14 +110,18 @@ function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 				break
 			end
 
-			pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(math.random(-MAGNITUDE, MAGNITUDE), 0, math.random(-MAGNITUDE, MAGNITUDE)))
+
+			rng = Random.new()
+			rX, rZ = rng:NextInteger(-MAGNITUDE, MAGNITUDE), rng:NextInteger(-MAGNITUDE, MAGNITUDE)
+			pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(rX, 0, rZ))
+
 			repeatedTimes += 1
 		end
 
 		resolve(pos)
 
 	end):andThen(function(pos: Vector3)
-		orbLocation = CFrame.new(pos) * CFrame.new(0, math.random(9, 10), 2)
+		orbLocation = CFrame.new(pos) * CFrame.new(0, math.random(7, 8), 2)
 
 	end):catch(function(err)
 		warn(tostring(err))

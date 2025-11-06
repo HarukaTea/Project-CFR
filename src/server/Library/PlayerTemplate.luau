@@ -39,7 +39,6 @@ export type PlayerDataJSON = {
     Talents: {},
     PlayTime: number,
     Class: string,
-    ClassVariant: string,
     LastSeen: string,
     LastJoinedDateTime: string,
     ItemsSQL: {
@@ -110,7 +109,6 @@ local playerStats = {
 
             PlayTime = 0,
             Class = "Chain",
-            ClassVariant = "None",
             LastSeen = "InitusBay",
 
             LastJoinedDateTime = DateTime.now():ToIsoDate(),

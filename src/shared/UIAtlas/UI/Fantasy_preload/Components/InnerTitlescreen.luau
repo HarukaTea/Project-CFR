@@ -9,7 +9,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 local SaveSlot = require(script.Parent.SaveSlot)
 
-local FriendListView = require(script.Parent.FriendListView)
+local ServerListView = require(script.Parent.ServerListView)
 
 local Children = Fusion.Children
 
@@ -30,9 +30,7 @@ return function (scope: Fusion.Scope<any>, props: {
     table.insert(scope, saveSlotBackSignal)
     table.insert(scope, readyToTeleportSignal)
 
-    local friendListClickedSignal = Signal.new()
     local serverListClickedSignal = Signal.new()
-    table.insert(scope, friendListClickedSignal)
     table.insert(scope, serverListClickedSignal)
 
 
@@ -107,7 +105,6 @@ return function (scope: Fusion.Scope<any>, props: {
                                 SaveSlotBackSignal = saveSlotBackSignal,
                                 ReadyToTeleportSignal = readyToTeleportSignal,
 
-                                FriendListClickedSignal = friendListClickedSignal,
                                 ServerListClickedSignal = serverListClickedSignal,
 
                                 IsUIShown = isShown,
@@ -122,12 +119,11 @@ return function (scope: Fusion.Scope<any>, props: {
                     Position = UDim2.fromScale(0.5, 0.3),
 
                     [Children] = {
-                        FriendListView(scope, {
+                        ServerListView(scope, {
                             SaveSlotClickedSignal = saveSlotClickedSignal,
                             SaveSlotBackSignal = saveSlotBackSignal,
                             ReadyToTeleportSignal = readyToTeleportSignal,
 
-                            FriendListClickedSignal = friendListClickedSignal,
                             ServerListClickedSignal = serverListClickedSignal,
 
                             SlotChosen = whichSlotIsChosen,

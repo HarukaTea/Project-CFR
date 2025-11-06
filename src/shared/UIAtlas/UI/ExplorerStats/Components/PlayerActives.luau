@@ -6,7 +6,6 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
@@ -23,7 +22,6 @@ return function(scope: Fusion.Scope<any>, props: {
     MaxClassUltProgress: Fusion.Value<number>,
 
     Class: Fusion.Value<string>,
-    ClassVariant: Fusion.Value<string>
 
 }, self: {
     RequestToCastClassUlt: Signal.SignalClass,
@@ -34,7 +32,7 @@ return function(scope: Fusion.Scope<any>, props: {
     local isSelectingUlt = Fusion.Value(scope, false)
 
 
-    local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
@@ -164,11 +162,9 @@ return function(scope: Fusion.Scope<any>, props: {
 
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]
-                                            local variant = use(props.ClassVariant) or "None"
-
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                            return classInfo.Skills["UltSkillIcon_"..variant] or ""
+                                            return classInfo.Skills["UltSkillIcon"] or ""
                                         end),
                                     }),
                                     Components.IconImageLabel(scope, {
@@ -177,16 +173,12 @@ return function(scope: Fusion.Scope<any>, props: {
 
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]
-                                            local variant = use(props.ClassVariant) or "None"
-
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                            return classInfo.Skills["UltSkillIcon_"..variant] or ""
+                                            return classInfo.Skills["UltSkillIcon"] or ""
                                         end),
                                         ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local classInfo = ClassBook[use(props.Class)]
-                                            local variant = use(props.ClassVariant) or "None"
-
                                             if classInfo == nil then return Color3.new(1, 1, 1) end
 
                                             local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
@@ -196,7 +188,7 @@ return function(scope: Fusion.Scope<any>, props: {
                                             x = math.clamp(x, 0, 0.999)
                                             if x < 0.999 then return Color3.new(1, 1, 1) end
 
-                                            return if classInfo.Skills["UltSkill"..variant.."_WithoutRecolor"] then
+                                            return if classInfo.Skills["UltSkill_WithoutRecolor"] then
                                                 Color3.new(1, 1, 1)
                                             else classInfo.Color
                                         end),

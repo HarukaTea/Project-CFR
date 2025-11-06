@@ -6,7 +6,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
@@ -53,7 +52,7 @@ return function(scope: Fusion.Scope<any>, props: {
     end))
 
 
-    local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)

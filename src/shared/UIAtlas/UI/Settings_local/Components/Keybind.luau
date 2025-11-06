@@ -11,15 +11,10 @@ local Children = Fusion.Children
 
 
 local KEY_NAMES = {
-    PromptTrigger = "Prompt Trigger",
+    PromptTrigger = "Trigger Prompt",
     Backpack = "Backpack",
     CharSelfView = "Character Stats",
     Settings = "Settings",
-    Guild = "Guild",
-    Store = "Donation Store",
-    PerkTree = "Perk Tree",
-    Achievements = "Achievements",
-    TutorialBook = "Tutorial Book",
     ClassUlt = "Class Ultimate",
     Active1 = "Active Skill 1",
     Active2 = "Active Skill 2",

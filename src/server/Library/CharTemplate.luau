@@ -57,12 +57,6 @@ local charStats = {
     TargetingList = {},
     TargetingEnemy = "_OBJECT",
 
-    --- class related
-    ChainCombo = 0,
-    BurstArrow = 0,
-    FlowHeat = 0,
-
-
     --- item related
     CanMine = false,
     CanYellowLight = false,

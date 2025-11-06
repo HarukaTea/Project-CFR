@@ -343,9 +343,13 @@ end
 --[[
 	Inspired by `Timer`, just like `window.setInterval` in javascript
 ]]
-function HarukaLib.Clock(tickTime: number, func: () -> ())
+function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean?)
 	local nowTime = 0
 	local dropTime = tickTime * 10
+
+	if runInstantly then
+		func()
+	end
 
 	local connection = RunService.Heartbeat:Connect(function(deltaTime)
 		nowTime += deltaTime
@@ -1207,6 +1211,30 @@ function HarukaLib.RichTextFormatter() : {
 	end
 
 	return HarukaRichTextFormatter
+end
+
+
+-- Note: Yields
+function HarukaLib.TryUntil(pCallback: (...any) -> (boolean, any), waitTime: number, successCallback: nil | (pcallResult: any) -> nil) : any
+	local result = nil
+
+	for _ = 1, math.huge do
+		local success, pcallResult = pcall(pCallback)
+		if success then
+			if successCallback then successCallback(pcallResult) end
+
+			result = pcallResult
+			break
+		else
+			if RunService:IsStudio() then
+				warn(pcallResult)
+			end
+		end
+
+		task.wait(waitTime)
+	end
+
+	return result
 end
 
 

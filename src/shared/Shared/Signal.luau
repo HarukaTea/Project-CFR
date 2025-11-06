@@ -178,4 +178,6 @@ Signal.Fire = fire
 Signal.DisconnectAll = disconnectAll
 Signal.Destroy = destroy
 
-return { new = Signal.new }
+return { new = Signal.new } :: {
+	new: () -> SignalClass
+}

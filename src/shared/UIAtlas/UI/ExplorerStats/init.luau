@@ -16,18 +16,6 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-local classBars = {}
-local globalClassBars = {}
-for _, bar: ModuleScript in script.Components.ClassPBars:GetChildren() do
-    classBars[bar.Name] = require(bar)
-end
-for _, bar: ModuleScript in script.Components.GlobalClassPBars:GetChildren() do
-    if not string.find(bar.Name, "Bar") then continue end
-
-    globalClassBars[bar.Name] = require(bar)
-end
-
-
 local Pinia = require(script.Pinia)
 
 
@@ -86,7 +74,6 @@ return function(plr: Player)
                     MaxClassUltProgress = self.MaxClassUltProgress,
 
                     Class = self.Class,
-                    ClassVariant = self.ClassVariant
                 }, self),
 
 
@@ -124,33 +111,6 @@ return function(plr: Player)
                             MaxTextSize = 14
                         })
                     }
-                }),
-
-                Components.Frame(scope, {
-                    Name = "GlobalClassAbilityDiv",
-                    AnchorPoint = Vector2.new(0, 0),
-                    Position = UDim2.fromScale(0, 1.5),
-
-                    [Children] = {
-                        Components.UIScale(scope, {}),
-
-                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
-                            local class = use(self.Class) :: string
-
-                            local Bar = globalClassBars[class.."Bar"]
-
-                            if not Bar then
-                                return nil
-                            end
-
-                            return Bar(scope, {
-                                ClassVal = self.ClassVals[class],
-                                ClassVal2 = self.ClassVals2[class],
-
-                                Char = self.char
-                            })
-                        end)
-                    }
                 })
             }
         },
@@ -161,38 +121,6 @@ return function(plr: Player)
 
 
             [Children] = {
-                Components.Frame(scope, {
-                    Name = "ClassAbilityDiv",
-                    AnchorPoint = Vector2.new(0, 0),
-                    Position = UDim2.fromScale(0, 1.5),
-
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 0.95
-                        }),
-
-                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
-                            if use(self.IsInCombat) then
-                                local class = use(self.Class) :: string
-
-                                local Bar = classBars[class.."Bar"]
-
-                                if not Bar then
-                                    return nil
-                                end
-
-                                return Bar(scope, {
-                                    ClassVal = self.ClassVals[class],
-                                    ClassVal2 = self.ClassVals2[class],
-
-                                    Char = self.char
-                                })
-                            end
-                        end)
-                    }
-                }),
-
-
                 MenuSelections(scope, {
                     MenuShowValue = self.MenuSelectionShown
                 })

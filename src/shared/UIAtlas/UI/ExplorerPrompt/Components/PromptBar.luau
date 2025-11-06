@@ -9,7 +9,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
@@ -59,7 +58,7 @@ return function (scope: Fusion.Scope<any>, props: {
     end
 
 
-    local lastInput = FusionComponents.useXboxControllerHotInput(scope)
+    local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))

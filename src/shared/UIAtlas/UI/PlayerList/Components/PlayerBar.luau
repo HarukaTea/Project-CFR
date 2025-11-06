@@ -6,7 +6,6 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
@@ -36,7 +35,7 @@ return function (scope: Fusion.Scope<any>, props: {
         return Fusion.Value(scope, val)
     end
     local thatClass = Value("Burst")
-    local thatRoles = FusionComponents.useFolder(scope, props.Player:WaitForChild("Roles"))
+    local thatRoles = Components.FusionComponents.useFolder(scope, props.Player:WaitForChild("Roles"))
     local thatLevel = Value(1)
 
 

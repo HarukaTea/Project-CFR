@@ -344,7 +344,7 @@ function EntityLib:EntityInit()
                 end
             end
         end
-    end))
+    end, true))
 
 
     table.clear(self.CombatInfo)

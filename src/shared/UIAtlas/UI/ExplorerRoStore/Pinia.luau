@@ -5,8 +5,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-
 local wait = task.wait
 
 
@@ -35,7 +33,7 @@ return function (self: Self)
     self.CurrentCategory = Value("RoStore")
 
 
-    local ranks = FusionComponents.useFolder(scope, workspace:WaitForChild("DonationRankContainer", 999))
+    local ranks = Components.FusionComponents.useFolder(scope, workspace:WaitForChild("DonationRankContainer", 999))
     self.DonationRanks = ranks :: Fusion.Value<{ IntValue }>
 
 

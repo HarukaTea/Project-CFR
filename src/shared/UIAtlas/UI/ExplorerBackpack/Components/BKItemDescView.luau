@@ -410,8 +410,8 @@ return function (scope: Fusion.Scope<any>, props: {
                                 [Children] = {
                                     Components.RoundUICorner(scope),
                                     Components.UIPadding(scope, {
-                                        PaddingRight = UDim.new(0, 0),
-                                        PaddingLeft = UDim.new(0, 0)
+                                        PaddingRight = UDim.new(0, 9),
+                                        PaddingLeft = UDim.new(0, 9)
                                     })
                                 }
                             })

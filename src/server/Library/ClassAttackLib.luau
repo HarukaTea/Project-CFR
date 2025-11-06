@@ -1,14 +1,11 @@
 
 local Debris = game:GetService("Debris")
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 local RepS = game:GetService("ReplicatedStorage")
-local SoundService = game:GetService("SoundService")
 
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
-local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
@@ -18,10 +15,11 @@ local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
 local wait = task.wait
 
+type Dict = { [string]: any }
 
 
 export type ClassAttackLibClass = {
-    [string]: (plr: Player) -> nil,
+    [string]: (plr: Player, symbolAttrs: Dict) -> nil,
 
     _CalCastingTime: (char: Model, baseTime: number) -> number,
     _CalDMG: (dmgType: string, char: Model, props: {
@@ -31,7 +29,6 @@ export type ClassAttackLibClass = {
     _AddClassUltCharge: (plr: Player, amount: number) -> nil,
     _FireClassUltCasted: (char: Model, props: {
         ClassId: string,
-        ClassVariant: string,
         DMGType: string,
         Target: Model
     }) -> nil,
@@ -45,6 +42,10 @@ export type ClassAttackLibClass = {
         DMGType: string,
         Attacker: string
     }) -> nil,
+
+
+    _getCharAndTargeting: (plr: Player) -> (Model?, Model?),
+    _charAndTargetingCheck: (char: Model, targeting: Model) -> boolean,
 }
 
 
@@ -65,10 +66,13 @@ local function _charAndTargetingCheck(char: Model, targeting: Model) : boolean
 
     return true
 end
+ClassAttackLib._getCharAndTargeting = _getCharAndTargeting
+ClassAttackLib._charAndTargetingCheck = _charAndTargetingCheck
+
 
 --// Universal
 
-ClassAttackLib.HEAL_ATTACK = function(plr: Player)
+ClassAttackLib.HEAL_ATTACK = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -78,126 +82,102 @@ end
 
 --// Class-specific
 
-ClassAttackLib.Chain = function(plr: Player)
+ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
+    if char:FindFirstChild("IsInComboUltPeriod") then
+        HarukaLib:AddAttr(char, "ChainCombo", 1)
+    end
+
 
     local combo = char:GetAttribute("ChainCombo") :: number
 
+    if combo % 3 == 0 then
+        ServerBindables.RToSpawnOrb:Fire(char.Name, "ChainSealOrb")
+
+    elseif combo % 3 == 1 and char:FindFirstChild("IsInComboUltPeriod") then
+        ServerBindables.RToSpawnOrb:Fire(char.Name, "ChainSealOrb")
+    end
+
+
     if char.Head:FindFirstChild("ComboStyle") then
-        char.Head.ComboStyle.Text.Text = "COMBO x"..combo
+        char.Head.ComboStyle.Text.Text = "CHAIN x"..combo
     else
         local comboStyle = RepS.Packages.ClassAttacks.ClassUIs.ComboStyle.ComboStyle:Clone() :: BillboardGui
         comboStyle.Adornee = char.Head
-        comboStyle.Text.Text = "COMBO x"..combo
+        comboStyle.Text.Text = "CHAIN x"..combo
         comboStyle.Parent = char.Head
     end
 
 
-    if combo >= 2 then
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * combo),
-            DMGType = "Physical",
-            Attacker = "ClassAttacks"
-        })
-
-        local comboEff = RepS.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
-		comboEff.Parent = targeting.PrimaryPart
-		Debris:AddItem(comboEff, 1)
-
-        ServerLib.ShowText(char, "COMBO!", ClassBook.Chain.Color)
-    else
+    if combo <= 1 then
         ClassAttackLib._DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib._CalDMG("DMG", char),
             DMGType = "Physical",
             Attacker = "ClassAttacks"
         })
+        return
+    end
+
+
+    local baseDMG = ClassAttackLib._CalDMG("DMG", char)
+	local totalDMG = math.ceil(baseDMG * (1 + 0.75 * combo))
+
+
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = totalDMG,
+        DMGType = "Physical",
+        Attacker = "ClassAttacks"
+    })
+
+    local comboEff = RepS.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
+    comboEff.Parent = targeting.PrimaryPart
+    Debris:AddItem(comboEff, 1)
+
+    ServerLib.ShowText(char, "COMBO!", ClassBook.Chain.Color)
+end
+ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+    ClassAttackLib._AddClassUltCharge(plr, 15)
+
+
+    local combo = char:GetAttribute("ChainCombo") :: number
+    local baseDMG = ClassAttackLib._CalDMG("DMG", char)
+	local totalDMG = math.ceil(baseDMG * (1 + 1.75 * combo))
+
+
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        DMG = totalDMG,
+        DMGType = "Physical",
+        Attacker = "ClassAttacks"
+    })
+
+
+    if not char:FindFirstChild("IsInComboUltPeriod") then
+        char:SetAttribute("ChainCombo", 0)
     end
 end
-ClassAttackLib.Chain_Ult_None = function(plr: Player)
+ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    local uniqueId = HttpService:GenerateGUID(false)
+    local ultPeriodSymbol = Instance.new("BoolValue")
+    ultPeriodSymbol.Name = "IsInComboUltPeriod"
+    ultPeriodSymbol.Value = true
+    ultPeriodSymbol.Parent = char
+
+    Debris:AddItem(ultPeriodSymbol, 6)
 
 
-    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
-        ProjectileId = "ChainSlash",
-        Duration = 10,
-        ProjectileUniqueId = uniqueId,
-        ProjectileType = "OverTime",
-        DMGType = "DMG",
-        DoTType = "Burn",
-        DMGBonus = 1,
-        IsClassUlt = true
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayAnimation.Fire(plr, {
-        AnimId = "BurstSpinAttack"
-    })
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "ChainSlash",
-        Caster = char,
-        ProjectileUniqueId = uniqueId
-    })
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Chain",
-        ClassVariant = "None",
-        DMGType = "Physical",
-        Target = targeting
-    })
-end
-ClassAttackLib.Chain_Ult_Combo = function(plr: Player)
-    local char, targeting = _getCharAndTargeting(plr)
-    if not _charAndTargetingCheck(char, targeting) then return end
-
-
-    local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib._CalCastingTime(char, 1)
-
-
-    Events.OpenCastTimeBar.Fire(plr, {
-        Duration = castTime
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellReadyToCast)
-
-    wait(castTime)
-    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
-        ProjectileId = "ChainSwordAstral",
-        ProjectileType = "OverTime",
-        Duration = 4,
-        ProjectileUniqueId = uniqueId,
-        DMGType = "DMG",
-        DoTType = "None",
-        DMGBonus = 1.5,
-        IsClassUlt = true
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayAnimation.Fire(plr, {
-        AnimId = "MagicCasted1"
-    })
-    Events.FaceToTargetingEnemy.Fire(plr)
-
-
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "ChainSwordAstral",
-        Caster = char,
-        ProjectileUniqueId = uniqueId
-    })
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Chain",
-        ClassVariant = "Combo",
-        DMGType = "Physical",
-        Target = targeting
+    StatusLib.CreateCustomEffect("ComboUlt", char, {
+        Duration = 6
     })
 end
 ClassAttackLib.HEAL_ATTACK_Chain = ClassAttackLib.HEAL_ATTACK
@@ -205,386 +185,400 @@ ClassAttackLib.HEAL_ATTACK_Chain = ClassAttackLib.HEAL_ATTACK
 
 
 
-ClassAttackLib.Burst = function(plr: Player)
+ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
+    ClassAttackLib._AddClassUltCharge(plr, 15)
 
-    ClassAttackLib._AddClassUltCharge(plr, 20)
 
-    ServerBindables.RToSpawnOrb:Fire(char.Name, "ArrowOrb")
+    local now = DateTime.now().UnixTimestamp
+	local lastBurst = char:GetAttribute("LastBurstTime") or 0
+	local arrowCount = char:GetAttribute("BurstArrow") or 0
+	local piercingCount = char:GetAttribute("BurstArrowPiercing") or 0
 
-    local result, _, _ = HarukaLib:RollLoot({
-        Extra = 10,
-        None = 90
-    })
-    if result == "Extra" then
-        ServerBindables.RToSpawnOrb:Fire(char.Name, "ArrowOrb")
+
+	local consumeNormal = 0
+	local consumePiercing = 0
+    if not char:FindFirstChild("IsInBurstUltPeriod") then
+        if piercingCount > 0 and arrowCount > 0 then
+            consumePiercing = 1
+            consumeNormal = 1
+
+        elseif (now - lastBurst) > 2 then
+            consumeNormal = math.min(1, arrowCount)
+        else
+            consumeNormal = math.min(2, arrowCount)
+        end
+    else
+        if piercingCount > 0 and arrowCount > 0 then
+            consumePiercing = 1
+            consumeNormal = math.clamp(arrowCount, 1, 2)
+
+        elseif (now - lastBurst) > 2 then
+            consumeNormal = math.min(1, arrowCount)
+            if piercingCount > 0 then
+                consumePiercing = 1
+            end
+        else
+            consumeNormal = math.min(3, arrowCount)
+        end
     end
 
-    local arrows = char:GetAttribute("BurstArrow") :: number
-    if arrows == nil or arrows <= 0 then
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = ClassAttackLib._CalDMG("DMG", char),
-            DMGType = "Physical",
-            Attacker = "ClassAttacks"
-        })
-    else
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = ClassAttackLib._CalDMG("DMG", char),
-            DMGType = "Physical",
-            Attacker = "ClassAttacks"
-        })
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * arrows),
-            DMGType = "Physical",
-            Attacker = "ClassAttacks"
-        })
 
-        ServerLib.ShowText(char, "BURST!", ClassBook.Burst.Color)
 
-        char:SetAttribute("BurstArrow", 0)
+    local totalConsumed = consumeNormal + consumePiercing
+	if totalConsumed <= 0 then
+		ClassAttackLib._DealDamageToEnemy(char, targeting, {
+			DMG = ClassAttackLib._CalDMG("DMG", char),
+			DMGType = "Physical",
+			Attacker = "ClassAttacks"
+		})
+		return
+	end
 
-        if char.Head:FindFirstChild("StackStyle") then
-            char.Head.StackStyle:Destroy()
+	local baseDMG = ClassAttackLib._CalDMG("DMG", char)
+	local totalDMG = math.ceil(baseDMG * (1 + 0.75 * consumeNormal + 1.59 * consumePiercing))
+
+	ClassAttackLib._DealDamageToEnemy(char, targeting, {
+		DMG = totalDMG,
+		DMGType = "Physical",
+		Attacker = "ClassAttacks"
+	})
+	ServerLib.ShowText(char, "BURST SHOT!", ClassBook.Burst.Color)
+
+
+	char:SetAttribute("BurstArrow", math.max(arrowCount - consumeNormal, 0))
+	char:SetAttribute("BurstArrowPiercing", math.max(piercingCount - consumePiercing, 0))
+	char:SetAttribute("LastBurstTime", now)
+
+
+    local stackStyle1 = char.Head:FindFirstChild("StackStyle_Arrow") :: BillboardGui
+    if stackStyle1 then
+        local arrows = char:GetAttribute("BurstArrow") or 0
+        if arrows <= 0 then
+            stackStyle1:Destroy()
+        else
+            stackStyle1.Text.Text = arrows.." ARROWS"
+        end
+    end
+    local stackStyle2 = char.Head:FindFirstChild("StackStyle_Piercing") :: BillboardGui
+    if stackStyle2 then
+        local arrowsPiercing = char:GetAttribute("BurstArrowPiercing") or 0
+        if arrowsPiercing <= 0 then
+            stackStyle2:Destroy()
+        else
+            stackStyle2.Text.Text = arrowsPiercing.." PIERCING"
         end
     end
 end
-ClassAttackLib.Burst_Ult_None = function(plr: Player)
+ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
+    local ultPeriodSymbol = Instance.new("BoolValue")
+    ultPeriodSymbol.Name = "IsInBurstUltPeriod"
+    ultPeriodSymbol.Value = true
+    ultPeriodSymbol.Parent = char
 
-    local linearVelocity = Instance.new("LinearVelocity")
-    linearVelocity.Name = "ExtraUpBV"
-    linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
-    linearVelocity.ForceLimitsEnabled = false
-    linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 50 * 1.8
-    linearVelocity.Parent = char.PrimaryPart
-    Debris:AddItem(linearVelocity, 0.05)
+    Debris:AddItem(ultPeriodSymbol, 8)
 
 
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "ChainJump",
-        Caster = char,
-        ProjectileUniqueId = "nil"
+    StatusLib.CreateCustomEffect("BurstUlt", char, {
+        Duration = 8
     })
-    Events.PlayAnimation.Fire(plr, {
-        AnimId = "BurstSpinAttack"
-    })
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "BurstArrowsSplit",
-        Caster = char,
-        ProjectileUniqueId = "nil"
-    })
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Burst",
-        ClassVariant = "None",
-        DMGType = "Physical",
-        Target = targeting
-    })
-
-    Promise.delay(0.9):andThen(function()
-        for _ = 1, 3 do
-            ClassAttackLib._DealDamageToEnemy(char, targeting, {
-                DMG = ClassAttackLib._CalDMG("DMG", char),
-                DMGType = "Physical",
-                Attacker = "SkillProjectile"
-            })
-            wait(0.05)
-        end
-    end):catch(function() end)
 end
-ClassAttackLib.Burst_Ult_Stack = ClassAttackLib.Burst_Ult_None
-ClassAttackLib.Burst_BurstArrow = function(plr: Player)
+ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    local afterArrow = char:GetAttribute("BurstArrow") or 0
+    local now = DateTime.now().UnixTimestamp
+    local arrowCount = math.clamp( (char:GetAttribute("BurstArrow") or 0) + 1, 0, 12)
+    local arrowPiercingCount = char:GetAttribute("BurstArrowPiercing") or 0
 
-    afterArrow = math.clamp(afterArrow + 1, 0, 10)
-    char:SetAttribute("BurstArrow", afterArrow)
+    local firstTick = char:GetAttribute("BurstArrowTick1") or 0
+    local comboCount = char:GetAttribute("BurstArrowCombo") or 0
 
-
-    if char.Head:FindFirstChild("StackStyle") then
-        char.Head.StackStyle.Text.Text = afterArrow.." ARROWS"
+    if firstTick == 0 or (now - firstTick) > 3 then
+        firstTick = now
+        comboCount = 1
     else
-        local stackStyle = RepS.Packages.ClassAttacks.ClassUIs.StackStyle.StackStyle:Clone() :: BillboardGui
-        stackStyle.Adornee = char.Head
-        stackStyle.Text.Text = afterArrow.." ARROWS"
-        stackStyle.Parent = char.Head
+        comboCount += 1
+    end
+
+    if comboCount >= 3 then
+        arrowPiercingCount = math.clamp(arrowPiercingCount + 1, 0, 4)
+        firstTick = 0
+        comboCount = 0
+    end
+
+    char:SetAttribute("BurstArrow", arrowCount)
+    char:SetAttribute("BurstArrowPiercing", arrowPiercingCount)
+    char:SetAttribute("BurstArrowTick1", firstTick)
+    char:SetAttribute("BurstArrowCombo", comboCount)
+
+
+    if char.Head:FindFirstChild("StackStyle_Arrow") then
+        char.Head.StackStyle_Arrow.Text.Text = arrowCount.." ARROWS"
+    else
+        local stackStyle1 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Arrow.StackStyle:Clone() :: BillboardGui
+        stackStyle1.Name = "StackStyle_Arrow"
+        stackStyle1.Adornee = char.Head
+        stackStyle1.Text.Text = arrowCount.." ARROWS"
+        stackStyle1.Parent = char.Head
+    end
+
+
+    if char.Head:FindFirstChild("StackStyle_Piercing") then
+        char.Head.StackStyle_Piercing.Text.Text = arrowPiercingCount.." PIERCING"
+    else
+        local stackStyle2 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Piercing.StackStyle:Clone() :: BillboardGui
+        stackStyle2.Name = "StackStyle_Piercing"
+        stackStyle2.Adornee = char.Head
+        stackStyle2.Text.Text = arrowPiercingCount.." PIERCING"
+        stackStyle2.Parent = char.Head
     end
 end
 ClassAttackLib.HEAL_ATTACK_Burst = ClassAttackLib.HEAL_ATTACK
 
 
 
-ClassAttackLib.Reverberation = function(plr: Player)
+ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
-    local RNG = Random.new()
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
-    local resonateNum = RNG:NextInteger(1, 9)
-    if char:FindFirstChild("ReverberationEcho") then
-        local notOdd = { 2, 4, 6, 8 }
-        resonateNum = notOdd[RNG:NextInteger(1, #notOdd)]
+    local dmg = ClassAttackLib._CalDMG("DMG", char)
+
+    local orbPitch = symbolAttrs.ReverberationPitch
+    char:SetAttribute("ReverberationPitch", orbPitch)
+
+    local targetingPitch = targeting:GetAttribute("ReverberationPitch_"..plr.Name) or 0
+    if targetingPitch == orbPitch then
+        dmg = math.ceil(dmg * 2.5)
+
+        local echoStackFolder = targeting:FindFirstChild("EchoHolder_"..plr.Name)
+        if not echoStackFolder then
+            echoStackFolder = Instance.new("Folder")
+            echoStackFolder.Name = "EchoHolder_"..plr.Name
+            echoStackFolder.Parent = targeting
+        end
+
+        local echoStack = #echoStackFolder:GetChildren()
+        if echoStack < 3 then
+            local echoSymbol = Instance.new("BoolValue")
+            echoSymbol.Name = "Echo"
+            echoSymbol.Value = true
+            echoSymbol.Parent = echoStackFolder
+
+            Debris:AddItem(echoSymbol, 15)
+        end
     end
-    Events.CLASS_RollNewResonateNumForPlayer.Fire(plr, {
-        ResonateNum = resonateNum
-    })
 
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib._CalDMG(ClassBook.Reverberation.Type, char),
+        DMG = dmg,
         DMGType = "Physical",
         Attacker = "ClassAttacks"
     })
+end
+ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
 
-    local thatResonateNum = targeting:GetAttribute("ReverResonateNum_"..plr.UserId) :: number
-    if thatResonateNum and resonateNum == thatResonateNum then
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char, {
-                ForceMaxDMG = true
-            }) * 3),
-            DMGType = "Physical",
-            Attacker = "ClassAttacks"
-        })
 
-        ServerLib.ShowText(char, "ECHOED!", Color3.fromHex('#81ecec'))
+    local enemySymbols = char.TargetingList:GetChildren() :: { ObjectValue }
+    local enemies = {} :: { Model }
+
+    for _, symbol in enemySymbols do
+        table.insert(enemies, symbol.Value)
+    end
+    for _, enemy in enemies do
+        if not enemy:FindFirstChild("EchoHolder_"..plr.Name) then continue end
+
+        local stack = #enemy["EchoHolder_"..plr.Name]:GetChildren()
+        if stack <= 0 then continue end
+
+        enemy["EchoHolder_"..plr.Name]:ClearAllChildren()
+
+        for _ = 1, stack do
+            local dmg = ClassAttackLib._CalDMG("DMG", char)
+
+            local note = enemy:GetAttribute("ReverberationPitch_"..plr.Name) or 0
+            local pitch = char:GetAttribute("ReverberationPitch") or 10
+
+            if note == pitch then
+                dmg = math.ceil(dmg * 2.05)
+            end
+
+            ClassAttackLib._DealDamageToEnemy(char, enemy, {
+                DMG = dmg,
+                DMGType = "Physical",
+                Attacker = "EchoStack"
+            })
+        end
     end
 end
-ClassAttackLib.Reverberation_Ult_None = function(plr: Player)
+ClassAttackLib.Reverberation_Shift = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
+    local pitch = targeting:GetAttribute("ReverberationPitch_"..plr.Name) or 0
+    local afterPitch = pitch + 1
 
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayAnimation.Fire(plr, {
-        AnimId = "BurstSpinAttack"
-    })
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "BlueEchoUlt",
-        Caster = char,
-        ProjectileUniqueId = "nil"
-    })
+    if afterPitch > 9 then afterPitch = 1 end
+    if afterPitch < 1 then afterPitch = 9 end
 
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Reverberation",
-        ClassVariant = "None",
-        DMGType = "Physical",
-        Target = targeting
-    })
-
-
-    Promise.delay(0.7):andThen(function()
-        for _ = 1, 5 do
-            char, targeting = _getCharAndTargeting(plr)
-            if not _charAndTargetingCheck(char, targeting) then break end
-
-
-            ClassAttackLib._DealDamageToEnemy(char, targeting, {
-                DMG = ClassAttackLib._CalDMG("DMG", char, {
-                    ForceMaxDMG = true
-                }),
-                DMGType = "Physical",
-                Attacker = "SkillProjectile"
-            })
-            wait(0.5)
-        end
-    end):catch(function() end)
+    targeting:SetAttribute("ReverberationPitch_"..plr.Name, afterPitch)
 end
-ClassAttackLib.Reverberation_Echo = function(plr: Player)
+ClassAttackLib.Reverberation_Flat = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    StatusLib.CreateCustomEffect("Reverberation", char, {
-        Duration = 6
-    })
+    local pitch = targeting:GetAttribute("ReverberationPitch_"..plr.Name) or 0
+    local afterPitch = pitch - 1
 
-    local eff = Instance.new("BoolValue")
-    eff.Name = "ReverberationEcho"
-    eff.Value = true
-    eff.Parent = char
-    Debris:AddItem(eff, 6)
+    if afterPitch > 9 then afterPitch = 1 end
+    if afterPitch < 1 then afterPitch = 9 end
+
+    targeting:SetAttribute("ReverberationPitch_"..plr.Name, afterPitch)
 end
 ClassAttackLib.HEAL_ATTACK_Reverberation = ClassAttackLib.HEAL_ATTACK
 
 
 
-ClassAttackLib.Flow = function(plr: Player)
+ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
-    local heat = char:GetAttribute("FlowHeat") :: number
-    local nextHeat = math.clamp(heat + 35, 0, 100)
+    local markHolder = targeting:FindFirstChild("MarkHolder_"..plr.Name)
+    if not markHolder then
+        markHolder = Instance.new("Folder")
+        markHolder.Name = "MarkHolder_"..plr.Name
+        markHolder.Parent = targeting
+    end
 
-    char:SetAttribute("FlowHeat", nextHeat)
+    local markStack = #markHolder:GetChildren()
+    if markStack >= 5 then return end
 
 
-    if char.Head:FindFirstChild("FocusStyle") then
-        char.Head.FocusStyle.Text.Text = "FOCUS "..nextHeat.."%"
-    else
-        local focusStyle = RepS.Packages.ClassAttacks.ClassUIs.FocusStyle.FocusStyle:Clone() :: BillboardGui
-        focusStyle.Adornee = char.Head
-        focusStyle.Text.Text = "FOCUS "..nextHeat.."%"
-        focusStyle.Parent = char.Head
+    local markSymbol = Instance.new("BoolValue")
+    markSymbol.Name = "Mark"
+    markSymbol.Value = true
+    markSymbol.Parent = markHolder
+    Debris:AddItem(markSymbol, 8)
+end
+ClassAttackLib.Flow_Catalyst = function(plr: Player, symbolAttrs: Dict)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+    local activateDuringUlt = false
+
+    if char:FindFirstChild("IsInFlowUltPeriod") and not char:FindFirstChild("IsCatalystOrbTouched") then
+        local catalystSymbol = Instance.new("BoolValue")
+        catalystSymbol.Name = "IsCatalystOrbTouched"
+        catalystSymbol.Value = true
+        catalystSymbol.Parent = char
+
+        Debris:AddItem(catalystSymbol, 6)
+
+        activateDuringUlt = true
     end
 
 
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib._CalDMG("Magic", char),
-        DMGType = "Magic",
-        Attacker = "ClassAttacks"
-    })
-    if nextHeat >= 100 then
-        char:SetAttribute("FlowHeat", 0)
+    local enemiesSymbol = char.TargetingList:GetChildren() :: { ObjectValue }
+    local enemies = {}
+    for _, symbol in enemiesSymbol do
+        table.insert(enemies, symbol.Value)
+    end
 
-        if char.Head:FindFirstChild("FocusStyle") then
-            char.Head.FocusStyle:Destroy()
+    for _, enemy in enemies do
+        local markHolder = enemy:FindFirstChild("MarkHolder_"..plr.Name)
+        if not markHolder then continue end
+
+        local markStack = #markHolder:GetChildren()
+        if markStack <= 0 then continue end
+
+        local firstMark = markHolder:FindFirstChildOfClass("BoolValue")
+        if firstMark then
+            firstMark:Destroy()
         end
 
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib._CalDMG("Magic", char) * 3),
+
+        --// overload check
+        local now = DateTime.now().UnixTimestamp
+        local detonationCountAttr = "FlowDetonationCount_"..plr.Name
+        local detonationTimeAttr = "FlowDetonationTime_"..plr.Name
+
+        local lastDetTime = enemy:GetAttribute(detonationTimeAttr) or 0
+        local detCount = enemy:GetAttribute(detonationCountAttr) or 0
+
+        if (now - lastDetTime) <= 2 then
+            detCount += 1
+        else
+            detCount = 1
+        end
+
+        enemy:SetAttribute(detonationCountAttr, detCount)
+        enemy:SetAttribute(detonationTimeAttr, now)
+
+
+        if detCount >= 3 or activateDuringUlt then
+            if not activateDuringUlt then
+                markHolder:ClearAllChildren()
+
+                enemy:SetAttribute(detonationCountAttr, 0)
+                enemy:SetAttribute(detonationTimeAttr, 0)
+            end
+
+            local dmg = math.ceil(ClassAttackLib._CalDMG("Magic", char) * 6)
+
+            ClassAttackLib._DealDamageToEnemy(char, enemy, {
+                DMG = dmg,
+                DMGType = "Magic",
+                Attacker = "ClassAttacks"
+            })
+            ServerLib.ShowText(enemy, "OVERLOAD BURST!", Color3.fromRGB(255, 60, 60))
+            continue
+        end
+
+        --// normal detonation
+        local dmg = ClassAttackLib._CalDMG("Magic", char)
+        dmg = math.ceil(dmg * (1 + 0.5 * markStack))
+
+        ClassAttackLib._DealDamageToEnemy(char, enemy, {
+            DMG = dmg,
             DMGType = "Magic",
             Attacker = "ClassAttacks"
         })
-
-        local burnObj = DoTLib.new({
-            Target = targeting,
-            Type = "Burn",
-            Duration = 8,
-            Creator = char,
-            Power = 1,
-        })
-        burnObj:Activate()
-
-
-        ServerLib.ShowText(char, "FLOW!", ClassBook.Flow.Color)
     end
 end
-ClassAttackLib.Flow_Ult_None = function(plr: Player)
+ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib._CalCastingTime(char, 1)
+    local ultPeriodSymbol = Instance.new("BoolValue")
+    ultPeriodSymbol.Name = "IsInFlowUltPeriod"
+    ultPeriodSymbol.Value = true
+    ultPeriodSymbol.Parent = char
+
+    Debris:AddItem(ultPeriodSymbol, 6)
 
 
-    Events.OpenCastTimeBar.Fire(plr, {
-        Duration = castTime
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellReadyToCast)
-
-    wait(castTime)
-    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
-        ProjectileId = "FlowAyakaUlt",
-        ProjectileType = "OneTime",
-        Duration = 3,
-        ProjectileUniqueId = uniqueId,
-        DMGType = "Magic",
-        DoTType = "None",
-        DMGBonus = 1,
-        IsClassUlt = true
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayAnimation.Fire(plr, {
-        AnimId = "MagicCasted1"
-    })
-    Events.FaceToTargetingEnemy.Fire(plr)
-
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "FlowAyakaUlt",
-        Caster = char,
-        ProjectileUniqueId = uniqueId
-    })
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Flow",
-        ClassVariant = "None",
-        DMGType = "Magical",
-        Target = targeting
-    })
-end
-ClassAttackLib.Flow_Ult_Focus = function(plr: Player)
-    local char, targeting = _getCharAndTargeting(plr)
-    if not _charAndTargetingCheck(char, targeting) then return end
-
-
-    local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib._CalCastingTime(char, 3)
-
-    local uniqueId2 = HttpService:GenerateGUID(false)
-
-
-    Events.OpenCastTimeBar.Fire(plr, {
-        Duration = castTime
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellReadyToCast)
-
-    wait(castTime)
-    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
-        ProjectileId = "FlowGanyuUlt",
-        ProjectileType = "OverTime",
-        Duration = 8,
-        ProjectileUniqueId = uniqueId,
-        DMGType = "Magic",
-        DoTType = "Burn",
-        DMGBonus = 3,
-        IsClassUlt = true
-    })
-    ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
-        ProjectileId = "FlowLightningBlast",
-        ProjectileType = "OneTime",
-        Duration = 3,
-        ProjectileUniqueId = uniqueId2,
-        DMGType = "Magic",
-        DoTType = "Burn",
-        DMGBonus = 3,
-        IsClassUlt = true
-    })
-    Events.PlaySound.Fire(plr, SoundService.SFXs.SpellCasted)
-    Events.PlayAnimation.Fire(plr, {
-        AnimId = "MagicCasted1"
-    })
-    Events.FaceToTargetingEnemy.Fire(plr)
-
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "FlowGanyuUlt",
-        Caster = char,
-        ProjectileUniqueId = uniqueId
-    })
-    Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
-        SceneId = "FlowLightningBlast",
-        Caster = char,
-        ProjectileUniqueId = uniqueId2
-    })
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Flow",
-        ClassVariant = "Focus",
-        DMGType = "Magical",
-        Target = targeting
+    StatusLib.CreateCustomEffect("FlowUlt", char, {
+        Duration = 6
     })
 end
 ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
 
 
 
-ClassAttackLib.Execution = function(plr: Player)
+ClassAttackLib.Execution = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -601,7 +595,7 @@ ClassAttackLib.Execution = function(plr: Player)
         Attacker = "ClassAttacks"
     })
 end
-ClassAttackLib.Execution_Ult_None = function(plr: Player)
+ClassAttackLib.Execution_Ult_None = function(plr: Player, symbolAttrs: Dict)
 
 end
 ClassAttackLib.HEAL_ATTACK_Execution = ClassAttackLib.HEAL_ATTACK
@@ -626,7 +620,6 @@ end
 
 function ClassAttackLib._FireClassUltCasted(char: Model, props: {
     ClassId: string,
-    ClassVariant: string,
     DMGType: string,
     Target: Model
 })
@@ -638,7 +631,7 @@ function ClassAttackLib._FireClassUltCasted(char: Model, props: {
 end
 
 
-function ClassAttackLib._CalDMG(dmgType: string, char: Model, props: {
+function ClassAttackLib._CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
     ForceMaxDMG: boolean?,
     ForceDMG: number?,
 }?) : number

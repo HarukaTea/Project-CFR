@@ -94,8 +94,6 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
     --// track new items
     table.insert(scope, Events.PlayItemDropFX.On(function(data)
-        local UI = self.UI
-
         if not UI then return end
         if not UI:FindFirstChild("Center") then return end
 
@@ -128,8 +126,6 @@ return function (UI: ScreenGui, self: Pinia.Self)
     local function _onNewEXPAdded()
         if expDropQueue:IsLocked() then return end
         if expDropQueue:IsEmpty() then return end
-
-        local UI = self.UI
 
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
@@ -177,8 +173,6 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         if self == nil then return end
 
-        local UI = self.UI
-
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
 
@@ -219,8 +213,6 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
     --// track cast cd
     table.insert(scope, Events.OpenCastTimeBar.On(function(data)
-        local UI = self.UI
-
         if not UI then return end
         if not UI:FindFirstChild("Bottom") then return end
 
@@ -254,8 +246,6 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         achivementQueue:SetLockState(true)
 
-
-        local UI = self.UI
 
 
         local data = achivementQueue:Pop()

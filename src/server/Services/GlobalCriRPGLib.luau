@@ -554,9 +554,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local thatOrbSubStyle = symbol:GetAttribute("OrbSubStyle") :: string
 
         local orbPos = symbol.Value :: CFrame
-        symbol:Destroy()
-
-
         local check = true
         local whiteList = { "HEAL_ATTACK" }
 
@@ -609,11 +606,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
 
 
-            ClassAttackLib[thatOrbStyle](plr)
+            ClassAttackLib[thatOrbStyle](plr, symbol:GetAttributes())
 
         end):catch(function(err)
             warn(tostring(err))
         end)
+
+        symbol:Destroy()
     end)
 end)
 
@@ -807,20 +806,18 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         --// cast Ult if req meets
         local class = plr:GetAttribute("Class") :: string
-        local variant = plr:GetAttribute("ClassVariant") :: string
-
         if char:GetAttribute("ClassUltProgress") >= char:GetAttribute("MaxClassUltProgress") then
             char:SetAttribute("ClassUltProgress", 0)
 
             Promise.new(function()
-                if not ClassAttackLib[class.."_Ult_"..variant] then
+                if not ClassAttackLib[class.."_Ult"] then
                     warn(`ClassAttackLib ult Func for {class} not found`)
 
                     Events.CreateNotify.Fire(plr, "[Error] Missing ult Func, please contact the developer!")
                     return
                 end
 
-                ClassAttackLib[class.."_Ult_"..variant](plr)
+                ClassAttackLib[class.."_Ult"](plr)
 
             end):catch(function(err)
                 warn(tostring(err))

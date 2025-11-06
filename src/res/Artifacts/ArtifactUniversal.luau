@@ -12,7 +12,6 @@ export type DMGPropsMetaData = {
 
 export type ClassUltMetaData = {
     ClassId: string,
-    ClassVariant: string,
     DMGType: string,
     Target: Model
 }
@@ -56,7 +55,6 @@ ArtifactUniversal.RegisterClassUltCasted = function(
         if not ServerLib.IsCharValid(caster) then return end
         if not ultProps then return end
         if not ultProps.ClassId then return end
-        if not ultProps.ClassVariant then return end
 
         handler(ultProps.Target, caster, ultProps)
     end)

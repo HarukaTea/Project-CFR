@@ -218,9 +218,9 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope<any>, props: Fusion
 
 			if use(absContentSize)[target] > use(absSize)[target] then
 				if target == "Y" then
-					return UDim2.fromOffset(0, use(absContentSize)[target] + 15.99)
+					return UDim2.fromOffset(0, use(absContentSize)[target] + 15 / 2)
 				elseif target == "X" then
-					return UDim2.fromOffset(use(absContentSize)[target] + 15.99, 0)
+					return UDim2.fromOffset(use(absContentSize)[target] + 15 / 2, 0)
 				else
 					return UDim2.fromOffset(0, 0)
 				end

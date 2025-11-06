@@ -10,7 +10,10 @@ local SSS = game:GetService("ServerScriptService")
 
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local LiveServers = require(SSS.HarukaServer.Shared.LiveServers)
 
+
+type Dict = { [string]: {any} }
 
 local nowClock = os.clock()
 
@@ -71,11 +74,11 @@ do
     workspace:SetAttribute("ServerLocation", "Unknown")
 
     Promise.new(function()
-        local serverInfo = HttpService:GetAsync("https://ipapi.co/json/", false)
+        local serverInfo = HttpService:GetAsync("http://ip-api.com/json", false)
 
         if serverInfo then
             local realInfo = HttpService:JSONDecode(serverInfo) :: { any }
-            local serverLocation = realInfo["country"] :: string
+            local serverLocation = realInfo["countryCode"] :: string
 
             if serverLocation then
                 workspace:SetAttribute("ServerLocation", serverLocation)
@@ -113,4 +116,36 @@ do
             end
         end)
     end)
+end
+
+
+
+
+--// add to live servers
+do
+    LiveServers:Initiate()
+    LiveServers:AddToLiveServers()
+
+
+    local serverSymbolContainer = workspace.MapComponents.GlobalServers :: Folder
+
+    HarukaLib.Clock(60, function()
+        local list = LiveServers:GetLiveServers(20, false, game.PlaceId)
+        local currentWorldServers = list[tostring(game.PlaceId)] or {}
+
+        serverSymbolContainer:ClearAllChildren()
+
+        for _, server: Dict in currentWorldServers do
+            local symbol = Instance.new("BoolValue")
+            symbol.Name = server.JobId
+            symbol.Value = true
+
+            for attr, val in server do
+                symbol:SetAttribute(attr, val)
+            end
+
+            symbol.Parent = serverSymbolContainer
+        end
+
+    end, true)
 end

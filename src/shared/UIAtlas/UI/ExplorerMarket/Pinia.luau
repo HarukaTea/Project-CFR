@@ -5,8 +5,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-
 
 local wait = task.wait
 
@@ -102,10 +100,10 @@ return function (self: Self)
 
     self.ItemListAbsSize = Value(Vector2.zero)
 
-    self.Items = FusionComponents.useFolder(scope, self.plr.Items)
+    self.Items = Components.FusionComponents.useFolder(scope, self.plr.Items)
 
 
-    local folder = FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    local folder = Components.FusionComponents.useFolder(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
 

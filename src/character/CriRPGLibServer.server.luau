@@ -1,5 +1,4 @@
 
-local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12,6 +11,7 @@ local SoundService = game:GetService("SoundService")
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
+local ClassOrbCallbackLib = require(ServerScriptService.HarukaServer.Library.ClassOrbCallbackLib)
 
 local ArtifactBook = require(ReplicatedStorage.HarukaShared.Library.ArtifactBook)
 local ArtifactLib = require(ServerScriptService.HarukaServer.Library.ArtifactLib)
@@ -257,14 +257,23 @@ table.insert(CriRPGLib.Funcs, function()
 
 
     local orbSpawnAdd, orbSpawnEmpty = HarukaLib.Bin()
+    local function _spawnOrb_Callback(orbSymbol: CFrameValue)
+        local class = plr:GetAttribute("Class") or "Burst"
+
+        if ClassOrbCallbackLib[class] then
+            ClassOrbCallbackLib[class](orbSymbol, char)
+        end
+    end
     local function _spawnOrb_done(orbName: string, extraProps: {
         Offset: Vector3?,
-        ForceLocation: CFrame?
+        ForceLocation: CFrame?,
+        IsSpeicalOrb: boolean?
     }?)
         local enemy = char.TargetingEnemy.Value :: Model
         local extraProps = extraProps or {
             ForceLocation = nil,
-            Offset = nil
+            Offset = nil,
+            IsSpeicalOrb = false
         }
 
         if ServerLib.IsCharValid(enemy) and char.Humanoid.Health > 0 then
@@ -304,6 +313,11 @@ table.insert(CriRPGLib.Funcs, function()
                 OrbDuration = orbFadeTime,
                 OrbLocationPos = orbPos.Position
             })
+
+
+            if extraProps.IsSpeicalOrb == false then
+                _spawnOrb_Callback(symbol)
+            end
         end
     end
     local function _spawnOrb()
@@ -321,7 +335,7 @@ table.insert(CriRPGLib.Funcs, function()
             ["HealOrb"] = 22,
             ["None"] = 23 + 55
         })
-        if resultOrb == "HealOrb" then _spawnOrb_done("HealOrb") end
+        if resultOrb == "HealOrb" then _spawnOrb_done("HealOrb", { IsSpeicalOrb = true }) end
     end
     local function orbSpawnHandler(state: boolean)
         if state then
@@ -350,9 +364,9 @@ table.insert(CriRPGLib.Funcs, function()
 
 
     Add(ServerBindables.RToSpawnOrb:Connect(function(charId: string, orbName: string, extraProps: {
-        Offset: Vector3,
-        ForceLocation: CFrame
-    })
+        Offset: Vector3?,
+        ForceLocation: CFrame?
+    }?)
         if charId ~= char.Name then return end
 
         _spawnOrb_done(orbName, extraProps)
@@ -851,9 +865,6 @@ table.insert(CriRPGLib.Funcs, function()
 
             local class = info.StatInfoDesync.ForClass :: string
             plr:SetAttribute("Class", class)
-
-            local variant = info.StatInfoDesync.ForVariant :: string
-            plr:SetAttribute("ClassVariant", variant or "None")
         end
     }))
 end)
@@ -1001,7 +1012,7 @@ Add(HarukaLib.Clock(5, function()
     if char.TargetingEnemy.Value == nil then
 		char.PlayerCombatEnded:Fire(char.Name)
 	end
-end))
+end, true))
 Add(char.PlayerCombatEnded.Event:Connect(function(charId: string)
     if charId ~= char.Name then return end
 

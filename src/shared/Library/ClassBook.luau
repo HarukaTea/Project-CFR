@@ -3,11 +3,10 @@ export type ClassJSON = {
     Icon: string,
     Color: Color3,
     Type: string,
-    Desc: string,
-    Hint: string,
 
     Skills: {
-        [string]: string | boolean,
+        UltSkillIcon: string,
+        UltSkill_WithoutRecolor: boolean?
     },
     BaseStats: {
         [string]: number
@@ -24,13 +23,9 @@ return {
 		Color = Color3.fromHex('#ffeaa7'),
         Type = "DMG",
 
-        Desc = "As a <yellow>Chain</font> class, deal high damage by building <red>Combos</font>. <br/>Gain <red>Combos</font> by touching <yellow>Orbs</font>. <br/>Your <red>Combo</font> resets immediately upon landing.<br/>Not recommended for beginners.",
-        Hint = "Build more combos!",
-
         Skills = {
-            UltSkillIcon_None = "rbxassetid://80904500184652",
-            UltSkillIcon_Combo = "rbxassetid://93384862517537",
-            UltSkillCombo_WithoutRecolor = true
+            UltSkillIcon = "rbxassetid://80904500184652",
+            UltSkill_WithoutRecolor = true
         },
 
 
@@ -45,12 +40,8 @@ return {
 		Color = Color3.fromHex('#7bed9f'),
 		Type = "DMG",
 
-        Desc = "The <green>Burst</font> class deals high damage based on the number of <green>Arrows</font> you have. <br/>Touching a bow-shaped Orb instantly spawns an <green>Arrow Orb</font> on the field. <br/>Touching an <green>Arrow Orb</font> grants you an Arrow. <br/>Recommended for beginners.",
-        Hint = "Collect more Arrows!",
-
         Skills = {
-            UltSkillIcon_None = "rbxassetid://119538556978639",
-            UltSkillIcon_Stack = "rbxassetid://119538556978639",
+            UltSkillIcon = "rbxassetid://119538556978639",
         },
 
 
@@ -65,13 +56,9 @@ return {
 		Color = Color3.fromHex('#a29bfe'),
 		Type = "Magic",
 
-        Desc = "<purple>Flow</font> class damage scales with your Flow amount. <br/>Each hit builds 35% Flow, culminating in a devastating burst and a <red>Burn</font> effect once Full Flow is achieved. <br/>Not ideal for new players.",
-        Hint = "",
-
         Skills = {
-            UltSkillIcon_None = "rbxassetid://79241468928508",
-            UltSkillIcon_Focus = "rbxassetid://139131407566901",
-            UltSkillFocus_WithoutRecolor = true
+            UltSkillIcon = "rbxassetid://79241468928508",
+            UltSkill_WithoutRecolor = true
         },
 
 
@@ -84,13 +71,9 @@ return {
         Color = Color3.fromHex('#34ace0'),
 		Type = "DMG",
 
-        Desc = "",
-        Hint = "",
-
-
         Skills = {
-            UltSkillIcon_None = "rbxassetid://117298958380190",
-            UltSkillNone_WithoutRecolor = true
+            UltSkillIcon = "rbxassetid://117298958380190",
+            UltSkill_WithoutRecolor = true
         },
 
 
@@ -104,12 +87,9 @@ return {
         Color = Color3.fromHex('#ffffff'),
         Type = "Magic",
 
-        Desc = "",
-        Hint = "",
-
         Skills = {
-            UltSkillIcon_None = "rbxassetid://118519686473047",
-            UltSkillNone_WithoutRecolor = true
+            UltSkillIcon = "rbxassetid://118519686473047",
+            UltSkill_WithoutRecolor = true
         },
 
         BaseStats = {
@@ -122,12 +102,9 @@ return {
         Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
-        Desc = "",
-        Hint = "",
-
         Skills = {
-            UltSkillIcon_None = "rbxassetid://114059978330713",
-            UltSkillNone_WithoutRecolor = true
+            UltSkillIcon = "rbxassetid://114059978330713",
+            UltSkill_WithoutRecolor = true
         },
 
         BaseStats = {
