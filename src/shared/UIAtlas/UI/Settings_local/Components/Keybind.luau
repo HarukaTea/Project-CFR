@@ -9,20 +9,6 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
 
-
-local KEY_NAMES = {
-    PromptTrigger = "Trigger Prompt",
-    Backpack = "Backpack",
-    CharSelfView = "Character Stats",
-    Settings = "Settings",
-    ClassUlt = "Class Ultimate",
-    Active1 = "Active Skill 1",
-    Active2 = "Active Skill 2",
-    Active3 = "Active Skill 3",
-    Dash = "Dash",
-}
-
-
 return function(scope: Fusion.Scope<any>, props: {
     Platfrom: string,
 	KeybindId: string,
@@ -77,7 +63,7 @@ return function(scope: Fusion.Scope<any>, props: {
 			Components.TextLabel(scope, {
 				Name = "Title",
 				Size = UDim2.fromScale(0.35, 1),
-				Text = KEY_NAMES[props.KeybindId] or "_UNKNOWN",
+				Text = KeybindsBook.KEYBIND_NAMES[props.KeybindId] or "ERROR_STRING_NOT_FOUND",
 				TextXAlignment = Enum.TextXAlignment.Left,
 
 				[Children] = {

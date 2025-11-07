@@ -57,15 +57,15 @@ FusionComponents.useViewportSize = function(scope: Fusion.Scope<any>) : Fusion.V
 end
 
 
-FusionComponents.useFolder = function(scope: Fusion.Scope<any>, folder: Folder) : Fusion.Value<{ Instance }>
-    local val = Fusion.Value(scope, folder:GetChildren())
+FusionComponents.useChildren = function(scope: Fusion.Scope<any>, ins: Instance) : Fusion.Value<{ Instance }>
+    local val = Fusion.Value(scope, ins:GetChildren())
 
     local function _getChildren()
         wait()
-        val:set(folder:GetChildren())
+        val:set(ins:GetChildren())
     end
-    table.insert(scope, folder.ChildAdded:Connect(_getChildren))
-    table.insert(scope, folder.ChildRemoved:Connect(_getChildren))
+    table.insert(scope, ins.ChildAdded:Connect(_getChildren))
+    table.insert(scope, ins.ChildRemoved:Connect(_getChildren))
 
     return val
 end

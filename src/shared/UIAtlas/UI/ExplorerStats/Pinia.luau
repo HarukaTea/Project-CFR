@@ -152,7 +152,7 @@ return function (self: Self)
 
     self.IsInCombat = Value(false)
 
-    local targeting = FusionComponents.useFolder(scope, self.char:WaitForChild("TargetingList"))
+    local targeting = FusionComponents.useChildren(scope, self.char:WaitForChild("TargetingList"))
 
     self.TargetingList = targeting :: Fusion.Value<{ ObjectValue }>
     self.TargetingEnemy = FusionComponents.useValue(scope, self.char:WaitForChild("TargetingEnemy"))
@@ -285,7 +285,7 @@ return function (self: Self)
     end
 
 
-    local equipping = FusionComponents.useFolder(scope, self.plr:WaitForChild("EquippingItems", 999))
+    local equipping = FusionComponents.useChildren(scope, self.plr:WaitForChild("EquippingItems", 999))
     self.EquippingItems = equipping :: Fusion.Value<{ StringValue }>
 
     local function _handleItemEquip()

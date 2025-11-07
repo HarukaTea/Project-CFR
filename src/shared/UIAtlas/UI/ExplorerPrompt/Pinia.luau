@@ -64,7 +64,7 @@ return function (self: Self)
 	table.insert(scope, promptSymbolContainer)
 
 
-	local promptSymbols = FusionComponents.useFolder(scope, promptSymbolContainer)
+	local promptSymbols = FusionComponents.useChildren(scope, promptSymbolContainer)
 	self.PromptList = promptSymbols
 
 

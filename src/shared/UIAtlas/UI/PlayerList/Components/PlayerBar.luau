@@ -35,7 +35,7 @@ return function (scope: Fusion.Scope<any>, props: {
         return Fusion.Value(scope, val)
     end
     local thatClass = Value("Burst")
-    local thatRoles = Components.FusionComponents.useFolder(scope, props.Player:WaitForChild("Roles"))
+    local thatRoles = Components.FusionComponents.useChildren(scope, props.Player:WaitForChild("Roles"))
     local thatLevel = Value(1)
 
 

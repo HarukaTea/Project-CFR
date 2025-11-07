@@ -31,7 +31,7 @@ return function (self: Self)
     self.Enemies = FusionComponents.useTagged(scope, "EnemyEntity_Combat")
     self.EnemiesOverworld = FusionComponents.useTagged(scope, "EnemyEntity")
 
-    self.TargetingList = FusionComponents.useFolder(scope, self.char:WaitForChild("TargetingList", 999))
+    self.TargetingList = FusionComponents.useChildren(scope, self.char:WaitForChild("TargetingList", 999))
     self.TargetingEnemy = FusionComponents.useValue(scope, self.char:WaitForChild("TargetingEnemy", 999))
 
 

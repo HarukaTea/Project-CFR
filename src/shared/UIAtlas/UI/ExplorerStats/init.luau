@@ -214,8 +214,8 @@ return function(plr: Player)
                             Size = UDim2.fromScale(0.15, 0.65),
                             Text = "START",
                             BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.AZUR_BLUE_COLOR,
-                            TextColor3 = Components.HarukaColorLab.COLOR_SERIES.AzurLane.Text,
+                            BackgroundColor3 = Components.BLUE_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
                                 Events.DUNGEON_RequestToStartDungeon.Fire()
@@ -255,8 +255,8 @@ return function(plr: Player)
                             Size = UDim2.fromScale(0.2, 0.65),
                             Text = "RESTART",
                             BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.AZUR_BLUE_COLOR,
-                            TextColor3 = Components.HarukaColorLab.COLOR_SERIES.AzurLane.Text,
+                            BackgroundColor3 = Components.BLUE_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
                                 Events.DUNGEON_RequestToRestartDungeon.Fire()

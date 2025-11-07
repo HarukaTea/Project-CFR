@@ -1,6 +1,7 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
@@ -19,7 +20,7 @@ local function initPlayer(player: Player)
         player:Kick("This server is invalid/locked. Rejoin can fix it.")
         return
     end
-    if player.AccountAge < 2 then
+    if player.AccountAge < 2 and not RunService:IsStudio() then
         player:Kick("You must be at least 2 days old in Roblox Platform to play!")
         return
     end

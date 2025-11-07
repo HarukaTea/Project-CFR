@@ -59,7 +59,7 @@ return function(scope: Fusion.Scope<any>, props: {
                         AnchorPoint = Vector2.new(0, 0),
                         Position = UDim2.fromScale(0, 0),
                         BackgroundTransparency = 0,
-                        BackgroundColor3 = Color3.fromRGB(129, 236, 236),
+                        BackgroundColor3 = Color3.fromHex('#7ce4f8'),
 
                         Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local x = (props.Time - use(curTime)) / props.Time
@@ -83,9 +83,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 Size = UDim2.fromScale(1, 0.5),
                 FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
 
-                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return `CASTING  /  {string.format("%.1f", props.Time - use(curTime))}s`
-                end),
+                Text = "CASTING",
 
                 [Children] = {
                     Components.TextUIStroke(scope, { Thickness = 3 })

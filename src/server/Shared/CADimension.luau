@@ -13,8 +13,8 @@ local RunService = game:GetService("RunService")
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 
-local liveServersHashMap = MSS:GetHashMap("CF_LiveServers")
-local key = "_GlobalServers"
+local liveWorldsHashMap = MSS:GetHashMap("CF_Dimension")
+local key = "_AllWorlds"
 
 
 local privateServerId = game.PrivateServerId
@@ -24,6 +24,16 @@ local placeIdStr = tostring(game.PlaceId)
 local isUploaded = false
 local isRemoving = false
 local isInited = false
+
+
+
+export type ServerInfo = {
+    PlayerUserIds: {number},
+    WorldId: string,
+    JobId: string,
+    ServerLocation: string,
+    CityLocation: string
+}
 
 
 type Dict = { [string]: {any} }
@@ -36,15 +46,16 @@ local function _getTableSizeInKB(t: {any?}): number
 	return size / 1000
 end
 
-local LSS = {}
+local CADimensions = {}
 
-function LSS:Initiate()
+function CADimensions:Init()
 	if isInited then return end
+    if RunService:IsStudio() then return end
 
 	isInited = true
 
     HarukaLib.TryUntil(function()
-        liveServersHashMap:UpdateAsync(key, function(oldValue: Dict)
+        liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
             if not oldValue then
                 return { [placeIdStr] = {} }
             end
@@ -54,38 +65,48 @@ function LSS:Initiate()
 
 
 	game:BindToClose(function()
-		LSS:RemoveFromLiveServers()
+		CADimensions:RemoveFromLiveServers()
 	end)
 
-    print("[HarukaServer] Added to live servers")
+    print("[HarukaServer] Added to CF Dimension")
 end
 
 
-function LSS:AddToLiveServers(refreshRate: number?)
+function CADimensions:AddToDimension(refreshRate: number?)
 	refreshRate = refreshRate or 300
 
 	if isUploaded then return end
     if privateServerId ~= "" then return end
+    if RunService:IsStudio() then return end
 
 	isUploaded = true
 
 
     HarukaLib.Clock(refreshRate, function()
         HarukaLib.TryUntil(function()
-            local dataToUpload = {
-                PlayersCount = #Players:GetPlayers(),
-                WorldId = workspace:GetAttribute("WorldId") or "Unknown",
-                JobId = game.JobId,
-                ServerLocation = workspace:GetAttribute("ServerLocation") or "Unknown"
-            }
+            local playerIds = {}
+            for _, player: Player in Players:GetPlayers() do
+                table.insert(playerIds, player.UserId)
+            end
 
-            liveServersHashMap:UpdateAsync(key, function(oldValue: Dict)
+            local serverLocation = workspace:GetAttribute("ServerLocation") or "Unknown"
+            local cityLocation = workspace:GetAttribute("CityLocation") or "Unknown"
+            local worldId = workspace:GetAttribute("WorldId") or "Unknown"
+
+            local dataToUpload = {
+                PlayerUserIds = playerIds,
+                WorldId = worldId,
+                JobId = game.JobId,
+                ServerLocation = serverLocation,
+                CityLocation = cityLocation
+            } :: ServerInfo
+
+            liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
                 if _getTableSizeInKB(oldValue) >= 32 * 1024 then
                     return nil
                 end
-                if not oldValue then
-                    return nil
-                end
+                oldValue = oldValue or {}
+
                 if not oldValue[placeIdStr] then
                     oldValue[placeIdStr] = {}
                 end
@@ -98,13 +119,17 @@ function LSS:AddToLiveServers(refreshRate: number?)
     end, true)
 end
 
-function LSS:RemoveFromLiveServers()
+function CADimensions:RemoveFromDimension()
 	if isRemoving then return end
+    if RunService:IsStudio() then return end
+
 	isRemoving = true
 
 
     HarukaLib.TryUntil(function()
-        liveServersHashMap:UpdateAsync(key, function(oldValue: Dict)
+        liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
+            oldValue = oldValue or {}
+
             if not oldValue[placeIdStr] then
                 oldValue[placeIdStr] = {}
             end
@@ -121,7 +146,9 @@ end
 
 
 -- PlaceId defaults to game.PlaceId, whereas ExcludeSelf defaults to true
-function LSS:GetLiveServers(maxFetch: number?, excludeThisServer: boolean?, placeId: number?): {[string]: Dict}
+function CADimensions:GetWorlds(maxFetch: number?, excludeThisServer: boolean?, placeId: number?): {[string]: {
+    [string]: ServerInfo
+}}
 	placeId = placeId or game.PlaceId
 	excludeThisServer = (excludeThisServer == nil and true) or excludeThisServer
 	maxFetch = maxFetch or 20
@@ -129,10 +156,12 @@ function LSS:GetLiveServers(maxFetch: number?, excludeThisServer: boolean?, plac
 	local data = {}
 
     HarukaLib.TryUntil(function()
-        liveServersHashMap:GetAsync(key)
+        liveWorldsHashMap:GetAsync(key)
 
     end, 2, function(result)
         if excludeThisServer then
+            result = result or {}
+
             if not result[placeIdStr] then
                 result[placeIdStr] = {}
             end
@@ -141,7 +170,7 @@ function LSS:GetLiveServers(maxFetch: number?, excludeThisServer: boolean?, plac
         end
 
 
-        local dataTable = HarukaLib.TableUtils.Cut(result[placeIdStr][serverId], maxFetch)
+        local dataTable = HarukaLib.TableUtils.Cut(result[placeIdStr], maxFetch)
         data = dataTable
     end)
 
@@ -149,5 +178,5 @@ function LSS:GetLiveServers(maxFetch: number?, excludeThisServer: boolean?, plac
 end
 
 
-return LSS
+return CADimensions
 

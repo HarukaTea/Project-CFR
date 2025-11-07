@@ -4,39 +4,52 @@ local HarukaColorLab = {}
 
 HarukaColorLab.COLOR_SERIES = {}
 
+
 HarukaColorLab.COLOR_SERIES.Genshin = {
-    Background = Color3.fromRGB(28, 28, 37),
-    Title = Color3.fromHex('D3BC8E'),
-    Text = Color3.fromHex('ECE5D8'),
-    Text2 = Color3.fromHex('F6F2EE'),
-    Text3 = Color3.fromHex('FFFFFF'),
-    KeyText = Color3.fromHex('FFCC33'),
-    KeyText2 = Color3.fromHex('37FFFF'),
-    WarnText = Color3.fromHex('FF5E41'),
-    WaterElement = Color3.fromHex('80C0FF'),
-    FireElement = Color3.fromHex('FF9999'),
-    WindElement = Color3.fromHex('80FFD7'),
-    ThunderElement = Color3.fromHex('FFACFF'),
-    GrassElement = Color3.fromHex('99FF88'),
-    IceElement = Color3.fromHex('99FFFF'),
-    EarthElement = Color3.fromHex('FFE699')
+    Background = Color3.fromHex('#1c1c25'),
+
+    Text = Color3.fromHex('#ece5d8'),
+    Text2 = Color3.fromHex('#f6f2ee'),
+
+    KeyText = Color3.fromHex('#ffcc33'),
+    KeyText2 = Color3.fromHex('#37ffff'),
+    WarnText = Color3.fromHex('#ff5e41'),
+
+    WaterElement = Color3.fromHex('#80c0ff'),
+    FireElement = Color3.fromHex('#ff9999'),
+    WindElement = Color3.fromHex('#80ffd7'),
+    ThunderElement = Color3.fromHex('#ffacff'),
+    GrassElement = Color3.fromHex('#99ff88'),
+    IceElement = Color3.fromHex('#99ffff'),
+    EarthElement = Color3.fromHex('#ffe699')
 }
 
-HarukaColorLab.COLOR_SERIES.AzurLane = {
+
+HarukaColorLab.COLOR_SERIES.AzurPromilia = {
     Background = Color3.fromHex('#eeece9'),
-    Text = Color3.fromHex('#6c6763'),
+
     Green = Color3.fromHex('#7bd99f'),
     Red = Color3.fromHex('#ff7675'),
     Blue = Color3.fromHex('#7ce4f8'),
 }
 
 
+HarukaColorLab.COLOR_SERIES.Muelsyse = {
+    Background = Color3.fromHex('#100e0a'),
+    BackgroundLighter = Color3.fromHex('#25292f'),
+
+    Text = Color3.fromHex('#f3dfb8'),
+}
+
+
 --// legacy references
-HarukaColorLab.BLACK_COLOR = HarukaColorLab.COLOR_SERIES.Genshin.Background
-HarukaColorLab.WHITE_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Background
-HarukaColorLab.RED_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Red
-HarukaColorLab.GREEN_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Green
-HarukaColorLab.AZUR_BLUE_COLOR = HarukaColorLab.COLOR_SERIES.AzurLane.Blue
+
+
+HarukaColorLab.BLACK_COLOR = HarukaColorLab.COLOR_SERIES.Muelsyse.Background
+HarukaColorLab.WHITE_COLOR = HarukaColorLab.COLOR_SERIES.Genshin.Text
+HarukaColorLab.RED_COLOR = HarukaColorLab.COLOR_SERIES.AzurPromilia.Red
+HarukaColorLab.GREEN_COLOR = HarukaColorLab.COLOR_SERIES.AzurPromilia.Green
+HarukaColorLab.BLUE_COLOR = HarukaColorLab.COLOR_SERIES.AzurPromilia.Blue
 
 
 return HarukaColorLab

@@ -28,7 +28,7 @@ HarukaComponents.BLACK_COLOR = HarukaColorLab.BLACK_COLOR
 HarukaComponents.WHITE_COLOR = HarukaColorLab.WHITE_COLOR
 HarukaComponents.RED_COLOR = HarukaColorLab.RED_COLOR
 HarukaComponents.GREEN_COLOR = HarukaColorLab.GREEN_COLOR
-HarukaComponents.AZUR_BLUE_COLOR = HarukaColorLab.AZUR_BLUE_COLOR
+HarukaComponents.BLUE_COLOR = HarukaColorLab.BLUE_COLOR
 
 
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }

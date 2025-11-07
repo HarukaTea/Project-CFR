@@ -166,8 +166,8 @@ function ClientLib.TrackEffectListToUI(props: {
 	effectListContainer.Parent = props.Target
 	table.insert(props.Scope, effectListContainer)
 
-	local effectListEnemy = FusionComponents.useFolder(props.Scope, props.Target.EffectList)
-	local containerVal = FusionComponents.useFolder(props.Scope, effectListContainer)
+	local effectListEnemy = FusionComponents.useChildren(props.Scope, props.Target.EffectList)
+	local containerVal = FusionComponents.useChildren(props.Scope, effectListContainer)
 
 
 	Fusion.Observer(props.Scope, containerVal):onBind(function()

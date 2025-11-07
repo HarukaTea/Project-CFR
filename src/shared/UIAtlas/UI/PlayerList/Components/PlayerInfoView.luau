@@ -42,7 +42,7 @@ return function (scope: Fusion.Scope<any>, props: {
             local level = Value(1)
             local role = Value("")
             local class = Value("Burst")
-            local equippingItems = Components.FusionComponents.useFolder(scope, player.EquippingItems)
+            local equippingItems = Components.FusionComponents.useChildren(scope, player.EquippingItems)
             local playTime = Value(0)
 
 

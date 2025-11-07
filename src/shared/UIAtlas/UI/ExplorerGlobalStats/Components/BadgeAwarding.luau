@@ -26,7 +26,7 @@ return function(scope: Fusion.Scope<any>, props: {
 
     local frame = Components.Frame(scope, {
         Name = "BadgeAwarding",
-        BackgroundColor3 = Components.HarukaColorLab.COLOR_SERIES.AzurLane.Text,
+        BackgroundColor3 = Components.BLACK_COLOR,
         BackgroundTransparency = 0,
         Size = UDim2.fromScale(0.3, 1.5),
 

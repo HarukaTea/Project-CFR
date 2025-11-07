@@ -10,6 +10,21 @@ local keybinds = {
 }
 
 
+keybinds.KEYBIND_NAMES = {
+    PromptTrigger = "Trigger Prompt",
+    Backpack = "Backpack",
+    CharSelfView = "Character Stats",
+    Settings = "Settings",
+    ClassUlt = "Class Ultimate",
+    Active1 = "Active Skill 1",
+    Active2 = "Active Skill 2",
+    Active3 = "Active Skill 3",
+    Dash = "Dash",
+    TargetSwitch = "Target Switch"
+}
+
+
+
 keybinds.PC.PromptTrigger = Enum.KeyCode.F
 keybinds.Console.PromptTrigger = Enum.KeyCode.ButtonY
 
@@ -17,19 +32,20 @@ keybinds.Console.PromptTrigger = Enum.KeyCode.ButtonY
 keybinds.PC.Backpack = Enum.KeyCode.B
 keybinds.PC.CharSelfView = Enum.KeyCode.C
 keybinds.PC.Settings = Enum.KeyCode.N
---keybinds.PC.PerkTree = Enum.KeyCode.Z
 
 keybinds.PC.ClassUlt = Enum.KeyCode.Q
 keybinds.PC.Active1 = Enum.KeyCode.One
 keybinds.PC.Active2 = Enum.KeyCode.Two
 keybinds.PC.Active3 = Enum.KeyCode.Three
 keybinds.PC.Dash = Enum.KeyCode.R
+keybinds.PC.TargetSwitch = Enum.KeyCode.LeftAlt
 
 keybinds.Console.ClassUlt = Enum.KeyCode.ButtonY
 keybinds.Console.Active1 = Enum.KeyCode.ButtonL1
 keybinds.Console.Active2 = Enum.KeyCode.ButtonR1
 keybinds.Console.Active3 = Enum.KeyCode.ButtonR2
 keybinds.Console.Dash = Enum.KeyCode.ButtonX
+keybinds.Console.TargetSwitch = Enum.KeyCode.DPadRight
 
 
 

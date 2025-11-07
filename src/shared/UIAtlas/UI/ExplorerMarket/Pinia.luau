@@ -100,10 +100,10 @@ return function (self: Self)
 
     self.ItemListAbsSize = Value(Vector2.zero)
 
-    self.Items = Components.FusionComponents.useFolder(scope, self.plr.Items)
+    self.Items = Components.FusionComponents.useChildren(scope, self.plr.Items)
 
 
-    local folder = Components.FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    local folder = Components.FusionComponents.useChildren(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
 

@@ -24,7 +24,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 AutomaticSize = Enum.AutomaticSize.X,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.fromScale(0.5, 0),
-                Size = UDim2.fromScale(0, 0.8),
+                Size = UDim2.fromScale(0, 1),
 
                 [Fusion.Out("AbsoluteSize")] = absTextSize,
 
@@ -51,7 +51,7 @@ return function(scope: Fusion.Scope<any>, props: {
             Components.Frame(scope, {
                 Name = "AreaDecoBar",
                 AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.9),
+                Position = UDim2.fromScale(0.5, 1.1),
                 BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BackgroundTransparency = 0,
 

@@ -26,7 +26,7 @@ return function (scope: Fusion.Scope<any>, props: {
         return Fusion.Value(scope, val)
     end
     local isVisible = Value(false)
-    local serversAvailable = Components.FusionComponents.useFolder(scope, workspace.MapComponents.GlobalServers)
+    local serversAvailable = Components.FusionComponents.useChildren(scope, workspace.MapComponents.GlobalServers)
 
 
     props.ServerListClickedSignal:Connect(function()
@@ -103,11 +103,14 @@ return function (scope: Fusion.Scope<any>, props: {
                     Components.PaddingFrame(scope, "AAA"),
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.ForPairs(scope, serversAvailable, function(_, scope: Fusion.Scope<any>, index: string, symbol: BoolValue)
+                    Fusion.ForPairs(scope, serversAvailable, function(_, scope: Fusion.Scope<any>, index: string, symbol: IntValue)
                         local isSelecting = Fusion.Value(scope, false)
+
+                        --// TODO: in the future, add how many friends are in this server UI
+                        --local adventurersPlaying = Components.FusionComponents.useChildren(scope, symbol)
+
                         local info = symbol:GetAttributes() :: {
-                            PlayersCount: number,
-                            JobId: string,
+                            CityLocation: string,
                             WorldId: string,
                             ServerLocation: string
                         }
@@ -159,7 +162,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                     TextXAlignment = Enum.TextXAlignment.Left,
                                     AutoLocalize = false,
 
-                                    Text = [[The Initia <font color="#666666">]].."[ "..info.ServerLocation.." - "..info.JobId.."]</font>"
+                                    Text = [[The Initia <font color="#666666">]].."[ "..info.ServerLocation.." - "..symbol.Name.."]</font>"
                                 }),
                                 Components.TextLabel(scope, {
                                     Name = "PlayerCount",
@@ -167,13 +170,9 @@ return function (scope: Fusion.Scope<any>, props: {
                                     Size = UDim2.fromScale(0.85, 0.35),
                                     TextXAlignment = Enum.TextXAlignment.Left,
 
-                                    Text = "Adventurers: "..info.PlayersCount.." / 20",
+                                    Text = "Adventurers: "..symbol.Value.." / 20",
                                     TextColor3 = Fusion.Computed(scope, function()
-                                        if info.PlayersCount >= 20 then
-                                            return Color3.fromRGB(0, 198, 96)
-                                        else
-                                            return Color3.fromRGB(255, 0, 0)
-                                        end
+                                        return if symbol.Value >= 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
                                     end)
                                 }),
 
@@ -186,11 +185,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                     TextColor3 = Components.BLACK_COLOR,
 
                                     BackgroundColor3 = Fusion.Computed(scope, function()
-                                        if info.PlayersCount >= 20 then
-                                            return Components.RED_COLOR
-                                        else
-                                            return Components.GREEN_COLOR
-                                        end
+                                        return if symbol.Value >= 20 then Components.GREEN_COLOR else Components.RED_COLOR
                                     end),
 
                                     [Children] = {

@@ -53,7 +53,7 @@ return function (self: Self)
     self.Dialogue = Value("None")
 
 
-    local quests = FusionComponents.useFolder(scope, self.plr:WaitForChild("Quests", 999))
+    local quests = FusionComponents.useChildren(scope, self.plr:WaitForChild("Quests", 999))
     self.Quests = quests :: Fusion.Value<{ StringValue }>
 
     self.MaxUTFShown = Value(-1)

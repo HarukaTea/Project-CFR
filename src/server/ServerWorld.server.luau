@@ -10,7 +10,7 @@ local SSS = game:GetService("ServerScriptService")
 
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local LiveServers = require(SSS.HarukaServer.Shared.LiveServers)
+local CADimension = require(SSS.HarukaServer.Shared.CADimension)
 
 
 type Dict = { [string]: {any} }
@@ -72,18 +72,23 @@ end
 --// Init server location
 do
     workspace:SetAttribute("ServerLocation", "Unknown")
+    workspace:SetAttribute("CityLocation", "Unknown")
 
     Promise.new(function()
-        local serverInfo = HttpService:GetAsync("http://ip-api.com/json", false)
+        local serverInfo = HttpService:GetAsync("https://api.ipbase.com/v1/json/", false)
 
         if serverInfo then
             local realInfo = HttpService:JSONDecode(serverInfo) :: { any }
-            local serverLocation = realInfo["countryCode"] :: string
+            local serverLocation = realInfo["country_code"] :: string
+            local cityLocation = realInfo["city"] :: string
 
             if serverLocation then
                 workspace:SetAttribute("ServerLocation", serverLocation)
-
                 print("Server Location: "..serverLocation)
+            end
+            if cityLocation then
+                workspace:SetAttribute("CityLocation", cityLocation)
+                print("City Location: "..cityLocation)
             end
         end
 
@@ -115,6 +120,8 @@ do
                 plr:Kick("[Error] The server has been running for over 6 hours, please rejoin a new one!")
             end
         end)
+
+        CADimension:RemoveFromDimension()
     end)
 end
 
@@ -123,26 +130,39 @@ end
 
 --// add to live servers
 do
-    LiveServers:Initiate()
-    LiveServers:AddToLiveServers()
+    local worldIdWhiteList = { "InitusWorld" }
+    local worldId = workspace:GetAttribute("WorldId") or "Unknown"
 
+    if not table.find(worldIdWhiteList, worldId) then return end
+
+    CADimension:Init()
+    CADimension:AddToDimension()
 
     local serverSymbolContainer = workspace.MapComponents.GlobalServers :: Folder
 
     HarukaLib.Clock(60, function()
-        local list = LiveServers:GetLiveServers(20, false, game.PlaceId)
-        local currentWorldServers = list[tostring(game.PlaceId)] or {}
+        local list = CADimension:GetWorlds(20, true, game.PlaceId)
+        local currentWorldServers = list[tostring(game.PlaceId)]
+
+        currentWorldServers = currentWorldServers or {}
 
         serverSymbolContainer:ClearAllChildren()
 
-        for _, server: Dict in currentWorldServers do
-            local symbol = Instance.new("BoolValue")
+        for _, server in currentWorldServers do
+            local symbol = Instance.new("IntValue")
             symbol.Name = server.JobId
-            symbol.Value = true
+            symbol.Value = #server.PlayerUserIds
 
-            for attr, val in server do
-                symbol:SetAttribute(attr, val)
+            for _, userId in server.PlayerUserIds do
+                local idSymbol = Instance.new("BoolValue")
+                idSymbol.Name = userId
+                idSymbol.Value = true
+                idSymbol.Parent = symbol
             end
+
+            symbol:SetAttribute("CityLocation", server.CityLocation)
+            symbol:SetAttribute("ServerLocation", server.ServerLocation)
+            symbol:SetAttribute("WorldId", server.WorldId)
 
             symbol.Parent = serverSymbolContainer
         end

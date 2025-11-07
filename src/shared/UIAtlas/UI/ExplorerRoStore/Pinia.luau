@@ -33,7 +33,7 @@ return function (self: Self)
     self.CurrentCategory = Value("RoStore")
 
 
-    local ranks = Components.FusionComponents.useFolder(scope, workspace:WaitForChild("DonationRankContainer", 999))
+    local ranks = Components.FusionComponents.useChildren(scope, workspace:WaitForChild("DonationRankContainer", 999))
     self.DonationRanks = ranks :: Fusion.Value<{ IntValue }>
 
 

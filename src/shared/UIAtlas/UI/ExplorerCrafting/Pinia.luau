@@ -50,9 +50,9 @@ return function (self: Self)
     self.Items = Components.FusionComponents.useTagged(scope, "CraftingProductEntity")
 
 
-    self.PlayerItems = Components.FusionComponents.useFolder(scope, self.plr.Items)
+    self.PlayerItems = Components.FusionComponents.useChildren(scope, self.plr.Items)
 
-    local folder = Components.FusionComponents.useFolder(scope, self.plr.EquippingItems)
+    local folder = Components.FusionComponents.useChildren(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
     self.Gold = Value(0)

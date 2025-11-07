@@ -34,7 +34,7 @@ return function (self: Self)
 
     self.IsUIShown = Value(true)
 
-    local quests = FusionComponents.useFolder(scope, plr:WaitForChild("Quests", 999))
+    local quests = FusionComponents.useChildren(scope, plr:WaitForChild("Quests", 999))
     local npcs = FusionComponents.useTagged(scope, "NPCEntity")
     local storyLocators = FusionComponents.useTagged(scope, "StoryLocatorEntity")
 
