@@ -223,7 +223,7 @@ enemyDiedSignal:Connect(function(uniqueId: string)
     local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
     countdown.Transparency = 1
     countdown.CFrame = entityObj.Locator.CFrame
-    countdown.Parent = workspace
+    countdown.Parent = workspace.MapComponents
     Debris:AddItem(countdown, respawnTime)
 
     Promise.try(function()
@@ -918,7 +918,7 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         encounterBorder:PivotTo(combatLocation)
         encounterBorder:SetAttribute("Owner", target.Name)
         encounterBorder:SetAttribute("CombatMode", combatMode)
-        encounterBorder.Parent = workspace
+        encounterBorder.Parent = workspace.MapComponents
         Debris:AddItem(encounterBorder, 5)
 
 

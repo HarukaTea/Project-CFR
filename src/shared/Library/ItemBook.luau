@@ -83,7 +83,7 @@ ItemBook.DesyncItemStat = function(_, infoType: "Stat" | "Extra", info: { string
                 attrs[stat] = true
                 continue
 
-            elseif string.find(stat, "ForClass") or string.find(stat, "ForVariant") then
+            elseif string.find(stat, "ForClass") then
                 local attr, content = string.match(stat, "^(.-)%((.-)%)$")
                 if attr == nil or content == nil then continue end
 

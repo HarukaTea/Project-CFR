@@ -164,7 +164,7 @@ if game.PlaceId == AssetBook.PlaceIds.AbyssLevelTest then formulas.EXPEvent = 80
 if game.PlaceId == AssetBook.PlaceIds.MainworldTest then formulas.EXPEvent = 80 end
 
 if formulas.EXPEvent > 1 then
-    print("[Notice] EXP Event Is Enabled")
+    print("[WARNING] EXP Event Enabled")
 end
 
 

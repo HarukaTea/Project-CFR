@@ -355,7 +355,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             galleon:AddTag("SkyDriveGalleon")
             galleon.PrimaryPart.Anchored = false
             galleon.PrimaryPart.Massless = false
-            galleon.Parent = workspace
+            galleon.Parent = workspace.MapComponents.SkyGalleonsContainer
 
 
             _sitGalleon(galleon, plr)
@@ -425,15 +425,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             amount = math.floor(amount)
 
 
-            local tempModel = HarukaLib:CreateMockModel()
-            tempModel:PivotTo(CFrame.new(adornee.Position + Vector3.yAxis * 3))
-            tempModel.Parent = workspace
-            Debris:AddItem(tempModel, 5)
-
-
-            Events.PlayHitStatusVFX.FireList(ServerLib.GetNearbyPlayers(adornee.Position), {
-                Target = tempModel,
-            })
             ServerLib.PlaceItemDropPart(plr, finalMaterial, amount, adornee.Position + Vector3.new(
                 math.random(-8, 8), 0, math.random(-8, 8)
             ), true)

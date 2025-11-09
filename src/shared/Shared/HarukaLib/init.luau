@@ -6,6 +6,7 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local ServerScriptService = game:GetService("ServerScriptService")
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
 
@@ -1235,6 +1236,37 @@ function HarukaLib.TryUntil(pCallback: (...any) -> (boolean, any), waitTime: num
 	end
 
 	return result
+end
+
+
+--// teleport the character, and face the cframe, snippet code
+function HarukaLib:TeleportPlayer(char: Model, target: CFrame)
+	char:PivotTo(target)
+
+
+	local sharedEvents = nil
+	if RunService:IsClient() then
+		sharedEvents = require(RepS.HarukaShared.Library.Bindables)
+
+	elseif RunService:IsServer() then
+		sharedEvents = require(ServerScriptService.HarukaServer.Library.ServerEvents)
+	end
+
+	target = CFrame.fromOrientation(
+		-math.pi / 4,
+		(select(2, char.PrimaryPart.CFrame:ToOrientation())),
+		0
+	) + target.Position
+
+	if sharedEvents then
+		if RunService:IsServer() then
+			local player = Players:GetPlayerFromCharacter(char)
+			sharedEvents.UpdateCameraCFrame.Fire(player, target)
+
+		elseif RunService:IsClient() then
+			sharedEvents.UpdateCameraCFrame:Fire(target)
+		end
+	end
 end
 
 

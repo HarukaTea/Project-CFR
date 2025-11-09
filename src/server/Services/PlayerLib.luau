@@ -883,6 +883,19 @@ function PlayerLib:_ValidateSaveData(data: PlayerTemplate.PlayerDataJSON)
         data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
     end
 
+    --// mirgration2: check if there is forVariant stat in each item
+    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
+        local itemStat = itemInfo.ItemStat
+
+        local cleaned = string.gsub(itemStat, "ForVariant%b()", "")
+
+        cleaned = string.gsub(cleaned, ",+", ",")
+        cleaned = string.gsub(cleaned, "^,|,$", "")
+        cleaned = string.gsub(cleaned, ",,", ",")
+
+        data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
+    end
+
 
     --// clean up old settings
     data.Settings = nil
@@ -1135,7 +1148,7 @@ function PlayerLib:UpdateDonationRank()
     local totalRobuxGained = PlayerLib._GetCurrentDonation(profile)
     if totalRobuxGained <= 0 then return end
 
-    ServerBindables.RToCheckLeaderboardRank:Fire(self.Player, "Donation")
+    ServerBindables.RToAwardLeaderboardRank:Fire(self.Player, "Donation")
 end
 
 

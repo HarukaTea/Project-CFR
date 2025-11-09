@@ -60,7 +60,7 @@ type SignalConnection = {
 	[any]: any,
 }
 
-type PromiseLib = {
+export type PromiseLib = {
 	__index: PromiseLib,
 	prototype: { [string]: any },
 

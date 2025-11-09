@@ -368,7 +368,7 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 
 		if string.find(attr, "Can") then
 			char:SetAttribute(attr, value)
-		elseif string.find(attr, "ForClass") or string.find(attr, "ForVariant") then
+		elseif string.find(attr, "ForClass") then
 			--// do nothing
 		elseif attr == "ATK" then
 			local calMethod = math.floor

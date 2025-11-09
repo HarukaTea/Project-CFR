@@ -28,14 +28,14 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local charge = RepS.Packages.SkillProjectiles:FindFirstChild("ChainSlashCharge", true):Clone() :: BasePart
     charge.CFrame = char.PrimaryPart.CFrame
-    charge.Parent = workspace
+    charge.Parent = workspace.Terrain
     Debris:AddItem(charge, 1)
 
 
     wait(0.55)
     local vortex = RepS.Packages.SkillProjectiles:FindFirstChild("ChainVortexSlash", true):Clone() :: Model
     vortex:PivotTo(char.PrimaryPart.CFrame * CFrame.new(0, 1.5, 0))
-    vortex.Parent = workspace
+    vortex.Parent = workspace.Terrain
     Debris:AddItem(vortex, 10)
 
 

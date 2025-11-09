@@ -4,7 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
-local ODSModule = require(ServerScriptService.HarukaServer.Shared.OrderedDatastore)
+local ODSModule = require(ServerScriptService.HarukaServer.Shared.OrderedDatastoreWrapper)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -14,34 +14,36 @@ local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerB
 local TOP3_BADGE_ID = 2495465107761594
 
 
-local skyTowerRankContainer = Instance.new("Folder")
-skyTowerRankContainer.Name = "SkyTowerRankContainer"
-skyTowerRankContainer.Parent = workspace
+local abyssSpeedrunContainer = Instance.new("Folder")
+abyssSpeedrunContainer.Name = "AbyssSpeedrunContainer"
+abyssSpeedrunContainer.Parent = workspace.MapComponents
 
 
 local donationRanksContainer = Instance.new("Folder")
 donationRanksContainer.Name = "DonationRankContainer"
-donationRanksContainer.Parent = workspace
+donationRanksContainer.Parent = workspace.MapComponents
 
 
 local userNameCache = {}
 local userThumbnailCache = {}
 
 
-local skyTowerSpeedrunStore = ODSModule.new("_SkyTowerSpeedrun_Date01", true)
+local abyssSpeedrunStore = ODSModule.new("_AbyssSpeedrun_Nov2025", true)
 local donationStore = ODSModule.new("_Donation", true)
 
 
 local STORE_LIST = {
-    SkyTower = skyTowerSpeedrunStore,
+    Abyss = abyssSpeedrunStore,
     Donation = donationStore
 }
 
 
-local function _getTop50Players(store: OrderedDataStore) : {{
-    PlayerId: number,
-    Val: number
-}}
+local function _getTop50Players(store: OrderedDataStore) : {
+    {
+        PlayerId: number,
+        Val: number
+    }
+}
     if store == nil then return {} end
 
 
@@ -110,7 +112,7 @@ local function refreshLeaderboard(store: OrderedDataStore, folder: Folder)
 end
 
 HarukaLib.Clock(180, function()
-    refreshLeaderboard(skyTowerSpeedrunStore.orderedDataStore, skyTowerRankContainer)
+    refreshLeaderboard(abyssSpeedrunStore.orderedDataStore, abyssSpeedrunContainer)
 end, true)
 HarukaLib.Clock(60, function()
     refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)
@@ -134,7 +136,7 @@ ServerBindables.RToUpdateLeaderboardRank:Connect(function(key: string, value: nu
 end)
 
 
-ServerBindables.RToCheckLeaderboardRank:Connect(function(plr: Player, storeName: string)
+ServerBindables.RToAwardLeaderboardRank:Connect(function(plr: Player, storeName: string)
     if storeName == "Donation" then
         donationStore:GetOrderedPositionAsync("Player_"..plr.UserId, true):andThen(function(data)
             if not data then return end
@@ -152,5 +154,8 @@ ServerBindables.RToCheckLeaderboardRank:Connect(function(plr: Player, storeName:
             ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
 
         end):catch(function() end)
+
+    elseif storeName == "Abyss" then
+        --// TODO: Implement Abyss Speedrun Leaderboard
     end
 end)

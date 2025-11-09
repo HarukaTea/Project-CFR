@@ -29,7 +29,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowCharge = RepS.Packages.SkillProjectiles:FindFirstChild("FlowCharge", true):Clone() :: BasePart
     flowCharge.CFrame = char.PrimaryPart.CFrame
-    flowCharge.Parent = workspace
+    flowCharge.Parent = workspace.Terrain
     Debris:AddItem(flowCharge, 1)
 
     HarukaLib:EmitParticles(flowCharge)
@@ -42,7 +42,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
         task.spawn(function()
             local part = HarukaLib:CreateMockPart()
             part.CFrame = char.PrimaryPart.CFrame * CFrame.new(angle / 3, 0, 0)
-            part.Parent = workspace
+            part.Parent = workspace.Terrain
             Debris:AddItem(part, 10)
 
 
@@ -115,7 +115,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             --- visual
             local flowIce = RepS.Packages.SkillProjectiles:FindFirstChild("FlowIce", true):Clone() :: BasePart
             flowIce.CFrame = part.CFrame
-            flowIce.Parent = workspace
+            flowIce.Parent = workspace.Terrain
             Debris:AddItem(flowIce, 10)
 
             Promise.try(function()

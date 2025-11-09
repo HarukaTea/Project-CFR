@@ -141,7 +141,7 @@ do
     local serverSymbolContainer = workspace.MapComponents.GlobalServers :: Folder
 
     HarukaLib.Clock(60, function()
-        local list = CADimension:GetWorlds(20, true, game.PlaceId)
+        local list = CADimension:GetWorlds(true, game.PlaceId)
         local currentWorldServers = list[tostring(game.PlaceId)]
 
         currentWorldServers = currentWorldServers or {}

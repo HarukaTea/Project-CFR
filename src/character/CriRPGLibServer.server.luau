@@ -108,7 +108,8 @@ function CriRPGLib:_SpawnToLastLocation()
 
     local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
 
-    char:PivotTo(baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
+    HarukaLib:TeleportPlayer(char, baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
+
 
     if not map then return end
     local spawnPoints = map:FindFirstChild("SpawnPoints") :: Configuration
@@ -117,7 +118,7 @@ function CriRPGLib:_SpawnToLastLocation()
     local rSpawnPoint = spawnPoints:GetChildren()[math.random(1, #spawnPoints:GetChildren())]
 
 
-    char:PivotTo(rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
+    HarukaLib:TeleportPlayer(char, rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
 end
 
 
@@ -191,19 +192,9 @@ table.insert(CriRPGLib.Funcs, function()
     light.Shadows = false
     light.Parent = char.PrimaryPart
 
-    local blueLight = Instance.new("PointLight")
-    blueLight.Range = 38
-    blueLight.Brightness = 3
-    blueLight.Color = Color3.fromHex('#81ecec')
-    blueLight.Shadows = false
-    blueLight.Parent = char.PrimaryPart
-
     Add(HarukaLib:Hydrate(char, {
         ["Attr-CanYellowLight"] = function(state: boolean)
             light.Enabled = state or false
-        end,
-        ["Attr-CanBlueLight"] = function(state: boolean)
-            blueLight.Enabled = state or false
         end
     }))
 end)
@@ -946,7 +937,7 @@ table.insert(CriRPGLib.Funcs, function()
             if not itemInfo then continue end
 
             local artifactInfo = ArtifactBook:GetArtifactInfo(itemInfo.ArtifactId)
-            if artifactInfo.ArtifactId then continue end
+            if not artifactInfo.ArtifactId then continue end
 
             artifactSetCount[artifactInfo.ArtifactId] += 1
         end

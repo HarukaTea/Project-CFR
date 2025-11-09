@@ -532,7 +532,7 @@ function EntityLib:_ListenAttributeTracker()
 
             cylinderMesh.Parent = eff
 
-            eff.Parent = workspace
+            eff.Parent = workspace.Terrain
             Debris:AddItem(eff, 1)
 
             local afterSize = eff.Size + Vector3.new(15.99 * 2, 0, 15.99 * 2)
@@ -581,7 +581,7 @@ function EntityLib:_ListenAttributeTracker()
             Promise.delay(1):andThen(function()
                 local deathEffect = ReplicatedStorage.Packages.Effects.DefeatedEffect:Clone() :: BasePart
                 deathEffect.CFrame = location
-                deathEffect.Parent = workspace
+                deathEffect.Parent = workspace.Terrain
 
                 Debris:AddItem(deathEffect, 2)
 

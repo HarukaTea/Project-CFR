@@ -45,12 +45,12 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
         Promise.try(function()
             local astral = RepS.Packages.SkillProjectiles:FindFirstChild("ChainTargetCircle", true):Clone() :: BasePart
             astral.CFrame = CFrame.new(ClientLib.FindGroundByRay(pos))
-            astral.Parent = workspace
+            astral.Parent = workspace.Terrain
             Debris:AddItem(astral, 3)
 
             local sword = RepS.Packages.SkillProjectiles:FindFirstChild("DivineBlade", true):Clone() :: Model
             sword:PivotTo(astral.CFrame * CFrame.new(0, 70, 0) * CFrame.Angles(math.rad(-90), 0, 0))
-            sword.Parent = workspace
+            sword.Parent = workspace.Terrain
             Debris:AddItem(sword, 3)
 
 

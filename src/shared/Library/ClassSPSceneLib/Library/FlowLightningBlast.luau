@@ -32,12 +32,12 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local launch = RepS.Packages.SkillProjectiles:FindFirstChild("FlowLightningLaunch", true):Clone() :: BasePart
     launch.CFrame = directionCF * CFrame.new(0, -1, 0)
-    launch.Parent = workspace
+    launch.Parent = workspace.Terrain
     Debris:AddItem(launch, 10)
 
     local windBlueMesh = RepS.Packages.SkillProjectiles:FindFirstChild("FlowLightningWindBlue", true):Clone() :: MeshPart
     windBlueMesh.CFrame = directionCF * CFrame.Angles(math.rad(-22), math.rad(-90), math.rad(-90))
-    windBlueMesh.Parent = workspace
+    windBlueMesh.Parent = workspace.Terrain
     Debris:AddItem(windBlueMesh, 10)
 
 
@@ -52,12 +52,12 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowLightningOrb = RepS.Packages.SkillProjectiles:FindFirstChild("FlowLightningOrb", true):Clone() :: MeshPart
     flowLightningOrb.CFrame = directionCF * CFrame.new(0, 0, -5)
-    flowLightningOrb.Parent = workspace
+    flowLightningOrb.Parent = workspace.Terrain
     Debris:AddItem(flowLightningOrb, 10)
 
     local flowDebris = RepS.Packages.SkillProjectiles:FindFirstChild("FlowLightningDebris", true):Clone() :: BasePart
     flowDebris.CFrame = directionCF * CFrame.new(0, -1.5, -75) * CFrame.Angles(0, math.rad(90), 0)
-    flowDebris.Parent = workspace
+    flowDebris.Parent = workspace.Terrain
     Debris:AddItem(flowDebris, 10)
 
 
@@ -87,12 +87,12 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowLaunchStart = RepS.Packages.SkillProjectiles:FindFirstChild("FlowLaunchShockwave", true).Start:Clone() :: BasePart
     flowLaunchStart.CFrame = directionCF
-    flowLaunchStart.Parent = workspace
+    flowLaunchStart.Parent = workspace.Terrain
     Debris:AddItem(flowLaunchStart, 10)
 
     local flowMark = RepS.Packages.SkillProjectiles:FindFirstChild("FlowMark", true):Clone() :: BasePart
     flowMark.CFrame = directionCF * CFrame.new(0, -2.65, 0) * CFrame.Angles(0, math.rad(90), 0)
-    flowMark.Parent = workspace
+    flowMark.Parent = workspace.Terrain
     Debris:AddItem(flowMark, 10)
 
 
@@ -134,7 +134,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowSideBeams = RepS.Packages.SkillProjectiles:FindFirstChild("FlowSideBeams", true):Clone() :: BasePart
     flowSideBeams.CFrame = directionCF * CFrame.new(0, 0, 25) * CFrame.Angles(0, math.rad(180), 0)
-    flowSideBeams.Parent = workspace
+    flowSideBeams.Parent = workspace.Terrain
     Debris:AddItem(flowSideBeams, 10)
 
 
@@ -145,7 +145,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowSideBeams2 = RepS.Packages.SkillProjectiles:FindFirstChild("FlowSideBeams2", true):Clone() :: BasePart
     flowSideBeams2.CFrame = directionCF * CFrame.new(0, 0, 25) * CFrame.Angles(0, math.rad(180), 0)
-    flowSideBeams2.Parent = workspace
+    flowSideBeams2.Parent = workspace.Terrain
     Debris:AddItem(flowSideBeams2, 10)
 
     HarukaLib:CreateTween(flowSideBeams, sineTween, {
@@ -158,7 +158,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowProjectile = RepS.Packages.SkillProjectiles:FindFirstChild("FlowProjectile", true):Clone() :: BasePart
     flowProjectile.CFrame = directionCF * CFrame.Angles(0, 0, math.rad(114))
-    flowProjectile.Parent = workspace
+    flowProjectile.Parent = workspace.Terrain
     Debris:AddItem(flowProjectile, 10)
 
 
@@ -210,17 +210,17 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowWhiteShockwave = RepS.Packages.SkillProjectiles:FindFirstChild("FlowWhiteShockwave", true):Clone() :: BasePart
     flowWhiteShockwave.CFrame = directionCF * CFrame.Angles(math.rad(-64), math.rad(90), math.rad(-180))
-    flowWhiteShockwave.Parent = workspace
+    flowWhiteShockwave.Parent = workspace.Terrain
     Debris:AddItem(flowWhiteShockwave, 10)
 
     local flowTornado = RepS.Packages.SkillProjectiles:FindFirstChild("FlowTornado", true):Clone() :: BasePart
     flowTornado.CFrame = directionCF * CFrame.Angles(0, math.rad(90), math.rad(90))
-    flowTornado.Parent = workspace
+    flowTornado.Parent = workspace.Terrain
     Debris:AddItem(flowTornado, 10)
 
     local flowShockwave2 = RepS.Packages.SkillProjectiles:FindFirstChild("FlowShockwave2", true):Clone() :: BasePart
     flowShockwave2.CFrame = directionCF * CFrame.Angles(math.rad(-88), 0, 0)
-    flowShockwave2.Parent = workspace
+    flowShockwave2.Parent = workspace.Terrain
     Debris:AddItem(flowShockwave2, 10)
 
 
@@ -265,7 +265,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local flowBolt = RepS.Packages.SkillProjectiles:FindFirstChild("FlowBolt", true):Clone() :: BasePart
     flowBolt.CFrame = directionCF * CFrame.new(0, 0, -70)
-    flowBolt.Parent = workspace
+    flowBolt.Parent = workspace.Terrain
     Debris:AddItem(flowBolt, 10)
 
 

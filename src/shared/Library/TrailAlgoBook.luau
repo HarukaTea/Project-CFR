@@ -105,7 +105,7 @@ function TrailAlgoBook:Init(part: BasePart, props: {
 		projectile = projectile:Clone()
 		projectile.Position = startPos.Position
 		projectile.A0.Trail.Enabled = true
-		projectile.Parent = workspace
+		projectile.Parent = workspace.Terrain
 
 		local trail = projectile.A0.Trail :: Trail
 

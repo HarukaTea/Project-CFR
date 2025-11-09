@@ -49,7 +49,12 @@ end
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    local function playTween(data)
+    local function playTween(data: {
+        TweenInfo: string,
+        Goal: { [string]: any },
+        Objs: { Instance },
+        UseHarukaTween: boolean?
+    })
         local style, goal, objs, useHarukaTween = data.TweenInfo, data.Goal, data.Objs, data.UseHarukaTween
 
         style = AssetBook.TweenInfos[style]
@@ -131,6 +136,12 @@ table.insert(ClientWorldLib.Funcs, function()
     end
     Events.PlayCameraCutscene.On(playCameraScene)
     Bindables.PlayCameraCutscene:Connect(playCameraScene)
+
+
+    local function updateCameraCFrame(cframe: CFrame)
+
+    end
+    Events.UpdateCameraCFrame.On(updateCameraCFrame)
 end)
 
 
@@ -528,7 +539,7 @@ end)
 table.insert(ClientWorldLib.Funcs, function()
     local itemDisplayContainer = Instance.new("Folder")
     itemDisplayContainer.Name = "ItemDisplayContainer"
-    itemDisplayContainer.Parent = workspace
+    itemDisplayContainer.Parent = workspace.MapComponents
 
     local RNG = Random.new()
 
@@ -660,7 +671,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
     local clientObjContainer = Instance.new("Folder")
     clientObjContainer.Name = "ClientObjsContainer"
-    clientObjContainer.Parent = workspace
+    clientObjContainer.Parent = workspace.MapComponents
 
 
     local windmillWings = {}

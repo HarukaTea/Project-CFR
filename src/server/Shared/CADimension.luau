@@ -65,7 +65,7 @@ function CADimensions:Init()
 
 
 	game:BindToClose(function()
-		CADimensions:RemoveFromLiveServers()
+		CADimensions:RemoveFromDimension()
 	end)
 
     print("[HarukaServer] Added to CF Dimension")
@@ -146,12 +146,11 @@ end
 
 
 -- PlaceId defaults to game.PlaceId, whereas ExcludeSelf defaults to true
-function CADimensions:GetWorlds(maxFetch: number?, excludeThisServer: boolean?, placeId: number?): {[string]: {
+function CADimensions:GetWorlds(excludeThisServer: boolean?, placeId: number?): {[string]: {
     [string]: ServerInfo
 }}
 	placeId = placeId or game.PlaceId
 	excludeThisServer = (excludeThisServer == nil and true) or excludeThisServer
-	maxFetch = maxFetch or 20
 
 	local data = {}
 
@@ -159,19 +158,16 @@ function CADimensions:GetWorlds(maxFetch: number?, excludeThisServer: boolean?, 
         liveWorldsHashMap:GetAsync(key)
 
     end, 2, function(result)
+        result = result or {}
+
+        if not result[placeIdStr] then
+            result[placeIdStr] = {}
+        end
         if excludeThisServer then
-            result = result or {}
-
-            if not result[placeIdStr] then
-                result[placeIdStr] = {}
-            end
-
             result[placeIdStr][serverId] = nil
         end
 
-
-        local dataTable = HarukaLib.TableUtils.Cut(result[placeIdStr], maxFetch)
-        data = dataTable
+        data = result
     end)
 
 	return data

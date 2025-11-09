@@ -31,7 +31,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     fireball.CFrame = char["Right Arm"].CFrame
     fireball.CFrame = HarukaLib:CFLookAt(fireball.Position, targetingEnemy.PrimaryPart.Position)
     fireball.Anchored = true
-    fireball.Parent = workspace
+    fireball.Parent = workspace.Terrain
     Debris:AddItem(fireball, 3)
 
 
@@ -69,7 +69,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
                     local hitVFX = RepS.Packages.SkillProjectiles:FindFirstChild("FireballHitVFX", true):Clone() :: BasePart
                     hitVFX.CFrame = entity.PrimaryPart.CFrame
                     hitVFX.Anchored = true
-                    hitVFX.Parent = workspace
+                    hitVFX.Parent = workspace.Terrain
                     Debris:AddItem(hitVFX, 5)
 
                     HarukaLib:EmitParticles(hitVFX)

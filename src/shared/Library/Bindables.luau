@@ -4,30 +4,60 @@ local RepS = game:GetService("ReplicatedStorage")
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 return {
+    --@params: `(slotId: number)`
     CDEndTimeReached = Signal.new(),
+
+    --@params: `None`
     ActionSlide = Signal.new(),
 
+    --@params: `(message: string, sender: Player)`
     PlayerChatted = Signal.new(),
+
+    --@params: `(anim: string)`
     PlayAnimation = Signal.new(),
+
+    --@params: `(anim: string)`
     PlayRawAnimation = Signal.new(),
+
+    --@params: `(anim: string)`
     CancelRawAnimation = Signal.new(),
+
+    --@params: `(data: {TweenInfo: string, Goal: { [string]: any }, Objs: { Instance }, UseHarukaTween: boolean?} )`
     ClientTween = Signal.new(),
+
+    --@parmas: `(sound: Sound)`
     PlaySound = Signal.new(),
+
+    --@params: `(part: BasePart)`
     PlayCameraCutscene = Signal.new(),
 
+    --@params: `(cframe: CFrame)`
+    UpdateCameraCFrame = Signal.new(),
 
+    --@params: `(msg: string)`
     CreateNotify = Signal.new(),
+
+    --@params: `(msg: string)`
     CreateSystemNotify = Signal.new(),
+
+    --@params: `(msg: string, duration: number)`
     CreateFSNotify = Signal.new(),
+
+    --@params: `(data: {Hint: string, ConfirmText: string, CancelText: string, ConfirmUniqueId: string} )`
     CreateConfirmPrompt = Signal.new(),
+
+    --@params: `(data: {Hint: string, ConfirmText: string, ConfirmUniqueId: string} )`
     CreateInfoPrompt = Signal.new(),
+
+    --@params: `(text: string, showBar: boolean)`
     CreateCenterNotify = Signal.new(),
+
+    --@params: `(duration: number)`
     CreateCircularFade = Signal.new(),
 
+    --@params: `(uniqueId: string, result: "YES" | "NO")`
     ConfirmPromptChosen = Signal.new(),
 
-
+    --@params: `None`
     Titlescreen_CameraCFrameChanged = Signal.new(),
-
-    DisplayTutorialTopic = Signal.new(),
 }

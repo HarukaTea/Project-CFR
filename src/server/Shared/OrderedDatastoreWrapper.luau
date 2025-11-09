@@ -1,21 +1,36 @@
 
--------
--- Made by: core @corehimself
+-- Made by: @corehimself
 -- Created: 9/18/2023
--------
 
-local OrderedDatastore = {}
-OrderedDatastore.__index = OrderedDatastore
 
--- Utils
-local datastoreService = game:GetService("DataStoreService")
+local DSS = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
+
+
+export type OrderedDatastoreWrapper = {
+	__index : OrderedDatastoreWrapper,
+
+	GetOrderedPositionAsync: (self: OrderedDatastoreWrapper, Key: string | number, Descending: boolean) -> Promise.TypedPromise,
+	UpdateAsync: (self: OrderedDatastoreWrapper, Key: string, Value: number) -> Promise.TypedPromise,
+
+	new: (OrderedDatastoreName: string, ConvertUserIdToString: boolean) -> OrderedDatastoreWrapper,
+
+	dataName: string,
+	convertUserIdToString: boolean,
+	orderedDataStore: OrderedDataStore
+}
+
+
+local OrderedDatastore = {} :: OrderedDatastoreWrapper
+OrderedDatastore.__index = OrderedDatastore
+
+
+
 -- Constants
-local CACHE_EXPIRATION_TIME = 90
 local dataCache = {}
 
 local function retrieveFromCache(PlayerUserID: number?, dName: string)
@@ -40,10 +55,10 @@ local function pagesToTable(pages)
 	return items
 end
 local function waitForRequestBudget(requestType)
-	local currentBudget = datastoreService:GetRequestBudgetForRequestType(requestType)
+	local currentBudget = DSS:GetRequestBudgetForRequestType(requestType)
 
 	while currentBudget < 1 do
-		currentBudget = datastoreService:GetRequestBudgetForRequestType(requestType)
+		currentBudget = DSS:GetRequestBudgetForRequestType(requestType)
 		task.wait(5)
 	end
 end
@@ -57,7 +72,6 @@ local function safeCall(func, self, requestType, ...)
 		success, ret = pcall(func, self, ...)
 
 		if not success then
-			print("[OrderedDatastore] Error: " .. ret)
 			if string.find(ret, "501") or string.find(ret, "504") then
 				return
 			end
@@ -77,7 +91,6 @@ local function retryOperation(maxRetries, retryDelay, operation)
 			if retries < maxRetries then
 				task.wait(retryDelay)
 			else
-				print("[OrderedDatastore] Max retries reached")
 				return nil
 			end
 		end
@@ -201,7 +214,7 @@ function OrderedDatastore.new(OrderedDatastoreName: string, ConvertUserIdToStrin
 	local Info = {
 		dataName = OrderedDatastoreName,
 		convertUserIdToString = ConvertUserIdToString,
-		orderedDataStore = datastoreService:GetOrderedDataStore(OrderedDatastoreName),
+		orderedDataStore = DSS:GetOrderedDataStore(OrderedDatastoreName),
 	}
 
 	return setmetatable(Info, OrderedDatastore)

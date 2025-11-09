@@ -80,7 +80,7 @@ table.insert(ServerWorldLib.Funcs, function()
 
     local craftingProductContainer = Instance.new("Folder")
     craftingProductContainer.Name = "CraftingProductContainer"
-    craftingProductContainer.Parent = workspace
+    craftingProductContainer.Parent = workspace.MapComponents
 
     local partyHolderContainer = Instance.new("Folder")
     partyHolderContainer.Name = "PartyHolder"
@@ -89,6 +89,16 @@ table.insert(ServerWorldLib.Funcs, function()
     local globalServersContainer = Instance.new("Folder")
     globalServersContainer.Name = "GlobalServers"
     globalServersContainer.Parent = workspace.MapComponents
+
+
+    local skyGalleonContainer = Instance.new("Folder")
+    skyGalleonContainer.Name = "SkyGalleonsContainer"
+    skyGalleonContainer.Parent = workspace.MapComponents
+
+
+    if workspace:FindFirstChild("Accessory Storage") then
+        workspace["Accessory Storage"]:Destroy()
+    end
 end)
 
 
@@ -107,7 +117,7 @@ table.insert(ServerWorldLib.Funcs, function()
         productVal:SetAttribute("ItemStat", info.StatInfo)
         productVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
-        productVal.Parent = workspace.CraftingProductContainer
+        productVal.Parent = workspace.MapComponents.CraftingProductContainer
     end
 end)
 
@@ -142,7 +152,7 @@ table.insert(ServerWorldLib.Funcs, function()
     for _, tree: Model in CollectionService:GetTagged("TreeEntity") do
         local part = HarukaLib:CreateMockPart()
         part.Name = "TreeBoundingBox"
-        part.Size = select(2, tree:GetBoundingBox()) * 1.599
+        part.Size = select(2, tree:GetBoundingBox()) * 1.1599
         part.CFrame = tree.WorldPivot
         part.CanQuery = true
         part.Parent = tree

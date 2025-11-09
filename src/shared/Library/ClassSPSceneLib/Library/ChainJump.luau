@@ -22,7 +22,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     local projectile = RepS.Packages.SkillProjectiles:FindFirstChild("ExtraJumpFade", true):Clone() :: Model
     projectile:PivotTo(char.PrimaryPart.CFrame * CFrame.new(0, -3, 0))
 
-    projectile.Parent = workspace
+    projectile.Parent = workspace.Terrain
     Debris:AddItem(projectile, 3)
 
 

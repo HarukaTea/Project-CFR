@@ -31,7 +31,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local orb = RepS.Packages.SkillProjectiles:FindFirstChild("FlowGanyuOrb", true):Clone() :: Model
     orb:PivotTo(CFrame.new(centerPos) * CFrame.new(0, 30, 0))
-    orb.Parent = workspace
+    orb.Parent = workspace.Terrain
     Debris:AddItem(orb, 10)
 
     local preSize = orb.PrimaryPart.Size
@@ -60,7 +60,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             droplet.Position = orb.PrimaryPart.Position + Vector3.new(
                 math.random(-20, 20), 0, math.random(-20, 20)
             )
-            droplet.Parent = workspace
+            droplet.Parent = workspace.Terrain
             Debris:AddItem(droplet, 4)
 
 
@@ -75,7 +75,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
                 local impact = RepS.Packages.SkillProjectiles:FindFirstChild("FlowGanyuImpact", true):Clone() :: BasePart
                 impact.CFrame = CFrame.new(floorPos) + Vector3.yAxis
-                impact.Parent = workspace
+                impact.Parent = workspace.Terrain
                 Debris:AddItem(impact, 3)
 
                 HarukaLib:EmitParticles(impact)

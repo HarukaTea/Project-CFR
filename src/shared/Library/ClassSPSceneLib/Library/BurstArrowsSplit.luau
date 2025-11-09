@@ -36,7 +36,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
         local impact = RepS.Packages.SkillProjectiles:FindFirstChild("BurstArrowUltImpact", true):Clone() :: BasePart
         impact.CFrame = targetingEnemy.PrimaryPart.CFrame
-        impact.Parent = workspace
+        impact.Parent = workspace.Terrain
         Debris:AddItem(impact, 1)
 
 
@@ -54,7 +54,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
         arrow.Anchored = false
         arrow.CFrame = char["Left Arm"].CFrame
         arrow.CFrame = CFrame.new(arrow.Position, endCF.Position)
-        arrow.Parent = workspace
+        arrow.Parent = workspace.Terrain
 
         local start = arrow.CFrame
         local mid1 = (start:Lerp(endCF, 0.3) * angles[math.random(#angles)]).Position

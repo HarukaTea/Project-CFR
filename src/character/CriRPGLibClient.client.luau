@@ -136,13 +136,13 @@ table.insert(CriRPGLib.Funcs, function()
             isInCombat = true
 
             pcall(_destroyCombatBorder)
-            Bindables.CreateCenterNotify:Fire("COMBAT START!", true)
+            Bindables.CreateCenterNotify:Fire("ADVANTAGE!", true)
 
             local border = RepS.Packages.Unloads.CombatBorder:Clone() :: Model
             local entityPos = char:GetAttribute("CombatLocation") :: CFrame
 
             border:PivotTo(entityPos)
-            border.Parent = workspace
+            border.Parent = workspace.MapComponents
 
             HarukaLib:SetCollisionGroup(border, "Hitbox")
 
@@ -374,7 +374,7 @@ table.insert(CriRPGLib.Funcs, function()
             orbContainer:ClearAllChildren()
         else
             orbContainer:ClearAllChildren()
-            orbContainer.Parent = workspace
+            orbContainer.Parent = workspace.MapComponents
         end
     end
     Add(HarukaLib:Hydrate(char, {
@@ -591,7 +591,7 @@ table.insert(CriRPGLib.Funcs, function()
             projectileContainer:ClearAllChildren()
         else
             projectileContainer:ClearAllChildren()
-            projectileContainer.Parent = workspace
+            projectileContainer.Parent = workspace.MapComponents
         end
     end
     Add(HarukaLib:Hydrate(char, {
@@ -603,7 +603,7 @@ end)
 table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
     projectileContainer.Name = "UniProjectileContainer_"..plr.UserId
-    projectileContainer.Parent = workspace
+    projectileContainer.Parent = workspace.MapComponents
     Add(projectileContainer)
 
 

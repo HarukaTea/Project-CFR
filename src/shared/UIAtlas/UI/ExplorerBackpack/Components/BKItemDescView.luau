@@ -225,9 +225,6 @@ return function (scope: Fusion.Scope<any>, props: {
                             end
 
                             return classInfo.Icon
-
-                        elseif attr == "ForVariant" then
-                            return AssetBook.ItemEffectIcons[val] or AssetBook.ExtraIcons.Unknown
                         else
                             return AssetBook.ItemEffectIcons[attr] or AssetBook.ExtraIcons.Unknown
                         end
@@ -240,9 +237,6 @@ return function (scope: Fusion.Scope<any>, props: {
                             end
 
                             return classInfo.Color
-
-                        elseif attr == "ForVariant" then
-                            return AssetBook.ItemEffectIconColors[val] or Color3.new(1, 1, 1)
 
                         elseif string.find(attr, "Can") then
                             return AssetBook.ItemEffectIconColors[attr] or Color3.new(1, 1, 1)
@@ -267,9 +261,6 @@ return function (scope: Fusion.Scope<any>, props: {
 
                         elseif attr == "ForClass" then
                             return `<font color="#e9cc9f">Class: </font> {val}`
-
-                        elseif attr == "ForVariant" then
-                            return `<font color="#e9cc9f">Variant: </font> {val}`
                         else
                             return `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
                         end

@@ -26,7 +26,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     local mark = RepS.Packages.SkillProjectiles:FindFirstChild("ArcaneMarkRune", true):Clone() :: Model
     mark:PivotTo(targetingEnemy.PrimaryPart.CFrame * CFrame.new(0, 2.5, 0))
     mark.PrimaryPart.Anchored = true
-    mark.Parent = workspace
+    mark.Parent = workspace.Terrain
     Debris:AddItem(mark, 5)
 
     HarukaLib:EmitParticles(mark)

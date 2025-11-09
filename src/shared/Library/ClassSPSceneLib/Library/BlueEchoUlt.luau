@@ -36,7 +36,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local echoRay = RepS.Packages.SkillProjectiles:FindFirstChild("EchoRay", true):Clone() :: BasePart
     echoRay.Position = centerPos
-    echoRay.Parent = workspace
+    echoRay.Parent = workspace.Terrain
     Debris:AddItem(echoRay, 10)
 
 
