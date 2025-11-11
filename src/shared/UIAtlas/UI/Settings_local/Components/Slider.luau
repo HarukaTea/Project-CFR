@@ -87,9 +87,9 @@ return function(scope: Fusion.Scope<any>, props: {
 
 		[Children] = {
 			Components.UICorner(scope, { CornerRadius = UDim.new(0.25, 0) }),
-			Components.UIStroke(scope, {
+			Components.ScaledUIStroke(scope, {
 				Color = Color3.new(),
-				Thickness = 3
+				Thickness = 0.15
 			}),
 
 			uiDragDetector
@@ -120,12 +120,12 @@ return function(scope: Fusion.Scope<any>, props: {
             Components.UIAspectRatioConstraint(scope, 26.688),
 
             Components.RoundUICorner(scope),
-            Components.UIStroke(scope, {
-                Thickness = 2,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.1,
 
-                Transparency = Fusion.Computed(scope, function(use: Fusion.Use)
-                    return if use(isSelecting) then 0 else 1
-                end)
+                Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
+                    return use(isSelecting)
+                end),
             }),
 
 			Components.TextLabel(scope, {

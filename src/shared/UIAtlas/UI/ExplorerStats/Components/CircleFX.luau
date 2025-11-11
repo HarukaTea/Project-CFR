@@ -13,7 +13,9 @@ return function(scope: Fusion.Scope<any>)
 
         [Children] = {
             Components.RoundUICorner(scope),
-            Components.UIStroke(scope, { Thickness = 2.5 })
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.07
+            })
         }
     })
 end

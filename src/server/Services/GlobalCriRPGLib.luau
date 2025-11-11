@@ -739,7 +739,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end)
         if badStatus then
             if RunService:IsStudio() then
-                Events.CreateNotify.Fire(plr, "[Error] Invalid Function Status Code")
+                Events.CreateNotify.Fire(plr, "[Error] Invalid Function Status Code (Studio DEBUG)")
             end
 
             Events.RequestToCastItem_Response.Fire(plr, {

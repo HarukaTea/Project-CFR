@@ -10,6 +10,11 @@ return {
     --@params: `None`
     ActionSlide = Signal.new(),
 
+    --@params: `None`
+    CloseExplorerUIs = Signal.new(),
+
+
+
     --@params: `(message: string, sender: Player)`
     PlayerChatted = Signal.new(),
 
@@ -57,6 +62,9 @@ return {
 
     --@params: `(uniqueId: string, result: "YES" | "NO")`
     ConfirmPromptChosen = Signal.new(),
+
+
+
 
     --@params: `None`
     Titlescreen_CameraCFrameChanged = Signal.new(),

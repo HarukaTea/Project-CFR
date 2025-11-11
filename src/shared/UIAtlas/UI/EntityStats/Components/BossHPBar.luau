@@ -122,9 +122,7 @@ return function (scope: Fusion.Scope<any>, props: {
                         Text = entityInfo.Name,
 
                         [Children] = {
-                            Components.TextUIStroke(scope, {
-                                Thickness = 2
-                            })
+                            Components.ScaledTextUIStroke(scope, {})
                         }
                     }),
                     Components.TextLabel(scope, {
@@ -137,9 +135,7 @@ return function (scope: Fusion.Scope<any>, props: {
                         Text = entityInfo.Tag,
 
                         [Children] = {
-                            Components.TextUIStroke(scope, {
-                                Thickness = 2
-                            })
+                            Components.ScaledTextUIStroke(scope, {})
                         }
                     }),
 
@@ -234,9 +230,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                 end),
 
                                 [Children] = {
-                                    Components.TextUIStroke(scope, {
-                                        Thickness = 2
-                                    })
+                                    Components.ScaledTextUIStroke(scope, {})
                                 }
                             }),
 
@@ -256,9 +250,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                 end),
 
                                 [Children] = {
-                                    Components.TextUIStroke(scope, {
-                                        Thickness = 2
-                                    })
+                                    Components.ScaledTextUIStroke(scope, {})
                                 }
                             })
                         }

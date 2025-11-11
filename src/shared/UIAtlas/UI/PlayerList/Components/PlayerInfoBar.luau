@@ -113,8 +113,8 @@ return function(scope: Fusion.Scope<any>, props: {
                             Components.UIPadding(scope, {
                                 PaddingTop = UDim.new(0.05, 0),
                                 PaddingBottom = UDim.new(0.05, 0),
-                                PaddingLeft = UDim.new(0.05, 0),
-                                PaddingRight = UDim.new(0.05, 0)
+                                PaddingLeft = UDim.new(0, 4),
+                                PaddingRight = UDim.new(0, 4),
                             })
                         }
                     }),
@@ -139,9 +139,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 AutoLocalize = false,
 
                 [Children] = {
-                    Components.TextUIStroke(scope, {
-                        Thickness = 2
-                    })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             }),
         }
@@ -170,9 +168,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 TextColor3 = Color3.fromHex('#ffeaa7'),
 
                 [Children] = {
-                    Components.TextUIStroke(scope, {
-                        Thickness = 2
-                    })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             })
         }

@@ -89,8 +89,8 @@ return function (scope: Fusion.Scope<any>, props: {
                             Components.UIPadding(scope, {
                                 PaddingTop = UDim.new(0.05, 0),
                                 PaddingBottom = UDim.new(0.05, 0),
-                                PaddingLeft = UDim.new(0.05, 0),
-                                PaddingRight = UDim.new(0.05, 0)
+                                PaddingLeft = UDim.new(0, 4),
+                                PaddingRight = UDim.new(0, 4),
                             })
                         }
                     }),

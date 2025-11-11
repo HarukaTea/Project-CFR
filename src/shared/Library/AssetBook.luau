@@ -205,32 +205,31 @@ AssetBook.BadgeIds = {
 	QueenBeeDestroyer = 2491246281240652,
 	HMWolfHunter = 467703311828658,
 	GoldCollector = 306749336762986,
-	SkyAdventurer = 2140109709187125,
 	GoldGatherer = 4119351477910950,
 	StoneBreaker = 1589730243445305,
-	Fighter = 3437152739289237
+	Fighter = 3437152739289237,
+
+	--// SkyAdventurer = 2140109709187125,
 }
 
 
 
 AssetBook.PlaceIds = {
-	AbyssLevelTest = 17737750943,
-	AbyssLevelReal = 18331795211,
-
-	MainworldTest = 118088243313343,
-	MainworldReal = 124519565742104,
-
-	TutorialTest = 0,
-	TutorialReal = 1043446942,
-
 	["7037847546"] = {
 		AbyssLevel = 18331795211,
 		Mainworld = 124519565742104,
 		Tutorial = 1043446942,
+	},
+	["123"] = {
+		AbyssLevel = 17737750943,
+		Mainworld = 118088243313343,
+		Tutorial = 0,
 	}
 }
 
 
-AssetBook.CFUniverseId = 7037847546
+AssetBook.CFUniverseId_Main = 7037847546
+
+
 
 return AssetBook

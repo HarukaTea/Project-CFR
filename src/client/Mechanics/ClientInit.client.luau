@@ -4,6 +4,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -139,9 +140,10 @@ table.insert(ClientWorldLib.Funcs, function()
 
 
     local function updateCameraCFrame(cframe: CFrame)
-
+        workspace.CurrentCamera.CFrame = cframe
     end
     Events.UpdateCameraCFrame.On(updateCameraCFrame)
+    Bindables.UpdateCameraCFrame:Connect(updateCameraCFrame)
 end)
 
 
@@ -779,6 +781,17 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    Bindables.CloseExplorerUIs:Connect(function()
+        Players.LocalPlayer:SetAttribute("CurrentUIGroup", "None")
+
+        HarukaLib:FreezePlayerControls("Unfreeze")
+
+        GuiService.SelectedObject = nil
+    end)
+end)
 
 
 ClientWorldLib:Init()

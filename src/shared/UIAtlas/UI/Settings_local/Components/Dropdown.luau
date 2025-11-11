@@ -35,12 +35,12 @@ return function(scope: Fusion.Scope<any>, props: {
             Components.UIAspectRatioConstraint(scope, 26.688),
 
             Components.RoundUICorner(scope),
-            Components.UIStroke(scope, {
-                Thickness = 2,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.1,
 
-                Transparency = Fusion.Computed(scope, function(use: Fusion.Use)
-                    return if use(isSelecting) then 0 else 1
-                end)
+                Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
+                    return use(isSelecting)
+                end),
             }),
 
 			Components.TextLabel(scope, {
@@ -84,8 +84,8 @@ return function(scope: Fusion.Scope<any>, props: {
                         end
                     }),
 
-                    Components.UIStroke(scope, {
-                        Thickness = 2.5,
+                    Components.ScaledUIStroke(scope, {
+                        Thickness = 0.08,
 
                         Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
                             return use(isSelectingDropdown)

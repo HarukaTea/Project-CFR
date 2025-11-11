@@ -58,14 +58,11 @@ return function(scope: Fusion.Scope<any>, props: {
 
                 [Children] = {
                     Components.RoundUICorner(scope),
-                    Components.TextUIStroke(scope, {
-                        Name = "UIStrokeText",
-                        Thickness = 2
-                    }),
-                    Components.UIStroke(scope, {
+                    Components.ScaledTextUIStroke(scope, {}),
+                    Components.ScaledUIStroke(scope, {
                         Name = "UIStroke",
                         Color = Color3.fromHex('#7bed9f'),
-                        Thickness = 3
+                        Thickness = 0.05
                     }),
                     Components.UIPadding(scope, {
                         PaddingTop = UDim.new(0.15, 0),
@@ -85,7 +82,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 Text = "LEVEL",
 
                 [Children] = {
-                    Components.TextUIStroke(scope, { Thickness = 1.5 })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             }),
             Components.TextLabel(scope, {
@@ -100,7 +97,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 end),
 
                 [Children] = {
-                    Components.TextUIStroke(scope, { Thickness = 2 })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             }),
             Components.TextLabel(scope, {
@@ -114,7 +111,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 Text = `+{props.AddedEXP}`,
 
                 [Children] = {
-                    Components.TextUIStroke(scope, { Thickness = 2 })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             }),
 

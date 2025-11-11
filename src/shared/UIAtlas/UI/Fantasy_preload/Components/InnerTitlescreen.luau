@@ -115,7 +115,7 @@ return function (scope: Fusion.Scope<any>, props: {
 
 
                 Components.Frame(scope, {
-                    Name = "FriendList",
+                    Name = "ServerList",
                     Position = UDim2.fromScale(0.5, 0.3),
 
                     [Children] = {

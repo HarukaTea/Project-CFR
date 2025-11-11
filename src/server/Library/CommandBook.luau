@@ -127,7 +127,8 @@ local commands = {
                 if not ServerLib.IsCharValid(thatChar) then continue end
                 if not ServerLib.IsCharValid(destinationPlayer.Character) then break end
 
-                thatChar:PivotTo(destinationPlayer.Character.PrimaryPart.CFrame)
+
+                HarukaLib:TeleportPlayer(thatChar, destinationPlayer.Character.PrimaryPart.CFrame)
             end
 
             props.ResolveObj()

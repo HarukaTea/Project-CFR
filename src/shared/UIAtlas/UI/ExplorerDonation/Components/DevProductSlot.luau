@@ -96,8 +96,8 @@ return function(scope: Fusion.Scope<any>, props: {
                 CornerRadius = UDim.new(0.1, 0)
             }),
 
-            Components.UIStroke(scope, {
-                Thickness = 3,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.025,
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)

@@ -325,8 +325,8 @@ return function (scope: Fusion.Scope<any>, props: {
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.015, 0) }),
 
-            Components.UIStroke(scope, {
-                Thickness = 6,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.02,
                 Color = Color3.new()
             }),
 

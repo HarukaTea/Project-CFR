@@ -384,20 +384,57 @@ function HarukaComponents.TextButton(scope: Fusion.Scope<any>, props: FusionProp
 end
 
 
-function HarukaComponents.UIStroke(scope: Fusion.Scope<any>, props: FusionPropsEntry) : UIStroke
+--@deprecated, use ScaledUIStroke instead
+function HarukaComponents.UIStroke(scope: Fusion.Scope<any>, props: FusionPropsEntry, forceUse: boolean?) : UIStroke
+	if not forceUse then
+		warn("You are using deprecated UIStroke, use ScaledUIStroke instead")
+	end
+
 	return _createNewCompoent(scope, props, "UIStroke", {
 		Thickness = 1,
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 		Color = WHITE_BG_COLOR,
-		Transparency = 0
+		Transparency = 0,
 	})
 end
 
 
+function HarukaComponents.ScaledUIStroke(scope: Fusion.Scope<any>, props: FusionPropsEntry) : UIStroke
+	return _createNewCompoent(scope, props, "UIStroke", {
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+		Color = WHITE_BG_COLOR,
+		Transparency = 0,
+
+		--// Nov 2025 update: roblox added ScaledThickness
+		StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize,
+		Thickness = 0.015
+	})
+end
+
+
+--@deprecated, use ScaledTextUIStroke instead
 function HarukaComponents.TextUIStroke(scope: Fusion.Scope<any>, props: FusionPropsEntry) : UIStroke
+	warn("You are using deprecated TextUIStroke, use ScaledTextUIStroke instead")
+
 	return _createNewCompoent(scope, props, "UIStroke", {
 		Thickness = 1,
 		Transparency = 0,
+	})
+end
+
+
+function HarukaComponents.ScaledTextUIStroke(scope: Fusion.Scope<any>, props: FusionPropsEntry, isBillboard: boolean?) : UIStroke
+	local defaultThickness = 0.1159
+	if isBillboard then
+		defaultThickness = 0.05
+	end
+
+	return _createNewCompoent(scope, props, "UIStroke", {
+		Transparency = 0,
+
+		--// Nov 2025 update: roblox added ScaledThickness
+		StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize,
+		Thickness = defaultThickness
 	})
 end
 

@@ -1,6 +1,8 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -30,10 +32,10 @@ return function (self: Self)
     self.IsUIShown = Value(false)
 
 
-    self.CurrentCategory = Value("RoStore")
+    self.CurrentCategory = Value("Donation")
 
 
-    local ranks = Components.FusionComponents.useChildren(scope, workspace:WaitForChild("DonationRankContainer", 999))
+    local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("DonationRankContainer", 999))
     self.DonationRanks = ranks :: Fusion.Value<{ IntValue }>
 
 
@@ -42,14 +44,21 @@ return function (self: Self)
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
             if newPanel == nil then return end
 
-            self.IsUIShown:set(newPanel == "Store")
+            self.IsUIShown:set(newPanel == "Donation")
+
+            if newPanel == "Donation" then
+                if game.GameId ~= AssetBook.CFUniverseId_Main then
+                    Bindables.CloseExplorerUIs:Fire()
+                    Bindables.CreateNotify:Fire("You can't donate in test place!")
+                end
+            end
         end
     }))
 
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {
-        Name = "UIBlur_RoStore",
+        Name = "UIBlur_Donation",
         Size = 21,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)

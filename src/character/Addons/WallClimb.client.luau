@@ -25,8 +25,6 @@ local WallClimb = {}
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
-RunService:UnbindFromRenderStep("WallClimbSystem")
-
 
 Add(Players.PlayerRemoving:Connect(function(player: Player)
 	if player == plr then
@@ -124,7 +122,6 @@ end
 WallClimb.IsClimbing = false
 
 function WallClimb:Init()
-    if not char:GetAttribute("CanClimb") then return end
     if WallClimb.IsClimbing then return end
 
     local rayResult = workspace:Raycast(char.PrimaryPart.Position, char.PrimaryPart.CFrame.LookVector, wallClimbRaycastParams) :: RaycastResult
@@ -209,7 +206,7 @@ function WallClimb:Stop()
 end
 
 
-RunService:BindToRenderStep("WallClimbSystem", Enum.RenderPriority.Camera.Value, function()
+Add(RunService.Heartbeat:Connect(function()
     if IS_PC then
         local pressedKeys = UserInputService:GetKeysPressed()
 
@@ -225,7 +222,4 @@ RunService:BindToRenderStep("WallClimbSystem", Enum.RenderPriority.Camera.Value,
         local key = getKeyFromMoveDirection()
         climbFunction(key)
     end
-end)
-Add(function()
-    RunService:UnbindFromRenderStep("WallClimbSystem")
-end)
+end))

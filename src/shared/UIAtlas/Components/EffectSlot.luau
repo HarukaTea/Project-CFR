@@ -83,7 +83,7 @@ return function (scope: Fusion.Scope<any>, effect: StringValue) : ImageLabel
                 end),
 
                 [Children] = {
-                    Components.TextUIStroke(scope, { Thickness = 1.7 })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             }),
 

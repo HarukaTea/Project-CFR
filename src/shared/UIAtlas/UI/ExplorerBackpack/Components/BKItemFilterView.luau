@@ -14,6 +14,9 @@ return function (scope: Fusion.Scope<any>, props: {
     SortMethodList: { Fusion.Value<boolean> },
 })
 
+
+    local isSelecting = Fusion.Value(scope, false)
+
     local function Title(text: string, order: number)
         return Components.TextLabel(scope, {
             Name = text.."Title",
@@ -50,7 +53,52 @@ return function (scope: Fusion.Scope<any>, props: {
                 }),
 
 
-                Title("Search", 1),
+                Components.TextLabel(scope, {
+                    Name = "SearchTitle",
+                    LayoutOrder = 1,
+                    Size = UDim2.fromScale(0.9, 0.05),
+                    TextXAlignment = Enum.TextXAlignment.Left,
+
+                    Text = "Search",
+
+                    [Children] = {
+                        Components.UIAspectRatioConstraint(scope, 14.438),
+
+                         Components.Frame(scope, {
+                            Name = "Close",
+                            Size = UDim2.fromScale(2, 2),
+                            Position = UDim2.fromScale(1, -1),
+                            AnchorPoint = Vector2.new(1, 0),
+                            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
+                            [Children] = {
+                                Components.ImageLabel(scope, {
+                                    Name = "Icon",
+                                    Image = "rbxassetid://82804434423267",
+
+                                    ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                        return if use(isSelecting) then Color3.fromRGB(255, 255, 0) else Color3.new(1, 1, 1)
+                                    end)
+                                }),
+                                Components.HoverImageButton(scope, {
+                                    [Fusion.OnEvent("MouseEnter")] = function()
+                                        isSelecting:set(true)
+                                    end,
+                                    [Fusion.OnEvent("MouseLeave")] = function()
+                                        isSelecting:set(false)
+                                    end,
+
+
+                                    [Fusion.OnEvent("MouseButton1Click")] = function()
+                                        --// TODO: close BKFilterItemView
+                                    end
+                                })
+                            }
+                        })
+                    }
+                }),
+
+
                 Title("Includes", 4),
                 Title("Sort Order", 6),
 
@@ -61,6 +109,8 @@ return function (scope: Fusion.Scope<any>, props: {
                     Size = UDim2.fromScale(0.9, 0.06),
                     PlaceholderText = "Item Name Here",
                     TextXAlignment = Enum.TextXAlignment.Left,
+                    BackgroundTransparency = 0,
+                    BackgroundColor3 = Components.HarukaColorLab.Muelsyse.BackgroundLighter,
 
                     Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(props.FilterItemText)
@@ -72,10 +122,8 @@ return function (scope: Fusion.Scope<any>, props: {
                         Components.UIAspectRatioConstraint(scope, 11.359),
 
                         Components.RoundUICorner(scope),
-                        Components.UIStroke(scope, {
-                            Thickness = 1.5,
-                            Transparency = 0.1,
-                            Color = Color3.fromRGB(213, 206, 193)
+                        Components.ScaledUIStroke(scope, {
+                            Thickness = 0.05,
                         }),
 
                         Components.UIPadding(scope, {
@@ -90,7 +138,7 @@ return function (scope: Fusion.Scope<any>, props: {
                             Size = UDim2.fromScale(0.8, 0.8),
                             SizeConstraint = Enum.SizeConstraint.RelativeYY,
                             Image = "rbxassetid://82194349460454",
-                            ImageColor3 = Color3.fromRGB(213, 206, 193)
+                            ImageColor3 = Components.WHITE_COLOR
                         })
                     }
                 }),
@@ -119,14 +167,11 @@ return function (scope: Fusion.Scope<any>, props: {
                                 Size = UDim2.fromScale(0.95, 0.32),
 
 
-                                BackgroundTransparency = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then 0 else 1
-                                end),
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then Color3.fromRGB(213, 206, 193) else Color3.fromRGB(29, 37, 49)
+                                    return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.HarukaColorLab.Muelsyse.BackgroundLighter
                                 end),
                                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then Color3.fromRGB(29, 37, 49) else Color3.fromRGB(213, 206, 193)
+                                    return if use(props.FilterTierList[index]) then Components.HarukaColorLab.Muelsyse.BackgroundLighter else Components.WHITE_COLOR
                                 end),
 
 
@@ -145,9 +190,8 @@ return function (scope: Fusion.Scope<any>, props: {
                                     Components.UIAspectRatioConstraint(scope, 10.117),
                                     Components.UICorner(scope, { CornerRadius = UDim.new(0.05, 0) }),
 
-                                    Components.UIStroke(scope, {
-                                        Thickness = 1,
-                                        Color = Color3.fromRGB(213, 206, 193)
+                                    Components.ScaledUIStroke(scope, {
+                                        Thickness = 0.05
                                     }),
 
                                     Components.UIPadding(scope, {
@@ -172,9 +216,8 @@ return function (scope: Fusion.Scope<any>, props: {
 
                                         [Children] = {
                                             Components.RoundUICorner(scope),
-                                            Components.UIStroke(scope, {
-                                                Thickness = 1,
-                                                Color = Color3.fromRGB(213, 206, 193),
+                                            Components.ScaledUIStroke(scope, {
+                                                Thickness = 0.1,
                                             }),
 
                                             Components.ImageLabel(scope, {
@@ -228,15 +271,11 @@ return function (scope: Fusion.Scope<any>, props: {
                                 LayoutOrder = index,
                                 Size = UDim2.fromScale(0.95, 0.32),
 
-
-                                BackgroundTransparency = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.SortMethodList[index]) then 0 else 1
-                                end),
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.SortMethodList[index]) then Color3.fromRGB(213, 206, 193) else Color3.fromRGB(29, 37, 49)
+                                    return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.HarukaColorLab.Muelsyse.BackgroundLighter
                                 end),
                                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.SortMethodList[index]) then Color3.fromRGB(29, 37, 49) else Color3.fromRGB(213, 206, 193)
+                                    return if use(props.FilterTierList[index]) then Components.HarukaColorLab.Muelsyse.BackgroundLighter else Components.WHITE_COLOR
                                 end),
 
 
@@ -258,9 +297,8 @@ return function (scope: Fusion.Scope<any>, props: {
                                     Components.UIAspectRatioConstraint(scope, 10.117),
                                     Components.UICorner(scope, { CornerRadius = UDim.new(0.05, 0) }),
 
-                                    Components.UIStroke(scope, {
-                                        Thickness = 1,
-                                        Color = Color3.fromRGB(213, 206, 193)
+                                    Components.ScaledUIStroke(scope, {
+                                        Thickness = 0.05
                                     }),
 
                                     Components.UIPadding(scope, {
@@ -285,9 +323,8 @@ return function (scope: Fusion.Scope<any>, props: {
 
                                         [Children] = {
                                             Components.RoundUICorner(scope),
-                                            Components.UIStroke(scope, {
-                                                Thickness = 1,
-                                                Color = Color3.fromRGB(213, 206, 193),
+                                            Components.ScaledUIStroke(scope, {
+                                                Thickness = 0.1
                                             }),
 
                                             Components.ImageLabel(scope, {
@@ -322,17 +359,32 @@ return function (scope: Fusion.Scope<any>, props: {
             [Children] = {
                 Components.UIAspectRatioConstraint(scope, 11.957),
 
+                Components.UIListLayout(scope, {
+                    FillDirection = Enum.FillDirection.Horizontal,
+                    Padding = UDim.new(0.02, 0),
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                }),
+
                 ExecuteButton(scope, {
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    Position = UDim2.fromScale(0.5, 0.5),
-                    Size = UDim2.fromScale(0.6, 1),
+                    Size = UDim2.fromScale(0.45, 1),
                     ButtonText = "Reset",
                     ButtonType = "Cancel",
+                    LayoutOrder = 1,
                     ButtonClickFunc = function()
                         for _, tierStatus in props.FilterTierList do
                             tierStatus:set(true)
                         end
                         props.FilterItemText:set("")
+                    end
+                }),
+                ExecuteButton(scope, {
+                    Size = UDim2.fromScale(0.45, 1),
+                    ButtonText = "Confirm",
+                    ButtonType = "Confirm",
+                    LayoutOrder = 2,
+                    ButtonClickFunc = function()
+                        --// TODO: confirm filter data, which is just close the window lol
                     end
                 })
             }

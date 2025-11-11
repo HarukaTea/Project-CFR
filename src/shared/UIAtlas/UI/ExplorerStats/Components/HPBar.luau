@@ -88,9 +88,9 @@ return function (scope: Fusion.Scope<any>, props: {
                 }
             }),
 
-            Components.UIStroke(scope, {
+            Components.ScaledUIStroke(scope, {
                 Name = "Shield",
-                Thickness = 2.5,
+                Thickness = 0.2,
                 Color = Color3.fromRGB(255, 234, 167),
 
                 [Children] = {
@@ -115,10 +115,11 @@ return function (scope: Fusion.Scope<any>, props: {
         [Children] = {
             Components.RoundUICorner(scope),
 
-            Components.UIStroke(scope, {
+            Components.ScaledUIStroke(scope, {
                 Name = "Shield",
-                Thickness = 2.5,
+                Thickness = 0.2,
                 Color = Color3.fromRGB(255, 234, 167):Lerp(Color3.new(), 0.65),
+                ZIndex = 0,
 
                 [Children] = {
                     Components.UIGradient(scope, {

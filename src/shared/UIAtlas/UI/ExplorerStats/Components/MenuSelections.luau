@@ -22,7 +22,7 @@ local SELECTION_ICONS = {
     Guild = "rbxassetid://132493733644902",
     Stats = "rbxassetid://97344315886689",
     Trade = "rbxassetid://129768568967812",
-    Store = "rbxassetid://73470004505046",
+    Donation = "rbxassetid://73470004505046",
     Achievements = "rbxassetid://135736394286615",
     TutorialBook = "rbxassetid://105305190168965",
 
@@ -48,8 +48,8 @@ local function SelectionSlot(scope: Fusion.Scope<any>, props: {
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.05, 0) }),
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.025,
 
                 Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if use(isSelecting) then Color3.fromRGB(255, 255, 255) else Color3.fromRGB(61, 61, 61)
@@ -134,9 +134,9 @@ return function (scope: Fusion.Scope<any>, props: {
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.03, 0) }),
-            Components.UIStroke(scope, {
+            Components.ScaledUIStroke(scope, {
                 Color = Color3.fromRGB(61, 61, 61),
-                Thickness = 4,
+                Thickness = 0.015,
             }),
 
             Components.Frame(scope, {
@@ -153,20 +153,20 @@ return function (scope: Fusion.Scope<any>, props: {
                     Selections(scope, 1, {
                         SelectionSlot(scope, {
                             LayoutOrder = 1,
-                            SelectionId = "TutorialBook",
-                            Title = "Tutorials",
-                            MenuShownValue = props.MenuShowValue
-                        }),
-                        SelectionSlot(scope, {
-                            LayoutOrder = 2,
                             SelectionId = "Achievements",
                             Title = "Badges",
                             MenuShownValue = props.MenuShowValue
                         }),
                         SelectionSlot(scope, {
-                            LayoutOrder = 3,
-                            SelectionId = "Store",
+                            LayoutOrder = 2,
+                            SelectionId = "Donation",
                             Title = "Donations",
+                            MenuShownValue = props.MenuShowValue
+                        }),
+                        SelectionSlot(scope, {
+                            LayoutOrder = 3,
+                            SelectionId = "Empty",
+                            Title = "Empty",
                             MenuShownValue = props.MenuShowValue
                         }),
                         SelectionSlot(scope, {

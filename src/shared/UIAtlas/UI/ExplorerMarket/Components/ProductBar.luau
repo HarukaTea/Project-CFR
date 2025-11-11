@@ -35,8 +35,8 @@ return function(scope: Fusion.Scope<any>, props: {
             Components.UIAspectRatioConstraint(scope, 11.804),
 
             Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.035,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting) or use(props.CurrentSelectedItemUniqueId) == props.UniqueId

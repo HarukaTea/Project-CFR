@@ -281,15 +281,11 @@ return function (plr: Player)
 
 
             Components.Frame(scope, {
-                Name = "Right",
-                AnchorPoint = Vector2.new(1, 0),
-                Position = UDim2.fromScale(1, 0),
+                Name = "Left",
+                AnchorPoint = Vector2.new(0, 0),
+                Position = UDim2.fromScale(0, 0),
                 Size = UDim2.fromScale(0.3, 1),
                 ZIndex = 3,
-
-                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return not use(self.IsPurchasing)
-                end),
 
                 [Children] = {
                     Components.Frame(scope, {
@@ -304,13 +300,14 @@ return function (plr: Player)
                             Components.Frame(scope, {
                                 Name = "Shadows",
                                 AnchorPoint = Vector2.new(0, 0),
-                                Position = UDim2.fromScale(-1, 0),
+                                Position = UDim2.fromScale(1, 0),
                                 BackgroundColor3 = Color3.fromRGB(),
                                 BackgroundTransparency = 0,
 
                                 [Children] = {
                                     Components.UIGradient(scope, {
-                                        Transparency = NumberSequence.new(1, 0.5)
+                                        Transparency = NumberSequence.new(1, 0.5),
+                                        Rotation = 180
                                     })
                                 }
                             }),

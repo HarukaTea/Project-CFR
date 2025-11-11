@@ -415,7 +415,7 @@ function ServerLib.CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -
 	end)
 end
 function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
-	if game.GameId ~= AssetBook.CFUniverseId then return end
+	if game.GameId ~= AssetBook.CFUniverseId_Main then return end
 
 
 	Promise.new(function()

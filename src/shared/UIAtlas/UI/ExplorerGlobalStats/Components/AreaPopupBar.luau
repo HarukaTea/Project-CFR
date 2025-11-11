@@ -44,7 +44,9 @@ return function(scope: Fusion.Scope<any>, props: {
 
                 [Children] = {
                     Components.UIPadding(scope, {}),
-                    Components.TextUIStroke(scope, { Thickness = 2.5 })
+                    Components.ScaledTextUIStroke(scope, {
+                        Thickness = 0.07
+                    })
                 }
             }),
 

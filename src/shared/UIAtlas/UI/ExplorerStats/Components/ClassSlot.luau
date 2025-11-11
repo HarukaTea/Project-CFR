@@ -64,8 +64,8 @@ return function(scope: Fusion.Scope<any>, props: {
 
 
         [Children] = {
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.03,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)

@@ -16,9 +16,6 @@ return function(scope: Fusion.Scope<any>, props: {
     ButtonClickFunc: () -> nil,
     ButtonType: "Confirm" | "Cancel" | "Info"
 })
-    local isSelecting = Fusion.Value(scope, false)
-
-
     props.AnchorPoint = props.AnchorPoint or Vector2.new()
     props.LayoutOrder = props.LayoutOrder or 1
     props.Position = props.Position or UDim2.fromScale(0, 0)
@@ -47,31 +44,19 @@ return function(scope: Fusion.Scope<any>, props: {
 
 	return Components.TextButton(scope, {
         Name = "ExecuteButton",
-        AutoButtonColor = false,
+        AutoButtonColor = true,
         BackgroundColor3 = Components.WHITE_COLOR,
+        TextColor3 = Components.HarukaColorLab.Genshin.Background,
 
         AnchorPoint = props.AnchorPoint,
         LayoutOrder = props.LayoutOrder,
         Position = props.Position,
         Size = props.Size,
 
-        [Fusion.OnEvent("MouseEnter")] = function()
-            isSelecting:set(true)
-        end,
-        [Fusion.OnEvent("MouseLeave")] = function()
-            isSelecting:set(false)
-        end,
         [Fusion.OnEvent("MouseButton1Click")] = props.ButtonClickFunc,
 
         [Children] = {
             Components.RoundUICorner(scope),
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
-
-                Transparency = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return if use(isSelecting) then 0 else 1
-                end), AssetBook.TweenInfos.twiceHalf)
-            }),
 
             Components.UIListLayout(scope, {
                 FillDirection = Enum.FillDirection.Horizontal,

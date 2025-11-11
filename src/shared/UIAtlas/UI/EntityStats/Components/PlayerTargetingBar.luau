@@ -29,19 +29,16 @@ return function(scope: Fusion.Scope<any>, props: {
 
 
     ORDER += 2
+    if ORDER > math.huge - 1 then
+        ORDER = 1
+    end
 
 
     local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
-    local level = Value(1)
     local absContentSize = Value(Vector2.zero)
 
-    table.insert(scope, HarukaLib:Hydrate(targeting, {
-        ["Attr-Level"] = function(val: number)
-            level:set(val)
-        end
-    }))
 
     local bar = Components.Frame(scope, {
         Name = targeting.Name,
@@ -86,8 +83,8 @@ return function(scope: Fusion.Scope<any>, props: {
                     Components.TextLabel(scope, {
                         Name = "IsTargeting",
                         AnchorPoint = Vector2.new(0, 0.5),
-                        Size = UDim2.fromScale(0.15, 0.15),
-                        SizeConstraint = Enum.SizeConstraint.RelativeXX,
+                        Size = UDim2.fromScale(1.3, 1.3),
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
                         FontFace = Font.fromName("RobotoMono", Enum.FontWeight.Bold),
                         Text = ">",
 
@@ -99,9 +96,7 @@ return function(scope: Fusion.Scope<any>, props: {
                         end),
 
                         [Children] = {
-                            Components.TextUIStroke(scope, {
-                                Thickness = 3
-                            })
+                            Components.ScaledTextUIStroke(scope, {})
                         }
                     })
                 }
@@ -122,16 +117,22 @@ return function(scope: Fusion.Scope<any>, props: {
 
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Components.IconImageLabel(scope, {
+                    Components.HoverImageButton(scope, {
+                        Name = "Icon",
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
                         Size = UDim2.fromScale(1.2, 1.2),
                         LayoutOrder = 3,
 
                         Image = EntityBook[targeting.Name].Icon,
 
+                        [Fusion.OnEvent("MouseButton1Click")] = function()
+                            --// TODO: switch enemy target
+
+                        end,
+
                         [Children] = {
-                            Components.UIStroke(scope, {
-                                Thickness = 3,
-                                Color = Components.WHITE_COLOR,
+                            Components.ScaledUIStroke(scope, {
+                                Thickness = 0.1,
 
                                 [Children] = {
                                     Components.UIGradient(scope, {
@@ -156,9 +157,7 @@ return function(scope: Fusion.Scope<any>, props: {
                         AutomaticSize = Enum.AutomaticSize.X,
                         TextColor3 = Components.BLACK_COLOR,
 
-                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return `Lv.{use(level)}`
-                        end),
+                        Text = `Lv.{targeting:GetAttribute("Level")}`,
 
                         [Children] = {
                             Components.RoundUICorner(scope),
@@ -184,8 +183,8 @@ return function(scope: Fusion.Scope<any>, props: {
                             Components.UIPadding(scope, {
                                 PaddingTop = UDim.new(0.05, 0),
                                 PaddingBottom = UDim.new(0.05, 0),
-                                PaddingLeft = UDim.new(0.05, 0),
-                                PaddingRight = UDim.new(0.05, 0)
+                                PaddingLeft = UDim.new(0, 4),
+                                PaddingRight = UDim.new(0, 4),
                             })
                         }
                     })

@@ -150,16 +150,18 @@ end
 
 
 local COLOR_LIST = {
-	["<blue>"] = [[<font color="#47a3ff">]],
-	["<purple>"] = [[<font color="#8178ff">]],
-	["<red>"] = [[<font color="#ff4a65">]],
-	["<orange>"] = [[<font color="#ffaf57">]],
-	["<yellow>"] = [[<font color="#fcff82">]],
-	["<green>"] = [[<font color="#7bed9f">]],
-	["<cyan>"] = [[<font color="#81ecec">]],
+	--// HarukaColorLab -> Genshin -> Elements
+
+	["<blue>"] = [[<font color="#80c0ff">]],
+	["<purple>"] = [[<font color="#ffacff">]],
+	["<red>"] = [[<font color="#ff5e41">]],
+	["<orange>"] = [[<font color="#ff9999">]],
+	["<yellow>"] = [[<font color="#ffe699">]],
+	["<green>"] = [[<font color="#99ff88">]],
+	["<cyan>"] = [[<font color="#80ffd7">]],
 	["<white>"] = [[<font color="#ffffff">]],
 	["<black>"] = [[<font color="#2d3436">]],
-	["<pink>"] = [[<font color="#fd79a8">]],
+	["<pink>"] = [[<font color="#ffacff">]],
 	["<gray>"] = [[<font color="#747d8c">]],
 	["<grey>"] = [[<font color="#747d8c">]],
 

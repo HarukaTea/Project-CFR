@@ -120,8 +120,8 @@ return function(scope: Fusion.Scope<any>, props: {
                 Image = Icons[props.Slot],
             }),
 
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.05,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)

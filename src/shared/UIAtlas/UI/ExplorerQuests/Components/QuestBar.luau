@@ -57,8 +57,8 @@ return function (scope: Fusion.Scope<any>, props: {
 
                 [Children] = {
                     Components.RoundUICorner(scope),
-                    Components.UIStroke(scope, {
-                        Thickness = 3,
+                    Components.ScaledUIStroke(scope, {
+                        Thickness = 0.1,
                         Color = Components.BLACK_COLOR
                     })
                 }
@@ -77,7 +77,7 @@ return function (scope: Fusion.Scope<any>, props: {
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [Children] = {
-                            Components.TextUIStroke(scope, { Thickness = 2 })
+                            Components.ScaledTextUIStroke(scope, {})
                         }
                     }),
                     Components.TextLabel(scope, {
@@ -113,7 +113,7 @@ return function (scope: Fusion.Scope<any>, props: {
                         end),
 
                         [Children] = {
-                            Components.TextUIStroke(scope, { Thickness = 2 })
+                            Components.ScaledTextUIStroke(scope, {})
                         }
                     })
                 }

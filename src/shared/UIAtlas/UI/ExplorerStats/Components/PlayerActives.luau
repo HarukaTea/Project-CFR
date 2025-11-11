@@ -133,8 +133,8 @@ return function(scope: Fusion.Scope<any>, props: {
                                         })
                                     }),
 
-                                    Components.UIStroke(scope, {
-                                        Thickness = 2.5,
+                                    Components.ScaledUIStroke(scope, {
+                                        Thickness = 0.035,
 
                                         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             return use(isSelectingUlt)
@@ -235,9 +235,7 @@ return function(scope: Fusion.Scope<any>, props: {
                                         end),
 
                                         [Children] = {
-                                            Components.TextUIStroke(scope, {
-                                                Thickness = 2.5
-                                            })
+                                            Components.ScaledTextUIStroke(scope, {})
                                         }
                                     }),
 

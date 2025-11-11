@@ -103,7 +103,7 @@ return function(plr: Player)
                     AutoLocalize = false,
 
                     Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                        return use(self.ServerLocation).." / "..require(RepS.VERSION)
+                        return use(self.ServerLocation)..", "..use(self.CityLocation).." / "..require(RepS.VERSION)
                     end),
 
                     [Children] = {
@@ -156,8 +156,8 @@ return function(plr: Player)
                                 Components.IconImageLabel(scope, {
                                     Image = "rbxassetid://130903046224988",
                                 }),
-                                Components.UIStroke(scope, {
-                                    Thickness = 2.5,
+                                Components.ScaledUIStroke(scope, {
+                                    Thickness = 0.05,
 
                                     Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         return use(isSelectingMenuSelection)

@@ -29,8 +29,9 @@ return function (scope: Fusion.Scope<any>, props: {
 
                 [Children] = {
                     Components.RoundUICorner(scope),
-                    Components.UIStroke(scope, {
-                        Thickness = 2
+                    Components.ScaledUIStroke(scope, {
+                        Thickness = 0.15,
+                        Color = Components.BLACK_COLOR
                     })
                 }
             }),
@@ -49,9 +50,7 @@ return function (scope: Fusion.Scope<any>, props: {
                 end),
 
                 [Children] = {
-                    Components.TextUIStroke(scope, {
-                        Thickness = 2
-                    })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             })
         }

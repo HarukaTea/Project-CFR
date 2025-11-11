@@ -49,7 +49,6 @@ return function (scope: Fusion.Scope<any>, props: {
     SaveSlotBackSignal: Signal.SignalClass,
     ReadyToTeleportSignal: Signal.SignalClass,
 
-    FriendListClickedSignal: Signal.SignalClass,
     ServerListClickedSignal: Signal.SignalClass,
 
     IsUIShown: Fusion.Value,
@@ -132,8 +131,8 @@ return function (scope: Fusion.Scope<any>, props: {
         [Children] = {
             Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
 
-            Components.UIStroke(scope, {
-                Thickness = 3,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.015,
                 Color = Color3.new(),
             }),
 
@@ -192,8 +191,8 @@ return function (scope: Fusion.Scope<any>, props: {
                 [Children] = {
                     Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
 
-                    Components.UIStroke(scope, {
-                        Thickness = 3,
+                    Components.ScaledUIStroke(scope, {
+                        Thickness = 0.015,
 
                         Enabled = Fusion.Computed(scope, function(use: Fusion.Scope<any>, _)
                             return use(isSelecting)

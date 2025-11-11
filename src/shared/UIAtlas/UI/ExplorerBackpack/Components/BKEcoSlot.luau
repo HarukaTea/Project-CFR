@@ -25,8 +25,8 @@ return function(scope: Fusion.Scope<any>, props: {
         Name = props.Currency,
         AutoButtonColor = false,
         Size = UDim2.fromScale(0.15, 0.7),
-        BackgroundColor3 = Color3.new(),
-        BackgroundTransparency = 0.3,
+        BackgroundColor3 = Components.BLACK_COLOR,
+        BackgroundTransparency = 0,
         LayoutOrder = props.Index,
 
 
@@ -41,8 +41,8 @@ return function(scope: Fusion.Scope<any>, props: {
         [Children] = {
             Components.RoundUICorner(scope),
 
-            Components.UIStroke(scope, {
-                Thickness = 2,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.08,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)

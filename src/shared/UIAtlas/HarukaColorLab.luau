@@ -2,10 +2,7 @@
 local HarukaColorLab = {}
 
 
-HarukaColorLab.COLOR_SERIES = {}
-
-
-HarukaColorLab.COLOR_SERIES.Genshin = {
+HarukaColorLab.Genshin = {
     Background = Color3.fromHex('#1c1c25'),
 
     Text = Color3.fromHex('#ece5d8'),
@@ -25,7 +22,7 @@ HarukaColorLab.COLOR_SERIES.Genshin = {
 }
 
 
-HarukaColorLab.COLOR_SERIES.AzurPromilia = {
+HarukaColorLab.AzurPromilia = {
     Background = Color3.fromHex('#eeece9'),
 
     Green = Color3.fromHex('#7bd99f'),
@@ -34,7 +31,7 @@ HarukaColorLab.COLOR_SERIES.AzurPromilia = {
 }
 
 
-HarukaColorLab.COLOR_SERIES.Muelsyse = {
+HarukaColorLab.Muelsyse = {
     Background = Color3.fromHex('#100e0a'),
     BackgroundLighter = Color3.fromHex('#25292f'),
 
@@ -42,14 +39,22 @@ HarukaColorLab.COLOR_SERIES.Muelsyse = {
 }
 
 
+HarukaColorLab.Roblox = {
+    Background = Color3.fromHex('#111216'),
+    StudioDark = Color3.fromHex('#191a1f'),
+
+    OceanColor = Color3.fromHex('#1446ff')
+}
+
+
 --// legacy references
 
 
-HarukaColorLab.BLACK_COLOR = HarukaColorLab.COLOR_SERIES.Muelsyse.Background
-HarukaColorLab.WHITE_COLOR = HarukaColorLab.COLOR_SERIES.Genshin.Text
-HarukaColorLab.RED_COLOR = HarukaColorLab.COLOR_SERIES.AzurPromilia.Red
-HarukaColorLab.GREEN_COLOR = HarukaColorLab.COLOR_SERIES.AzurPromilia.Green
-HarukaColorLab.BLUE_COLOR = HarukaColorLab.COLOR_SERIES.AzurPromilia.Blue
+HarukaColorLab.BLACK_COLOR = HarukaColorLab.Roblox.StudioDark
+HarukaColorLab.WHITE_COLOR = HarukaColorLab.Genshin.Text
+HarukaColorLab.RED_COLOR = HarukaColorLab.AzurPromilia.Red
+HarukaColorLab.GREEN_COLOR = HarukaColorLab.AzurPromilia.Green
+HarukaColorLab.BLUE_COLOR = HarukaColorLab.AzurPromilia.Blue
 
 
 return HarukaColorLab

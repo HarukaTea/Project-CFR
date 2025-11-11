@@ -25,6 +25,7 @@ export type Self = {
     UI: ScreenGui,
 
     ServerLocation: Fusion.Value<string>,
+    CityLocation: Fusion.Value<string>,
 
     HP: Fusion.Value<number>,
     MaxHP: Fusion.Value<number>,
@@ -131,6 +132,7 @@ return function (self: Self)
 
 
     self.ServerLocation = Value("Unknown")
+    self.CityLocation = Value("Void")
 
     self.HP = Value(100)
     self.MaxHP = Value(100)
@@ -181,6 +183,9 @@ return function (self: Self)
     table.insert(scope, HarukaLib:Hydrate(workspace, {
         ["Attr-ServerLocation"] = function(newLocation: string)
             self.ServerLocation:set(newLocation)
+        end,
+        ["Attr-CityLocation"] = function(newLocation: string)
+            self.CityLocation:set(newLocation)
         end
     }))
 

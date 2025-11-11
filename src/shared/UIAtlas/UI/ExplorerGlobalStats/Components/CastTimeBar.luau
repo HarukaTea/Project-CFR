@@ -86,7 +86,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 Text = "CASTING",
 
                 [Children] = {
-                    Components.TextUIStroke(scope, { Thickness = 3 })
+                    Components.ScaledTextUIStroke(scope, {})
                 }
             })
         }

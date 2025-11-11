@@ -33,13 +33,13 @@ return function (plr: Player)
     Pinia(self)
 
 
-    if plr.PlayerGui:FindFirstChild("ExplorerRoStore") then
-        plr.PlayerGui.ExplorerRoStore:Destroy()
+    if plr.PlayerGui:FindFirstChild("ExplorerDonation") then
+        plr.PlayerGui.ExplorerDonation:Destroy()
     end
 
 
     local UI; UI = Components.HarukaScreenGui(scope, {
-        Name = "ExplorerRoStore",
+        Name = "ExplorerDonation",
         DisplayOrder = UIPriorityBook.Z3,
         Parent = plr.PlayerGui,
 
@@ -61,7 +61,7 @@ return function (plr: Player)
                         Name = "ProductList",
 
                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return use(self.CurrentCategory) == "RoStore"
+                            return use(self.CurrentCategory) == "Donation"
                         end),
 
                         [Children] = {
@@ -118,7 +118,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "RoStore", "RoLeaderboard" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Donation", "DonationLeaderboard" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
                             return index, BKCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -145,7 +145,7 @@ return function (plr: Player)
 
 
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.CurrentCategory) == "RoLeaderboard"
+                        return use(self.CurrentCategory) == "DonationLeaderboard"
                     end),
 
                     [Children] = {

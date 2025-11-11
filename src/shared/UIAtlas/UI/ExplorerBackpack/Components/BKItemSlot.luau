@@ -139,8 +139,8 @@ return function(scope: Fusion.Scope<any>, props: {
                 Rotation = 45
             }),
 
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.035,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting) or use(props.CurrentSelectedItemUniqueId) == uniqueId

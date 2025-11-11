@@ -38,8 +38,8 @@ return function(scope: Fusion.Scope<any>, props: {
 
         [Children] = {
             Components.RoundUICorner(scope),
-            Components.UIStroke(scope, {
-                Thickness = 3,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.03,
 
                 Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local isSelectingState = use(isSelecting)

@@ -61,8 +61,8 @@ end))
 
 
 local ControlsModule = require(Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule")) :: {
-    GetControls: () -> {
-        GetMoveVector: () -> Vector3
+    GetControls: (self: any) -> {
+        GetMoveVector: (self: any) -> Vector3
     }
 }
 ControlsModule = ControlsModule:GetControls()

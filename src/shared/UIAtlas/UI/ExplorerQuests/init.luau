@@ -75,8 +75,6 @@ return function(plr: Player)
                             MaxDistance = 1599 * 40,
                             Adornee = realLocator,
 
-                            [Fusion.Attribute("Distance")] = 38,
-
                             [Children] = {
                                 QuestIndicator(scope, {
                                     QuestType = questInfo.QuestType,
@@ -129,7 +127,7 @@ return function(plr: Player)
                                     AutoLocalize = false,
 
                                     [Children] = {
-                                        Components.TextUIStroke(scope, { Thickness = 2 })
+                                        Components.ScaledTextUIStroke(scope, {}, true)
                                     }
                                 })
                             }

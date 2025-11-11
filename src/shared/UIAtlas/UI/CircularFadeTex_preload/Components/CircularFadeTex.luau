@@ -25,11 +25,9 @@ return function (scope: Fusion.Scope<any>)
 
                 [Children] = {
                     Components.UIStroke(scope, {
-                        Thickness = 99999,
+                        Thickness = 9999,
                         Color = Color3.fromRGB(),
-
-                        [Fusion.Attribute("IgnoreDPI")] = true
-                    })
+                    }, true)
                 }
             })
         }

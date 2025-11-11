@@ -120,8 +120,8 @@ return function(plr: Player)
                                         Components.UICorner(scope, {
                                             CornerRadius = UDim.new(0.2, 0)
                                         }),
-										Components.UIStroke(scope, {
-											Thickness = 3
+										Components.ScaledUIStroke(scope, {
+											Thickness = 0.15
 										})
 									}
 								})

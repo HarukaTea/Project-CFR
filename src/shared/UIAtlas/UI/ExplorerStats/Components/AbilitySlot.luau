@@ -102,8 +102,8 @@ return function(scope: Fusion.Scope<any>, props: {
         [Children] = {
             Components.RoundUICorner(scope),
 
-            Components.UIStroke(scope, {
-                Thickness = 2.5,
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.05,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
@@ -154,7 +154,7 @@ return function(scope: Fusion.Scope<any>, props: {
                         PaddingBottom = UDim.new(0.22, 0),
                     }),
 
-                    Components.TextUIStroke(scope, { Thickness = 2.8 })
+                    Components.ScaledTextUIStroke(scope, {})
                 },
             }),
 
