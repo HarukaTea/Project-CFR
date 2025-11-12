@@ -7,17 +7,17 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
-local BKOptionBtn = require(script.Components.BKOptionBtn)
-local BKCategoryBtn = require(script.Components.BKCategoryBtn)
-local BKEcoSlot = require(script.Components.BKEcoSlot)
-local BKItemSlot = require(script.Components.BKItemSlot)
+local BottombarOptionBtn = require(RepS.HarukaShared.UIAtlas.Components.BottombarOptionBtn)
+local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
+local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarEcoSlot)
+local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
 
-local BKItemDescView = require(script.Components.BKItemDescView)
-local BKItemFilterView = require(script.Components.BKItemFilterView)
+local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
+local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
-local FakeTopBG = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
@@ -251,7 +251,7 @@ return function (plr: Player)
                         }),
 
                         Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope<any>, index: number, currency: string)
-                            return index, BKEcoSlot(scope, {
+                            return index, BottombarEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,
 
@@ -276,7 +276,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        BKOptionBtn(scope, {
+                        BottombarOptionBtn(scope, {
                             Option = "Filter",
                             Index = 1
                         }, self),
@@ -445,7 +445,7 @@ return function (plr: Player)
                         }),
 
                         Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
-                            return index, BKCategoryBtn(scope, {
+                            return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
 
@@ -457,7 +457,7 @@ return function (plr: Player)
                     }
                 }),
 
-                FakeTopBG(scope)
+                FakeTopBGTex(scope)
             }
         },
 

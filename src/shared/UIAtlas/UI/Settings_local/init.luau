@@ -7,6 +7,10 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
+local SideCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.SideCategoryBtn)
+
+
+local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Slider = require(script.Components.Slider)
 local Switcher = require(script.Components.Switcher)
@@ -74,59 +78,13 @@ return function (plr: Player)
                                     return panelId, nil
                                 end
 
+                                return panelId, SideCategoryBtn(scope, {
+                                    PanelId = panelId,
 
-                                local isSelected = Fusion.Value(scope, false)
-                                if panelInfo.LayoutOrder == 1 then
-                                    isSelected:set(true)
-                                end
-
-                                table.insert(scope, self.PanelSwitched:Connect(function(panel: string)
-                                    isSelected:set(panel == panelId)
-                                end))
-
-                                return panelId, Components.Frame(scope, {
-                                    Name = panelId,
-                                    BackgroundTransparency = 0,
-                                    Size = UDim2.fromScale(0.7, 0.09),
                                     LayoutOrder = panelInfo.LayoutOrder,
+                                    PanelTitle = panelInfo.PanelTitle,
 
-                                    BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-                                        return if use(isSelected) then Color3.fromRGB(255, 247, 233) else Components.BLACK_COLOR
-                                    end),
-
-                                    [Children] = {
-                                        Components.RoundUICorner(scope),
-                                        Components.TextLabel(scope, {
-                                            Name = "Title",
-                                            Text = panelInfo.PanelTitle,
-                                            TextXAlignment = Enum.TextXAlignment.Left,
-
-                                            TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-                                                return if use(isSelected) then Components.BLACK_COLOR else Color3.fromRGB(255, 247, 233)
-                                            end),
-
-                                            [Children] = {
-                                                Components.UIPadding(scope, {})
-                                            }
-                                        }),
-
-                                        Components.HoverImageButton(scope, {
-                                            [Fusion.OnEvent("MouseEnter")] = function()
-                                                isSelected:set(true)
-                                            end,
-                                            [Fusion.OnEvent("MouseLeave")] = function()
-                                                if Fusion.peek(self.PanelSelected) == panelId then return end
-
-                                                isSelected:set(false)
-                                            end,
-
-                                            [Fusion.OnEvent("MouseButton1Click")] = function()
-                                                self.PanelSelected:set(panelId)
-                                                self.PanelSwitched:Fire(panelId)
-                                            end
-                                        })
-                                    }
-
+                                    PanelSelected = self.PanelSelected,
                                 })
                             end)
                         }
@@ -240,13 +198,7 @@ return function (plr: Player)
                 CloseView(scope, {
                     ViewShownValue = self.IsSettingsShown
                 }),
-
-                Components.Frame(scope, {
-                    Name = "FakeTopBG",
-                    BackgroundTransparency = 0.1,
-                    Size = UDim2.fromScale(2, 1.8),
-                    ZIndex = 0,
-                })
+                FakeTopBGTex(scope)
             }
         }
     })

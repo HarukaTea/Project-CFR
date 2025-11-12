@@ -60,11 +60,27 @@ type SignalConnection = {
 	[any]: any,
 }
 
+
+export type Error = {
+	__index: Error,
+
+	new: () -> Error,
+	is: (anything: any) -> boolean,
+	isKind: (anything: any, kind: string) -> boolean,
+	extend: (options: { error: string?, trace: string?, context: string?, kind: string? }) -> Error,
+	getErrorChain: () -> { Error },
+	__tostring: () -> string,
+
+	Kind: {
+		[string]: true
+	},
+}
+
 export type PromiseLib = {
 	__index: PromiseLib,
 	prototype: { [string]: any },
 
-	Error: any,
+	Error: Error,
 	Status: Status,
 	_getTime: () -> number,
 

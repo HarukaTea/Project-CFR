@@ -6,7 +6,7 @@ local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
 local Types = require(script.Parent.Parent.Parent.Types)
-local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
+local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 
 local wait = task.wait

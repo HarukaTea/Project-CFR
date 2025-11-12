@@ -12,6 +12,7 @@ local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerB
 
 
 local TOP3_BADGE_ID = 2495465107761594
+local TOP3_SPEEDRUN_BADGE_ID = 3055867327519680
 
 
 local abyssSpeedrunContainer = Instance.new("Folder")
@@ -127,8 +128,10 @@ ServerBindables.RToUpdateLeaderboardRank:Connect(function(key: string, value: nu
     if not STORE_LIST[storeName] then return end
     if not key then return end
     if not value then return end
-
     if type(value) ~= "number" then return end
+    if value <= 0 then return end
+
+
 
     local store = STORE_LIST[storeName]
 
@@ -136,20 +139,26 @@ ServerBindables.RToUpdateLeaderboardRank:Connect(function(key: string, value: nu
 end)
 
 
+local function _checkIsDataValid(data) : boolean?
+    if not data then return end
+    if not data[1] then return end
+    if not data[2] then return end
+
+    if data[1] <= 0 then return end
+    if data[1] > 3 then return end
+
+    if not data[2].key then return end
+    if not data[2].value then return end
+
+    if data[2].value <= 0 then return end
+
+    return true
+end
 ServerBindables.RToAwardLeaderboardRank:Connect(function(plr: Player, storeName: string)
     if storeName == "Donation" then
         donationStore:GetOrderedPositionAsync("Player_"..plr.UserId, true):andThen(function(data)
-            if not data then return end
-            if not data[1] then return end
-            if not data[2] then return end
-
-            if data[1] <= 0 then return end
-            if data[1] > 3 then return end
-
-            if not data[2].key then return end
-            if not data[2].value then return end
-
-            if data[2].value <= 0 then return end
+            --// data[1]: rank, data[2]: {key: string, value: number}
+            if not _checkIsDataValid(data) then return end
 
             ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
 
@@ -157,5 +166,13 @@ ServerBindables.RToAwardLeaderboardRank:Connect(function(plr: Player, storeName:
 
     elseif storeName == "Abyss" then
         --// TODO: Implement Abyss Speedrun Leaderboard
+
+        abyssSpeedrunStore:GetOrderedPositionAsync("Player_"..plr.UserId, false):andThen(function(data)
+            --// data[1]: rank, data[2]: {key: string, value: number}
+
+            if not _checkIsDataValid(data) then return end
+
+            ServerLib.GiveBadge(TOP3_SPEEDRUN_BADGE_ID, plr)
+        end)
     end
 end)

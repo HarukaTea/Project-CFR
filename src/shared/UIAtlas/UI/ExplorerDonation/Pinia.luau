@@ -7,6 +7,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 local wait = task.wait
 
 
@@ -19,6 +20,10 @@ export type Self = {
     IsUIShown: Fusion.Value<boolean>,
     CurrentCategory: Fusion.Value<string>,
     DonationRanks: Fusion.Value<{ IntValue }>,
+
+    PanelSelected: Fusion.Value<string>,
+
+    PanelList: { string },
 }
 
 
@@ -33,6 +38,9 @@ return function (self: Self)
 
 
     self.CurrentCategory = Value("Donation")
+    self.PanelSelected = Value("Featured")
+
+    self.PanelList = { "Donation #1", "Donation #2" }
 
 
     local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("DonationRankContainer", 999))
@@ -47,7 +55,7 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "Donation")
 
             if newPanel == "Donation" then
-                if game.GameId ~= AssetBook.CFUniverseId_Main then
+                if game.PlaceId ~= AssetBook.PlaceIds["7037847546"].Mainworld then
                     Bindables.CloseExplorerUIs:Fire()
                     Bindables.CreateNotify:Fire("You can't donate in test place!")
                 end

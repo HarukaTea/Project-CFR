@@ -7,7 +7,7 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Types = require(script.Parent.Parent.Parent.Types)
-local UniversalEntity = shared.UniversalEntity :: Types.UniversalEntity
+local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 local FoxUniversal = require(script.Parent.FoxUniversal)
 

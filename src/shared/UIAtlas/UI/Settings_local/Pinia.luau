@@ -26,7 +26,6 @@ export type Self = {
     PanelSelected: Fusion.Value<string>,
     IsSettingsShown: Fusion.Value<boolean>,
 
-    PanelSwitched: Signal.SignalClass,
     ValidInputBegan: Signal.SignalClass,
 
     SliderProgressVals: { [string]: { [string]: Fusion.Value<number> } },
@@ -68,7 +67,6 @@ return function (self: Self)
     self.PanelSelected = Value("Graphics")
     self.IsSettingsShown = Value(false)
 
-    self.PanelSwitched = Signal.new()
     self.ValidInputBegan = Signal.new()
 
     self.SliderProgressVals = {}

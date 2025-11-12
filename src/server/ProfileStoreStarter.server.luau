@@ -2,4 +2,4 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
-require(ServerScriptService.HarukaServer.Shared.ProfileStore)
+require(ServerScriptService.HarukaServer.Shared.ProfileStore_Haruka)

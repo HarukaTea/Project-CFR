@@ -221,7 +221,4 @@ end
 
 
 
-shared.UniversalEntity = UniversalEntity
-
-
 return UniversalEntity

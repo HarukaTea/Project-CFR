@@ -8,19 +8,19 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
-local BKItemDescView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemDescView)
-local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemFilterView)
+local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
+local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
+local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
-local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
-local BKOptionBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKOptionBtn)
+local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
+local BottombarOptionBtn = require(RepS.HarukaShared.UIAtlas.Components.BottombarOptionBtn)
 
 local CraftItemMatSlot = require(script.Components.CraftItemMatSlot)
 local CraftGoldMatSlot = require(script.Components.CraftGoldMatSlot)
-local BKItemSlot = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemSlot)
 
 
 local Children = Fusion.Children
@@ -231,7 +231,7 @@ return function (plr: Player)
                         }),
 
                         Fusion.ForPairs(scope, { "Crafting", "Gemstone" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
-                            return index, BKCategoryBtn(scope, {
+                            return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
 
@@ -280,7 +280,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        BKOptionBtn(scope, {
+                        BottombarOptionBtn(scope, {
                             Option = "Filter",
                             Index = 1
                         }, self),

@@ -10,17 +10,16 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
-local Classbook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore)
+local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore_Haruka)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
+local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
@@ -39,19 +38,11 @@ export type PlayerLibClass = {
 
     _Remove: (self: PlayerLibClass) -> nil,
     _SaveData: (self: PlayerLibClass) -> nil,
-    _RemoveChestAcquire: (self: PlayerLibClass) -> nil,
-    _RemoveFromParty: (self: PlayerLibClass) -> nil,
-    _RemoveSkyGalleon: (self: PlayerLibClass) -> nil,
-    _ValidateSaveData: (self: PlayerLibClass, data: { PlayerTemplate.PlayerDataJSON }) -> { PlayerTemplate.PlayerDataJSON },
-    _ValidateMainData: (self: PlayerLibClass, data: { PlayerTemplate.PlayerMainDataJSON }) -> { PlayerTemplate.PlayerMainDataJSON },
-
-    CalDonationAndSave: (profile: ProfileStore.Profile<PlayerTemplate.JSON>, plr: Player) -> nil,
-    UpdateDonationRank: (self: PlayerLibClass) -> nil,
-
+    RemoveMapComponents: (self: PlayerLibClass) -> nil,
 
     Player: Player,
     UniqueId: string,
-    Profile: ProfileStore.Profile<PlayerTemplate.JSON>,
+    ProfileObj: PlayerProfileLib.PlayerProfileLibClass,
     Slot: "Slot1" | "Slot2" | "Slot3",
 
     Add: <T>(item: T) -> T,
@@ -121,7 +112,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
     --// Load in datastore
     Promise.new(function(resolve, reject)
         local slotChosen = netData.SlotId or "Slot1"
-        local profile = self.Profile
+        local profile = self.ProfileObj.Profile
 
 
         --// start to load in
@@ -139,13 +130,13 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end
 
         --// validate
-        local validatedMainData = self:_ValidateMainData(profile.Data)
+        local validatedMainData = self.ProfileObj:_ValidateMainData(profile.Data)
         if validatedMainData == nil then reject() return end
 
         profile.Data = validatedMainData
 
 
-        local validatedData = self:_ValidateSaveData(validatedMainData[slot].Attrs)
+        local validatedData = self.ProfileObj:_ValidateSaveData(validatedMainData[slot].Attrs)
         if validatedData == nil then reject() return end
 
         profile.Data[slot].Attrs = validatedData
@@ -300,18 +291,27 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
                 _createSymbol("Tester")
             end
 
-            if plr.UserId == 304008764 then
-                _createSymbol("Translator")
-            end
         end):catch(function() end)
 
 
         --// load in player badges
         Promise.try(function()
-            --// FIXME: this API has a maximum limit of 10 badges per call, need to split it into multiple calls
-            local badgesPlayerOwned = BadgeService:CheckUserBadgesAsync(plr.UserId, HarukaLib.TableUtils.Values(AssetBook.BadgeIds))
-            for _, badgeId: number in badgesPlayerOwned do
-                plr:SetAttribute("BADGE_"..badgeId, true)
+            local allBadgeIds = HarukaLib.TableUtils.Values(AssetBook.BadgeIds)
+
+            local multipleCalls = {}
+            for _ = 1, math.ceil(#allBadgeIds / 10) do
+                table.insert(multipleCalls, {})
+            end
+            for index: number, badgeId: number in allBadgeIds do
+                local realIndex = math.ceil(index / 10)
+                table.insert(multipleCalls[realIndex], badgeId)
+            end
+
+            for _, badgeIds: { number } in multipleCalls do
+                local badgesPlayerOwned = BadgeService:CheckUserBadgesAsync(plr.UserId, badgeIds)
+                for _, badgeId: number in badgesPlayerOwned do
+                    plr:SetAttribute("BADGE_"..badgeId, true)
+                end
             end
 
         end):catch(function() end)
@@ -340,12 +340,12 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
             end
 
 
-            PlayerLib.CalDonationAndSave(profile, plr)
+            PlayerProfileLib.CalDonationAndSave(profile, plr)
         end)
 
 
-        --// FIXME: PT4 Badge, remove this when ended
-        ServerLib.GiveBadge(2015177958272323, plr)
+        --// Alpha Player badge
+        ServerLib.GiveBadge(3358503633424175, plr)
 
 
 
@@ -366,7 +366,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         ServerBindables.RToSpawnChar:Fire(plr)
 
         self.Add(HarukaLib.Clock(77, function()
-            self:UpdateDonationRank()
+            self.ProfileObj:UpdateDonationRank()
         end, true))
 
         if plr:FindFirstChild("ProfileContainer") then
@@ -501,23 +501,21 @@ function PlayerLib:Init()
     end)
 
 
+    local profileObj = PlayerProfileLib.new(plr, profile)
+    self.ProfileObj = profileObj
+
+
 
     --// Load in datastore
-    profile:Reconcile()
-    profile:AddUserId(plr.UserId)
+    profileObj:Init()
 
-    profile.OnSessionEnd:Connect(function()
-        plr:Kick("Profile session end, Data was loaded on another roblox server, please try again later?")
-    end)
     if plr.Parent ~= Players then
         profile:EndSession()
         return
     end
-
     self.Add(function()
         profile:EndSession()
     end)
-    self.Profile = profile
 
 
     local profileContainer = Instance.new("Folder")
@@ -527,7 +525,7 @@ function PlayerLib:Init()
 
     Promise.new(function(resolve)
         for i = 1, 3 do
-            local data = self:_ValidateSaveData(profile.Data["Slot"..i].Attrs)
+            local data = self.ProfileObj:_ValidateSaveData(profile.Data["Slot"..i].Attrs)
 
             for attr: string, val: any in data do
                 if not table.find(attrWhiteList, attr) then continue end
@@ -581,27 +579,26 @@ function PlayerLib:_Remove()
         self:_SaveData()
     end)
     pcall(function()
-        if self.Profile then
-            self.Profile:EndSession()
+        if self.ProfileObj and self.ProfileObj.Profile then
+            self.ProfileObj.Profile:EndSession()
         end
     end)
     if not success then
         warn(err)
     end
 
-    self:_RemoveChestAcquire()
-    self:_RemoveFromParty()
-    self:_RemoveSkyGalleon()
+    self:RemoveMapComponents()
 end
 
 
 
 function PlayerLib:_SaveData()
-    if not self.Profile then return end
+    if not self.ProfileObj then return end
+    if not self.ProfileObj.Profile then return end
     if not self.Slot then return end
     if self.Player:GetAttribute("Haruka_DataLocked") then return end
 
-    local profileAttrs = self.Profile.Data[self.Slot].Attrs :: { any }
+    local profileAttrs = self.ProfileObj.Profile.Data[self.Slot].Attrs :: { any }
     local nowAttrs = self.Player:GetAttributes()
 
 
@@ -692,468 +689,44 @@ function PlayerLib:_SaveData()
     profileAttrs.QuestsV2 = questsV2
     profileAttrs.Talents = talentsSQL
 
-    self.Profile.Data.Settings = criSettingsSQL
+    self.ProfileObj.Profile.Data.Settings = criSettingsSQL
 
-    PlayerLib.CalDonationAndSave(self.Profile, self.Player)
+    PlayerProfileLib.CalDonationAndSave(self.ProfileObj.Profile, self.Player)
 end
 
 
-function PlayerLib:_RemoveChestAcquire()
-    pcall(function()
-        for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
-            chest:SetAttribute("Receiver_"..self.Player.Name, nil)
-        end
-    end)
-end
-function PlayerLib:_RemoveFromParty()
-    pcall(function()
-        local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name) :: ObjectValue?
 
-        if party then
+function PlayerLib:RemoveMapComponents()
+    local funcs = {
+        function ()
+            for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
+                chest:SetAttribute("Receiver_"..self.Player.Name, nil)
+            end
+        end,
+
+        function()
+            for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
+                if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
+
+                if galleon.Owner.Value == self.Player then
+                    galleon:Destroy()
+                end
+            end
+        end,
+
+        function()
+            local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name) :: ObjectValue?
+            if not party then return end
+
             ServerBindables.PartyInvite:Fire(self.Player, "PlayerLeave", self.Player.Name)
-        end
-    end)
-end
-function PlayerLib:_RemoveSkyGalleon()
-    pcall(function()
-        for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
-            if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
-
-            if galleon.Owner.Value == self.Player then
-                galleon:Destroy()
-            end
-        end
-    end)
-end
-
-
-
-
-function PlayerLib:_ValidateSaveData(data: PlayerTemplate.PlayerDataJSON)
-    data = table.clone(data)
-
-
-    --// check class
-    local class = data.Class
-    if class == nil then
-        data.Class = "Chain"
-    end
-    if not Classbook[data.Class] then
-        data.Class = "Chain"
-    end
-
-
-    --// check valid items
-    for uniqueId, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        if itemInfo.ItemId == nil then
-            data.ItemsSQL[uniqueId] = nil
-            continue
-        end
-        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
-
-        if uniqueId ~= itemInfo.UniqueId then
-            data.ItemsSQL[uniqueId] = nil
-            continue
-        end
-        if not trueItemInfo then
-            data.ItemsSQL[itemInfo.UniqueId] = nil
-            continue
-        end
-        if itemInfo.Amount <= 0 then
-            data.ItemsSQL[itemInfo.UniqueId] = nil
-            continue
-        end
-        if trueItemInfo.ItemId == "Dawnbreak" then
-            local whiteList = { 304008764, 503716687, 1030029371 }
-            if not table.find(whiteList, self.Player.UserId) then
-                data.ItemsSQL[itemInfo.UniqueId] = nil
-                continue
-            end
-        end
-
-
-        --- clear up old data to save data storage space
-        if itemInfo.IsV2ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = nil
-        end
-        if itemInfo.Level then
-            data.ItemsSQL[itemInfo.UniqueId].Level = nil
-        end
-
-
-        --- migration from old code
-        if not itemInfo.IsFav then
-            data.ItemsSQL[itemInfo.UniqueId].IsFav = false
-        end
-        if not itemInfo.IsLocked then
-            data.ItemsSQL[itemInfo.UniqueId].IsLocked = false
-        end
-
-
-        if not itemInfo.ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
-        end
-        if table.find(trueItemInfo.TagsDesync, "NoRandom") then
-            if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
-                data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
-            end
-        end
-        if table.find(trueItemInfo.TagsDesync, "Chest") then
-            if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
-                data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
-            end
-        end
-    end
-
-
-    --// check valid item stacks
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        if itemInfo.Amount > 1 then
-            local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
-
-            if table.find(AssetBook.StackableItemTypes, itemType) then
-                for _ = itemInfo.Amount, 2, -1 do
-                    local itemUniqueId = HttpService:GenerateGUID(false)
-
-                    data.ItemsSQL[itemUniqueId] = {
-                        ItemId = itemInfo.ItemId,
-                        Amount = 1,
-                        UniqueId = itemUniqueId,
-                        ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId),
-                        IsFav = false,
-                        IsLocked = false
-                    }
-                end
-
-                data.ItemsSQL[itemInfo.UniqueId].Amount = 1
-            end
-            if itemType == "Active" or itemType == "Passive" or itemType == "Recipe" or itemType == "Quest" then
-                local returnAmount = itemInfo.Amount - 1
-
-                data.Gold += math.floor(ItemBook:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
-                data.ItemsSQL[itemInfo.UniqueId].Amount = 1
-            end
-        end
-
-        if itemInfo.Amount > 999 then
-            local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
-
-            if itemType == "Consumable" or itemType == "Material" then
-                local returnAmount = itemInfo.Amount - 999
-
-                data.Gold += math.floor(ItemBook:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
-                data.ItemsSQL[itemInfo.UniqueId].Amount = 999
-            end
-        end
-    end
-
-
-    --// check "NoDuplicate" tag item
-    local noDuplicateUniqueIds = {}
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
-
-        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") then
-            if noDuplicateUniqueIds[trueItemInfo.ItemId] == nil then
-                noDuplicateUniqueIds[trueItemInfo.ItemId] = {}
-            end
-
-            table.insert(noDuplicateUniqueIds[trueItemInfo.ItemId], itemInfo.UniqueId)
-        end
-    end
-    for _, uniqueIds: { string } in noDuplicateUniqueIds do
-        if #uniqueIds > 1 then
-            for i = 2, #uniqueIds do
-                data.ItemsSQL[uniqueIds[i]] = nil
-            end
-        end
-    end
-
-
-    --// mirgration: check if there is mana stat in each item
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        local itemStat = itemInfo.ItemStat
-
-        local cleaned = string.gsub(itemStat, "MaxManaEx%b()", "")
-
-        cleaned = string.gsub(cleaned, ",+", ",")
-        cleaned = string.gsub(cleaned, "^,|,$", "")
-        cleaned = string.gsub(cleaned, ",,", ",")
-
-        data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
-    end
-
-    --// mirgration2: check if there is forVariant stat in each item
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        local itemStat = itemInfo.ItemStat
-
-        local cleaned = string.gsub(itemStat, "ForVariant%b()", "")
-
-        cleaned = string.gsub(cleaned, ",+", ",")
-        cleaned = string.gsub(cleaned, "^,|,$", "")
-        cleaned = string.gsub(cleaned, ",,", ",")
-
-        data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
-    end
-
-
-    --// clean up old settings
-    data.Settings = nil
-
-
-    --// check valid equipping items
-    for thatSlot: string, itemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
-        --// check if there are other same item id in equipping items
-        for slot: string, thatItemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
-            if thatItemInfo.ItemId == itemInfo.ItemId and slot ~= thatSlot then
-                data.EquippingItemsSQL[slot] = nil
-            end
-        end
-        for slot: string, thatItemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
-            if string.match(thatItemInfo.ItemId, "^(%w+)%d*$") == string.match(itemInfo.ItemId, "^(%w+)%d*$") and slot ~= thatSlot then
-                data.EquippingItemsSQL[slot] = nil
-            end
-        end
-        for slot: string, thatItemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
-            if thatItemInfo.UniqueId == itemInfo.UniqueId and slot ~= thatSlot then
-                data.EquippingItemsSQL[slot] = nil
-            end
-        end
-
-        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
-        if not trueItemInfo then
-            data.EquippingItemsSQL[thatSlot] = nil
-            continue
-        end
-        if trueItemInfo.ItemId == "Dawnbreak" then
-            local whiteList = { 304008764, 503716687, 1030029371 }
-            if not table.find(whiteList, self.Player.UserId) then
-                data.EquippingItemsSQL[thatSlot] = nil
-                continue
-            end
-        end
-
-
-        --// check type
-        if string.find(thatSlot, "Weapon") then
-            if trueItemInfo.Type ~= "Weapon" then
-                data.EquippingItemsSQL[thatSlot] = nil
-                continue
-            end
-        end
-        if string.find(thatSlot, "Accessory") then
-            if trueItemInfo.Type ~= "Accessory" then
-                data.EquippingItemsSQL[thatSlot] = nil
-                continue
-            end
-        end
-        if string.find(thatSlot, "Active") then
-            local whiteList = { "Active", "Consumable" }
-            if not table.find(whiteList, trueItemInfo.Type) then
-                data.EquippingItemsSQL[thatSlot] = nil
-                continue
-            end
-        end
-
-
-
-        --// check if item exists and level is enough
-        local itemObj = data.ItemsSQL[itemInfo.UniqueId]
-        if itemObj == nil then
-            data.EquippingItemsSQL[thatSlot] = nil
-            continue
-        end
-        local trueItemObjItemInfo = ItemBook:GetItemInfo(itemObj.ItemId)
-        if trueItemObjItemInfo == nil then
-            data.EquippingItemsSQL[thatSlot] = nil
-            continue
-        end
-
-        local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
-        if not table.find(whiteList, ItemBook:GetItemInfo(itemObj.ItemId).Type) then
-            data.EquippingItemsSQL[thatSlot] = nil
-            continue
-        end
-        if data.Level < trueItemObjItemInfo.Level then
-            data.EquippingItemsSQL[thatSlot] = nil
-            continue
-        end
-    end
-
-
-
-    --// check valid weapon equipping
-    local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
-    local starterClassWeapons = {
-        Chain = "WoodenSword",
-        Burst = "WoodenBow",
-        Flow = "WoodenStaff"
+        end,
     }
-    local woodenWeapon = nil
-    for _, itemObj in data.ItemsSQL do
-        if itemObj.ItemId == starterClassWeapons["Burst"] then
-            woodenWeapon = itemObj
-            break
-        end
-    end
-    if not woodenWeapon then
-        data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = starterClassWeapons["Burst"],
-            Amount = 1,
-            UniqueId = itemUniqueIdForEmptyWeapon,
-            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons["Burst"]),
-            IsFav = false,
-            IsLocked = false
-        }
-    end
-    if not data.EquippingItemsSQL["Weapon1"] then
-        data.EquippingItemsSQL["Weapon1"] = {
-            ItemId = starterClassWeapons["Burst"],
-            UniqueId = itemUniqueIdForEmptyWeapon
-        }
-    end
 
-
-
-    --// check valid quests
-    for questId: string, _ in data.QuestsV2 do
-        if not QuestBook[questId] then
-            data.QuestsV2[questId] = nil
-        end
-    end
-    if HarukaLib.TableUtils.IsEmpty(data.QuestsV2) then
-        data.QuestsV2.Main1 = {
-            Id = "Main1",
-            QuestState = "Started",
-            ObjectiveProgress = {}
-        }
-    end
-
-
-    --// check invalid points
-
-    local totalPoints = data.PerkPoints :: number
-    local level = data.Level :: number
-    local shouldPoint = FormulaBook.PLAYER_POINT_PER_LEVEL * level
-
-    totalPoints += data.VITPoints
-    totalPoints += data.INTPoints
-    totalPoints += data.STRPoints
-    totalPoints += data.DEXPoints
-    totalPoints += data.DEFPoints
-
-    if totalPoints ~= shouldPoint then
-        data.PerkPoints = shouldPoint
-        data.VITPoints = 0
-        data.INTPoints = 0
-        data.STRPoints = 0
-        data.DEXPoints = 0
-        data.DEFPoints = 0
-    end
-
-    local shouldReset = false
-    if data.VITPoints < 0 then shouldReset = true end
-    if data.INTPoints < 0 then shouldReset = true end
-    if data.STRPoints < 0 then shouldReset = true end
-    if data.DEXPoints < 0 then shouldReset = true end
-    if data.DEFPoints < 0 then shouldReset = true end
-    if data.DEXPoints > FormulaBook.PLAYER_MAX_DEX_POINTS then shouldReset = true end
-
-    if shouldReset then
-        data.PerkPoints = shouldPoint
-        data.VITPoints = 0
-        data.INTPoints = 0
-        data.STRPoints = 0
-        data.DEXPoints = 0
-        data.DEFPoints = 0
-    end
-
-
-    --// check invalid talent points
-    local totalTalentPoints = data.TalentPoints :: number
-    local shouldTalentPoint = FormulaBook.PLAYER_TALENT_POINT_PER_LEVEL * level
-
-    totalTalentPoints += #data.Talents * 15
-
-    if totalTalentPoints ~= shouldTalentPoint then
-        data.TalentPoints = shouldTalentPoint
-        data.Talents = {}
-    end
-    if data.TalentPoints < 0 then
-        data.TalentPoints = shouldTalentPoint
-        data.Talents = {}
-    end
-
-    return data
+    pcall(funcs[1])
+    pcall(funcs[2])
+    pcall(funcs[3])
 end
 
-
-
-function PlayerLib:_ValidateMainData(data: PlayerTemplate.PlayerMainDataJSON)
-    data = table.clone(data)
-
-    --// check gamepass purchase logs
-    for gamepassId: string, _ in data.GamepassPurchaseLogs do
-        if tonumber(gamepassId) then
-            --// was saved incorrectly
-            local gamepassName = nil
-            for gpName: string, gpId: number in AssetBook.GamepassIds do
-                if gpId == tonumber(gamepassId) then
-                    gamepassName = gpName
-                    break
-                end
-            end
-            if not gamepassName then continue end
-
-            data.GamepassPurchaseLogs[gamepassName] = data.GamepassPurchaseLogs[gamepassId]
-            data.GamepassPurchaseLogs[gamepassId] = nil
-        end
-    end
-
-    return data
-end
-
-
-function PlayerLib._GetCurrentDonation(profile: ProfileStore.Profile<PlayerTemplate.JSON>) : number
-    local totalRobuxGained = 0
-    for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
-        if purchaseInfo.Purchased then
-            totalRobuxGained += purchaseInfo.PurchasedPrice or 0
-        end
-    end
-    for _, purchaseInfo in profile.Data.DevProductsPurchaseLogs do
-        if purchaseInfo.Purchased then
-            totalRobuxGained += purchaseInfo.PurchasedPrice or 0
-        end
-    end
-
-    return totalRobuxGained
-end
-function PlayerLib.CalDonationAndSave(profile: ProfileStore.Profile<PlayerTemplate.JSON>, plr: Player) : number
-    local totalRobuxGained = PlayerLib._GetCurrentDonation(profile)
-    if totalRobuxGained <= 0 then return 0 end
-
-    ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..tostring(plr.UserId), totalRobuxGained, "Donation")
-
-    return 1599
-end
-
-
-
-function PlayerLib:UpdateDonationRank()
-    local profile = self.Profile
-    if profile == nil then return end
-
-
-    local totalRobuxGained = PlayerLib._GetCurrentDonation(profile)
-    if totalRobuxGained <= 0 then return end
-
-    ServerBindables.RToAwardLeaderboardRank:Fire(self.Player, "Donation")
-end
-
-
-
-shared.PlayerLib = PlayerLib
 
 
 return PlayerLib

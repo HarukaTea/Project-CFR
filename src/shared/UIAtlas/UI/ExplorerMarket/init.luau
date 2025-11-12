@@ -10,13 +10,12 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local ProductBar = require(script.Components.ProductBar)
 local PurchasePrompt = require(script.Components.PurchasePrompt)
-local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
-local BKEcoSlot = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKEcoSlot)
-local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemFilterView)
-local BKItemDescView = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemDescView)
-local BKItemSlot = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKItemSlot)
-local BKOptionBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKOptionBtn)
-
+local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
+local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarEcoSlot)
+local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
+local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
+local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
+local BottombarOptionBtn = require(RepS.HarukaShared.UIAtlas.Components.BottombarOptionBtn)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
@@ -432,13 +431,13 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        BKOptionBtn(scope, {
+                        BottombarOptionBtn(scope, {
                             Option = "Filter",
                             Index = 1
                         }, self),
 
                         Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
-                            return index, BKCategoryBtn(scope, {
+                            return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index + 2,
 
@@ -516,7 +515,7 @@ return function (plr: Player)
                         }),
 
                         Fusion.ForPairs(scope, { "Market", "Sell" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
-                            return index, BKCategoryBtn(scope, {
+                            return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
 
@@ -545,7 +544,7 @@ return function (plr: Player)
                         }),
 
                         Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope<any>, index: number, currency: string)
-                            return index, BKEcoSlot(scope, {
+                            return index, BottombarEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,
 

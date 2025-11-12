@@ -27,7 +27,7 @@ return function(scope: Fusion.Scope<any>, props: {
         productInfo:set(info)
     end))
     table.insert(scope, task.spawn(function()
-        if props.Type ~= "GamePass" then return end
+        if props.Type ~= "Gamepass" then return end
 
         local hasOwned = false
         pcall(function()
@@ -37,43 +37,6 @@ return function(scope: Fusion.Scope<any>, props: {
         hasOwnedGamepass:set(hasOwned)
     end))
 
-
-
-    local isLimited
-    if props.Type == "GamePass" then
-        isLimited = {
-            Components.TextLabel(scope, {
-                Name = "Limited",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.5),
-                Size = UDim2.fromScale(0.5, 0.15),
-                BackgroundTransparency = 0,
-                BackgroundColor3 = Components.WHITE_COLOR,
-                TextColor3 = Components.BLACK_COLOR,
-                Text = "LIMITED",
-
-                [Children] = {
-                    Components.RoundUICorner(scope)
-                }
-            }),
-            Components.Frame(scope, {
-                Name = "Shadow",
-                BackgroundTransparency = 0.4,
-                ZIndex = 2,
-
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(hasOwnedGamepass)
-                end),
-
-                [Children] = {
-                    Components.UICorner(scope, {
-                        CornerRadius = UDim.new(0.1, 0)
-                    }),
-                }
-            })
-
-        }
-    end
 
     local isSelecting = Fusion.Value(scope, false)
 
@@ -113,8 +76,6 @@ return function(scope: Fusion.Scope<any>, props: {
                 end)
             }),
 
-            isLimited,
-
             Components.TextLabel(scope, {
                 Name = "Price",
                 AnchorPoint = Vector2.new(0.5, 1),
@@ -127,7 +88,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local productInfoState = use(productInfo)
                     if productInfoState.PriceInRobux then
-                        return `Donate {utf8.char(0xE002)} {productInfoState.PriceInRobux}`
+                        return `{utf8.char(0xE002)} {productInfoState.PriceInRobux}`
                     end
 
                     return "Fetching Info..."
@@ -148,7 +109,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 end,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                    if props.Type == "GamePass" then
+                    if props.Type == "Gamepass" then
                         MarketplaceService:PromptGamePassPurchase(Players.LocalPlayer, props.AssetId)
                     elseif props.Type == "Product" then
                         MarketplaceService:PromptProductPurchase(Players.LocalPlayer, props.AssetId, true, Enum.CurrencyType.Robux)

@@ -188,16 +188,23 @@ AssetBook.PerkPointColors = {
 
 
 AssetBook.GamepassIds = {
-	Donation1 = 1094837868,
-	Donation2 = 1094827969,
-	Donation3 = 1274366124,
-	Donation4 = 1274424139
+	["Donation #1"] = {},
+	["Donation #2"] = {}
 }
 
 
 AssetBook.DevProductIds = {
-	DonationPack5 = 3315706829,
-	DonationPack6Mega = 3315707330
+	["Donation #1"] = {
+		DonationPack1 = 3454021702,
+		DonationPack2 = 3454021999,
+		DonationPack3 = 3454022448,
+		DonationPack4 = 3454022868,
+		DonationPack5 = 3454023339,
+	},
+	["Donation #2"] = {
+		HalloweenPack1 = 3454075092,
+		HalloweenPack2 = 3454075601,
+	}
 }
 
 AssetBook.BadgeIds = {

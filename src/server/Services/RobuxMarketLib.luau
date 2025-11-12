@@ -7,7 +7,9 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore)
+local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore_Haruka)
+local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
+local PlayerLib = require(ServerScriptService.HarukaServer.Services.PlayerLib)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
@@ -34,7 +36,7 @@ for _, productId in AssetBook.DevProductIds do
         })
 
         profile:Save()
-        shared.PlayerLib._RequestToCalculateTotalDonationAndSave(profile, player)
+        PlayerProfileLib.CalDonationAndSave(profile, player)
     end
 end
 local function processReceipt(receiptInfo: {[string]: any})
@@ -49,9 +51,9 @@ local function processReceipt(receiptInfo: {[string]: any})
         wait()
 
         if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
-            local playerObj = shared.PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
+            local playerObj = PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
             if playerObj then
-                local profile = playerObj.Profile :: ProfileStore.Profile<PlayerTemplate.JSON>
+                local profile = playerObj.ProfileObj.Profile
 
                 if profile and profile:IsActive() then
                     local handler = productFunctions[tostring(productId)]
@@ -82,10 +84,10 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     if not player then return end
     if player.Parent ~= Players then return end
 
-    local playerObj = shared.PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
+    local playerObj = PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
     if not playerObj then return end
 
-    local profile = playerObj.Profile :: ProfileStore.Profile<PlayerTemplate.JSON>
+    local profile = playerObj.ProfileObj.Profile
     if not profile then return end
 
 
@@ -111,7 +113,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     end)
 
     profile:Save()
-    shared.PlayerLib.CalDonationAndSave(profile, player)
+    PlayerProfileLib.CalDonationAndSave(profile, player)
 
 
     Events.CreateNotify.Fire(player, "You have successfully purchased the gamepass!")

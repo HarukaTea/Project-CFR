@@ -9,7 +9,9 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
-local BKCategoryBtn = require(RepS.HarukaShared.UIAtlas.UI.ExplorerBackpack.Components.BKCategoryBtn)
+local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
+local SideCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.SideCategoryBtn)
+
 
 local DevProductSlot = require(script.Components.DevProductSlot)
 local DonationRankSlot = require(script.Components.DonationRankSlot)
@@ -57,34 +59,69 @@ return function (plr: Player)
                 [Children] = {
                     Components.UIAspectRatioConstraint(scope, 3.389),
 
+
                     Components.Frame(scope, {
-                        Name = "ProductList",
+                        Name = "Categories",
+                        AnchorPoint = Vector2.zero,
+                        Position = UDim2.fromScale(0, 0),
+                        Size = UDim2.fromScale(0.3, 1),
+
+                        [Children] = {
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.04, 0),
+                            }),
+
+                            Fusion.ForPairs(scope, self.PanelList, function(_, scope: Fusion.Scope<any>, index: number, panelId: string)
+                                return panelId, SideCategoryBtn(scope, {
+                                    PanelId = panelId,
+
+                                    LayoutOrder = index,
+                                    PanelTitle = panelId,
+
+                                    PanelSelected = self.PanelSelected,
+                                })
+                            end)
+                        }
+                    }),
+
+                    Components.Frame(scope, {
+                        Name = "Products",
+                        AnchorPoint = Vector2.zero,
+                        Position = UDim2.fromScale(0.3, 0),
+                        Size = UDim2.fromScale(0.7, 1),
 
                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return use(self.CurrentCategory) == "Donation"
                         end),
 
                         [Children] = {
-                            --// FIXME: remember to use Fusion.Computed when using scrolling in the future
-                            Components.UIGridLayout(scope, {
-                                FillDirection = Enum.FillDirection.Horizontal,
-                                CellPadding = UDim2.fromOffset(24, 24),
-                                CellSize = UDim2.fromScale(0.15, 0.4)
-                            }),
+                            Fusion.ForValues(scope, self.PanelList, function(_, scope: Fusion.Scope<any>, panelId: string)
+                                return Components.Frame(scope, {
+                                    Name = panelId,
 
+                                    [Children] = {
+                                        Components.UIGridLayout(scope, {
+                                            FillDirection = Enum.FillDirection.Horizontal,
+                                            CellPadding = UDim2.fromScale(0.04, 0.04),
+                                            CellSize = UDim2.fromScale(0.2, 0.4)
+                                        }),
 
-                            Fusion.ForPairs(scope, AssetBook.GamepassIds, function(_, scope: Fusion.Scope<any>, gamepass: string, gamepassId: number)
-                                return gamepass, DevProductSlot(scope, {
-                                    Type = "GamePass",
-                                    AssetId = gamepassId
-                                })
-                            end),
-                            Fusion.ForPairs(scope, AssetBook.DevProductIds, function(_, scope: Fusion.Scope<any>, devProduct: string, devProductId: number)
-                                return devProduct, DevProductSlot(scope, {
-                                    Type = "Product",
-                                    AssetId = devProductId
+                                        Fusion.ForPairs(scope, AssetBook.GamepassIds[panelId], function(_, scope: Fusion.Scope<any>, gamepass: string, gamepassId: number)
+                                            return gamepass, DevProductSlot(scope, {
+                                                Type = "Gamepass",
+                                                AssetId = gamepassId
+                                            })
+                                        end),
+                                        Fusion.ForPairs(scope, AssetBook.DevProductIds[panelId], function(_, scope: Fusion.Scope<any>, devProduct: string, devProductId: number)
+                                            return devProduct, DevProductSlot(scope, {
+                                                Type = "Product",
+                                                AssetId = devProductId
+                                            })
+                                        end)
+                                    }
                                 })
                             end)
+
                         }
                     })
                 }
@@ -119,7 +156,7 @@ return function (plr: Player)
                         }),
 
                         Fusion.ForPairs(scope, { "Donation", "DonationLeaderboard" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
-                            return index, BKCategoryBtn(scope, {
+                            return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
 
@@ -173,7 +210,5 @@ return function (plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end
