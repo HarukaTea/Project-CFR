@@ -10,7 +10,7 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     Enemy: Model,
 })
     if not ClientLib.IsCharValid(props.Enemy) then return nil end

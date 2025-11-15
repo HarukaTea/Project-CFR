@@ -6,6 +6,7 @@ local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
@@ -13,7 +14,7 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore_Haruka)
+local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
@@ -34,7 +35,7 @@ export type PlayerLibClass = {
     Init: (self: PlayerLibClass) -> nil,
 
     GetPlayerObjByUniqueId: (uniqueId: string) -> PlayerLibClass,
-    _GetCurrentDonation: (profile: ProfileStore.Profile<PlayerTemplate.JSON>) -> nil,
+    _GetCurrentDonation: (profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) -> nil,
 
     _Remove: (self: PlayerLibClass) -> nil,
     _SaveData: (self: PlayerLibClass) -> nil,
@@ -64,8 +65,8 @@ local EXTRA_TEMPLATE = {
 }
 
 
-local profileStoreMain = ProfileStore.New(
-    require(ServerScriptService.DS_VERSION),
+local profileStoreMain = HarukaDatastore.GetStore(
+    require(ServerScriptService.DS_VERSION).Id,
     PlayerTemplate
 )
 
@@ -99,10 +100,16 @@ Players.PlayerRemoving:Connect(function(player)
         player.Character:Destroy()
     end
 end)
-Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
+Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
+    if not netData.ActionId then return end
+    if not netData.SlotId then return end
+
+
+    if netData.ActionId ~= "Play" then return end
+
     local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
     if not playerObj then
-        plr:Kick("Failed to find player object, please report this to the developer!")
+        plr:Kick("Failed to find player object, please report this issue to the developer!")
         return
     end
 
@@ -117,7 +124,7 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
 
         --// start to load in
         local slot = slotChosen
-        local data = profile.Data[slot].Attrs :: { any }
+        local data = profile.Data[slot].Attrs :: PlayerTemplate.PlayerDataJSON
 
         self.Slot = slot
         plr:SetAttribute("SlotChosen", slot)
@@ -384,30 +391,33 @@ Events.RequestToChooseWhichSlotToPlay.SetCallback(function(plr: Player, netData)
         end
     end)
 end)
-Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
-    if data.SlotId == nil then return end
+Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
+    if not data.ActionId then return end
+    if not data.SlotId then return end
+
+    if data.ActionId ~= "Erase" then return end
 
 
-    Events.CreateFSNotify.Fire(plr, "Erasing your save file...", 3)
+    Events.CreateFSNotify_S.Fire(plr, "Erasing your save file...", 3)
 
 
     local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
     if not playerObj then
         warn("[Data Erase] Player object not found when trying to erase save file.")
 
-        Events.CreateNotify.Fire(plr, "[ERROR] Player object not found, when trying to erase save file.")
+        Events.CreateNotify_S.Fire(plr, "[ERROR] Player object not found, when trying to erase save file.")
         return
     end
-    if not playerObj.Profile then
+    if not playerObj.ProfileObj.Profile then
         warn("[Data Erase] Profile not found when trying to erase save file.")
 
-        Events.CreateNotify.Fire(plr, "[ERROR] Profile not found, when trying to erase save file.")
+        Events.CreateNotify_S.Fire(plr, "[ERROR] Profile not found, when trying to erase save file.")
         return
     end
 
 
     for attr, value in table.clone(PlayerTemplate).Slot1.Attrs do
-        playerObj.Profile.Data[data.SlotId].Attrs[attr] = value
+        playerObj.ProfileObj.Profile.Data[data.SlotId].Attrs[attr] = value
     end
 
     local profileContainer = plr.ProfileContainer :: Folder
@@ -421,7 +431,7 @@ Events.RequestToEraseSaveFile.SetCallback(function(plr: Player, data)
     end
 
 
-    Events.CreateFSNotify.Fire(plr, "Save file erased!", 2)
+    Events.CreateFSNotify_S.Fire(plr, "Save file erased!", 2)
 end)
 
 
@@ -453,18 +463,14 @@ function PlayerLib:Init()
     local profileFailedTimes = 0
 
     while profile == nil do
-        wait(1.15)
+        wait(0.5)
         if not plr then break end
         if not plr.Parent then break end
         if profile ~= nil then break end
 
 
         Promise.new(function(resolve, reject)
-            profile = profileStoreMain:StartSessionAsync("Player_"..plr.UserId, {
-                Cancel = function()
-                    return plr.Parent ~= Players
-                end
-            })
+            profile = profileStoreMain:CreateProfileAsync("Player_"..plr.UserId)
 
             if profile == nil then
                 reject("Failed to fetch profile")
@@ -474,10 +480,14 @@ function PlayerLib:Init()
             resolve(true)
         end):timeout(6):catch(function(err)
             if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
-                Events.CreateNotify.Fire(plr, "Roblox server is running slower than usual, we're trying to load...")
+                Events.CreateNotify_S.Fire(plr, "Roblox server is running slower than usual, we're trying to load...")
                 warn("Roblox server is handling data requests slowly [Timeout]")
             else
-                Events.CreateNotify.Fire(plr, "Roblox server is handling requests slowly, we're trying to load...")
+                Events.CreateNotify_S.Fire(plr, "Roblox server is handling requests slowly, we're trying to load...")
+
+                if RunService:IsStudio() then
+                    warn(tostring(err))
+                end
             end
         end):await()
 
@@ -486,7 +496,7 @@ function PlayerLib:Init()
         end
     end
 
-    wait(1.15)
+    wait(0.5)
     if profile == nil then
         plr:Kick("Profile session end, please try again later?")
         return
@@ -501,21 +511,16 @@ function PlayerLib:Init()
     end)
 
 
+    if plr.Parent ~= Players then return end
+
+
+
     local profileObj = PlayerProfileLib.new(plr, profile)
     self.ProfileObj = profileObj
 
 
-
     --// Load in datastore
     profileObj:Init()
-
-    if plr.Parent ~= Players then
-        profile:EndSession()
-        return
-    end
-    self.Add(function()
-        profile:EndSession()
-    end)
 
 
     local profileContainer = Instance.new("Folder")
@@ -565,31 +570,17 @@ end
 function PlayerLib:Destroy()
     allPlayerObjPool[self.UniqueId] = nil
 
-    self:_Remove()
-
-    self.Empty()
-end
-
-
-
---// Private functions
-
-function PlayerLib:_Remove()
-    local success, err = pcall(function()
-        self:_SaveData()
-    end)
-    pcall(function()
-        if self.ProfileObj and self.ProfileObj.Profile then
-            self.ProfileObj.Profile:EndSession()
-        end
-    end)
+    local success, err = pcall(self._SaveData, self)
     if not success then
         warn(err)
     end
 
     self:RemoveMapComponents()
+    self.Empty()
 end
 
+
+--// Private functions
 
 
 function PlayerLib:_SaveData()
@@ -663,7 +654,7 @@ function PlayerLib:_SaveData()
             local progressState = quest.Value
 
             local objectives = quest:GetAttributes()
-            if #objectives ~= #QuestBook[questId].Objectives then
+            if HarukaLib.TableUtils.CountDictLength(objectives) ~= #QuestBook[questId].Objectives then
                 objectives = {}
             end
             if not questId or not progressState then
@@ -690,6 +681,7 @@ function PlayerLib:_SaveData()
     profileAttrs.Talents = talentsSQL
 
     self.ProfileObj.Profile.Data.Settings = criSettingsSQL
+    self.ProfileObj.Profile:SaveProfileAsync()
 
     PlayerProfileLib.CalDonationAndSave(self.ProfileObj.Profile, self.Player)
 end
@@ -698,7 +690,7 @@ end
 
 function PlayerLib:RemoveMapComponents()
     local funcs = {
-        function ()
+        function()
             for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
                 chest:SetAttribute("Receiver_"..self.Player.Name, nil)
             end

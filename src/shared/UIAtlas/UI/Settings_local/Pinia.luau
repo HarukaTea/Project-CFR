@@ -20,7 +20,7 @@ local SettingsTemplate = require(script.Parent.SettingsTemplate)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     SettingsFolder: Folder,
     PanelSelected: Fusion.Value<string>,
@@ -77,7 +77,7 @@ return function (self: Self)
 
     self.IsInKeybindMode = Value(false)
 
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     --// track visible

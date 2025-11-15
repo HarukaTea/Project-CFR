@@ -29,7 +29,6 @@ local WindShake = {
 	ObjectMetadata = {} :: {
 		[Instance]: {
 			ChunkKey: Vector3,
-			Settings: Settings,
 			Seed: number,
 			Origin: CFrame,
 			LastUpdate: number,

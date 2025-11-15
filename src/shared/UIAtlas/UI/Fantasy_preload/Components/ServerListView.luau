@@ -12,14 +12,14 @@ local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     SaveSlotClickedSignal: RBXScriptSignal,
     SaveSlotBackSignal: RBXScriptSignal,
     ReadyToTeleportSignal: RBXScriptSignal,
 
     ServerListClickedSignal: RBXScriptSignal,
 
-    SlotChosen: Fusion.Value
+    SlotChosen: Fusion.Value<string>
 })
 
     local function Value<T>(val: T) : Fusion.Value<T>
@@ -103,7 +103,7 @@ return function (scope: Fusion.Scope<any>, props: {
                     Components.PaddingFrame(scope, "AAA"),
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.ForPairs(scope, serversAvailable, function(_, scope: Fusion.Scope<any>, index: string, symbol: IntValue)
+                    Fusion.ForPairs(scope, serversAvailable, function(_, scope: Fusion.Scope, index: string, symbol: IntValue)
                         local isSelecting = Fusion.Value(scope, false)
 
                         --// TODO: in the future, add how many friends are in this server UI

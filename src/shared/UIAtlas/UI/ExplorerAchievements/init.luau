@@ -26,7 +26,7 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     Pinia(self)
@@ -66,7 +66,7 @@ return function (plr: Player)
                             Components.PaddingFrame(scope, "ZZZ"),
 
 
-                            Fusion.ForPairs(scope, AssetBook.BadgeIds, function(_, scope: Fusion.Scope<any>, badge: string, badgeId: number)
+                            Fusion.ForPairs(scope, AssetBook.BadgeIds, function(_, scope: Fusion.Scope, badge: string, badgeId: number)
 
                                 local badgeInfo = Fusion.Value(scope, {})
                                 local hasOwned = Fusion.Value(scope, false)

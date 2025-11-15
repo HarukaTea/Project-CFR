@@ -101,18 +101,31 @@ end
 
 
 function CharLib:__Init()
-    Bindables.PlayCameraCutscene:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
+    Bindables.UpdateCameraPart:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
 
-    if not workspace:GetAttribute("DungeonId") then
-        SoundService.Musics.Overworld:Play()
-    end
-    if workspace:GetAttribute("DungeonId") and workspace:GetAttribute("DungeonStarted") then
-        SoundService.Musics.Overworld:Play()
-    end
+    SoundService.Musics.Overworld:Play()
+    CharLib:__Init_Abyss()
 
     local camera = workspace.CurrentCamera
     if camera:FindFirstChild("DeathBlur") then
         camera.DeathBlur:Destroy()
+    end
+end
+
+
+
+function CharLib:__Init_Abyss()
+    local abyssId = workspace:GetAttribute("AbyssId")
+    local dungeonId = workspace:GetAttribute("DungeonId")
+
+    if (abyssId or dungeonId) then
+        SoundService.Musics.Overworld:Stop()
+    end
+
+    local abyssStarted = workspace:GetAttribute("AbyssStarted")
+    local dungeonStarted = workspace:GetAttribute("DungeonStarted")
+    if (abyssId or dungeonId) and (abyssStarted or dungeonStarted) then
+        SoundService.Musics.Overworld:Play()
     end
 end
 
@@ -139,9 +152,9 @@ function CharLib:_InitUI()
 end
 
 function CharLib:__Destroy()
-    Events.RequestToForceReset.Fire()
+    Events.ForceResetPlayer_C.Fire()
 
-    Bindables.PlayCameraCutscene:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
+    Bindables.UpdateCameraPart:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
     Bindables.PlaySound:Fire(ReplicatedStorage.Packages.Unloads.ResetSound)
     Bindables.PlaySound:Fire(SoundService.SFXs.Death)
 
@@ -208,9 +221,10 @@ table.insert(CharLib.Funcs, function()
         point = animator:LoadAnimation(animationsChar.point),
         wave = animator:LoadAnimation(animationsChar.wave),
         laugh = animator:LoadAnimation(animationsChar.laugh),
-    }
+    } :: {[string]: AnimationTrack}
     Add(self.CharAnims)
-    for animId: string, anim: AnimationTrack in self.CharAnims do
+
+    for animId, anim in self.CharAnims do
         if string.find(animId, "dance") then
             anim.Looped = true
         end
@@ -256,8 +270,8 @@ table.insert(CharLib.Funcs, function()
 
         self.ClassAttackAnims[anim]:Play()
     end
-    Add(Bindables.PlayAnimation:Connect(_playAnim))
-    Add(Events.PlayAnimation.On(function(data)
+    Add(Bindables.PlayAnimation_S:Connect(_playAnim))
+    Add(Events.PlayAnimation_S.On(function(data)
         _playAnim(data.AnimId)
     end))
 
@@ -328,16 +342,23 @@ table.insert(CharLib.Funcs, function()
     Add(Bindables.PlayerChatted:Connect(function(msg: string, sender: Player)
         if sender ~= plr then return end
 
+        msg = tostring(msg)
+
         local emote = ""
+
+        -- don't ask me why this messy code is here, because of dawg luau-lsp type-checking
         if msg == "/e dance" then
             emote = "dance"..math.random(1, 3)
-
-        elseif (string.sub(msg, 1, 3) == "/e ") then
-            emote = string.sub(msg, 4)
-
-        elseif (string.sub(msg, 1, 7) == "/emote ") then
-            emote = string.sub(msg, 8)
         end
+        if not msg == "/e dance" then
+            if (string.sub(msg, 1, 3) == "/e ") then
+                emote = string.sub(msg, 4)
+
+            elseif (string.sub(msg, 1, 7) == "/emote ") then
+                emote = string.sub(msg, 8)
+            end
+        end
+
 
         local whiteList = { "dance1", "dance2", "dance3", "cheer", "point", "wave", "laugh" }
 

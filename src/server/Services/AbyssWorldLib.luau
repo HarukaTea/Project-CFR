@@ -37,15 +37,28 @@ local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 if not workspace:GetAttribute("AbyssId") then return nil end
 
 
+local abyssMobsContainer = workspace.Enemies:FindFirstChild("_ABYSS_TEAM") :: Folder
+if not abyssMobsContainer then
+    error("[AbyssLib] _ABYSS_TEAM folder not found in Enemies folder")
+    return nil
+end
+
+
+local abyssAirwall = workspace.MapComponents:FindFirstChild("_AbyssAirwall") :: BasePart
+if not abyssAirwall then
+    error("[AbyssLib] _AbyssAirwall folder not found in MapComponents folder")
+    return nil
+end
+
+
+
+
 local wait = task.wait
 
 
 function AbyssWorldLib:Init()
-    for _, func: () -> nil in AbyssWorldLib.Funcs do
-        Promise.try(func):catch(function(err)
-            warn(tostring(err))
-        end):await()
-    end
+    Promise.try(AbyssWorldLib.Funcs[1]):await()
+
     for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
         task.spawn(func)
     end
@@ -55,10 +68,33 @@ end
 --// Private functions
 
 
-table.insert(AbyssWorldLib.Funcs, function()
-    if not workspace:GetAttribute("AbyssId") then return end
+function AbyssWorldLib.GiveLoot()
+    for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+        Promise.try(function()
+            local char = player.Character
+            local luck = 1
+            if ServerLib.IsCharValid(char) then
+                luck = char:GetAttribute("Luck") / 100 or 1
+            end
+            luck = math.max(1, luck)
 
-    repeat wait() until Players:FindFirstChildOfClass("Player")
+            for _ = 1, 3 do
+                Events.PlaySound_S.Fire(player, SoundService.SFXs.LootDropped)
+
+                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot(), luck)
+
+                ServerLib.GiveItemDrop(player, result, AbyssWorldLib.AbyssId * 10)
+                wait(0.15)
+            end
+        end)
+    end
+end
+
+
+
+
+table.insert(AbyssWorldLib.Funcs, function()
+    repeat wait(0.5) until Players:FindFirstChildOfClass("Player")
 
     local player = Players:FindFirstChildOfClass("Player")
     local abyssSortedMap = MemoryStoreService:GetSortedMap("AbyssTeleportData")
@@ -74,17 +110,10 @@ table.insert(AbyssWorldLib.Funcs, function()
 
 
     AbyssWorldLib.AbyssId = abyssId
-
-
-    local folder = workspace.Enemies:FindFirstChild("_ABYSS_TEAM") :: Folder
-    if not folder then
-        warn("Did you forget to add the _ABYSS_TEAM folder to the Enemies folder?")
-        return
-    end
-
     workspace:SetAttribute("AbyssLevelId", abyssId)
 
-    local totalMobs = folder:GetChildren() :: { BasePart }
+
+    local totalMobs = abyssMobsContainer:GetChildren() :: { BasePart }
     local index = 1
     for mobId: string, mobInfo in AbyssTeambook[abyssId].Team do
         if not totalMobs[index] then break end
@@ -107,7 +136,7 @@ table.insert(AbyssWorldLib.Funcs, function()
         end
     end
 
-    workspace:SetAttribute("DungeonStarted", false)
+    workspace:SetAttribute("AbyssStarted", false)
 end)
 
 
@@ -115,30 +144,15 @@ end)
 
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
-    Events.DUNGEON_RequestToStartDungeon.SetCallback(function()
+    Events.Abyss_StartAbyss_C.SetCallback(function()
         if AbyssWorldLib.Started then return end
-
-        workspace:SetAttribute("DungeonStarted", true)
         AbyssWorldLib.Started = true
 
-        Events.CreateCenterNotify.FireList(CollectionService:GetTagged("PlayerEntity"), "CHALLENGE STARTED!", true)
-        Events.DUNGEON_StartDungeon.FireList(CollectionService:GetTagged("PlayerEntity"))
+        Events.CreateCenterNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), "CHALLENGE STARTED!", true)
 
-        workspace.MapComponents._AbyssAirwall:Destroy()
+        workspace:SetAttribute("AbyssStarted", true)
 
-
-        local clockDisconnect = nil
-        workspace:SetAttribute("DungeonLeftTime", 0)
-
-        clockDisconnect = HarukaLib.Clock(1, function()
-            if workspace:GetAttribute("DungeonFinished") then return end
-
-            HarukaLib:AddAttr(workspace, "DungeonLeftTime", 1)
-        end)
-
-        repeat wait() until workspace:GetAttribute("DungeonFinished")
-
-        if clockDisconnect then clockDisconnect() end
+        abyssAirwall:Destroy()
     end)
 end)
 
@@ -146,66 +160,43 @@ end)
 
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
-    local folder = workspace.Enemies:FindFirstChild("_ABYSS_TEAM") :: Folder
-    if not folder then
-        warn("Did you forget to add the _ABYSS_TEAM folder to the Enemies folder?")
-        return
-    end
-
-    repeat wait(1) until #folder:GetChildren() <= 0
-    Events.DUNGEON_EndDungeon.FireList(CollectionService:GetTagged("PlayerEntity"))
+    repeat wait(1) until #abyssMobsContainer:GetChildren() <= 0
 
 
-    workspace:SetAttribute("DungeonFinished", true)
-
-
-    wait(1)
-    for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
-        Promise.try(function()
-            local char = player.Character
-            local luck = 1
-            if ServerLib.IsCharValid(char) then
-                luck = char:GetAttribute("Luck") / 100 or 1
-            end
-            luck = math.max(1, luck)
-
-            for _ = 1, 3 do
-                Events.PlaySound.Fire(player, SoundService.SFXs.LootDropped)
-
-                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot(), luck)
-
-                ServerLib.GiveItemDrop(player, result, AbyssWorldLib.AbyssId * 10)
-                wait(0.15)
-            end
-        end)
-    end
+    workspace:SetAttribute("AbyssFinished", true)
+    task.delay(1, AbyssWorldLib.GiveLoot)
 end)
 
 
 
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
-    Events.DUNGEON_RequestToLeaveDungeon.SetCallback(function(plr: Player)
-        Events.CreateFSNotify.Fire(plr, "Teleporting back to Mainworld...", 999)
+    Events.Abyss_AfterEndAction_S.SetCallback(function(plr: Player, actionId: string)
+        if not actionId then return end
 
-        local teleportOptions = Instance.new("TeleportOptions")
 
-        local slotInfo = {
-            [plr.Name] = plr:GetAttribute("SlotChosen")
-        }
-        teleportOptions:SetTeleportData({
-            FromAbyss = true,
-            SlotIds = slotInfo
-        })
+        if actionId == "Leave" then
+            Events.CreateFSNotify_S.Fire(plr, "Teleporting back to Mainworld...", 999)
 
-        wait(1)
-        TeleportService:TeleportAsync(AssetBook.PlaceIds[tostring(game.GameId)].Mainworld, { plr }, teleportOptions)
-    end)
+            local teleportOptions = Instance.new("TeleportOptions")
+            local slotInfo = {
+                [plr.Name] = plr:GetAttribute("SlotChosen")
+            }
+            teleportOptions:SetTeleportData({
+                FromAbyss = true,
+                SlotIds = slotInfo
+            })
+            TeleportService:TeleportAsync(
+                AssetBook.PlaceIds[tostring(game.GameId)].Mainworld,
+                { plr },
+                teleportOptions
+            )
 
-    Events.DUNGEON_RequestToRestartDungeon.SetCallback(function(plr: Player)
-        ServerBindables.RToChallengeAbyss:Fire(plr, {
-            AbyssId = AbyssWorldLib.AbyssId
-        })
+        elseif actionId == "Restart" then
+            ServerBindables.RToChallengeAbyss:Fire(plr, {
+                AbyssId = AbyssWorldLib.AbyssId
+            })
+        end
     end)
 end)
 

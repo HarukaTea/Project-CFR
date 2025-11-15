@@ -57,7 +57,7 @@ end
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToForceReset.SetCallback(function(plr: Player)
+    Events.ForceResetPlayer_C.SetCallback(function(plr: Player)
         local char = plr.Character
 
         if not plr.Character then return end
@@ -68,7 +68,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 
 
-    Events.RequestToRejoinGame.SetCallback(function(plr: Player)
+    Events.RejoinGame_C.SetCallback(function(plr: Player)
         local worldId = workspace:GetAttribute("WorldId") :: string
 
         if worldId and worldId == "InitusWorld" then
@@ -225,7 +225,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         pcall(function()
             galleon.PrimaryPart:SetNetworkOwner(nil)
         end)
-        Events.SetSkyGalleon.Fire(plr, {
+        Events.SetSkyGalleonOwner_S.Fire(plr, {
             Galleon = galleon
         })
     end
@@ -263,38 +263,34 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             if not ServerLib.IsCharValid(char) then return end
             if char:GetAttribute("IsInCombat") then
-                Events.CreateNotify.Fire(plr, "You can't talk to NPCs while in combat!")
+                Events.CreateNotify_S.Fire(plr, "You can't talk to NPCs while in combat!")
                 return
             end
 
             if char:GetAttribute("IsChatting") then
-                Events.CreateNotify.Fire(plr, "You are already in a chat with another NPC!")
+                Events.CreateNotify_S.Fire(plr, "You are already in a chat with another NPC!")
                 return
             end
 
             char:SetAttribute("IsChatting", true)
 
-            Events.EnterNPCChat.Fire(plr, {
-                NPCModel = npc
-            })
+            Events.EnterNPCChat_S.Fire(plr, npc)
 
         elseif prompt.Name == "Chest" then
             local chest = prompt:FindFirstAncestorOfClass("Model")
 
             if not ItemBook:GetItemInfo(chest.Name) then
-                Events.CreateNotify.Fire(plr, "[Error] Invalid Chest")
+                Events.CreateNotify_S.Fire(plr, "[Error] Invalid Chest")
                 return
             end
             if chest:GetAttribute("Receiver_"..plr.Name) then
-                Events.CreateNotify.Fire(plr, "You have already opened this treasure chest!")
+                Events.CreateNotify_S.Fire(plr, "You have already opened this treasure chest!")
                 return
             end
 
             chest:SetAttribute("Receiver_"..plr.Name, true)
 
-            Events.OpenChestClientTween.Fire(plr, {
-                Chest = chest
-            })
+            Events.OpeningChest_S.Fire(plr, chest)
 
             ServerLib.GiveItemDrop(plr, chest.Name, chest:GetAttribute("Amount") or 1)
 
@@ -313,18 +309,18 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 end
             end
 
-            Events.OpenMarketUI.Fire(plr, {
+            Events.OpenMarketUI_S.Fire(plr, {
                 Products = products
             })
 
         elseif prompt.Name == "Crafting" then
             adornee:AddTag("CraftingPromptEntity")
 
-            Events.OpenCraftingUI.Fire(plr)
+            Events.OpenCraftingUI_S.Fire(plr)
 
 
         elseif prompt.Name == "AbyssView" then
-            Events.OpenAbyssUI.Fire(plr)
+            Events.OpenAbyssUI_S.Fire(plr)
 
 
         elseif prompt.Name == "BoatSummon" then
@@ -379,14 +375,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if not items:FindFirstChild(statue.Weapon.Value) then
                 ServerLib.GiveItemDrop(plr, statue.Weapon.Value, 1)
             else
-                Events.CreateNotify.Fire(plr, " You've already received the Goddess's blessing!")
+                Events.CreateNotify_S.Fire(plr, " You've already received the Goddess's blessing!")
             end
 
 
         elseif prompt.Name == "PurchaseTicket" then
             local merchantId = adornee.Name
 
-            Events.OpenTicketPurchaseUI.Fire(plr, {
+            Events.OpenTravelTicketUI_S.Fire(plr, {
                 MerchantId = merchantId
             })
 
@@ -402,7 +398,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             if material:GetAttribute("Profession") then
                 if not char:GetAttribute(material:GetAttribute("Profession")) then
-                    Events.CreateNotify.Fire(plr, "You cannot gather this material. Maybe you need a tool.")
+                    Events.CreateNotify_S.Fire(plr, "You cannot gather this material. Maybe you need a tool.")
                     return
                 end
             end
@@ -441,7 +437,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToDMGPlayer.SetCallback(function(plr: Player, data)
+    Events.DMGPlayer_C.SetCallback(function(plr: Player, data)
         if data.ProjectileUniqueId == nil then return end
         if data.IsPierce == nil then return end
         if data.DoTStatus == nil then return end
@@ -471,7 +467,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if result == "Dodge" then
                 projectileDMG = 0
 
-                ServerLib.ShowText(char, "DODGE!", Color3.fromHex('#ffffff'))
+                ServerLib.ShowText_S(char, "DODGE!", Color3.fromHex('#ffffff'))
             end
             resolve()
 
@@ -493,47 +489,47 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             char:SetAttribute("Shield", afterShield)
             char.PlayerGotHit:Fire(char.Name, projectileDMG, "Shield")
 
-            Events.PlaySound.Fire(plr, SoundService.SFXs.ShieldAbsorb)
+            Events.PlaySound_S.Fire(plr, SoundService.SFXs.ShieldAbsorb)
 
             if afterShield <= 0 then
-                Events.PlaySound.Fire(plr, SoundService.SFXs.ShieldBroken)
+                Events.PlaySound_S.Fire(plr, SoundService.SFXs.ShieldBroken)
 
                 local exceededDMG = projectileDMG
                 if exceededDMG > 0 then
                     exceededDMG = math.ceil(exceededDMG / 1.599)
                     char.Humanoid:TakeDamage(exceededDMG)
 
-                    Events.PlayGotHitScreenFX.Fire(plr)
+                    Events.PlayGotHitScreenFX_S.Fire(plr)
 
                     char.PlayerGotHit:Fire(char.Name, exceededDMG, "Health")
                 end
             end
         else
             if data.IsPierce then
-                ServerLib.ShowText(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
+                ServerLib.ShowText_S(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
             end
 
             char.Humanoid:TakeDamage(projectileDMG)
             char.PlayerGotHit:Fire(char.Name, projectileDMG, "Health")
 
-            Events.PlayGotHitScreenFX.Fire(plr)
+            Events.PlayGotHitScreenFX_S.Fire(plr)
         end
     end)
 end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToDMGEnemy.SetCallback(function(plr: Player, data)
+    Events.DMGEnemy_C.SetCallback(function(plr: Player, data)
         local orbUniqueId = data.OrbUniqueId
         if orbUniqueId == nil then return end
 
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Character")
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Character")
             return
         end
         if not ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Orb Identity")
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Orb Identity")
             warn("Invalid orb identity")
             return
         end
@@ -574,7 +570,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end):catch(function(reason: string)
             check = false
 
-            if tostring(reason) == "Distance" then Events.CreateNotify.Fire(plr, "You are too far away from orb!") end
+            if tostring(reason) == "Distance" then Events.CreateNotify_S.Fire(plr, "You are too far away from orb!") end
             if tostring(reason) == "ClassId" then
                 warn("Invalid ClassId for orb")
             end
@@ -609,18 +605,14 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToCastItem_Request.SetCallback(function(plr: Player, data)
+    Events.CastItem_C_Request.SetCallback(function(plr: Player, data)
         local slotId = data.SlotId
         if slotId == nil then return end
 
 
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Character")
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Character")
             return
         end
 
@@ -629,21 +621,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local equippingInfo = equippingItems:FindFirstChild(slotId) :: StringValue
 
         if not equippingInfo then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Equip Info")
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Equip Info")
             return
         end
 
         local itemInfo = ItemBook:GetItemInfo(equippingInfo.Value)
         if not itemInfo then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Item Info")
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Item Info")
             return
         end
 
@@ -651,21 +635,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local itemSymbol = items:FindFirstChild(equippingInfo.Value) :: IntConstrainedValue
 
         if not itemSymbol then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Item")
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Item")
             return
         end
 
         local amount = items[equippingInfo.Value].Value or 0 :: number
         if amount <= 0 then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Amount")
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Amount")
             return
         end
 
@@ -678,22 +654,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if inCDCheck then
-            Events.CreateNotify.Fire(plr, "The item is still on cooldown!")
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
+            Events.CreateNotify_S.Fire(plr, "The item is still on cooldown!")
             return
         end
 
         local realCD = tonumber(itemInfo.ExtraStatInfoDesync.CD)
         if not realCD then
             warn("Invalid CD for item")
-
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
             return
         end
 
@@ -717,11 +684,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
         if not CastItemLib[itemInfo.ItemId] then
             warn("Invalid CastItemLib function")
-
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
             return
         end
 
@@ -739,13 +701,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end)
         if badStatus then
             if RunService:IsStudio() then
-                Events.CreateNotify.Fire(plr, "[Error] Invalid Function Status Code (Studio DEBUG)")
+                Events.CreateNotify_S.Fire(plr, "[Error] Invalid Function Status Code (Studio DEBUG)")
             end
-
-            Events.RequestToCastItem_Response.Fire(plr, {
-                SlotId = slotId,
-                CooldownTime = 0
-            })
             return
         end
 
@@ -758,16 +715,16 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         itemCDSymbol.Parent = ServerStorage.ItemCDSymbolContainer
         Debris:AddItem(itemCDSymbol, realCD)
 
-        Events.RequestToCastItem_Response.Fire(plr, {
+        Events.CastItem_S_Response.Fire(plr, {
             SlotId = slotId,
-            CooldownTime = realCD
+            CooldownEndTime = DateTime.now().UnixTimestamp + realCD
         })
     end)
 end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToPickupItemDrops.SetCallback(function(plr: Player, data)
+    Events.PickupItemDrops_C.SetCallback(function(plr: Player, data)
         local itemUniqueId = data.ItemUniqueId
         if itemUniqueId == nil then return end
 
@@ -789,7 +746,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToCastClassUlt.SetCallback(function(plr: Player)
+    Events.CastClassUlt_C.SetCallback(function(plr: Player)
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then return end
         if not char:GetAttribute("IsInCombat") then return end
@@ -804,7 +761,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 if not ClassAttackLib[class.."_Ult"] then
                     warn(`ClassAttackLib ult Func for {class} not found`)
 
-                    Events.CreateNotify.Fire(plr, "[Error] Missing ult Func, please contact the developer!")
+                    Events.CreateNotify_S.Fire(plr, "[Error] Missing ult Func, please contact the developer!")
                     return
                 end
 
@@ -819,7 +776,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToEndNPCChat.SetCallback(function(plr: Player, data)
+    Events.FinishNPCChat_C.SetCallback(function(plr: Player, data)
         if data.NPCId == nil then return end
         if data.SeriesId == nil then return end
 
@@ -856,7 +813,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToEquipItem.SetCallback(function(plr: Player, data)
+    Events.EquipItem_C.SetCallback(function(plr: Player, data)
         if data.ItemId == nil then return end
         if data.ItemUniqueId == nil then return end
 
@@ -864,7 +821,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't equip item in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't equip item in combat!")
             return
         end
 
@@ -882,14 +839,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local level = itemInfo.Level
         if level > plr:GetAttribute("Level") then
-            Events.CreateNotify.Fire(plr, "You don't meet the level requirement to equip this item!")
+            Events.CreateNotify_S.Fire(plr, "You don't meet the level requirement to equip this item!")
             return
         end
 
 
         local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
         if not table.find(whiteList, itemInfo.Type) then
-            Events.CreateNotify.Fire(plr, "You can't equip this item! Invalid Item Type")
+            Events.CreateNotify_S.Fire(plr, "You can't equip this item! Invalid Item Type")
             return
         end
 
@@ -921,7 +878,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             _refresh()
             ServerLib.EquipItem(plr, data.ItemUniqueId)
 
-            Events.PlaySound.Fire(plr, SoundService.SFXs.EXP)
+            Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
             return
         end
 
@@ -937,7 +894,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 symbol:Destroy()
                 ServerLib.UnequipItem(plr, data.ItemUniqueId)
 
-                Events.PlaySound.Fire(plr, SoundService.SFXs.EquipItem)
+                Events.PlaySound_S.Fire(plr, SoundService.SFXs.EquipItem)
                 break
             end
         end
@@ -958,7 +915,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if sameItemCheck then
-            Events.CreateNotify.Fire(plr, "You have already equipped this item!")
+            Events.CreateNotify_S.Fire(plr, "You have already equipped this item!")
             return
         end
 
@@ -989,12 +946,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 ServerLib.EquipItem(plr, data.ItemUniqueId)
 
 
-                Events.PlaySound.Fire(plr, SoundService.SFXs.EquipItem)
+                Events.PlaySound_S.Fire(plr, SoundService.SFXs.EquipItem)
                 break
             end
         end
         if not check then
-            Events.CreateNotify.Fire(plr, "You don't have enough slots to equip more items!")
+            Events.CreateNotify_S.Fire(plr, "You don't have enough slots to equip more items!")
             return
         end
     end)
@@ -1002,14 +959,14 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToPurchaseItem.SetCallback(function(plr: Player, data)
+    Events.BuyItem_C.SetCallback(function(plr: Player, data)
         local product, purchaseAmount = data.ProductId, data.PurchaseAmount
         if product == nil then return end
         if data.ProductUniqueId == nil then return end
         if purchaseAmount == nil then return end
 
         if purchaseAmount > 99 then
-            Events.CreateNotify.Fire(plr, "You can't purchase more than 99 items at once!")
+            Events.CreateNotify_S.Fire(plr, "You can't purchase more than 99 items at once!")
             return
         end
 
@@ -1017,7 +974,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't purchase items in combat!")
             return
         end
 
@@ -1030,7 +987,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not distanceCheck then
-            Events.CreateNotify.Fire(plr, "You are too far from the Market!")
+            Events.CreateNotify_S.Fire(plr, "You are too far from the Market!")
             return
         end
 
@@ -1043,18 +1000,18 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local curGold = plr:GetAttribute("Gold") :: number
 
         if curGold < totalPrice then
-            Events.CreateNotify.Fire(plr, "You don't have enough Gold to purchase this item!")
+            Events.CreateNotify_S.Fire(plr, "You don't have enough Gold to purchase this item!")
             return
         end
 
-        Events.CreateNotify.Fire(plr, "Purchase successful! Welcome back!")
+        Events.CreateNotify_S.Fire(plr, "Purchase successful! Welcome back!")
 
         HarukaLib:AddAttr(plr, "Gold", -totalPrice)
-        Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
 
         ServerLib.GiveItemDrop(plr, product, purchaseAmount)
     end)
-    Events.RequestToSellItem.SetCallback(function(plr: Player, data)
+    Events.SellItem_C.SetCallback(function(plr: Player, data)
         local item, sellAmount = data.ItemId, data.SellAmount
         if item == nil then return end
         if data.ItemUniqueId == nil then return end
@@ -1062,7 +1019,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         --// cant sell more than 999 items at once
         if sellAmount > 999 then
-            Events.CreateNotify.Fire(plr, "You can't sell more than 999 items at once!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell more than 999 items at once!")
             return
         end
 
@@ -1072,7 +1029,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't sell items in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell items in combat!")
             return
         end
 
@@ -1086,7 +1043,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not distanceCheck then
-            Events.CreateNotify.Fire(plr, "You are too far from the Market!")
+            Events.CreateNotify_S.Fire(plr, "You are too far from the Market!")
             return
         end
 
@@ -1097,11 +1054,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         if itemInfo.Type == "Passive" then
-            Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell your Passive items!")
             return
         end
         if itemInfo.Type == "Quest" then
-            Events.CreateNotify.Fire(plr, "You can't sell your Quest items!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell your Quest items!")
             return
         end
         local foundInChest = false
@@ -1112,7 +1069,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if foundInChest then
-            Events.CreateNotify.Fire(plr, "You cannot sell items obtained from Overworld Chests!")
+            Events.CreateNotify_S.Fire(plr, "You cannot sell items obtained from Overworld Chests!")
             return
         end
 
@@ -1142,13 +1099,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if equipping then
-            Events.CreateNotify.Fire(plr, "You can't sell your equipped item!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell your equipped item!")
             return
         end
 
         --// cant sell locked item
         if itemSymbol:GetAttribute("IsLocked") then
-            Events.CreateNotify.Fire(plr, "You can't sell locked item!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell locked item!")
             return
         end
 
@@ -1166,13 +1123,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local totalPrice = itemInfo.SellPrice * sellAmount
 
-        Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
-        Events.CreateNotify.Fire(plr, "Sell successful! Welcome back!")
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
+        Events.CreateNotify_S.Fire(plr, "Sell successful! Welcome back!")
 
 
         HarukaLib:AddAttr(plr, "Gold", totalPrice)
     end)
-    Events.RequestToSellAllItems.SetCallback(function(plr: Player, data)
+    Events.SellAllItems_C.SetCallback(function(plr: Player, data)
         if not data.ItemId then return end
 
         local item = data.ItemId
@@ -1184,11 +1141,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         --// cant sell passive items
         if itemInfo.Type == "Passive" then
-            Events.CreateNotify.Fire(plr, "You can't sell your Passive items!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell your Passive items!")
             return
         end
         if itemInfo.Type == "Quest" then
-            Events.CreateNotify.Fire(plr, "You can't sell your Quest items!")
+            Events.CreateNotify_S.Fire(plr, "You can't sell your Quest items!")
             return
         end
 
@@ -1197,7 +1154,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't purchase items in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't purchase items in combat!")
             return
         end
 
@@ -1211,7 +1168,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not distanceCheck then
-            Events.CreateNotify.Fire(plr, "You are too far from the Market!")
+            Events.CreateNotify_S.Fire(plr, "You are too far from the Market!")
             return
         end
 
@@ -1225,7 +1182,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if foundInChest then
-            Events.CreateNotify.Fire(plr, "You cannot sell items obtained from Overworld Chests!")
+            Events.CreateNotify_S.Fire(plr, "You cannot sell items obtained from Overworld Chests!")
             return
         end
 
@@ -1242,11 +1199,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                     end
                 end
                 if amount == 1 then
-                    Events.CreateNotify.Fire(plr, "You can't sell your weapons obtained from Statues!")
+                    Events.CreateNotify_S.Fire(plr, "You can't sell your weapons obtained from Statues!")
                     return
                 end
             else
-                Events.CreateNotify.Fire(plr, "You can't sell your weapons obtained from Statues!")
+                Events.CreateNotify_S.Fire(plr, "You can't sell your weapons obtained from Statues!")
                 return
             end
         end
@@ -1299,8 +1256,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             symbol:Destroy()
         end
 
-        Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
-        Events.CreateNotify.Fire(plr, "Sell successful! Welcome back!")
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
+        Events.CreateNotify_S.Fire(plr, "Sell successful! Welcome back!")
 
         HarukaLib:AddAttr(plr, "Gold", totalGold)
     end)
@@ -1308,7 +1265,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToAddPoint.SetCallback(function(plr: Player, data)
+    Events.AddStatPoint_C.SetCallback(function(plr: Player, data)
         if data.PointId == nil then return end
         if data.PointAmount == nil then return end
 
@@ -1316,7 +1273,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't change your skill points in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't change your skill points in combat!")
             return
         end
 
@@ -1336,7 +1293,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 if dexPoints >= FormulaBook.PLAYER_MAX_DEX_POINTS then
                     plr:SetAttribute("DEXPoints", FormulaBook.PLAYER_MAX_DEX_POINTS)
 
-                    Events.CreateNotify.Fire(plr, "DEX points have reached their limit!")
+                    Events.CreateNotify_S.Fire(plr, "DEX points have reached their limit!")
                     return
                 end
             end
@@ -1354,7 +1311,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
                     plr:SetAttribute("DEXPoints", FormulaBook.PLAYER_MAX_DEX_POINTS)
 
-                    Events.CreateNotify.Fire(plr, "DEX points have reached their limit!")
+                    Events.CreateNotify_S.Fire(plr, "DEX points have reached their limit!")
                 end
             end
 
@@ -1372,12 +1329,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             HarukaLib:AddAttr(plr, data.PointId.."Points", pointAdd)
         end
     end)
-    Events.RequestToResetPoint.SetCallback(function(plr: Player)
+    Events.ResetStatPoint_C.SetCallback(function(plr: Player)
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't change your skill points in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't change your skill points in combat!")
             return
         end
 
@@ -1395,6 +1352,8 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
+    --//FIXME: Revamp the anti-cheat of this part
+
     Events.RequestToDMGEnemyBySkillProjectile.SetCallback(function(plr: Player, data)
         local projectileId = data.ProjectileUniqueId
         if projectileId == nil then return end
@@ -1466,7 +1425,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToCraftItem.SetCallback(function(plr: Player, data)
+    Events.CraftItem_C.SetCallback(function(plr: Player, data)
         local item, itemUniqueId = data.ItemId, data.ItemUniqueId
         if item == nil then return end
         if itemUniqueId == nil then return end
@@ -1475,24 +1434,24 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerLib.IsCharValid(char) then return end
 
         if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify.Fire(plr, "You can't craft items in combat!")
+            Events.CreateNotify_S.Fire(plr, "You can't craft items in combat!")
             return
         end
 
         local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then
-            Events.CreateNotify.Fire(plr, "[Error] Invalid Item Id")
+            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Item Id")
             return
         end
         if HarukaLib.TableUtils.IsEmpty(itemInfo.RecipeDesync) then
-            Events.CreateNotify.Fire(plr, "This item cannot be crafted!")
+            Events.CreateNotify_S.Fire(plr, "This item cannot be crafted!")
             return
         end
 
 
         local gold = plr:GetAttribute("Gold") :: number
         if gold < itemInfo.Price then
-            Events.CreateNotify.Fire(plr, "You don't have enough Gold to craft this item!")
+            Events.CreateNotify_S.Fire(plr, "You don't have enough Gold to craft this item!")
             return
         end
 
@@ -1505,7 +1464,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not distanceCheck then
-            Events.CreateNotify.Fire(plr, "You are too far from the Crafting Station!")
+            Events.CreateNotify_S.Fire(plr, "You are too far from the Crafting Station!")
             return
         end
 
@@ -1519,7 +1478,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             if not materialInfo then
                 materialCheck = false
-                Events.CreateNotify.Fire(plr, "Invalid material id, please contact the developer!")
+                Events.CreateNotify_S.Fire(plr, "Invalid material id, please contact the developer!")
                 break
             end
             if not itemSymbol then
@@ -1542,28 +1501,28 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if isEquipping then
                 materialCheck = false
 
-                Events.CreateNotify.Fire(plr, "You can't craft this item while you have equipped one of the materials!")
+                Events.CreateNotify_S.Fire(plr, "You can't craft this item while you have equipped one of the materials!")
                 break
             end
 
             if materialInfo.Type == "Passive" then
                 materialCheck = false
-                Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
+                Events.CreateNotify_S.Fire(plr, "Invalid item recipe, please contact the developer!")
                 break
             end
             if materialInfo.Type == "Accessory" then
                 materialCheck = false
-                Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
+                Events.CreateNotify_S.Fire(plr, "Invalid item recipe, please contact the developer!")
                 break
             end
             if materialInfo.Type == "Quest" then
                 materialCheck = false
-                Events.CreateNotify.Fire(plr, "Invalid item recipe, please contact the developer!")
+                Events.CreateNotify_S.Fire(plr, "Invalid item recipe, please contact the developer!")
                 break
             end
         end
         if not materialCheck then
-            Events.CreateNotify.Fire(plr, "You don't have enough materials to craft this item!")
+            Events.CreateNotify_S.Fire(plr, "You don't have enough materials to craft this item!")
             return
         end
 
@@ -1580,8 +1539,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         HarukaLib:AddAttr(plr, "Gold", -itemInfo.Price)
 
 
-        Events.PlaySound.Fire(plr, SoundService.SFXs.AnvilUse)
-        Events.CreateNotify.Fire(plr, "Craft successful! Welcome back!")
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.AnvilUse)
+        Events.CreateNotify_S.Fire(plr, "Craft successful! Welcome back!")
 
 
         ServerLib.GiveItemDrop(plr, item, 1)
@@ -1611,7 +1570,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             HarukaParty:Leave(plr)
         end
     end
-    Events.RequestToPartyInvite.SetCallback(function(plr: Player, data)
+    Events.PartyInvite_C.SetCallback(function(plr: Player, data)
         local option, newMember = data.Option, data.PlayerName
 
         partyInvite(plr, option, newMember)
@@ -1644,9 +1603,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         TeleportService:TeleportAsync(AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel, { plr }, teleportOptions)
 
 
-        Events.CreateFSNotify.Fire(plr, "Teleporting to Abyss...", 15)
+        Events.CreateFSNotify_S.Fire(plr, "Teleporting to Abyss...", 15)
     end
-    Events.RequestToChallengeAbyss.SetCallback(_challengeAbyss)
+    Events.StartAbyss_C.SetCallback(_challengeAbyss)
     ServerBindables.RToChallengeAbyss:Connect(_challengeAbyss)
 end)
 
@@ -1655,7 +1614,7 @@ end)
 table.insert(GlobalCriRPGLib.Funcs, function()
     local GALLEON_POSY_LIMIT = 140
 
-    Events.RequestToSetSkyGalleonPos.SetCallback(function(plr: Player, data)
+    Events.DriveSkyGalleon_C.SetCallback(function(plr: Player, data)
         if not data.Galleon then return end
         if not data.PosX then return end
         if not data.PosZ then return end
@@ -1681,7 +1640,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToSaveSettings.SetCallback(function(plr: Player, data)
+    Events.SaveSettings_C.SetCallback(function(plr: Player, data)
         if data.SettingId == nil then return end
         if data.SettingValue == nil then return end
 
@@ -1711,71 +1670,52 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 end)
 
 
-table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToPlayTutorial.SetCallback(function(plr: Player)
-        local teleportOptions = Instance.new("TeleportOptions")
-
-        local code = TeleportService:ReserveServer(AssetBook.PlaceIds[tostring(game.GameId)].Tutorial)
-        teleportOptions.ReservedServerAccessCode = code
-
-        TeleportService:TeleportAsync(AssetBook.PlaceIds[tostring(game.GameId)].Tutorial, { plr }, teleportOptions)
-    end)
-end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToFavItem.SetCallback(function(plr: Player, data)
+    Events.FavOrLockItem_C.SetCallback(function(plr: Player, data)
+        if not data.ActionId then return end
         if not data.ItemSymbol then return end
 
         local symbol = data.ItemSymbol :: IntConstrainedValue
         if not symbol:IsDescendantOf(plr) then return end
 
-        local state = symbol:GetAttribute("IsFav")
+
+        local state: boolean
+        if data.ActionId == "Fav" then
+            state = symbol:GetAttribute("IsFav")
+        elseif data.ActionId == "Lock" then
+            state = symbol:GetAttribute("IsLocked")
+        end
+
         state = state or false
         state = not state
 
-        symbol:SetAttribute("IsFav", state)
-    end)
-
-    Events.RequestToLockItem.SetCallback(function(plr: Player, data)
-        if not data.ItemSymbol then return end
-
-        local symbol = data.ItemSymbol :: IntConstrainedValue
-        if not symbol:IsDescendantOf(plr) then return end
-
-        local state = symbol:GetAttribute("IsLocked")
-        state = state or false
-        state = not state
-
-        symbol:SetAttribute("IsLocked", state)
+        if data.ActionId == "Fav" then
+            symbol:SetAttribute("IsFav", state)
+        elseif data.ActionId == "Lock" then
+            symbol:SetAttribute("IsLocked", state)
+        end
     end)
 end)
 
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToEnterClimbingState.SetCallback(function(plr: Player, data)
+    Events.SetServerCharAttr_C.SetCallback(function(plr: Player, data)
+        if not data.AttrId then return end
         if not data.State then return end
 
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then return end
 
-        char:SetAttribute("IsClimbing", data.State)
-    end)
-    Events.RequestToEnterSwimmingState.SetCallback(function(plr: Player, data)
-        if not data.State then return end
-
-        local char = plr.Character
-        if not ServerLib.IsCharValid(char) then return end
-
-        char:SetAttribute("IsSwimming", data.State)
+        char:SetAttribute(data.AttrId, data.State)
     end)
 end)
 
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.RequestToPurchaseTicket.SetCallback(function(plr: Player, data)
+    Events.BuyTicket_C.SetCallback(function(plr: Player, data)
         if not data.MerchantId then return end
 
         local merchant = workspace.MapComponents.TravelTickets:FindFirstChild(data.MerchantId)
@@ -1783,15 +1723,15 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local goldAmount = plr:GetAttribute("Gold")
         if goldAmount < 599 then
-            Events.CreateNotify.Fire(plr, "You don't have enough gold to purchase a ticket!")
+            Events.CreateNotify_S.Fire(plr, "You don't have enough gold to purchase a ticket!")
             return
         end
 
         HarukaLib:AddAttr(plr, "Gold", -599)
 
-        Events.CreateNotify.Fire(plr, "Have a safe journey!")
-        Events.CreateCircularFade.Fire(plr, 2)
-        Events.PlaySound.Fire(plr, SoundService.SFXs.Buy)
+        Events.CreateNotify_S.Fire(plr, "Have a safe journey!")
+        Events.CreateCircularFade_S.Fire(plr, 2)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
 
         wait(1)
         local char = plr.Character :: Model

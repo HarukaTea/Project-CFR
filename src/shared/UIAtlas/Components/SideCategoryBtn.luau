@@ -8,7 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     PanelId: string,
     LayoutOrder: number,
     PanelTitle: string,

@@ -8,7 +8,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     MerchantId: string
 })
 
@@ -161,7 +161,7 @@ return function (scope: Fusion.Scope<any>, props: {
                         Text = "Purchase",
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
-                            Events.RequestToPurchaseTicket.Fire({
+                            Events.BuyTicket_C.Fire({
                                 MerchantId = props.MerchantId
                             })
 

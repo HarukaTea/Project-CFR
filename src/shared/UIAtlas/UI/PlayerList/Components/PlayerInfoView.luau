@@ -24,11 +24,11 @@ local fromRGB = Color3.fromRGB
 local isInviting = false
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     PlayerSelecting: Fusion.Value<Player?>,
 })
 
-    return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
+    return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         if use(props.PlayerSelecting) == nil then
             return nil
 
@@ -262,7 +262,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             }),
 
-                            Fusion.ForValues(scope, { "InviteParty" }, function(_, scope: Fusion.Scope<any>, action: string)
+                            Fusion.ForValues(scope, { "InviteParty" }, function(_, scope: Fusion.Scope, action: string)
                                 return Components.TextButton(scope, {
                                     Name = action,
                                     Size = UDim2.fromScale(1, 0.5),
@@ -317,7 +317,7 @@ return function (scope: Fusion.Scope<any>, props: {
 
                                             if choice ~= "YES" then return end
 
-                                            Events.RequestToPartyInvite.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
+                                            Events.PartyInvite_C.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
                                         end
                                     end,
 

@@ -8,7 +8,7 @@ local Children = Fusion.Children
 
 local fromScale = UDim2.fromScale
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     Text: string
 })
     return Components.Frame(scope, {

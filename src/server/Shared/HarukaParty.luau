@@ -149,7 +149,7 @@ local HarukaParty = {}
 
 function HarukaParty:Invite(inviter: Player, target: Player)
 	if PlayerPartyDataClass:IsInParty(target) then
-		Events.CreateNotify.Fire(inviter, "Player already in a party!")
+		Events.CreateNotify_S.Fire(inviter, "Player already in a party!")
 		return
 	end
 
@@ -169,21 +169,21 @@ function HarukaParty:Accept(inviter: Player, invitee: Player)
 
 	local ok = inviterParty:AddMember(invitee)
 	if not ok then
-		Events.CreateNotify.Fire(invitee, "Party is full!")
-		Events.CreateNotify.Fire(inviter, "Party is full!")
+		Events.CreateNotify_S.Fire(invitee, "Party is full!")
+		Events.CreateNotify_S.Fire(inviter, "Party is full!")
 		return
 	end
 	PlayerPartyDataClass:SetParty(invitee, inviterParty)
 
 
 	for _, member in inviterParty:GetAllMembers() do
-		Events.CreateNotify.Fire(member, invitee.DisplayName .. " joined the party!")
+		Events.CreateNotify_S.Fire(member, invitee.DisplayName .. " joined the party!")
 	end
 end
 
 
 function HarukaParty:Decline(inviter: Player, invitee: Player)
-	Events.CreateNotify.Fire(inviter, invitee.DisplayName .. " declined your invitation.")
+	Events.CreateNotify_S.Fire(inviter, invitee.DisplayName .. " declined your invitation.")
 end
 
 
@@ -191,11 +191,11 @@ function HarukaParty:Kick(leader: Player, target: Player)
 	local party = PlayerPartyDataClass:GetParty(leader)
 
 	if not party or party.Leader ~= leader then
-		Events.CreateNotify.Fire(leader, "You are not a leader!")
+		Events.CreateNotify_S.Fire(leader, "You are not a leader!")
         return
 	end
 	if not party.Members[target] then
-		Events.CreateNotify.Fire(leader, "Player not in your party!")
+		Events.CreateNotify_S.Fire(leader, "Player not in your party!")
         return
 	end
 
@@ -203,7 +203,7 @@ function HarukaParty:Kick(leader: Player, target: Player)
 	PlayerPartyDataClass:ClearParty(target)
 
 	for _, member in party:GetAllMembers() do
-		Events.CreateNotify.Fire(member, target.DisplayName .. " was kicked from the party!")
+		Events.CreateNotify_S.Fire(member, target.DisplayName .. " was kicked from the party!")
 	end
 end
 
@@ -224,11 +224,11 @@ function HarukaParty:Leave(plr: Player)
 		for _, member in party:GetAllMembers() do
 			PlayerPartyDataClass:ClearParty(member)
 
-			Events.CreateNotify.Fire(member, "Party has been disbanded!")
+			Events.CreateNotify_S.Fire(member, "Party has been disbanded!")
 		end
 	else
 		for _, member in party:GetAllMembers() do
-			Events.CreateNotify.Fire(member, plr.DisplayName .. " has left the party.")
+			Events.CreateNotify_S.Fire(member, plr.DisplayName .. " has left the party.")
 		end
 	end
 end

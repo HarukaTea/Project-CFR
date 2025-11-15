@@ -36,21 +36,19 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
     local castTime = ClassAttackLib._CalCastingTime(char, 2)
 
 
-    Events.OpenCastTimeBar.Fire(player, {
-        Duration = castTime
-    })
-    Events.PlaySound.Fire(player, SoundService.SFXs.SpellReadyToCast)
+    Events.OpenCastTimeBar_S.Fire(player, castTime)
+    Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellReadyToCast)
 
 
     Promise.delay(castTime):andThen(function()
-        Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
-        Events.PlayAnimation.Fire(player, {
+        Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
+        Events.PlayAnimation_S.Fire(player, {
             AnimId = "MagicCasted1"
         })
-        Events.FaceToTargetingEnemy.Fire(player)
+        Events.FaceTargetingEnemy_S.Fire(player)
 
 
-        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayVFXScene_S.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "ArcaneMarkRune",
             Caster = char,
             ProjectileUniqueId = uniqueId,

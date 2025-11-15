@@ -58,7 +58,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// track ticket purchases
-    table.insert(scope, Events.OpenTicketPurchaseUI.On(function(data)
+    table.insert(scope, Events.OpenTravelTicketUI_S.On(function(data)
         if not UI then return end
         if not UI:FindFirstChild("Center") then return end
 

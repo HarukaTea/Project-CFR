@@ -21,7 +21,7 @@ local wait = task.wait
 export type Self = {
 	plr: Player,
 	char: Model,
-	scope: Fusion.Scope<any>,
+	scope: Fusion.Scope,
 
 	fsHintsQueue: HarukaLib.HarukaQueue,
 	centerHintsQueue: HarukaLib.HarukaQueue,
@@ -33,7 +33,7 @@ export type Self = {
 
 
 return function (self: Self)
-	local scope = self.scope :: Fusion.Scope<any>
+	local scope = self.scope :: Fusion.Scope
 
 
 	self.fsHintsQueue = HarukaLib.Queue()
@@ -67,7 +67,7 @@ return function (self: Self)
 		HarukaLib:UITween(normalHint, "In", { TweenTime = 0.5 })
 		HarukaLib:UITween(normalHint, "Out", { TweenTime = 0.5, DelayTime = 3 })
 	end
-	table.insert(scope, Events.CreateNotify.On(_createHint))
+	table.insert(scope, Events.CreateNotify_S.On(_createHint))
 	table.insert(scope, Bindables.CreateNotify:Connect(_createHint))
 
 
@@ -111,7 +111,7 @@ return function (self: Self)
 
 		_onFSHintAdded()
 	end
-	table.insert(scope, Events.CreateFSNotify.On(_createFSHint))
+	table.insert(scope, Events.CreateFSNotify_S.On(_createFSHint))
 	table.insert(scope, Bindables.CreateFSNotify:Connect(_createFSHint))
 	table.insert(scope, self.fsHintsQueue.ElementAdded:Connect(_onFSHintAdded))
 
@@ -156,16 +156,7 @@ return function (self: Self)
 
 		_onCenterHintAdded()
 	end
-	table.insert(scope, Events.CreateCenterNotify.On(_createCenterNotify))
+	table.insert(scope, Events.CreateCenterNotify_S.On(_createCenterNotify))
 	table.insert(scope, Bindables.CreateCenterNotify:Connect(_createCenterNotify))
 	table.insert(scope, self.centerHintsQueue.ElementAdded:Connect(_onCenterHintAdded))
-
-
-
-	--// system message display
-	local function _displaySystemMessage(text: string)
-		TextChatService.TextChannels.RBXGeneral:DisplaySystemMessage(HarukaLib:RichTextify(text))
-	end
-	table.insert(scope, Events.CreateSystemNotify.On(_displaySystemMessage))
-	table.insert(scope, Bindables.CreateSystemNotify:Connect(_displaySystemMessage))
 end

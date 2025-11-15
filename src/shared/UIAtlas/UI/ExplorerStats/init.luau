@@ -35,7 +35,7 @@ return function(plr: Player)
     end
 
 
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
     local isSelectingMenuSelection = Fusion.Value(scope, false)
 
 
@@ -181,7 +181,7 @@ return function(plr: Player)
 
                         Fusion.ForPairs(scope, {
                             "Backpack", "Character", "Settings"
-                        }, function(_, scope: Fusion.Scope<any>, index: number, slot: string)
+                        }, function(_, scope: Fusion.Scope, index: number, slot: string)
                             return index, MenuSlot(scope, {
                                 Slot = slot,
                                 Index = index
@@ -218,7 +218,7 @@ return function(plr: Player)
                             TextColor3 = Components.BLACK_COLOR,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
-                                Events.DUNGEON_RequestToStartDungeon.Fire()
+                                Events.Abyss_StartAbyss_C.Fire()
                             end,
 
                             [Children] = {
@@ -259,7 +259,7 @@ return function(plr: Player)
                             TextColor3 = Components.BLACK_COLOR,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
-                                Events.DUNGEON_RequestToRestartDungeon.Fire()
+                                Events.Abyss_AfterEndAction_S.Fire("Restart")
 
                                 self.DungeonEndActionsClicked:set(true)
                             end,
@@ -278,7 +278,7 @@ return function(plr: Player)
                             TextColor3 = Components.BLACK_COLOR,
 
                             [Fusion.OnEvent("MouseButton1Click")] = function()
-                                Events.DUNGEON_RequestToLeaveDungeon.Fire()
+                                Events.Abyss_AfterEndAction_S.Fire("Leave")
 
                                 self.DungeonEndActionsClicked:set(true)
                             end,
@@ -311,6 +311,12 @@ return function(plr: Player)
                             DungeonId = self.DungeonId,
                             DungeonStarted = self.DungeonStarted,
                             CountdownTime = self.DungeonLeftTime
+                        }),
+
+                        DungeonTimer(scope, {
+                            DungeonId = self.AbyssId,
+                            DungeonStarted = self.AbyssStarted,
+                            CountdownTime = self.AbyssTime
                         })
                     }
                 }),

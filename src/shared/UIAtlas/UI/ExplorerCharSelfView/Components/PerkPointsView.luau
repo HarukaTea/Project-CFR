@@ -14,7 +14,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     Class: Fusion.Value<string>,
     Level: Fusion.Value<number>,
     EXP: Fusion.Value<number>,
@@ -216,7 +216,7 @@ return function(scope: Fusion.Scope<any>, props: {
                                 TextColor3 = Color3.fromRGB(),
 
                                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                                    Events.RequestToResetPoint.Fire()
+                                    Events.ResetStatPoint_C.Fire()
                                 end,
 
                                 [Children] = {
@@ -298,7 +298,7 @@ return function(scope: Fusion.Scope<any>, props: {
                 LayoutOrder = 4,
 
                 [Children] = {
-                    Fusion.ForPairs(scope, { "STR", "INT", "VIT", "DEX", "DEF" }, function(_, scope: Fusion.Scope<any>, index: number, point: string)
+                    Fusion.ForPairs(scope, { "STR", "INT", "VIT", "DEX", "DEF" }, function(_, scope: Fusion.Scope, index: number, point: string)
                         local SYMBOL_ICONS = {
                             STR = "rbxassetid://134445989246357",
                             DEX = "rbxassetid://123194426967050",
@@ -397,7 +397,7 @@ return function(scope: Fusion.Scope<any>, props: {
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         SoundService.SFXs.Ding:Play()
 
-                                        Events.RequestToAddPoint.Fire({
+                                        Events.AddStatPoint_C.Fire({
                                             PointId = point,
                                             PointAmount = Fusion.peek(amount)
                                         })
@@ -429,7 +429,7 @@ return function(scope: Fusion.Scope<any>, props: {
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         SoundService.SFXs.Ding:Play()
 
-                                        Events.RequestToAddPoint.Fire({
+                                        Events.AddStatPoint_C.Fire({
                                             PointId = point,
                                             PointAmount = -Fusion.peek(amount)
                                         })

@@ -258,13 +258,13 @@ table.insert(CriRPGLib.Funcs, function()
     local function _spawnOrb_done(orbName: string, extraProps: {
         Offset: Vector3?,
         ForceLocation: CFrame?,
-        IsSpeicalOrb: boolean?
+        IsSpecialOrb: boolean?
     }?)
         local enemy = char.TargetingEnemy.Value :: Model
         local extraProps = extraProps or {
             ForceLocation = nil,
             Offset = nil,
-            IsSpeicalOrb = false
+            IsSpecialOrb = false
         }
 
         if ServerLib.IsCharValid(enemy) and char.Humanoid.Health > 0 then
@@ -298,7 +298,7 @@ table.insert(CriRPGLib.Funcs, function()
             Debris:AddItem(symbol, orbFadeTime + 5)
 
 
-            Events.PlaceOrb.Fire(plr, {
+            Events.PlaceOrb_S.Fire(plr, {
                 OrbId = orb.Name,
                 OrbUniqueId = orbUniqueId,
                 OrbDuration = orbFadeTime,
@@ -306,7 +306,7 @@ table.insert(CriRPGLib.Funcs, function()
             })
 
 
-            if extraProps.IsSpeicalOrb == false then
+            if extraProps.IsSpecialOrb == false then
                 _spawnOrb_Callback(symbol)
             end
         end
@@ -326,7 +326,7 @@ table.insert(CriRPGLib.Funcs, function()
             ["HealOrb"] = 22,
             ["None"] = 23 + 55
         })
-        if resultOrb == "HealOrb" then _spawnOrb_done("HealOrb", { IsSpeicalOrb = true }) end
+        if resultOrb == "HealOrb" then _spawnOrb_done("HealOrb", { IsSpecialOrb = true }) end
     end
     local function orbSpawnHandler(state: boolean)
         if state then
@@ -433,7 +433,7 @@ table.insert(CriRPGLib.Funcs, function()
                 if plr:GetAttribute("Level") + totalLevelShouldGive > FormulaBook.PLAYER_MAX_LEVEL then
                     totalLevelShouldGive = FormulaBook.PLAYER_MAX_LEVEL - plr:GetAttribute("Level")
 
-                    Events.CreateNotify.Fire(plr, "You've reached the maximum level!")
+                    Events.CreateNotify_S.Fire(plr, "You've reached the maximum level!")
                 end
                 if totalLevelShouldGive <= 0 then
                     plr:SetAttribute("EXP", 0)
@@ -444,9 +444,9 @@ table.insert(CriRPGLib.Funcs, function()
                 HarukaLib:AddAttr(plr, "EXP", -math.ceil(maxEXPGained))
                 HarukaLib:AddAttr(plr, "PerkPoints", FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
 
-                Events.PlaySound.Fire(plr, SoundService.SFXs.LevelUp)
+                Events.PlaySound_S.Fire(plr, SoundService.SFXs.LevelUp)
 
-                ServerLib.ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
+                ServerLib.ShowText_S(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
 
 
                 local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
@@ -467,7 +467,7 @@ table.insert(CriRPGLib.Funcs, function()
             if level > FormulaBook.PLAYER_MAX_LEVEL then
                 plr:SetAttribute("Level", FormulaBook.PLAYER_MAX_LEVEL)
 
-                Events.CreateNotify.Fire(plr, "You've reached the maximum level!")
+                Events.CreateNotify_S.Fire(plr, "You've reached the maximum level!")
             end
         end
     }))

@@ -87,7 +87,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         _lookAt(target)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "SpikeAttack"
         })
@@ -96,7 +96,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "BeeMove1",
             ProjectileCF = CFrame.new(projectilePos),
@@ -109,7 +109,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         _lookAt(target)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "SpikeAttack"
         })
@@ -119,7 +119,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         projectilePos = CFrame.lookAt(projectilePos.Position, target.PrimaryPart.Position)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "BeeMove2",
             ProjectileCF = projectilePos,
@@ -153,7 +153,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
                     local projectileUniqueId = HttpService:GenerateGUID(false)..child.Name
                     local projectilePos = child.CFrame
 
-                    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+                    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
                         ProjectileUniqueId = projectileUniqueId,
                         ProjectileId = "BeeMove3_2",
                         ProjectileCF = projectilePos,

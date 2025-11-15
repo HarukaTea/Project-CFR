@@ -16,7 +16,7 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     ProductId: string,
     UniqueId: string,
 
@@ -416,7 +416,7 @@ return function(scope: Fusion.Scope<any>, props: {
 
                                     local curAmount = Fusion.peek(amount)
 
-                                    Events.RequestToPurchaseItem.Fire({
+                                    Events.BuyItem_C.Fire({
                                         ProductId = Fusion.peek(props.ProductId),
                                         ProductUniqueId = Fusion.peek(props.UniqueId),
                                         PurchaseAmount = curAmount
@@ -434,7 +434,7 @@ return function(scope: Fusion.Scope<any>, props: {
 
                                     local curAmount = Fusion.peek(amount)
 
-                                    Events.RequestToSellItem.Fire({
+                                    Events.SellItem_C.Fire({
                                         ItemId = Fusion.peek(props.ProductId),
                                         ItemUniqueId = Fusion.peek(props.UniqueId),
                                         SellAmount = curAmount

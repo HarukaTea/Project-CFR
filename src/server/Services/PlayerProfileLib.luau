@@ -17,25 +17,25 @@ local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 
 
-local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore_Haruka)
+local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
 
 
 export type PlayerProfileLibClass = {
     __index: PlayerProfileLibClass,
 
-    new: (player: Player, profile: ProfileStore.Profile<PlayerTemplate.JSON>) -> PlayerProfileLibClass,
+    new: (player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) -> PlayerProfileLibClass,
     Init: (self: PlayerProfileLibClass) -> nil,
 
 
     Player: Player,
-    Profile: ProfileStore.Profile<PlayerTemplate.JSON>,
+    Profile: HarukaDatastore.Profile<PlayerTemplate.JSON>,
 
 
     _ValidateSaveData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerDataJSON }) -> { PlayerTemplate.PlayerDataJSON },
     _ValidateMainData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerMainDataJSON }) -> { PlayerTemplate.PlayerMainDataJSON },
 
-    CalDonationAndSave: (profile: ProfileStore.Profile<PlayerTemplate.JSON>, plr: Player) -> nil,
+    CalDonationAndSave: (profile: HarukaDatastore.Profile<PlayerTemplate.JSON>, plr: Player) -> nil,
     UpdateDonationRank: (self: PlayerProfileLibClass) -> nil,
 }
 
@@ -45,7 +45,7 @@ PlayerProfileLib.__index = PlayerProfileLib
 
 
 
-function PlayerProfileLib.new(player: Player, profile: ProfileStore.Profile<PlayerTemplate.JSON>)
+function PlayerProfileLib.new(player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>)
     local self = setmetatable({}, PlayerProfileLib)
 
     self.Player = player
@@ -60,12 +60,7 @@ function PlayerProfileLib:Init()
     local profile = self.Profile
     local plr = self.Player
 
-    profile:Reconcile()
     profile:AddUserId(plr.UserId)
-
-    profile.OnSessionEnd:Connect(function()
-        plr:Kick("Profile session end, Data was loaded on another roblox server, please try again later?")
-    end)
 end
 
 
@@ -75,8 +70,8 @@ end
 
 
 
-function PlayerProfileLib:_ValidateSaveData(data: PlayerTemplate.PlayerDataJSON)
-    data = table.clone(data)
+function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON)
+    local data = HarukaLib.TableUtils.DeepCopy(dataT)
 
 
     --// check class
@@ -435,8 +430,8 @@ end
 
 
 
-function PlayerProfileLib:_ValidateMainData(data: PlayerTemplate.PlayerMainDataJSON)
-    data = table.clone(data)
+function PlayerProfileLib:_ValidateMainData(dataT: PlayerTemplate.PlayerMainDataJSON)
+    local data = HarukaLib.TableUtils.DeepCopy(dataT)
 
     --// check gamepass purchase logs
     for gamepassId: string, _ in data.GamepassPurchaseLogs do
@@ -460,7 +455,7 @@ function PlayerProfileLib:_ValidateMainData(data: PlayerTemplate.PlayerMainDataJ
 end
 
 
-function PlayerProfileLib._GetCurrentDonation(profile: ProfileStore.Profile<PlayerTemplate.JSON>) : number
+function PlayerProfileLib._GetCurrentDonation(profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) : number
     local totalRobuxGained = 0
     for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
         if purchaseInfo.Purchased then
@@ -475,7 +470,7 @@ function PlayerProfileLib._GetCurrentDonation(profile: ProfileStore.Profile<Play
 
     return totalRobuxGained
 end
-function PlayerProfileLib.CalDonationAndSave(profile: ProfileStore.Profile<PlayerTemplate.JSON>, plr: Player) : number
+function PlayerProfileLib.CalDonationAndSave(profile: HarukaDatastore.Profile<PlayerTemplate.JSON>, plr: Player) : number
     local totalRobuxGained = PlayerProfileLib._GetCurrentDonation(profile)
     if totalRobuxGained <= 0 then return 0 end
 

@@ -4,15 +4,15 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
 
-local isTestPlace = false
-for placeId: string, placeNumberId: number in AssetBook.PlaceIds do
-    if placeNumberId == game.PlaceId and string.find(placeId, "Test") then
-        isTestPlace = true
-        break
-    end
+local isMainPlace = game.GameId == AssetBook.CFUniverseId_Main
+if not isMainPlace then
+    return {
+        Id = "_CFT_TEST_DATA",
+        OldId = "_CFT_0625"
+    }
+else
+    return {
+        Id = "_CF_RELEASE_DATA",
+        OldId = "_PRESSURE_TEST_0506"
+    }
 end
-if isTestPlace then return "_CFT_0625" end
-
-
-
-return "_PRESSURE_TEST_0506"

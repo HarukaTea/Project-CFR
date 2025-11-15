@@ -5,7 +5,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
-local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -21,7 +20,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
     UI: ScreenGui,
 
     ServerLocation: Fusion.Value<string>,
@@ -67,6 +66,12 @@ export type Self = {
     DungeonLeftTime: Fusion.Value<number>,
     DungeonEndActionsClicked: Fusion.Value<boolean>,
 
+    AbyssId: Fusion.Value<string?>,
+    AbyssStarted: Fusion.Value<boolean>,
+    AbyssFinished: Fusion.Value<boolean>,
+    AbyssTime: Fusion.Value<number>,
+    AbyssEndActionsClicked: Fusion.Value<boolean>,
+
     MenuSelectionShown: Fusion.Value<boolean>,
 
     Items: Fusion.Value<{ IntConstrainedValue }>,
@@ -110,7 +115,7 @@ export type Self = {
     }?,
 
 
-    RequestToCastClassUlt: Signal.SignalClass,
+    CastClassUlt_C: Signal.SignalClass,
     RequestToCastItem: Signal.SignalClass,
     RequestToDash: Signal.SignalClass,
 
@@ -124,7 +129,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
     local plr = self.plr :: Player
 
 
@@ -175,6 +180,14 @@ return function (self: Self)
     self.DungeonFinished = Value(false)
     self.DungeonLeftTime = Value(0)
     self.DungeonEndActionsClicked = Value(false)
+
+
+    self.AbyssId = Fusion.Value(self.scope, nil)
+    self.AbyssStarted = Value(false)
+    self.AbyssFinished = Value(false)
+    self.AbyssTime = Value(0)
+    self.AbyssEndActionsClicked = Value(false)
+
 
     self.MenuSelectionShown = Value(false)
 
@@ -331,11 +344,11 @@ return function (self: Self)
 
 
     --// track input
-    self.RequestToCastClassUlt = Signal.new()
+    self.CastClassUlt_C = Signal.new()
     self.RequestToCastItem = Signal.new()
     self.RequestToDash = Signal.new()
 
-    table.insert(scope, self.RequestToCastClassUlt)
+    table.insert(scope, self.CastClassUlt_C)
     table.insert(scope, self.RequestToCastItem)
     table.insert(scope, self.RequestToDash)
 
@@ -393,15 +406,14 @@ return function (self: Self)
                 return
             end
 
-
-            Events.RequestToCastItem_Request.Fire({
+            Events.CastItem_C_Request.Fire({
                 SlotId = slotIdStr
             })
         else
             _normalCancelCD(info)
         end
     end)
-    self.RequestToCastClassUlt:Connect(function()
+    self.CastClassUlt_C:Connect(function()
         if self.ClassActiveCastCD then
             return
         end
@@ -411,7 +423,7 @@ return function (self: Self)
         task.delay(1, function()
             self.ClassActiveCastCD = false
         end)
-        Events.RequestToCastClassUlt.Fire()
+        Events.CastClassUlt_C.Fire()
     end)
 
 
@@ -434,9 +446,10 @@ return function (self: Self)
             tween = nil
         end)
     end
-    table.insert(scope, Events.RequestToCastItem_Response.On(function(data)
+    table.insert(scope, Events.CastItem_S_Response.On(function(data)
         local slotId = data.SlotId
-        local cdTime = data.CooldownTime
+        local cdTimeEnd = data.CooldownEndTime
+        local cdTime = cdTimeEnd - DateTime.now().UnixTimestamp
 
         slotId = string.sub(slotId, 7)
         if slotId == nil then return end
@@ -446,12 +459,7 @@ return function (self: Self)
 
         local info = list[slotId]
         if not info then return end
-
-
-        if cdTime <= 0 then
-            _createCooldownAnim(0, info)
-            return
-        end
+        if cdTime <= 0 then return end
 
 
         _createCooldownAnim(cdTime, info)
@@ -506,7 +514,7 @@ return function (self: Self)
             end
         end
 
-        Bindables.PlayAnimation:Fire("Dash")
+        Bindables.PlayAnimation_S:Fire("Dash")
     end)
 
 
@@ -539,7 +547,7 @@ return function (self: Self)
             self.plr:SetAttribute("CurrentUIGroup", curUIGroup == "None" and isWhichUIButton or "None")
         end
         if inputObj.KeyCode == KeybindsBook.PC.ClassUlt or inputObj.KeyCode == KeybindsBook.Console.ClassUlt then
-            self.RequestToCastClassUlt:Fire()
+            self.CastClassUlt_C:Fire()
 
         elseif inputObj.KeyCode == KeybindsBook.PC.Active1 or inputObj.KeyCode == KeybindsBook.Console.Active1 then
             self.RequestToCastItem:Fire(1)
@@ -679,6 +687,25 @@ return function (self: Self)
             val = val or 0
 
             self.DungeonLeftTime:set(val)
+        end
+    }))
+
+
+    --// track abyss
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-AbyssId"] = function(id: string)
+            self.AbyssId:set(id)
+        end,
+        ["Attr-AbyssStarted"] = function(state: boolean)
+            self.AbyssStarted:set(state)
+        end,
+        ["Attr-AbyssFinished"] = function(state: boolean)
+            self.AbyssFinished:set(state)
+        end,
+        ["Attr-AbyssTime"] = function(val: number)
+            val = val or 0
+
+            self.AbyssTime:set(val)
         end
     }))
 end

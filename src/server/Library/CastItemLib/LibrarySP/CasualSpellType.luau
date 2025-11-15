@@ -39,10 +39,8 @@ return function (self: Types.CastItemLib)
         local castTime = ClassAttackLib._CalCastingTime(char, 1)
 
 
-        Events.OpenCastTimeBar.Fire(player, {
-            Duration = castTime
-        })
-        Events.PlaySound.Fire(player, SoundService.SFXs.SpellReadyToCast)
+        Events.OpenCastTimeBar_S.Fire(player, castTime)
+        Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellReadyToCast)
 
 
         Promise.delay(castTime):andThen(function()
@@ -56,14 +54,14 @@ return function (self: Types.CastItemLib)
                 DMGBonus = 1,
                 IsClassUlt = false
             })
-            Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
-            Events.PlayAnimation.Fire(player, {
+            Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
+            Events.PlayAnimation_S.Fire(player, {
                 AnimId = "MagicCasted1"
             })
-            Events.FaceToTargetingEnemy.Fire(player)
+            Events.FaceTargetingEnemy_S.Fire(player)
 
 
-            Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+            Events.PlayVFXScene_S.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
                 SceneId = "FireballSpell",
                 Caster = char,
                 ProjectileUniqueId = uniqueId,
@@ -86,7 +84,7 @@ return function (self: Types.CastItemLib)
         if not check then return 0 end
 
 
-        Events.PlaySound.Fire(player, SoundService.SFXs.SpellCasted)
+        Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
 
         StatusLib.NormalBoostForEntity("Speed", char, {
             Power = 0.5,
@@ -120,7 +118,7 @@ return function (self: Types.CastItemLib)
 
         Events.Spell_ExtraJumpSupport.Fire(player)
 
-        Events.PlayClassSPScene.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayVFXScene_S.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "ChainJump",
             Caster = char,
             ProjectileUniqueId = "nil"

@@ -30,7 +30,7 @@ return function(plr: Player)
     end
 
 
-	local scope = self.scope :: Fusion.Scope<any>
+	local scope = self.scope :: Fusion.Scope
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerPrompt",
@@ -58,7 +58,7 @@ return function(plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Center
                         }),
 
-                        Fusion.ForPairs(scope, self.PromptList, function(_, scope: Fusion.Scope<any>, index: number, prompt: ObjectValue)
+                        Fusion.ForPairs(scope, self.PromptList, function(_, scope: Fusion.Scope, index: number, prompt: ObjectValue)
                             return index, PromptBar(scope, {
                                 PromptObject = prompt.Value,
                                 CurrentPromptIndex = self.CurrentPromptIndex,

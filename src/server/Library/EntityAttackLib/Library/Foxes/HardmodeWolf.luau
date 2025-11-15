@@ -71,7 +71,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         _lookAt(target)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "SpikeShot"
         })
@@ -83,7 +83,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         local r = math.random(1, 2)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "HardmodeWolfMove"..r,
             ProjectileCF = projectilePos,
@@ -94,7 +94,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
     local function _spikeRain(target: Model)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "SpikeRain"
         })
@@ -103,7 +103,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "HardmodeWolfMove3",
             ProjectileCF = CFrame.new(projectilePos),
@@ -125,7 +125,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
                 local post = ServerLib.FindGroundByRay(projectilePos + random)
 
 
-                Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+                Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
                     ProjectileUniqueId = projectileUniqueId,
                     ProjectileId = "HardmodeWolfSpike2",
                     ProjectileCF = CFrame.new(post),
@@ -136,7 +136,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
     local function _wolfBite(target: Model)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "WolfBite"
         })
@@ -147,7 +147,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         projectilePos = HarukaLib:CFLookAt(projectilePos, entity.PrimaryPart.Position)
 
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "HardmodeWolfMove4",
             ProjectileCF = projectilePos,
@@ -159,7 +159,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _wolfBarrage(target: Model)
         _lookAt(target)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "SpikeShot"
         })
@@ -167,7 +167,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = entity.PrimaryPart.CFrame
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "HardmodeWolfMove5",
             ProjectileCF = projectilePos,

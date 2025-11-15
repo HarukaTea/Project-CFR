@@ -15,22 +15,19 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
 
-local PLACE_IDS = {
-    ["88043509623826"] = 2,
-    ["17737750873"] = 2,
-    ["78011578174285"] = 2
+local Types = require(RepS.HarukaShared.Shared.HarukaCMD.Types)
+
+
+local UNIVERSE_IDS = {
 }
-local testerRank = PLACE_IDS[tostring(game.PlaceId)] or 127
+local testerRank = UNIVERSE_IDS[tostring(game.GameId)] or 127
 
 local wait = task.wait
 
 
-export type CallbackProps = {
-    Executor: Player,
-    Args: { any },
-
-    ResolveObj: () -> nil
-}
+export type CallbackProps = Types.CallbackProps
+export type CommandArgJSON = Types.CommandArgJSON
+export type CommandJSON = Types.CommandJSON
 
 
 
@@ -42,7 +39,7 @@ for _, spawnPoints in LOCATION_SPAWNPOINTS do
 end
 
 
-local commands = {
+local commands: CommandJSON = {
     {
         Name = "GiveNoclip",
         Alias = "/give_noclip",
@@ -317,7 +314,7 @@ local commands = {
                 PrivateReason = "Banned by Shroomhaven Panel",
                 ExcludeAltAccounts = false
             })
-            Events.CreateNotify.Fire(props.Executor, "[Haven] Banned successfully!")
+            Events.CreateNotify_S.Fire(props.Executor, "[Haven] Banned successfully!")
 
             props.ResolveObj()
         end
@@ -345,11 +342,11 @@ local commands = {
         Callback = function(props: CallbackProps)
             local thatPlayer = Players:GetNameFromUserIdAsync(tonumber(props.Args[1]))
 
-            Events.CreateNotify.Fire(props.Executor, "Querying player in roblox...")
+            Events.CreateNotify_S.Fire(props.Executor, "Querying player in roblox...")
 
             RunService.Heartbeat:Wait()
             if not thatPlayer then
-                Events.CreateNotify.Fire(props.Executor, "[Error] Invalid Player Object")
+                Events.CreateNotify_S.Fire(props.Executor, "[Error] Invalid Player Object")
 
                 props.ResolveObj()
                 return
@@ -364,7 +361,7 @@ local commands = {
                 PrivateReason = "Banned by Shroomhaven Panel",
                 ExcludeAltAccounts = false
             })
-            Events.CreateNotify.Fire(props.Executor, "[Haven] Banned successfully!")
+            Events.CreateNotify_S.Fire(props.Executor, "[Haven] Banned successfully!")
 
             props.ResolveObj()
         end
@@ -384,7 +381,7 @@ local commands = {
         Callback = function(props: CallbackProps)
             props.Args[1]:SetAttribute("Haruka_DataLocked", true)
 
-            Events.CreateNotify.Fire(props.Executor, "[Haven] Data Locked!")
+            Events.CreateNotify_S.Fire(props.Executor, "[Haven] Data Locked!")
 
             props.ResolveObj()
         end
@@ -431,11 +428,11 @@ local commands = {
         Callback = function(props: CallbackProps)
             local thatPlayer = Players:GetNameFromUserIdAsync(tonumber(props.Args[1]))
 
-            Events.CreateNotify.Fire(props.Executor, "Querying player in roblox...")
+            Events.CreateNotify_S.Fire(props.Executor, "Querying player in roblox...")
 
             RunService.Heartbeat:Wait()
             if not thatPlayer then
-                Events.CreateNotify.Fire(props.Executor, "[Error] Invalid Player Object")
+                Events.CreateNotify_S.Fire(props.Executor, "[Error] Invalid Player Object")
 
                 props.ResolveObj()
                 return
@@ -445,7 +442,7 @@ local commands = {
             userid = tonumber(userid) :: number
 
             HarukaLib:UnbanPlayerByUserId(userid)
-            Events.CreateNotify.Fire(props.Executor, "[Haven] Unbanned successfully!")
+            Events.CreateNotify_S.Fire(props.Executor, "[Haven] Unbanned successfully!")
 
             props.ResolveObj()
         end
@@ -481,7 +478,7 @@ local commands = {
 
             local pos = ServerLib.FindGroundByRay(char.PrimaryPart.Position)
 
-            Events.CreateNotify.Fire(props.Executor, "Spawning Entity...")
+            Events.CreateNotify_S.Fire(props.Executor, "Spawning Entity...")
 
             wait(2)
             local locator = HarukaLib:CreateMockPart()

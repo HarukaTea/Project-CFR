@@ -9,7 +9,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
     OptionTitle: string,
@@ -95,7 +95,7 @@ return function(scope: Fusion.Scope<any>, props: {
 				[Fusion.OnEvent("MouseButton1Click")] = function()
 					props.BooleanValue:set(not Fusion.peek(props.BooleanValue))
 
-					Events.RequestToSaveSettings.Fire({
+					Events.SaveSettings_C.Fire({
 						SettingId = props.OptionId,
 						SettingValue = Fusion.peek(props.BooleanValue)
 					})

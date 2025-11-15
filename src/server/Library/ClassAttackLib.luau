@@ -138,7 +138,7 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     comboEff.Parent = targeting.PrimaryPart
     Debris:AddItem(comboEff, 1)
 
-    ServerLib.ShowText(char, "COMBO!", ClassBook.Chain.Color)
+    ServerLib.ShowText_S(char, "COMBO!", ClassBook.Chain.Color)
 end
 ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -245,7 +245,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 		DMGType = "Physical",
 		Attacker = "ClassAttacks"
 	})
-	ServerLib.ShowText(char, "BURST SHOT!", ClassBook.Burst.Color)
+	ServerLib.ShowText_S(char, "BURST SHOT!", ClassBook.Burst.Color)
 
 
 	char:SetAttribute("BurstArrow", math.max(arrowCount - consumeNormal, 0))
@@ -542,7 +542,7 @@ ClassAttackLib.Flow_Catalyst = function(plr: Player, symbolAttrs: Dict)
                 DMGType = "Magic",
                 Attacker = "ClassAttacks"
             })
-            ServerLib.ShowText(enemy, "OVERLOAD BURST!", Color3.fromRGB(255, 60, 60))
+            ServerLib.ShowText_S(enemy, "OVERLOAD BURST!", Color3.fromRGB(255, 60, 60))
             continue
         end
 
@@ -653,7 +653,7 @@ function ClassAttackLib._CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
         isCrit = result == "Crit"
     end
     if isCrit then
-        ServerLib.ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
+        ServerLib.ShowText_S(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
     end
 
 
@@ -745,10 +745,10 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
         dmgProps.DMG /= 2
         dmgProps.DMG = math.ceil(dmgProps.DMG)
 
-        ServerLib.ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
+        ServerLib.ShowText_S(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
     end
     if dmgProps.DMG <= 0 then
-        ServerLib.ShowText(targeting, "MISS!", Color3.fromHex('#ffffff'))
+        ServerLib.ShowText_S(targeting, "MISS!", Color3.fromHex('#ffffff'))
         ServerLib.ApplyHitStatus(targeting)
         return
     end

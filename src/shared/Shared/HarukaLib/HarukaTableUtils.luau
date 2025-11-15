@@ -136,4 +136,37 @@ tableUtils.Clone = function(tbl: Dict) : Dict
     return tableUtils.CopyTableExcept(tbl, {}, false)
 end
 
+
+
+tableUtils.DeepCopy = function (t: Dict)
+	local copy = {}
+	for key, value in t do
+		if type(value) == "table" then
+			copy[key] = tableUtils.DeepCopy(value)
+		else
+			copy[key] = value
+		end
+	end
+	return copy
+end
+
+-- **NOTE:** only string keys will be reconciled
+tableUtils.Reconcile = function (target: Dict, template: Dict)
+	for k, v in template do
+		if type(k) == "string" then -- Only string keys will be reconciled
+			if target[k] == nil then
+				if type(v) == "table" then
+					target[k] = tableUtils.DeepCopy(v)
+				else
+					target[k] = v
+				end
+			elseif type(target[k]) == "table" and type(v) == "table" then
+				tableUtils.Reconcile(target[k], v)
+			end
+		end
+	end
+end
+
+
+
 return tableUtils

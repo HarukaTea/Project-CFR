@@ -12,19 +12,17 @@ local Children = Fusion.Children
 local wait = task.wait
 
 
-local Pinia = require(script.Pinia)
+local AfterPinia = require(script.AfterPinia)
 
 
 return function (plr: Player)
-    local self = {} :: Pinia.Self
+    local self = {} :: AfterPinia.Self
 
     self.plr = plr
     self.scope = Fusion.scoped()
 
-    Pinia(self)
 
-
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerHints",
         DisplayOrder = UIPriorityBook.Highest + 1,
@@ -54,6 +52,9 @@ return function (plr: Player)
         }
     })
     self.UI = UI
+
+
+    AfterPinia(self)
 
 
 

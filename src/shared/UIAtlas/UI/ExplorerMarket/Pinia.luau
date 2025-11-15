@@ -13,7 +13,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     IsUIShown: Fusion.Value<boolean>,
     CurrentSelectedItemUniqueId: Fusion.Value<string>,
@@ -54,7 +54,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     self.IsUIShown = Value(false)
@@ -129,7 +129,7 @@ return function (self: Self)
             self.FilterViewShown:set(false)
         end
     }))
-    table.insert(scope, Events.OpenMarketUI.On(function(data)
+    table.insert(scope, Events.OpenMarketUI_S.On(function(data)
         self.Products:set(data.Products)
         self.plr:SetAttribute("CurrentUIGroup", "Market")
     end))

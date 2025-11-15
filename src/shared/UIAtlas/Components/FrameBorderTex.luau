@@ -6,7 +6,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     BorderType: "Inner" | "Outer",
 
     Size: UDim2?,
@@ -49,7 +49,7 @@ return function(scope: Fusion.Scope<any>, props: {
         Name = "FrameBorderTex",
 
         [Children] = {
-            Fusion.ForPairs(scope, pattern, function(_, scope: Fusion.Scope<any>, id: string, data: {
+            Fusion.ForPairs(scope, pattern, function(_, scope: Fusion.Scope, id: string, data: {
                 AnchorPoint: Vector2,
                 Position: UDim2,
                 InnerPosition: UDim2,

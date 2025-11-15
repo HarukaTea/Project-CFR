@@ -12,9 +12,10 @@ local ProductBar = require(script.Components.ProductBar)
 local PurchasePrompt = require(script.Components.PurchasePrompt)
 local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
 local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarEcoSlot)
-local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
+
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
+local BKItemListView = require(RepS.HarukaShared.UIAtlas.Components.BKItemListView)
 local BottombarOptionBtn = require(RepS.HarukaShared.UIAtlas.Components.BottombarOptionBtn)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
@@ -33,7 +34,7 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     Pinia(self)
@@ -78,7 +79,7 @@ return function (plr: Player)
                         ClipsDescendants = false,
 
                         [Children] = {
-                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope<any>, itemInfo: {
+                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope, itemInfo: {
                                 ProductId: string,
                                 ProductUniqueId: string,
                             })
@@ -113,93 +114,7 @@ return function (plr: Player)
                 end),
 
                 [Children] = {
-                    Components.ScrollingFrame(scope, {
-                        Name = "Backpack",
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        Size = UDim2.fromScale(0.97, 0.95),
-                        ScrollingDirection = Enum.ScrollingDirection.Y,
-                        ClipsDescendants = false,
-
-                        [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
-
-                        [Children] = {
-                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
-                                if not use(self.IsUIShown) then return nil end
-                                if use(self.CurrentCategory) ~= "Sell" then return nil end
-
-                                local info = ItemBook:GetItemInfo(itemSymbol.Name)
-                                if not info then return nil end
-
-                                local isVisible = false
-                                local isVisibleFactor2 = false
-                                local category = use(self.CurrentItemCategory) :: string
-
-                                if category == "Misc" then
-                                    category = { "Recipe", "Quest", "Cosmetic" }
-                                elseif category == "Active" then
-                                    category = { "Consumable", "Active" }
-                                elseif category == "Accessory" then
-                                    category = { "Accessory", "Passive" }
-                                else
-                                    category = { category }
-                                end
-                                isVisible = table.find(category, info.Type) ~= nil
-
-
-                                local state = use(self.FilterTierList[info.Tier])
-                                isVisibleFactor2 = state
-
-
-                                local isVisibleFactor3 = false
-                                local text = use(self.FilterItemText)
-                                local textWithoutSpaces = string.gsub(text, " ", "")
-
-                                if textWithoutSpaces == "" then
-                                    isVisibleFactor3 = true
-                                else
-                                    if string.find(string.lower(info.Name), string.lower(textWithoutSpaces)) then
-                                        isVisibleFactor3 = true
-                                    else
-                                        isVisibleFactor3 = false
-                                    end
-                                end
-
-                                if isVisible and isVisibleFactor2 and isVisibleFactor3 then
-                                    return index, BKItemSlot(scope, {
-                                        ItemSymbol = itemSymbol,
-                                        EquippingItems = self.EquippingItems,
-
-                                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                                        CurrentSelectedItem = self.CurrentSelectedItem,
-                                        CurrentSortOrderList = self.SortMethodList,
-                                    })
-                                else
-                                    return index, nil
-                                end
-                            end)
-                        }
-                    }, {
-                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local size = use(self.ItemListAbsSize) :: Vector2
-                            local x = size.X * 0.125 * 0.86
-                            local y = size.X * 0.135 * 0.86
-
-                            return UDim2.fromOffset(x, y)
-                        end),
-                        CellPadding = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local size = use(self.ItemListAbsSize) :: Vector2
-                            local x = size.X * 0.015
-                            local y = size.X * 0.023
-
-                            return UDim2.fromOffset(x, y)
-                        end),
-
-                        [Fusion.Out("AbsoluteCellCount")] = self.AvailableItems,
-
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        SortOrder = Enum.SortOrder.Name
-                    }),
+                    BKItemListView(scope, self),
 
                     Components.TextLabel(scope, {
                         Name = "Empty",
@@ -227,7 +142,7 @@ return function (plr: Player)
                 [Children] = {
                     Components.UIAspectRatioConstraint(scope),
 
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
+                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                         if use(self.CurrentCategory) == "Sell" then
                             return BKItemDescView(scope, {
                                 Item = use(self.CurrentSelectedItem),
@@ -396,7 +311,7 @@ return function (plr: Player)
                                             }):Wait()
 
                                             if result and result == "YES" then
-                                                Events.RequestToSellAllItems.Fire({
+                                                Events.SellAllItems_C.Fire({
                                                     ItemId = Fusion.peek(self.CurrentSelectedItem)
                                                 })
                                             end
@@ -436,7 +351,7 @@ return function (plr: Player)
                             Index = 1
                         }, self),
 
-                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material" }, function(_, scope: Fusion.Scope, index: number, category: string)
                             return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index + 2,
@@ -514,7 +429,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Market", "Sell" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Market", "Sell" }, function(_, scope: Fusion.Scope, index: number, category: string)
                             return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -543,7 +458,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope<any>, index: number, currency: string)
+                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
                             return index, BottombarEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,

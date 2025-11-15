@@ -338,7 +338,7 @@ table.insert(CriRPGLib.Funcs, function()
     orbContainer.Parent = ServerStorage
     Add(orbContainer)
 
-    Add(Events.PlaceOrb.On(function(data)
+    Add(Events.PlaceOrb_S.On(function(data)
         if not char:GetAttribute("IsInCombat") then return end
 
 
@@ -428,7 +428,7 @@ table.insert(CriRPGLib.Funcs, function()
             end)
             pcall(_fadeOrb, orb)
 
-            Events.RequestToDMGEnemy.Fire({
+            Events.DMGEnemy_C.Fire({
                 OrbUniqueId = orbUniqueId or "nil",
             })
 
@@ -472,9 +472,9 @@ table.insert(CriRPGLib.Funcs, function()
 
                 local customAnim = orb:GetAttribute("CustomAnim") :: string
                 if customAnim then
-                    Bindables.PlayAnimation:Fire(customAnim)
+                    Bindables.PlayAnimation_S:Fire(customAnim)
                 else
-                    Bindables.PlayAnimation:Fire(`{class}Attack{if animStep == 1 then "" else "2"}`)
+                    Bindables.PlayAnimation_S:Fire(`{class}Attack{if animStep == 1 then "" else "2"}`)
                 end
 
                 animStep = if animStep == 1 then 2 else 1
@@ -520,7 +520,7 @@ table.insert(CriRPGLib.Funcs, function()
                 DoTStatus = "Shocking"
             end
 
-            Events.RequestToDMGPlayer.Fire({
+            Events.DMGPlayer_C.Fire({
                 ProjectileUniqueId = uniqueId,
                 IsPierce = shouldPierce,
                 DoTStatus = DoTStatus
@@ -536,7 +536,14 @@ table.insert(CriRPGLib.Funcs, function()
     projectileContainer.Parent = ServerStorage
     Add(projectileContainer)
 
-    Add(Events.SpawnATKs.On(function(data)
+
+    local uniProjectileContainer = Instance.new("Folder")
+    uniProjectileContainer.Name = "UniProjectileContainer_"..plr.UserId
+    uniProjectileContainer.Parent = workspace.MapComponents
+    Add(uniProjectileContainer)
+
+
+    Add(Events.SpawnEnemyATKs_S.On(function(data)
         if not char:GetAttribute("IsInCombat") then return end
 
         projectileContainer = projectileContainer or workspace.Terrain
@@ -571,44 +578,10 @@ table.insert(CriRPGLib.Funcs, function()
         projectile:AddTag("EnemyProjectile")
         projectile.Parent = projectileContainer
     end))
-    Add(CollectionService:GetInstanceAddedSignal("EnemyProjectile"):Connect(function(projectile: Model)
-        if ProjectileLib[projectile.Name] then
-            local success, err = pcall(ProjectileLib[projectile.Name], projectile, projectileContainer)
-            if not success and RunService:IsStudio() then
-                warn(err)
-            end
-        else
-            warn("Invalid projectile ID: ".. projectile.Name)
-        end
-    end))
+    Add(Events.SpawnEnemyATKs_S.On(function(data)
+        if not data.IsUniATK then return end
 
-
-    local function _checkCombatState(state: boolean)
-        if not state then
-            projectileContainer.Parent = ServerStorage
-
-            RunService.Heartbeat:Wait()
-            projectileContainer:ClearAllChildren()
-        else
-            projectileContainer:ClearAllChildren()
-            projectileContainer.Parent = workspace.MapComponents
-        end
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-IsInCombat"] = _checkCombatState
-    }))
-end)
-
-
-table.insert(CriRPGLib.Funcs, function()
-    local projectileContainer = Instance.new("Folder")
-    projectileContainer.Name = "UniProjectileContainer_"..plr.UserId
-    projectileContainer.Parent = workspace.MapComponents
-    Add(projectileContainer)
-
-
-    Add(Events.SpawnUniATKs.On(function(data)
-        projectileContainer = projectileContainer or workspace.Terrain
+        uniProjectileContainer = uniProjectileContainer or workspace.Terrain
 
 
         local projectileId, projectileCF = data.ProjectileId, data.ProjectileCF
@@ -639,13 +612,40 @@ table.insert(CriRPGLib.Funcs, function()
         ownerSymbol.Parent = projectile
 
         projectile:AddTag("EnemyProjectile")
-        projectile.Parent = projectileContainer
+        projectile.Parent = uniProjectileContainer
     end))
+    Add(CollectionService:GetInstanceAddedSignal("EnemyProjectile"):Connect(function(projectile: Model)
+        if ProjectileLib[projectile.Name] then
+            local success, err = pcall(ProjectileLib[projectile.Name], projectile, projectileContainer)
+            if not success and RunService:IsStudio() then
+                warn(err)
+            end
+        else
+            warn("Invalid projectile ID: ".. projectile.Name)
+        end
+    end))
+
+
+    local function _checkCombatState(state: boolean)
+        if not state then
+            projectileContainer.Parent = ServerStorage
+
+            RunService.Heartbeat:Wait()
+            projectileContainer:ClearAllChildren()
+        else
+            projectileContainer:ClearAllChildren()
+            projectileContainer.Parent = workspace.MapComponents
+        end
+    end
+    Add(HarukaLib:Hydrate(char, {
+        ["Attr-IsInCombat"] = _checkCombatState
+    }))
 end)
 
 
+
 table.insert(CriRPGLib.Funcs, function()
-    Add(Events.PlayClassSPScene.On(function(data)
+    Add(Events.PlayVFXScene_S.On(function(data)
         local sceneId = data.SceneId
 
         if ClassSPSceneLib[sceneId] == nil then
@@ -663,7 +663,7 @@ end)
 
 
 table.insert(CriRPGLib.Funcs, function()
-    Add(Events.FaceToTargetingEnemy.On(function()
+    Add(Events.FaceTargetingEnemy_S.On(function()
         local targeting = char.TargetingEnemy :: ObjectValue?
 
         if not ClientLib.IsCharValid(targeting.Value) then return end
@@ -749,7 +749,10 @@ end)
 
 
 table.insert(CriRPGLib.Funcs, function()
-    if not workspace:GetAttribute("DungeonId") then return end
+    local abyssId = workspace:GetAttribute("AbyssId")
+    local dungeonId = workspace:GetAttribute("DungeonId")
+
+    if not abyssId and not dungeonId then return end
 
 
     local function _playOverworldMusic(soundId: string)
@@ -763,19 +766,33 @@ table.insert(CriRPGLib.Funcs, function()
             Volume = 0.7
         }):Play()
     end
-    Add(Events.DUNGEON_StartDungeon.On(function()
+    local function _started(state: boolean)
+        if not state then return end
+
         _playOverworldMusic(SoundService.Musics.Overworld.SoundId)
-    end))
-    Add(Events.DUNGEON_StartBossFight.On(function()
+    end
+    local function _victoryed(state: boolean)
+        if not state then return end
+
+        _playOverworldMusic(SoundService.Musics.Victory.SoundId)
+    end
+    local function _bossFighting(state: boolean)
+        if not state then return end
+
         SoundService.Musics.Combat.SoundId = SoundService.Musics.BossCombat.SoundId
 
         _playOverworldMusic(SoundService.Musics.BossCombat.SoundId)
-    end))
-    Add(Events.DUNGEON_EndDungeon.On(function()
-        SoundService.Musics.Combat.SoundId = SoundService.Musics.Victory.SoundId
+    end
+    Add(HarukaLib:Hydrate(workspace, {
+        ["Attr-AbyssStarted"] = _started,
+        ["Attr-DungeonStarted"] = _started,
 
-        _playOverworldMusic(SoundService.Musics.Victory.SoundId)
-    end))
+        ["Attr-AbyssFinished"] = _victoryed,
+        ["Attr-DungeonFinished"] = _victoryed,
+
+        ["Attr-AbyssBossFighting"] = _bossFighting,
+        ["Attr-DungeonBossFighting"] = _bossFighting
+    }))
 end)
 
 

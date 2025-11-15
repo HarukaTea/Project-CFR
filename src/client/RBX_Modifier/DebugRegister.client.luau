@@ -29,7 +29,7 @@ if worldId and worldId == "InitusWorld" then
 
     rejoinCommand.Triggered:Connect(function(textSource: TextSource)
         if textSource.UserId == plr.UserId then
-            Events.RequestToRejoinGame.Fire()
+            Events.RejoinGame_C.Fire()
         end
     end)
 end

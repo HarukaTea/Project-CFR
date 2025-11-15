@@ -10,7 +10,7 @@ local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     AddedEXP: number
 })
 

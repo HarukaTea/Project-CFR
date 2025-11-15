@@ -118,7 +118,8 @@ local function swimIn()
     playSwimAnim("SwimIdle")
 
 
-    Events.RequestToEnterSwimmingState.Fire({
+    Events.SetServerCharAttr_C.Fire({
+        AttrId = "IsSwimming",
         State = true
     })
 end
@@ -144,7 +145,8 @@ local function swimOut()
 
     playSwimAnim(nil)
 
-    Events.RequestToEnterSwimmingState.Fire({
+    Events.SetServerCharAttr_C.Fire({
+        AttrId = "IsSwimming",
         State = false
     })
 end

@@ -11,7 +11,7 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     IsChatShown: Fusion.Value<boolean>,
 
     ChoiceList: Fusion.Value<{ string }>,
@@ -40,7 +40,7 @@ return function (scope: Fusion.Scope<any>, props: {
     local lastInputType = Components.FusionComponents.useXboxControllerHotInput(scope)
     local key = nil
 
-    key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
+    key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInputType) :: string
 
         if input == "Controller" then
@@ -195,7 +195,7 @@ return function (scope: Fusion.Scope<any>, props: {
                     }),
 
 
-                    Fusion.ForPairs(scope, props.ChoiceList, function(_, scope: Fusion.Scope<any>, index: number, choice: string)
+                    Fusion.ForPairs(scope, props.ChoiceList, function(_, scope: Fusion.Scope, index: number, choice: string)
 
                         local choiceType = "Default"
                         local isSelecting = Fusion.Value(scope, false)

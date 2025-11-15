@@ -11,7 +11,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     IsUIShown: Fusion.Value<boolean>
 }
@@ -22,7 +22,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(false)
 

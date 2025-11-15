@@ -27,7 +27,7 @@ return function(plr: Player)
     end
 
 
-	local scope = self.scope :: Fusion.Scope<any>
+	local scope = self.scope :: Fusion.Scope
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerStatsGlobal",

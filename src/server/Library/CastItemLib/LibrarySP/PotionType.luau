@@ -83,7 +83,7 @@ return function (self: Types.CastItemLib)
                 Duration = 8
             })
 
-            Events.PlayStatPoweredScreenFX.Fire(player)
+            Events.PlayStatPoweredScreenFX_S.Fire(player)
         end)
 
         return nil
@@ -118,7 +118,7 @@ return function (self: Types.CastItemLib)
                 eff.Enabled = false
             end):catch(function() end)
 
-            Events.PlayStatPoweredScreenFX.Fire(player)
+            Events.PlayStatPoweredScreenFX_S.Fire(player)
         end)
 
         return nil

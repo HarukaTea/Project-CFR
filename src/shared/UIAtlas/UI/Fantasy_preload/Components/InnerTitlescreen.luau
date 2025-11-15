@@ -15,11 +15,11 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     SlotUISignal: RBXScriptSignal,
     CutsceneUISignal: RBXScriptSignal,
 
-    CharVals: { Fusion.Value },
+    CharVals: { Fusion.Value<Model?> },
 
 }) : ScreenGui
 
@@ -68,7 +68,7 @@ return function (scope: Fusion.Scope<any>, props: {
     }, {
         BottomProps = {
             [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                     if use(isBackButtonShown) then
                         return ExecuteButton(scope, {
                             AnchorPoint = Vector2.new(0.5, 0),
@@ -96,7 +96,7 @@ return function (scope: Fusion.Scope<any>, props: {
                     Position = UDim2.fromScale(0.5, 0.3),
 
                     [Children] = {
-                        Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope<any>, index: number, charVal: Fusion.Value)
+                        Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope, index: number, charVal: Fusion.Value<Model?>)
                             return index, SaveSlot(scope, {
                                 SlotId = index,
                                 CharacterModel = charVal,

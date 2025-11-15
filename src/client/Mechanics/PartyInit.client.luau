@@ -84,7 +84,7 @@ mouse.Button1Down:Connect(function()
 
     if choice ~= "YES" then return end
 
-    Events.RequestToPartyInvite.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
+    Events.PartyInvite_C.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
 end)
 mouse.Move:Connect(function()
     local target = mouse.Target
@@ -111,7 +111,7 @@ mouse.Move:Connect(function()
 end)
 
 --- handling party invite
-Events.PartyInviteResult.On(function(data)
+Events.PartyInviteResult_S.On(function(data)
     local option, inviter = data.Option, data.PlayerName
     local char = plr.Character
 
@@ -130,9 +130,9 @@ Events.PartyInviteResult.On(function(data)
             ConfirmUniqueId = "ConfirmInviteAccept"..HarukaLib:GenerateUUID(),
         }):Wait()
         if choice == "YES" then
-            Events.RequestToPartyInvite.Fire({ Option = "InviteAccept", PlayerName = inviter })
+            Events.PartyInvite_C.Fire({ Option = "InviteAccept", PlayerName = inviter })
         else
-            Events.RequestToPartyInvite.Fire({ Option = "InviteDecline", PlayerName = inviter })
+            Events.PartyInvite_C.Fire({ Option = "InviteDecline", PlayerName = inviter })
         end
     end
 end)

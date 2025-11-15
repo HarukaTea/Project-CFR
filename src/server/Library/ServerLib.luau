@@ -136,24 +136,32 @@ end
 function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
+	local pos = target.PrimaryPart.Position
+	local cf, size = target:GetBoundingBox()
 
 
-
-	Events.ShowDMGNumber.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
-		DMGTarget = target,
+	Events.ShowDMGNumber_S.FireList(ServerLib.GetNearbyPlayers(pos), {
+		DMGPos = pos,
+		DMGCF = cf,
+		DMGSize = size,
 		DMGNumber = tostring(number),
 		DMGColor = color or Color3.new(1, 1, 1)
 	})
 end
 
 
-function ServerLib.ShowText(target: Model, text: string, color: Color3?)
+function ServerLib.ShowText_S(target: Model, text: string, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
 
+	local pos = target.PrimaryPart.Position
+	local cf, size = target:GetBoundingBox()
 
-	Events.ShowText.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
-		Target = target,
+
+	Events.ShowText_S.FireList(ServerLib.GetNearbyPlayers(pos), {
+		TextPos = pos,
+		TextCF = cf,
+		TextSize = size,
 		Text = text,
 		TextColor = color or Color3.new(1, 1, 1)
 	})
@@ -164,9 +172,9 @@ function ServerLib.ApplyHitStatus(target: Model)
 	if not ServerLib.IsCharValid(target) then return end
 
 
-
-	Events.PlayHitStatusVFX.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
-		Target = target
+	Events.PlayVFXStatusToEntity_S.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
+		StatusId = "Hit",
+		Entity = target
 	})
 end
 
@@ -184,7 +192,7 @@ function ServerLib.PlaceItemDropPart(plr: Player, itemId: string, amount: number
 	symbol:SetAttribute("Receiver", plr.Name)
 
 
-	Events.SpawnItemDrop.Fire(plr, {
+	Events.SpawnItemDrop_S.Fire(plr, {
 		ItemUniqueId = itemUniqueId,
 		ItemId = itemId,
 		ItemAmount = amount,
@@ -305,11 +313,11 @@ function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 	end
 
 
-	Events.PlayItemDropFX.Fire(plr, {
+	Events.PlayItemDropFX_S.Fire(plr, {
 		ItemId = itemId,
 		Amount = amount
 	})
-	Events.PlaySound.Fire(plr, SoundService.SFXs.ItemAcquired)
+	Events.PlaySound_S.Fire(plr, SoundService.SFXs.ItemAcquired)
 end
 
 
@@ -323,9 +331,7 @@ function ServerLib.GiveEXPRewards(plr: Player, exp: number)
 	Promise.delay(1.5):andThen(function()
 		HarukaLib:AddAttr(plr, "EXP", exp)
 
-		Events.OpenEXPAwardBar.Fire(plr, {
-			EXPGained = exp
-		})
+		Events.OpenEXPAwardBar_S.Fire(plr, exp)
 	end)
 end
 
@@ -344,13 +350,13 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 		end
 	end
 	if not itemSymbol then
-		Events.CreateNotify.Fire(plr, "[Error] Cannot equip item, item not found")
+		Events.CreateNotify_S.Fire(plr, "[Error] Cannot equip item, item not found")
 		return
 	end
 
 	local char = plr.Character :: Model
 	if not ServerLib.IsCharValid(char) then
-		Events.CreateNotify.Fire(plr, "[Error] Cannot equip item, character not found")
+		Events.CreateNotify_S.Fire(plr, "[Error] Cannot equip item, character not found")
 		return
 	end
 
@@ -427,7 +433,7 @@ function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 			if badgeMarketInfo.IsEnabled then
 				BadgeService:AwardBadge(plr.UserId, badgeId)
 
-				Events.DisplayAchievementNotify.Fire(plr, {
+				Events.PlayBadgeNotify_S.Fire(plr, {
 					BadgeId = badgeId,
 				})
 			end

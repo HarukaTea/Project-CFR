@@ -10,7 +10,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     SlotUISignal: Signal.SignalClass,
     CutsceneUISignal: Signal.SignalClass,
@@ -20,7 +20,7 @@ export type Self = {
 
 
 return function (self: Self)
-	local scope = self.scope :: Fusion.Scope<any>
+	local scope = self.scope :: Fusion.Scope
 
 
 	self.SlotUISignal = Signal.new()

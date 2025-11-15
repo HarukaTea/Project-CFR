@@ -19,18 +19,7 @@ Add(char.TargetingList.ChildRemoved:Connect(function(child: ObjectValue)
     if not child:IsA("ObjectValue") then return end
 
 
-    Events.RequestToCastItem_Response.Fire(plr, {
-        SlotId = "Active1",
-        CooldownTime = 0
-    })
-    Events.RequestToCastItem_Response.Fire(plr, {
-        SlotId = "Active2",
-        CooldownTime = 0
-    })
-    Events.RequestToCastItem_Response.Fire(plr, {
-        SlotId = "Active3",
-        CooldownTime = 0
-    })
+    --// FIXME: ghostly lantern anti-cheat
 end))
 
 

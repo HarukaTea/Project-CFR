@@ -32,7 +32,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
     task.delay(5, function()
         spawnClock = false
     end)
-    table.insert(scope, Events.PlayGotHitScreenFX.On(function()
+    table.insert(scope, Events.PlayGotHitScreenFX_S.On(function()
         if spawnClock then return end
 
         local newScope = Fusion.scoped()
@@ -52,7 +52,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// got heal fx
-    table.insert(scope, Events.PlayHealScreenFX.On(function()
+    table.insert(scope, Events.PlayHealedScreenFX_S.On(function()
         if spawnClock then return end
 
         local newScope = Fusion.scoped()
@@ -72,7 +72,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// got powered fx
-    table.insert(scope, Events.PlayStatPoweredScreenFX.On(function()
+    table.insert(scope, Events.PlayStatPoweredScreenFX_S.On(function()
         if spawnClock then return end
 
 
@@ -93,7 +93,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// track new items
-    table.insert(scope, Events.PlayItemDropFX.On(function(data)
+    table.insert(scope, Events.PlayItemDropFX_S.On(function(data)
         if not UI then return end
         if not UI:FindFirstChild("Center") then return end
 
@@ -157,8 +157,8 @@ return function (UI: ScreenGui, self: Pinia.Self)
         _onNewEXPAdded()
     end
     table.insert(scope, expDropQueue.ElementAdded:Connect(_onNewEXPAdded))
-    table.insert(scope, Events.OpenEXPAwardBar.On(function(data)
-        expDropQueue:Push(data.EXPGained)
+    table.insert(scope, Events.OpenEXPAwardBar_S.On(function(expGained)
+        expDropQueue:Push(expGained)
     end))
 
 
@@ -212,25 +212,25 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// track cast cd
-    table.insert(scope, Events.OpenCastTimeBar.On(function(data)
+    table.insert(scope, Events.OpenCastTimeBar_S.On(function(castTime: number)
         if not UI then return end
         if not UI:FindFirstChild("Bottom") then return end
 
 
         local newScope = Fusion.scoped()
         local castingTimeBar = CastingTimeBar(newScope, {
-            Time = data.Duration
+            Time = castTime
         })
         castingTimeBar.Parent = UI.Bottom.CastTimeBars
-        Debris:AddItem(castingTimeBar, data.Duration + 0.2)
+        Debris:AddItem(castingTimeBar, castTime + 0.2)
 
 
-        Promise.delay(data.Duration + 1):andThen(function()
+        Promise.delay(castTime + 1):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
 
-        wait(data.Duration)
+        wait(castTime)
         HarukaLib:UITween(castingTimeBar, "Out", {})
     end))
 
@@ -275,7 +275,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         _onNewAchievementAdded()
     end
     table.insert(scope, achivementQueue.ElementAdded:Connect(_onNewAchievementAdded))
-    table.insert(scope, Events.DisplayAchievementNotify.On(function(data)
+    table.insert(scope, Events.PlayBadgeNotify_S.On(function(data)
         achivementQueue:Push(data)
     end))
 end

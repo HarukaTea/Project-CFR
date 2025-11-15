@@ -536,7 +536,7 @@ table.insert(ServerWorldLib.Funcs, function()
         if RunService:IsStudio() then return end
         if closeReason ~= Enum.CloseReason.DeveloperUpdate then return end
 
-        Events.CreateFSNotify.FireList(Players:GetPlayers(), string.upper("CF is updating, please wait..."), 15)
+        Events.CreateFSNotify_S.FireList(Players:GetPlayers(), string.upper("CF is updating, please wait..."), 15)
     end
     game:BindToClose(shutdownSetup)
 end)

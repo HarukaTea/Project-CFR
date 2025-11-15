@@ -17,7 +17,7 @@ local MKK_NUMBER = 1599 * 40 ^ 2
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     LockConn: RBXScriptConnection?,
     LockEnabled: Fusion.Value<boolean>,
@@ -34,7 +34,7 @@ export type Self = {
 
 
 return function (self: Self)
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
     self.LockConn = nil
     self.LockEnabled = Fusion.Value(scope, false)

@@ -15,7 +15,7 @@ local wait = task.wait
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     IsUIShown: Fusion.Value<boolean>,
     AbyssIndexSelected: Fusion.Value<number>,
@@ -28,7 +28,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(false)
 
@@ -55,7 +55,7 @@ return function (self: Self)
     }))
 
 
-    table.insert(scope, Events.OpenAbyssUI.On(function()
+    table.insert(scope, Events.OpenAbyssUI_S.On(function()
         self.plr:SetAttribute("CurrentUIGroup", "AbyssView")
     end))
 

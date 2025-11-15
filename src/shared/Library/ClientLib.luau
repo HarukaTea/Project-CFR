@@ -151,7 +151,7 @@ end
 
 function ClientLib.TrackEffectListToUI(props: {
 	Target: Model,
-	Scope: Fusion.Scope<any>,
+	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
 	EffectContainer: GuiObject?
 })
@@ -243,7 +243,7 @@ end
 
 
 function ClientLib.TrackInputTextbox(props: {
-	Scope: Fusion.Scope<any>,
+	Scope: Fusion.Scope,
 	TextBox: TextBox,
 
 	Callback: (amountVal: Fusion.Value<number>) -> nil

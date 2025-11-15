@@ -38,7 +38,7 @@ StatusLib.Heal = function(char: Model, healAmount: number) : number?
 
     ServerLib.PlayWorldSound(SoundService.SFXs.Healing, char.PrimaryPart.Position)
 
-    Events.PlayHealScreenFX.Fire(plr)
+    Events.PlayHealedScreenFX_S.Fire(plr)
 
     return healAmount
 end
@@ -145,7 +145,7 @@ StatusLib.DMGBoost = function(char: Model, props: {
     local power = props.DMGPower or 0
     local ex = props.DMG or 0
 
-    Events.PlayStatPoweredScreenFX.Fire(plr)
+    Events.PlayStatPoweredScreenFX_S.Fire(plr)
 
 
     HarukaLib:AddAttr(char, "MaxDMGEx", ex)

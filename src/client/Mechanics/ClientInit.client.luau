@@ -91,7 +91,6 @@ table.insert(ClientWorldLib.Funcs, function()
         end
     end
     Bindables.ClientTween:Connect(playTween)
-    Events.PlayClientTween.On(playTween)
 
 
 
@@ -113,7 +112,7 @@ table.insert(ClientWorldLib.Funcs, function()
         sound:Play()
         if timePos then sound.TimePosition = timePos end
     end
-    Events.PlaySound.On(playSound)
+    Events.PlaySound_S.On(playSound)
     Bindables.PlaySound:Connect(playSound)
 
 
@@ -135,15 +134,15 @@ table.insert(ClientWorldLib.Funcs, function()
         camera.CameraSubject = part
         camera.CFrame = part.CFrame
     end
-    Events.PlayCameraCutscene.On(playCameraScene)
-    Bindables.PlayCameraCutscene:Connect(playCameraScene)
+    Events.UpdateCameraPart_S.On(playCameraScene)
+    Bindables.UpdateCameraPart:Connect(playCameraScene)
 
 
     local function updateCameraCFrame(cframe: CFrame)
         workspace.CurrentCamera.CFrame = cframe
     end
-    Events.UpdateCameraCFrame.On(updateCameraCFrame)
-    Bindables.UpdateCameraCFrame:Connect(updateCameraCFrame)
+    Events.UpdateCameraCF_S.On(updateCameraCFrame)
+    Bindables.UpdateCameraCF:Connect(updateCameraCFrame)
 end)
 
 
@@ -335,20 +334,16 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    local function _spawnDMGNumber(entity: Model, text: string, color: Color3)
-        if not ClientLib.IsModelValid(entity) then return end
-        if not entity:IsDescendantOf(workspace) then return end
+    local random = Random.new()
 
-        local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
+    local function _spawnDMGNumber(pos: Vector3, BCF: CFrame, Bsize: Vector3, text: string, color: Color3)
+        local distance = plr:DistanceFromCharacter(pos)
         if distance <= 0 or distance > focusRenderDistance then return end
 
-        local pos = entity.PrimaryPart.Position
-        local random = Random.new()
 
         if text == "0" then text = "MISS" end
 
         Promise.try(function()
-            local BCF, Bsize = entity:GetBoundingBox()
             pos += Vector3.new(
                 random:NextNumber(-2, 2),
                 0,
@@ -373,10 +368,10 @@ table.insert(ClientWorldLib.Funcs, function()
             ui.Text = text
             ui.TextColor3 = color or Color3.new(1, 1, 1)
 
-            part.BillboardGui.Size = UDim2.fromScale(12 * 2, 12 * 2)
+            part.BillboardGui.Size = UDim2.fromScale(12 * 3, 12 * 3)
 
             HarukaLib:CreateTween(part.BillboardGui, AssetBook.TweenInfos.half, {
-                Size = UDim2.fromScale(3, 3)
+                Size = UDim2.fromScale(6, 6)
             }):Play()
 
             Promise.delay(1.5):andThen(function()
@@ -389,26 +384,21 @@ table.insert(ClientWorldLib.Funcs, function()
 
         end):catch(function() end)
     end
-    Events.ShowDMGNumber.On(function(data)
-        _spawnDMGNumber(data.DMGTarget, data.DMGNumber, data.DMGColor)
+    Events.ShowDMGNumber_S.On(function(data)
+        _spawnDMGNumber(data.DMGPos, data.DMGCF, data.DMGSize, data.DMGNumber, data.DMGColor)
     end)
 end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    local function _spawnText(entity: Model, text: string, color: Color3)
-        if not ClientLib.IsModelValid(entity) then return end
-        if not entity:IsDescendantOf(workspace) then return end
+    local random = Random.new()
 
-        local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
+
+    local function _spawnText(pos: Vector3, BCF: CFrame, Bsize: Vector3, text: string, color: Color3)
+        local distance = plr:DistanceFromCharacter(pos)
         if distance <= 0 or distance > focusRenderDistance then return end
 
-        local pos = entity.PrimaryPart.Position
-        local random = Random.new()
-
-
         Promise.try(function()
-            local BCF, Bsize = entity:GetBoundingBox()
             pos += Vector3.new(
                 random:NextNumber(-2, 2),
                 0,
@@ -444,8 +434,8 @@ table.insert(ClientWorldLib.Funcs, function()
 
         end):catch(function() end)
     end
-    Events.ShowText.On(function(data)
-        _spawnText(data.Target, data.Text, data.TextColor)
+    Events.ShowText_S.On(function(data)
+        _spawnText(data.TextPos, data.TextCF, data.TextSize, data.Text, data.TextColor)
     end)
 end)
 
@@ -489,8 +479,10 @@ table.insert(ClientWorldLib.Funcs, function()
 
         end):catch(function() end)
     end
-    Events.PlayHitStatusVFX.On(function(data)
-        _onHit(data.Target)
+    Events.PlayVFXStatusToEntity_S.On(function(data)
+        if data.StatusId ~= "Hit" then return end
+
+        _onHit(data.Entity)
     end)
 end)
 
@@ -545,7 +537,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
     local RNG = Random.new()
 
-    Events.SpawnItemDrop.On(function(data)
+    Events.SpawnItemDrop_S.On(function(data)
         local location = data.ItemDropLocationPos :: Vector3
         local autoPickup = data.AllowAutoPickUp
 
@@ -612,7 +604,7 @@ table.insert(ClientWorldLib.Funcs, function()
             until timeout <= 0 or plr:DistanceFromCharacter(itemSphere.Position) <= 10 or itemSphere:GetAttribute("AutoPickup")
 
 
-            Events.RequestToPickupItemDrops.Fire({
+            Events.PickupItemDrops_C.Fire({
                 ItemUniqueId = itemSphere:GetAttribute("HarukaUniqueId") or "nil"
             })
 
@@ -651,8 +643,7 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    Events.OpenChestClientTween.On(function(data)
-        local chest = data.Chest :: Model
+    Events.OpeningChest_S.On(function(chest)
         if not ClientLib.IsModelValid(chest) then return end
 
         SoundService.SFXs.ChestDrop:Play()

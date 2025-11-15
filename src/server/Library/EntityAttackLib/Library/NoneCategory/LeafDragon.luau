@@ -57,7 +57,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "LeafDragonMove1",
             ProjectileCF = CFrame.new(projectilePos),
@@ -70,7 +70,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "LeafDragonMove2",
             ProjectileCF = CFrame.new(projectilePos),
@@ -84,7 +84,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "LeafDragonMove3",
             ProjectileCF = CFrame.new(projectilePos),

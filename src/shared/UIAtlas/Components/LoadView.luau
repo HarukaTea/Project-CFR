@@ -15,7 +15,7 @@ local Children = Fusion.Children
 
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     LoadingText: Fusion.Value<string>,
 })
 
@@ -108,7 +108,7 @@ return function (scope: Fusion.Scope<any>, props: {
                             Size = UDim2.fromOffset(1, 1)
                         }),
 
-                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope<any>, classId: string, classInfo: Classbook.ClassJSON)
+                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: Classbook.ClassJSON)
                             if classInfo.DevClass then return classId, nil end
 
 

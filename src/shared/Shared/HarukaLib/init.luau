@@ -1263,10 +1263,10 @@ function HarukaLib:TeleportPlayer(char: Model, target: CFrame)
 	if sharedEvents then
 		if RunService:IsServer() then
 			local player = Players:GetPlayerFromCharacter(char)
-			sharedEvents.UpdateCameraCFrame.Fire(player, target)
+			sharedEvents.UpdateCameraCF_S.Fire(player, target)
 
 		elseif RunService:IsClient() then
-			sharedEvents.UpdateCameraCFrame:Fire(target)
+			sharedEvents.UpdateCameraCF:Fire(target)
 		end
 	end
 end

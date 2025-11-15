@@ -9,7 +9,7 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     Platfrom: string,
 	KeybindId: string,
     KeybindVal: Enum.KeyCode,
@@ -109,7 +109,7 @@ return function(scope: Fusion.Scope<any>, props: {
 
                                 KeybindsBook[props.Platfrom][props.KeybindId] = Enum.KeyCode[validKeyName]
 
-                                Events.RequestToSaveSettings.Fire({
+                                Events.SaveSettings_C.Fire({
                                     SettingId = "KEYBIND_"..props.Platfrom.."_"..props.KeybindId,
                                     SettingValue = validKeyName
                                 })

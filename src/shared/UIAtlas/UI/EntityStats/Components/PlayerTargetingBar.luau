@@ -15,7 +15,7 @@ local Children = Fusion.Children
 local ORDER = 1
 
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     Targeting: ObjectValue,
 
     TargetingEnemy: Fusion.Value<ObjectValue>,

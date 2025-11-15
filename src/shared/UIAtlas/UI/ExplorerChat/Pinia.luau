@@ -16,7 +16,7 @@ local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
 
     IsChatShown: Fusion.Value<boolean>,
@@ -40,7 +40,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     self.IsChatShown = Value(false)
@@ -120,7 +120,7 @@ return function (self: Self)
         HarukaLib:FreezePlayerControls("Unfreeze")
 
         if npcChatting then
-            Events.RequestToEndNPCChat.Fire({
+            Events.FinishNPCChat_C.Fire({
                 NPCId = npcChatting.Name,
                 SeriesId = seriesId
             })
@@ -371,7 +371,5 @@ return function (self: Self)
 
         __setText(currentDialoguesChatting[currentDialogueIndexChatting])
     end
-    table.insert(scope, Events.EnterNPCChat.On(function(data)
-        _startChatting(data.NPCModel)
-    end))
+    table.insert(scope, Events.EnterNPCChat_S.On(_startChatting))
 end

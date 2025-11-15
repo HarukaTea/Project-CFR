@@ -1,3 +1,15 @@
 {
-    "languageMode": "nonstrict"
+    "languageMode": "nonstrict",
+    "typeErrors": false,
+    "lintErrors": false,
+    "lint": {
+        "LocalShadow": false,
+        "LocalUnused": false,
+        "SameLineStatement": false,
+        "ImplicitReturn": false,
+        "ComparisonPrecedence": false,
+        "ImportUnused": false,
+        "FunctionUnused": false,
+        "UninitializedLocal": false
+    }
 }

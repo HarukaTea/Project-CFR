@@ -8,7 +8,7 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>)
+return function (scope: Fusion.Scope)
     return Components.HarukaScreenGui(scope, {
         Name = "CircularFadeTex",
         ScreenInsets = Enum.ScreenInsets.None,

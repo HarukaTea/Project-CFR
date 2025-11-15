@@ -8,7 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     StatList: {
         {
             Id: string,
@@ -33,7 +33,7 @@ return function (scope: Fusion.Scope<any>, props: {
         [Children] = {
             Components.PaddingFrame(scope, "AAA"),
 
-            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope<any>, index: number, val)
+            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope, index: number, val)
 
                 local correspondingBaseStat = nil
                 for _, baseStatInfo in props.BaseStatList do
@@ -84,9 +84,9 @@ return function (scope: Fusion.Scope<any>, props: {
 
                             Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local shouldUsePercent = false
-                                if val.Id == "CRIT DMG" then
+                                if string.find(val.Id, "CRIT DMG") then
                                     shouldUsePercent = true
-                                elseif val.Id == "LUCK" then
+                                elseif string.find(val.Id, "LUCK") then
                                     shouldUsePercent = true
                                 elseif string.find(val.Id, "CHANCE") then
                                     shouldUsePercent = true

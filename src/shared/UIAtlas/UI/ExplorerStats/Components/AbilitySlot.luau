@@ -15,7 +15,7 @@ local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCirc
 
 local Children = Fusion.Children
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     ActiveInfo: {
         Id: string,
         CDSymbol: NumberValue,
@@ -46,7 +46,7 @@ return function(scope: Fusion.Scope<any>, props: {
     end))
 
 
-    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope<any>)
+    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)
 

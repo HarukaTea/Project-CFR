@@ -14,8 +14,8 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 export type OrderedDatastoreWrapper = {
 	__index : OrderedDatastoreWrapper,
 
-	GetOrderedPositionAsync: (self: OrderedDatastoreWrapper, Key: string | number, Descending: boolean) -> Promise.TypedPromise,
-	UpdateAsync: (self: OrderedDatastoreWrapper, Key: string, Value: number) -> Promise.TypedPromise,
+	GetOrderedPositionAsync: <T>(self: OrderedDatastoreWrapper, Key: string | number, Descending: boolean) -> Promise.TypedPromise<T>,
+	UpdateAsync: <T>(self: OrderedDatastoreWrapper, Key: string, Value: number) -> Promise.TypedPromise<T>,
 
 	new: (OrderedDatastoreName: string, ConvertUserIdToString: boolean) -> OrderedDatastoreWrapper,
 

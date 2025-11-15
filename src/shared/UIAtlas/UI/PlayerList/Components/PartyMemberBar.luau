@@ -11,7 +11,7 @@ local Children = Fusion.Children
 
 local fromScale = UDim2.fromScale
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     Member: ObjectValue
 })
     local member = props.Member.Value
@@ -53,7 +53,7 @@ return function (scope: Fusion.Scope<any>, props: {
                     if not member.Parent then return end
 
                     if Players.LocalPlayer.Name == member.Name then
-                        Events.RequestToPartyInvite.Fire({ Option = "PartyLeave", PlayerName = member.Name })
+                        Events.PartyInvite_C.Fire({ Option = "PartyLeave", PlayerName = member.Name })
                         return
                     end
                     if Players.LocalPlayer.Name ~= member.Parent.Name then
@@ -61,7 +61,7 @@ return function (scope: Fusion.Scope<any>, props: {
                         return
                     end
 
-                    Events.RequestToPartyInvite.Fire({ Option = "PartyKick", PlayerName = member.Name })
+                    Events.PartyInvite_C.Fire({ Option = "PartyKick", PlayerName = member.Name })
                 end,
 
                 [Children] = {

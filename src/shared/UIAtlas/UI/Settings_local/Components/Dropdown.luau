@@ -8,7 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
     OptionTitle: string,
@@ -149,7 +149,7 @@ return function(scope: Fusion.Scope<any>, props: {
                             Components.PaddingFrame(scope, "AAA"),
                             Components.PaddingFrame(scope, "ZZZ"),
 
-                            Fusion.ForValues(scope, props.OptionDropdownOptions, function(_, scope: Fusion.Scope<any>, option: string)
+                            Fusion.ForValues(scope, props.OptionDropdownOptions, function(_, scope: Fusion.Scope, option: string)
 
                                 local isHovering = Fusion.Value(scope, false)
 
@@ -205,7 +205,7 @@ return function(scope: Fusion.Scope<any>, props: {
                                         props.DropdownValue:set(option)
                                         isSelectingDropdownList:set(false)
 
-                                        Events.RequestToSaveSettings.Fire({
+                                        Events.SaveSettings_C.Fire({
                                             SettingId = props.OptionId,
                                             SettingValue = option
                                         })

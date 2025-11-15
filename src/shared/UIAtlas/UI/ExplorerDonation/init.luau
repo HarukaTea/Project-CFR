@@ -29,7 +29,7 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     Pinia(self)
@@ -71,7 +71,7 @@ return function (plr: Player)
                                 Padding = UDim.new(0.04, 0),
                             }),
 
-                            Fusion.ForPairs(scope, self.PanelList, function(_, scope: Fusion.Scope<any>, index: number, panelId: string)
+                            Fusion.ForPairs(scope, self.PanelList, function(_, scope: Fusion.Scope, index: number, panelId: string)
                                 return panelId, SideCategoryBtn(scope, {
                                     PanelId = panelId,
 
@@ -95,7 +95,7 @@ return function (plr: Player)
                         end),
 
                         [Children] = {
-                            Fusion.ForValues(scope, self.PanelList, function(_, scope: Fusion.Scope<any>, panelId: string)
+                            Fusion.ForValues(scope, self.PanelList, function(_, scope: Fusion.Scope, panelId: string)
                                 return Components.Frame(scope, {
                                     Name = panelId,
 
@@ -106,13 +106,13 @@ return function (plr: Player)
                                             CellSize = UDim2.fromScale(0.2, 0.4)
                                         }),
 
-                                        Fusion.ForPairs(scope, AssetBook.GamepassIds[panelId], function(_, scope: Fusion.Scope<any>, gamepass: string, gamepassId: number)
+                                        Fusion.ForPairs(scope, AssetBook.GamepassIds[panelId], function(_, scope: Fusion.Scope, gamepass: string, gamepassId: number)
                                             return gamepass, DevProductSlot(scope, {
                                                 Type = "Gamepass",
                                                 AssetId = gamepassId
                                             })
                                         end),
-                                        Fusion.ForPairs(scope, AssetBook.DevProductIds[panelId], function(_, scope: Fusion.Scope<any>, devProduct: string, devProductId: number)
+                                        Fusion.ForPairs(scope, AssetBook.DevProductIds[panelId], function(_, scope: Fusion.Scope, devProduct: string, devProductId: number)
                                             return devProduct, DevProductSlot(scope, {
                                                 Type = "Product",
                                                 AssetId = devProductId
@@ -155,7 +155,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Donation", "DonationLeaderboard" }, function(_, scope: Fusion.Scope<any>, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Donation", "DonationLeaderboard" }, function(_, scope: Fusion.Scope, index: number, category: string)
                             return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -188,7 +188,7 @@ return function (plr: Player)
                     [Children] = {
                         Components.PaddingFrame(scope, "AAA"),
 
-                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope<any>, index: number, val: NumberValue)
+                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: NumberValue)
                             return index, DonationRankSlot(scope, {
                                 Index = val:GetAttribute("Order"),
                                 Value = val.Value,

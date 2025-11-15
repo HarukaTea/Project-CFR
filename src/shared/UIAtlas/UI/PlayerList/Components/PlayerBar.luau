@@ -14,7 +14,7 @@ local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 local Children = Fusion.Children
 
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     Player: Player,
 
     PlayerSelecting: Fusion.Value<Player?>,
@@ -191,7 +191,7 @@ return function (scope: Fusion.Scope<any>, props: {
                             }),
 
 
-                            Fusion.ForPairs(scope, thatRoles, function(_, scope: Fusion.Scope<any>, index: number, role: BoolValue)
+                            Fusion.ForPairs(scope, thatRoles, function(_, scope: Fusion.Scope, index: number, role: BoolValue)
                                 local ICONS = {
                                     Premium = "rbxassetid://102910527174929",
                                     Tester = "rbxassetid://96080257571120",

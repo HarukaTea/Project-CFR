@@ -31,7 +31,7 @@ return function (plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
 
     Pinia(self)
@@ -93,7 +93,7 @@ return function (plr: Player)
                                 Components.PaddingFrame(scope, "ZZZ"),
 
 
-                                Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope<any>, index: number, _)
+                                Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
                                         Index = index,
                                         AbyssIndexSelected = self.AbyssIndexSelected,
@@ -150,7 +150,6 @@ return function (plr: Player)
                             Size = UDim2.fromScale(0.5, 0.67),
 
                             [Children] = {
-                                --// FIXME: remember to switch Fusion.Computed when using scrolling in the future
                                 Components.UIGridLayout(scope, {
                                     FillDirection = Enum.FillDirection.Horizontal,
                                     VerticalAlignment = Enum.VerticalAlignment.Bottom,
@@ -161,7 +160,7 @@ return function (plr: Player)
                                 }),
 
 
-                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope<any>, mobId: string, mobInfo: {
+                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: {
                                     Level: number,
                                     EnvironmentBonus: number
                                 })
@@ -213,7 +212,7 @@ return function (plr: Player)
                                 end)
                                 Bindables.CreateNotify:Fire("Teleporting to Abyss...")
 
-                                Events.RequestToChallengeAbyss.Fire({
+                                Events.StartAbyss_C.Fire({
                                     AbyssId = Fusion.peek(self.AbyssIndexSelected)
                                 })
                             end

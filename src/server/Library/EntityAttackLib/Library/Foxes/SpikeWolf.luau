@@ -79,7 +79,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
     local function _wolfBite(target: Model)
 
-        Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+        Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
             Entity = entity,
             AnimId = "WolfBite"
         })
@@ -90,7 +90,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         projectilePos = HarukaLib:CFLookAt(projectilePos, entity.PrimaryPart.Position)
 
 
-        Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+        Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "WolfMove4",
             ProjectileCF = projectilePos,

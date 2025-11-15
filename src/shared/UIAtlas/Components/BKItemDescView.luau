@@ -16,7 +16,7 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
-return function (scope: Fusion.Scope<any>, props: {
+return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemUniqueId: string,
     EquippingItems: Fusion.Value<{ StringValue }>,
@@ -86,7 +86,8 @@ return function (scope: Fusion.Scope<any>, props: {
             BackgroundTransparency = 0,
 
             [Fusion.OnEvent("MouseButton1Click")] = function()
-                Events.RequestToFavItem.Fire({
+                Events.FavOrLockItem_C.Fire({
+                    ActionId = "Fav",
                     ItemSymbol = itemSymbol
                 })
             end,
@@ -132,7 +133,8 @@ return function (scope: Fusion.Scope<any>, props: {
             BackgroundTransparency = 0,
 
             [Fusion.OnEvent("MouseButton1Click")] = function()
-                Events.RequestToLockItem.Fire({
+                Events.FavOrLockItem_C.Fire({
+                    ActionId = "Lock",
                     ItemSymbol = itemSymbol
                 })
             end,
@@ -184,7 +186,7 @@ return function (scope: Fusion.Scope<any>, props: {
 
 
 
-    local function ItemEffectShowcase(scope: Fusion.Scope<any>, properties: {
+    local function ItemEffectShowcase(scope: Fusion.Scope, properties: {
         Attr: string,
         Val: any
     })
@@ -230,23 +232,23 @@ return function (scope: Fusion.Scope<any>, props: {
                         end
                     end),
                     ImageColor3 = Fusion.Computed(scope, function()
-                        if attr == "ForClass" then
+                        if string.find(attr, "ForClass") then
                             local classInfo = ClassBook[val]
                             if classInfo == nil then
                                 return Color3.new(1, 1, 1)
                             end
 
                             return classInfo.Color
-
-                        elseif string.find(attr, "Can") then
+                        end
+                        if string.find(attr, "Can") then
                             return AssetBook.ItemEffectIconColors[attr] or Color3.new(1, 1, 1)
-
-                        elseif string.find(attr, "Ex") or string.find(attr, "ExPower") then
+                        end
+                        if string.find(attr, "Ex") or string.find(attr, "ExPower") then
                             local exPos = string.find(attr, "Ex")
                             return AssetBook.ItemEffectIconColors[string.sub(attr, 1, exPos - 1)] or Color3.new(1, 1, 1)
-                        else
-                            return Color3.new(1, 1, 1)
                         end
+
+                        return Color3.new(1, 1, 1)
                     end),
                 }),
                 Components.TextLabel(scope, {
@@ -463,7 +465,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                         VerticalAlignment = Enum.VerticalAlignment.Center,
                                     }),
 
-                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope<any>, _)
+                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
                                         return StarTierSymbol(scope, {})
                                     end)
                                 }
@@ -481,13 +483,13 @@ return function (scope: Fusion.Scope<any>, props: {
 
                     ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichTextify(info.Stat)),
 
-                    Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope<any>, attr: string, val: any)
+                    Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
                             Attr = attr,
                             Val = val
                         })
                     end),
-                    Fusion.ForPairs(scope, itemStatExtra, function(_, scope: Fusion.Scope<any>, attr: string, val: any)
+                    Fusion.ForPairs(scope, itemStatExtra, function(_, scope: Fusion.Scope, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
                             Attr = attr,
                             Val = val
@@ -553,7 +555,7 @@ return function (scope: Fusion.Scope<any>, props: {
                                 VerticalAlignment = Enum.VerticalAlignment.Center,
                             }),
 
-                            Fusion.ForPairs(scope, info.TagsDesync, function(_, scope: Fusion.Scope<any>, index: number, tag: string)
+                            Fusion.ForPairs(scope, info.TagsDesync, function(_, scope: Fusion.Scope, index: number, tag: string)
                                 return index, Components.TextLabel(scope, {
                                     Name = "Tag",
                                     LayoutOrder = index,

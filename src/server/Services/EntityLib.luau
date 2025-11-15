@@ -235,7 +235,7 @@ enemyDiedSignal:Connect(function(uniqueId: string)
         end
     end):catch(function() end)
 end)
-Events.RequestToStartCombat.SetCallback(function(plr: Player, data)
+Events.StartCombat_C.SetCallback(function(plr: Player, data)
     local entity = data.Entity
     local combatMode = data.CombatMode
     if not combatMode then return end
@@ -747,8 +747,9 @@ function EntityLib:_RoamTask()
 
                     local lastNearestChar = self.NearestChar
                     if lastNearestChar == nil then
-                        Events.ApplyFoundStatusToEnemy.FireList(ServerLib.GetNearbyPlayers(curPos), {
-                            Enemy = entity
+                        Events.PlayVFXStatusToEntity_S.FireList(ServerLib.GetNearbyPlayers(curPos), {
+                            StatusId = "Found",
+                            Entity = entity
                         })
 
                         ServerLib.PlayWorldSound(SoundService.SFXs.Found, curPos)
@@ -1137,11 +1138,11 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end
 
         if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
-            Events.CreateNotify.FireList(players, "Combat Timeout!")
+            Events.CreateNotify_S.FireList(players, "Combat Timeout!")
 
             warn("Combat Timeout, unknown reason unconfirmed")
         else
-            Events.CreateNotify.FireList(players, "An error occurred during combat! We're sorry!")
+            Events.CreateNotify_S.FireList(players, "An error occurred during combat! We're sorry!")
 
             warn(tostring(err))
         end
@@ -1254,6 +1255,11 @@ function EntityLib:_CombatEnd()
     end
 
 
+    local abyssId = workspace:GetAttribute("AbyssId")
+    local dungeonId = workspace:GetAttribute("DungeonId")
+    local isSPWorldType = abyssId ~= nil or dungeonId ~= nil
+
+
     --// give loots
     Promise.new(function(resolve)
         --// check if entity is dead, if no, then means player failed
@@ -1297,7 +1303,7 @@ function EntityLib:_CombatEnd()
             --- give loots and badges, combat won!
             local success, err = pcall(function()
                 if not foundTeamUpEnemies and isEnemyDeadCheck then
-                    if workspace:GetAttribute("DungeonId") or workspace:GetAttribute("AbyssId") then
+                    if isSPWorldType then
                         self.Locator:SetAttribute("NoRespawn", true)
                     end
 
@@ -1309,7 +1315,7 @@ function EntityLib:_CombatEnd()
                     for _, diedEntitySymbol in entity.TeamUpEnemies:GetChildren() do
                         local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
 
-                        if workspace:GetAttribute("DungeonId") or workspace:GetAttribute("AbyssId") then
+                        if isSPWorldType then
                             diedEntitySymbol.Value:SetAttribute("NoRespawn", true)
                         end
 
@@ -1348,7 +1354,7 @@ function EntityLib:_CombatEnd()
                         ServerLib.GiveEXPRewards(plr, math.floor(totalEXP))
 
                         HarukaLib:AddAttr(plr, "Gold", math.floor(totalGold))
-                        ServerLib.ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
+                        ServerLib.ShowText_S(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
 
                         HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
                     end

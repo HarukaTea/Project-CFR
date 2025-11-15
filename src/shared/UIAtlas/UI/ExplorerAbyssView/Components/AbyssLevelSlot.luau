@@ -11,7 +11,7 @@ local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     Index: number,
     AbyssIndexSelected: Fusion.Value<number>,
     IsInfoUI: boolean

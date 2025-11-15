@@ -23,7 +23,7 @@ local wait = task.wait
 SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
 
 
-    Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeBlast"
     })
@@ -31,7 +31,7 @@ SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = entity.Name.."Move1_1",
         ProjectileCF = CFrame.new(projectilePos),
@@ -66,7 +66,7 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
                 local projectileUniqueId = HttpService:GenerateGUID(false)..child.Name
                 local projectilePos = child.CFrame
 
-                Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+                Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
                     ProjectileUniqueId = projectileUniqueId,
                     ProjectileId = entity.Name.."Move2_2",
                     ProjectileCF = projectilePos,
@@ -105,7 +105,7 @@ end
 SlimeUniversal.SlimeBarrageShot = function(entity: Model)
 
 
-    Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeBlast"
     })
@@ -116,7 +116,7 @@ SlimeUniversal.SlimeBarrageShot = function(entity: Model)
         math.random(-32, 32)
     ))
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = entity.Name.."Move1_1",
         ProjectileCF = CFrame.new(projectilePos),
@@ -128,18 +128,18 @@ end
 
 
 SlimeUniversal.SlimeSpin = function(entity: Model)
-
-
     wait(0.35)
-    Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeSpin"
     })
-    Events.SpawnUniATKs.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         ProjectileUniqueId = HttpService:GenerateGUID(false),
         ProjectileId = "SlimeSpin",
         ProjectileCF = entity.PrimaryPart.CFrame,
-        ProjectileOwner = entity
+        ProjectileOwner = entity,
+
+        IsUniATK = true
     })
 end
 
@@ -154,19 +154,21 @@ SlimeUniversal.SlimeBomb = function(entity: Model)
     ))
 
 
-    Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeSpin"
     })
-    Events.SpawnUniATKs.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         ProjectileUniqueId = HttpService:GenerateGUID(false),
         ProjectileId = "SlimeSpin",
         ProjectileCF = entity.PrimaryPart.CFrame,
-        ProjectileOwner = entity
+        ProjectileOwner = entity,
+
+        IsUniATK = true
     })
 
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = entity.Name.."Move4",
         ProjectileCF = CFrame.new(projectilePos),
@@ -187,7 +189,7 @@ SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
     local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
 
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = entity.Name.."Move3",
         ProjectileCF = realProjectilePos,
@@ -201,12 +203,6 @@ SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
     immuneTag.Name = "AttackImmune"
     immuneTag.Parent = entity
     Debris:AddItem(immuneTag, 1.5)
-
-
-    Events.ApplyHighlightForEntity.FireList(UniversalEntity:GetTargets(entity), {
-        Entity = entity,
-        Duration = 4
-    })
 
 
     local diveDown = realProjectilePos * CFrame.new(0, -8, 0)
@@ -230,7 +226,7 @@ SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
     local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
 
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = entity.Name.."Move3",
         ProjectileCF = realProjectilePos,

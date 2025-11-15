@@ -11,7 +11,7 @@ local Children = Fusion.Children
 
 local plr = Players.LocalPlayer
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
     Type: string,
     AssetId: number
 })

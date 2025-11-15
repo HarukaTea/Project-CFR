@@ -19,7 +19,7 @@ return function (plr: Player)
 	self.plr = plr
 	self.scope = Fusion.scoped()
 
-	local scope = self.scope :: Fusion.Scope<any>
+	local scope = self.scope :: Fusion.Scope
 
 
 	self.cirularFadeQueue = HarukaLib.Queue()
@@ -69,7 +69,7 @@ return function (plr: Player)
 
 		_onCircularFadeAdded()
 	end
-    table.insert(scope, Events.CreateCircularFade.On(_createCircularFade))
+    table.insert(scope, Events.CreateCircularFade_S.On(_createCircularFade))
 	table.insert(scope, Bindables.CreateCircularFade:Connect(_createCircularFade))
 	table.insert(scope, self.cirularFadeQueue.ElementAdded:Connect(_onCircularFadeAdded))
 end

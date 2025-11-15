@@ -53,7 +53,7 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
 }))
 
 
-Add(Events.SetSkyGalleon.On(function(data)
+Add(Events.SetSkyGalleonOwner_S.On(function(data)
     currentGalleon = data.Galleon
 end))
 
@@ -88,7 +88,7 @@ Add(RunService.Heartbeat:Connect(function()
     end
 
 
-    Events.RequestToSetSkyGalleonPos.Fire({
+    Events.DriveSkyGalleon_C.Fire({
         Galleon = currentGalleon,
         PosX = newPosition.X,
         PosZ = newPosition.Z,

@@ -11,7 +11,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 export type Self = {
     plr: Player,
     char: Model,
-    scope: Fusion.Scope<any>,
+    scope: Fusion.Scope,
 
     IsUIShown2: Fusion.Value<boolean>,
     Enemies: Fusion.Value<{ Instance }>,
@@ -26,7 +26,7 @@ return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
-    local scope = self.scope :: Fusion.Scope<any>
+    local scope = self.scope :: Fusion.Scope
 
     self.Enemies = FusionComponents.useTagged(scope, "EnemyEntity_Combat")
     self.EnemiesOverworld = FusionComponents.useTagged(scope, "EnemyEntity")

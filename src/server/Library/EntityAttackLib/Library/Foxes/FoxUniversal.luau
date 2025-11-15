@@ -23,7 +23,7 @@ local FoxUniversal = {}
 FoxUniversal.SpikeShot = function(entity: Model, target: Model)
     local entity, target = entity, target
 
-    Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SpikeShot"
     })
@@ -35,7 +35,7 @@ FoxUniversal.SpikeShot = function(entity: Model, target: Model)
 
     local r = math.random(1, 2)
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = "FoxMove"..r,
         ProjectileCF = projectilePos,
@@ -49,7 +49,7 @@ end
 FoxUniversal.SpikeRain = function(entity: Model, target: Model)
 
 
-    Events.PlayAnimForEnemy.FireList(UniversalEntity:GetNearbyPlayers(entity), {
+    Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SpikeRain"
     })
@@ -58,7 +58,7 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
 
-    Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+    Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = "FoxMove3",
         ProjectileCF = CFrame.new(projectilePos),
@@ -79,7 +79,7 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
             end
             local post = ServerLib.FindGroundByRay(projectilePos + random)
 
-            Events.SpawnATKs.FireList(UniversalEntity:GetTargets(entity), {
+            Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
                 ProjectileUniqueId = projectileUniqueId,
                 ProjectileId = "FoxSpike2",
                 ProjectileCF = CFrame.new(post),

@@ -11,7 +11,7 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Children = Fusion.Children
 
 
-return function(scope: Fusion.Scope<any>, props: {
+return function(scope: Fusion.Scope, props: {
 	BarVal: Fusion.Value<number>,
 	LayoutOrder: number,
 	OptionInfo: {
@@ -59,7 +59,7 @@ return function(scope: Fusion.Scope<any>, props: {
 			barVal:set(val)
 			props.OptionInfo.ValChanged:Fire(val)
 
-			Events.RequestToSaveSettings.Fire({
+			Events.SaveSettings_C.Fire({
 				SettingId = props.OptionId,
 				SettingValue = val
 			})

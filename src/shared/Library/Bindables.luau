@@ -19,7 +19,7 @@ return {
     PlayerChatted = Signal.new(),
 
     --@params: `(anim: string)`
-    PlayAnimation = Signal.new(),
+    PlayAnimation_S = Signal.new(),
 
     --@params: `(anim: string)`
     PlayRawAnimation = Signal.new(),
@@ -34,10 +34,10 @@ return {
     PlaySound = Signal.new(),
 
     --@params: `(part: BasePart)`
-    PlayCameraCutscene = Signal.new(),
+    UpdateCameraPart = Signal.new(),
 
     --@params: `(cframe: CFrame)`
-    UpdateCameraCFrame = Signal.new(),
+    UpdateCameraCF = Signal.new(),
 
     --@params: `(msg: string)`
     CreateNotify = Signal.new(),

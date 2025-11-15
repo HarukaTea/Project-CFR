@@ -200,7 +200,8 @@ do
     if shouldSkipTitlescreen then
         local Events = require(RepS.HarukaShared.Library.Events)
 
-        Events.RequestToChooseWhichSlotToPlay.Fire({
+        Events.Titlescreen_SlotActions_C.Fire({
+            ActionId = "Play",
             SlotId = forceSlotChosen
         })
     else

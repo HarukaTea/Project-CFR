@@ -33,8 +33,6 @@ local function doCleanup(
 	alreadyDestroying[task] = true
 
 	if typeof(task) == "table" then
-		local task = (task :: any) :: {Destroy: (...unknown) -> (...unknown)?, destroy: (...unknown) -> (...unknown)?}
-
 		if task[1] ~= nil then
 			-- It is important to iterate backwards through the table, since
 			-- objects are added in order of construction.

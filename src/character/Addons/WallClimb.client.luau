@@ -145,7 +145,8 @@ function WallClimb:Init()
     climbingAnim:AdjustSpeed(0.4)
 
 
-    Events.RequestToEnterClimbingState.Fire({
+    Events.SetServerCharAttr_C.Fire({
+        AttrId = "IsClimbing",
         State = true
     })
 end
@@ -200,7 +201,8 @@ function WallClimb:Stop()
     climbingAnim:Stop()
 
 
-    Events.RequestToEnterClimbingState.Fire({
+    Events.SetServerCharAttr_C.Fire({
+        AttrId = "IsClimbing",
         State = false
     })
 end

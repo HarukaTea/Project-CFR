@@ -17,7 +17,7 @@ return function (plr: Player)
 	self.scope = Fusion.scoped()
 
 
-	local scope = self.scope :: Fusion.Scope<any>
+	local scope = self.scope :: Fusion.Scope
 
 
 	self.ConfirmPromptsQueue = HarukaLib.Queue()

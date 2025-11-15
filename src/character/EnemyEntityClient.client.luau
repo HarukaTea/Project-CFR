@@ -96,7 +96,9 @@ local wait = task.wait
 local allEntityPool = {}
 
 
-Add(Events.ApplyFoundStatusToEnemy.On(function(data)
+Add(Events.PlayVFXStatusToEntity_S.On(function(data)
+    if data.StatusId ~= "Found" then return end
+
     local entity = data.Enemy
     if not ClientLib.IsCharValid(entity) then return end
 
@@ -132,7 +134,7 @@ Add(Events.ApplyFoundStatusToEnemy.On(function(data)
         OutlineTransparency = 1
     }):Play()
 end))
-Add(Events.PlayAnimForEnemy.On(function(data)
+Add(Events.PlayEnemyAnim_S.On(function(data)
     if not ClientLib.IsCharValid(data.Entity) then return end
 
 
@@ -144,18 +146,6 @@ Add(Events.PlayAnimForEnemy.On(function(data)
             break
         end
     end
-end))
-Add(Events.ApplyHighlightForEntity.On(function(data)
-    if not ClientLib.IsModelValid(data.Entity) then return end
-
-    local highlight = Instance.new("Highlight")
-    highlight.Parent = data.Entity
-    Debris:AddItem(highlight, data.Duration)
-
-    HarukaLib:CreateTween(highlight, TweenInfo.new(data.Duration), {
-        FillTransparency = 1,
-        OutlineTransparency = 1
-    }):Play()
 end))
 Add(HarukaLib.Clock(1, function()
     local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
@@ -209,7 +199,7 @@ Add(HarukaLib.Clock(0.5, function()
     end
 
     if nearestDist > 0 and nearestDist < 20 then
-        Events.RequestToStartCombat.Fire({
+        Events.StartCombat_C.Fire({
             Entity = nearestEnemy,
             CombatMode = workspace:GetAttribute("CombatMode")
         })

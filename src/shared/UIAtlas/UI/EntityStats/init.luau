@@ -45,7 +45,7 @@ return function (plr: Player)
                 Name = "EnemyEntity_HPBars",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, self.Enemies, function(_, scope: Fusion.Scope<any>, index: number, enemy: Model)
+                    Fusion.ForPairs(scope, self.Enemies, function(_, scope: Fusion.Scope, index: number, enemy: Model)
                         return index, EnemyHPBar(scope, {
                             Enemy = enemy,
                         })
@@ -56,7 +56,7 @@ return function (plr: Player)
                 Name = "EnemyEntity_InfoBars",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, self.EnemiesOverworld, function(_, scope: Fusion.Scope<any>, index: number, enemy: Model)
+                    Fusion.ForPairs(scope, self.EnemiesOverworld, function(_, scope: Fusion.Scope, index: number, enemy: Model)
                         return index, EnemyInfoBar(scope, {
                             Enemy = enemy,
                         })
@@ -111,7 +111,7 @@ return function (plr: Player)
                                     VerticalAlignment = Enum.VerticalAlignment.Center
                                 }),
 
-                                Fusion.ForValues(scope, self.TargetingList, function(_, scope: Fusion.Scope<any>, targeting: ObjectValue)
+                                Fusion.ForValues(scope, self.TargetingList, function(_, scope: Fusion.Scope, targeting: ObjectValue)
                                     return PlayerTargetingBar(scope, {
                                         Targeting = targeting,
                                         TargetingEnemy = self.TargetingEnemy,

@@ -7,7 +7,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-local ProfileStore = require(ServerScriptService.HarukaServer.Shared.ProfileStore_Haruka)
+local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
 local PlayerLib = require(ServerScriptService.HarukaServer.Services.PlayerLib)
 
@@ -25,7 +25,7 @@ local wait = task.wait
 local productFunctions = {}
 
 for _, productId in AssetBook.DevProductIds do
-    productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: ProfileStore.Profile<PlayerTemplate.JSON>)
+    productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>)
         local productInfo = MarketplaceService:GetProductInfo(receipt.ProductId, Enum.InfoType.Product)
         assert(productInfo)
 
@@ -35,7 +35,7 @@ for _, productId in AssetBook.DevProductIds do
             PurchasedPrice = productInfo.PriceInRobux,
         })
 
-        profile:Save()
+        profile:SaveProfileAsync()
         PlayerProfileLib.CalDonationAndSave(profile, player)
     end
 end
@@ -54,17 +54,16 @@ local function processReceipt(receiptInfo: {[string]: any})
             local playerObj = PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
             if playerObj then
                 local profile = playerObj.ProfileObj.Profile
-
-                if profile and profile:IsActive() then
+                if profile then
                     local handler = productFunctions[tostring(productId)]
                     local success, result = pcall(handler, receiptInfo, player, profile)
 
                     if success then
-                        Events.CreateNotify.Fire(player, "You have successfully purchased the product!")
+                        Events.CreateNotify_S.Fire(player, "You have successfully purchased the product!")
                         return Enum.ProductPurchaseDecision.PurchaseGranted
                     else
-                        Events.CreateNotify.Fire(player, "Failed to process receipt!")
-                        Events.CreateNotify.Fire(player, "But you didnt lose your Robux!")
+                        Events.CreateNotify_S.Fire(player, "Failed to process receipt!")
+                        Events.CreateNotify_S.Fire(player, "But you didnt lose your Robux!")
                         warn(`Failed to process receipt: `, receiptInfo, result)
                     end
                 end
@@ -112,11 +111,12 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
         }
     end)
 
-    profile:Save()
+
+    Events.CreateNotify_S.Fire(player, "You have successfully purchased the gamepass!")
+
+
+    profile:SaveProfileAsync()
     PlayerProfileLib.CalDonationAndSave(profile, player)
-
-
-    Events.CreateNotify.Fire(player, "You have successfully purchased the gamepass!")
 end)
 
 
