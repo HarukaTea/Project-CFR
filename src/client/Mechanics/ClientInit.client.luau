@@ -43,7 +43,7 @@ HarukaLib:Hydrate(workspace, {
 
 function ClientWorldLib:Init()
     for _, func: () -> nil in ClientWorldLib.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 
@@ -604,9 +604,7 @@ table.insert(ClientWorldLib.Funcs, function()
             until timeout <= 0 or plr:DistanceFromCharacter(itemSphere.Position) <= 10 or itemSphere:GetAttribute("AutoPickup")
 
 
-            Events.PickupItemDrops_C.Fire({
-                ItemUniqueId = itemSphere:GetAttribute("HarukaUniqueId") or "nil"
-            })
+            Events.PickupItemDrops_C.Fire(itemSphere:GetAttribute("HarukaUniqueId") or "/")
 
             itemSphere.A0:Destroy()
             itemSphere.A1:Destroy()

@@ -116,10 +116,7 @@ Events.PartyInviteResult_S.On(function(data)
     local char = plr.Character
 
     if option == "Invite" then
-        if not char then return end
-        if not char.PrimaryPart then return end
-        if not char:FindFirstChild("PartyInviteTicket") then return end
-        if char.PartyInviteTicket.Value ~= Players[inviter].Character then return end
+        if not ClientLib.IsCharValid(char) then return end
         if plr.PlayerGui:FindFirstChild("ConfirmPrompt") then return end
 
 
@@ -131,7 +128,7 @@ Events.PartyInviteResult_S.On(function(data)
         }):Wait()
         if choice == "YES" then
             Events.PartyInvite_C.Fire({ Option = "InviteAccept", PlayerName = inviter })
-        else
+        elseif choice == "NO" then
             Events.PartyInvite_C.Fire({ Option = "InviteDecline", PlayerName = inviter })
         end
     end

@@ -23,7 +23,7 @@ GlobalQuestFuncLib.Funcs = {}
 
 function GlobalQuestFuncLib:Init()
     for _, func: () -> nil in GlobalQuestFuncLib.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 

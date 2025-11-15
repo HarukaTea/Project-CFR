@@ -9,6 +9,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
 
+local Pinia = require(script.Parent.Parent.Pinia)
+
+
 local Children = Fusion.Children
 
 
@@ -20,7 +23,7 @@ return function(scope: Fusion.Scope, props: {
 
     TargetingEnemy: Fusion.Value<ObjectValue>,
     TargetArrowPos: Fusion.Value<UDim2>
-})
+}, self: Pinia.Self) : Frame
     if not ClientLib.IsCharValid(props.Targeting.Value) then return nil end
 
     local targeting = props.Targeting.Value :: Model
@@ -57,7 +60,7 @@ return function(scope: Fusion.Scope, props: {
 
                 Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local sizeCon = use(absContentSize).X
-                    sizeCon = math.clamp(sizeCon, 28, 999)
+                    sizeCon = math.clamp(sizeCon, 36, 999)
 
                     return UDim2.new(1.05, sizeCon * -1, 0, 0)
                 end)
@@ -72,7 +75,7 @@ return function(scope: Fusion.Scope, props: {
 
                 Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local sizeCon = use(absContentSize).X
-                    sizeCon = math.clamp(sizeCon, 28, 999)
+                    sizeCon = math.clamp(sizeCon, 36, 999)
 
                     return UDim2.new(0.05, sizeCon, 1, 0)
                 end),
@@ -96,7 +99,9 @@ return function(scope: Fusion.Scope, props: {
                         end),
 
                         [Children] = {
-                            Components.ScaledTextUIStroke(scope, {})
+                            Components.ScaledTextUIStroke(scope, {
+                                Thickness = 0.059
+                            })
                         }
                     })
                 }
@@ -120,14 +125,15 @@ return function(scope: Fusion.Scope, props: {
                     Components.HoverImageButton(scope, {
                         Name = "Icon",
                         SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                        BackgroundTransparency = 0,
+                        BackgroundColor3 = Color3.fromRGB(),
                         Size = UDim2.fromScale(1.2, 1.2),
                         LayoutOrder = 3,
 
                         Image = EntityBook[targeting.Name].Icon,
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
-                            --// TODO: switch enemy target
-
+                            self.SwitchTargetFunc()
                         end,
 
                         [Children] = {

@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local Children = Fusion.Children
 
@@ -53,7 +54,7 @@ return function (scope: Fusion.Scope, props: {
                             Padding = UDim.new(0.5, 0)
                         }),
 
-                        Fusion.ForPairs(scope, { "Play" }, function(_, scope: Fusion.Scope, index: number, panelId: string)
+                        Fusion.ForPairs(scope, { "Play", "Tutorial" }, function(_, scope: Fusion.Scope, index: number, panelId: string)
                             local isSelecting = Fusion.Value(scope, false)
 
                             return index, Components.Frame(scope, {
@@ -104,7 +105,17 @@ return function (scope: Fusion.Scope, props: {
                                             if panelId == "Play" then
                                                 props.SlotUISignal:Fire()
 
-                                                --- elseif panelId == "Tutorial" then
+                                            elseif panelId == "Tutorial" then
+                                                local result = Components:CreateConfirmPrompt(scope, {
+                                                    CancelText = "No",
+                                                    ConfirmText = "Yes",
+                                                    Hint = "Play the tutorial?",
+                                                    ConfirmUniqueId = "TutorialConfirm"
+                                                }):Wait()
+
+                                                if result == "YES" then
+                                                    Events.Titlescreen_PlayTutorial_C.Fire()
+                                                end
                                             end
                                         end,
                                     })

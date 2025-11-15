@@ -234,7 +234,9 @@ return function (plr: Player)
                                     BKItemFilterView(scope, {
                                         FilterTierList = self.FilterTierList,
                                         FilterItemText = self.FilterItemText,
-                                        SortMethodList = self.SortMethodList
+                                        SortMethodList = self.SortMethodList,
+
+                                        UIOpenState = self.FilterViewShown
                                     })
                                 }
                             })
@@ -311,9 +313,7 @@ return function (plr: Player)
                                             }):Wait()
 
                                             if result and result == "YES" then
-                                                Events.SellAllItems_C.Fire({
-                                                    ItemId = Fusion.peek(self.CurrentSelectedItem)
-                                                })
+                                                Events.SellAllItems_C.Fire(Fusion.peek(self.CurrentSelectedItem))
                                             end
                                         end
                                     })

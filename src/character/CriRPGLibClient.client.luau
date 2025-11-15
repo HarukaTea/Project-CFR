@@ -90,7 +90,7 @@ end
 
 function CriRPGLib:Init()
     for _, func: () -> nil in CriRPGLib.Funcs do
-        task.spawn(func)
+        func()
     end
 
 
@@ -428,9 +428,7 @@ table.insert(CriRPGLib.Funcs, function()
             end)
             pcall(_fadeOrb, orb)
 
-            Events.DMGEnemy_C.Fire({
-                OrbUniqueId = orbUniqueId or "nil",
-            })
+            Events.DMGEnemy_C.Fire(orbUniqueId or "/")
 
             local SFXId = orb:GetAttribute("SFXId") :: string
             local SFX: Sound = if SFXId then SoundService.SFXs:FindFirstChild(SFXId) else SoundService.SFXs.OrbHit

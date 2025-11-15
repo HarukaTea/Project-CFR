@@ -116,7 +116,7 @@ return function (plr: Player)
                                         Targeting = targeting,
                                         TargetingEnemy = self.TargetingEnemy,
                                         TargetArrowPos = self.TargetArrowPos
-                                    })
+                                    }, self)
                                 end),
                             }
                         }),

@@ -406,9 +406,7 @@ return function (self: Self)
                 return
             end
 
-            Events.CastItem_C_Request.Fire({
-                SlotId = slotIdStr
-            })
+            Events.CastItem_C_Request.Fire(slotIdStr)
         else
             _normalCancelCD(info)
         end

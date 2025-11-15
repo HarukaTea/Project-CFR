@@ -578,7 +578,7 @@ function EntityLib:_ListenStatsTracker()
 
         entity.Humanoid.MaxHealth = math.ceil(finalHealth * healthExBuff + healthBuff)
 
-        if DateTime.now().UnixTimestamp - entity:GetAttribute("CombatStartClock") <= 5 then
+        if DateTime.now().UnixTimestamp - entity:GetAttribute("CombatStartClock") <= 2 then
             entity.Humanoid.Health = entity.Humanoid.MaxHealth
         end
         if entity.Humanoid.Health > entity.Humanoid.MaxHealth then

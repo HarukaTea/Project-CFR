@@ -132,7 +132,9 @@ return function (plr: Player)
                                     BKItemFilterView(scope, {
                                         FilterTierList = self.FilterTierList,
                                         FilterItemText = self.FilterItemText,
-                                        SortMethodList = self.SortMethodList
+                                        SortMethodList = self.SortMethodList,
+
+                                        UIOpenState = self.FilterViewShown
                                     })
                                 }
                             })

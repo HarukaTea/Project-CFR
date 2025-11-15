@@ -101,7 +101,7 @@ return function (scope: Fusion.Scope, props: {
                     Components.Frame(scope, {
                         Name = "EffectList",
                         AnchorPoint = Vector2.new(0, 0),
-                        Position = UDim2.fromScale(0, 1.1),
+                        Position = UDim2.fromScale(0, 1.7),
                         Size = UDim2.fromScale(0.875, 0.7),
 
                         [Children] = {
@@ -255,6 +255,90 @@ return function (scope: Fusion.Scope, props: {
                             })
                         }
                     }),
+
+
+                    Components.Frame(scope, {
+                        Name = "BreakBar",
+                        AnchorPoint = Vector2.zero,
+                        Position = UDim2.fromScale(0, 1.3),
+                        Size = UDim2.fromScale(1, 0.2),
+                        BackgroundTransparency = 0,
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+
+                            Components.Frame(scope, {
+                                Name = "Bar",
+                                AnchorPoint = Vector2.zero,
+                                BackgroundTransparency = 0,
+                                Position = UDim2.fromScale(0, 0),
+                                ZIndex = 2,
+
+                                Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local breakState, maxBreakState = use(breakProgress) :: number, use(totalBreakProgress) :: number
+
+                                    local x = (maxBreakState - breakState) / maxBreakState
+                                    if x ~= x then x = 0 end
+
+                                    x = math.clamp(x, 0, 1)
+
+                                    return UDim2.fromScale(x, 1)
+
+                                end), AssetBook.TweenInfos.half),
+                                BackgroundColor3 = Color3.fromRGB(253, 203, 110),
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope)
+                                }
+                            }),
+                            Components.Frame(scope, {
+                                Name = "BarFade",
+                                AnchorPoint = Vector2.zero,
+                                BackgroundTransparency = 0,
+                                Position = UDim2.fromScale(0, 0),
+
+                                Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local breakState, maxBreakState = use(breakProgress) :: number, use(totalBreakProgress) :: number
+
+                                    local x = (maxBreakState - breakState) / maxBreakState
+                                    if x ~= x then x = 0 end
+
+                                    x = math.clamp(x, 0, 1)
+
+                                    return UDim2.fromScale(x, 1)
+
+                                end), AssetBook.TweenInfos.one),
+                                BackgroundColor3 = Color3.fromRGB(253, 203, 110):Lerp(Color3.new(), 0.5),
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope)
+                                }
+                            }),
+
+                            Components.TextLabel(scope, {
+                                Name = "Title",
+                                AnchorPoint = Vector2.new(0.5, 0.5),
+                                Position = UDim2.fromScale(0.5, 0.5),
+                                AutomaticSize = Enum.AutomaticSize.X,
+                                Size = UDim2.fromScale(0, 2.1),
+                                ZIndex = 3,
+                                Text = "BREAK",
+                                BackgroundTransparency = 0,
+                                BackgroundColor3 = Components.WHITE_COLOR,
+                                TextColor3 = Components.BLACK_COLOR,
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope),
+                                    Components.UIPadding(scope, {
+                                        PaddingTop = UDim.new(0, 0),
+                                        PaddingBottom = UDim.new(0, 0),
+                                        PaddingLeft = UDim.new(0, 12),
+                                        PaddingRight = UDim.new(0, 12)
+                                    })
+                                }
+                            }),
+                        }
+                    })
                 }
             })
 

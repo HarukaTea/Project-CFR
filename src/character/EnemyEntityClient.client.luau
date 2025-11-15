@@ -620,9 +620,9 @@ function EntityLib:_SpawnHighlightIndicator()
 
     local highlight = Instance.new("Highlight")
     highlight.Parent = self.Entity
-    Debris:AddItem(highlight, 5)
+    Debris:AddItem(highlight, 2)
 
-    HarukaLib:CreateTween(highlight, AssetBook.TweenInfos.six, {
+    HarukaLib:CreateTween(highlight, AssetBook.TweenInfos.two, {
         FillTransparency = 1,
         OutlineTransparency = 1
     }):Play()

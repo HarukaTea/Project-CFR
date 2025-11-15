@@ -248,11 +248,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
 
-        local data = achivementQueue:Pop()
+        local badgeId = achivementQueue:Pop()
         local newScope = Fusion.scoped()
 
         local expBar = BadgeAwarding(newScope, {
-            BadgeId = data.BadgeId,
+            BadgeId = tonumber(badgeId),
         })
         expBar.Parent = UI.Bottom.BadgeAwarding
         Debris:AddItem(expBar, 5)
@@ -275,7 +275,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         _onNewAchievementAdded()
     end
     table.insert(scope, achivementQueue.ElementAdded:Connect(_onNewAchievementAdded))
-    table.insert(scope, Events.PlayBadgeNotify_S.On(function(data)
-        achivementQueue:Push(data)
+    table.insert(scope, Events.PlayBadgeNotify_S.On(function(badgeId: string)
+        achivementQueue:Push(badgeId)
     end))
 end

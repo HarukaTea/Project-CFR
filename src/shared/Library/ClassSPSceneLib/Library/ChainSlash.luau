@@ -76,7 +76,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
                     Debris:AddItem(bool, 2)
 
 
-                    Events.RequestToDMGEnemyBySkillProjectile.Fire({
+                    Events.DMGEnemyBySkills_C.Fire({
                         ProjectileUniqueId = projectileUniqueId,
                         EnemyEntity = entity,
                     })

@@ -1,9 +1,11 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 
 local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
@@ -161,7 +163,7 @@ return function (scope: Fusion.Scope, props: {
                                     TextXAlignment = Enum.TextXAlignment.Left,
                                     AutoLocalize = false,
 
-                                    Text = [[The Initia <font color="#666666">]].."[ "..info.ServerLocation.." - "..symbol.Name.."]</font>"
+                                    Text = [[The Initia <font color="#666666">]].."[ "..info.ServerLocation..", "..info.CityLocation.." / "..string.sub(symbol.Name, 1, 8).."]</font>"
                                 }),
                                 Components.TextLabel(scope, {
                                     Name = "PlayerCount",
@@ -171,7 +173,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     Text = "Adventurers: "..symbol.Value.." / 20",
                                     TextColor3 = Fusion.Computed(scope, function()
-                                        return if symbol.Value >= 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
+                                        return if symbol.Value <= 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
                                     end)
                                 }),
 
@@ -184,8 +186,18 @@ return function (scope: Fusion.Scope, props: {
                                     TextColor3 = Components.BLACK_COLOR,
 
                                     BackgroundColor3 = Fusion.Computed(scope, function()
-                                        return if symbol.Value >= 20 then Components.GREEN_COLOR else Components.RED_COLOR
+                                        return if symbol.Value <= 20 then Components.GREEN_COLOR else Components.RED_COLOR
                                     end),
+
+
+                                    [Fusion.OnEvent("MouseButton1Click")] = function()
+                                        if game.JobId == symbol.Name then
+                                            Bindables.CreateNotify:Fire("You are already in this server!")
+                                            return
+                                        end
+
+                                        Events.ServerHop_C.Fire(symbol.Name)
+                                    end,
 
                                     [Children] = {
                                         Components.RoundUICorner(scope),

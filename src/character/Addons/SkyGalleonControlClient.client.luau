@@ -53,8 +53,8 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
 }))
 
 
-Add(Events.SetSkyGalleonOwner_S.On(function(data)
-    currentGalleon = data.Galleon
+Add(Events.SetSkyGalleonOwner_S.On(function(galleon)
+    currentGalleon = galleon
 end))
 
 

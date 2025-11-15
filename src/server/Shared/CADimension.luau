@@ -26,9 +26,11 @@ local isRemoving = false
 local isInited = false
 
 
+local MAX_TIME = 60 * 60 * 24
+
 
 export type ServerInfo = {
-    PlayerUserIds: {number},
+    PlayerUserIds: { string },
     WorldId: string,
     JobId: string,
     ServerLocation: string,
@@ -56,11 +58,10 @@ function CADimensions:Init()
 
     HarukaLib.TryUntil(function()
         liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
-            if not oldValue then
-                return { [placeIdStr] = {} }
-            end
+            oldValue = oldValue or {}
+
             return oldValue
-        end, 3888000)
+        end, MAX_TIME)
     end, 2)
 
 
@@ -68,12 +69,13 @@ function CADimensions:Init()
 		CADimensions:RemoveFromDimension()
 	end)
 
-    print("[HarukaServer] Added to CF Dimension")
+
+    print("[CADimension] Connected to CF Dimension")
 end
 
 
-function CADimensions:AddToDimension(refreshRate: number?)
-	refreshRate = refreshRate or 300
+function CADimensions:AddToDimension()
+	local refreshRate = 30
 
 	if isUploaded then return end
     if privateServerId ~= "" then return end
@@ -86,7 +88,7 @@ function CADimensions:AddToDimension(refreshRate: number?)
         HarukaLib.TryUntil(function()
             local playerIds = {}
             for _, player: Player in Players:GetPlayers() do
-                table.insert(playerIds, player.UserId)
+                table.insert(playerIds, tostring(player.UserId))
             end
 
             local serverLocation = workspace:GetAttribute("ServerLocation") or "Unknown"
@@ -102,21 +104,20 @@ function CADimensions:AddToDimension(refreshRate: number?)
             } :: ServerInfo
 
             liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
-                if _getTableSizeInKB(oldValue) >= 32 * 1024 then
-                    return nil
+                if _getTableSizeInKB(oldValue) >= 30 * 1024 then
+                    return {}
                 end
                 oldValue = oldValue or {}
 
-                if not oldValue[placeIdStr] then
-                    oldValue[placeIdStr] = {}
-                end
-
-                oldValue[placeIdStr][serverId] = dataToUpload
+                oldValue[serverId] = dataToUpload
 
                 return oldValue
-            end, 3888000)
+            end, MAX_TIME)
         end, 2)
     end, true)
+
+
+    print("[CADimension] Uploaded to CF Dimension")
 end
 
 function CADimensions:RemoveFromDimension()
@@ -129,14 +130,10 @@ function CADimensions:RemoveFromDimension()
     HarukaLib.TryUntil(function()
         liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
             oldValue = oldValue or {}
+            oldValue[serverId] = nil
 
-            if not oldValue[placeIdStr] then
-                oldValue[placeIdStr] = {}
-            end
-
-            oldValue[placeIdStr][serverId] = nil
             return oldValue
-        end, 3888000)
+        end, MAX_TIME)
 
     end, 2, function()
         isRemoving = false
@@ -145,32 +142,10 @@ function CADimensions:RemoveFromDimension()
 end
 
 
--- PlaceId defaults to game.PlaceId, whereas ExcludeSelf defaults to true
-function CADimensions:GetWorlds(excludeThisServer: boolean?, placeId: number?): {[string]: {
+function CADimensions:GetWorlds(): {
     [string]: ServerInfo
-}}
-	placeId = placeId or game.PlaceId
-	excludeThisServer = (excludeThisServer == nil and true) or excludeThisServer
-
-	local data = {}
-
-    HarukaLib.TryUntil(function()
-        liveWorldsHashMap:GetAsync(key)
-
-    end, 2, function(result)
-        result = result or {}
-
-        if not result[placeIdStr] then
-            result[placeIdStr] = {}
-        end
-        if excludeThisServer then
-            result[placeIdStr][serverId] = nil
-        end
-
-        data = result
-    end)
-
-	return data
+}
+	return liveWorldsHashMap:GetAsync(key) or {}
 end
 
 

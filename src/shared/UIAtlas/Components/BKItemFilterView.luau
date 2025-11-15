@@ -12,6 +12,8 @@ return function (scope: Fusion.Scope, props: {
     FilterTierList: { Fusion.Value<boolean> },
     FilterItemText: Fusion.Value<string>,
     SortMethodList: { Fusion.Value<boolean> },
+
+    UIOpenState: Fusion.Value<boolean>,
 })
 
 
@@ -90,7 +92,7 @@ return function (scope: Fusion.Scope, props: {
 
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
-                                        --// TODO: close BKFilterItemView
+                                        props.UIOpenState:set(false)
                                     end
                                 })
                             }
@@ -272,10 +274,10 @@ return function (scope: Fusion.Scope, props: {
                                 Size = UDim2.fromScale(0.95, 0.32),
 
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.HarukaColorLab.Muelsyse.BackgroundLighter
+                                    return if use(props.SortMethodList[index]) then Components.WHITE_COLOR else Components.HarukaColorLab.Muelsyse.BackgroundLighter
                                 end),
                                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then Components.HarukaColorLab.Muelsyse.BackgroundLighter else Components.WHITE_COLOR
+                                    return if use(props.SortMethodList[index]) then Components.HarukaColorLab.Muelsyse.BackgroundLighter else Components.WHITE_COLOR
                                 end),
 
 
@@ -384,7 +386,7 @@ return function (scope: Fusion.Scope, props: {
                     ButtonType = "Confirm",
                     LayoutOrder = 2,
                     ButtonClickFunc = function()
-                        --// TODO: confirm filter data, which is just close the window lol
+                        props.UIOpenState:set(false)
                     end
                 })
             }

@@ -58,7 +58,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// track ticket purchases
-    table.insert(scope, Events.OpenTravelTicketUI_S.On(function(data)
+    table.insert(scope, Events.OpenTravelTicketUI_S.On(function(merchantId: string)
         if not UI then return end
         if not UI:FindFirstChild("Center") then return end
 
@@ -68,7 +68,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         local newScope = Fusion.scoped()
 
         local TicketPurchaseDreamField, blur = TicketPurchase(scope, {
-            MerchantId = data.MerchantId
+            MerchantId = merchantId
         })
         TicketPurchaseDreamField.Parent = UI.Center
         Debris:AddItem(TicketPurchaseDreamField, 30)

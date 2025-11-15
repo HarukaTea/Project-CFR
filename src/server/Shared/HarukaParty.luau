@@ -153,7 +153,11 @@ function HarukaParty:Invite(inviter: Player, target: Player)
 		return
 	end
 
-	--Events.PartyInvite:FireClient(target, inviter)
+
+	Events.PartyInviteResult_S.Fire(target, {
+		Option = "Invite",
+		PlayerName = inviter.Name
+	})
 end
 
 

@@ -89,7 +89,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
                     local dist = (impact.Position - enemyPos).Magnitude :: number
 
                     if dist < 23 then
-                        Events.RequestToDMGEnemyBySkillProjectile.Fire({
+                        Events.DMGEnemyBySkills_C.Fire({
                             ProjectileUniqueId = projectileUniqueId,
                             EnemyEntity = entity,
                         })

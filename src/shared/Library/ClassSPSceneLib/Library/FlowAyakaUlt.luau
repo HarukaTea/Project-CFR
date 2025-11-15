@@ -78,7 +78,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
                             bool.Parent = tempMarkedContainer
 
 
-                            Events.RequestToDMGEnemyBySkillProjectile.Fire({
+                            Events.DMGEnemyBySkills_C.Fire({
                                 ProjectileUniqueId = projectileUniqueId,
                                 EnemyEntity = entity,
                             })

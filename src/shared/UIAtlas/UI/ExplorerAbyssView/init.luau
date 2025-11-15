@@ -212,9 +212,7 @@ return function (plr: Player)
                                 end)
                                 Bindables.CreateNotify:Fire("Teleporting to Abyss...")
 
-                                Events.StartAbyss_C.Fire({
-                                    AbyssId = Fusion.peek(self.AbyssIndexSelected)
-                                })
+                                Events.StartAbyss_C.Fire(Fusion.peek(self.AbyssIndexSelected))
                             end
                         }),
                         ExecuteButton(scope, {

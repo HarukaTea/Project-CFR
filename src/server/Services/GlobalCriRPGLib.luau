@@ -48,7 +48,7 @@ local wait = task.wait
 
 function GlobalCriRPGLib:Init()
     for _, func: () -> nil in GlobalCriRPGLib.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 
@@ -74,6 +74,34 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if worldId and worldId == "InitusWorld" then
             TeleportService:Teleport(game.PlaceId, plr)
         end
+    end)
+
+
+    -- handle server hop
+    Events.ServerHop_C.SetCallback(function(plr: Player, jobId: string?)
+        if not jobId then return end
+
+        local teleportOptions = Instance.new("TeleportOptions")
+        teleportOptions.ServerInstanceId = jobId
+
+        Events.CreateNotify_S.Fire(plr, "Server hopping, please wait...")
+
+        wait(1.5)
+        TeleportService:TeleportAsync(game.PlaceId, { plr }, teleportOptions)
+    end)
+end)
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.Titlescreen_PlayTutorial_C.SetCallback(function(plr: Player)
+        local teleportOptions = Instance.new("TeleportOptions")
+
+        local tutorialPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].Tutorial
+        local code = TeleportService:ReserveServer(tutorialPlaceId)
+
+        TeleportService:TeleportAsync(tutorialPlaceId, { plr }, teleportOptions)
+
+        Events.CreateFSNotify_S.Fire(plr, "Teleporting to tutorial...", 15)
     end)
 end)
 
@@ -225,9 +253,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         pcall(function()
             galleon.PrimaryPart:SetNetworkOwner(nil)
         end)
-        Events.SetSkyGalleonOwner_S.Fire(plr, {
-            Galleon = galleon
-        })
+        Events.SetSkyGalleonOwner_S.Fire(plr, galleon)
     end
     ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, plr: Player)
         if prompt.Enabled == false then return end
@@ -382,9 +408,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         elseif prompt.Name == "PurchaseTicket" then
             local merchantId = adornee.Name
 
-            Events.OpenTravelTicketUI_S.Fire(plr, {
-                MerchantId = merchantId
-            })
+            Events.OpenTravelTicketUI_S.Fire(plr, merchantId)
 
         elseif prompt.Name == "Material" then
             local material = prompt:FindFirstAncestorOfClass("Model")
@@ -519,8 +543,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.DMGEnemy_C.SetCallback(function(plr: Player, data)
-        local orbUniqueId = data.OrbUniqueId
+    Events.DMGEnemy_C.SetCallback(function(plr: Player, orbUniqueId)
         if orbUniqueId == nil then return end
 
         local char = plr.Character
@@ -605,8 +628,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.CastItem_C_Request.SetCallback(function(plr: Player, data)
-        local slotId = data.SlotId
+    Events.CastItem_C_Request.SetCallback(function(plr: Player, slotId)
         if slotId == nil then return end
 
 
@@ -724,8 +746,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.PickupItemDrops_C.SetCallback(function(plr: Player, data)
-        local itemUniqueId = data.ItemUniqueId
+    Events.PickupItemDrops_C.SetCallback(function(plr: Player, itemUniqueId)
         if itemUniqueId == nil then return end
 
         local itemSymbol = ServerStorage.ItemSphereSymbolContainer:FindFirstChild(itemUniqueId) :: IntValue?
@@ -1129,11 +1150,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         HarukaLib:AddAttr(plr, "Gold", totalPrice)
     end)
-    Events.SellAllItems_C.SetCallback(function(plr: Player, data)
-        if not data.ItemId then return end
-
-        local item = data.ItemId
-
+    Events.SellAllItems_C.SetCallback(function(plr: Player, item)
         --// cant not sell nil items
         local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then return end
@@ -1352,9 +1369,9 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    --//FIXME: Revamp the anti-cheat of this part
+    --// TODO: Revamp the anti-cheat of this part
 
-    Events.RequestToDMGEnemyBySkillProjectile.SetCallback(function(plr: Player, data)
+    Events.DMGEnemyBySkills_C.SetCallback(function(plr: Player, data)
         local projectileId = data.ProjectileUniqueId
         if projectileId == nil then return end
         if data.EnemyEntity == nil then return end
@@ -1557,16 +1574,16 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if option == "Invite" then
             HarukaParty:Invite(plr, target)
 
-        elseif option == "Accept" then
+        elseif option == "InviteAccept" then
             HarukaParty:Accept(plr, target)
 
-        elseif option == "Decline" then
+        elseif option == "InviteDecline" then
             HarukaParty:Decline(plr, target)
 
-        elseif option == "Kick" then
+        elseif option == "PartyKick" then
             HarukaParty:Kick(plr, target)
 
-        elseif option == "Leave" then
+        elseif option == "PartyLeave" then
             HarukaParty:Leave(plr)
         end
     end
@@ -1580,15 +1597,13 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    local function _challengeAbyss(plr: Player, data: {
-        AbyssId: number?
-    })
-        if not data.AbyssId then return end
+    local function _challengeAbyss(plr: Player, abyssId: number?)
+        if not abyssId then return end
 
 
-        local abyssSortedMap = MemoryStoreService:GetSortedMap("AbyssTeleportData")
+        local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData")
         pcall(function()
-            abyssSortedMap:SetAsync("AbyssChallenge_"..plr.UserId, data.AbyssId, 60 * 5)
+            abyssHashMap:SetAsync(tostring(plr.UserId), abyssId, 60 * 5)
         end)
 
         local teleportOptions = Instance.new("TeleportOptions")
@@ -1597,10 +1612,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             SlotId = plr:GetAttribute("SlotChosen")
         })
 
-        local code = TeleportService:ReserveServer(AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel)
+        local abyssPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel
+        local code = TeleportService:ReserveServer(abyssPlaceId)
         teleportOptions.ReservedServerAccessCode = code
 
-        TeleportService:TeleportAsync(AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel, { plr }, teleportOptions)
+        TeleportService:TeleportAsync(abyssPlaceId, { plr }, teleportOptions)
 
 
         Events.CreateFSNotify_S.Fire(plr, "Teleporting to Abyss...", 15)
@@ -1715,10 +1731,10 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.BuyTicket_C.SetCallback(function(plr: Player, data)
-        if not data.MerchantId then return end
+    Events.BuyTicket_C.SetCallback(function(plr: Player, merchantId)
+        if not merchantId then return end
 
-        local merchant = workspace.MapComponents.TravelTickets:FindFirstChild(data.MerchantId)
+        local merchant = workspace.MapComponents.TravelTickets:FindFirstChild(merchantId)
         if not merchant then return end
 
         local goldAmount = plr:GetAttribute("Gold")

@@ -222,15 +222,18 @@ AssetBook.BadgeIds = {
 
 
 AssetBook.PlaceIds = {
+	-- CF REL
 	["7037847546"] = {
 		AbyssLevel = 18331795211,
 		Mainworld = 124519565742104,
 		Tutorial = 1043446942,
 	},
-	["123"] = {
+
+	-- CFT_but_public
+	["6754928573"] = {
 		AbyssLevel = 17737750943,
 		Mainworld = 118088243313343,
-		Tutorial = 0,
+		Tutorial = 18502526655,
 	}
 }
 

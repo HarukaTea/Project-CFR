@@ -81,7 +81,7 @@ function CriRPGLib:Init()
     self:_SpawnToLastLocation()
 
     for _, func: () -> nil in CriRPGLib.Funcs do
-        task.spawn(func)
+        func()
     end
 
     self:_AutoEquipItems()

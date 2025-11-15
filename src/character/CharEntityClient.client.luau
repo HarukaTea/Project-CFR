@@ -55,7 +55,7 @@ end))
 
 function CharLib:Init()
     for _, func: () -> nil in CharLib.Funcs do
-        task.spawn(func)
+        func()
     end
 
 
@@ -271,9 +271,7 @@ table.insert(CharLib.Funcs, function()
         self.ClassAttackAnims[anim]:Play()
     end
     Add(Bindables.PlayAnimation_S:Connect(_playAnim))
-    Add(Events.PlayAnimation_S.On(function(data)
-        _playAnim(data.AnimId)
-    end))
+    Add(Events.PlayAnimation_S.On(_playAnim))
 
 
     local function _playRawAnim(animId: string)

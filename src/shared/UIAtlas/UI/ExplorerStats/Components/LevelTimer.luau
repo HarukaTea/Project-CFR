@@ -8,18 +8,18 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
-    DungeonId: Fusion.Value<string?>,
-    DungeonStarted: Fusion.Value<boolean>,
+    LevelId: Fusion.Value<string?>,
+    LevelStarted: Fusion.Value<boolean>,
     CountdownTime: Fusion.Value<number>
 })
     return Components.ImageLabel(scope, {
-        Name = "TimerBG",
+        Name = "TimerBG_"..(Fusion.peek(props.LevelId) or "/"),
         Size = UDim2.fromScale(0.15, 0.7),
         Image = "rbxassetid://97834064886932",
         ImageColor3 = Color3.fromRGB(),
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use)
-            return if use(props.DungeonId) and use(props.DungeonStarted) and use(props.CountdownTime) > 0 then true else false
+            return if use(props.LevelId) and use(props.LevelStarted) and use(props.CountdownTime) > 0 then true else false
         end),
 
         [Children] = {
@@ -58,7 +58,10 @@ return function (scope: Fusion.Scope, props: {
                 end),
 
                 [Children] = {
-                    Components.UIPadding(scope, {})
+                    Components.UIPadding(scope, {
+                        PaddingTop = UDim.new(0, 0),
+                        PaddingBottom = UDim.new(0, 0),
+                    })
                 }
             })
         }

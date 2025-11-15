@@ -60,7 +60,7 @@ function AbyssWorldLib:Init()
     Promise.try(AbyssWorldLib.Funcs[1]):await()
 
     for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
-        task.spawn(func)
+        func()
     end
 end
 
@@ -97,11 +97,11 @@ table.insert(AbyssWorldLib.Funcs, function()
     repeat wait(0.5) until Players:FindFirstChildOfClass("Player")
 
     local player = Players:FindFirstChildOfClass("Player")
-    local abyssSortedMap = MemoryStoreService:GetSortedMap("AbyssTeleportData")
+    local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData")
 
     local abyssId = 1
     local success, _ = pcall(function()
-        abyssId = abyssSortedMap:GetAsync("AbyssChallenge_"..player.UserId)
+        abyssId = abyssHashMap:GetAsync(tostring(player.UserId))
     end)
     if not success then
         abyssId = 1
@@ -111,6 +111,7 @@ table.insert(AbyssWorldLib.Funcs, function()
 
     AbyssWorldLib.AbyssId = abyssId
     workspace:SetAttribute("AbyssLevelId", abyssId)
+    workspace:SetAttribute("AbyssTime", 0)
 
 
     local totalMobs = abyssMobsContainer:GetChildren() :: { BasePart }
@@ -156,6 +157,16 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
     end)
 end)
 
+
+
+table.insert(AbyssWorldLib.ListenFuncs, function()
+    HarukaLib.Clock(1, function()
+        if not workspace:GetAttribute("AbyssStarted") then return end
+        if workspace:GetAttribute("AbyssFinished") then return end
+
+        HarukaLib:AddAttr(workspace, "AbyssTime", 1)
+    end)
+end)
 
 
 

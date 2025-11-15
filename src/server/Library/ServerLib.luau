@@ -433,9 +433,7 @@ function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 			if badgeMarketInfo.IsEnabled then
 				BadgeService:AwardBadge(plr.UserId, badgeId)
 
-				Events.PlayBadgeNotify_S.Fire(plr, {
-					BadgeId = badgeId,
-				})
+				Events.PlayBadgeNotify_S.Fire(plr, tostring(badgeId))
 			end
 		end
 

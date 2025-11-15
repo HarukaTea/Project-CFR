@@ -85,7 +85,7 @@ return function (self: Self)
 			if not state then
 				self.PartyMembers:set({})
 			else
-				repeat wait(0.03) until workspace.MapComponents.PartyHolder:FindFirstChild(self.plr.Name, true)
+				repeat wait(1) until workspace.MapComponents.PartyHolder:FindFirstChild(self.plr.Name, true)
 
 				local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.plr.Name, true)
 				if party:IsA("ObjectValue") then party = party.Parent end

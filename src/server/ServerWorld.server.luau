@@ -140,15 +140,15 @@ do
 
     local serverSymbolContainer = workspace.MapComponents.GlobalServers :: Folder
 
-    HarukaLib.Clock(60, function()
-        local list = CADimension:GetWorlds(true, game.PlaceId)
-        local currentWorldServers = list[tostring(game.PlaceId)]
-
-        currentWorldServers = currentWorldServers or {}
+    HarukaLib.Clock(15, function()
+        local currentWorldServers = CADimension:GetWorlds()
 
         serverSymbolContainer:ClearAllChildren()
 
-        for _, server in currentWorldServers do
+        for _, server: CADimension.ServerInfo in currentWorldServers do
+            if not server.JobId then continue end
+
+
             local symbol = Instance.new("IntValue")
             symbol.Name = server.JobId
             symbol.Value = #server.PlayerUserIds

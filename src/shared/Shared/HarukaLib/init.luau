@@ -351,7 +351,10 @@ function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean
 	local dropTime = tickTime * 10
 
 	if runInstantly then
-		func()
+		local success, result = pcall(func)
+		if not success then
+			warn(result)
+		end
 	end
 
 	local connection = RunService.Heartbeat:Connect(function(deltaTime)
@@ -1218,14 +1221,12 @@ end
 
 
 -- Note: Yields
-function HarukaLib.TryUntil(pCallback: (...any) -> (boolean, any), waitTime: number, successCallback: nil | (pcallResult: any) -> nil) : any
+function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, successCallback: nil | () -> nil) : any
 	local result = nil
 
 	for _ = 1, math.huge do
 		local success, pcallResult = pcall(pCallback)
 		if success then
-			if successCallback then successCallback(pcallResult) end
-
 			result = pcallResult
 			break
 		else

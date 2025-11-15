@@ -707,10 +707,10 @@ function PlayerLib:RemoveMapComponents()
         end,
 
         function()
-            local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name) :: ObjectValue?
+            local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name, true) :: ObjectValue?
             if not party then return end
 
-            ServerBindables.PartyInvite:Fire(self.Player, "PlayerLeave", self.Player.Name)
+            ServerBindables.PartyInvite:Fire(self.Player, "PartyLeave", self.Player.Name)
         end,
     }
 

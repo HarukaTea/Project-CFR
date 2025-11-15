@@ -10,7 +10,8 @@ local PlayerActive = require(script.Components.PlayerActives)
 local MenuSelections = require(script.Components.MenuSelections)
 
 local MenuSlot = require(script.Components.MenuSlot)
-local DungeonTimer = require(script.Components.DungeonTimer)
+local LevelTimer = require(script.Components.LevelTimer)
+local LevelStarterComponent = require(script.Components.LevelStarterBtn)
 
 local Children = Fusion.Children
 
@@ -190,106 +191,9 @@ return function(plr: Player)
                     }
                 }),
 
-                Components.Frame(scope, {
-                    Name = "DungeonStarter",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 1.5),
-                    ZIndex = 5,
 
-                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.DungeonId) ~= nil and use(self.DungeonStarted) == false
-                    end),
-
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 1
-                        }),
-                        Components.UIListLayout(scope, {
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                        }),
-
-                        Components.TextButton(scope, {
-                            Name = "DungeonStart",
-                            Size = UDim2.fromScale(0.15, 0.65),
-                            Text = "START",
-                            BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.BLUE_COLOR,
-                            TextColor3 = Components.BLACK_COLOR,
-
-                            [Fusion.OnEvent("MouseButton1Click")] = function()
-                                Events.Abyss_StartAbyss_C.Fire()
-                            end,
-
-                            [Children] = {
-                                Components.RoundUICorner(scope),
-                                Components.UIPadding(scope, {})
-                            }
-                        })
-                    }
-                }),
-
-
-                Components.Frame(scope, {
-                    Name = "DungeonEndActions",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 1.5),
-                    ZIndex = 5,
-
-                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.DungeonId) ~= nil and use(self.DungeonStarted) and use(self.DungeonFinished) and use(self.DungeonEndActionsClicked) == false
-                    end),
-
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 1
-                        }),
-                        Components.UIListLayout(scope, {
-                            Padding = UDim.new(0.5, 0),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                        }),
-
-                        Components.TextButton(scope, {
-                            Name = "DungeonRestart",
-                            Size = UDim2.fromScale(0.2, 0.65),
-                            Text = "RESTART",
-                            BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.BLUE_COLOR,
-                            TextColor3 = Components.BLACK_COLOR,
-
-                            [Fusion.OnEvent("MouseButton1Click")] = function()
-                                Events.Abyss_AfterEndAction_S.Fire("Restart")
-
-                                self.DungeonEndActionsClicked:set(true)
-                            end,
-
-                            [Children] = {
-                                Components.RoundUICorner(scope),
-                                Components.UIPadding(scope, {})
-                            }
-                        }),
-                        Components.TextButton(scope, {
-                            Name = "DungeonLeave",
-                            Size = UDim2.fromScale(0.2, 0.65),
-                            Text = "BACK TO INITUS",
-                            BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.RED_COLOR,
-                            TextColor3 = Components.BLACK_COLOR,
-
-                            [Fusion.OnEvent("MouseButton1Click")] = function()
-                                Events.Abyss_AfterEndAction_S.Fire("Leave")
-
-                                self.DungeonEndActionsClicked:set(true)
-                            end,
-
-                            [Children] = {
-                                Components.RoundUICorner(scope),
-                                Components.UIPadding(scope, {})
-                            }
-                        })
-                    }
-                }),
+                LevelStarterComponent(scope, "Abyss", self),
+                LevelStarterComponent(scope, "Dungeon", self),
 
 
                 Components.Frame(scope, {
@@ -307,15 +211,15 @@ return function(plr: Player)
                             Scale = 1
                         }),
 
-                        DungeonTimer(scope, {
-                            DungeonId = self.DungeonId,
-                            DungeonStarted = self.DungeonStarted,
+                        LevelTimer(scope, {
+                            LevelId = self.DungeonId,
+                            LevelStarted = self.DungeonStarted,
                             CountdownTime = self.DungeonLeftTime
                         }),
 
-                        DungeonTimer(scope, {
-                            DungeonId = self.AbyssId,
-                            DungeonStarted = self.AbyssStarted,
+                        LevelTimer(scope, {
+                            LevelId = self.AbyssId,
+                            LevelStarted = self.AbyssStarted,
                             CountdownTime = self.AbyssTime
                         })
                     }
