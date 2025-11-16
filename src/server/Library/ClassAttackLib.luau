@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 local RepS = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
 
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -12,6 +13,7 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
+local Events = require(SSS.HarukaServer.Library.ServerEvents)
 
 local wait = task.wait
 
@@ -89,8 +91,13 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
-    if char:FindFirstChild("IsInComboUltPeriod") then
+    Events.Class_ChainUIUpdateSupport.Fire(plr)
+
+
+    local isInUltPeriod = char:FindFirstChild("IsInComboUltPeriod") ~= nil
+    if isInUltPeriod then
         HarukaLib:AddAttr(char, "ChainCombo", 1)
+        Events.Class_ChainUIUpdateSupport.Fire(plr)
     end
 
 
@@ -99,18 +106,8 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     if combo % 3 == 0 then
         ServerBindables.RToSpawnOrb:Fire(char.Name, "ChainSealOrb")
 
-    elseif combo % 3 == 1 and char:FindFirstChild("IsInComboUltPeriod") then
+    elseif combo % 3 == 1 and isInUltPeriod then
         ServerBindables.RToSpawnOrb:Fire(char.Name, "ChainSealOrb")
-    end
-
-
-    if char.Head:FindFirstChild("ComboStyle") then
-        char.Head.ComboStyle.Text.Text = "CHAIN x"..combo
-    else
-        local comboStyle = RepS.Packages.ClassAttacks.ClassUIs.ComboStyle.ComboStyle:Clone() :: BillboardGui
-        comboStyle.Adornee = char.Head
-        comboStyle.Text.Text = "CHAIN x"..combo
-        comboStyle.Parent = char.Head
     end
 
 
@@ -144,12 +141,10 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    ClassAttackLib._AddClassUltCharge(plr, 15)
-
 
     local combo = char:GetAttribute("ChainCombo") :: number
     local baseDMG = ClassAttackLib._CalDMG("DMG", char)
-	local totalDMG = math.ceil(baseDMG * (1 + 1.75 * combo))
+	local totalDMG = math.ceil(baseDMG * (1 + combo))
 
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
@@ -168,17 +163,26 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    local ultPeriodSymbol = Instance.new("BoolValue")
-    ultPeriodSymbol.Name = "IsInComboUltPeriod"
-    ultPeriodSymbol.Value = true
-    ultPeriodSymbol.Parent = char
-
-    Debris:AddItem(ultPeriodSymbol, 6)
+    Events.OpenCastTimeBar_S.Fire(plr, 1)
+    Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
 
-    StatusLib.CreateCustomEffect("ComboUlt", char, {
-        Duration = 6
-    })
+    Promise.delay(1):andThen(function()
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.FaceTargetingEnemy_S.Fire(plr)
+
+
+        local ultPeriodSymbol = Instance.new("BoolValue")
+        ultPeriodSymbol.Name = "IsInComboUltPeriod"
+        ultPeriodSymbol.Value = true
+        ultPeriodSymbol.Parent = char
+
+        Debris:AddItem(ultPeriodSymbol, 6)
+
+        StatusLib.CreateCustomEffect("ComboUlt", char, {
+            Duration = 6
+        })
+    end):catch(function() end)
 end
 ClassAttackLib.HEAL_ATTACK_Chain = ClassAttackLib.HEAL_ATTACK
 
@@ -251,42 +255,34 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 	char:SetAttribute("BurstArrow", math.max(arrowCount - consumeNormal, 0))
 	char:SetAttribute("BurstArrowPiercing", math.max(piercingCount - consumePiercing, 0))
 	char:SetAttribute("LastBurstTime", now)
-
-
-    local stackStyle1 = char.Head:FindFirstChild("StackStyle_Arrow") :: BillboardGui
-    if stackStyle1 then
-        local arrows = char:GetAttribute("BurstArrow") or 0
-        if arrows <= 0 then
-            stackStyle1:Destroy()
-        else
-            stackStyle1.Text.Text = arrows.." ARROWS"
-        end
-    end
-    local stackStyle2 = char.Head:FindFirstChild("StackStyle_Piercing") :: BillboardGui
-    if stackStyle2 then
-        local arrowsPiercing = char:GetAttribute("BurstArrowPiercing") or 0
-        if arrowsPiercing <= 0 then
-            stackStyle2:Destroy()
-        else
-            stackStyle2.Text.Text = arrowsPiercing.." PIERCING"
-        end
-    end
 end
 ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    local ultPeriodSymbol = Instance.new("BoolValue")
-    ultPeriodSymbol.Name = "IsInBurstUltPeriod"
-    ultPeriodSymbol.Value = true
-    ultPeriodSymbol.Parent = char
-
-    Debris:AddItem(ultPeriodSymbol, 8)
 
 
-    StatusLib.CreateCustomEffect("BurstUlt", char, {
-        Duration = 8
-    })
+    Events.OpenCastTimeBar_S.Fire(plr, 1)
+    Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
+
+
+    Promise.delay(1):andThen(function()
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.FaceTargetingEnemy_S.Fire(plr)
+
+
+        local ultPeriodSymbol = Instance.new("BoolValue")
+        ultPeriodSymbol.Name = "IsInBurstUltPeriod"
+        ultPeriodSymbol.Value = true
+        ultPeriodSymbol.Parent = char
+
+        Debris:AddItem(ultPeriodSymbol, 8)
+
+
+        StatusLib.CreateCustomEffect("BurstUlt", char, {
+            Duration = 8
+        })
+    end):catch(function() end)
 end
 ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -316,28 +312,6 @@ ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     char:SetAttribute("BurstArrowPiercing", arrowPiercingCount)
     char:SetAttribute("BurstArrowTick1", firstTick)
     char:SetAttribute("BurstArrowCombo", comboCount)
-
-
-    if char.Head:FindFirstChild("StackStyle_Arrow") then
-        char.Head.StackStyle_Arrow.Text.Text = arrowCount.." ARROWS"
-    else
-        local stackStyle1 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Arrow.StackStyle:Clone() :: BillboardGui
-        stackStyle1.Name = "StackStyle_Arrow"
-        stackStyle1.Adornee = char.Head
-        stackStyle1.Text.Text = arrowCount.." ARROWS"
-        stackStyle1.Parent = char.Head
-    end
-
-
-    if char.Head:FindFirstChild("StackStyle_Piercing") then
-        char.Head.StackStyle_Piercing.Text.Text = arrowPiercingCount.." PIERCING"
-    else
-        local stackStyle2 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Piercing.StackStyle:Clone() :: BillboardGui
-        stackStyle2.Name = "StackStyle_Piercing"
-        stackStyle2.Adornee = char.Head
-        stackStyle2.Text.Text = arrowPiercingCount.." PIERCING"
-        stackStyle2.Parent = char.Head
-    end
 end
 ClassAttackLib.HEAL_ATTACK_Burst = ClassAttackLib.HEAL_ATTACK
 

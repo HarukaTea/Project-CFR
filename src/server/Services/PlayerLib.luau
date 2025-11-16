@@ -19,8 +19,8 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
-local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
+local HarukaQuest = require(ServerScriptService.HarukaServer.Shared.HarukaQuest)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
@@ -177,6 +177,9 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         talentFolder.Parent = plr
 
 
+        local harukaQuestObj = HarukaQuest.new(plr)
+
+
         for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in validatedData.ItemsSQL do
             local itemVal = Instance.new("IntConstrainedValue")
             itemVal.MinValue = 0
@@ -211,9 +214,17 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
             itemVal.Parent = equippingFolder
         end
-        for questId: string, questInfo: PlayerTemplate.PlayerQuestDataJSON in validatedData.QuestsV2 do
-            QuestLib.GiveQuest(plr, questId, questInfo.ObjectiveProgress, questInfo.QuestState)
+
+
+        local isAbyss = workspace:GetAttribute("AbyssId")
+        local isDungeon = workspace:GetAttribute("DungeonId")
+
+        if not isAbyss and not isDungeon then
+            harukaQuestObj:LoadSavedTable(validatedData.QuestsV3)
+            self.Add(harukaQuestObj)
         end
+
+
         for settingsId: string, settingsVal: any in validatedMainData.Settings do
             local val = nil
 
@@ -648,26 +659,6 @@ function PlayerLib:_SaveData()
             }
         end
     end
-    for _, quest: StringValue in quests:GetChildren() do
-        if quest:IsA("StringValue") then
-            local questId = quest.Name
-            local progressState = quest.Value
-
-            local objectives = quest:GetAttributes()
-            if HarukaLib.TableUtils.CountDictLength(objectives) ~= #QuestBook[questId].Objectives then
-                objectives = {}
-            end
-            if not questId or not progressState then
-                continue
-            end
-
-            questsV2[questId] = {
-                Id = questId,
-                QuestState = progressState,
-                ObjectiveProgress = objectives
-            }
-        end
-    end
     for _, symbol: any in criSettings:GetChildren() do
         criSettingsSQL[symbol.Name] = symbol.Value
     end
@@ -675,9 +666,25 @@ function PlayerLib:_SaveData()
         table.insert(talentsSQL, symbol.Name)
     end
 
+    local success, result = pcall(function()
+        local isAbyss = workspace:GetAttribute("AbyssId")
+        local isDungeon = workspace:GetAttribute("DungeonId")
+
+        if not isAbyss and not isDungeon then
+            --- im not 100% sure if this will work correctly, better pcall it
+            local harukaQuestObj = HarukaQuest.GetObjByPlayer(self.Player)
+            if harukaQuestObj then
+                profileAttrs.QuestsV3 = harukaQuestObj:ExportDataTable()
+            end
+        end
+    end)
+    if not success then
+        warn(result)
+    end
+
+
     profileAttrs.ItemsSQL = itemSQL
     profileAttrs.EquippingItemsSQL = equippingItemsSQL
-    profileAttrs.QuestsV2 = questsV2
     profileAttrs.Talents = talentsSQL
 
     self.ProfileObj.Profile.Data.Settings = criSettingsSQL

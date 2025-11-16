@@ -362,6 +362,10 @@ table.insert(ClientWorldLib.Funcs, function()
             part.Parent = workspace.Terrain
             Debris:AddItem(part, 5)
 
+
+            HarukaLib:CreateTween(part, AssetBook.TweenInfos.two, { Position = pos + Vector3.yAxis * 15 }):Play()
+
+
             RunService.Heartbeat:Wait()
 
             local ui = part.BillboardGui.Number :: TextLabel
@@ -379,8 +383,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 HarukaLib:CreateTween(ui.UIStroke, AssetBook.TweenInfos.twiceHalf, { Transparency = 1 }):Play()
 
             end):catch(function() end)
-
-            random = nil
 
         end):catch(function() end)
     end
@@ -417,6 +419,9 @@ table.insert(ClientWorldLib.Funcs, function()
             part.Parent = workspace.Terrain
             Debris:AddItem(part, 5)
 
+
+            HarukaLib:CreateTween(part, AssetBook.TweenInfos.two, { Position = pos + Vector3.yAxis * 15 }):Play()
+
             RunService.Heartbeat:Wait()
 
             local ui = part.BillboardGui.Label :: TextLabel
@@ -429,8 +434,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 HarukaLib:CreateTween(ui.UIStroke, AssetBook.TweenInfos.twiceHalf, { Transparency = 1 }):Play()
 
             end):catch(function() end)
-
-            random = nil
 
         end):catch(function() end)
     end

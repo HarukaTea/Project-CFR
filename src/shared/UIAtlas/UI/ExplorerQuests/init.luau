@@ -47,12 +47,11 @@ return function(plr: Player)
                 Name = "QuestMarkers",
 
                 [Children] = {
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: StringValue)
-                        if not questSymbol.Value then return nil end
-                        if questSymbol.Value == "Delivered" then return nil end
+                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: Folder)
+                        if questSymbol:GetAttribute("IsCompleted") then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
 
-                        local questInfo = QuestBook[questSymbol.Name]
+                        local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
 
                         local questId = questSymbol.Name
                         local locator = QuestBook[questId].WorldLocatorId
@@ -85,12 +84,11 @@ return function(plr: Player)
                             }
                         })
                     end),
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: StringValue)
-                        if not questSymbol.Value then return nil end
-                        if questSymbol.Value == "Delivered" then return nil end
+                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: Folder)
+                        if questSymbol:GetAttribute("IsCompleted") then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
 
-                        local questInfo = QuestBook[questSymbol.Name]
+                        local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
                         local questId = questSymbol.Name
 
                         local npc = QuestBook[questId].NPC
@@ -108,7 +106,7 @@ return function(plr: Player)
                         if not npcModel then return nil end
 
 
-                        if npcModel:GetAttribute("NoLocationMarker") then return nil end
+                        if npcModel:GetAttribute("_NoLocationMarker") then return nil end
 
 
                         return questId, Components.BillboardGui(scope, {
@@ -156,13 +154,10 @@ return function(plr: Player)
                         }),
 
                         Fusion.ForValues(scope, self.Quests, function(_, scope: Fusion.Scope, questSymbol: StringValue)
-                            if not questSymbol.Value then return nil end
-                            if questSymbol.Value == "Delivered" then return nil end
+                            if questSymbol:GetAttribute("IsCompleted") then return nil end
                             if not QuestBook[questSymbol.Name] then return nil end
 
-
-                            local questInfo = QuestBook[questSymbol.Name]
-
+                            local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
 
                             return QuestBar(scope, {
                                 QuestType = questInfo.QuestType,

@@ -23,8 +23,8 @@ if localTeamworkPackages:FindFirstChild("LocationBook") then
     end
 end
 
-if localTeamworkPackages:FindFirstChild("MapLocal") then
-    localTeamworkPackages.MapLocal:Clone().Parent = Players.LocalPlayer.PlayerScripts
+if localTeamworkPackages:FindFirstChild("MapServer") then
+    localTeamworkPackages.MapServer:Clone().Parent = workspace.MapComponents
 end
 
 if localTeamworkPackages:FindFirstChild("QuestBook") then

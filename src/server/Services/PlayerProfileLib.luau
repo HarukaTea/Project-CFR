@@ -332,24 +332,24 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     }
     local woodenWeapon = nil
     for _, itemObj in data.ItemsSQL do
-        if itemObj.ItemId == starterClassWeapons["Burst"] then
+        if itemObj.ItemId == starterClassWeapons["Chain"] then
             woodenWeapon = itemObj
             break
         end
     end
     if not woodenWeapon then
         data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = starterClassWeapons["Burst"],
+            ItemId = starterClassWeapons["Chain"],
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
-            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons["Burst"]),
+            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons["Chain"]),
             IsFav = false,
             IsLocked = false
         }
     end
     if not data.EquippingItemsSQL["Weapon1"] then
         data.EquippingItemsSQL["Weapon1"] = {
-            ItemId = starterClassWeapons["Burst"],
+            ItemId = starterClassWeapons["Chain"],
             UniqueId = itemUniqueIdForEmptyWeapon
         }
     end
@@ -357,17 +357,20 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
 
 
     --// check valid quests
-    for questId: string, _ in data.QuestsV2 do
-        if not QuestBook[questId] then
-            data.QuestsV2[questId] = nil
+    local isAbyss = workspace:GetAttribute("IsAbyss")
+    local isDungeon = workspace:GetAttribute("IsDungeon")
+    if not isAbyss and not isDungeon then
+        for questId: string, _ in data.QuestsV3 do
+            if not QuestBook[questId] then
+                data.QuestsV3[questId] = nil
+            end
         end
-    end
-    if HarukaLib.TableUtils.IsEmpty(data.QuestsV2) then
-        data.QuestsV2.Main1 = {
-            Id = "Main1",
-            QuestState = "Started",
-            ObjectiveProgress = {}
-        }
+        if HarukaLib.TableUtils.IsEmpty(data.QuestsV3) then
+            data.QuestsV3.Main1 = {
+                Completed = false,
+                Objectives = {}
+            }
+        end
     end
 
 

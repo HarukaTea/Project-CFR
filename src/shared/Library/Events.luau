@@ -298,6 +298,9 @@ if not RunService:IsRunning() then
 		CraftItem_C = table.freeze({
 			Fire = noop
 		}),
+		Class_ChainUIUpdateSupport = table.freeze({
+			On = noop
+		}),
 		CastItem_S_Response = table.freeze({
 			On = noop
 		}),
@@ -349,12 +352,12 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(34)
-local reliable_event_queue: { [number]: { any } } = table.create(34)
-reliable_events[28] = {}
-reliable_event_queue[28] = {}
+local reliable_events = table.create(35)
+local reliable_event_queue: { [number]: { any } } = table.create(35)
 reliable_events[29] = {}
 reliable_event_queue[29] = {}
+reliable_events[30] = {}
+reliable_event_queue[30] = {}
 reliable_events[26] = {}
 reliable_event_queue[26] = 0
 reliable_events[25] = {}
@@ -373,8 +376,8 @@ reliable_events[12] = {}
 reliable_event_queue[12] = {}
 reliable_events[4] = {}
 reliable_event_queue[4] = 0
-reliable_events[27] = {}
-reliable_event_queue[27] = {}
+reliable_events[28] = {}
+reliable_event_queue[28] = {}
 reliable_events[6] = {}
 reliable_event_queue[6] = {}
 reliable_events[5] = {}
@@ -409,14 +412,16 @@ reliable_events[13] = {}
 reliable_event_queue[13] = 0
 reliable_events[1] = {}
 reliable_event_queue[1] = {}
-reliable_events[30] = {}
-reliable_event_queue[30] = {}
-reliable_events[32] = {}
-reliable_event_queue[32] = {}
-reliable_events[33] = {}
-reliable_event_queue[33] = {}
 reliable_events[31] = {}
 reliable_event_queue[31] = {}
+reliable_events[33] = {}
+reliable_event_queue[33] = {}
+reliable_events[34] = {}
+reliable_event_queue[34] = {}
+reliable_events[32] = {}
+reliable_event_queue[32] = {}
+reliable_events[27] = {}
+reliable_event_queue[27] = 0
 reliable_events[11] = {}
 reliable_event_queue[11] = {}
 reliable.OnClientEvent:Connect(function(buff, inst)
@@ -427,7 +432,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 28 then
+		if id == 29 then
 			local value
 			local bool_1 = buffer.readu8(incoming_buff, read(1))
 			if bit32.btest(bool_1, 0b0000000000000001) then
@@ -437,17 +442,17 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value = nil
 			end
-			if reliable_events[28][1] then
-				for _, cb in reliable_events[28] do
+			if reliable_events[29][1] then
+				for _, cb in reliable_events[29] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[28], value)
-				if #reliable_event_queue[28] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[28]} events in queue for UpdateCameraPart_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[29], value)
+				if #reliable_event_queue[29] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[29]} events in queue for UpdateCameraPart_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 29 then
+		elseif id == 30 then
 			local value
 			local pos_1 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
 			local axisangle_1 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
@@ -457,14 +462,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value = CFrame.new(pos_1)
 			end
-			if reliable_events[29][1] then
-				for _, cb in reliable_events[29] do
+			if reliable_events[30][1] then
+				for _, cb in reliable_events[30] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[29], value)
-				if #reliable_event_queue[29] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[29]} events in queue for UpdateCameraCF_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[30], value)
+				if #reliable_event_queue[30] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[30]} events in queue for UpdateCameraCF_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 26 then
@@ -670,7 +675,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {reliable_event_queue[4]} events in queue for PlayStatPoweredScreenFX_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 27 then
+		elseif id == 28 then
 			local value, value2
 			local bool_7 = buffer.readu8(incoming_buff, read(1))
 			if bit32.btest(bool_7, 0b0000000000000001) then
@@ -685,14 +690,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value2 = nil
 			end
-			if reliable_events[27][1] then
-				for _, cb in reliable_events[27] do
+			if reliable_events[28][1] then
+				for _, cb in reliable_events[28] do
 					task.spawn(cb, value, value2)
 				end
 			else
-				table.insert(reliable_event_queue[27], { value, value2 })
-				if #reliable_event_queue[27] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[27]} events in queue for PlaySound_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[28], { value, value2 })
+				if #reliable_event_queue[28] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[28]} events in queue for PlaySound_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 6 then
@@ -967,25 +972,54 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for EnterNPCChat_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 30 then
+		elseif id == 31 then
 			local value
 			local len_22 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_22), len_22)
-			if reliable_events[30][1] then
-				for _, cb in reliable_events[30] do
+			if reliable_events[31][1] then
+				for _, cb in reliable_events[31] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[30], value)
-				if #reliable_event_queue[30] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[30]} events in queue for CreateNotify_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[31], value)
+				if #reliable_event_queue[31] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[31]} events in queue for CreateNotify_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 32 then
+		elseif id == 33 then
 			local value, value2
 			local len_23 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_23), len_23)
 			value2 = buffer.readu8(incoming_buff, read(1))
+			if reliable_events[33][1] then
+				for _, cb in reliable_events[33] do
+					task.spawn(cb, value, value2)
+				end
+			else
+				table.insert(reliable_event_queue[33], { value, value2 })
+				if #reliable_event_queue[33] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[33]} events in queue for CreateFSNotify_S. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 34 then
+			local value
+			value = buffer.readu8(incoming_buff, read(1))
+			if reliable_events[34][1] then
+				for _, cb in reliable_events[34] do
+					task.spawn(cb, value)
+				end
+			else
+				table.insert(reliable_event_queue[34], value)
+				if #reliable_event_queue[34] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[34]} events in queue for CreateCircularFade_S. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 32 then
+			local value, value2
+			local bool_12 = buffer.readu8(incoming_buff, read(1))
+			local len_24 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_24), len_24)
+			value2 = bit32.btest(bool_12, 0b0000000000000001)
 			if reliable_events[32][1] then
 				for _, cb in reliable_events[32] do
 					task.spawn(cb, value, value2)
@@ -993,36 +1027,19 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				table.insert(reliable_event_queue[32], { value, value2 })
 				if #reliable_event_queue[32] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[32]} events in queue for CreateFSNotify_S. Did you forget to attach a listener?`)
+					warn(`[ZAP] {#reliable_event_queue[32]} events in queue for CreateCenterNotify_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 33 then
+		elseif id == 27 then
 			local value
-			value = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[33][1] then
-				for _, cb in reliable_events[33] do
+			if reliable_events[27][1] then
+				for _, cb in reliable_events[27] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[33], value)
-				if #reliable_event_queue[33] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[33]} events in queue for CreateCircularFade_S. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 31 then
-			local value, value2
-			local bool_12 = buffer.readu8(incoming_buff, read(1))
-			local len_24 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_24), len_24)
-			value2 = bit32.btest(bool_12, 0b0000000000000001)
-			if reliable_events[31][1] then
-				for _, cb in reliable_events[31] do
-					task.spawn(cb, value, value2)
-				end
-			else
-				table.insert(reliable_event_queue[31], { value, value2 })
-				if #reliable_event_queue[31] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[31]} events in queue for CreateCenterNotify_S. Did you forget to attach a listener?`)
+				reliable_event_queue[27] += 1
+				if reliable_event_queue[27] > 16 then
+					warn(`[ZAP] {reliable_event_queue[27]} events in queue for Class_ChainUIUpdateSupport. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 11 then
@@ -1053,18 +1070,6 @@ local returns = {
 	SendEvents = SendEvents,
 	UpdateCameraPart_S = {
 		On = function(Callback: (part: ((BasePart)?)) -> ())
-			table.insert(reliable_events[28], Callback)
-			for _, value in reliable_event_queue[28] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[28] = {}
-			return function()
-				table.remove(reliable_events[28], table.find(reliable_events[28], Callback))
-			end
-		end,
-	},
-	UpdateCameraCF_S = {
-		On = function(Callback: (cframe: (CFrame)) -> ())
 			table.insert(reliable_events[29], Callback)
 			for _, value in reliable_event_queue[29] do
 				task.spawn(Callback, value)
@@ -1072,6 +1077,18 @@ local returns = {
 			reliable_event_queue[29] = {}
 			return function()
 				table.remove(reliable_events[29], table.find(reliable_events[29], Callback))
+			end
+		end,
+	},
+	UpdateCameraCF_S = {
+		On = function(Callback: (cframe: (CFrame)) -> ())
+			table.insert(reliable_events[30], Callback)
+			for _, value in reliable_event_queue[30] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[30] = {}
+			return function()
+				table.remove(reliable_events[30], table.find(reliable_events[30], Callback))
 			end
 		end,
 	},
@@ -1434,13 +1451,13 @@ local returns = {
 	},
 	PlaySound_S = {
 		On = function(Callback: (sound: ((Sound)?), timePos: ((number)?)) -> ())
-			table.insert(reliable_events[27], Callback)
-			for _, value in reliable_event_queue[27] do
+			table.insert(reliable_events[28], Callback)
+			for _, value in reliable_event_queue[28] do
 				task.spawn(Callback, unpack(value))
 			end
-			reliable_event_queue[27] = {}
+			reliable_event_queue[28] = {}
 			return function()
-				table.remove(reliable_events[27], table.find(reliable_events[27], Callback))
+				table.remove(reliable_events[28], table.find(reliable_events[28], Callback))
 			end
 		end,
 	},
@@ -1903,33 +1920,21 @@ local returns = {
 	},
 	CreateNotify_S = {
 		On = function(Callback: (text: (string)) -> ())
-			table.insert(reliable_events[30], Callback)
-			for _, value in reliable_event_queue[30] do
+			table.insert(reliable_events[31], Callback)
+			for _, value in reliable_event_queue[31] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[30] = {}
+			reliable_event_queue[31] = {}
 			return function()
-				table.remove(reliable_events[30], table.find(reliable_events[30], Callback))
+				table.remove(reliable_events[31], table.find(reliable_events[31], Callback))
 			end
 		end,
 	},
 	CreateFSNotify_S = {
 		On = function(Callback: (text: (string), duration: (number)) -> ())
-			table.insert(reliable_events[32], Callback)
-			for _, value in reliable_event_queue[32] do
-				task.spawn(Callback, unpack(value))
-			end
-			reliable_event_queue[32] = {}
-			return function()
-				table.remove(reliable_events[32], table.find(reliable_events[32], Callback))
-			end
-		end,
-	},
-	CreateCircularFade_S = {
-		On = function(Callback: (duration: (number)) -> ())
 			table.insert(reliable_events[33], Callback)
 			for _, value in reliable_event_queue[33] do
-				task.spawn(Callback, value)
+				task.spawn(Callback, unpack(value))
 			end
 			reliable_event_queue[33] = {}
 			return function()
@@ -1937,15 +1942,27 @@ local returns = {
 			end
 		end,
 	},
+	CreateCircularFade_S = {
+		On = function(Callback: (duration: (number)) -> ())
+			table.insert(reliable_events[34], Callback)
+			for _, value in reliable_event_queue[34] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[34] = {}
+			return function()
+				table.remove(reliable_events[34], table.find(reliable_events[34], Callback))
+			end
+		end,
+	},
 	CreateCenterNotify_S = {
 		On = function(Callback: (text: (string), showBar: (boolean)) -> ())
-			table.insert(reliable_events[31], Callback)
-			for _, value in reliable_event_queue[31] do
+			table.insert(reliable_events[32], Callback)
+			for _, value in reliable_event_queue[32] do
 				task.spawn(Callback, unpack(value))
 			end
-			reliable_event_queue[31] = {}
+			reliable_event_queue[32] = {}
 			return function()
-				table.remove(reliable_events[31], table.find(reliable_events[31], Callback))
+				table.remove(reliable_events[32], table.find(reliable_events[32], Callback))
 			end
 		end,
 	},
@@ -1975,6 +1992,18 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_48)
 			end
 			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
+		end,
+	},
+	Class_ChainUIUpdateSupport = {
+		On = function(Callback: () -> ())
+			table.insert(reliable_events[27], Callback)
+			for _ = 1, reliable_event_queue[27] do
+				task.spawn(Callback)
+			end
+			reliable_event_queue[27] = 0
+			return function()
+				table.remove(reliable_events[27], table.find(reliable_events[27], Callback))
+			end
 		end,
 	},
 	CastItem_S_Response = {

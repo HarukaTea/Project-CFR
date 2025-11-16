@@ -16,11 +16,8 @@ export type PlayerEquippingItemDataJSON = {
     UniqueId: string
 }
 export type PlayerQuestDataJSON = {
-    Id: string,
-    QuestState: string,
-    ObjectiveProgress: {
-        [string]: any
-    }
+    Completed: boolean,
+    Objectives: { [string]: number }
 }
 
 
@@ -47,7 +44,7 @@ export type PlayerDataJSON = {
     EquippingItemsSQL: {
         [string]: PlayerEquippingItemDataJSON
     },
-    QuestsV2: {
+    QuestsV3: {
         [string]: PlayerQuestDataJSON
     },
     CombatWonTimes: number,
@@ -115,7 +112,7 @@ local playerStats = {
 
             ItemsSQL = {},
             EquippingItemsSQL = {},
-            QuestsV2 = {},
+            QuestsV3 = {},
 
             CombatWonTimes = 0,
         }

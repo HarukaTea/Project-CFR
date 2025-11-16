@@ -1,10 +1,15 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
+local SoundService = game:GetService("SoundService")
 
 
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
-local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
+local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
+local HarukaQuest = require(SSS.HarukaServer.Shared.HarukaQuest)
+local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(SSS.HarukaServer.Library.ServerEvents)
 
 
 
@@ -32,9 +37,27 @@ end
 
 
 table.insert(GlobalQuestFuncLib.Funcs, function()
+    ServerBindables.QuestCompleted:Connect(function(plr: Player, questId: string)
+        local questData = QuestBook[questId] :: QuestBook.QuestJSON
+        if not questData then return end
+
+        for attr, val in questData.Rewards do
+            HarukaLib:AddAttr(plr, attr, val)
+        end
+
+
+        Events.CreateNotify_S.Fire(plr, "Quest completed! Well done!")
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.QuestCompleted)
+    end)
+end)
+
+
+
+table.insert(GlobalQuestFuncLib.Funcs, function()
     QuestBindables.InterSkyTowerQuest:Connect(function(plr: Player)
-        if QuestLib.CanGiveQuest("SideTowerTheKey", plr) then
-            QuestLib.GiveQuest(plr, "SideTowerTheKey")
+        local questObj = HarukaQuest.GetObjByPlayer(plr)
+        if questObj then
+            questObj:GiveQuest("InterSkyTower")
         end
     end)
 end)

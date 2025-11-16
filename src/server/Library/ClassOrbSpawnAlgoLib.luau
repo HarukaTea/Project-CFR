@@ -15,7 +15,6 @@ local ClassOrbSpawnAlgoLib = {} :: {
 
 ClassOrbSpawnAlgoLib.Chain = function(spawnCallback: (orbName: string) -> nil)
     spawnCallback("ChainOrb")
-    spawnCallback("ChainSealOrb")
 end
 
 ClassOrbSpawnAlgoLib.Burst = function(spawnCallback: (orbName: string) -> nil)

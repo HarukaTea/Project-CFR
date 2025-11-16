@@ -6,20 +6,42 @@ export type QuestObjectiveJSON = {
 }
 
 
+export type QuestJSON = {
+    Id: string,
+    QuestType: "Main" | "Side" | "Town",
+
+    Name: string,
+    Target: string,
+    NPC: string,
+    WorldLocatorId: string,
+
+    Repeatable: boolean,
+    DeliverType: "Normal" | "Objective",
+
+    RequiredQuests: { string },
+    Rewards: {
+        Gold: number?,
+        EXP: number?,
+        Astra: number?,
+    },
+
+    Objectives: {
+        [number]: QuestObjectiveJSON,
+    }
+}
+
+
 
 local template = {
     Id = "",
-    QuestType = "Main" :: "Main" | "Side" | "Town",
+    QuestType = "Main",
 
     Name = "",
-    Desc = "",
     Target = "",
     NPC = "",
     WorldLocatorId = "",
 
     Repeatable = false,
-    DeliverType = "Normal" :: "Normal" | "Objective",
-
     RequiredQuests = {
         "Main1"
     },
@@ -39,6 +61,26 @@ local template = {
 
 
 local quests = {
+    --// Main
+    Main1 = {
+        Id = "Main1",
+        QuestType = "Main",
+
+        Name = "Adventurer Guild",
+        Target = "Head to the Guild",
+        NPC = "",
+        WorldLocatorId = "InitusGuildLocator",
+
+        Repeatable = false,
+        RequiredQuests = {},
+
+        Rewards = {
+            Gold = 150
+        },
+        Objectives = {}
+    }
+
+
     --// Side
 
 

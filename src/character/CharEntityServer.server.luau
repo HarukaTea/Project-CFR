@@ -23,6 +23,9 @@ type CharLibClass = {
 
     Destroy: (self: CharLibClass) -> nil,
     Init: (self: CharLibClass) -> nil,
+
+	_RagdollInit: (self: CharLibClass) -> nil,
+	_TriggerRagdoll: (self: CharLibClass) -> nil,
 }
 
 
@@ -234,6 +237,7 @@ table.insert(CharLib.Funcs, function()
 	}))
 	Add(event.Event:Connect(function(_, attacker: Model, dmgProps: {
 		DMG: number,
+		DMGType: string,
 		Attacker: string
 	})
 		if script == nil then return end
@@ -241,6 +245,7 @@ table.insert(CharLib.Funcs, function()
 		if attacker ~= char then return end
 		if not dmgProps then return end
 		if not dmgProps.DMG then return end
+		if not dmgProps.DMGType then return end
 		if not dmgProps.Attacker then return end
 		if dmgProps.Attacker ~= "ClassAttacks" then return end
 

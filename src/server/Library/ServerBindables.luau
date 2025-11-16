@@ -29,4 +29,7 @@ return {
 
     --@params: `player: Player, option: string, newMember: string`
     PartyInvite = Signal.new(),
+
+    --@params: `player: Player, questId: string`
+    QuestCompleted = Signal.new(),
 }

@@ -13,7 +13,7 @@ return function (scope: Fusion.Scope, props: {
     QuestType: string,
     QuestId: string,
 
-    QuestVal: StringValue
+    QuestVal: Folder
 })
 
     local questId = props.QuestId
@@ -71,18 +71,21 @@ return function (scope: Fusion.Scope, props: {
                 [Children] = {
                     Components.TextLabel(scope, {
                         Name = "Title",
+                        Position = UDim2.fromScale(0, 0),
                         Size = UDim2.fromScale(1, 0.5),
                         Text = QuestBook[questId].Name,
                         TextColor3 = AssetBook.QuestTypeColors[props.QuestType],
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [Children] = {
-                            Components.ScaledTextUIStroke(scope, {})
+                            Components.ScaledTextUIStroke(scope, {
+                                Thickness = 0.1
+                            })
                         }
                     }),
                     Components.TextLabel(scope, {
                         Name = "Info",
-                        Position = UDim2.fromScale(0, 0.5),
+                        Position = UDim2.fromScale(0, 0.55),
                         Size = UDim2.fromScale(1, 0.4),
                         RichText = true,
                         TextXAlignment = Enum.TextXAlignment.Left,
@@ -101,7 +104,7 @@ return function (scope: Fusion.Scope, props: {
                                 local id = tonumber(matched)
                                 if not id then return "nil" end
 
-                                local val = objectiveVals["Objective"..matched]
+                                local val = objectiveVals[tonumber(matched)]
                                 if not val then return "nil" end
 
                                 val = use(val)
@@ -113,7 +116,9 @@ return function (scope: Fusion.Scope, props: {
                         end),
 
                         [Children] = {
-                            Components.ScaledTextUIStroke(scope, {})
+                            Components.ScaledTextUIStroke(scope, {
+                                Thickness = 0.1
+                            })
                         }
                     })
                 }

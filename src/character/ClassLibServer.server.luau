@@ -97,42 +97,126 @@ end
 
 
 ClassMechanicLib._CLASS_Chain = function(self)
-    local function _classAbilityClear()
-        char:SetAttribute("ChainCombo", 0)
+    local chainAdd, chainEmpty = HarukaLib.Bin()
+    ClassAdd(chainEmpty)
 
+
+    local function _clearComboUI()
         if char.Head:FindFirstChild("ComboStyle") then
             char.Head.ComboStyle:Destroy()
         end
     end
+    local function _classAbilityClear()
+        chainEmpty()
+        _clearComboUI()
+
+        char:SetAttribute("ChainCombo", 0)
+    end
+
+
+    local _internal_AttrCD = false
+
+
     ClassAdd(HarukaLib:Hydrate(char, {
-        ["Attr-IsInCombat"] = _classAbilityClear
+        ["Attr-IsInCombat"] = _classAbilityClear,
     }))
-    ClassAdd(HarukaLib.Clock(3.2, function()
-        if char:FindFirstChild("IsInComboUltPeriod") then return end
+    ClassAdd(HarukaLib:Hydrate(char, {
+        ["Attr-ChainCombo"] = function(combo: number)
+            if char.Head:FindFirstChild("ComboStyle") then
+                char.Head.ComboStyle.Text.Text = "CHAIN x"..combo
+            else
+                local comboStyle = RepS.Packages.ClassAttacks.ClassUIs.ComboStyle.ComboStyle:Clone() :: BillboardGui
+                comboStyle.Adornee = char.Head
+                comboStyle.Text.Text = "CHAIN x"..combo
+                comboStyle.Parent = char.Head
+            end
+            if _internal_AttrCD then return end
 
 
-        HarukaLib:AddAttr(char, "ChainCombo", -1)
+            combo = combo or 0
+            if combo <= 0 then
+                _classAbilityClear()
+                return
+            end
 
-        if char:GetAttribute("ChainCombo") <= 0 then
-            _classAbilityClear()
+            chainEmpty()
+            if char:FindFirstChild("IsInComboUltPeriod") then return end
+
+
+            chainAdd(HarukaLib.Clock(3.2, function()
+                if char:FindFirstChild("IsInComboUltPeriod") then return end
+
+                _internal_AttrCD = true
+                HarukaLib:AddAttr(char, "ChainCombo", -1)
+                _internal_AttrCD = false
+
+
+                Events.Class_ChainUIUpdateSupport.Fire(plr)
+            end))
         end
-    end))
-
-
+    }))
     ClassAdd(_classAbilityClear)
 end
 
 
 ClassMechanicLib._CLASS_Burst = function(self)
-    local function _classAbilityClear()
-        char:SetAttribute("BurstArrow", 0)
-
-        if char.Head:FindFirstChild("StackStyle") then
-            char.Head.StackStyle:Destroy()
+    local function _clearStackUI()
+        if char.Head:FindFirstChild("StackStyle_Arrow") then
+            char.Head.StackStyle_Arrow:Destroy()
         end
+        if char.Head:FindFirstChild("StackStyle_Piercing") then
+            char.Head.StackStyle_Piercing:Destroy()
+        end
+    end
+    local function _classAbilityClear()
+        _clearStackUI()
+
+        char:SetAttribute("BurstArrow", 0)
+        char:SetAttribute("BurstArrowPiercing", 0)
+        char:SetAttribute("LastBurstTime", nil)
     end
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear
+    }))
+    ClassAdd(HarukaLib:Hydrate(char, {
+        ["Attr-BurstArrow"] = function(arrow: number)
+            arrow = arrow or 0
+
+            local stackStyle1 = char.Head:FindFirstChild("StackStyle_Arrow") :: BillboardGui
+
+            if arrow <= 0 then
+                if stackStyle1 then stackStyle1:Destroy() end
+                return
+            end
+            if stackStyle1 then
+                stackStyle1.Text.Text = arrow.." ARROWS"
+            else
+                stackStyle1 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Arrow.StackStyle:Clone() :: BillboardGui
+                stackStyle1.Name = "StackStyle_Arrow"
+                stackStyle1.Adornee = char.Head
+                stackStyle1.Text.Text = arrow.." ARROWS"
+                stackStyle1.Parent = char.Head
+            end
+        end,
+        ["Attr-BurstArrowPiercing"] = function(arrow: number)
+            arrow = arrow or 0
+
+            local stackStyle2 = char.Head:FindFirstChild("StackStyle_Piercing") :: BillboardGui
+
+            if arrow <= 0 then
+                if stackStyle2 then stackStyle2:Destroy() end
+                return
+            end
+            if stackStyle2 then
+                stackStyle2.Text.Text = arrow.." PIERCING"
+            else
+                stackStyle2 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Piercing.StackStyle:Clone() :: BillboardGui
+                stackStyle2.Name = "StackStyle_Piercing"
+                stackStyle2.Adornee = char.Head
+                stackStyle2.Text.Text = arrow.." PIERCING"
+                stackStyle2.Parent = char.Head
+            end
+        end
     }))
 
 

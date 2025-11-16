@@ -24,7 +24,7 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://80904500184652",
+            UltSkillIcon = "rbxassetid://2965862892",
             UltSkill_WithoutRecolor = true
         },
 
@@ -46,7 +46,7 @@ return {
 
 
         BaseStats = {
-            MaxClassUltProgress = 70
+
         }
     },
 

@@ -78,6 +78,9 @@ export type Self = {
     EquippingItems: Fusion.Value<{ StringValue }>,
 
 
+    ChainCombo: Fusion.Value<number>,
+
+
     ActiveList: {
         {
             Id: string,
@@ -190,6 +193,9 @@ return function (self: Self)
 
 
     self.MenuSelectionShown = Value(false)
+
+
+    self.ChainCombo = Value(0)
 
 
     --// track server
@@ -602,6 +608,16 @@ return function (self: Self)
         end,
         ["Attr-IsShieldRepairing"] = function(val: boolean)
             self.IsShieldRepairing:set(val)
+        end
+    }))
+
+
+    --// track class vals
+    table.insert(scope, HarukaLib:Hydrate(self.char, {
+        ["Attr-ChainCombo"] = function(val: number)
+            val = val or 0
+
+            self.ChainCombo:set(val)
         end
     }))
 

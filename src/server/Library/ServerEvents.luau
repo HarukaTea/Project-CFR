@@ -397,6 +397,12 @@ if not RunService:IsRunning() then
 		CraftItem_C = table.freeze({
 			SetCallback = noop
 		}),
+		Class_ChainUIUpdateSupport = table.freeze({
+			Fire = noop,
+			FireExcept = noop,
+			FireList = noop,
+			FireSet = noop
+		}),
 		CastItem_S_Response = table.freeze({
 			Fire = noop,
 			FireExcept = noop,
@@ -944,7 +950,7 @@ local returns = {
 		Fire = function(Player: Player, part: ((BasePart)?))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local bool_24 = 0
 			local bool_24_pos_1 = alloc(1)
 			if part ~= nil then
@@ -958,7 +964,7 @@ local returns = {
 		FireExcept = function(Except: Player, part: ((BasePart)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local bool_25 = 0
 			local bool_25_pos_1 = alloc(1)
 			if part ~= nil then
@@ -981,7 +987,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, part: ((BasePart)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local bool_26 = 0
 			local bool_26_pos_1 = alloc(1)
 			if part ~= nil then
@@ -1002,7 +1008,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, part: ((BasePart)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
 			local bool_27 = 0
 			local bool_27_pos_1 = alloc(1)
 			if part ~= nil then
@@ -1025,7 +1031,7 @@ local returns = {
 		Fire = function(Player: Player, cframe: (CFrame))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			local axis_1, angle_1 = cframe:ToAxisAngle()
 			axis_1 = axis_1 * angle_1
 			alloc(4)
@@ -1045,7 +1051,7 @@ local returns = {
 		FireExcept = function(Except: Player, cframe: (CFrame))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			local axis_2, angle_2 = cframe:ToAxisAngle()
 			axis_2 = axis_2 * angle_2
 			alloc(4)
@@ -1074,7 +1080,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, cframe: (CFrame))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			local axis_3, angle_3 = cframe:ToAxisAngle()
 			axis_3 = axis_3 * angle_3
 			alloc(4)
@@ -1101,7 +1107,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, cframe: (CFrame))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 29)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
 			local axis_4, angle_4 = cframe:ToAxisAngle()
 			axis_4 = axis_4 * angle_4
 			alloc(4)
@@ -2507,7 +2513,7 @@ local returns = {
 		Fire = function(Player: Player, sound: ((Sound)?), timePos: ((number)?))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			local bool_48 = 0
 			local bool_48_pos_1 = alloc(1)
 			if sound ~= nil then
@@ -2526,7 +2532,7 @@ local returns = {
 		FireExcept = function(Except: Player, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			local bool_49 = 0
 			local bool_49_pos_1 = alloc(1)
 			if sound ~= nil then
@@ -2554,7 +2560,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			local bool_50 = 0
 			local bool_50_pos_1 = alloc(1)
 			if sound ~= nil then
@@ -2580,7 +2586,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, sound: ((Sound)?), timePos: ((number)?))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 28)
 			local bool_51 = 0
 			local bool_51_pos_1 = alloc(1)
 			if sound ~= nil then
@@ -4041,7 +4047,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_114 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_114)
@@ -4052,7 +4058,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_115 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_115)
@@ -4072,7 +4078,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_116 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_116)
@@ -4090,7 +4096,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, text: (string))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 30)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
 			local len_117 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_117)
@@ -4110,7 +4116,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string), duration: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_118 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_118)
@@ -4123,7 +4129,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string), duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_119 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_119)
@@ -4145,7 +4151,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, text: (string), duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_120 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_120)
@@ -4165,7 +4171,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, text: (string), duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
 			local len_121 = #text
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_121)
@@ -4187,7 +4193,7 @@ local returns = {
 		Fire = function(Player: Player, duration: (number))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			player_map[Player] = save()
@@ -4195,7 +4201,7 @@ local returns = {
 		FireExcept = function(Except: Player, duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -4212,7 +4218,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -4227,7 +4233,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, duration: (number))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 33)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 34)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, duration)
 			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
@@ -4244,7 +4250,7 @@ local returns = {
 		Fire = function(Player: Player, text: (string), showBar: (boolean))
 			load_player(Player)
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local bool_68 = 0
 			local bool_68_pos_1 = alloc(1)
 			local len_122 = #text
@@ -4261,7 +4267,7 @@ local returns = {
 		FireExcept = function(Except: Player, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local bool_69 = 0
 			local bool_69_pos_1 = alloc(1)
 			local len_123 = #text
@@ -4287,7 +4293,7 @@ local returns = {
 		FireList = function(List: { [unknown]: Player }, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local bool_70 = 0
 			local bool_70_pos_1 = alloc(1)
 			local len_124 = #text
@@ -4311,7 +4317,7 @@ local returns = {
 		FireSet = function(Set: { [Player]: any }, text: (string), showBar: (boolean))
 			load_empty()
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 31)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 32)
 			local bool_71 = 0
 			local bool_71_pos_1 = alloc(1)
 			local len_125 = #text
@@ -4341,6 +4347,55 @@ local returns = {
 			reliable_events[15] = Callback
 			return function()
 				reliable_events[15] = nil
+			end
+		end,
+	},
+	Class_ChainUIUpdateSupport = {
+		Fire = function(Player: Player)
+			load_player(Player)
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			player_map[Player] = save()
+		end,
+		FireExcept = function(Except: Player)
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in Players:GetPlayers() do
+				if player ~= Except then
+					load_player(player)
+					alloc(used)
+					buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+					table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+					player_map[player] = save()
+				end
+			end
+		end,
+		FireList = function(List: { [unknown]: Player })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for _, player in List do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
+			end
+		end,
+		FireSet = function(Set: { [Player]: any })
+			load_empty()
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
+			local buff, used, inst = outgoing_buff, outgoing_used, outgoing_inst
+			for player in Set do
+				load_player(player)
+				alloc(used)
+				buffer.copy(outgoing_buff, outgoing_apos, buff, 0, used)
+				table.move(inst, 1, #inst, #outgoing_inst + 1, outgoing_inst)
+				player_map[player] = save()
 			end
 		end,
 	},

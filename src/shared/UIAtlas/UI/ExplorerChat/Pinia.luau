@@ -341,8 +341,7 @@ return function (self: Self)
             local found = false
 
             for _, questSymbol: StringValue in quests do
-                if not questSymbol.Value then continue end
-                if questSymbol.Value == "Completed" then continue end
+                if questSymbol:GetAttribute("IsCompleted") then continue end
 
                 local questId = questSymbol.Name
 

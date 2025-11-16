@@ -26,6 +26,7 @@ local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 local HarukaParty = require(SSS.HarukaServer.Shared.HarukaParty)
+local HarukaQuest = require(SSS.HarukaServer.Shared.HarukaQuest)
 
 
 
@@ -827,6 +828,16 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if bindableId then
             if QuestBindables[bindableId] then
                 QuestBindables[bindableId]:Fire(plr)
+            end
+        end
+
+
+        local quests = npcModel:FindFirstChild("Quests")
+        if quests then
+            local harukaQuestObj = HarukaQuest.GetObjByPlayer(plr)
+
+            for _, questVal: BoolValue in quests:GetChildren() do
+                harukaQuestObj:GiveQuest(questVal.Name)
             end
         end
     end)
