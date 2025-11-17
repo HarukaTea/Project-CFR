@@ -19,8 +19,6 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
-local wait = task.wait
-
 
 local Pinia = require(script.Pinia)
 

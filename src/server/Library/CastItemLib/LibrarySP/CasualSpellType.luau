@@ -16,9 +16,6 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local Types = require(script.Parent.Parent.Types)
 
 
-local wait = task.wait
-
-
 return function (self: Types.CastItemLib)
     local CastItemLib = self
 

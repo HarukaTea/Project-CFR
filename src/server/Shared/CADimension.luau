@@ -19,7 +19,6 @@ local key = "_AllWorlds"
 
 local privateServerId = game.PrivateServerId
 local serverId = game.JobId
-local placeIdStr = tostring(game.PlaceId)
 
 local isUploaded = false
 local isRemoving = false

@@ -1,7 +1,6 @@
 
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
-local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
@@ -13,9 +12,6 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local CircleFX = require(script.Parent.Components.CircleFX)
 local TicketPurchase = require(script.Parent.Components.TicketPurchase)
-
-local wait = task.wait
-
 
 local Pinia = require(script.Parent.Pinia)
 

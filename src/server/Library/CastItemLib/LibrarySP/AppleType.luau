@@ -7,8 +7,6 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
 local Types = require(script.Parent.Parent.Types)
 
-local wait = task.wait
-
 
 return function (self: Types.CastItemLib)
     local CastItemLib = self

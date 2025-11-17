@@ -4,7 +4,6 @@ local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local PPS = game:GetService("ProximityPromptService")
 local RepS = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 

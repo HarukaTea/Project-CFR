@@ -29,9 +29,6 @@ local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 
-local wait = task.wait
-
-
 function ServerWorldLib:Init()
     if not workspace:FindFirstChild("Maps") then
         error("Maps folder not found in workspace")

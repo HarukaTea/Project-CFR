@@ -30,8 +30,6 @@ return function (scope: Fusion.Scope, props: {
 
     props.Platform = HarukaLib:GetDevice()
 
-    local isPC = props.Platform == "PC" or props.Platform == "Console"
-
 
     local promptType = props.PromptObject.Name :: string
     if not AssetBook.PromptIcons[promptType] then
@@ -68,6 +66,8 @@ return function (scope: Fusion.Scope, props: {
     local keyOrIcon = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean) :: boolean
+
+        boolean = boolean
 
         if input == "Keyboard" then
             return Components.TextLabel(scope, {

@@ -54,6 +54,8 @@ return function(scope: Fusion.Scope, props: {
         key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
             local boolean = use(refreshBoolean) :: boolean
 
+            boolean = boolean
+
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,

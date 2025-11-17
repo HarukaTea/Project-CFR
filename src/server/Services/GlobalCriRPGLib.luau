@@ -100,6 +100,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local tutorialPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].Tutorial
         local code = TeleportService:ReserveServer(tutorialPlaceId)
 
+        teleportOptions.ReservedServerAccessCode = code
+
         TeleportService:TeleportAsync(tutorialPlaceId, { plr }, teleportOptions)
 
         Events.CreateFSNotify_S.Fire(plr, "Teleporting to tutorial...", 15)
@@ -834,10 +836,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local quests = npcModel:FindFirstChild("Quests")
         if quests then
-            local harukaQuestObj = HarukaQuest.GetObjByPlayer(plr)
-
             for _, questVal: BoolValue in quests:GetChildren() do
-                harukaQuestObj:GiveQuest(questVal.Name)
+                HarukaQuest.GiveQuest(plr, questVal.Name)
             end
         end
     end)

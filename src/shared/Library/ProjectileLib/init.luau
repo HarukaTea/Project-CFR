@@ -1,6 +1,5 @@
 
 local Debris = game:GetService("Debris")
-local TweenService = game:GetService("TweenService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)

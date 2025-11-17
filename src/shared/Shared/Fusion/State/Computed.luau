@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -55,7 +56,7 @@ local function Computed<T, S>(
 			_EXTREMELY_DANGEROUS_usedAsValue = nil,
 			_innerScope = nil,
 			_processor = processor
-		}, 
+		},
 		METATABLE
 	) :: any
 	local destroy = function()
@@ -86,8 +87,8 @@ function class._evaluate<T, S>(
 		local targetState = castToState(target)
 		if targetState ~= nil then
 			checkLifetime.bOutlivesA(
-				outerScope, self.oldestTask, 
-				targetState.scope, targetState.oldestTask, 
+				outerScope, self.oldestTask,
+				targetState.scope, targetState.oldestTask,
 				checkLifetime.formatters.useFunction
 			)
 			depend(self, targetState)
@@ -108,7 +109,7 @@ function class._evaluate<T, S>(
 	else
 		local errorObj = (newValue :: any) :: Types.Error
 		doCleanup(innerScope)
-		
+
 		-- this needs to be non-fatal, because otherwise it'd disrupt the
 		-- update process
 		External.logErrorNonFatal("callbackError", errorObj)

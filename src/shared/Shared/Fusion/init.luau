@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 --[[

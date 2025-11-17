@@ -7,8 +7,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 
-local wait = task.wait
-
 
 export type Self = {
     plr: Player,

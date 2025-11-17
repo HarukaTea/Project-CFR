@@ -12,8 +12,6 @@ local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
 
-local trueBefore = false
-
 
 local event = Instance.new("BindableEvent")
 event.Name = "PlayerClassUltCasted"

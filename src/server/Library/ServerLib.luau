@@ -318,6 +318,10 @@ function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 		Amount = amount
 	})
 	Events.PlaySound_S.Fire(plr, SoundService.SFXs.ItemAcquired)
+
+
+	-- add quest progress
+
 end
 
 

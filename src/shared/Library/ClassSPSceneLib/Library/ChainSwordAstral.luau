@@ -1,7 +1,6 @@
 
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
@@ -20,7 +19,6 @@ local wait = task.wait
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
     local targetingEnemy = char.TargetingEnemy.Value

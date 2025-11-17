@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -102,7 +103,7 @@ return {
 		BorderColor3 = Color3.new(0, 0, 0),
 		BorderSizePixel = 0
 	},
-	
+
 	CanvasGroup = {
 		BackgroundColor3 = Color3.new(1, 1, 1),
 		BorderColor3 = Color3.new(0, 0, 0),
@@ -134,7 +135,7 @@ return {
 	WireframeHandleAdornment = {
 		ZIndex = 0
 	},
-	
+
 	Part = {
 		Anchored = true,
 		Size = Vector3.one,
@@ -145,7 +146,7 @@ return {
 		TopSurface = Enum.SurfaceType.Smooth,
 		BottomSurface = Enum.SurfaceType.Smooth,
 	},
-	
+
 	TrussPart = {
 		Anchored = true,
 		Size = Vector3.one * 2,

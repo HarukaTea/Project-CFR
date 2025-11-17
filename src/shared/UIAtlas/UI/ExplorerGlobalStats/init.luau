@@ -6,8 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-local wait = task.wait
-
 
 local Pinia = require(script.Pinia)
 

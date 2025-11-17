@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -22,7 +23,7 @@ function checkLifetime.formatters.useFunction(
 	local usedName = nameOf(used, "object")
 	return `The use()-d {usedName}`, `the {selfName}`
 end
-	
+
 function checkLifetime.formatters.boundProperty(
 	instance: Instance,
 	bound: unknown,

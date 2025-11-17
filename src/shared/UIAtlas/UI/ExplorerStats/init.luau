@@ -15,12 +15,8 @@ local LevelStarterComponent = require(script.Components.LevelStarterBtn)
 
 
 
-local _Class_ChainBar = require(script.Components._Class_ChainBar)
-
-
 local Children = Fusion.Children
 
-local wait = task.wait
 
 local Pinia = require(script.Pinia)
 
@@ -129,25 +125,6 @@ return function(plr: Player)
             [Children] = {
                 MenuSelections(scope, {
                     MenuShowValue = self.MenuSelectionShown
-                }),
-
-
-                Components.Frame(scope, {
-                    Name = "ClassAbilityDiv_Center",
-                    AnchorPoint = Vector2.zero,
-                    Position = UDim2.fromScale(0, 1.5),
-
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 0.95
-                        }),
-
-
-                        _Class_ChainBar(scope, {
-                            ClassVal = self.ChainCombo,
-                            Char = self.char
-                        })
-                    }
                 })
             }
         },

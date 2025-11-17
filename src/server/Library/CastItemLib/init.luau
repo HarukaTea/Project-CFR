@@ -16,10 +16,6 @@ export type CastItemLib = Types.CastItemLib
 
 local CastItemLib = {} :: CastItemLib
 
-local wait = task.wait
-
-
-
 
 local function _preCheck(props: {
     ReqCombat: boolean,

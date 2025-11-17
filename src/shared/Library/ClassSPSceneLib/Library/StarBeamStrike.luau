@@ -13,9 +13,6 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local Types = require(script.Parent.Parent.Types)
 
 
-local wait = task.wait
-
-
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)

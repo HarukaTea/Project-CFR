@@ -14,7 +14,6 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 
 local Children = Fusion.Children
 
-local wait = task.wait
 
 return function(scope: Fusion.Scope, props: {
     ProductId: string,

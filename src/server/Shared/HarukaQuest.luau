@@ -2,8 +2,6 @@
 --// Inspired by RoQuests
 --// @Author: HarukaTea
 
-
-local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -24,32 +22,37 @@ export type SavedQuestData = {
     }
 }
 
+export type HarukaQuestData = {
+    Data: QuestBook.QuestJSON,
+    Container: Folder
+}
+
 
 export type HarukaQuestClass = {
-    __index: HarukaQuestClass,
+    InitPlayer: (plr: Player) -> HarukaQuestClass,
+    StopTrackingPlayer: (plr: Player) -> nil,
 
-    new: (plr: Player) -> HarukaQuestClass,
+
     _checkIsReqCompleted: (plr: Player, questData: QuestBook.QuestJSON) -> boolean,
 
-    GetObjByPlayer: (plr: Player) -> HarukaQuestClass,
+
+    GiveQuest: (plr: Player, questId: string) -> nil,
+    AddProgress: (plr: Player, questId: string, objectiveId: string, amount: number) -> nil,
+    RemoveQuest: (plr: Player, questId: string) -> nil,
+    CheckQuestCompletion: (plr: Player, questId: string) -> nil,
+    CompleteQuest: (plr: Player, questId: string) -> nil,
+    ExportDataTable: (plr: Player) -> SavedQuestData,
+    LoadSavedTable: (plr: Player, savedData: SavedQuestData) -> nil,
+
+    GetAllQuests: (plr: Player) -> { [string]: HarukaQuestData },
+    GetDoingQuests: (plr: Player) -> { [string]: HarukaQuestData },
+    GetCompletedQuests: (plr: Player) -> { [string]: HarukaQuestData },
+    GetQuestData: (plr: Player, questId: string) -> QuestBook.QuestJSON?,
 
 
-    GiveQuest: (self: HarukaQuestClass, questId: string) -> nil,
-    AddProgress: (self: HarukaQuestClass, questId: string, objectiveId: string, amount: number) -> nil,
-    RemoveQuest: (self: HarukaQuestClass, questId: string) -> nil,
-    CheckQuestCompletion: (self: HarukaQuestClass, questId: string) -> nil,
-    CompleteQuest: (self: HarukaQuestClass, questId: string) -> nil,
-    ExportDataTable: (self: HarukaQuestClass) -> SavedQuestData,
-    LoadSavedTable: (self: HarukaQuestClass, savedData: SavedQuestData) -> nil,
-
-    Destroy: (self: HarukaQuestClass) -> nil,
-
-
-    Player: Player,
     ActiveQuests: {
-        [string]: {
-            Data: QuestBook.QuestJSON,
-            Container: Folder
+        [Player]: {
+            [string]: HarukaQuestData
         }
     }
 }
@@ -58,11 +61,8 @@ export type HarukaQuestClass = {
 
 
 local HarukaQuest = {} :: HarukaQuestClass
-HarukaQuest.__index = HarukaQuest
 
-
-
-local allQuestsObjPool = {}
+HarukaQuest.ActiveQuests = {}
 
 
 
@@ -82,39 +82,20 @@ HarukaQuest._checkIsReqCompleted = _checkIsReqCompleted
 
 
 
-function HarukaQuest.GetObjByPlayer(plr: Player) : HarukaQuestClass
-    return allQuestsObjPool[plr]
+function HarukaQuest.InitPlayer(plr: Player)
+    HarukaQuest.ActiveQuests[plr] = {}
+end
+
+
+function HarukaQuest.StopTrackingPlayer(plr: Player)
+    HarukaQuest.ActiveQuests[plr] = nil
 end
 
 
 
-
-function HarukaQuest.new(plr: Player)
-    local self = setmetatable({}, HarukaQuest)
-
-
-    self.Player = plr
-    self.ActiveQuests = {}
-
-
-    allQuestsObjPool[plr] = self
-
-    return self
-end
-
-
-function HarukaQuest:Destroy()
-    allQuestsObjPool[self.Player] = nil
-end
-
-
-
-function HarukaQuest:GiveQuest(questId: string)
+function HarukaQuest.GiveQuest(plr: Player, questId: string)
     local questData = QuestBook[questId] :: QuestBook.QuestJSON
     if not questData then return  warn("Quest not found:", questId) end
-
-    local plr = self.Player
-
 
     if not _checkIsReqCompleted(plr, questData) then return end
     if plr.Quests:FindFirstChild(questId) then return end
@@ -133,7 +114,7 @@ function HarukaQuest:GiveQuest(questId: string)
     end
 
 
-    self.ActiveQuests[questId] = {
+    HarukaQuest.ActiveQuests[plr][questId] = {
         Data = questData,
         Container = folder,
     }
@@ -142,30 +123,27 @@ end
 
 
 
-function HarukaQuest:AddProgress(questId: string, objectiveId: string, amount: number)
-    local plr = self.Player
-    if not self.ActiveQuests[questId] then return end
+function HarukaQuest.AddProgress(plr: Player, questId: string, objectiveId: string, amount: number)
+    if not HarukaQuest.ActiveQuests[plr][questId] then return end
 
-    local container = self.ActiveQuests[questId].Container
+    local container = HarukaQuest.ActiveQuests[plr][questId].Container
     local objectiveVal = container:GetAttribute(objectiveId)
     if not objectiveVal then return end
 
 
     HarukaLib:AddAttr(container, objectiveId, amount)
-
-
-    self:CheckQuestCompletion(questId)
+    HarukaQuest.CheckQuestCompletion(plr, questId)
 end
 
 
 
 
 
-function HarukaQuest:CheckQuestCompletion(questId: string)
-    if not self.ActiveQuests[questId] then return end
+function HarukaQuest.CheckQuestCompletion(plr: Player, questId: string)
+    if not HarukaQuest.ActiveQuests[plr][questId] then return end
 
-    local questData = self.ActiveQuests[questId].Data
-    local container = self.ActiveQuests[questId].Container
+    local questData = HarukaQuest.ActiveQuests[plr][questId].Data
+    local container = HarukaQuest.ActiveQuests[plr][questId].Container
 
     for _, objective: QuestBook.QuestObjectiveJSON in questData.Objectives do
         if container:GetAttribute(objective.ObjectiveId) < objective.Target then
@@ -174,27 +152,27 @@ function HarukaQuest:CheckQuestCompletion(questId: string)
     end
 
 
-    self:CompleteQuest(questId)
+    HarukaQuest.CompleteQuest(plr, questId)
 end
 
 
 
-function HarukaQuest:CompleteQuest(questId: string)
-    if not self.ActiveQuests[questId] then return end
+function HarukaQuest.CompleteQuest(plr: Player, questId: string)
+    if not HarukaQuest.ActiveQuests[plr][questId] then return end
 
-    self.ActiveQuests[questId].Container:SetAttribute("IsCompleted", true)
+    HarukaQuest.ActiveQuests[plr][questId].Container:SetAttribute("IsCompleted", true)
 
 
-    ServerBindables.QuestCompleted:Fire(self.Player, questId)
+    ServerBindables.QuestCompleted:Fire(plr, questId)
 end
 
 
 
 
-function HarukaQuest:ExportDataTable()
+function HarukaQuest.ExportDataTable(plr: Player) : SavedQuestData
     local result = {}
 
-    for _, questFolder: Folder in self.Player.Quests:GetChildren() do
+    for _, questFolder: Folder in plr.Quests:GetChildren() do
         local questId = questFolder.Name
         local questData = {
             Completed = questFolder:GetAttribute("IsCompleted") or false,
@@ -214,14 +192,11 @@ function HarukaQuest:ExportDataTable()
 end
 
 
-function HarukaQuest:LoadSavedTable(savedData: SavedQuestData)
-    local plr = self.Player
-
-
+function HarukaQuest.LoadSavedTable(plr: Player, savedData: SavedQuestData)
     for questId, state in savedData do
         if not QuestBook[questId] then continue end
 
-        self:GiveQuest(questId)
+        HarukaQuest.GiveQuest(plr, questId)
         local container = plr.Quests:FindFirstChild(questId)
 
         for objId, value in state.Objectives do
@@ -233,6 +208,43 @@ function HarukaQuest:LoadSavedTable(savedData: SavedQuestData)
     end
 end
 
+
+function HarukaQuest.GetAllQuests(plr: Player) : { [string]: HarukaQuestData }
+    return HarukaQuest.ActiveQuests[plr]
+end
+
+
+function HarukaQuest.GetDoingQuests(plr: Player) : { [string]: HarukaQuestData }
+    local result = {}
+
+    for questId: string, questData: HarukaQuestData in HarukaQuest.ActiveQuests[plr] do
+        if questData.Container:GetAttribute("IsCompleted") then continue end
+
+        result[questId] = questData
+    end
+
+    return result
+end
+
+
+function HarukaQuest.GetCompletedQuests(plr: Player) : { [string]: HarukaQuestData }
+    local result = {}
+
+    for questId: string, questData: HarukaQuestData in HarukaQuest.ActiveQuests[plr] do
+        if not questData.Container:GetAttribute("IsCompleted") then continue end
+
+        result[questId] = questData
+    end
+
+    return result
+end
+
+
+function HarukaQuest.GetQuestData(plr: Player, questId: string) : QuestBook.QuestJSON?
+    if not HarukaQuest.ActiveQuests[plr][questId] then return nil end
+
+    return HarukaQuest.ActiveQuests[plr][questId].Data
+end
 
 
 return HarukaQuest

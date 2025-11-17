@@ -31,35 +31,6 @@ export type QuestJSON = {
 }
 
 
-
-local template = {
-    Id = "",
-    QuestType = "Main",
-
-    Name = "",
-    Target = "",
-    NPC = "",
-    WorldLocatorId = "",
-
-    Repeatable = false,
-    RequiredQuests = {
-        "Main1"
-    },
-
-    Rewards = {
-        Gold = 15
-    },
-    Objectives = {
-        [1] = {
-            ObjectiveId = "Slime",
-            Default = 0,
-            Target = 5,
-        }
-    }
-}
-
-
-
 local quests = {
     --// Main
     Main1 = {

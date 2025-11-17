@@ -14,7 +14,6 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
-local wait = task.wait
 
 
 export type Self = {
@@ -76,9 +75,6 @@ export type Self = {
 
     Items: Fusion.Value<{ IntConstrainedValue }>,
     EquippingItems: Fusion.Value<{ StringValue }>,
-
-
-    ChainCombo: Fusion.Value<number>,
 
 
     ActiveList: {
@@ -193,10 +189,6 @@ return function (self: Self)
 
 
     self.MenuSelectionShown = Value(false)
-
-
-    self.ChainCombo = Value(0)
-
 
     --// track server
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -608,16 +600,6 @@ return function (self: Self)
         end,
         ["Attr-IsShieldRepairing"] = function(val: boolean)
             self.IsShieldRepairing:set(val)
-        end
-    }))
-
-
-    --// track class vals
-    table.insert(scope, HarukaLib:Hydrate(self.char, {
-        ["Attr-ChainCombo"] = function(val: number)
-            val = val or 0
-
-            self.ChainCombo:set(val)
         end
     }))
 

@@ -8,9 +8,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local AbyssTeambook = require(RepS.HarukaShared.Library.AbyssTeambook)
 
-local wait = task.wait
-
-
 
 export type Self = {
     plr: Player,

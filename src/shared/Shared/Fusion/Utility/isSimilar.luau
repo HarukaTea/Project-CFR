@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -9,7 +10,7 @@ local task = nil -- Disable usage of Roblox's task scheduler
 ]]
 
 local function isSimilar(
-	a: unknown, 
+	a: unknown,
 	b: unknown
 ): boolean
 	local typeA = typeof(a)

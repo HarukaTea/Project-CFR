@@ -1,7 +1,6 @@
 
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
-local TextChatService = game:GetService("TextChatService")
 
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)

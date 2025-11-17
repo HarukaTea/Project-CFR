@@ -43,7 +43,7 @@ end
 
 
 SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
-    local entity, target = entity, target
+
 
     local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("SlimeMove2", true):Clone() :: Model
     local post = ServerLib.FindGroundByRay(entity.PrimaryPart.Position)
@@ -181,7 +181,7 @@ end
 
 
 SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
-    local entity, target = entity, target
+
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
@@ -218,7 +218,7 @@ end
 
 
 SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
-    local entity, target = entity, target
+
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)

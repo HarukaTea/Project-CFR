@@ -15,8 +15,6 @@ local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 
-local wait = task.wait
-
 type Dict = { [string]: any }
 
 

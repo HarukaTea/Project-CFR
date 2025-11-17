@@ -13,7 +13,6 @@ local ServerListView = require(script.Parent.ServerListView)
 
 local Children = Fusion.Children
 
-local wait = task.wait
 
 return function (scope: Fusion.Scope, props: {
     SlotUISignal: RBXScriptSignal,

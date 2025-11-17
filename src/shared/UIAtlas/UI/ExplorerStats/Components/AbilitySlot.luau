@@ -50,6 +50,8 @@ return function(scope: Fusion.Scope, props: {
         local input = use(lastInput) :: string
         local boolean = use(refreshBoolean)
 
+        boolean = boolean
+
         if input == "Controller" then
             local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.Dash.Name] or KeybindsBook.Console.Dash.Name
 

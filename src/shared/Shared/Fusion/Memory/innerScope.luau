@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -17,7 +18,7 @@ local function innerScope<T>(
 	local new = deriveScopeImpl(existing, ...)
 	table.insert(existing, new)
 	table.insert(
-		new, 
+		new,
 		function()
 			local index = table.find(existing, new)
 			if index ~= nil then

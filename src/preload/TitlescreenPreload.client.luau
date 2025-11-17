@@ -1,6 +1,5 @@
 
 local Debris = game:GetService("Debris")
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local RunService = game:GetService("RunService")

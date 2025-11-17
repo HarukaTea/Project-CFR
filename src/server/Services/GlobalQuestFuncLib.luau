@@ -55,10 +55,7 @@ end)
 
 table.insert(GlobalQuestFuncLib.Funcs, function()
     QuestBindables.InterSkyTowerQuest:Connect(function(plr: Player)
-        local questObj = HarukaQuest.GetObjByPlayer(plr)
-        if questObj then
-            questObj:GiveQuest("InterSkyTower")
-        end
+        HarukaQuest.GiveQuest(plr, "InterSkyTower")
     end)
 end)
 

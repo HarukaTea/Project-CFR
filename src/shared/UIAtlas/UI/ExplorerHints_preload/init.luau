@@ -9,9 +9,6 @@ local HarukaListLayout = require(RepS.HarukaShared.Shared.HarukaListLayout)
 
 local Children = Fusion.Children
 
-local wait = task.wait
-
-
 local AfterPinia = require(script.AfterPinia)
 
 

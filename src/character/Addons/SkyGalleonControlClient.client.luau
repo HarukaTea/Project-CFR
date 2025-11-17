@@ -19,9 +19,6 @@ local currentGalleon: Model? = nil
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
-local wait = task.wait
-
-
 Add(Players.PlayerRemoving:Connect(function(player: Player)
 	if player == plr then
 		Empty()

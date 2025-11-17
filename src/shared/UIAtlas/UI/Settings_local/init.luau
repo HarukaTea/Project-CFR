@@ -202,4 +202,5 @@ return function (plr: Player)
             }
         }
     })
+    self.UI = UI
 end

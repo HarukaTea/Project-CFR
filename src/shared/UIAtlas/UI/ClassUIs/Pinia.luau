@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
@@ -13,6 +14,8 @@ export type Self = {
 
     IsUIShown: Fusion.Value<boolean>,
     IsUIShown2: Fusion.Value<boolean>,
+
+    ChainCombo: Fusion.Value<number>,
 }
 
 
@@ -25,6 +28,18 @@ return function (self: Self)
     local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(true)
+
+    self.ChainCombo = Value(0)
+
+    --// track menu
+    table.insert(scope, HarukaLib:Hydrate(self.plr, {
+        ["Attr-CurrentUIGroup"] = function(newPanel: string)
+            if newPanel == nil then return end
+
+            self.IsUIShown:set(newPanel == "None")
+        end
+    }))
+
     self.IsUIShown2 = Value(true)
 
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -32,6 +47,16 @@ return function (self: Self)
             state = state or false
 
             self.IsUIShown2:set(not state)
+        end
+    }))
+
+
+    --// track class vals
+    table.insert(scope, HarukaLib:Hydrate(self.char, {
+        ["Attr-ChainCombo"] = function(val: number)
+            val = val or 0
+
+            self.ChainCombo:set(val)
         end
     }))
 end

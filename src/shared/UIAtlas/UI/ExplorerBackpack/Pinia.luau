@@ -109,10 +109,10 @@ return function (self: Self)
     local blur = Components.BlurFS(scope, {
         Name = "UIBlur_Backpack",
         Size = 21,
-        Parent = workspace.CurrentCamera,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
         end)
     })
+    blur.Parent = workspace.CurrentCamera
 end

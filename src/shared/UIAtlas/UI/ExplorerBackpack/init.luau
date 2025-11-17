@@ -393,6 +393,7 @@ return function (plr: Player)
             }
         }
     })
+    self.UI = UI
 
 
     return function ()

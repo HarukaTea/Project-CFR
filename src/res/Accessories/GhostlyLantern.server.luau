@@ -1,5 +1,4 @@
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -11,7 +10,6 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
-local plr = Players:GetPlayerFromCharacter(char)
 
 
 Add(char.TargetingList.ChildRemoved:Connect(function(child: ObjectValue)

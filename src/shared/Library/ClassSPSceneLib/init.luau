@@ -13,8 +13,6 @@ export type ClassSPSceneLib = Types.ClassSPSceneLib
 
 local ClassSPSceneLib = {} :: ClassSPSceneLib
 
-local wait = task.wait
-
 
 local function _tweenValue(start: number, duration: number, endTime: number)
 	local numVal = Instance.new('NumberValue')

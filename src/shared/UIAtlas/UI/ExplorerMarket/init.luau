@@ -494,10 +494,10 @@ return function (plr: Player)
             }
         }
     })
+    self.UI = UI
+
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

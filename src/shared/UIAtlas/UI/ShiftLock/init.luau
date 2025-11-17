@@ -79,10 +79,12 @@ return function(plr: Player)
 			}
 		}
 	})
+	self.UI = UI
 
 
 	return function ()
 		self.ChangeShiftLockState:Fire("Off")
+
         Fusion.doCleanup(scope)
     end
 end

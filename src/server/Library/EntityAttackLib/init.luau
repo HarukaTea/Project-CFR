@@ -7,10 +7,6 @@ export type EntityAttackLib = Types.EntityAttackObj
 local EntityAttackLib = {} :: EntityAttackLib
 
 
-require(script.UniversalEntity)
-
-local wait = task.wait
-
 
 for _, module: ModuleScript in script.Library:GetDescendants() do
     if module:IsA("ModuleScript") then

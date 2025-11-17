@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -60,7 +61,7 @@ local function Disassembly<S, KI, KO, VI, VO>(
 			_inputTable = inputTable,
 			_constructor = constructor,
 			_subObjects = {}
-		}, 
+		},
 		METATABLE
 	) :: any
 
@@ -79,7 +80,7 @@ local function Disassembly<S, KI, KO, VI, VO>(
 	self.oldestTask = destroy
 	nicknames[self.oldestTask] = "For (internal disassembler)"
 	table.insert(scope, destroy)
-	
+
 	return self
 end
 
@@ -166,7 +167,7 @@ function class._evaluate<S, KI, KO, VI, VO>(
 				if pendingValue == oldInputValue then
 					-- If the values are the same, then no need to update those,
 					-- so prefer this choice to any other.
-					break 
+					break
 				end
 			end
 		end

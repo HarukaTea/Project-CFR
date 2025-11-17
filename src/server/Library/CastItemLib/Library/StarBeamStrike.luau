@@ -14,9 +14,6 @@ local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local Types = require(script.Parent.Parent.Types)
 
 
-local wait = task.wait
-
-
 return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo: {}) : number?
     local CastItemLib = self
 

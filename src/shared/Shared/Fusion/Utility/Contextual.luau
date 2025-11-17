@@ -1,3 +1,4 @@
+--!nolint LocalUnused
 
 local task = nil -- Disable usage of Roblox's task scheduler
 
@@ -33,7 +34,7 @@ local function Contextual<T>(
 			-- callback, it would be held strongly in this table forever
 			_valuesNow = setmetatable({}, WEAK_KEYS_METATABLE),
 			_defaultValue = defaultValue
-		}, 
+		},
 		METATABLE
 	) :: any
 
@@ -63,7 +64,7 @@ function class.is<T>(
 	newValue: T
 )
 	local methods = {}
-	
+
 	function methods.during<T, A...>(
 		_: any, -- during is called with colon syntax but we don't care
 		callback: (A...) -> T,

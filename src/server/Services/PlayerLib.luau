@@ -177,9 +177,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         talentFolder.Parent = plr
 
 
-        local harukaQuestObj = HarukaQuest.new(plr)
-
-
         for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in validatedData.ItemsSQL do
             local itemVal = Instance.new("IntConstrainedValue")
             itemVal.MinValue = 0
@@ -216,12 +213,17 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         end
 
 
+        HarukaQuest.InitPlayer(plr)
+
+
         local isAbyss = workspace:GetAttribute("AbyssId")
         local isDungeon = workspace:GetAttribute("DungeonId")
 
         if not isAbyss and not isDungeon then
-            harukaQuestObj:LoadSavedTable(validatedData.QuestsV3)
-            self.Add(harukaQuestObj)
+            HarukaQuest.LoadSavedTable(plr, validatedData.QuestsV3)
+            self.Add(function()
+                HarukaQuest.StopTrackingPlayer(plr)
+            end)
         end
 
 
@@ -614,13 +616,11 @@ function PlayerLib:_SaveData()
 
     local items = self.Player.Items :: Folder
     local equippingItems = self.Player.EquippingItems :: Folder
-    local quests = self.Player.Quests :: Folder
     local criSettings = self.Player.CriRPGSettings :: Configuration
     local talents = self.Player.Talents :: Folder
 
     local itemSQL = {}
     local equippingItemsSQL = {}
-    local questsV2 = {}
     local criSettingsSQL = {}
     local talentsSQL = {}
 
@@ -672,9 +672,9 @@ function PlayerLib:_SaveData()
 
         if not isAbyss and not isDungeon then
             --- im not 100% sure if this will work correctly, better pcall it
-            local harukaQuestObj = HarukaQuest.GetObjByPlayer(self.Player)
-            if harukaQuestObj then
-                profileAttrs.QuestsV3 = harukaQuestObj:ExportDataTable()
+            local questData = HarukaQuest.ExportDataTable(self.Player)
+            if questData then
+                profileAttrs.QuestsV3 = questData
             end
         end
     end)

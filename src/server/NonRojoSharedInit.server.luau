@@ -1,5 +1,4 @@
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --// For teamwork purposes, init files that arent in the rojo Project

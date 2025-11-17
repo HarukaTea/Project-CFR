@@ -553,12 +553,13 @@ table.insert(ClientWorldLib.Funcs, function()
             local itemSphere = ReplicatedStorage.Packages.Effects.ItemDisplay:Clone() :: BasePart
 
             itemSphere.CFrame = CFrame.new(location) * CFrame.new(0, itemSphere.Size.Y / 2, 0)
+
             itemSphere:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
+            itemSphere:SetAttribute("AutoPickup", autoPickup)
+
             itemSphere:AddTag("ItemDisplayEntity")
             itemSphere.Anchored = true
             itemSphere.CanCollide = false
-
-            itemSphere:SetAttribute("AutoPickup", data.AllowAutoPickUp)
 
             local info = ItemBook:GetItemInfo(data.ItemId)
             if info == nil then

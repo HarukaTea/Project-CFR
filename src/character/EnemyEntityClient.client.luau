@@ -19,7 +19,6 @@ local Add, Empty = HarukaLib.Bin()
 
 
 local player = Players.LocalPlayer
-local plr = player
 local char = script:FindFirstAncestorOfClass("Model")
 
 local RNG = Random.new()

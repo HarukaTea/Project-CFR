@@ -18,7 +18,6 @@ local wait = task.wait
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    local ClassSPSceneLib = self
     if not ClientLib.IsCharValid(char) then return end
 
 

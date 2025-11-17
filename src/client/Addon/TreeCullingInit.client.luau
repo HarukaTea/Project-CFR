@@ -14,9 +14,6 @@ local flowerContainer = workspace:WaitForChild("FlowerContainer", 999)
 
 local plr = Players.LocalPlayer
 
-local wait = task.wait
-
-
 local treeRenderDistance = 888
 local flowerRenderDistance = 555
 
