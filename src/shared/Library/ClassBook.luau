@@ -41,13 +41,12 @@ return {
 		Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://119538556978639",
+            UltSkillIcon = "rbxassetid://2965863905",
+            UltSkill_WithoutRecolor = true
         },
 
 
-        BaseStats = {
-
-        }
+        BaseStats = {}
     },
 
 
@@ -57,7 +56,7 @@ return {
 		Type = "Magic",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://79241468928508",
+            UltSkillIcon = "rbxassetid://2965863231",
             UltSkill_WithoutRecolor = true
         },
 
@@ -72,15 +71,32 @@ return {
 		Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://117298958380190",
-            UltSkill_WithoutRecolor = true
+            UltSkillIcon = "rbxassetid://121488236607929",
         },
 
 
         BaseStats = {
-            SpeedCombat = 40
+            SpeedCombat = 40,
+            MaxClassUltProgress = 80
         }
     },
+
+
+    Knight = {
+        Icon = "rbxassetid://2965863677",
+        Color = Color3.fromHex('#ffeaa7'),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://2965863677",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {
+            MaxHealth = 200
+        }
+    },
+
 
     Furioso = {
         Icon = "rbxassetid://128714575176870",
@@ -110,5 +126,103 @@ return {
         BaseStats = {
             ShockingChance = 10
         }
-    }
+    },
+
+
+    Rogue = {
+		Icon = "rbxassetid://12284961892",
+		Color = Color3.fromRGB(255, 170, 255),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+	},
+	Repeater = {
+		Icon = "rbxassetid://12190533959",
+		Color = Color3.fromRGB(65, 179, 255),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+	},
+	Striker = {
+		Icon = "rbxassetid://12190535870",
+		Color = Color3.fromRGB(253, 148, 44),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+	},
+	Alchemist = {
+		Icon = "rbxassetid://12236618949",
+		Color = Color3.fromRGB(43, 188, 93),
+        Type = "Magic",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+	},
+	Illusionist = {
+		Icon = "rbxassetid://15875390788",
+		Color = Color3.fromRGB(0, 255, 252),
+        Type = "Magic",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+	},
+    Juggernaut = {
+        Icon = "rbxassetid://16654290906",
+        Color = Color3.fromRGB(253, 148, 44),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+    },
+    Reaper = {
+        Icon = "rbxassetid://17667241921",
+        Color = Color3.fromRGB(163, 39, 39),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+    },
+    WindDancer = {
+        Icon = "rbxassetid://18423401512",
+        Color = Color3.fromHex('#70a1ff'),
+        Type = "DMG",
+
+        Skills = {
+            UltSkillIcon = "rbxassetid://0",
+            UltSkill_WithoutRecolor = true
+        },
+
+        BaseStats = {}
+    },
 }

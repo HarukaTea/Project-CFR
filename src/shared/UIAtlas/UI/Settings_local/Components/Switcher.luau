@@ -24,11 +24,10 @@ return function(scope: Fusion.Scope, props: {
 		Name = props.OptionId,
 		Size = UDim2.fromScale(0.9, 0.08),
         BackgroundTransparency = 0,
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
         LayoutOrder = props.LayoutOrder,
 
 		[Children] = {
-            Components.UIAspectRatioConstraint(scope, 26.688),
+            Components.UIAspectRatioConstraint(scope, 29.548),
 
             Components.RoundUICorner(scope),
             Components.ScaledUIStroke(scope, {
@@ -119,11 +118,14 @@ return function(scope: Fusion.Scope, props: {
 				AnchorPoint = Vector2.new(0, 0.5),
 				Size = UDim2.fromScale(0.05, 0.8),
 
-				BackgroundColor3 = Color3.fromRGB(255, 247, 233),
-
 				Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
 					return if use(props.BooleanValue) then UDim2.fromScale(0.92, 0.5) else UDim2.fromScale(0.87, 0.5)
 				end), AssetBook.TweenInfos.twiceHalf),
+
+				BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+					return if use(props.BooleanValue) then Components.HarukaColorLab.AzurPromilia.Background else Components.HarukaColorLab.AzurPromilia.Background:Lerp(Color3.fromRGB(), 0.5)
+				end),
+
 
 				[Children] = {
 					Components.RoundUICorner(scope)

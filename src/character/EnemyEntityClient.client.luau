@@ -184,7 +184,7 @@ Add(HarukaLib.Clock(0.5, function()
         if entity:GetAttribute("IsInCombat") then continue end
         if entity:GetAttribute("IsDead") then continue end
         if entity:GetAttribute("EnteringCombat") then continue end
-        if nowClock - entity:GetAttribute("SpawnClock") <= 3 then continue end
+        if nowClock - entity:GetAttribute("SpawnClock") <= 1 then continue end
 
         pcall(function()
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)

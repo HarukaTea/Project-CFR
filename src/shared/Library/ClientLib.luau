@@ -2,6 +2,7 @@
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 
@@ -182,6 +183,10 @@ function ClientLib.TrackEffectListToUI(props: {
 			local uniqueId = effectObj:GetAttribute("TaskUniqueId")
 
 			if effectListContainer:FindFirstChild(uniqueId) then continue end
+
+			local playerOnly = effectObj:GetAttribute("PlayerOnly") :: string
+			if playerOnly and playerOnly ~= Players.LocalPlayer.Name then continue end
+
 
 			local symbol = Instance.new("StringValue")
 			symbol.Name = uniqueId

@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 
 export type Self = {
@@ -15,7 +16,14 @@ export type Self = {
     IsUIShown: Fusion.Value<boolean>,
     IsUIShown2: Fusion.Value<boolean>,
 
+    IsInCombat: Fusion.Value<boolean>,
+    Class: Fusion.Value<string>,
+
     ChainCombo: Fusion.Value<number>,
+    ReverberationPitch: Fusion.Value<number>,
+
+
+    TargetingList: Fusion.Value<{ ObjectValue }>,
 }
 
 
@@ -30,6 +38,15 @@ return function (self: Self)
     self.IsUIShown = Value(true)
 
     self.ChainCombo = Value(0)
+    self.ReverberationPitch = Value(0)
+
+    local char = self.char :: Model
+    self.TargetingList = FusionComponents.useChildren(scope, char:WaitForChild("TargetingList", 999))
+
+
+    self.Class = Value("Chain")
+    self.IsInCombat = Value(false)
+
 
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -57,6 +74,28 @@ return function (self: Self)
             val = val or 0
 
             self.ChainCombo:set(val)
+        end,
+        ["Attr-ReverberationPitch"] = function(val: number)
+            val = val or 0
+
+            self.ReverberationPitch:set(val)
+        end
+    }))
+
+
+
+    table.insert(scope, HarukaLib:Hydrate(self.plr, {
+        ["Attr-Class"] = function(val: string)
+            val = val or "Burst"
+
+            self.Class:set(val)
+        end
+    }))
+    table.insert(scope, HarukaLib:Hydrate(self.char, {
+        ["Attr-IsInCombat"] = function(state: boolean)
+            state = state or false
+
+            self.IsInCombat:set(state)
         end
     }))
 end

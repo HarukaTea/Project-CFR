@@ -21,12 +21,12 @@ return function (scope: Fusion.Scope, props: {
         LayoutOrder = props.Index,
 
         [Children] = {
-            Components.UIAspectRatioConstraint(scope, 21.063),
+            Components.UIAspectRatioConstraint(scope, 14.042),
 
             Components.TextLabel(scope, {
                 Name = "PlayerName",
-                Position = UDim2.fromScale(0.08, 0),
-                Size = UDim2.fromScale(0.3, 1),
+                Position = UDim2.fromScale(0.1, 0),
+                Size = UDim2.fromScale(0.5, 1),
                 Text = props.PlayerName,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AutoLocalize = false,
@@ -43,12 +43,12 @@ return function (scope: Fusion.Scope, props: {
                 }
             }),
             Components.TextLabel(scope, {
-                Name = "Stat",
+                Name = "RobuxDonated",
                 AnchorPoint = Vector2.xAxis,
-                Position = UDim2.fromScale(0.98, 0),
+                Position = UDim2.fromScale(0.95, 0),
                 Size = UDim2.fromScale(0.3, 1),
                 TextXAlignment = Enum.TextXAlignment.Right,
-                Text = `{utf8.char(0xE002)} {props.Value}`,
+                Text = `{props.Value}`,
 
 
                 [Children] = {

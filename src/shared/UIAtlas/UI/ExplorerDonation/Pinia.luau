@@ -33,12 +33,6 @@ return function (self: Self)
     self.IsUIShown = Value(false)
 
 
-    self.CurrentCategory = Value("Donation")
-    self.PanelSelected = Value("Featured")
-
-    self.PanelList = { "Donation #1", "Donation #2" }
-
-
     local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("DonationRankContainer", 999))
     self.DonationRanks = ranks :: Fusion.Value<{ IntValue }>
 
@@ -51,7 +45,7 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "Donation")
 
             if newPanel == "Donation" then
-                if game.PlaceId ~= AssetBook.PlaceIds["7037847546"].Mainworld then
+                if game.GameId ~= AssetBook.CFUniverseId_Main then
                     Bindables.CloseExplorerUIs:Fire()
                     Bindables.CreateNotify:Fire("You can't donate in test place!")
                 end

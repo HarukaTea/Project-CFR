@@ -53,18 +53,28 @@ end
 
 StatusLib.CreateCustomEffect = function(eff: string, char: Model, props: {
     Duration: number,
+    PlayerOnly: string?,
+    IsDebuff: boolean?,
 })
     if not ServerLib.IsCharValid(char) then return end
 
+    local boostStr = "Boost"
+    if props.IsDebuff then
+        boostStr = "Debuff"
+    end
+
     local effectSymbol = Instance.new("StringValue")
     effectSymbol.Name = "EffectSymbol"
-    effectSymbol.Value = eff.."Boost"
+    effectSymbol.Value = eff..boostStr
 
     effectSymbol:SetAttribute("Ex", 0)
     effectSymbol:SetAttribute("ExPower", 1)
     effectSymbol:SetAttribute("EndClock", DateTime.now().UnixTimestamp + props.Duration)
 
     effectSymbol:SetAttribute("TaskUniqueId", HttpService:GenerateGUID(false))
+
+
+    effectSymbol:SetAttribute("_PlayerOnly", props.PlayerOnly)
 
     effectSymbol.Parent = char.EffectList
     Debris:AddItem(effectSymbol, props.Duration)

@@ -32,15 +32,11 @@ return function(plr: Player)
 		Parent = plr.PlayerGui,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(self.IsUIShown)
+            return use(self.IsUIShown) and use(self.IsUIShown2)
         end)
 
 	}, {
         BottomProps = {
-            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return use(self.IsUIShown2)
-            end),
-
             [Children] = {
                 Components.Frame(scope, {
                     Name = "CastTimeBars",
@@ -76,11 +72,6 @@ return function(plr: Player)
             }
         },
         CenterProps = {
-            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return use(self.IsUIShown2)
-            end),
-
-
             [Children] = {
                 Components.Frame(scope, {
                     Name = "ItemDropsDiv",
@@ -112,10 +103,6 @@ return function(plr: Player)
         },
 
         TopProps = {
-            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return use(self.IsUIShown2)
-            end),
-
             [Children] = {
                 Components.Frame(scope, {
                     Name = "LevelEXP",

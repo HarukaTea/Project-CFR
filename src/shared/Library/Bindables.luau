@@ -63,6 +63,9 @@ return {
     --@params: `(uniqueId: string, result: "YES" | "NO")`
     ConfirmPromptChosen = Signal.new(),
 
+    --@params: `None`
+    DevProductPurchasing = Signal.new(),
+
 
 
 

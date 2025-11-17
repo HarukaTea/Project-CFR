@@ -3,6 +3,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -54,7 +55,6 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.UIAspectRatioConstraint(scope, 1.271),
             Components.UICorner(scope, {
                 CornerRadius = UDim.new(0.1, 0)
             }),
@@ -77,6 +77,22 @@ return function(scope: Fusion.Scope, props: {
             }),
 
             Components.TextLabel(scope, {
+                Name = "Featured",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.5),
+                Size = UDim2.fromScale(0.5, 0.15),
+                BackgroundTransparency = 0,
+                BackgroundColor3 = Components.WHITE_COLOR,
+                TextColor3 = Components.BLACK_COLOR,
+
+                Text = "Featured",
+
+                [Children] = {
+                    Components.RoundUICorner(scope)
+                }
+            }),
+
+            Components.TextLabel(scope, {
                 Name = "Price",
                 AnchorPoint = Vector2.new(0.5, 1),
                 Position = UDim2.fromScale(0.5, 1),
@@ -88,7 +104,7 @@ return function(scope: Fusion.Scope, props: {
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local productInfoState = use(productInfo)
                     if productInfoState.PriceInRobux then
-                        return `{utf8.char(0xE002)} {productInfoState.PriceInRobux}`
+                        return `Donate {utf8.char(0xE002)} {productInfoState.PriceInRobux}`
                     end
 
                     return "Fetching Info..."
@@ -111,8 +127,13 @@ return function(scope: Fusion.Scope, props: {
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if props.Type == "Gamepass" then
                         MarketplaceService:PromptGamePassPurchase(Players.LocalPlayer, props.AssetId)
+
+                        Bindables.DevProductPurchasing:Fire()
+
                     elseif props.Type == "Product" then
                         MarketplaceService:PromptProductPurchase(Players.LocalPlayer, props.AssetId, true, Enum.CurrencyType.Robux)
+
+                        Bindables.DevProductPurchasing:Fire()
                     end
                 end
             })

@@ -18,7 +18,9 @@ export type Self = {
     char: Model,
     scope: Fusion.Scope,
 
+    IsUIShown: Fusion.Value<boolean>,
     IsUIShown2: Fusion.Value<boolean>,
+
     Enemies: Fusion.Value<{ Instance }>,
     EnemiesOverworld: Fusion.Value<{ Instance }>,
     TargetingList: Fusion.Value<{ Instance }>,
@@ -42,6 +44,18 @@ return function (self: Self)
 
     self.TargetingList = FusionComponents.useChildren(scope, char:WaitForChild("TargetingList", 999))
     self.TargetingEnemy = FusionComponents.useValue(scope, char:WaitForChild("TargetingEnemy", 999))
+
+
+    self.IsUIShown = Value(true)
+
+    --// track menu
+    table.insert(scope, HarukaLib:Hydrate(self.plr, {
+        ["Attr-CurrentUIGroup"] = function(newPanel: string)
+            if newPanel == nil then return end
+
+            self.IsUIShown:set(newPanel == "None")
+        end
+    }))
 
 
     --// handle arrow position

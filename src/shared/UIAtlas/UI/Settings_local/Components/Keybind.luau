@@ -46,10 +46,9 @@ return function(scope: Fusion.Scope, props: {
 		Name = props.KeybindId,
 		Size = UDim2.fromScale(0.9, 0.09),
         BackgroundTransparency = 0,
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
 
 		[Children] = {
-            Components.UIAspectRatioConstraint(scope, 23.723),
+            Components.UIAspectRatioConstraint(scope, 29.548),
 
             Components.RoundUICorner(scope),
             Components.ScaledUIStroke(scope, {

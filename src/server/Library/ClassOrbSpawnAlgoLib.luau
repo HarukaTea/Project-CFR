@@ -24,8 +24,13 @@ end
 
 ClassOrbSpawnAlgoLib.Reverberation = function(spawnCallback: (orbName: string) -> nil)
     spawnCallback("ReverberationOrb")
-    spawnCallback("EchoShiftOrb")
-    spawnCallback("EchoFlatOrb")
+
+
+    local result = HarukaLib:RollLoot({
+        EchoSharpOrb = 50,
+        EchoFlatOrb = 50
+    })
+    spawnCallback(result)
 end
 
 ClassOrbSpawnAlgoLib.Flow = function(spawnCallback: (orbName: string) -> nil)

@@ -59,11 +59,12 @@ return function (plr: Player)
                         Name = "Categories",
                         AnchorPoint = Vector2.zero,
                         Position = UDim2.fromScale(0, 0),
-                        Size = UDim2.fromScale(0.3, 1),
+                        Size = UDim2.fromScale(0.2, 1),
 
                         [Children] = {
                             Components.UIListLayout(scope, {
                                 Padding = UDim.new(0.04, 0),
+                                HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             }),
 
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
@@ -93,8 +94,8 @@ return function (plr: Player)
                     Components.Frame(scope, {
                         Name = "Settings",
                         AnchorPoint = Vector2.zero,
-                        Position = UDim2.fromScale(0.3, 0),
-                        Size = UDim2.fromScale(0.7, 1),
+                        Position = UDim2.fromScale(0.225, 0),
+                        Size = UDim2.fromScale(0.775, 1),
 
                         [Children] = {
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
@@ -113,7 +114,7 @@ return function (plr: Player)
                                 return panelId, Components.ScrollingFrame(scope, {
                                     Name = panelId,
                                     AnchorPoint = Vector2.zero,
-                                    Position = UDim2.fromScale(-0.05, 0),
+                                    Position = UDim2.fromScale(0, 0),
 
                                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         return use(self.PanelSelected) == panelId

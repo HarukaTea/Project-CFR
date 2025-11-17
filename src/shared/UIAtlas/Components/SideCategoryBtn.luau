@@ -21,11 +21,11 @@ return function (scope: Fusion.Scope, props: {
     return Components.Frame(scope, {
         Name = props.PanelId,
         BackgroundTransparency = 0,
-        Size = UDim2.fromScale(0.7, 0.09),
+        Size = UDim2.fromScale(1, 0.09),
         LayoutOrder = props.LayoutOrder,
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-            return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Color3.fromRGB(255, 247, 233) else Components.BLACK_COLOR
+            return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.HarukaColorLab.AzurPromilia.Background else Components.BLACK_COLOR
         end),
 
         [Children] = {
@@ -36,7 +36,7 @@ return function (scope: Fusion.Scope, props: {
                 TextXAlignment = Enum.TextXAlignment.Left,
 
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-                    return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.BLACK_COLOR else Color3.fromRGB(255, 247, 233)
+                    return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.BLACK_COLOR else Components.HarukaColorLab.AzurPromilia.Background
                 end),
 
                 [Children] = {
@@ -49,9 +49,7 @@ return function (scope: Fusion.Scope, props: {
                     isSelecting:set(true)
                 end,
                 [Fusion.OnEvent("MouseLeave")] = function()
-                    if Fusion.peek(props.PanelSelected) == props.PanelId then return end
-
-                    isSelecting:set(true)
+                    isSelecting:set(false)
                 end,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()

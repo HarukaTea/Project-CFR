@@ -25,4 +25,5 @@
     "robloxLsp.diagnostics.globals": [
         "Path2DControlPoint"
     ],
+    "stylua.disableVersionCheck": true,
 }

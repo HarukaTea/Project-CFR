@@ -113,11 +113,10 @@ return function(scope: Fusion.Scope, props: {
 		Name = props.OptionId,
 		Size = UDim2.fromScale(0.9, 0.08),
         BackgroundTransparency = 0,
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
         LayoutOrder = props.LayoutOrder,
 
 		[Children] = {
-            Components.UIAspectRatioConstraint(scope, 26.688),
+            Components.UIAspectRatioConstraint(scope, 29.548),
 
             Components.RoundUICorner(scope),
             Components.ScaledUIStroke(scope, {

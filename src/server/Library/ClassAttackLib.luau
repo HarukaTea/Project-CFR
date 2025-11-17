@@ -70,6 +70,12 @@ ClassAttackLib._getCharAndTargeting = _getCharAndTargeting
 ClassAttackLib._charAndTargetingCheck = _charAndTargetingCheck
 
 
+local function _castUltPromiseUtil(func1: () -> nil, func2: () -> nil)
+    func1()
+    Promise.delay(1):andThen(func2):catch(function() end)
+end
+
+
 --// Universal
 
 ClassAttackLib.HEAL_ATTACK = function(plr: Player, symbolAttrs: Dict)
@@ -154,6 +160,9 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
 
     if not char:FindFirstChild("IsInComboUltPeriod") then
         char:SetAttribute("ChainCombo", 0)
+    else
+        local nearestQuota = math.floor(combo / 3) * 3
+        char:SetAttribute("ChainCombo", nearestQuota)
     end
 end
 ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
@@ -161,11 +170,11 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    Events.OpenCastTimeBar_S.Fire(plr, 1)
-    Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
+    _castUltPromiseUtil(function()
+        Events.OpenCastTimeBar_S.Fire(plr, 1)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
-
-    Promise.delay(1):andThen(function()
+    end, function()
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
         Events.FaceTargetingEnemy_S.Fire(plr)
 
@@ -180,7 +189,7 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
         StatusLib.CreateCustomEffect("ComboUlt", char, {
             Duration = 6
         })
-    end):catch(function() end)
+    end)
 end
 ClassAttackLib.HEAL_ATTACK_Chain = ClassAttackLib.HEAL_ATTACK
 
@@ -259,12 +268,11 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
+    _castUltPromiseUtil(function()
+        Events.OpenCastTimeBar_S.Fire(plr, 1)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
-    Events.OpenCastTimeBar_S.Fire(plr, 1)
-    Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
-
-
-    Promise.delay(1):andThen(function()
+    end, function()
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
         Events.FaceTargetingEnemy_S.Fire(plr)
 
@@ -280,7 +288,7 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         StatusLib.CreateCustomEffect("BurstUlt", char, {
             Duration = 8
         })
-    end):catch(function() end)
+    end)
 end
 ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -293,7 +301,7 @@ ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     local firstTick = char:GetAttribute("BurstArrowTick1") or 0
     local comboCount = char:GetAttribute("BurstArrowCombo") or 0
 
-    if firstTick == 0 or (now - firstTick) > 3 then
+    if firstTick == 0 or (now - firstTick) > 5 then
         firstTick = now
         comboCount = 1
     else
@@ -345,6 +353,12 @@ ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
             echoSymbol.Parent = echoStackFolder
 
             Debris:AddItem(echoSymbol, 15)
+
+            StatusLib.CreateCustomEffect("ReverberationEcho", targeting, {
+                Duration = 15,
+                PlayerOnly = plr.Name,
+                IsDebuff = true
+            })
         end
     end
 
@@ -392,7 +406,7 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
         end
     end
 end
-ClassAttackLib.Reverberation_Shift = function(plr: Player, symbolAttrs: Dict)
+ClassAttackLib.Reverberation_EchoSharp = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -404,7 +418,7 @@ ClassAttackLib.Reverberation_Shift = function(plr: Player, symbolAttrs: Dict)
 
     targeting:SetAttribute("ReverberationPitch_"..plr.Name, afterPitch)
 end
-ClassAttackLib.Reverberation_Flat = function(plr: Player, symbolAttrs: Dict)
+ClassAttackLib.Reverberation_EchoFlat = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
@@ -427,6 +441,14 @@ ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
+
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        Attacker = "ClassAttacks",
+        DMG = ClassAttackLib._CalDMG("Magic", char),
+        DMGType = "Magic"
+    })
+
+
     local markHolder = targeting:FindFirstChild("MarkHolder_"..plr.Name)
     if not markHolder then
         markHolder = Instance.new("Folder")
@@ -447,6 +469,13 @@ end
 ClassAttackLib.Flow_Catalyst = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
+
+
+    ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        Attacker = "ClassAttacks",
+        DMG = ClassAttackLib._CalDMG("Magic", char),
+        DMGType = "Magic"
+    })
 
     local activateDuringUlt = false
 
@@ -534,17 +563,27 @@ ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    local ultPeriodSymbol = Instance.new("BoolValue")
-    ultPeriodSymbol.Name = "IsInFlowUltPeriod"
-    ultPeriodSymbol.Value = true
-    ultPeriodSymbol.Parent = char
+    _castUltPromiseUtil(function()
+        Events.OpenCastTimeBar_S.Fire(plr, 1)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
-    Debris:AddItem(ultPeriodSymbol, 6)
+    end, function()
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.FaceTargetingEnemy_S.Fire(plr)
 
 
-    StatusLib.CreateCustomEffect("FlowUlt", char, {
-        Duration = 6
-    })
+        local ultPeriodSymbol = Instance.new("BoolValue")
+        ultPeriodSymbol.Name = "IsInFlowUltPeriod"
+        ultPeriodSymbol.Value = true
+        ultPeriodSymbol.Parent = char
+
+        Debris:AddItem(ultPeriodSymbol, 6)
+
+
+        StatusLib.CreateCustomEffect("FlowUlt", char, {
+            Duration = 6
+        })
+    end)
 end
 ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
 

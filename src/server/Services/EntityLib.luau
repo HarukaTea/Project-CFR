@@ -148,7 +148,7 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: str
     if entity:GetAttribute("EnteringCombat") then return end
 
     local clock = entity:GetAttribute("SpawnClock") :: number
-    if DateTime.now().UnixTimestamp - clock <= 3 then return end
+    if DateTime.now().UnixTimestamp - clock <= 1 then return end
 
 
     if not ServerLib.IsCharValid(target) then return end
@@ -168,7 +168,7 @@ joinCombatSignal:Connect(function(entity: Model, target: Model)
     if entity:GetAttribute("EnteringCombat") then return end
 
     local clock = entity:GetAttribute("SpawnClock") :: number
-    if DateTime.now().UnixTimestamp - clock < 3 then return end
+    if DateTime.now().UnixTimestamp - clock < 1 then return end
 
     if not ServerLib.IsCharValid(target) then return end
 
@@ -666,7 +666,7 @@ function EntityLib:_RoamTask()
 
             if self.NearestChar then continue end
             if self.CombatInfo.IsInCombat then break end
-            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
+            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 1 then continue end
 
 
             local success, err = pcall(function()
@@ -709,7 +709,7 @@ function EntityLib:_RoamTask()
 
             if entity:GetAttribute("IsInCombat") then break end
             if self.CombatInfo.IsInCombat then break end
-            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
+            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 1 then continue end
 
 
 
@@ -779,7 +779,7 @@ function EntityLib:_RoamTask()
 
             if entity:GetAttribute("IsInCombat") then break end
             if self.CombatInfo.IsInCombat then break end
-            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 3 then continue end
+            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 1 then continue end
 
             Promise.new(function(resolve)
                 local curPos = entity.PrimaryPart.Position :: Vector3

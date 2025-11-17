@@ -29,7 +29,7 @@ return function (self: Self)
 
     self.IsUIShown = Value(false)
 
-    self.AbyssIndexSelected = Value(-1)
+    self.AbyssIndexSelected = Fusion.Value(scope, nil)
     self.AbyssInfo = Value({})
 
 

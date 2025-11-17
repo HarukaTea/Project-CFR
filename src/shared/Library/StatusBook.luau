@@ -102,4 +102,11 @@ return {
         Color = Color3.fromHex('#81ecec'),
         IconColor = Color3.fromHex('#81ecec')
     },
+
+
+    --// special custom
+    ReverberationEchoDebuff = {
+        Icon = "rbxassetid://120613067089872",
+        Color = Color3.fromHex('#34ace0'),
+    }
 }

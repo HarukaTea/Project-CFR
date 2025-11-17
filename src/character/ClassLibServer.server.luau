@@ -191,8 +191,7 @@ ClassMechanicLib._CLASS_Burst = function(self)
             if stackStyle1 then
                 stackStyle1.Text.Text = arrow.." ARROWS"
             else
-                stackStyle1 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Arrow.StackStyle:Clone() :: BillboardGui
-                stackStyle1.Name = "StackStyle_Arrow"
+                stackStyle1 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle.StackStyle_Arrow:Clone() :: BillboardGui
                 stackStyle1.Adornee = char.Head
                 stackStyle1.Text.Text = arrow.." ARROWS"
                 stackStyle1.Parent = char.Head
@@ -210,8 +209,7 @@ ClassMechanicLib._CLASS_Burst = function(self)
             if stackStyle2 then
                 stackStyle2.Text.Text = arrow.." PIERCING"
             else
-                stackStyle2 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle_Piercing.StackStyle:Clone() :: BillboardGui
-                stackStyle2.Name = "StackStyle_Piercing"
+                stackStyle2 = RepS.Packages.ClassAttacks.ClassUIs.StackStyle.StackStyle_Piercing:Clone() :: BillboardGui
                 stackStyle2.Adornee = char.Head
                 stackStyle2.Text.Text = arrow.." PIERCING"
                 stackStyle2.Parent = char.Head
