@@ -65,8 +65,11 @@ local EXTRA_TEMPLATE = {
 }
 
 
+local DS_Version = require(ServerScriptService.DS_VERSION)
+
+
 local profileStoreMain = HarukaDatastore.GetStore(
-    require(ServerScriptService.DS_VERSION).Id,
+    DS_Version.Id,
     PlayerTemplate
 )
 
@@ -475,6 +478,9 @@ function PlayerLib:Init()
     local profile = nil
     local profileFailedTimes = 0
 
+
+    local worldId = workspace:GetAttribute("WorldId") or "Unknown"
+
     while profile == nil do
         wait(0.5)
         if not plr then break end
@@ -483,12 +489,34 @@ function PlayerLib:Init()
 
 
         Promise.new(function(resolve, reject)
-            profile = profileStoreMain:CreateProfileAsync("Player_"..plr.UserId)
+            profile = profileStoreMain:CreateProfileAsync("Player_"..plr.UserId, (worldId == "TutorialPlace"))
 
             if profile == nil then
                 reject("Failed to fetch profile")
                 return
             end
+
+
+            --// transfer data!! (V0.5.5)
+            if not profile._IsTransferred and worldId ~= "TutorialPlace" then
+                local success, result = profile:TransferDataAsync(DS_Version.OldId, "Player_"..plr.UserId)
+                if success then
+                    profile._IsTransferred = true
+                    profile:SaveProfileAsync()
+                else
+                    warn("[Data Migration] Failed to transfer data from old datastore to new one!")
+                    warn(tostring(result))
+
+                    pcall(function()
+                        AnalyticsService:LogCustomEvent(plr, "PlayerDataTransferFailed", 1)
+                    end)
+                    plr:Kick("[Code 101] Failed to transfer data, please try again or contact us in community!")
+
+                    resolve("Failed to transfer data")
+                    return
+                end
+            end
+
 
             resolve(true)
         end):timeout(6):catch(function(err)
@@ -601,6 +629,11 @@ function PlayerLib:_SaveData()
     if not self.ProfileObj.Profile then return end
     if not self.Slot then return end
     if self.Player:GetAttribute("Haruka_DataLocked") then return end
+
+
+    local worldId = workspace:GetAttribute("WorldId") or "Unknown"
+    if worldId == "TutorialPlace" then return end
+
 
     local profileAttrs = self.ProfileObj.Profile.Data[self.Slot].Attrs :: { any }
     local nowAttrs = self.Player:GetAttributes()

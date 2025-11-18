@@ -84,7 +84,7 @@ return {
 
     Knight = {
         Icon = "rbxassetid://2965863677",
-        Color = Color3.fromHex('#ffeaa7'),
+        Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {
@@ -131,7 +131,7 @@ return {
 
     Rogue = {
 		Icon = "rbxassetid://12284961892",
-		Color = Color3.fromRGB(255, 170, 255),
+		Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {
@@ -143,7 +143,7 @@ return {
 	},
 	Repeater = {
 		Icon = "rbxassetid://12190533959",
-		Color = Color3.fromRGB(65, 179, 255),
+		Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {
@@ -155,7 +155,7 @@ return {
 	},
 	Striker = {
 		Icon = "rbxassetid://12190535870",
-		Color = Color3.fromRGB(253, 148, 44),
+		Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {
@@ -167,7 +167,7 @@ return {
 	},
 	Alchemist = {
 		Icon = "rbxassetid://12236618949",
-		Color = Color3.fromRGB(43, 188, 93),
+		Color = Color3.fromHex('#ffffff'),
         Type = "Magic",
 
         Skills = {
@@ -179,7 +179,7 @@ return {
 	},
 	Illusionist = {
 		Icon = "rbxassetid://15875390788",
-		Color = Color3.fromRGB(0, 255, 252),
+		Color = Color3.fromHex('#ffffff'),
         Type = "Magic",
 
         Skills = {
@@ -191,7 +191,7 @@ return {
 	},
     Juggernaut = {
         Icon = "rbxassetid://16654290906",
-        Color = Color3.fromRGB(253, 148, 44),
+        Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {
@@ -203,7 +203,7 @@ return {
     },
     Reaper = {
         Icon = "rbxassetid://17667241921",
-        Color = Color3.fromRGB(163, 39, 39),
+        Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {
@@ -215,7 +215,7 @@ return {
     },
     WindDancer = {
         Icon = "rbxassetid://18423401512",
-        Color = Color3.fromHex('#70a1ff'),
+        Color = Color3.fromHex('#ffffff'),
         Type = "DMG",
 
         Skills = {

@@ -45,7 +45,7 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "Donation")
 
             if newPanel == "Donation" then
-                if game.GameId ~= AssetBook.CFUniverseId_Main then
+                if game.GameId ~= AssetBook.CFUniverseId_Main and not workspace:GetAttribute("DisableDonation") then
                     Bindables.CloseExplorerUIs:Fire()
                     Bindables.CreateNotify:Fire("You can't donate in test place!")
                 end

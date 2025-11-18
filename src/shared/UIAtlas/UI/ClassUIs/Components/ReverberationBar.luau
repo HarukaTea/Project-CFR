@@ -17,6 +17,7 @@ local plr = Players.LocalPlayer
 
 return function(scope: Fusion.Scope, props: {
     Enemy: Model,
+    SelfUI: GuiObject,
 })
     if not ClientLib.IsCharValid(props.Enemy) then return nil end
 
@@ -25,14 +26,14 @@ return function(scope: Fusion.Scope, props: {
     props.Enemy:SetAttribute("_UIMarked_Reverberation", true)
 
 
-    local pointUI = RepS.Packages.ClassAttacks.ClassUIs.ReverberationStyle.ReverberationStyle:Clone() :: BillboardGui
-    pointUI.Adornee = props.Enemy.Head
-    pointUI.Frame.Text.Text = props.Enemy:GetAttribute("ReverberationPitch_"..plr.Name)
-    pointUI.Parent = workspace.Terrain
+    table.insert(scope, task.delay(1, function()
+        local pointUI = RepS.Packages.ClassAttacks.ClassUIs.ReverberationStyle.ReverberationStyle:Clone() :: BillboardGui
+        pointUI.Adornee = props.Enemy.Head
+        pointUI.Frame.Text.Text = props.Enemy:GetAttribute("ReverberationPitch_"..plr.Name)
+        pointUI.Parent = props.Enemy
 
-    --// FIXME: why is that now showing?
-    table.insert(scope, pointUI)
-
+        table.insert(scope, pointUI)
+    end))
 
     return nil
 end

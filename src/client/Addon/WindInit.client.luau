@@ -5,7 +5,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 local CollectionService = game:GetService("CollectionService")
 local RepS = game:GetService("ReplicatedStorage")
 
-local WindLines = require(RepS.HarukaShared.Shared.Ambient.WindLines)
+--// local WindLines = require(RepS.HarukaShared.Shared.Ambient.WindLines)
 local WindShake = require(RepS.HarukaShared.Shared.Ambient.WindShake)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
@@ -23,12 +23,13 @@ workspace.GlobalWind = WIND_VECTOR
 
 
 local function _initWind()
-    WindLines:Init({
-        Direction = WIND_VECTOR,
-        Speed = 10,
-        LifeTime = 1.5,
-        SpawnRate = 8,
-    })
+    -- WindLines:Init({
+    --     Direction = WIND_VECTOR,
+    --     Speed = 10,
+    --     LifeTime = 1.5,
+    --     SpawnRate = 8,
+    -- })
+
     WindShake:Init({
         WindSpeed = 10,
         WindDirection = WIND_VECTOR,
@@ -62,7 +63,7 @@ HarukaLib:Hydrate(workspace, {
                 _updateTree(tree)
             end
         else
-            WindLines:Cleanup()
+            -- WindLines:Cleanup()
             WindShake:Cleanup()
 
             for treePart: BasePart, cf: CFrame in allTreeCFrames do

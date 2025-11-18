@@ -1,11 +1,25 @@
 
+local Debris = game:GetService("Debris")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local wait = task.wait
+
+
+if not game.Loaded then
+    game.Loaded:Wait()
+end
+
+repeat wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
+repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 999)
+repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
+
+
 local ContentProvider = game:GetService("ContentProvider")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 
-local wait = task.wait
 
 
 repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Library", 999)
@@ -128,4 +142,15 @@ function PreloadSceneLib.Cleanup()
     Bindables.Titlescreen_CameraCFrameChanged:Fire()
 end
 
-return PreloadSceneLib
+
+
+
+PreloadSceneLib._LoadPreloadAssets()
+PreloadSceneLib._LoadScreenMouseFollower()
+
+repeat wait() until workspace:GetAttribute("Haruka_TitlescreenDestroying")
+
+PreloadSceneLib.Cleanup()
+
+
+Debris:AddItem(script, 15)

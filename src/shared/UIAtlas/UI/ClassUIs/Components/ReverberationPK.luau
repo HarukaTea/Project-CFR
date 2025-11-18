@@ -14,6 +14,7 @@ return function(scope: Fusion.Scope, props: {
 })
     return Components.Frame(scope, {
         Name = "ResonateNum",
+        SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
         [Children] = {
             Components.IconImageLabel(scope, {
@@ -23,15 +24,14 @@ return function(scope: Fusion.Scope, props: {
                 Image = "rbxassetid://121488236607929"
             }),
 
-            --// FIXME: why icon shade tex will go wrong???
-            -- IconShadeTex(scope, {}),
+            IconShadeTex(scope, {}),
 
             Components.TextLabel(scope, {
                 Name = "Num",
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.5, -0.3),
                 ZIndex = 2,
-                Size = UDim2.fromScale(0.75, 0.75),
+                Size = UDim2.fromScale(0.6, 0.6),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 FontFace = Font.fromName("Roboto", Enum.FontWeight.Bold),
 

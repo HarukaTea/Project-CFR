@@ -35,12 +35,12 @@ return function (scope: Fusion.Scope, props: {
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         Position = UDim2.fromScale(0.5, -1),
         Size = UDim2.fromScale(1.5, 1.5),
-        Image = "rbxassetid://109494337237105",
-        ImageTransparency = 0.25,
-        BackgroundTransparency = 0.25,
+        Image = "rbxassetid://92765950574050",
 
         [Children] = {
-            Components.RoundUICorner(scope)
+            Components.UICorner(scope, {
+                CornerRadius = UDim.new(0.2, 0)
+            })
         }
     })
 
@@ -154,17 +154,10 @@ return function (scope: Fusion.Scope, props: {
         Position = UDim2.new(0.5, 1500 / 1.5, 0.5, 1500 / 1.5),
         Size = UDim2.new(1, 1500 * 2, 1, 1500 * 2)
     })
-    local tween2 = HarukaLib:CreateTween(texEmblem, TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 999, false, 0), {
-        Rotation = 360
-    })
     table.insert(scope, function()
         tween:Cancel()
     end)
-    table.insert(scope, function()
-        tween2:Cancel()
-    end)
     tween:Play()
-    tween2:Play()
 
 
     return UI

@@ -25,11 +25,11 @@ export type Profile<T> = {
 
     AddUserId: (self: Profile<T>, userId: number) -> nil,
     SaveProfileAsync: (self: Profile<T>) -> nil,
-    TransferDataAsync: (self: Profile<T>) -> boolean,
+    TransferDataAsync: (self: Profile<T>, storeName: string, key: string) -> boolean,
 }
 export type HarukaDatastore = {
     GetStore: (storeName: string, template: Dict) -> HarukaDatastore,
-    CreateProfileAsync: <T>(self: HarukaDatastore, key: string) -> Profile<T>,
+    CreateProfileAsync: <T>(self: HarukaDatastore, key: string, forceUseTemplateData: boolean?) -> Profile<T>,
 
 
     StoreName: string,
@@ -65,6 +65,9 @@ end
 
 
 function Profile:SaveProfileAsync()
+    if workspace:GetAttribute("DisableDatastore") then return end
+
+
     local success, result = pcall(function()
         self.Store:UpdateAsync(self.Key, function(oldValue: Dict, keyInfo: DataStoreKeyInfo)
             keyInfo = keyInfo or KEYINFO_MOCK
@@ -75,6 +78,7 @@ function Profile:SaveProfileAsync()
             if #userIds <= 0 then
                 userIds = { self.UserId }
             end
+            metaData._IsTransferred = self._IsTransferred
 
             if self.Data == nil then
                 return oldValue, userIds, metaData
@@ -99,8 +103,12 @@ function Profile:TransferDataAsync(storeName: string, key: string) : boolean
         return false
     end
 
-    if oriProfile == nil then
+    oriProfile = oriProfile or {}
+
+    if oriProfile.Data == nil then
         oriProfile = HarukaLib.TableUtils.DeepCopy(self.Template)
+    else
+        oriProfile = oriProfile.Data
     end
     HarukaLib.TableUtils.Reconcile(oriProfile, self.Template)
 
@@ -131,7 +139,7 @@ function HarukaDatastore.GetStore(storeName: string, template: Dict) : HarukaDat
 end
 
 
-function HarukaDatastore:CreateProfileAsync(key: string)
+function HarukaDatastore:CreateProfileAsync(key: string, forceUseTemplateData: boolean?)
     self.Key = key
 
     local data: Dict, keyInfo: DataStoreKeyInfo = self.Store:GetAsync(key)

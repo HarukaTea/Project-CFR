@@ -10,7 +10,7 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
-local BKItemListView = require(RepS.HarukaShared.UIAtlas.Components.BKItemListView)
+local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
@@ -64,7 +64,86 @@ return function (plr: Player)
                 ClipsDescendants = true,
 
                 [Children] = {
-                    BKItemListView(scope, self)
+                    Components.ScrollingFrame(scope, {
+                        Name = "Backpack",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(0.97, 0.95),
+                        ScrollingDirection = Enum.ScrollingDirection.Y,
+                        ClipsDescendants = false,
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.CurrentCategory) == "Crafting"
+                        end),
+
+                        [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
+
+                        [Children] = {
+                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
+                                if not use(self.IsUIShown) then return nil end
+
+
+                                local info = ItemBook:GetItemInfo(itemSymbol.Name)
+                                if not info then return nil end
+
+                                local isVisible = false
+                                local isVisibleFactor2 = false
+                                isVisible = true
+
+
+                                local state = use(self.FilterTierList[info.Tier])
+                                isVisibleFactor2 = state
+
+
+                                local isVisibleFactor3 = false
+                                local text = use(self.FilterItemText)
+                                local textWithoutSpaces = string.gsub(text, " ", "")
+
+                                if textWithoutSpaces == "" then
+                                    isVisibleFactor3 = true
+                                else
+                                    textWithoutSpaces = textWithoutSpaces :: string
+
+                                    if string.find(string.lower(info.Name), string.lower(textWithoutSpaces)) then
+                                        isVisibleFactor3 = true
+                                    else
+                                        isVisibleFactor3 = false
+                                    end
+                                end
+
+
+                                if isVisible and isVisibleFactor2 and isVisibleFactor3 then
+                                    return index, BKItemSlot(scope, {
+                                        ItemSymbol = itemSymbol,
+                                        EquippingItems = self.EquippingItems,
+
+                                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                        CurrentSelectedItem = self.CurrentSelectedItem,
+                                        CurrentSortOrderList = self.SortMethodList,
+                                    })
+                                else
+                                    return index, nil
+                                end
+                            end)
+                        }
+                    }, {
+                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local size = use(self.ItemListAbsSize) :: Vector2
+                            local x = size.X * 0.125 * 0.86
+                            local y = size.X * 0.135 * 0.86
+
+                            return UDim2.fromOffset(x, y)
+                        end),
+                        CellPadding = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local size = use(self.ItemListAbsSize) :: Vector2
+                            local x = size.X * 0.015
+                            local y = size.X * 0.023
+
+                            return UDim2.fromOffset(x, y)
+                        end),
+
+                        FillDirection = Enum.FillDirection.Horizontal,
+                    })
                 }
             }),
 

@@ -119,7 +119,7 @@ do
     local scope = Fusion.scoped()
     local UI: ScreenGui = nil
 
-    local LoadingTextVal = Fusion.Value(scope, "Sailing to Initus Bay...")
+    local LoadingTextVal = Fusion.Value(scope, "Sailing to The Initia...")
     local isAlreadyLoaded = false
 
     UI = LoadView(scope, {
@@ -134,11 +134,11 @@ do
     })
     task.spawn(function()
         while not isAlreadyLoaded do
-            LoadingTextVal:set("Sailing to Initus Bay.")
+            LoadingTextVal:set("Sailing to The Initia.")
             wait(0.5)
-            LoadingTextVal:set("Sailing to Initus Bay..")
+            LoadingTextVal:set("Sailing to The Initia..")
             wait(0.5)
-            LoadingTextVal:set("Sailing to Initus Bay...")
+            LoadingTextVal:set("Sailing to The Initia...")
             wait(0.5)
         end
     end)
@@ -161,18 +161,9 @@ do
         end
     end
     if shouldSkipTitlescreen then
-        local folder = Instance.new("Folder")
-        folder.Name = "Titlescreen"
-        folder.Parent = workspace.MapComponents
-
         workspace:SetAttribute("ShouldSkipTitlescreen", true)
     else
         repeat wait() until RepS:WaitForChild("Packages", 999)
-        repeat wait() until RepS.Packages:WaitForChild("Titlescreen", 999)
-
-        wait()
-        RepS.Packages.Titlescreen.Parent = workspace.MapComponents
-
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("MainCamera", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("Credits", 999)
@@ -180,10 +171,10 @@ do
 
     repeat wait() until plr:GetAttribute("_PlayerProfileInited")
 
+    wait(3)
     isAlreadyLoaded = true
 
 
-    wait(1)
     if not shouldSkipTitlescreen then
         HarukaLib:UITween(UI, "Out", {
             TweenCallback = function()
@@ -234,14 +225,12 @@ do
             ClientLib.LoadLightingPreset(worldId)
         end
 
+
+        local insWhiteList = { "CharPreviewLocator", "MainCamera" }
         for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do
-            if ins:IsA("Folder") then
+            if not table.find(insWhiteList, ins.Name) then
                 ins:Destroy()
             end
-        end
-
-        if RepS.Packages:FindFirstChild("Titlescreen") then
-            RepS.Packages.Titlescreen:Destroy()
         end
     end)
 
@@ -255,6 +244,5 @@ do
     workspace:SetAttribute("Haruka_GameEntered", true)
 
 
-    Debris:AddItem(script.Parent.Services, 10)
     Debris:AddItem(script, 15)
 end
