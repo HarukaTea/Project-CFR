@@ -23,13 +23,6 @@ workspace.GlobalWind = WIND_VECTOR
 
 
 local function _initWind()
-    -- WindLines:Init({
-    --     Direction = WIND_VECTOR,
-    --     Speed = 10,
-    --     LifeTime = 1.5,
-    --     SpawnRate = 8,
-    -- })
-
     WindShake:Init({
         WindSpeed = 10,
         WindDirection = WIND_VECTOR,
@@ -63,7 +56,6 @@ HarukaLib:Hydrate(workspace, {
                 _updateTree(tree)
             end
         else
-            -- WindLines:Cleanup()
             WindShake:Cleanup()
 
             for treePart: BasePart, cf: CFrame in allTreeCFrames do

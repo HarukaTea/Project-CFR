@@ -14,7 +14,10 @@ export type AbyssWorldLibClass = {
     ListenFuncs: { () -> nil },
 
     Started: boolean,
-    AbyssId: number
+    AbyssId: number,
+
+    Init: (self: AbyssWorldLibClass) -> nil,
+    GiveLoot: () -> nil
 }
 
 
