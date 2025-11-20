@@ -149,7 +149,7 @@ if not RunService:IsRunning() then
 			SetCallback = noop
 		}),
 		SwitchTargetEnemy_C = table.freeze({
-			On = noop
+			SetCallback = noop
 		}),
 		StartCombat_C = table.freeze({
 			SetCallback = noop
@@ -486,7 +486,6 @@ RunService.Heartbeat:Connect(SendEvents)
 
 local reliable_events = table.create(30)
 reliable_events[0] = {}
-reliable_events[23] = {}
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -530,8 +529,8 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			else
 				value = nil
 			end
-			for _, cb in reliable_events[23] do
-				task.spawn(cb, player, value)
+			if reliable_events[23] then
+				task.spawn(reliable_events[23], player, value)
 			end
 		elseif id == 12 then
 			local value
@@ -1152,10 +1151,10 @@ local returns = {
 		end,
 	},
 	SwitchTargetEnemy_C = {
-		On = function(Callback: (Player: Player, target: ((Model)?)) -> ()): () -> ()
-			table.insert(reliable_events[23], Callback)
+		SetCallback = function(Callback: (Player: Player, target: ((Model)?)) -> ()): () -> ()
+			reliable_events[23] = Callback
 			return function()
-				table.remove(reliable_events[23], table.find(reliable_events[23], Callback))
+				reliable_events[23] = nil
 			end
 		end,
 	},

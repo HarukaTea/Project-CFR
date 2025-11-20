@@ -25,8 +25,8 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
-local HarukaParty = require(SSS.HarukaServer.Shared.HarukaParty)
-local HarukaQuest = require(SSS.HarukaServer.Shared.HarukaQuest)
+local HarukaParty = require(SSS.HarukaServer.Services.HarukaParty)
+local HarukaQuest = require(SSS.HarukaServer.Services.HarukaQuest)
 
 
 
@@ -571,27 +571,13 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local whiteList = { "HEAL_ATTACK" }
 
         Promise.new(function(resolve, reject)
-            local DISTANCE = 25
-
-            local distance1 = plr:DistanceFromCharacter(orbPos.Position)
-            local distance2 = plr:DistanceFromCharacter(orbPos.Position + Vector3.yAxis * DISTANCE)
-            local distance3 = plr:DistanceFromCharacter(orbPos.Position - Vector3.yAxis * DISTANCE)
-
-            local minDistance = math.min(distance1, distance2, distance3)
-
-            if distance1 < DISTANCE or distance2 < DISTANCE or distance3 < DISTANCE then
-                resolve()
-            else
-                reject("Distance")
-            end
-            if distance1 <= 0 or distance2 <= 0 or distance3 <= 0 then reject("Distance") end
-            if minDistance > DISTANCE * math.clamp(plr:GetNetworkPing() / 150, 1, 2) then reject("Distance") end
-
             if not table.find(whiteList, thatOrbStyle) then
                 local class = plr:GetAttribute("Class") :: string
 
                 if class ~= thatOrbStyle then reject("ClassId") end
             end
+
+            resolve(true)
 
         end):catch(function(reason: string)
             check = false
@@ -1766,6 +1752,18 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         char:PivotTo(merchant.Destination.Value.CFrame)
+    end)
+end)
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.SwitchTargetEnemy_C.SetCallback(function(plr: Player, target: Model)
+        if not target then return end
+
+        local char = plr.Character
+        if not ServerLib.IsCharValid(char) then return end
+
+        char.TargetingEnemy.Value = target
     end)
 end)
 

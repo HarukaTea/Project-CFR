@@ -52,8 +52,9 @@ return function (plr: Player)
                     NPCId = self.NPCId,
                     MaxUTFShown = self.MaxUTFShown,
 
-                    ProcessedToNextDialogueSignal = self.ProcessedToNextDialogueSignal,
-                    ProcessedToNextDialogueByChoiceSignal = self.ProcessedToNextDialogueByChoiceSignal,
+                    GoToNextDialogueSignal = self.GoToNextDialogueSignal,
+                    GoToNextDialogueByChoiceSignal = self.GoToNextDialogueByChoiceSignal,
+                    GoSkipDialogueSignal = self.GoSkipDialogueSignal,
                 })
             }
         }

@@ -47,20 +47,29 @@ return function (scope: Fusion.Scope, props: {
                 VerticalAlignment = Enum.VerticalAlignment.Center,
             }),
 
-            Components.Frame(scope, {
-                Name = "Symbol",
-                BackgroundColor3 = AssetBook.QuestTypeColors[props.QuestType],
-                BackgroundTransparency = 0,
-                Size = UDim2.fromScale(0.5, 0.5),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+            Components.IconImageLabel(scope, {
+                Size = UDim2.fromScale(0.8, 0.8),
+                Image = "rbxassetid://123153183547809",
                 LayoutOrder = 1,
 
                 [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.ScaledUIStroke(scope, {
-                        Thickness = 0.1,
-                        Color = Components.BLACK_COLOR
-                    })
+                    Components.Frame(scope, {
+                        Name = "Symbol",
+                        BackgroundColor3 = AssetBook.QuestTypeColors[props.QuestType],
+                        BackgroundTransparency = 0,
+                        AnchorPoint = Vector2.one,
+                        Size = UDim2.fromScale(0.35, 0.35),
+                        Position = UDim2.fromScale(1, 1),
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+                            Components.ScaledUIStroke(scope, {
+                                Thickness = 0.1,
+                                Color = Components.BLACK_COLOR
+                            })
+                        }
+                    }),
                 }
             }),
 

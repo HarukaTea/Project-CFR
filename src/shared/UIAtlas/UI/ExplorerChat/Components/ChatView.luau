@@ -22,8 +22,9 @@ return function (scope: Fusion.Scope, props: {
     NPCId: Fusion.Value<string>,
     IsTypewriting: Fusion.Value<boolean>,
 
-    ProcessedToNextDialogueSignal: Signal.SignalClass,
-    ProcessedToNextDialogueByChoiceSignal: Signal.SignalClass,
+    GoToNextDialogueSignal: Signal.SignalClass,
+    GoToNextDialogueByChoiceSignal: Signal.SignalClass,
+    GoSkipDialogueSignal: Signal.SignalClass,
 })
 
     local absDialogueSize = Fusion.Value(scope, Vector2.zero)
@@ -180,6 +181,30 @@ return function (scope: Fusion.Scope, props: {
 
             key,
 
+
+            Components.TextButton(scope, {
+                Name = "SkipBtn",
+                BackgroundColor3 = Components.BLUE_COLOR,
+                TextColor3 = Components.BLACK_COLOR,
+                Size = UDim2.fromScale(0.1, 0.55),
+                Position = UDim2.fromScale(0.02, -2.5),
+                Text = "SKIP",
+
+
+                [Fusion.OnEvent("MouseButton1Click")] = function()
+                    props.GoSkipDialogueSignal:Fire()
+                end,
+
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {
+                        PaddingLeft = UDim.new(0, 0),
+                        PaddingRight = UDim.new(0, 0),
+                    })
+                }
+            }),
+
             Components.Frame(scope, {
                 Name = "ChoicesFrame",
                 ZIndex = 12,
@@ -238,7 +263,7 @@ return function (scope: Fusion.Scope, props: {
                                         isSelecting:set(false)
                                     end,
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
-                                        props.ProcessedToNextDialogueByChoiceSignal:Fire(index)
+                                        props.GoToNextDialogueByChoiceSignal:Fire(index)
                                     end,
                                 }),
 

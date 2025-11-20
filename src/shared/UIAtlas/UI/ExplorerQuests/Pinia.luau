@@ -14,6 +14,8 @@ export type Self = {
     scope: Fusion.Scope,
 
     IsUIShown: Fusion.Value<boolean>,
+    IsUIShown2: Fusion.Value<boolean>,
+
     Quests: Fusion.Value<{ StringValue }>,
     NPCs: Fusion.Value<{ Model }>,
     StoryLocators: Fusion.Value<{ BasePart }>,
@@ -33,6 +35,7 @@ return function (self: Self)
     local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(true)
+    self.IsUIShown2 = Value(true)
 
     local quests = FusionComponents.useChildren(scope, plr:WaitForChild("Quests", 999))
     local npcs = FusionComponents.useTagged(scope, "NPCEntity")
@@ -51,6 +54,13 @@ return function (self: Self)
             if newPanel == nil then return end
 
             self.IsUIShown:set(newPanel == "None")
+        end
+    }))
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-HideUIFactor"] = function(state: boolean)
+            state = state or false
+
+            self.IsUIShown2:set(not state)
         end
     }))
 

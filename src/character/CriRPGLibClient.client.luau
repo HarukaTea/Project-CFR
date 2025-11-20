@@ -177,14 +177,22 @@ table.insert(CriRPGLib.Funcs, function()
                         if targetSoundId.SoundId ~= SoundService.Musics.Overworld.SoundId then
                             SoundService.Musics.Overworld:Pause()
 
-                            SoundService.Musics.BossCombat.SoundId = targetSoundId.SoundId
-                            SoundService.Musics.BossCombat:Play()
+                            local bossCombatMusic = SoundService.Musics.BossCombat :: Sound
+
+                            bossCombatMusic.SoundId = targetSoundId.SoundId
+
+                            bossCombatMusic:Play()
+                            bossCombatMusic.PlaybackSpeed = targetSoundId.PlaybackSpeed
+                            bossCombatMusic.TimePosition = targetSoundId.TimePosition
+                            bossCombatMusic.Volume = targetSoundId.Volume
                         end
                     end
                 else
                     if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
                         SoundService.Musics.Overworld:Pause()
                         SoundService.Musics.Combat:Play()
+
+                        SoundService.Musics.Combat.TimePosition = SoundService.Musics.Combat:GetAttribute("TimePosition") or 0
                     end
                 end
             end)
@@ -269,11 +277,13 @@ table.insert(CriRPGLib.Funcs, function()
 
                     wait(0.3)
                     overworldMusic.SoundId = targetSoundOW.SoundId
-                    overworldMusic.PlaybackSpeed = targetSoundOW.PlaybackSpeed
 
-                    if combatMusic.Playing then return end
 
                     overworldMusic:Play()
+                    overworldMusic.PlaybackSpeed = targetSoundOW.PlaybackSpeed
+                    overworldMusic.TimePosition = targetSoundOW.TimePosition
+
+                    if combatMusic.Playing then return end
 
                     HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.half, {
                         Volume = targetSoundOW.Volume
@@ -287,6 +297,9 @@ table.insert(CriRPGLib.Funcs, function()
                     combatMusic:Play()
                     combatMusic.PlaybackSpeed = targetSoundCB.PlaybackSpeed
                     combatMusic.Volume = targetSoundCB.Volume
+                    combatMusic.TimePosition = targetSoundCB.TimePosition
+
+                    combatMusic:SetAttribute("TimePosition", targetSoundCB.TimePosition)
                 end
             end))
 
@@ -312,6 +325,9 @@ table.insert(CriRPGLib.Funcs, function()
             end
             if Lighting:FindFirstChildOfClass("DepthOfFieldEffect") then
                 HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("DepthOfFieldEffect"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.DepthOfField):Play()
+            end
+            if Lighting:FindFirstChildOfClass("SunRaysEffect") then
+                HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("SunRaysEffect"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.SunRays):Play()
             end
             if workspace.Terrain:FindFirstChildOfClass("Clouds") then
                 HarukaLib:CreateTween(workspace.Terrain:FindFirstChildOfClass("Clouds"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Clouds):Play()

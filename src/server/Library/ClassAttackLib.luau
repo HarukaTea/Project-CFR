@@ -161,7 +161,12 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
     if not char:FindFirstChild("IsInComboUltPeriod") then
         char:SetAttribute("ChainCombo", 0)
     else
-        local nearestQuota = math.floor(combo / 3) * 3
+        local nearestQuota = combo
+        if nearestQuota <= 3 then
+            nearestQuota = 0
+        else
+            nearestQuota = math.floor( (combo - 1) / 3 ) * 3
+        end
         char:SetAttribute("ChainCombo", nearestQuota)
     end
 end
@@ -294,8 +299,12 @@ ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
+
+    local isUlt = char:FindFirstChild("IsInBurstUltPeriod") ~= nil
+    local gain = if isUlt then 2 else 1
+
     local now = DateTime.now().UnixTimestamp
-    local arrowCount = math.clamp( (char:GetAttribute("BurstArrow") or 0) + 1, 0, 12)
+    local arrowCount = math.clamp( (char:GetAttribute("BurstArrow") or 0) + gain, 0, 12)
     local arrowPiercingCount = char:GetAttribute("BurstArrowPiercing") or 0
 
     local firstTick = char:GetAttribute("BurstArrowTick1") or 0

@@ -17,7 +17,7 @@ local function initPlayer(player: Player)
         return
     end
     if workspace:GetAttribute("Haruka_ServerLocked") then
-        player:Kick("This server is invalid/locked. Rejoin can fix it.")
+        player:Kick("This server is shutting down, please do server hopping or wait for a while.")
         return
     end
     if player.AccountAge < 2 and not RunService:IsStudio() then

@@ -13,14 +13,14 @@ local keybinds = {
 keybinds.KEYBIND_NAMES = {
     PromptTrigger = "Trigger Prompt",
     Backpack = "Backpack",
-    CharSelfView = "Character Stats",
+    CharSelfView = "Character Stats Panel",
     Settings = "Settings",
     ClassUlt = "Class Ultimate",
     Active1 = "Active Skill 1",
     Active2 = "Active Skill 2",
     Active3 = "Active Skill 3",
     Dash = "Dash",
-    TargetSwitch = "Target Switch"
+    TargetSwitch = "Switch Target"
 }
 
 
@@ -38,7 +38,7 @@ keybinds.PC.Active1 = Enum.KeyCode.One
 keybinds.PC.Active2 = Enum.KeyCode.Two
 keybinds.PC.Active3 = Enum.KeyCode.Three
 keybinds.PC.Dash = Enum.KeyCode.R
-keybinds.PC.TargetSwitch = Enum.KeyCode.LeftAlt
+keybinds.PC.TargetSwitch = Enum.KeyCode.LeftControl
 
 keybinds.Console.ClassUlt = Enum.KeyCode.ButtonY
 keybinds.Console.Active1 = Enum.KeyCode.ButtonL1

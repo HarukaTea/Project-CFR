@@ -20,7 +20,7 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
-local HarukaQuest = require(ServerScriptService.HarukaServer.Shared.HarukaQuest)
+local HarukaQuest = require(ServerScriptService.HarukaServer.Services.HarukaQuest)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)

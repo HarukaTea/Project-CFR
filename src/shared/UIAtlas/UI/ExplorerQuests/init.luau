@@ -38,7 +38,7 @@ return function(plr: Player)
 		Parent = plr.PlayerGui,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(self.IsUIShown)
+            return use(self.IsUIShown) and use(self.IsUIShown2)
         end),
 
 
@@ -141,7 +141,7 @@ return function(plr: Player)
                 Components.Frame(scope, {
                     Name = "Quests",
                     AnchorPoint = Vector2.zero,
-                    Position = UDim2.fromScale(0.02, 0),
+                    Position = UDim2.fromScale(0.015, 0),
 
                     [Children] = {
                         Components.UIScale(scope, {
@@ -175,7 +175,5 @@ return function(plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

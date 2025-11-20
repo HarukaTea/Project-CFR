@@ -83,7 +83,7 @@ function CADimensions:AddToDimension()
 	isUploaded = true
 
 
-    HarukaLib.Clock(refreshRate, function()
+    self.thread = HarukaLib.Clock(refreshRate, function()
         HarukaLib.TryUntil(function()
             local playerIds = {}
             for _, player: Player in Players:GetPlayers() do
@@ -124,6 +124,7 @@ function CADimensions:RemoveFromDimension()
     if RunService:IsStudio() then return end
 
 	isRemoving = true
+    if self.thread then self.thread() end
 
 
     HarukaLib.TryUntil(function()

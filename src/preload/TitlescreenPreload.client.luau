@@ -23,7 +23,7 @@ if #Players:GetPlayers() > Players.MaxPlayers then
     return
 end
 if workspace:GetAttribute("Haruka_ServerLocked") then
-    plr:Kick("This server is invalid/locked. Rejoin can fix it.")
+    plr:Kick("This server is shutting down, please do server hopping or wait for a while.")
     return
 end
 

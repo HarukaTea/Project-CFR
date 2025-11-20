@@ -138,11 +138,10 @@ ClassMechanicLib._CLASS_Chain = function(self)
                 _classAbilityClear()
                 return
             end
-
-            chainEmpty()
             if char:FindFirstChild("IsInComboUltPeriod") then return end
 
 
+            chainEmpty()
             chainAdd(HarukaLib.Clock(3.2, function()
                 if char:FindFirstChild("IsInComboUltPeriod") then return end
 

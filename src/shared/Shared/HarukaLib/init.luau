@@ -1255,12 +1255,6 @@ function HarukaLib:TeleportPlayer(char: Model, target: CFrame)
 		sharedEvents = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 	end
 
-	target = CFrame.fromOrientation(
-		-math.pi / 4,
-		(select(2, char.PrimaryPart.CFrame:ToOrientation())),
-		0
-	) + target.Position
-
 	if sharedEvents then
 		if RunService:IsServer() then
 			local player = Players:GetPlayerFromCharacter(char)

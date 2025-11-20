@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local GuiService = game:GetService("GuiService")
 
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
@@ -31,8 +32,9 @@ export type Self = {
 
     MaxUTFShown: Fusion.Value<number>,
 
-    ProcessedToNextDialogueSignal: Signal.SignalClass,
-    ProcessedToNextDialogueByChoiceSignal: Signal.SignalClass,
+    GoToNextDialogueSignal: Signal.SignalClass,
+    GoToNextDialogueByChoiceSignal: Signal.SignalClass,
+    GoSkipDialogueSignal: Signal.SignalClass,
 }
 
 
@@ -58,10 +60,12 @@ return function (self: Self)
 
     self.MaxUTFShown = Value(-1)
 
-    self.ProcessedToNextDialogueSignal = Signal.new()
-    self.ProcessedToNextDialogueByChoiceSignal = Signal.new()
-    table.insert(scope, self.ProcessedToNextDialogueSignal)
-    table.insert(scope, self.ProcessedToNextDialogueByChoiceSignal)
+    self.GoToNextDialogueSignal = Signal.new()
+    self.GoToNextDialogueByChoiceSignal = Signal.new()
+    self.GoSkipDialogueSignal = Signal.new()
+    table.insert(scope, self.GoToNextDialogueSignal)
+    table.insert(scope, self.GoToNextDialogueByChoiceSignal)
+    table.insert(scope, self.GoSkipDialogueSignal)
 
 
     --// track ui
@@ -118,6 +122,7 @@ return function (self: Self)
         __clearDialogues()
 
         HarukaLib:FreezePlayerControls("Unfreeze")
+        GuiService.SelectedObject = nil
 
         if npcChatting then
             Events.FinishNPCChat_C.Fire({
@@ -279,14 +284,16 @@ return function (self: Self)
 
         __setText(dialogue)
     end
-    self.ProcessedToNextDialogueSignal:Connect(function()
+    self.GoToNextDialogueSignal:Connect(function()
         __nextText(if typewriterObj:IsTyping() then "Skip" else "Continue")
     end)
-    self.ProcessedToNextDialogueByChoiceSignal:Connect(function(choiceIndex: number)
+    self.GoToNextDialogueByChoiceSignal:Connect(function(choiceIndex: number)
         self.Choices:set({})
 
         __nextText("Continue", "ENTERCHOICE "..choiceIndex)
     end)
+    self.GoSkipDialogueSignal:Connect(__endChatting)
+
 
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
@@ -294,7 +301,7 @@ return function (self: Self)
 
         local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
         if (isGamepad and input.KeyCode == Enum.KeyCode.ButtonY) then
-            self.ProcessedToNextDialogueSignal:Fire()
+            self.GoToNextDialogueSignal:Fire()
         end
     end))
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
@@ -302,7 +309,7 @@ return function (self: Self)
         if not Fusion.peek(self.IsChatShown) then return end
 
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            self.ProcessedToNextDialogueSignal:Fire()
+            self.GoToNextDialogueSignal:Fire()
         end
     end))
 

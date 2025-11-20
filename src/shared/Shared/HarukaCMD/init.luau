@@ -444,10 +444,10 @@ function HarukaCMD:_InitCommandExecutionTracker()
         Promise.new(function(resolve)
             if not RunService:IsStudio() and realCmd.RankReq > 1 and game.GameId == AssetBook.CFUniverseId_Main then
                 Promise.try(function()
-                    local WEBHOOK_URL = "http://rainyleaf.xyz:3000/roblox-message"
+                    local WEBHOOK_URL = "http://rainyleaf.xyz:1599/roblox-message"
 
                     local JSONData = {
-                        message = `{plr.Name} executed command: {command} in PlaceId: {game.PlaceId}`
+                        message = `{plr.Name} executed command: {command} in World: {workspace:GetAttribute("WorldId") or "Unknown"}`
                     }
                     local JSONBody = HttpService:JSONEncode(JSONData)
 
