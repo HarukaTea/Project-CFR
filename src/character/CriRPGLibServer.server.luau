@@ -76,9 +76,8 @@ function CriRPGLib:Init()
         end
 	end))
 
-
-    self:_InitAttrs()
     self:_SpawnToLastLocation()
+    self:_InitAttrs()
 
     for _, func: () -> nil in CriRPGLib.Funcs do
         func()
@@ -106,19 +105,21 @@ function CriRPGLib:_SpawnToLastLocation()
     local lastLocation = plr:GetAttribute("LastSeen") :: string
     local map = workspace.Maps:FindFirstChild(lastLocation, true) :: Folder
 
+    if map then
+        local spawnPoints = map:FindFirstChild("SpawnPoints") :: Configuration
+        if spawnPoints then
+            local spawnPointChildern = spawnPoints:GetChildren()
+            if #spawnPointChildern > 0 then
+                local rSpawnPoint = spawnPointChildern[math.random(1, #spawnPointChildern)]
+
+                HarukaLib:TeleportPlayer(char, rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
+                return
+            end
+        end
+    end
     local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
 
     HarukaLib:TeleportPlayer(char, baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
-
-
-    if not map then return end
-    local spawnPoints = map:FindFirstChild("SpawnPoints") :: Configuration
-
-    if not spawnPoints then return end
-    local rSpawnPoint = spawnPoints:GetChildren()[math.random(1, #spawnPoints:GetChildren())]
-
-
-    HarukaLib:TeleportPlayer(char, rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
 end
 
 

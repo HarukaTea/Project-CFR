@@ -679,6 +679,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local intensity = char:GetAttribute("Intensity") or 0
 
         local reduce = realCD * (intensity / 100)
+        reduce = math.max(0, reduce)
+
         realCD -= reduce
         realCD = math.ceil(realCD)
         realCD = math.max(0, realCD)
@@ -728,7 +730,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         Events.CastItem_S_Response.Fire(plr, {
             SlotId = slotId,
-            CooldownEndTime = DateTime.now().UnixTimestamp + realCD
+            CooldownEndTime = math.ceil(DateTime.now().UnixTimestamp + realCD)
         })
     end)
 end)

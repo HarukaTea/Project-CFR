@@ -15,7 +15,7 @@ HarukaComponents.HarukaColorLab = HarukaColorLab
 HarukaComponents.FusionComponents = FusionComponents
 
 
-local DESIGN_VP_SIZE = Vector2.new(1168, 462.4)
+local DESIGN_VP_SIZE = Vector2.new(1168, 478.4)
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
 
 

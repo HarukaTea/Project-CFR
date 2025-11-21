@@ -198,7 +198,7 @@ table.insert(CharLib.Funcs, function()
             plr:SetAttribute("LastSeen", regionIn.Name)
             char:SetAttribute("AreaIn", regionIn.Name)
         end
-    end, true))
+    end))
 end)
 
 

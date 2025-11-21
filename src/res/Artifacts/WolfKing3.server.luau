@@ -25,7 +25,7 @@ local function _giveATK()
             Duration = 12,
             Ex = 25,
             Power = 0,
-            TrueEffectId = "CritChance"
+            TrueEffectId = "CriChance"
         })
     end
 end

@@ -316,21 +316,31 @@ table.insert(CriRPGLib.Funcs, function()
             end
 
             --- apply rain
-            Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel)
+            Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel or 0)
+
+
+            local colorEff = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+            local depthEff = Lighting:FindFirstChildOfClass("DepthOfFieldEffect")
+            local sunEff = Lighting:FindFirstChildOfClass("SunRaysEffect")
+            local cloudEff = workspace.Terrain:FindFirstChildOfClass("Clouds")
+            local bloomEff = Lighting:FindFirstChildOfClass("BloomEffect")
 
 
             --- apply atmosphere
-            if Lighting:FindFirstChildOfClass("ColorCorrectionEffect") then
-                HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("ColorCorrectionEffect"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.ColorCorrection):Play()
+            if colorEff then
+                HarukaLib:CreateTween(colorEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.ColorCorrection):Play()
             end
-            if Lighting:FindFirstChildOfClass("DepthOfFieldEffect") then
-                HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("DepthOfFieldEffect"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.DepthOfField):Play()
+            if depthEff then
+                HarukaLib:CreateTween(depthEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.DepthOfField):Play()
             end
-            if Lighting:FindFirstChildOfClass("SunRaysEffect") then
-                HarukaLib:CreateTween(Lighting:FindFirstChildOfClass("SunRaysEffect"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.SunRays):Play()
+            if sunEff then
+                HarukaLib:CreateTween(sunEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.SunRays):Play()
             end
-            if workspace.Terrain:FindFirstChildOfClass("Clouds") then
-                HarukaLib:CreateTween(workspace.Terrain:FindFirstChildOfClass("Clouds"), AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Clouds):Play()
+            if cloudEff then
+                HarukaLib:CreateTween(cloudEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Clouds):Play()
+            end
+            if bloomEff then
+                HarukaLib:CreateTween(bloomEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Bloom):Play()
             end
         end
 

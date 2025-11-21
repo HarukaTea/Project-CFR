@@ -161,9 +161,7 @@ return function (scope: Fusion.Scope, props: {
                         Text = "Purchase",
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
-                            Events.BuyTicket_C.Fire({
-                                MerchantId = props.MerchantId
-                            })
+                            Events.BuyTicket_C.Fire(props.MerchantId)
 
                             if blur then blur:Destroy() end
                             if frame then frame:Destroy() end

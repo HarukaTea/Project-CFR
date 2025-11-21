@@ -184,7 +184,8 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
         end
     end
 
-    char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 0.159 * 2.3
+    local dt = RunService.Heartbeat:Wait()
+    char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 40 * dt
 end
 
 

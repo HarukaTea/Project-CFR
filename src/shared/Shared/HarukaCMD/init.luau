@@ -447,7 +447,8 @@ function HarukaCMD:_InitCommandExecutionTracker()
                     local WEBHOOK_URL = "http://rainyleaf.xyz:1599/roblox-message"
 
                     local JSONData = {
-                        message = `{plr.Name} executed command: {command} in World: {workspace:GetAttribute("WorldId") or "Unknown"}`
+                        message = `{plr.Name} executed command: {command} in World: {workspace:GetAttribute("WorldId") or "Unknown"}`,
+                        secretKey = "1599mkk40_fallen_forever"
                     }
                     local JSONBody = HttpService:JSONEncode(JSONData)
 

@@ -207,9 +207,7 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
             )
 
         elseif actionId == "Restart" then
-            ServerBindables.RToChallengeAbyss:Fire(plr, {
-                AbyssId = AbyssWorldLib.AbyssId
-            })
+            ServerBindables.RToChallengeAbyss:Fire(plr, AbyssWorldLib.AbyssId)
         end
     end)
 end)

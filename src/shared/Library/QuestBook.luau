@@ -33,24 +33,6 @@ export type QuestJSON = {
 
 local quests = {
     --// Main
-    Main1 = {
-        Id = "Main1",
-        QuestType = "Main",
-
-        Name = "Adventurer Guild",
-        Target = "Head to the Guild",
-        NPC = "",
-        WorldLocatorId = "InitusGuildLocator",
-
-        Repeatable = false,
-        RequiredQuests = {},
-
-        Rewards = {
-            Gold = 150
-        },
-        Objectives = {}
-    }
-
 
     --// Side
 

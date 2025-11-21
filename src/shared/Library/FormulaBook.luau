@@ -72,7 +72,7 @@ local formulas = {
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
         local envir = props.EnvironmentBonus :: number
-        props.EnvironmentBonus = math.min(2, envir)
+        props.EnvironmentBonus = math.min(1.5, envir)
 
         local f = 4 * props.Level * envir
 

@@ -15,7 +15,7 @@ abyss[1] = {
     Team = {
         KingSlime = {
             Level = 50,
-            EnvironmentBonus = 2
+            EnvironmentBonus = 1
         },
         BlueSlime = {
             Level = 25,
@@ -29,7 +29,7 @@ abyss[2] = {
     Team = {
         QueenBee = {
             Level = 75,
-            EnvironmentBonus = 4
+            EnvironmentBonus = 2
         },
         Bee = {
             Level = 60,
@@ -43,11 +43,11 @@ abyss[3] = {
     Team = {
         CrimsonSlime = {
             Level = 100,
-            EnvironmentBonus = 6
+            EnvironmentBonus = 3
         },
         PurpleSlime = {
             Level = 95,
-            EnvironmentBonus = 4
+            EnvironmentBonus = 3
         }
     }
 }
@@ -57,11 +57,11 @@ abyss[4] = {
     Team = {
         HardmodeWolf = {
             Level = 125,
-            EnvironmentBonus = 8
+            EnvironmentBonus = 4
         },
         SpikeFox = {
             Level = 100,
-            EnvironmentBonus = 6
+            EnvironmentBonus = 4
         },
     }
 }
@@ -72,7 +72,7 @@ abyss[5] = {
     Team = {
         Sylvarion = {
             Level = 150,
-            EnvironmentBonus = 10
+            EnvironmentBonus = 5
         }
     }
 }
