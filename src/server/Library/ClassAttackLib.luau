@@ -22,24 +22,24 @@ export type ClassAttackLibClass = {
     [string]: (plr: Player, symbolAttrs: Dict) -> nil,
 
     _CalCastingTime: (char: Model, baseTime: number) -> number,
-    _CalDMG: (dmgType: string, char: Model, props: {
+    _CalDMG: (dmgType: "DMG" | "Magic", char: Model, props: {
         ForceMaxDMG: boolean?,
         ForceDMG: number?,
     }?) -> number,
     _AddClassUltCharge: (plr: Player, amount: number) -> nil,
     _FireClassUltCasted: (char: Model, props: {
         ClassId: string,
-        DMGType: string,
+        DMGType: "DMG" | "Magic",
         Target: Model
     }) -> nil,
     _DealDamageToEnemy: (char: Model, target: Model, dmgProps: {
         DMG: number,
-        DMGType: string,
+        DMGType: "DMG" | "Magic",
         Attacker: string
     }) -> nil,
     _DamageDealMiddler: (char: Model, target: Model, dmgProps: {
         DMG: number,
-        DMGType: string,
+        DMGType: "DMG" | "Magic",
         Attacker: string
     }) -> nil,
 
@@ -118,7 +118,7 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     if combo <= 1 then
         ClassAttackLib._DealDamageToEnemy(char, targeting, {
             DMG = ClassAttackLib._CalDMG("DMG", char),
-            DMGType = "Physical",
+            DMGType = "DMG",
             Attacker = "ClassAttacks"
         })
         return
@@ -131,7 +131,7 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
         DMG = totalDMG,
-        DMGType = "Physical",
+        DMGType = "DMG",
         Attacker = "ClassAttacks"
     })
 
@@ -153,7 +153,7 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
         DMG = totalDMG,
-        DMGType = "Physical",
+        DMGType = "DMG",
         Attacker = "ClassAttacks"
     })
 
@@ -173,6 +173,13 @@ end
 ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Chain",
+        DMGType = "DMG",
+        Target = targeting
+    })
 
 
     _castUltPromiseUtil(function()
@@ -247,7 +254,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 	if totalConsumed <= 0 then
 		ClassAttackLib._DealDamageToEnemy(char, targeting, {
 			DMG = ClassAttackLib._CalDMG("DMG", char),
-			DMGType = "Physical",
+			DMGType = "DMG",
 			Attacker = "ClassAttacks"
 		})
 		return
@@ -258,7 +265,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 
 	ClassAttackLib._DealDamageToEnemy(char, targeting, {
 		DMG = totalDMG,
-		DMGType = "Physical",
+		DMGType = "DMG",
 		Attacker = "ClassAttacks"
 	})
 	ServerLib.ShowText_S(char, "BURST SHOT!", ClassBook.Burst.Color)
@@ -271,6 +278,13 @@ end
 ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Burst",
+        DMGType = "DMG",
+        Target = targeting
+    })
 
 
     _castUltPromiseUtil(function()
@@ -374,7 +388,7 @@ ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
         DMG = dmg,
-        DMGType = "Physical",
+        DMGType = "DMG",
         Attacker = "ClassAttacks"
     })
 end
@@ -383,37 +397,53 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    local enemySymbols = char.TargetingList:GetChildren() :: { ObjectValue }
-    local enemies = {} :: { Model }
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Reverberation",
+        DMGType = "DMG",
+        Target = targeting
+    })
 
-    for _, symbol in enemySymbols do
-        table.insert(enemies, symbol.Value)
-    end
-    for _, enemy in enemies do
-        if not enemy:FindFirstChild("EchoHolder_"..plr.Name) then continue end
 
-        local stack = #enemy["EchoHolder_"..plr.Name]:GetChildren()
-        if stack <= 0 then continue end
+    _castUltPromiseUtil(function()
+        Events.OpenCastTimeBar_S.Fire(plr, 1)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
-        enemy["EchoHolder_"..plr.Name]:ClearAllChildren()
+    end, function()
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.FaceTargetingEnemy_S.Fire(plr)
 
-        for _ = 1, stack do
-            local dmg = ClassAttackLib._CalDMG("DMG", char)
+        local enemySymbols = char.TargetingList:GetChildren() :: { ObjectValue }
+        local enemies = {} :: { Model }
 
-            local note = enemy:GetAttribute("ReverberationPitch_"..plr.Name) or 0
-            local pitch = char:GetAttribute("ReverberationPitch") or 10
-
-            if note == pitch then
-                dmg = math.ceil(dmg * 2.05)
-            end
-
-            ClassAttackLib._DealDamageToEnemy(char, enemy, {
-                DMG = dmg,
-                DMGType = "Physical",
-                Attacker = "EchoStack"
-            })
+        for _, symbol in enemySymbols do
+            table.insert(enemies, symbol.Value)
         end
-    end
+        for _, enemy in enemies do
+            if not enemy:FindFirstChild("EchoHolder_"..plr.Name) then continue end
+
+            local stack = #enemy["EchoHolder_"..plr.Name]:GetChildren()
+            if stack <= 0 then continue end
+
+            enemy["EchoHolder_"..plr.Name]:ClearAllChildren()
+
+            for _ = 1, stack do
+                local dmg = ClassAttackLib._CalDMG("DMG", char)
+
+                local note = enemy:GetAttribute("ReverberationPitch_"..plr.Name) or 0
+                local pitch = char:GetAttribute("ReverberationPitch") or 10
+
+                if note == pitch then
+                    dmg = math.ceil(dmg * 2.05)
+                end
+
+                ClassAttackLib._DealDamageToEnemy(char, enemy, {
+                    DMG = dmg,
+                    DMGType = "DMG",
+                    Attacker = "EchoStack"
+                })
+            end
+        end
+    end)
 end
 ClassAttackLib.Reverberation_EchoSharp = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -474,6 +504,13 @@ ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
     markSymbol.Value = true
     markSymbol.Parent = markHolder
     Debris:AddItem(markSymbol, 8)
+
+
+    StatusLib:CreateCustomEffect("FlowMark", targeting, {
+        Duration = 8,
+        IsDebuff = true,
+        PlayerOnly = plr.Name
+    })
 end
 ClassAttackLib.Flow_Catalyst = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -572,6 +609,13 @@ ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Flow",
+        DMGType = "Magic",
+        Target = targeting
+    })
+
+
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
@@ -611,7 +655,7 @@ ClassAttackLib.Execution = function(plr: Player, symbolAttrs: Dict)
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
         DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * 3),
-        DMGType = "Physical",
+        DMGType = "DMG",
         Attacker = "ClassAttacks"
     })
 end
@@ -640,7 +684,7 @@ end
 
 function ClassAttackLib._FireClassUltCasted(char: Model, props: {
     ClassId: string,
-    DMGType: string,
+    DMGType: "DMG" | "Magic",
     Target: Model
 })
     for _, event in char:GetDescendants() do

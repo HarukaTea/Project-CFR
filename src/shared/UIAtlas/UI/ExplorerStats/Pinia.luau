@@ -362,11 +362,10 @@ return function (self: Self)
         if info == nil then return end
         if info.CastCD then return end
 
-        info.CastCD = true
+        _normalCancelCD(info)
 
         if not info then
             warn("Invalid item properties when casting item")
-            _normalCancelCD(info)
             return
         end
 
@@ -374,47 +373,40 @@ return function (self: Self)
         slotIdStr = "Active"..slotIdStr
 
         local equippingItems = plr.EquippingItems :: Folder
-        if equippingItems:FindFirstChild(slotIdStr) then
-            local itemSymbol = equippingItems[slotIdStr] :: StringValue
+        if not equippingItems:FindFirstChild(slotIdStr) then return end
 
-            local itemInfo = ItemBook:GetItemInfo(itemSymbol.Value)
-            if not itemInfo then
-                Bindables.CreateNotify:Fire("[Error] Invalid Item Id")
-                _normalCancelCD(info)
-                return
-            end
 
-            local castWhiteList = { "Active", "Consumable" }
-            if not table.find(castWhiteList, itemInfo.Type) then
-                Bindables.CreateNotify:Fire("[Error] Invalid Item Type")
-                _normalCancelCD(info)
-                return
-            end
+        local itemSymbol = equippingItems[slotIdStr] :: StringValue
 
-            local inCDCheck = false
-            for _, cdSymbol: BoolValue in CollectionService:GetTagged("ItemCDSymbol") do
-                if cdSymbol.Name == plr.UserId and cdSymbol:GetAttribute("ItemId") == itemInfo.ItemId then
-                    inCDCheck = true
-                    break
-                end
-            end
-            if inCDCheck then
-                Bindables.CreateNotify:Fire("The item is still on cooldown!")
-                _normalCancelCD(info)
-                return
-            end
-
-            Events.CastItem_C_Request.Fire(slotIdStr)
-        else
-            _normalCancelCD(info)
-        end
-    end)
-    self.CastClassUlt_C:Connect(function()
-        if self.ClassActiveCastCD then
+        local itemInfo = ItemBook:GetItemInfo(itemSymbol.Value)
+        if not itemInfo then
+            Bindables.CreateNotify:Fire("[Error] Invalid Item Id")
             return
         end
-        self.ClassActiveCastCD = true
 
+        local castWhiteList = { "Active", "Consumable" }
+        if not table.find(castWhiteList, itemInfo.Type) then
+            Bindables.CreateNotify:Fire("[Error] Invalid Item Type")
+            return
+        end
+
+        local inCDCheck = false
+        for _, cdSymbol: StringValue in workspace.MapComponents.ItemCDSymbolContainer:GetChildren() do
+            if cdSymbol.Name == plr.Name and cdSymbol.Value == itemInfo.ItemId then
+                inCDCheck = true
+                break
+            end
+        end
+        if inCDCheck then
+            Bindables.CreateNotify:Fire("The item is still on cooldown!")
+            return
+        end
+
+        Events.CastItem_C_Request.Fire(slotIdStr)
+    end)
+    self.CastClassUlt_C:Connect(function()
+        if self.ClassActiveCastCD then return end
+        self.ClassActiveCastCD = true
 
         task.delay(1, function()
             self.ClassActiveCastCD = false
@@ -444,8 +436,7 @@ return function (self: Self)
     end
     table.insert(scope, Events.CastItem_S_Response.On(function(data)
         local slotId = data.SlotId
-        local cdTimeEnd = data.CooldownEndTime
-        local cdTime = cdTimeEnd - DateTime.now().UnixTimestamp
+        local cdTime = data.CooldownTime
 
         slotId = string.sub(slotId, 7)
         if slotId == nil then return end

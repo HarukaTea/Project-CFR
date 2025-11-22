@@ -360,7 +360,7 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     local orbContainer = Instance.new("Folder")
-    orbContainer.Name = "OrbContainer_"..plr.UserId
+    orbContainer.Name = "OrbContainer_"..plr.Name
     orbContainer.Parent = ServerStorage
     Add(orbContainer)
 
@@ -556,13 +556,13 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
-    projectileContainer.Name = "ProjectileContainer_"..plr.UserId
+    projectileContainer.Name = "ProjectileContainer_"..plr.Name
     projectileContainer.Parent = ServerStorage
     Add(projectileContainer)
 
 
     local uniProjectileContainer = Instance.new("Folder")
-    uniProjectileContainer.Name = "UniProjectileContainer_"..plr.UserId
+    uniProjectileContainer.Name = "UniProjectileContainer_"..plr.Name
     uniProjectileContainer.Parent = workspace.MapComponents
     Add(uniProjectileContainer)
 

@@ -85,8 +85,7 @@ function CriRPGLib:Init()
 
     self:_AutoEquipItems()
 
-
-    char:SetAttribute("_CharDataInited", true)
+    char:SetAttribute("Haruka_CriRPGServerInited", true)
     char:AddTag("PlayerCharEntity")
 end
 
@@ -381,7 +380,7 @@ table.insert(CriRPGLib.Funcs, function()
         ProjectileType: "OneTime" | "OverTime",
         Duration: number,
         ProjectileUniqueId: string,
-        DMGType: string,
+        DMGType: "DMG" | "Magic",
         DoTType: string,
         DMGBonus: number,
         IsClassUlt: boolean

@@ -117,6 +117,10 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
     end
 
     local self = playerObj
+    if self.Slot then
+        Events.CreateNotify_S.Fire(plr, "[Error] You've already chosen a slot!")
+        return
+    end
 
 
     --// Load in datastore

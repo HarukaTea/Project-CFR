@@ -190,7 +190,7 @@ end
 
 
 
-local function _calDoTDMG(char: Model, dmgType: string)
+local function _calDoTDMG(char: Model, dmgType: "DMG" | "Magic")
     if dmgType == "DMG" then
         local minDMG, maxDMG = char:GetAttribute("MinDMG"), char:GetAttribute("MaxDMG")
         if minDMG > maxDMG then

@@ -6,13 +6,13 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
 export type DMGPropsMetaData = {
     DMG: number,
-    DMGType: string,
+    DMGType: "DMG" | "Magic",
     Attacker: string,
 }
 
 export type ClassUltMetaData = {
     ClassId: string,
-    DMGType: string,
+    DMGType: "DMG" | "Magic",
     Target: Model
 }
 

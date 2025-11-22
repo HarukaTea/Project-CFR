@@ -166,9 +166,6 @@ if not RunService:IsRunning() then
 		ShowDMGNumber_S = table.freeze({
 			On = noop
 		}),
-		SetSkyGalleonOwner_S = table.freeze({
-			On = noop
-		}),
 		SetServerCharAttr_C = table.freeze({
 			Fire = noop
 		}),
@@ -352,32 +349,30 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(35)
-local reliable_event_queue: { [number]: { any } } = table.create(35)
+local reliable_events = table.create(34)
+local reliable_event_queue: { [number]: { any } } = table.create(34)
+reliable_events[28] = {}
+reliable_event_queue[28] = {}
 reliable_events[29] = {}
 reliable_event_queue[29] = {}
-reliable_events[30] = {}
-reliable_event_queue[30] = {}
-reliable_events[26] = {}
-reliable_event_queue[26] = 0
 reliable_events[25] = {}
-reliable_event_queue[25] = {}
+reliable_event_queue[25] = 0
+reliable_events[24] = {}
+reliable_event_queue[24] = {}
 reliable_events[10] = {}
 reliable_event_queue[10] = {}
 reliable_events[9] = {}
 reliable_event_queue[9] = {}
 reliable_events[8] = {}
 reliable_event_queue[8] = {}
-reliable_events[21] = {}
-reliable_event_queue[21] = {}
-reliable_events[23] = {}
-reliable_event_queue[23] = {}
+reliable_events[22] = {}
+reliable_event_queue[22] = {}
 reliable_events[12] = {}
 reliable_event_queue[12] = {}
 reliable_events[4] = {}
 reliable_event_queue[4] = 0
-reliable_events[28] = {}
-reliable_event_queue[28] = {}
+reliable_events[27] = {}
+reliable_event_queue[27] = {}
 reliable_events[6] = {}
 reliable_event_queue[6] = {}
 reliable_events[5] = {}
@@ -394,10 +389,10 @@ reliable_events[0] = {}
 reliable_event_queue[0] = {}
 reliable_events[18] = {}
 reliable_event_queue[18] = {}
-reliable_events[24] = {}
-reliable_event_queue[24] = {}
-reliable_events[22] = {}
-reliable_event_queue[22] = {}
+reliable_events[23] = {}
+reliable_event_queue[23] = {}
+reliable_events[21] = {}
+reliable_event_queue[21] = {}
 reliable_events[14] = {}
 reliable_event_queue[14] = {}
 reliable_events[7] = {}
@@ -412,16 +407,16 @@ reliable_events[13] = {}
 reliable_event_queue[13] = 0
 reliable_events[1] = {}
 reliable_event_queue[1] = {}
-reliable_events[31] = {}
-reliable_event_queue[31] = {}
-reliable_events[33] = {}
-reliable_event_queue[33] = {}
-reliable_events[34] = {}
-reliable_event_queue[34] = {}
+reliable_events[30] = {}
+reliable_event_queue[30] = {}
 reliable_events[32] = {}
 reliable_event_queue[32] = {}
-reliable_events[27] = {}
-reliable_event_queue[27] = 0
+reliable_events[33] = {}
+reliable_event_queue[33] = {}
+reliable_events[31] = {}
+reliable_event_queue[31] = {}
+reliable_events[26] = {}
+reliable_event_queue[26] = 0
 reliable_events[11] = {}
 reliable_event_queue[11] = {}
 reliable.OnClientEvent:Connect(function(buff, inst)
@@ -432,7 +427,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 29 then
+		if id == 28 then
 			local value
 			local bool_1 = buffer.readu8(incoming_buff, read(1))
 			if bit32.btest(bool_1, 0b0000000000000001) then
@@ -442,17 +437,17 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value = nil
 			end
-			if reliable_events[29][1] then
-				for _, cb in reliable_events[29] do
+			if reliable_events[28][1] then
+				for _, cb in reliable_events[28] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[29], value)
-				if #reliable_event_queue[29] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[29]} events in queue for UpdateCameraPart_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[28], value)
+				if #reliable_event_queue[28] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[28]} events in queue for UpdateCameraPart_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 30 then
+		elseif id == 29 then
 			local value
 			local pos_1 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
 			local axisangle_1 = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
@@ -462,29 +457,29 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value = CFrame.new(pos_1)
 			end
-			if reliable_events[30][1] then
-				for _, cb in reliable_events[30] do
+			if reliable_events[29][1] then
+				for _, cb in reliable_events[29] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[30], value)
-				if #reliable_event_queue[30] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[30]} events in queue for UpdateCameraCF_S. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 26 then
-			local value
-			if reliable_events[26][1] then
-				for _, cb in reliable_events[26] do
-					task.spawn(cb, value)
-				end
-			else
-				reliable_event_queue[26] += 1
-				if reliable_event_queue[26] > 16 then
-					warn(`[ZAP] {reliable_event_queue[26]} events in queue for Spell_ExtraJumpSupport. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[29], value)
+				if #reliable_event_queue[29] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[29]} events in queue for UpdateCameraCF_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 25 then
+			local value
+			if reliable_events[25][1] then
+				for _, cb in reliable_events[25] do
+					task.spawn(cb, value)
+				end
+			else
+				reliable_event_queue[25] += 1
+				if reliable_event_queue[25] > 16 then
+					warn(`[ZAP] {reliable_event_queue[25]} events in queue for Spell_ExtraJumpSupport. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 24 then
 			local value
 			local bool_2 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
@@ -495,14 +490,14 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value["ItemAmount"] = buffer.readu16(incoming_buff, read(2))
 			value["ItemDropLocationPos"] = Vector3.new(buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)), buffer.readf32(incoming_buff, read(4)))
 			value["AllowAutoPickup"] = bit32.btest(bool_2, 0b0000000000000001)
-			if reliable_events[25][1] then
-				for _, cb in reliable_events[25] do
+			if reliable_events[24][1] then
+				for _, cb in reliable_events[24] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[25], value)
-				if #reliable_event_queue[25] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[25]} events in queue for SpawnItemDrop_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[24], value)
+				if #reliable_event_queue[24] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[24]} events in queue for SpawnItemDrop_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 10 then
@@ -595,56 +590,36 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[8]} events in queue for ShowDMGNumber_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 21 then
+		elseif id == 22 then
 			local value
 			local bool_4 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_4, 0b0000000000000001) then
-				incoming_ipos = incoming_ipos + 1
-				value = incoming_inst[incoming_ipos]
-				assert(value == nil or value:IsA("Model"), "received instance is not of the Model class!")
-			else
-				value = nil
-			end
-			if reliable_events[21][1] then
-				for _, cb in reliable_events[21] do
-					task.spawn(cb, value)
-				end
-			else
-				table.insert(reliable_event_queue[21], value)
-				if #reliable_event_queue[21] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[21]} events in queue for SetSkyGalleonOwner_S. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 23 then
-			local value
-			local bool_5 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_7 = buffer.readu16(incoming_buff, read(2))
 			value["StatusId"] = buffer.readstring(incoming_buff, read(len_7), len_7)
-			if bit32.btest(bool_5, 0b0000000000000001) then
+			if bit32.btest(bool_4, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Entity"] = incoming_inst[incoming_ipos]
 				assert(value["Entity"] == nil or value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 			else
 				value["Entity"] = nil
 			end
-			if reliable_events[23][1] then
-				for _, cb in reliable_events[23] do
+			if reliable_events[22][1] then
+				for _, cb in reliable_events[22] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[23], value)
-				if #reliable_event_queue[23] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[23]} events in queue for PlayVFXStatusToEntity_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[22], value)
+				if #reliable_event_queue[22] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[22]} events in queue for PlayVFXStatusToEntity_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 12 then
 			local value
-			local bool_6 = buffer.readu8(incoming_buff, read(1))
+			local bool_5 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
 			local len_8 = buffer.readu16(incoming_buff, read(2))
 			value["SceneId"] = buffer.readstring(incoming_buff, read(len_8), len_8)
-			if bit32.btest(bool_6, 0b0000000000000001) then
+			if bit32.btest(bool_5, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Caster"] = incoming_inst[incoming_ipos]
 				assert(value["Caster"] == nil or value["Caster"]:IsA("Model"), "received instance is not of the Model class!")
@@ -675,29 +650,29 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {reliable_event_queue[4]} events in queue for PlayStatPoweredScreenFX_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 28 then
+		elseif id == 27 then
 			local value, value2
-			local bool_7 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_7, 0b0000000000000001) then
+			local bool_6 = buffer.readu8(incoming_buff, read(1))
+			if bit32.btest(bool_6, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value = incoming_inst[incoming_ipos]
 				assert(value == nil or value:IsA("Sound"), "received instance is not of the Sound class!")
 			else
 				value = nil
 			end
-			if bit32.btest(bool_7, 0b0000000000000010) then
+			if bit32.btest(bool_6, 0b0000000000000010) then
 				value2 = buffer.readu8(incoming_buff, read(1))
 			else
 				value2 = nil
 			end
-			if reliable_events[28][1] then
-				for _, cb in reliable_events[28] do
+			if reliable_events[27][1] then
+				for _, cb in reliable_events[27] do
 					task.spawn(cb, value, value2)
 				end
 			else
-				table.insert(reliable_event_queue[28], { value, value2 })
-				if #reliable_event_queue[28] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[28]} events in queue for PlaySound_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[27], { value, value2 })
+				if #reliable_event_queue[27] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[27]} events in queue for PlaySound_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 6 then
@@ -742,9 +717,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 16 then
 			local value
-			local bool_8 = buffer.readu8(incoming_buff, read(1))
+			local bool_7 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			if bit32.btest(bool_8, 0b0000000000000001) then
+			if bit32.btest(bool_7, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Entity"] = incoming_inst[incoming_ipos]
 				assert(value["Entity"] == nil or value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
@@ -827,43 +802,43 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[18]} events in queue for PartyInviteResult_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 24 then
+		elseif id == 23 then
 			local value
-			local bool_9 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_9, 0b0000000000000001) then
+			local bool_8 = buffer.readu8(incoming_buff, read(1))
+			if bit32.btest(bool_8, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value = incoming_inst[incoming_ipos]
 				assert(value == nil or value:IsA("Model"), "received instance is not of the Model class!")
 			else
 				value = nil
 			end
-			if reliable_events[24][1] then
-				for _, cb in reliable_events[24] do
+			if reliable_events[23][1] then
+				for _, cb in reliable_events[23] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[24], value)
-				if #reliable_event_queue[24] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[24]} events in queue for OpeningChest_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[23], value)
+				if #reliable_event_queue[23] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[23]} events in queue for OpeningChest_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 22 then
+		elseif id == 21 then
 			local value
-			local bool_10 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_10, 0b0000000000000001) then
+			local bool_9 = buffer.readu8(incoming_buff, read(1))
+			if bit32.btest(bool_9, 0b0000000000000001) then
 				local len_18 = buffer.readu16(incoming_buff, read(2))
 				value = buffer.readstring(incoming_buff, read(len_18), len_18)
 			else
 				value = nil
 			end
-			if reliable_events[22][1] then
-				for _, cb in reliable_events[22] do
+			if reliable_events[21][1] then
+				for _, cb in reliable_events[21] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[22], value)
-				if #reliable_event_queue[22] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[22]} events in queue for OpenTravelTicketUI_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[21], value)
+				if #reliable_event_queue[21] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[21]} events in queue for OpenTravelTicketUI_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 14 then
@@ -954,8 +929,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 1 then
 			local value
-			local bool_11 = buffer.readu8(incoming_buff, read(1))
-			if bit32.btest(bool_11, 0b0000000000000001) then
+			local bool_10 = buffer.readu8(incoming_buff, read(1))
+			if bit32.btest(bool_10, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value = incoming_inst[incoming_ipos]
 				assert(value == nil or value:IsA("Model"), "received instance is not of the Model class!")
@@ -972,54 +947,25 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					warn(`[ZAP] {#reliable_event_queue[1]} events in queue for EnterNPCChat_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 31 then
+		elseif id == 30 then
 			local value
 			local len_22 = buffer.readu16(incoming_buff, read(2))
 			value = buffer.readstring(incoming_buff, read(len_22), len_22)
-			if reliable_events[31][1] then
-				for _, cb in reliable_events[31] do
+			if reliable_events[30][1] then
+				for _, cb in reliable_events[30] do
 					task.spawn(cb, value)
 				end
 			else
-				table.insert(reliable_event_queue[31], value)
-				if #reliable_event_queue[31] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[31]} events in queue for CreateNotify_S. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 33 then
-			local value, value2
-			local len_23 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_23), len_23)
-			value2 = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[33][1] then
-				for _, cb in reliable_events[33] do
-					task.spawn(cb, value, value2)
-				end
-			else
-				table.insert(reliable_event_queue[33], { value, value2 })
-				if #reliable_event_queue[33] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[33]} events in queue for CreateFSNotify_S. Did you forget to attach a listener?`)
-				end
-			end
-		elseif id == 34 then
-			local value
-			value = buffer.readu8(incoming_buff, read(1))
-			if reliable_events[34][1] then
-				for _, cb in reliable_events[34] do
-					task.spawn(cb, value)
-				end
-			else
-				table.insert(reliable_event_queue[34], value)
-				if #reliable_event_queue[34] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[34]} events in queue for CreateCircularFade_S. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[30], value)
+				if #reliable_event_queue[30] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[30]} events in queue for CreateNotify_S. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 32 then
 			local value, value2
-			local bool_12 = buffer.readu8(incoming_buff, read(1))
-			local len_24 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_24), len_24)
-			value2 = bit32.btest(bool_12, 0b0000000000000001)
+			local len_23 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_23), len_23)
+			value2 = buffer.readu8(incoming_buff, read(1))
 			if reliable_events[32][1] then
 				for _, cb in reliable_events[32] do
 					task.spawn(cb, value, value2)
@@ -1027,19 +973,48 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				table.insert(reliable_event_queue[32], { value, value2 })
 				if #reliable_event_queue[32] > 64 then
-					warn(`[ZAP] {#reliable_event_queue[32]} events in queue for CreateCenterNotify_S. Did you forget to attach a listener?`)
+					warn(`[ZAP] {#reliable_event_queue[32]} events in queue for CreateFSNotify_S. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 27 then
+		elseif id == 33 then
 			local value
-			if reliable_events[27][1] then
-				for _, cb in reliable_events[27] do
+			value = buffer.readu8(incoming_buff, read(1))
+			if reliable_events[33][1] then
+				for _, cb in reliable_events[33] do
 					task.spawn(cb, value)
 				end
 			else
-				reliable_event_queue[27] += 1
-				if reliable_event_queue[27] > 16 then
-					warn(`[ZAP] {reliable_event_queue[27]} events in queue for Class_ChainUIUpdateSupport. Did you forget to attach a listener?`)
+				table.insert(reliable_event_queue[33], value)
+				if #reliable_event_queue[33] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[33]} events in queue for CreateCircularFade_S. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 31 then
+			local value, value2
+			local bool_11 = buffer.readu8(incoming_buff, read(1))
+			local len_24 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_24), len_24)
+			value2 = bit32.btest(bool_11, 0b0000000000000001)
+			if reliable_events[31][1] then
+				for _, cb in reliable_events[31] do
+					task.spawn(cb, value, value2)
+				end
+			else
+				table.insert(reliable_event_queue[31], { value, value2 })
+				if #reliable_event_queue[31] > 64 then
+					warn(`[ZAP] {#reliable_event_queue[31]} events in queue for CreateCenterNotify_S. Did you forget to attach a listener?`)
+				end
+			end
+		elseif id == 26 then
+			local value
+			if reliable_events[26][1] then
+				for _, cb in reliable_events[26] do
+					task.spawn(cb, value)
+				end
+			else
+				reliable_event_queue[26] += 1
+				if reliable_event_queue[26] > 16 then
+					warn(`[ZAP] {reliable_event_queue[26]} events in queue for Class_ChainUIUpdateSupport. Did you forget to attach a listener?`)
 				end
 			end
 		elseif id == 11 then
@@ -1047,7 +1022,7 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			value = {  }
 			local len_25 = buffer.readu16(incoming_buff, read(2))
 			value["SlotId"] = buffer.readstring(incoming_buff, read(len_25), len_25)
-			value["CooldownEndTime"] = buffer.readu32(incoming_buff, read(4))
+			value["CooldownTime"] = buffer.readu8(incoming_buff, read(1))
 			if reliable_events[11][1] then
 				for _, cb in reliable_events[11] do
 					task.spawn(cb, value)
@@ -1070,6 +1045,18 @@ local returns = {
 	SendEvents = SendEvents,
 	UpdateCameraPart_S = {
 		On = function(Callback: (part: ((BasePart)?)) -> ())
+			table.insert(reliable_events[28], Callback)
+			for _, value in reliable_event_queue[28] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[28] = {}
+			return function()
+				table.remove(reliable_events[28], table.find(reliable_events[28], Callback))
+			end
+		end,
+	},
+	UpdateCameraCF_S = {
+		On = function(Callback: (cframe: (CFrame)) -> ())
 			table.insert(reliable_events[29], Callback)
 			for _, value in reliable_event_queue[29] do
 				task.spawn(Callback, value)
@@ -1080,18 +1067,6 @@ local returns = {
 			end
 		end,
 	},
-	UpdateCameraCF_S = {
-		On = function(Callback: (cframe: (CFrame)) -> ())
-			table.insert(reliable_events[30], Callback)
-			for _, value in reliable_event_queue[30] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[30] = {}
-			return function()
-				table.remove(reliable_events[30], table.find(reliable_events[30], Callback))
-			end
-		end,
-	},
 	Titlescreen_SlotActions_C = {
 		Fire = function(Value: ({
 			["ActionId"]: ((string)?),
@@ -1099,10 +1074,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local bool_13 = 0
-			local bool_13_pos_1 = alloc(1)
+			local bool_12 = 0
+			local bool_12_pos_1 = alloc(1)
 			if Value["ActionId"] ~= nil then
-				bool_13 = bit32.bor(bool_13, 0b0000000000000001)
+				bool_12 = bit32.bor(bool_12, 0b0000000000000001)
 				local len_26 = #Value["ActionId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
@@ -1110,7 +1085,7 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ActionId"], len_26)
 			end
 			if Value["SlotId"] ~= nil then
-				bool_13 = bit32.bor(bool_13, 0b0000000000000010)
+				bool_12 = bit32.bor(bool_12, 0b0000000000000010)
 				local len_27 = #Value["SlotId"]
 				assert(utf8.len(Value["SlotId"]) ~= nil, "value is not valid utf-8")
 				alloc(2)
@@ -1118,7 +1093,7 @@ local returns = {
 				alloc(len_27)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_27)
 			end
-			buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
+			buffer.writeu8(outgoing_buff, bool_12_pos_1, bool_12)
 		end,
 	},
 	Titlescreen_PlayTutorial_C = {
@@ -1131,14 +1106,14 @@ local returns = {
 		Fire = function(target: ((Model)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 23)
-			local bool_14 = 0
-			local bool_14_pos_1 = alloc(1)
+			local bool_13 = 0
+			local bool_13_pos_1 = alloc(1)
 			if target ~= nil then
-				bool_14 = bit32.bor(bool_14, 0b0000000000000001)
+				bool_13 = bit32.bor(bool_13, 0b0000000000000001)
 				assert(target:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, target)
 			end
-			buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
+			buffer.writeu8(outgoing_buff, bool_13_pos_1, bool_13)
 		end,
 	},
 	StartCombat_C = {
@@ -1148,47 +1123,47 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 12)
-			local bool_15 = 0
-			local bool_15_pos_1 = alloc(1)
+			local bool_14 = 0
+			local bool_14_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_15 = bit32.bor(bool_15, 0b0000000000000001)
+				bool_14 = bit32.bor(bool_14, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
 			if Value["CombatMode"] ~= nil then
-				bool_15 = bit32.bor(bool_15, 0b0000000000000010)
+				bool_14 = bit32.bor(bool_14, 0b0000000000000010)
 				local len_28 = #Value["CombatMode"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_28)
 				alloc(len_28)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["CombatMode"], len_28)
 			end
-			buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
+			buffer.writeu8(outgoing_buff, bool_14_pos_1, bool_14)
 		end,
 	},
 	StartAbyss_C = {
 		Fire = function(abyssId: ((number)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 18)
-			local bool_16 = 0
-			local bool_16_pos_1 = alloc(1)
+			local bool_15 = 0
+			local bool_15_pos_1 = alloc(1)
 			if abyssId ~= nil then
-				bool_16 = bit32.bor(bool_16, 0b0000000000000001)
+				bool_15 = bit32.bor(bool_15, 0b0000000000000001)
 				alloc(1)
 				buffer.writeu8(outgoing_buff, outgoing_apos, abyssId)
 			end
-			buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
+			buffer.writeu8(outgoing_buff, bool_15_pos_1, bool_15)
 		end,
 	},
 	Spell_ExtraJumpSupport = {
 		On = function(Callback: () -> ())
-			table.insert(reliable_events[26], Callback)
-			for _ = 1, reliable_event_queue[26] do
+			table.insert(reliable_events[25], Callback)
+			for _ = 1, reliable_event_queue[25] do
 				task.spawn(Callback)
 			end
-			reliable_event_queue[26] = 0
+			reliable_event_queue[25] = 0
 			return function()
-				table.remove(reliable_events[26], table.find(reliable_events[26], Callback))
+				table.remove(reliable_events[25], table.find(reliable_events[25], Callback))
 			end
 		end,
 	},
@@ -1200,13 +1175,13 @@ local returns = {
 			["ItemDropLocationPos"]: (Vector3),
 			["AllowAutoPickup"]: (boolean),
 		})) -> ())
-			table.insert(reliable_events[25], Callback)
-			for _, value in reliable_event_queue[25] do
+			table.insert(reliable_events[24], Callback)
+			for _, value in reliable_event_queue[24] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[25] = {}
+			reliable_event_queue[24] = {}
 			return function()
-				table.remove(reliable_events[25], table.find(reliable_events[25], Callback))
+				table.remove(reliable_events[24], table.find(reliable_events[24], Callback))
 			end
 		end,
 	},
@@ -1264,18 +1239,6 @@ local returns = {
 			end
 		end,
 	},
-	SetSkyGalleonOwner_S = {
-		On = function(Callback: (galleon: ((Model)?)) -> ())
-			table.insert(reliable_events[21], Callback)
-			for _, value in reliable_event_queue[21] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[21] = {}
-			return function()
-				table.remove(reliable_events[21], table.find(reliable_events[21], Callback))
-			end
-		end,
-	},
 	SetServerCharAttr_C = {
 		Fire = function(Value: ({
 			["AttrId"]: ((string)?),
@@ -1283,10 +1246,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 21)
-			local bool_17 = 0
-			local bool_17_pos_1 = alloc(1)
+			local bool_16 = 0
+			local bool_16_pos_1 = alloc(1)
 			if Value["AttrId"] ~= nil then
-				bool_17 = bit32.bor(bool_17, 0b0000000000000001)
+				bool_16 = bit32.bor(bool_16, 0b0000000000000001)
 				local len_29 = #Value["AttrId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_29)
@@ -1294,29 +1257,29 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["AttrId"], len_29)
 			end
 			if Value["State"] ~= nil then
-				bool_17 = bit32.bor(bool_17, 0b0000000000000010)
+				bool_16 = bit32.bor(bool_16, 0b0000000000000010)
 				if Value["State"] then
-					bool_17 = bit32.bor(bool_17, 0b0000000000000100)
+					bool_16 = bit32.bor(bool_16, 0b0000000000000100)
 				end
 			end
-			buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
+			buffer.writeu8(outgoing_buff, bool_16_pos_1, bool_16)
 		end,
 	},
 	ServerHop_C = {
 		Fire = function(jobId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 25)
-			local bool_18 = 0
-			local bool_18_pos_1 = alloc(1)
+			local bool_17 = 0
+			local bool_17_pos_1 = alloc(1)
 			if jobId ~= nil then
-				bool_18 = bit32.bor(bool_18, 0b0000000000000001)
+				bool_17 = bit32.bor(bool_17, 0b0000000000000001)
 				local len_30 = #jobId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_30)
 				alloc(len_30)
 				buffer.writestring(outgoing_buff, outgoing_apos, jobId, len_30)
 			end
-			buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
+			buffer.writeu8(outgoing_buff, bool_17_pos_1, bool_17)
 		end,
 	},
 	SellItem_C = {
@@ -1327,10 +1290,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 10)
-			local bool_19 = 0
-			local bool_19_pos_1 = alloc(1)
+			local bool_18 = 0
+			local bool_18_pos_1 = alloc(1)
 			if Value["ItemId"] ~= nil then
-				bool_19 = bit32.bor(bool_19, 0b0000000000000001)
+				bool_18 = bit32.bor(bool_18, 0b0000000000000001)
 				local len_31 = #Value["ItemId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_31)
@@ -1338,7 +1301,7 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_31)
 			end
 			if Value["ItemUniqueId"] ~= nil then
-				bool_19 = bit32.bor(bool_19, 0b0000000000000010)
+				bool_18 = bit32.bor(bool_18, 0b0000000000000010)
 				local len_32 = #Value["ItemUniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_32)
@@ -1346,28 +1309,28 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_32)
 			end
 			if Value["SellAmount"] ~= nil then
-				bool_19 = bit32.bor(bool_19, 0b0000000000000100)
+				bool_18 = bit32.bor(bool_18, 0b0000000000000100)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value["SellAmount"])
 			end
-			buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
+			buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
 		end,
 	},
 	SellAllItems_C = {
 		Fire = function(itemId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 14)
-			local bool_20 = 0
-			local bool_20_pos_1 = alloc(1)
+			local bool_19 = 0
+			local bool_19_pos_1 = alloc(1)
 			if itemId ~= nil then
-				bool_20 = bit32.bor(bool_20, 0b0000000000000001)
+				bool_19 = bit32.bor(bool_19, 0b0000000000000001)
 				local len_33 = #itemId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
 				alloc(len_33)
 				buffer.writestring(outgoing_buff, outgoing_apos, itemId, len_33)
 			end
-			buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
+			buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
 		end,
 	},
 	SaveSettings_C = {
@@ -1377,10 +1340,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 16)
-			local bool_21 = 0
-			local bool_21_pos_1 = alloc(1)
+			local bool_20 = 0
+			local bool_20_pos_1 = alloc(1)
 			if Value["SettingId"] ~= nil then
-				bool_21 = bit32.bor(bool_21, 0b0000000000000001)
+				bool_20 = bit32.bor(bool_20, 0b0000000000000001)
 				local len_34 = #Value["SettingId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
@@ -1388,10 +1351,10 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["SettingId"], len_34)
 			end
 			if Value["SettingValue"] ~= nil then
-				bool_21 = bit32.bor(bool_21, 0b0000000000000010)
+				bool_20 = bit32.bor(bool_20, 0b0000000000000010)
 				table.insert(outgoing_inst, Value["SettingValue"])
 			end
-			buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
+			buffer.writeu8(outgoing_buff, bool_20_pos_1, bool_20)
 		end,
 	},
 	ResetStatPoint_C = {
@@ -1411,13 +1374,13 @@ local returns = {
 			["StatusId"]: (string),
 			["Entity"]: ((Model)?),
 		})) -> ())
-			table.insert(reliable_events[23], Callback)
-			for _, value in reliable_event_queue[23] do
+			table.insert(reliable_events[22], Callback)
+			for _, value in reliable_event_queue[22] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[23] = {}
+			reliable_event_queue[22] = {}
 			return function()
-				table.remove(reliable_events[23], table.find(reliable_events[23], Callback))
+				table.remove(reliable_events[22], table.find(reliable_events[22], Callback))
 			end
 		end,
 	},
@@ -1451,13 +1414,13 @@ local returns = {
 	},
 	PlaySound_S = {
 		On = function(Callback: (sound: ((Sound)?), timePos: ((number)?)) -> ())
-			table.insert(reliable_events[28], Callback)
-			for _, value in reliable_event_queue[28] do
+			table.insert(reliable_events[27], Callback)
+			for _, value in reliable_event_queue[27] do
 				task.spawn(Callback, unpack(value))
 			end
-			reliable_event_queue[28] = {}
+			reliable_event_queue[27] = {}
 			return function()
-				table.remove(reliable_events[28], table.find(reliable_events[28], Callback))
+				table.remove(reliable_events[27], table.find(reliable_events[27], Callback))
 			end
 		end,
 	},
@@ -1560,17 +1523,17 @@ local returns = {
 		Fire = function(itemUniqueId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 7)
-			local bool_22 = 0
-			local bool_22_pos_1 = alloc(1)
+			local bool_21 = 0
+			local bool_21_pos_1 = alloc(1)
 			if itemUniqueId ~= nil then
-				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
+				bool_21 = bit32.bor(bool_21, 0b0000000000000001)
 				local len_35 = #itemUniqueId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
 				alloc(len_35)
 				buffer.writestring(outgoing_buff, outgoing_apos, itemUniqueId, len_35)
 			end
-			buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
+			buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 		end,
 	},
 	PartyInvite_C = {
@@ -1609,25 +1572,25 @@ local returns = {
 	},
 	OpeningChest_S = {
 		On = function(Callback: (chest: ((Model)?)) -> ())
-			table.insert(reliable_events[24], Callback)
-			for _, value in reliable_event_queue[24] do
+			table.insert(reliable_events[23], Callback)
+			for _, value in reliable_event_queue[23] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[24] = {}
+			reliable_event_queue[23] = {}
 			return function()
-				table.remove(reliable_events[24], table.find(reliable_events[24], Callback))
+				table.remove(reliable_events[23], table.find(reliable_events[23], Callback))
 			end
 		end,
 	},
 	OpenTravelTicketUI_S = {
 		On = function(Callback: (merchantId: ((string)?)) -> ())
-			table.insert(reliable_events[22], Callback)
-			for _, value in reliable_event_queue[22] do
+			table.insert(reliable_events[21], Callback)
+			for _, value in reliable_event_queue[21] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[22] = {}
+			reliable_event_queue[21] = {}
 			return function()
-				table.remove(reliable_events[22], table.find(reliable_events[22], Callback))
+				table.remove(reliable_events[21], table.find(reliable_events[21], Callback))
 			end
 		end,
 	},
@@ -1709,10 +1672,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
-			local bool_23 = 0
-			local bool_23_pos_1 = alloc(1)
+			local bool_22 = 0
+			local bool_22_pos_1 = alloc(1)
 			if Value["NPCId"] ~= nil then
-				bool_23 = bit32.bor(bool_23, 0b0000000000000001)
+				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
 				local len_38 = #Value["NPCId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
@@ -1720,14 +1683,14 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["NPCId"], len_38)
 			end
 			if Value["SeriesId"] ~= nil then
-				bool_23 = bit32.bor(bool_23, 0b0000000000000010)
+				bool_22 = bit32.bor(bool_22, 0b0000000000000010)
 				local len_39 = #Value["SeriesId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
 				alloc(len_39)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["SeriesId"], len_39)
 			end
-			buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
+			buffer.writeu8(outgoing_buff, bool_22_pos_1, bool_22)
 		end,
 	},
 	FavOrLockItem_C = {
@@ -1737,10 +1700,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 20)
-			local bool_24 = 0
-			local bool_24_pos_1 = alloc(1)
+			local bool_23 = 0
+			local bool_23_pos_1 = alloc(1)
 			if Value["ActionId"] ~= nil then
-				bool_24 = bit32.bor(bool_24, 0b0000000000000001)
+				bool_23 = bit32.bor(bool_23, 0b0000000000000001)
 				local len_40 = #Value["ActionId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
@@ -1748,11 +1711,11 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ActionId"], len_40)
 			end
 			if Value["ItemSymbol"] ~= nil then
-				bool_24 = bit32.bor(bool_24, 0b0000000000000010)
+				bool_23 = bit32.bor(bool_23, 0b0000000000000010)
 				assert(Value["ItemSymbol"]:IsA("IntConstrainedValue"), "received instance is not of the IntConstrainedValue class!")
 				table.insert(outgoing_inst, Value["ItemSymbol"])
 			end
-			buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
+			buffer.writeu8(outgoing_buff, bool_23_pos_1, bool_23)
 		end,
 	},
 	FaceTargetingEnemy_S = {
@@ -1774,10 +1737,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 8)
-			local bool_25 = 0
-			local bool_25_pos_1 = alloc(1)
+			local bool_24 = 0
+			local bool_24_pos_1 = alloc(1)
 			if Value["ItemId"] ~= nil then
-				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
+				bool_24 = bit32.bor(bool_24, 0b0000000000000001)
 				local len_41 = #Value["ItemId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
@@ -1785,14 +1748,14 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_41)
 			end
 			if Value["ItemUniqueId"] ~= nil then
-				bool_25 = bit32.bor(bool_25, 0b0000000000000010)
+				bool_24 = bit32.bor(bool_24, 0b0000000000000010)
 				local len_42 = #Value["ItemUniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
 				alloc(len_42)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_42)
 			end
-			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
+			buffer.writeu8(outgoing_buff, bool_24_pos_1, bool_24)
 		end,
 	},
 	EnterNPCChat_S = {
@@ -1808,37 +1771,21 @@ local returns = {
 		end,
 	},
 	DriveSkyGalleon_C = {
-		Fire = function(Value: ({
-			["Galleon"]: ((Model)?),
-			["PosX"]: ((number)?),
-			["PosZ"]: ((number)?),
-			["Rotation"]: ((number)?),
-		}))
+		Fire = function(moveVector: ((Vector3)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 19)
-			local bool_26 = 0
-			local bool_26_pos_1 = alloc(1)
-			if Value["Galleon"] ~= nil then
-				bool_26 = bit32.bor(bool_26, 0b0000000000000001)
-				assert(Value["Galleon"]:IsA("Model"), "received instance is not of the Model class!")
-				table.insert(outgoing_inst, Value["Galleon"])
+			local bool_25 = 0
+			local bool_25_pos_1 = alloc(1)
+			if moveVector ~= nil then
+				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, moveVector.X)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, moveVector.Y)
+				alloc(4)
+				buffer.writef32(outgoing_buff, outgoing_apos, moveVector.Z)
 			end
-			if Value["PosX"] ~= nil then
-				bool_26 = bit32.bor(bool_26, 0b0000000000000010)
-				alloc(2)
-				buffer.writei16(outgoing_buff, outgoing_apos, Value["PosX"])
-			end
-			if Value["PosZ"] ~= nil then
-				bool_26 = bit32.bor(bool_26, 0b0000000000000100)
-				alloc(2)
-				buffer.writei16(outgoing_buff, outgoing_apos, Value["PosZ"])
-			end
-			if Value["Rotation"] ~= nil then
-				bool_26 = bit32.bor(bool_26, 0b0000000000001000)
-				alloc(2)
-				buffer.writei16(outgoing_buff, outgoing_apos, Value["Rotation"])
-			end
-			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
+			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
 		end,
 	},
 	DMGPlayer_C = {
@@ -1849,10 +1796,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
-			local bool_27 = 0
-			local bool_27_pos_1 = alloc(1)
+			local bool_26 = 0
+			local bool_26_pos_1 = alloc(1)
 			if Value["ProjectileUniqueId"] ~= nil then
-				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
+				bool_26 = bit32.bor(bool_26, 0b0000000000000001)
 				local len_43 = #Value["ProjectileUniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
@@ -1860,37 +1807,37 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_43)
 			end
 			if Value["IsPierce"] ~= nil then
-				bool_27 = bit32.bor(bool_27, 0b0000000000000010)
+				bool_26 = bit32.bor(bool_26, 0b0000000000000010)
 				if Value["IsPierce"] then
-					bool_27 = bit32.bor(bool_27, 0b0000000000000100)
+					bool_26 = bit32.bor(bool_26, 0b0000000000000100)
 				end
 			end
 			if Value["DoTStatus"] ~= nil then
-				bool_27 = bit32.bor(bool_27, 0b0000000000001000)
+				bool_26 = bit32.bor(bool_26, 0b0000000000001000)
 				local len_44 = #Value["DoTStatus"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
 				alloc(len_44)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["DoTStatus"], len_44)
 			end
-			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
+			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
 		end,
 	},
 	DMGEnemy_C = {
 		Fire = function(orbUniqueId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
-			local bool_28 = 0
-			local bool_28_pos_1 = alloc(1)
+			local bool_27 = 0
+			local bool_27_pos_1 = alloc(1)
 			if orbUniqueId ~= nil then
-				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
+				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
 				local len_45 = #orbUniqueId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
 				alloc(len_45)
 				buffer.writestring(outgoing_buff, outgoing_apos, orbUniqueId, len_45)
 			end
-			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
+			buffer.writeu8(outgoing_buff, bool_27_pos_1, bool_27)
 		end,
 	},
 	DMGEnemyBySkills_C = {
@@ -1900,62 +1847,38 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 24)
-			local bool_29 = 0
-			local bool_29_pos_1 = alloc(1)
+			local bool_28 = 0
+			local bool_28_pos_1 = alloc(1)
 			if Value["Entity"] ~= nil then
-				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
+				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
 				assert(Value["Entity"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["Entity"])
 			end
 			if Value["ProjectileUniqueId"] ~= nil then
-				bool_29 = bit32.bor(bool_29, 0b0000000000000010)
+				bool_28 = bit32.bor(bool_28, 0b0000000000000010)
 				local len_46 = #Value["ProjectileUniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
 				alloc(len_46)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_46)
 			end
-			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
+			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
 		end,
 	},
 	CreateNotify_S = {
 		On = function(Callback: (text: (string)) -> ())
-			table.insert(reliable_events[31], Callback)
-			for _, value in reliable_event_queue[31] do
+			table.insert(reliable_events[30], Callback)
+			for _, value in reliable_event_queue[30] do
 				task.spawn(Callback, value)
 			end
-			reliable_event_queue[31] = {}
+			reliable_event_queue[30] = {}
 			return function()
-				table.remove(reliable_events[31], table.find(reliable_events[31], Callback))
+				table.remove(reliable_events[30], table.find(reliable_events[30], Callback))
 			end
 		end,
 	},
 	CreateFSNotify_S = {
 		On = function(Callback: (text: (string), duration: (number)) -> ())
-			table.insert(reliable_events[33], Callback)
-			for _, value in reliable_event_queue[33] do
-				task.spawn(Callback, unpack(value))
-			end
-			reliable_event_queue[33] = {}
-			return function()
-				table.remove(reliable_events[33], table.find(reliable_events[33], Callback))
-			end
-		end,
-	},
-	CreateCircularFade_S = {
-		On = function(Callback: (duration: (number)) -> ())
-			table.insert(reliable_events[34], Callback)
-			for _, value in reliable_event_queue[34] do
-				task.spawn(Callback, value)
-			end
-			reliable_event_queue[34] = {}
-			return function()
-				table.remove(reliable_events[34], table.find(reliable_events[34], Callback))
-			end
-		end,
-	},
-	CreateCenterNotify_S = {
-		On = function(Callback: (text: (string), showBar: (boolean)) -> ())
 			table.insert(reliable_events[32], Callback)
 			for _, value in reliable_event_queue[32] do
 				task.spawn(Callback, unpack(value))
@@ -1966,6 +1889,30 @@ local returns = {
 			end
 		end,
 	},
+	CreateCircularFade_S = {
+		On = function(Callback: (duration: (number)) -> ())
+			table.insert(reliable_events[33], Callback)
+			for _, value in reliable_event_queue[33] do
+				task.spawn(Callback, value)
+			end
+			reliable_event_queue[33] = {}
+			return function()
+				table.remove(reliable_events[33], table.find(reliable_events[33], Callback))
+			end
+		end,
+	},
+	CreateCenterNotify_S = {
+		On = function(Callback: (text: (string), showBar: (boolean)) -> ())
+			table.insert(reliable_events[31], Callback)
+			for _, value in reliable_event_queue[31] do
+				task.spawn(Callback, unpack(value))
+			end
+			reliable_event_queue[31] = {}
+			return function()
+				table.remove(reliable_events[31], table.find(reliable_events[31], Callback))
+			end
+		end,
+	},
 	CraftItem_C = {
 		Fire = function(Value: ({
 			["ItemId"]: ((string)?),
@@ -1973,10 +1920,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local bool_30 = 0
-			local bool_30_pos_1 = alloc(1)
+			local bool_29 = 0
+			local bool_29_pos_1 = alloc(1)
 			if Value["ItemId"] ~= nil then
-				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
+				bool_29 = bit32.bor(bool_29, 0b0000000000000001)
 				local len_47 = #Value["ItemId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
@@ -1984,32 +1931,32 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_47)
 			end
 			if Value["ItemUniqueId"] ~= nil then
-				bool_30 = bit32.bor(bool_30, 0b0000000000000010)
+				bool_29 = bit32.bor(bool_29, 0b0000000000000010)
 				local len_48 = #Value["ItemUniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
 				alloc(len_48)
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_48)
 			end
-			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
+			buffer.writeu8(outgoing_buff, bool_29_pos_1, bool_29)
 		end,
 	},
 	Class_ChainUIUpdateSupport = {
 		On = function(Callback: () -> ())
-			table.insert(reliable_events[27], Callback)
-			for _ = 1, reliable_event_queue[27] do
+			table.insert(reliable_events[26], Callback)
+			for _ = 1, reliable_event_queue[26] do
 				task.spawn(Callback)
 			end
-			reliable_event_queue[27] = 0
+			reliable_event_queue[26] = 0
 			return function()
-				table.remove(reliable_events[27], table.find(reliable_events[27], Callback))
+				table.remove(reliable_events[26], table.find(reliable_events[26], Callback))
 			end
 		end,
 	},
 	CastItem_S_Response = {
 		On = function(Callback: (Value: ({
 			["SlotId"]: (string),
-			["CooldownEndTime"]: (number),
+			["CooldownTime"]: (number),
 		})) -> ())
 			table.insert(reliable_events[11], Callback)
 			for _, value in reliable_event_queue[11] do
@@ -2025,17 +1972,17 @@ local returns = {
 		Fire = function(slotId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 5)
-			local bool_31 = 0
-			local bool_31_pos_1 = alloc(1)
+			local bool_30 = 0
+			local bool_30_pos_1 = alloc(1)
 			if slotId ~= nil then
-				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
+				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
 				local len_49 = #slotId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
 				alloc(len_49)
 				buffer.writestring(outgoing_buff, outgoing_apos, slotId, len_49)
 			end
-			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
+			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
 		end,
 	},
 	CastClassUlt_C = {
@@ -2048,17 +1995,17 @@ local returns = {
 		Fire = function(merchantId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 22)
-			local bool_32 = 0
-			local bool_32_pos_1 = alloc(1)
+			local bool_31 = 0
+			local bool_31_pos_1 = alloc(1)
 			if merchantId ~= nil then
-				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
+				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
 				local len_50 = #merchantId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
 				alloc(len_50)
 				buffer.writestring(outgoing_buff, outgoing_apos, merchantId, len_50)
 			end
-			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
+			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
 		end,
 	},
 	BuyItem_C = {
@@ -2069,10 +2016,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 9)
-			local bool_33 = 0
-			local bool_33_pos_1 = alloc(1)
+			local bool_32 = 0
+			local bool_32_pos_1 = alloc(1)
 			if Value["ProductId"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
+				bool_32 = bit32.bor(bool_32, 0b0000000000000001)
 				local len_51 = #Value["ProductId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
@@ -2080,7 +2027,7 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductId"], len_51)
 			end
 			if Value["ProductUniqueId"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000010)
+				bool_32 = bit32.bor(bool_32, 0b0000000000000010)
 				local len_52 = #Value["ProductUniqueId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
@@ -2088,11 +2035,11 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductUniqueId"], len_52)
 			end
 			if Value["PurchaseAmount"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000100)
+				bool_32 = bit32.bor(bool_32, 0b0000000000000100)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, Value["PurchaseAmount"])
 			end
-			buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
+			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
 		end,
 	},
 	AddStatPoint_C = {
@@ -2102,10 +2049,10 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 11)
-			local bool_34 = 0
-			local bool_34_pos_1 = alloc(1)
+			local bool_33 = 0
+			local bool_33_pos_1 = alloc(1)
 			if Value["PointId"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
+				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
 				local len_53 = #Value["PointId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
@@ -2113,11 +2060,11 @@ local returns = {
 				buffer.writestring(outgoing_buff, outgoing_apos, Value["PointId"], len_53)
 			end
 			if Value["PointAmount"] ~= nil then
-				bool_34 = bit32.bor(bool_34, 0b0000000000000010)
+				bool_33 = bit32.bor(bool_33, 0b0000000000000010)
 				alloc(2)
 				buffer.writei16(outgoing_buff, outgoing_apos, Value["PointAmount"])
 			end
-			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
+			buffer.writeu8(outgoing_buff, bool_33_pos_1, bool_33)
 		end,
 	},
 	Abyss_StartAbyss_C = {
@@ -2130,17 +2077,17 @@ local returns = {
 		Fire = function(actionId: ((string)?))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 27)
-			local bool_35 = 0
-			local bool_35_pos_1 = alloc(1)
+			local bool_34 = 0
+			local bool_34_pos_1 = alloc(1)
 			if actionId ~= nil then
-				bool_35 = bit32.bor(bool_35, 0b0000000000000001)
+				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
 				local len_54 = #actionId
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
 				alloc(len_54)
 				buffer.writestring(outgoing_buff, outgoing_apos, actionId, len_54)
 			end
-			buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
+			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
 		end,
 	},
 }

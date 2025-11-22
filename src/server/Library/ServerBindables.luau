@@ -11,7 +11,7 @@ return {
     RToSpawnOrb = Signal.new(),
 
     --@params: `charId: string, props: {ProjectId: string, ProjectileType: "OneTime" | "OverTime"`
-    --`,Duration: number, ProjectileUniqueId: string, DMGType: string, DoTType: string, DMGBonus: number`
+    --`,Duration: number, ProjectileUniqueId: string, DMGType: "DMG" | "Magic", DoTType: string, DMGBonus: number`
     --`,IsClassUlt: boolean }`
     RToCreateProjectileSymbol = Signal.new(),
 

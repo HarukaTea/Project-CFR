@@ -57,7 +57,7 @@ table.insert(ServerWorldLib.Funcs, function()
 
     local itemCDSymbolContainer = Instance.new("Folder")
     itemCDSymbolContainer.Name = "ItemCDSymbolContainer"
-    itemCDSymbolContainer.Parent = ServerStorage
+    itemCDSymbolContainer.Parent = workspace.MapComponents
 
     local itemSphereSymbolContainer = Instance.new("Folder")
     itemSphereSymbolContainer.Name = "ItemSphereSymbolContainer"

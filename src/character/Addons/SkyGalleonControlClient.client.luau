@@ -50,12 +50,6 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
 }))
 
 
-Add(Events.SetSkyGalleonOwner_S.On(function(galleon)
-    currentGalleon = galleon
-end))
-
-
-
 
 local ControlsModule = require(Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule")) :: {
     GetControls: (self: any) -> {
@@ -68,27 +62,5 @@ ControlsModule = ControlsModule:GetControls()
 Add(RunService.Heartbeat:Connect(function()
     if not currentGalleon then return end
 
-
-    local moveVector = ControlsModule:GetMoveVector() :: Vector3
-
-
-    local currentCFrame = currentGalleon.PrimaryPart.CFrame
-    local rotationInput = -moveVector.X
-    local targetVelocity = currentCFrame.LookVector * -moveVector.Z * 66
-    local newPosition = currentCFrame.Position + targetVelocity
-
-    if moveVector.Z > 0 then
-        rotationInput = -rotationInput
-    end
-    if math.abs(rotationInput) <= 0.4 then
-        rotationInput = 0
-    end
-
-
-    Events.DriveSkyGalleon_C.Fire({
-        Galleon = currentGalleon,
-        PosX = newPosition.X,
-        PosZ = newPosition.Z,
-        Rotation = rotationInput * 15
-    })
+    Events.DriveSkyGalleon_C.Fire(ControlsModule:GetMoveVector())
 end))

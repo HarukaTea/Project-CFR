@@ -29,7 +29,7 @@ local function _getCharsByRadius(pos: Vector3, radius: number)
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
         if not ServerLib.IsCharValid(char) then continue end
-        if not char:GetAttribute("_CharDataInited") then continue end
+        if not char:GetAttribute("Haruka_CriRPGServerInited") then continue end
 
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then continue end

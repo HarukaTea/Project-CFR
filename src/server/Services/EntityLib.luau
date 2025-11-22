@@ -118,7 +118,7 @@ local function _getCharsByRadius(pos: Vector3, radius: number)
 
     for _, char in chars do
         if not ServerLib.IsCharValid(char) then continue end
-        if not char:GetAttribute("_CharDataInited") then continue end
+        if not char:GetAttribute("Haruka_CriRPGServerInited") then continue end
 
         if (char.PrimaryPart.Position - pos).Magnitude < radius then
             table.insert(charList, char)

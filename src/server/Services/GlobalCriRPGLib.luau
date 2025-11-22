@@ -1,4 +1,5 @@
 
+local AnalyticsService = game:GetService("AnalyticsService")
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
@@ -256,7 +257,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         pcall(function()
             galleon.PrimaryPart:SetNetworkOwner(nil)
         end)
-        Events.SetSkyGalleonOwner_S.Fire(plr, galleon)
     end
     ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, plr: Player)
         if prompt.Enabled == false then return end
@@ -557,6 +557,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) then
             Events.CreateNotify_S.Fire(plr, "[Error] Invalid Orb Identity")
             warn("Invalid orb identity")
+
+            pcall(function()
+                AnalyticsService:LogCustomEvent(plr, "InvalidOrbIdentity", 1)
+            end)
             return
         end
 
@@ -658,8 +662,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         local inCDCheck = false
-        for _, cdSymbol: BoolValue in CollectionService:GetTagged("ItemCDSymbol") do
-            if cdSymbol.Name == plr.UserId and cdSymbol:GetAttribute("ItemId") == itemInfo.ItemId then
+        for _, cdSymbol: StringValue in workspace.MapComponents.ItemCDSymbolContainer:GetChildren() do
+            if cdSymbol.Name == plr.Name and cdSymbol.Value == itemInfo.ItemId then
                 inCDCheck = true
                 break
             end
@@ -696,7 +700,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not CastItemLib[itemInfo.ItemId] then
-            warn("Invalid CastItemLib function")
+            warn(`Invalid CastItemLib function for: {itemInfo.ItemId}`)
             return
         end
 
@@ -720,17 +724,15 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        local itemCDSymbol = Instance.new("BoolValue")
-        itemCDSymbol.Value = true
-        itemCDSymbol.Name = plr.UserId
-        itemCDSymbol:SetAttribute("ItemId", itemInfo.ItemId)
-        itemCDSymbol:AddTag("ItemCDSymbol")
-        itemCDSymbol.Parent = ServerStorage.ItemCDSymbolContainer
+        local itemCDSymbol = Instance.new("StringValue")
+        itemCDSymbol.Value = itemInfo.ItemId
+        itemCDSymbol.Name = plr.Name
+        itemCDSymbol.Parent = workspace.MapComponents.ItemCDSymbolContainer
         Debris:AddItem(itemCDSymbol, realCD)
 
         Events.CastItem_S_Response.Fire(plr, {
             SlotId = slotId,
-            CooldownEndTime = math.ceil(DateTime.now().UnixTimestamp + realCD)
+            CooldownTime = realCD
         })
     end)
 end)
@@ -739,6 +741,9 @@ end)
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.PickupItemDrops_C.SetCallback(function(plr: Player, itemUniqueId)
         if itemUniqueId == nil then return end
+
+        local char = plr.Character
+        if not ServerLib.IsCharValid(char) then return end
 
         local itemSymbol = ServerStorage.ItemSphereSymbolContainer:FindFirstChild(itemUniqueId) :: IntValue?
 
@@ -801,6 +806,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not npcModel then return end
+
+        local distance = plr:DistanceFromCharacter(npcModel.PrimaryPart.Position)
+        if distance <= 0 or distance > 40 then return end
+
 
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then return end
@@ -1385,7 +1394,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not projectileList:FindFirstChild(projectileId) then return end
 
         local symbol = projectileList:FindFirstChild(projectileId) :: StringValue
-        local style = symbol:GetAttribute("DMGType") :: string
+        local style = symbol:GetAttribute("DMGType") :: "DMG" | "Magic"
 
         if symbol:GetAttribute("Owner") ~= char.Name then return end
 
@@ -1602,7 +1611,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData")
         pcall(function()
-            abyssHashMap:SetAsync(tostring(plr.UserId), abyssId, 60 * 5)
+            abyssHashMap:SetAsync("Player_"..plr.UserId, abyssId, 60 * 5)
         end)
 
         local teleportOptions = Instance.new("TeleportOptions")
@@ -1622,35 +1631,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end
     Events.StartAbyss_C.SetCallback(_challengeAbyss)
     ServerBindables.RToChallengeAbyss:Connect(_challengeAbyss)
-end)
-
-
-
-table.insert(GlobalCriRPGLib.Funcs, function()
-    local GALLEON_POSY_LIMIT = 140
-
-    Events.DriveSkyGalleon_C.SetCallback(function(plr: Player, data)
-        if not data.Galleon then return end
-        if not data.PosX then return end
-        if not data.PosZ then return end
-        if not data.Rotation then return end
-
-
-        local galleon, pos, rotation = data.Galleon, Vector3.new(data.PosX, GALLEON_POSY_LIMIT, data.PosZ), data.Rotation
-        if not galleon:FindFirstChild("Owner") then return end
-        if galleon.Owner.Value ~= plr then return end
-        if not ServerLib.IsModelValid(galleon) then return end
-        if not galleon.PrimaryPart:FindFirstChild("AlignPosition") then return end
-
-        if not galleon.PrimaryPart.Position:FuzzyEq(pos) then
-            galleon.PrimaryPart.AlignPosition.Position = pos
-        end
-
-        local targetDirection = galleon.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(rotation), 0)
-        local targetPoint = galleon.PrimaryPart.Position + targetDirection.LookVector.Unit * 159
-
-        galleon.Humanoid:MoveTo(targetPoint)
-    end)
 end)
 
 

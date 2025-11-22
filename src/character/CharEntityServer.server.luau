@@ -237,7 +237,7 @@ table.insert(CharLib.Funcs, function()
 	}))
 	Add(event.Event:Connect(function(_, attacker: Model, dmgProps: {
 		DMG: number,
-		DMGType: string,
+		DMGType: "DMG" | "Magic",
 		Attacker: string
 	})
 		if script == nil then return end

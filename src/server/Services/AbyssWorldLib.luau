@@ -104,7 +104,7 @@ table.insert(AbyssWorldLib.Funcs, function()
 
     local abyssId = 1
     local success, _ = pcall(function()
-        abyssId = abyssHashMap:GetAsync(tostring(player.UserId))
+        abyssId = abyssHashMap:GetAsync("Player_"..player.UserId)
     end)
     if not success then
         abyssId = 1

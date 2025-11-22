@@ -205,7 +205,7 @@ do
 
     repeat wait() until plr.Character
     repeat wait() until plr.Character.PrimaryPart
-    repeat wait() until plr.Character:GetAttribute("_CharDataInited")
+    repeat wait() until plr.Character:GetAttribute("Haruka_CriRPGServerInited")
 
 
     workspace:SetAttribute("Haruka_TitlescreenDestroying", true)

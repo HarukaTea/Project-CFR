@@ -166,8 +166,7 @@ return function (scope: Fusion.Scope, props: {
                         SelectionSlot(scope, {
                             LayoutOrder = 3,
                             SelectionId = "Empty",
-                            Title = "Empty",
-                            MenuShownValue = props.MenuShowValue
+                            Title = "Empty"
                         }),
                         SelectionSlot(scope, {
                             LayoutOrder = 4,
