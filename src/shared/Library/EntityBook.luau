@@ -24,14 +24,14 @@ return {
         Tier = 1,
         BaseSpeed = 15,
         BaseJumpPower = 0,
-        EnvironmentBonus = 0.8,
+        EnvironmentBonus = 1,
 
         Species = "Bee",
 
         Drops = {
-            BeeStinger = 50,
-            GHoneyWings = 25,
-            EarthBow = 10
+            BeeStinger = 65,
+            GHoneyWings = 35,
+            EarthBow = 3
         }
     },
     QueenBee = {
@@ -51,7 +51,7 @@ return {
 
         Drops = {
             BeeStinger = 60,
-            GHoneyWings = 10,
+            GHoneyWings = 30,
             HoneyArmor2 = 4,
             HoneyGreaves = 4,
             HoneyHeadgear = 4
@@ -66,14 +66,14 @@ return {
         Tier = 1,
         BaseSpeed = 10,
         BaseJumpPower = 0,
-        EnvironmentBonus = 0.7,
+        EnvironmentBonus = 1,
 
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
+            SlimeGel = 65,
+            SlimeCore = 35,
+            DivineBlade = 3
         }
     },
     WheatSlime = {
@@ -83,14 +83,14 @@ return {
         Tier = 2,
         BaseSpeed = 10,
         BaseJumpPower = 0,
-        EnvironmentBonus = 0.8,
+        EnvironmentBonus = 1,
 
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
+            SlimeGel = 65,
+            SlimeCore = 35,
+            DivineBlade = 3
         }
     },
     BlueSlime = {
@@ -100,14 +100,14 @@ return {
         Tier = 2,
         BaseSpeed = 10,
         BaseJumpPower = 0,
-        EnvironmentBonus = 0.9,
+        EnvironmentBonus = 1,
 
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
+            SlimeGel = 65,
+            SlimeCore = 35,
+            DivineBlade = 3
         }
     },
     LapisSlime = {
@@ -122,9 +122,9 @@ return {
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
+            SlimeGel = 65,
+            SlimeCore = 35,
+            DivineBlade = 3
         }
     },
     PurpleSlime = {
@@ -134,14 +134,14 @@ return {
         Tier = 4,
         BaseSpeed = 10,
         BaseJumpPower = 0,
-        EnvironmentBonus = 1.1,
+        EnvironmentBonus = 1,
 
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
+            SlimeGel = 65,
+            SlimeCore = 35,
+            DivineBlade = 3
         }
     },
     EvolvedGreenSlime = {
@@ -151,14 +151,14 @@ return {
         Tier = 5,
         BaseSpeed = 10,
         BaseJumpPower = 0,
-        EnvironmentBonus = 1.3,
+        EnvironmentBonus = 1,
 
         Species = "Slime",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            DivineBlade = 10
+            SlimeGel = 65,
+            SlimeCore = 35,
+            DivineBlade = 3
         }
     },
     KingSlime = {
@@ -175,9 +175,9 @@ return {
         Tag = "The King of Slimes",
 
         Drops = {
-            SlimeGel = 50,
-            SlimeCore = 25,
-            SlimeKingCrown = 10,
+            SlimeGel = 65,
+            SlimeCore = 35,
+            SlimeKingCrown = 3,
         }
     },
     CrimsonSlime = {
@@ -196,8 +196,8 @@ return {
         Tag = "Core of Corruption",
 
         Drops = {
-            CrimsonSlimeCore = 75,
-            CrimsonSlimeFang = 10,
+            CrimsonSlimeCore = 92,
+            CrimsonSlimeFang = 8,
         }
     },
 
@@ -209,14 +209,14 @@ return {
         Tier = 1,
         BaseSpeed = 20,
         BaseJumpPower = 0,
-        EnvironmentBonus = 0.8,
+        EnvironmentBonus = 1,
 
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 50,
-            SpikyQuills = 25,
-            ForestStaff = 10
+            SpikyFur = 65,
+            SpikyQuills = 35,
+            ForestStaff = 3
         }
     },
     SpikeWolf = {
@@ -231,9 +231,9 @@ return {
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 50,
-            SpikyQuills = 25,
-            ForestStaff = 10
+            SpikyFur = 65,
+            SpikyQuills = 35,
+            ForestStaff = 3
         }
     },
     ThornWolf = {
@@ -243,14 +243,14 @@ return {
         Tier = 2,
         BaseSpeed = 25,
         BaseJumpPower = 0,
-        EnvironmentBonus = 1.2,
+        EnvironmentBonus = 1,
 
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 50,
-            SpikyQuills = 25,
-            ForestStaff = 10
+            SpikyFur = 65,
+            SpikyQuills = 35,
+            ForestStaff = 3
         }
     },
     NeedleWolf = {
@@ -260,14 +260,14 @@ return {
         Tier = 3,
         BaseSpeed = 25,
         BaseJumpPower = 0,
-        EnvironmentBonus = 1.5,
+        EnvironmentBonus = 1,
 
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 50,
-            SpikyQuills = 25,
-            ForestStaff = 10
+            SpikyFur = 65,
+            SpikyQuills = 35,
+            ForestStaff = 3
         }
     },
     IceWolf = {
@@ -277,14 +277,14 @@ return {
         Tier = 4,
         BaseSpeed = 25,
         BaseJumpPower = 0,
-        EnvironmentBonus = 1.5,
+        EnvironmentBonus = 1,
 
         Species = "Fox",
 
         Drops = {
-            SpikyFur = 50,
-            SpikyQuills = 25,
-            ForestStaff = 10
+            SpikyFur = 65,
+            SpikyQuills = 35,
+            ForestStaff = 3
         }
     },
     HardmodeWolf = {
@@ -303,7 +303,7 @@ return {
         Tag = "The Dire Howler",
 
         Drops = {
-            BlackFur = 60,
+            BlackFur = 90,
             WinterHowl = 4,
             WolfKingAxe = 4,
             BlackWolfNecklace = 4

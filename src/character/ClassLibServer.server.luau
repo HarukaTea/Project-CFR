@@ -97,24 +97,16 @@ end
 
 
 ClassMechanicLib._CLASS_Chain = function(self)
-    local chainAdd, chainEmpty = HarukaLib.Bin()
-    ClassAdd(chainEmpty)
-
-
     local function _clearComboUI()
         if char.Head:FindFirstChild("ComboStyle") then
             char.Head.ComboStyle:Destroy()
         end
     end
     local function _classAbilityClear()
-        chainEmpty()
         _clearComboUI()
 
         char:SetAttribute("ChainCombo", 0)
     end
-
-
-    local _internal_AttrCD = false
 
 
     ClassAdd(HarukaLib:Hydrate(char, {
@@ -130,28 +122,11 @@ ClassMechanicLib._CLASS_Chain = function(self)
                 comboStyle.Text.Text = "CHAIN x"..combo
                 comboStyle.Parent = char.Head
             end
-            if _internal_AttrCD then return end
-
 
             combo = combo or 0
             if combo <= 0 then
                 _classAbilityClear()
-                return
             end
-            if char:FindFirstChild("IsInComboUltPeriod") then return end
-
-
-            chainEmpty()
-            chainAdd(HarukaLib.Clock(3.2, function()
-                if char:FindFirstChild("IsInComboUltPeriod") then return end
-
-                _internal_AttrCD = true
-                HarukaLib:AddAttr(char, "ChainCombo", -1)
-                _internal_AttrCD = false
-
-
-                Events.Class_ChainUIUpdateSupport.Fire(plr)
-            end))
         end
     }))
     ClassAdd(_classAbilityClear)
@@ -172,7 +147,6 @@ ClassMechanicLib._CLASS_Burst = function(self)
 
         char:SetAttribute("BurstArrow", 0)
         char:SetAttribute("BurstArrowPiercing", 0)
-        char:SetAttribute("LastBurstTime", nil)
     end
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear
@@ -221,6 +195,49 @@ ClassMechanicLib._CLASS_Burst = function(self)
 end
 
 
+
+ClassMechanicLib._CLASS_Flow = function(self)
+    local function _clearFlowUI()
+        if char.Head:FindFirstChild("FocusStyle") then
+            char.Head.FocusStyle:Destroy()
+        end
+    end
+    local function _classAbilityClear()
+        _clearFlowUI()
+
+        char:SetAttribute("FlowMark", 0)
+    end
+
+
+    ClassAdd(HarukaLib:Hydrate(char, {
+        ["Attr-IsInCombat"] = _classAbilityClear,
+    }))
+    ClassAdd(HarukaLib:Hydrate(char, {
+        ["Attr-FlowMark"] = function(mark: number)
+            local realMark = mark * 35
+            realMark = math.clamp(realMark, 0, 100)
+
+            if char.Head:FindFirstChild("FocusStyle") then
+                char.Head.FocusStyle.Text.Text = "MARK "..realMark.."%"
+            else
+                local focusStyle = RepS.Packages.ClassAttacks.ClassUIs.FocusStyle.FocusStyle:Clone() :: BillboardGui
+                focusStyle.Adornee = char.Head
+                focusStyle.Text.Text = "MARK "..realMark.."%"
+                focusStyle.Parent = char.Head
+            end
+
+            mark = mark or 0
+            if mark <= 0 then
+                _classAbilityClear()
+            end
+        end
+    }))
+    ClassAdd(_classAbilityClear)
+end
+
+
+
+
 ClassMechanicLib._CLASS_Reverberation = function(self)
     local RNG = Random.new()
 
@@ -228,7 +245,15 @@ ClassMechanicLib._CLASS_Reverberation = function(self)
         if char.Name ~= charId then return end
         if entity:GetAttribute("ReverberationPitch_"..plr.Name) then return end
 
-        entity:SetAttribute("ReverberationPitch_"..plr.Name, RNG:NextInteger(1, 9))
+
+        local num = RNG:NextInteger(1, 5)
+        entity:SetAttribute("ReverberationPitch_"..plr.Name, num)
+
+
+        Events.Class_ReverberationEnemySupport.Fire(plr, {
+            Enemy = entity,
+            Num = num
+        })
     end))
 end
 

@@ -173,7 +173,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     Text = "Adventurers: "..symbol.Value.." / 20",
                                     TextColor3 = Fusion.Computed(scope, function()
-                                        return if symbol.Value <= 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
+                                        return if symbol.Value < 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
                                     end)
                                 }),
 
@@ -186,7 +186,7 @@ return function (scope: Fusion.Scope, props: {
                                     TextColor3 = Components.BLACK_COLOR,
 
                                     BackgroundColor3 = Fusion.Computed(scope, function()
-                                        return if symbol.Value <= 20 then Components.GREEN_COLOR else Components.RED_COLOR
+                                        return if symbol.Value < 20 then Components.GREEN_COLOR else Components.RED_COLOR
                                     end),
 
 

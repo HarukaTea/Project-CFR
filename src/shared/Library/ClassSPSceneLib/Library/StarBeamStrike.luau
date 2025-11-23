@@ -82,7 +82,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
                     Events.DMGEnemyBySkills_C.Fire({
                         ProjectileUniqueId = projectileUniqueId,
-                        EnemyEntity = entity,
+                        Entity = entity,
                     })
                     isFound = true
                     break

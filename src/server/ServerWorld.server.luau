@@ -147,6 +147,7 @@ do
 
         for _, server: CADimension.ServerInfo in currentWorldServers do
             if not server.JobId then continue end
+            if #server.PlayerUserIds <= 0 then continue end
 
 
             local symbol = Instance.new("IntValue")

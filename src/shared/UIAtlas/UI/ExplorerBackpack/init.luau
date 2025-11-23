@@ -13,7 +13,7 @@ local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarE
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
-local BKItemListView = require(RepS.HarukaShared.UIAtlas.Components.BKItemListView)
+local BKItemListView = require(script.Components.BKItemListView)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)

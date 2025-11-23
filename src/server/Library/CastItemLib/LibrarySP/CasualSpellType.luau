@@ -20,7 +20,7 @@ return function (self: Types.CastItemLib)
     local CastItemLib = self
 
 
-    CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: {}) : number?
+    CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: Types.Dict) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = true,
             ReqEnemy = true
@@ -49,7 +49,7 @@ return function (self: Types.CastItemLib)
                 DMGType = "Magic",
                 DoTType = "Burn",
                 DMGBonus = 1,
-                IsClassUlt = false
+                IsClassUlt = extraInfo.IsClassUlt or false
             })
             Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
             Events.PlayAnimation_S.Fire(player, "MagicCasted1")
@@ -67,7 +67,7 @@ return function (self: Types.CastItemLib)
     end
 
 
-    CastItemLib.Agility = function(player: Player, char: Model, extraInfo: {}) : number?
+    CastItemLib.Agility = function(player: Player, char: Model, extraInfo: Types.Dict) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = false,
             ReqEnemy = false
@@ -100,7 +100,7 @@ return function (self: Types.CastItemLib)
     end
 
 
-    CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: {}) : number?
+    CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: Types.Dict) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = false,
             ReqEnemy = false

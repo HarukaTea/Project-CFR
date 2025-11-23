@@ -45,6 +45,10 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
     ["Prop-SeatPart"] = function(part: BasePart)
         if part == nil then
             currentGalleon = nil
+        else
+            if part.Parent and part.Parent.Name == "SkyDriveGalleon" then
+                currentGalleon = part.Parent
+            end
         end
     end
 }))

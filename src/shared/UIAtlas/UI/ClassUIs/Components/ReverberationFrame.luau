@@ -38,9 +38,7 @@ return function(scope: Fusion.Scope, self: Pinia.Self)
                 Padding = UDim.new(0.01, 0)
             }),
 
-            ReverberationPK(scope, {
-                Num = self.ReverberationPitch
-            })
+            
         }
     })
 end

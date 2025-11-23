@@ -32,4 +32,7 @@ return {
 
     --@params: `player: Player, questId: string`
     QuestCompleted = Signal.new(),
+
+    --@params: `player: Player, char: Model, spellId: string, extraProps: Dict`
+    RToCastSpell = Signal.new(),
 }

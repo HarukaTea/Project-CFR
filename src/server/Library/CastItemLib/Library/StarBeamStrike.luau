@@ -14,7 +14,7 @@ local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local Types = require(script.Parent.Parent.Types)
 
 
-return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo: {}) : number?
+return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo: Types.Dict) : number?
     local CastItemLib = self
 
     local check = CastItemLib._preCheck({

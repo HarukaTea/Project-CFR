@@ -98,7 +98,7 @@ local allEntityPool = {}
 Add(Events.PlayVFXStatusToEntity_S.On(function(data)
     if data.StatusId ~= "Found" then return end
 
-    local entity = data.Enemy
+    local entity = data.Entity
     if not ClientLib.IsCharValid(entity) then return end
 
     local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)

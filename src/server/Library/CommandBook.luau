@@ -19,6 +19,7 @@ local Types = require(RepS.HarukaShared.Shared.HarukaCMD.Types)
 
 
 local UNIVERSE_IDS = {
+    ["6754928573"] = 2
 }
 local testerRank = UNIVERSE_IDS[tostring(game.GameId)] or 127
 

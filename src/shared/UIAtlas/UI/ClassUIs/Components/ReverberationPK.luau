@@ -10,7 +10,7 @@ local Children = Fusion.Children
 
 
 return function(scope: Fusion.Scope, props: {
-    Num: Fusion.Value<number>
+    Num: number
 })
     return Components.Frame(scope, {
         Name = "ResonateNum",
@@ -36,9 +36,7 @@ return function(scope: Fusion.Scope, props: {
                 FontFace = Font.fromName("Roboto", Enum.FontWeight.Bold),
 
 
-                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(props.Num)
-                end),
+                Text = tostring(props.Num),
 
                 [Children] = {
                     Components.ScaledTextUIStroke(scope, { Thickness = 0.1 })

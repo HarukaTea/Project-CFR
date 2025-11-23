@@ -171,6 +171,14 @@ table.insert(CriRPGLib.Funcs, function()
 
 
             pcall(function()
+                local function _playNormalCombatMusic()
+                    if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
+                        SoundService.Musics.Overworld:Pause()
+                        SoundService.Musics.Combat:Play()
+
+                        SoundService.Musics.Combat.TimePosition = SoundService.Musics.Combat:GetAttribute("TimePosition") or 0
+                    end
+                end
                 if isBoss then
                     local targetSoundId = SoundService.Musics.Areas.Combat:FindFirstChild(targetMusicId) :: Sound
                     if targetSoundId then
@@ -186,14 +194,11 @@ table.insert(CriRPGLib.Funcs, function()
                             bossCombatMusic.TimePosition = targetSoundId.TimePosition
                             bossCombatMusic.Volume = targetSoundId.Volume
                         end
+                    else
+                        _playNormalCombatMusic()
                     end
                 else
-                    if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
-                        SoundService.Musics.Overworld:Pause()
-                        SoundService.Musics.Combat:Play()
-
-                        SoundService.Musics.Combat.TimePosition = SoundService.Musics.Combat:GetAttribute("TimePosition") or 0
-                    end
+                    _playNormalCombatMusic()
                 end
             end)
             SoundService.SFXs.CombatStart:Play()

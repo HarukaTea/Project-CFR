@@ -41,7 +41,7 @@ return {
 
 
     --// custom effects
-    ReverberationBoost = {
+    ReverberationUltBoost = {
         Icon = "rbxassetid://120613067089872",
         Color = Color3.fromHex('#34ace0'),
     },
@@ -105,13 +105,5 @@ return {
 
 
     --// special custom
-    ReverberationEchoDebuff = {
-        Icon = "rbxassetid://120613067089872",
-        Color = Color3.fromHex('#34ace0'),
-    },
-    FlowMarkDebuff = {
-        Icon = "rbxassetid://100313471486816",
-		Color = Color3.fromHex('#a29bfe'),
-        IconColor = Color3.fromHex('#a29bfe')
-    }
+
 }

@@ -150,7 +150,7 @@ function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
 end
 
 
-function ServerLib.ShowText_S(target: Model, text: string, color: Color3?)
+function ServerLib.ShowText(target: Model, text: string, color: Color3?)
 	if not ServerLib.IsCharValid(target) then return end
 
 

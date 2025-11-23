@@ -6,10 +6,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 
-
-local ChainBar = require(script.Components.ChainBar)
-local FlowBar = require(script.Components.FlowBar)
-local ReverberationBar = require(script.Components.ReverberationBar)
 local ReverberationFrame = require(script.Components.ReverberationFrame)
 
 local Children = Fusion.Children
@@ -56,17 +52,7 @@ return function(plr: Player)
                         local class = use(self.Class)
 
 
-                        if class == "Flow" then
-                            return index, FlowBar(scope, {
-                                Enemy = symbol.Value
-                            })
-                        elseif class == "Reverberation" then
-                            return index, ReverberationBar(scope, {
-                                Enemy = symbol.Value
-                            })
-                        else
-                            return index, nil
-                        end
+                        return index, nil
                     end)
                 }
             }),
@@ -86,10 +72,6 @@ return function(plr: Player)
                         }),
 
 
-                        ChainBar(scope, {
-                            ClassVal = self.ChainCombo,
-                            Char = self.char
-                        })
                     }
                 })
             }
@@ -113,6 +95,9 @@ return function(plr: Player)
         }
     })
     self.UI = UI
+
+
+    require(script.Anims)(UI, self)
 
 
 

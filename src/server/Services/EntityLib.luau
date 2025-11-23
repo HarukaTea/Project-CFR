@@ -1354,7 +1354,7 @@ function EntityLib:_CombatEnd()
                         ServerLib.GiveEXPRewards(plr, math.floor(totalEXP))
 
                         HarukaLib:AddAttr(plr, "Gold", math.floor(totalGold))
-                        ServerLib.ShowText_S(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
+                        ServerLib.ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
 
                         HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
                     end

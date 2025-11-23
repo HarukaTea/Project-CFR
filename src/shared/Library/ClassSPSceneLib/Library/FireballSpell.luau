@@ -58,7 +58,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
                 if dist < 11 then
                     Events.DMGEnemyBySkills_C.Fire({
                         ProjectileUniqueId = projectileUniqueId,
-                        EnemyEntity = entity,
+                        Entity = entity,
                     })
 
 

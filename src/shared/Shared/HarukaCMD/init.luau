@@ -436,7 +436,7 @@ function HarukaCMD:_InitCommandExecutionTracker()
             return
         end
         if (plr:GetAttribute("Rank") or 0) == 127 and game.GameId ~= AssetBook.CFUniverseId_Main then
-            GlobalEvents.CreateNotify_S.Fire(plr, "We're sorry, but Mods are not allowed to execute commands in test place.")
+            GlobalEvents.CreateNotify_S.Fire(plr, "Mods are not allowed to execute commands in test place.")
             return
         end
 

@@ -30,6 +30,8 @@ local HarukaParty = require(SSS.HarukaServer.Services.HarukaParty)
 local HarukaQuest = require(SSS.HarukaServer.Services.HarukaQuest)
 
 
+type Dict = { [string]: any }
+
 
 export type GlobalCriRPGLibClass = {
     Funcs: { () -> nil },
@@ -494,7 +496,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if result == "Dodge" then
                 projectileDMG = 0
 
-                ServerLib.ShowText_S(char, "DODGE!", Color3.fromHex('#ffffff'))
+                ServerLib.ShowText(char, "DODGE!", Color3.fromHex('#ffffff'))
             end
             resolve()
 
@@ -533,7 +535,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         else
             if data.IsPierce then
-                ServerLib.ShowText_S(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
+                ServerLib.ShowText(char, "PIERCE!", Color3.fromRGB(255, 255, 255))
             end
 
             char.Humanoid:TakeDamage(projectileDMG)
@@ -734,6 +736,26 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             SlotId = slotId,
             CooldownTime = realCD
         })
+    end)
+
+
+    ServerBindables.RToCastSpell:Connect(function(plr: Player, char: Model, spellId: string, extraProps: Dict)
+        local badStatus = false
+        Promise.try(function()
+            local statusCode = CastItemLib[spellId](plr, char, extraProps or {}) :: number?
+
+            if statusCode and statusCode == 0 then
+                badStatus = true
+            end
+        end):catch(function(err)
+            warn(tostring(err))
+        end)
+        if badStatus then
+            if RunService:IsStudio() then
+                Events.CreateNotify_S.Fire(plr, "[Error] Invalid Function Status Code (Studio DEBUG)")
+            end
+            return
+        end
     end)
 end)
 
@@ -1090,6 +1112,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             Events.CreateNotify_S.Fire(plr, "You can't sell your Quest items!")
             return
         end
+
+        --// found in statue
+        if itemInfo.TagsDesync.Statue then
+            Events.CreateNotify_S.Fire(plr, "You can't sell your weapons obtained from Statues!")
+            return
+        end
+
+        --// found in chest
         local foundInChest = false
         for _, chest in CollectionService:GetTagged("ChestEntity") do
             if chest.Name == itemInfo.ItemId then
@@ -1382,11 +1412,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     Events.DMGEnemyBySkills_C.SetCallback(function(plr: Player, data)
         local projectileId = data.ProjectileUniqueId
         if projectileId == nil then return end
-        if data.EnemyEntity == nil then return end
+        if data.Entity == nil then return end
+
+
+        local entity = data.Entity
 
         local char = plr.Character
         if not ServerLib.IsCharValid(char) then return end
-        if not ServerLib.IsCharValid(data.EnemyEntity) then return end
+        if not ServerLib.IsCharValid(entity) then return end
 
         local projectileList = ServerStorage.SkillProjectileContainer:FindFirstChild("SkillProjectiles_"..char:GetAttribute("HarukaUniqueId")) :: Folder?
 
@@ -1402,7 +1435,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local projectileType = symbol:GetAttribute("ProjectileType") :: string
         local projectileDoTType = symbol:GetAttribute("DoTType") :: string
         local isClassUlt = symbol:GetAttribute("IsClassUlt") :: boolean
-        local enemyUniqueId = data.EnemyEntity:GetAttribute("HarukaUniqueId") :: string
+        local enemyUniqueId = entity:GetAttribute("HarukaUniqueId") :: string
         if symbol:FindFirstChild(enemyUniqueId) then return end
 
         local enemySymbol = Instance.new("BoolValue")
@@ -1416,7 +1449,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        local trueDMGStyle = "Physical"
+        local trueDMGStyle = "DMG"
         if style == "Magic" then
             trueDMGStyle = "Magic"
         end
@@ -1428,7 +1461,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        ClassAttackLib._DealDamageToEnemy(char, data.EnemyEntity, {
+        ClassAttackLib._DealDamageToEnemy(char, entity, {
             DMG = math.ceil(ClassAttackLib._CalDMG(style, char, {
                 ForceMaxDMG = true
             }) * trueDMGBonus),
@@ -1437,7 +1470,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         })
         if projectileDoTType ~= "None" then
             local debuffObj = DoTLib.new({
-                Target = data.EnemyEntity,
+                Target = entity,
                 Type = projectileDoTType,
                 Duration = 5,
                 Creator = char,

@@ -446,7 +446,7 @@ table.insert(CriRPGLib.Funcs, function()
 
                 Events.PlaySound_S.Fire(plr, SoundService.SFXs.LevelUp)
 
-                ServerLib.ShowText_S(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
+                ServerLib.ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
 
 
                 local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment

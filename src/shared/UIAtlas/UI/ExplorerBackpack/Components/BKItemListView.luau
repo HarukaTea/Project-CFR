@@ -8,7 +8,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 
-local BKItemSlot = require(script.Parent.BKItemSlot)
+local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
 
 local Children = Fusion.Children
 
