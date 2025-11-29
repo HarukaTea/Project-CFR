@@ -6,6 +6,9 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
+local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
+
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -18,44 +21,20 @@ return function(scope: Fusion.Scope, props: {
 })
 
     local ICONS = {
-        Passive = "rbxassetid://118638433713167",
+        Artifact = "rbxassetid://118638433713167",
         Accessory = "rbxassetid://88279390879858",
         Active = "rbxassetid://81960931694446",
         Weapon = "rbxassetid://136867665323280",
         Material = "rbxassetid://132557711412384",
         Misc = "rbxassetid://139698715468743",
-
-        Market = "rbxassetid://118291405899454",
-        Sell = "rbxassetid://18421784947",
-
-        Crafting = "rbxassetid://105673885617491",
-        Gemstone = "rbxassetid://139698715468743",
-
-        RoStore = "rbxassetid://135736394286615",
-        RoLeaderboard = "rbxassetid://106569943333610",
     }
-    local DEFAULT_COLOR = Color3.fromRGB(211, 188, 142)
     local COLORS = {
-        Passive = DEFAULT_COLOR,
-        Accessory = DEFAULT_COLOR,
-        Active = DEFAULT_COLOR,
-        Weapon = DEFAULT_COLOR,
-        Material = DEFAULT_COLOR,
-        Misc = DEFAULT_COLOR,
-
-        Market = Color3.fromRGB(211, 217, 238),
-        Sell = Color3.fromRGB(242, 170, 78),
-
-        STR = DEFAULT_COLOR,
-        DEX = DEFAULT_COLOR,
-        INT = DEFAULT_COLOR,
-        VIT = DEFAULT_COLOR,
-
-        Crafting = Color3.fromRGB(255, 255, 255),
-        Gemstone = DEFAULT_COLOR,
-
-        RoStore = DEFAULT_COLOR,
-        RoLeaderboard = DEFAULT_COLOR,
+        Artifact = Color3.fromRGB(85, 170, 255),
+        Accessory = Color3.fromRGB(255, 170, 127),
+        Active = Color3.fromRGB(170, 255, 255),
+        Weapon = Color3.fromRGB(255, 85, 127),
+        Material = Color3.fromRGB(85, 85, 127),
+        Misc = Color3.fromRGB(255, 255, 255),
     }
 
     local isSelecting = Fusion.Value(scope, false)
@@ -85,7 +64,7 @@ return function(scope: Fusion.Scope, props: {
 
             Components.IconImageLabel(scope, {
                 Image = ICONS[props.Category],
-                ImageColor3 = Components.WHITE_COLOR,
+                ImageColor3 = COLORS[props.Category],
 
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.5, 0.5),
@@ -103,6 +82,15 @@ return function(scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(1, 0.05),
                 BackgroundTransparency = 0,
                 BackgroundColor3 = COLORS[props.Category],
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(props.CurrentCategory) == props.Category
+                end)
+            }),
+
+            IconShadeTex(scope, {
+                Color = COLORS[props.Category],
+                Transparency = 0.7,
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(props.CurrentCategory) == props.Category

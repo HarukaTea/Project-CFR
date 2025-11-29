@@ -1115,20 +1115,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        local distanceCheck = false
-        for _, market: Model in CollectionService:GetTagged("MarketEntity") do
-            local distance = plr:DistanceFromCharacter(market.WorldPivot.Position)
-            if distance > 0 and distance <= 45 then
-                distanceCheck = true
-                break
-            end
-        end
-        if not distanceCheck then
-            Events.CreateNotify_S.Fire(plr, "You are too far from the Market!")
-            return
-        end
-
-
         --// cant sell items obtained from chests / nil
         local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then return end
@@ -1140,6 +1126,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
         if itemInfo.Type == "Quest" then
             Events.CreateNotify_S.Fire(plr, "You can't sell your Quest items!")
+            return
+        end
+        if itemInfo.Type == "CosmeticArmor" or itemInfo.Type == "CosmeticWeapon" then
+            Events.CreateNotify_S.Fire(plr, "You can't sell Cosmetic!")
             return
         end
 
@@ -1217,134 +1207,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         HarukaLib:AddAttr(plr, "Gold", totalPrice)
-    end)
-    Events.SellAllItems_C.SetCallback(function(plr: Player, item)
-        --// cant not sell nil items
-        local itemInfo = ItemBook:GetItemInfo(item)
-        if not itemInfo then return end
-
-
-        --// cant sell passive items
-        if itemInfo.Type == "Passive" then
-            Events.CreateNotify_S.Fire(plr, "You can't sell your Passive items!")
-            return
-        end
-        if itemInfo.Type == "Quest" then
-            Events.CreateNotify_S.Fire(plr, "You can't sell your Quest items!")
-            return
-        end
-
-        --// cant sell items in combat
-        local char = plr.Character
-        if not ServerLib:IsCharValid(char) then return end
-
-        if char:GetAttribute("IsInCombat") then
-            Events.CreateNotify_S.Fire(plr, "You can't purchase items in combat!")
-            return
-        end
-
-
-        local distanceCheck = false
-        for _, market: Model in CollectionService:GetTagged("MarketEntity") do
-            local distance = plr:DistanceFromCharacter(market.WorldPivot.Position)
-            if distance > 0 and distance <= 45 then
-                distanceCheck = true
-                break
-            end
-        end
-        if not distanceCheck then
-            Events.CreateNotify_S.Fire(plr, "You are too far from the Market!")
-            return
-        end
-
-
-        --// cant sell items obtained from chests / nil
-        local foundInChest = false
-        for _, chest in CollectionService:GetTagged("ChestEntity") do
-            if chest.Name == itemInfo.ItemId then
-                foundInChest = true
-                break
-            end
-        end
-        if foundInChest then
-            Events.CreateNotify_S.Fire(plr, "You cannot sell items obtained from Overworld Chests!")
-            return
-        end
-
-        --// found in statue
-        if table.find(itemInfo.TagsDesync, "Statue") then
-            if item == "Crescendo" then
-                local amount = 0
-
-                local items = plr.Items :: Folder
-
-                for _, itemSymbol in items:GetChildren() do
-                    if itemSymbol.Name == "Crescendo" then
-                        amount += 1
-                    end
-                end
-                if amount == 1 then
-                    Events.CreateNotify_S.Fire(plr, "You can't sell your weapons obtained from Statues!")
-                    return
-                end
-            else
-                Events.CreateNotify_S.Fire(plr, "You can't sell your weapons obtained from Statues!")
-                return
-            end
-        end
-
-
-        --// cant sell items that is not existed
-
-        local items = plr.Items :: Folder
-        local itemSymbol = items:FindFirstChild(item) :: IntConstrainedValue
-        if itemSymbol == nil then return end
-
-
-        local itemsWithThisId = {}
-        for _, symbol: IntConstrainedValue in items:GetChildren() do
-            if symbol.Name == item and symbol:GetAttribute("IsLocked") == false then
-                table.insert(itemsWithThisId, symbol)
-            end
-        end
-        if #itemsWithThisId <= 0 then return end
-
-
-        local hasEquipping, equipUniqueId = false, nil
-        for _, symbol: StringValue in plr.EquippingItems:GetChildren() do
-            if symbol.Value == item then
-                hasEquipping = true
-                equipUniqueId = symbol:GetAttribute("HarukaUniqueId")
-                break
-            end
-        end
-
-        if hasEquipping then
-            local eIndex = 0
-            for index: number, symbol: StringValue in itemsWithThisId do
-                if symbol:GetAttribute("HarukaUniqueId") == equipUniqueId then
-                    eIndex = index
-                    break
-                end
-            end
-            table.remove(itemsWithThisId, eIndex)
-        else
-            local eIndex = math.random(1, #itemsWithThisId)
-            table.remove(itemsWithThisId, eIndex)
-        end
-        if #itemsWithThisId <= 0 then return end
-
-
-        local totalGold = 0
-        for _, symbol: IntConstrainedValue in itemsWithThisId do
-            totalGold += itemInfo.SellPrice * symbol.Value
-            symbol:Destroy()
-        end
-
-        Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
-        Events.CreateNotify_S.Fire(plr, "Sell successful! Welcome back!")
-
-        HarukaLib:AddAttr(plr, "Gold", totalGold)
     end)
 end)
 

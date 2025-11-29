@@ -11,6 +11,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
 
@@ -161,14 +162,15 @@ return function(scope: Fusion.Scope, props: {
                             Components.UICorner(scope, { CornerRadius = UDim.new(0.08, 0) }),
 
                             Components.UIGradient(scope, {
+                                Color = ColorSequence.new(
+                                    AssetBook.ItemTierColors[info.Tier]:Lerp(Color3.new(1, 1, 1), 0.6),
+                                    AssetBook.ItemTierColors[info.Tier]
+                                ),
                                 Rotation = 60,
-
-                                Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return ColorSequence.new(
-                                        AssetBook.ItemTierColors[use(info).Tier]:Lerp(Color3.new(), 0.5),
-                                        AssetBook.ItemTierColors[use(info).Tier]
-                                    )
-                                end),
+                                Transparency = NumberSequence.new({
+                                    NumberSequenceKeypoint.new(0, 0.75),
+                                    NumberSequenceKeypoint.new(1, 0.5)
+                                })
                             }),
 
                             Components.IconImageLabel(scope, {
@@ -209,6 +211,11 @@ return function(scope: Fusion.Scope, props: {
                                 TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return use(absTextSize).Y / (79 / 18)
                                 end)
+                            }),
+
+                            CFEmblemTex(scope, {
+                                Transparency = 0.91,
+                                Position = UDim2.fromScale(0.6, 0.5)
                             })
                         }
                     }),

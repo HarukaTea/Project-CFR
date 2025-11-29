@@ -34,7 +34,7 @@ return function(scope: Fusion.Scope, self: { [string]: any }, isBackpackUI: bool
                 local category = use(self.CurrentCategory) :: string
 
                 if category == "Misc" then
-                    category = { "Recipe", "Quest", "CosmeticArmor", "CosmeticWeapon" }
+                    category = { "Quest", "CosmeticArmor", "CosmeticWeapon" }
                 elseif category == "Active" then
                     category = { "Consumable", "Active" }
                 elseif category == "Accessory" then

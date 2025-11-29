@@ -18,17 +18,9 @@ export type Self = {
     CurrentCategory: Fusion.Value<string>,
     CurrentItemCategory: Fusion.Value<string>,
 
-    CurrentPurchaseAction: Fusion.Value<string>,
-
     AvailableItems: Fusion.Value<Vector2>,
 
     IsPurchasing: Fusion.Value<boolean>,
-
-    FilterViewShown: Fusion.Value<boolean>,
-    FilterTierList: { Fusion.Value<boolean> },
-    FilterItemText: Fusion.Value<string>,
-
-    SortMethodList: { Fusion.Value<boolean> },
 
     Currency: {
         Gold: Fusion.Value<number>,
@@ -62,30 +54,9 @@ return function (self: Self)
     self.CurrentCategory = Value("Market")
     self.CurrentItemCategory = Value("Accessory")
 
-    self.CurrentPurchaseAction = Value("Purchase")
-
     self.AvailableItems = Value(Vector2.zero)
 
     self.IsPurchasing = Value(false)
-
-    self.FilterViewShown = Value(false)
-    self.FilterTierList = {
-
-    }
-    self.FilterItemText = Value("")
-    for _ = 1, 5 do
-        table.insert(self.FilterTierList, Value(true))
-    end
-
-
-    self.SortMethodList = {
-
-    }
-    for _ = 1, 2 do
-        table.insert(self.SortMethodList, Value(false))
-    end
-    self.SortMethodList[1]:set(true)
-
 
     self.Currency = {
         Gold = Value(0),
@@ -123,7 +94,6 @@ return function (self: Self)
             if newPanel == nil then return end
 
             self.IsUIShown:set(newPanel == "Market")
-            self.FilterViewShown:set(false)
         end
     }))
     table.insert(scope, Events.OpenMarketUI_S.On(function(data)

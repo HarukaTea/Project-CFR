@@ -24,6 +24,8 @@ export type Self = {
     CurrentSelectedItemUniqueId: Fusion.Value<string>,
     CurrentCategory: Fusion.Value<string>,
 
+    IsPurchasing: Fusion.Value<boolean>,
+
     Currency: {
         Gold: Fusion.Value<number>,
         Astra: Fusion.Value<number>
@@ -72,6 +74,9 @@ return function (self: Self)
         Gold = Value(0),
         Astra = Value(0)
     }
+
+
+    self.IsPurchasing = Value(false)
 
 
     self.ItemListAbsSize = Value(Vector2.zero)

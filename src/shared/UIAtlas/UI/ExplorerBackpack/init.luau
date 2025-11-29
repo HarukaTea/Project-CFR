@@ -15,6 +15,8 @@ local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescVi
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
 local BKItemListView = require(script.Components.BKItemListView)
 
+local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
+
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
@@ -78,6 +80,19 @@ return function (plr: Player)
             }),
 
 
+            Components.Frame(scope, {
+                Name = "ShadowOverlay2",
+                BackgroundTransparency = 0.3,
+                ZIndex = 3,
+                Interactable = false,
+                Active = false,
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(self.IsPurchasing)
+                end),
+            }),
+
+
             Components.HarukaFrame(scope, {
                 Name = "Top2",
                 AnchorPoint = Vector2.new(0.5, 0),
@@ -88,6 +103,29 @@ return function (plr: Player)
                     CloseTab(scope, {
                         ViewShownValue = self.IsUIShown
                     }),
+                }
+            }),
+
+
+            Components.Frame(scope, {
+                Name = "Center_ZIndex2",
+                Size = UDim2.fromScale(1, 0.1),
+
+                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return not use(self.IsPurchasing)
+                end),
+
+                [Children] = {
+                    Components.UIAspectRatioConstraint(scope),
+
+                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        return BKItemDescView(scope, {
+                            Item = use(self.CurrentSelectedItem),
+                            ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                            EquippingItems = self.EquippingItems,
+                            Items = use(self.Items),
+                        })
+                    end),
                 }
             }),
 
@@ -197,12 +235,6 @@ return function (plr: Player)
                             Option = "Filter",
                             Index = 1
                         }, self),
-
-                        Components.Frame(scope, {
-                            Name = "Padding",
-                            LayoutOrder = 2,
-                            Size = UDim2.fromScale(0.3, 1)
-                        }),
                     }
                 }),
 
@@ -230,7 +262,7 @@ return function (plr: Player)
                                 return nil
                             end
 
-                            local blackList = { "Material", "Recipe", "Quest", "Passive" }
+                            local blackList = { "Material", "Quest", "Passive" }
                             if table.find(blackList, itemInfo.Type) then
                                 return nil
                             end
@@ -270,6 +302,7 @@ return function (plr: Player)
                                         Size = UDim2.fromScale(0.15, 0.7),
                                         ButtonText = "Equip",
                                         ButtonType = "Confirm",
+                                        LayoutOrder = 233,
                                         ButtonClickFunc = function()
                                             _requestToEquip()
                                         end
@@ -283,6 +316,7 @@ return function (plr: Player)
                                     Size = UDim2.fromScale(0.15, 0.7),
                                     ButtonText = "Unequip",
                                     ButtonType = "Cancel",
+                                    LayoutOrder = 233,
                                     ButtonClickFunc = function()
                                         _requestToEquip()
                                     end
@@ -292,11 +326,39 @@ return function (plr: Player)
                                     Size = UDim2.fromScale(0.15, 0.7),
                                     ButtonText = "Equip",
                                     ButtonType = "Confirm",
+                                    LayoutOrder = 233,
                                     ButtonClickFunc = function()
                                         _requestToEquip()
                                     end
                                 })
                             end
+                        end),
+
+
+                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local item = use(self.CurrentSelectedItem) :: string
+
+                            local itemInfo = ItemBook:GetItemInfo(item)
+                            if itemInfo == nil then
+                                return nil
+                            end
+
+                            local blackList = { "Quest", "Passive", "CosmeticArmor", "CosmeticWeapon" }
+                            if table.find(blackList, itemInfo.Type) then
+                                return nil
+                            end
+
+                             return {
+                                ExecuteButton(scope, {
+                                    Size = UDim2.fromScale(0.115, 0.7),
+                                    ButtonText = "Sell",
+                                    ButtonType = "Cancel",
+                                    LayoutOrder = 2,
+                                    ButtonClickFunc = function()
+                                        self.IsPurchasing:set(true)
+                                    end
+                                })
+                            }
                         end),
                     }
                 }),
@@ -310,7 +372,7 @@ return function (plr: Player)
                         Components.TextLabel(scope, {
                             Name = "FilterModeHint",
                             AnchorPoint = Vector2.new(0, 0.5),
-                            Position = UDim2.fromScale(0.5, 0.5),
+                            Position = UDim2.fromScale(0.4, 0.5),
                             AutomaticSize = Enum.AutomaticSize.X,
                             Text = "FILTER MODE: ON",
                             BackgroundTransparency = 0,
@@ -336,8 +398,8 @@ return function (plr: Player)
                             [Children] = {
                                 Components.RoundUICorner(scope),
                                 Components.UIPadding(scope, {
-                                    PaddingLeft = UDim.new(0, 9),
-                                    PaddingRight = UDim.new(0, 9)
+                                    PaddingLeft = UDim.new(0, 15),
+                                    PaddingRight = UDim.new(0, 15)
                                 })
                             }
                         })
@@ -361,7 +423,7 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                        Fusion.ForPairs(scope, { "Accessory", "Artifact", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope, index: number, category: string)
                             return index, TopbarCategoryBtn(scope, {
                                 Category = category,
                                 Index = index,
@@ -379,17 +441,25 @@ return function (plr: Player)
         },
 
         CenterProps = {
-            ZIndex = 2,
+            ZIndex = 10,
 
             [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                    return BKItemDescView(scope, {
-                        Item = use(self.CurrentSelectedItem),
-                        ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
-                        EquippingItems = self.EquippingItems,
-                        Items = use(self.Items),
+                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    if not use(self.IsPurchasing) then return nil end
+
+                    return MKPurchasePrompt(scope, {
+                        ProductId = use(self.CurrentSelectedItem),
+                        UniqueId = use(self.CurrentSelectedItemUniqueId),
+
+                        IsPurchasing = self.IsPurchasing,
+                        Action = "Sell",
+
+                        CurrentSelectedItem = self.CurrentSelectedItem,
+                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+
+                        CurrencyId = "Gold",
                     })
-                end),
+                end)
             }
         }
     })

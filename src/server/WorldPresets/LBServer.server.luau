@@ -203,3 +203,6 @@ table.insert(LBLib.Funcs, function()
         end
     end)
 end)
+
+
+LBLib:Init()

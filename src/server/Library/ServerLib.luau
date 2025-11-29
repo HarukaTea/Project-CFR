@@ -218,11 +218,7 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
 
 	for attr: string, val: any in statInfoDesync do
 		if typeof(val) == "number" then
-			local maxVal = FormulaBook.ItemUpgradeCurveCal({
-				Level = itemInfo.Level,
-				Stat = attr,
-				Val = val
-			})
+			local maxVal = FormulaBook.ItemUpgradeCurveCal(val)
 			if val > maxVal then
 				maxVal, val = val, maxVal
 			end

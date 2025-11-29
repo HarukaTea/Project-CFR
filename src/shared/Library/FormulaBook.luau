@@ -140,19 +140,8 @@ local formulas = {
 
     --// items
 
-    ItemUpgradeCurveCal = function(props: {
-        Stat: string,
-        Val: number,
-        Level: number,
-    })
-        local stat = props.Stat
-        local level = props.Level
-        local val = props.Val
-
+    ItemUpgradeCurveCal = function(val: number)
         val = val or 0
-        if stat == nil or level == nil then
-            return val
-        end
 
         return val + math.floor(val * 0.11)
     end

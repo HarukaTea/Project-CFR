@@ -223,31 +223,6 @@ return function (plr: Player)
             Position = UDim2.fromScale(0.5, 0.02),
 
             [Children] = {
-                Components.Frame(scope, {
-                    Name = "Categories",
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            Padding = UDim.new(0.015, 0),
-                        }),
-
-                        Fusion.ForPairs(scope, { "Crafting", "Gemstone" }, function(_, scope: Fusion.Scope, index: number, category: string)
-                            return index, TopbarCategoryBtn(scope, {
-                                Category = category,
-                                Index = index,
-
-                                CurrentSelectedItem = self.CurrentSelectedItem,
-                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                                CurrentCategory = self.CurrentCategory,
-                            })
-                        end)
-                    }
-                }),
-
-
                 FakeTopBGTex(scope)
             }
         },
@@ -350,7 +325,7 @@ return function (plr: Player)
                         Components.TextLabel(scope, {
                             Name = "FilterModeHint",
                             AnchorPoint = Vector2.new(0, 0.5),
-                            Position = UDim2.fromScale(0.2, 0.5),
+                            Position = UDim2.fromScale(0.4, 0.5),
                             AutomaticSize = Enum.AutomaticSize.X,
                             Text = "FILTER MODE: ON",
                             BackgroundTransparency = 0,
@@ -376,8 +351,8 @@ return function (plr: Player)
                             [Children] = {
                                 Components.RoundUICorner(scope),
                                 Components.UIPadding(scope, {
-                                    PaddingLeft = UDim.new(0, 9),
-                                    PaddingRight = UDim.new(0, 9)
+                                    PaddingLeft = UDim.new(0, 15),
+                                    PaddingRight = UDim.new(0, 15)
                                 })
                             }
                         })

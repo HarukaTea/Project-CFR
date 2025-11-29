@@ -10,6 +10,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
+
 
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymbol)
@@ -32,6 +34,7 @@ return function (scope: Fusion.Scope, props: {
     local info = ItemBook:GetItemInfo(props.Item)
     if not info then return nil end
 
+    local itemInfo = info
 
     local artifactInfo = ArtifactBook:GetArtifactInfo(info.ArtifactId)
 
@@ -188,7 +191,9 @@ return function (scope: Fusion.Scope, props: {
 
     local function ItemEffectShowcase(scope: Fusion.Scope, properties: {
         Attr: string,
-        Val: any
+        Val: any,
+
+        IsPotType: boolean?,
     })
         local attr, val = properties.Attr, properties.Val
 
@@ -263,6 +268,37 @@ return function (scope: Fusion.Scope, props: {
 
                         elseif attr == "ForClass" then
                             return `<font color="#e9cc9f">Class: </font> {val}`
+                        elseif properties.IsPotType then
+                            local DEFAULT_TEXT = `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
+
+                            local basePot = itemInfo.StatInfoDesync[attr]
+                            if basePot == nil then
+                                return DEFAULT_TEXT
+                            end
+
+                            local maxPot = FormulaBook.ItemUpgradeCurveCal(basePot)
+
+                            local potRatio
+                            local upgradeRange = maxPot - basePot
+                            if upgradeRange == 0 then
+                                return DEFAULT_TEXT
+                            end
+
+                            potRatio = math.floor( ((val - basePot) / upgradeRange) * 100 )
+
+
+                            local color = Components.RED_COLOR:ToHex()
+                            if potRatio >= 30 and potRatio <= 70 then
+                                color = Components.BLUE_COLOR:ToHex()
+                            elseif potRatio > 70 then
+                                color = Components.GREEN_COLOR:ToHex()
+                            end
+
+                            if potRatio > 0 then
+                                return `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}   <font color="#{color}">(+{potRatio}%)</font>`
+                            else
+                                return DEFAULT_TEXT
+                            end
                         else
                             return `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
                         end
@@ -492,7 +528,9 @@ return function (scope: Fusion.Scope, props: {
                     Fusion.ForPairs(scope, itemStatExtra, function(_, scope: Fusion.Scope, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
                             Attr = attr,
-                            Val = val
+                            Val = val,
+
+                            IsPotType = true
                         })
                     end),
 

@@ -189,7 +189,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
 
                 data.ItemsSQL[itemInfo.UniqueId].Amount = 1
             end
-            if itemType == "Active" or itemType == "Passive" or itemType == "Recipe" or itemType == "Quest" then
+            if itemType == "Active" or itemType == "Passive" or itemType == "Quest" then
                 local returnAmount = itemInfo.Amount - 1
 
                 data.Gold += math.floor(ItemBook:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
@@ -210,12 +210,12 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     end
 
 
-    --// check "NoDuplicate" or "Chest" tag item
+    --// check "NoDuplicate" or "Chest" or "Statue" tag item
     local noDuplicateUniqueIds = {}
     for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
 
-        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") or table.find(trueItemInfo.TagsDesync, "Chest") then
+        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") or table.find(trueItemInfo.TagsDesync, "Chest") or table.find(trueItemInfo.TagsDesync, "Statue") then
             if noDuplicateUniqueIds[trueItemInfo.ItemId] == nil then
                 noDuplicateUniqueIds[trueItemInfo.ItemId] = {}
             end

@@ -65,9 +65,6 @@ return function (plr: Player)
                 Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return not use(self.IsPurchasing)
                 end),
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(self.CurrentCategory) == "Market"
-                end),
 
                 [Children] = {
                     Components.ScrollingFrame(scope, {
@@ -102,125 +99,6 @@ return function (plr: Player)
 
 
             Components.Frame(scope, {
-                Name = "CenterLeft_Selling",
-                AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromScale(0.03, 0.52),
-                Size = UDim2.fromScale(0.65, 0.66),
-                ClipsDescendants = true,
-
-                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return not use(self.IsPurchasing)
-                end),
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(self.CurrentCategory) == "Sell"
-                end),
-
-                [Children] = {
-                    Components.ScrollingFrame(scope, {
-                        Name = "Backpack",
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        Size = UDim2.fromScale(0.97, 0.95),
-                        ScrollingDirection = Enum.ScrollingDirection.Y,
-                        ClipsDescendants = false,
-
-                        [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
-
-                        [Children] = {
-                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
-                                if not use(self.IsUIShown) then return nil end
-                                if use(self.CurrentCategory) ~= "Sell" then return nil end
-
-                                local info = ItemBook:GetItemInfo(itemSymbol.Name)
-                                if not info then return nil end
-
-                                local isVisible = false
-                                local isVisibleFactor2 = false
-                                local category = use(self.CurrentItemCategory) :: string
-
-                                if category == "Misc" then
-                                    category = { "Recipe", "Quest", "CosmeticArmor", "CosmeticWeapon" }
-                                elseif category == "Active" then
-                                    category = { "Consumable", "Active" }
-                                elseif category == "Accessory" then
-                                    category = { "Accessory", "Passive" }
-                                else
-                                    category = { category }
-                                end
-                                isVisible = table.find(category, info.Type) ~= nil
-
-
-                                local state = use(self.FilterTierList[info.Tier])
-                                isVisibleFactor2 = state
-
-
-                                local isVisibleFactor3 = false
-                                local text = use(self.FilterItemText)
-                                local textWithoutSpaces = string.gsub(text, " ", "")
-
-                                if textWithoutSpaces == "" then
-                                    isVisibleFactor3 = true
-                                else
-                                    textWithoutSpaces = textWithoutSpaces :: string
-
-                                    if string.find(string.lower(info.Name), string.lower(textWithoutSpaces)) then
-                                        isVisibleFactor3 = true
-                                    else
-                                        isVisibleFactor3 = false
-                                    end
-                                end
-
-                                if isVisible and isVisibleFactor2 and isVisibleFactor3 then
-                                    return index, BKItemSlot(scope, {
-                                        ItemSymbol = itemSymbol,
-                                        EquippingItems = self.EquippingItems,
-
-                                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                                        CurrentSelectedItem = self.CurrentSelectedItem,
-                                        CurrentSortOrderList = self.SortMethodList,
-                                    })
-                                else
-                                    return index, nil
-                                end
-                            end)
-                        }
-                    }, {
-                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local size = use(self.ItemListAbsSize) :: Vector2
-                            local x = size.X * 0.125 * 0.86
-                            local y = size.X * 0.135 * 0.86
-
-                            return UDim2.fromOffset(x, y)
-                        end),
-                        CellPadding = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local size = use(self.ItemListAbsSize) :: Vector2
-                            local x = size.X * 0.015
-                            local y = size.X * 0.023
-
-                            return UDim2.fromOffset(x, y)
-                        end),
-
-                        [Fusion.Out("AbsoluteCellCount")] = self.AvailableItems,
-
-                        FillDirection = Enum.FillDirection.Horizontal
-                    }),
-
-                    Components.TextLabel(scope, {
-                        Name = "Empty",
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        Size = UDim2.fromScale(1, 0.1),
-                        Text = "EMPTY",
-                        TextTransparency = 0.8,
-
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return use(self.AvailableItems).X <= 0
-                        end)
-                    })
-                }
-            }),
-
-            Components.Frame(scope, {
                 Name = "Center_ZIndex2",
                 Size = UDim2.fromScale(1, 0.1),
 
@@ -232,23 +110,12 @@ return function (plr: Player)
                     Components.UIAspectRatioConstraint(scope),
 
                     Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        if use(self.CurrentCategory) == "Sell" then
-                            return BKItemDescView(scope, {
-                                Item = use(self.CurrentSelectedItem),
-                                ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
-                                EquippingItems = self.EquippingItems,
-                                Items = use(self.Items),
-                            })
-                        elseif use(self.CurrentCategory) == "Market" then
-                            return BKItemDescView(scope, {
-                                Item = use(self.CurrentSelectedItem),
-                                ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
-                                EquippingItems = self.EquippingItems,
-                                IsMarket = true
-                            })
-                        else
-                            return nil
-                        end
+                        return BKItemDescView(scope, {
+                            Item = use(self.CurrentSelectedItem),
+                            ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                            EquippingItems = self.EquippingItems,
+                            IsMarket = true
+                        })
                     end),
                 }
             }),
@@ -279,58 +146,6 @@ return function (plr: Player)
                     CloseTab(scope, {
                         ViewShownValue = self.IsUIShown
                     }),
-                }
-            }),
-
-
-            Components.Frame(scope, {
-                Name = "Left",
-                AnchorPoint = Vector2.new(0, 0),
-                Position = UDim2.fromScale(0, 0),
-                Size = UDim2.fromScale(0.3, 1),
-                ZIndex = 3,
-
-                [Children] = {
-                    Components.Frame(scope, {
-                        Name = "FilterOptions",
-                        ZIndex = 10,
-
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return use(self.FilterViewShown)
-                        end),
-
-                        [Children] = {
-                            Components.Frame(scope, {
-                                Name = "Shadows",
-                                AnchorPoint = Vector2.new(0, 0),
-                                Position = UDim2.fromScale(1, 0),
-                                BackgroundColor3 = Color3.fromRGB(),
-                                BackgroundTransparency = 0,
-
-                                [Children] = {
-                                    Components.UIGradient(scope, {
-                                        Transparency = NumberSequence.new(1, 0.5),
-                                        Rotation = 180
-                                    })
-                                }
-                            }),
-
-                            Components.Frame(scope, {
-                                Name = "Inner",
-                                ZIndex = 2,
-
-                                [Children] = {
-                                    BKItemFilterView(scope, {
-                                        FilterTierList = self.FilterTierList,
-                                        FilterItemText = self.FilterItemText,
-                                        SortMethodList = self.SortMethodList,
-
-                                        UIOpenState = self.FilterViewShown
-                                    })
-                                }
-                            })
-                        }
-                    })
                 }
             })
         }
@@ -364,136 +179,21 @@ return function (plr: Player)
 
 
                         Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local curCategory = use(self.CurrentCategory) :: string
                             local curItem = use(self.CurrentSelectedItem) :: string
 
-                            if curCategory == "Market" and curItem ~= "" then
+                            if curItem ~= "" then
                                 return ExecuteButton(scope, {
                                     Size = UDim2.fromScale(0.15, 0.7),
                                     ButtonText = "Purchase",
                                     ButtonType = "Confirm",
                                     ButtonClickFunc = function()
                                         self.IsPurchasing:set(true)
-                                        self.CurrentPurchaseAction:set("Purchase")
                                     end
                                 })
-                            elseif curCategory == "Sell" and curItem ~= "" then
-                                return {
-                                    ExecuteButton(scope, {
-                                        Size = UDim2.fromScale(0.15, 0.7),
-                                        ButtonText = "Sell",
-                                        ButtonType = "Cancel",
-                                        ButtonClickFunc = function()
-                                            self.IsPurchasing:set(true)
-                                            self.CurrentPurchaseAction:set("Sell")
-                                        end
-                                    }),
-                                    ExecuteButton(scope, {
-                                        Size = UDim2.fromScale(0.15, 0.7),
-                                        ButtonText = "Sell All",
-                                        ButtonType = "Cancel",
-                                        ButtonClickFunc = function()
-                                            local result = Components:CreateConfirmPrompt(scope, {
-                                                Hint = "Are you sure you want to sell <red>all items with this name</font>? We'll keep one as a backup for you.",
-                                                CancelText = "NO",
-                                                ConfirmText = "YES",
-
-                                                ConfirmUniqueId = "ConfirmSellAllItemsInMarket"
-                                            }):Wait()
-
-                                            if result and result == "YES" then
-                                                Events.SellAllItems_C.Fire(Fusion.peek(self.CurrentSelectedItem))
-                                            end
-                                        end
-                                    })
-                                }
                             else
                                 return nil
                             end
                         end),
-                    }
-                }),
-
-                Components.Frame(scope, {
-                    Name = "LSideBtns",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, -0.3),
-                    Size = UDim2.fromScale(0.96, 1),
-
-                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return use(self.CurrentCategory) == "Sell"
-                    end),
-                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return not use(self.IsPurchasing)
-                    end),
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            Padding = UDim.new(0.015, 0),
-                        }),
-
-                        BottombarOptionBtn(scope, {
-                            Option = "Filter",
-                            Index = 1
-                        }, self),
-
-                        Fusion.ForPairs(scope, { "Accessory", "Weapon", "Active", "Material" }, function(_, scope: Fusion.Scope, index: number, category: string)
-                            return index, TopbarCategoryBtn(scope, {
-                                Category = category,
-                                Index = index + 2,
-
-                                CurrentSelectedItem = self.CurrentSelectedItem,
-                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                                CurrentCategory = self.CurrentItemCategory,
-                            })
-                        end),
-                    }
-                }),
-
-
-                Components.Frame(scope, {
-                    Name = "FilterModeStatus",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, -0.1),
-
-                    [Children] = {
-                        Components.TextLabel(scope, {
-                            Name = "FilterModeHint",
-                            AnchorPoint = Vector2.new(0, 0.5),
-                            Position = UDim2.fromScale(0.52, 0.5),
-                            AutomaticSize = Enum.AutomaticSize.X,
-                            Text = "FILTER MODE: ON",
-                            BackgroundTransparency = 0,
-                            BackgroundColor3 = Components.WHITE_COLOR,
-                            TextColor3 = Components.BLACK_COLOR,
-                            Size = UDim2.fromScale(0, 0.56),
-
-
-                            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                local check = false
-                                for _, tierStatus in self.FilterTierList do
-                                    if use(tierStatus) == false then
-                                        check = true
-                                        break
-                                    end
-                                end
-                                if use(self.FilterItemText) ~= "" then check = true end
-
-                                return check
-                            end),
-
-
-                            [Children] = {
-                                Components.RoundUICorner(scope),
-                                Components.UIPadding(scope, {
-                                    PaddingLeft = UDim.new(0, 9),
-                                    PaddingRight = UDim.new(0, 9)
-                                })
-                            }
-                        })
                     }
                 })
             }
@@ -503,34 +203,6 @@ return function (plr: Player)
             Position = UDim2.fromScale(0.5, 0.02),
 
             [Children] = {
-                Components.Frame(scope, {
-                    Name = "Categories",
-
-                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return not use(self.IsPurchasing)
-                    end),
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            Padding = UDim.new(0.015, 0),
-                        }),
-
-                        Fusion.ForPairs(scope, { "Market", "Sell" }, function(_, scope: Fusion.Scope, index: number, category: string)
-                            return index, TopbarCategoryBtn(scope, {
-                                Category = category,
-                                Index = index,
-
-                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                                CurrentSelectedItem = self.CurrentSelectedItem,
-                                CurrentCategory = self.CurrentCategory,
-                            })
-                        end)
-                    }
-                }),
-
                 Components.Frame(scope, {
                     Name = "Economy",
                     Size = UDim2.fromScale(0.82, 1),
@@ -574,7 +246,7 @@ return function (plr: Player)
                         UniqueId = use(self.CurrentSelectedItemUniqueId),
 
                         IsPurchasing = self.IsPurchasing,
-                        Action = use(self.CurrentPurchaseAction),
+                        Action = "Market",
 
                         CurrentSelectedItem = self.CurrentSelectedItem,
                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
