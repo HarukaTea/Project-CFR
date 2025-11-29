@@ -2,7 +2,6 @@
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
-local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local SG = game:GetService("StarterGui")
 local RepS = game:GetService("ReplicatedStorage")
@@ -11,21 +10,6 @@ local TeleportService = game:GetService("TeleportService")
 local plr = Players.LocalPlayer
 
 local wait = task.wait
-
-
---// Runtime check, it's crazy that it happens
-if RunService:IsServer() then
-    plr:Kick("This server is invalid. Rejoin can fix it.")
-    return
-end
-if #Players:GetPlayers() > Players.MaxPlayers then
-    plr:Kick("Server is full, please rejoin!")
-    return
-end
-if workspace:GetAttribute("Haruka_ServerLocked") then
-    plr:Kick("This server is shutting down, please do server hopping or wait for a while.")
-    return
-end
 
 
 --// Core ui init

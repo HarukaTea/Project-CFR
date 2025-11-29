@@ -6,7 +6,7 @@ local SoundService = game:GetService("SoundService")
 
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
-local HarukaQuest = require(SSS.HarukaServer.Services.HarukaQuest)
+local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
@@ -28,7 +28,7 @@ GlobalQuestFuncLib.Funcs = {}
 
 function GlobalQuestFuncLib:Init()
     for _, func: () -> nil in GlobalQuestFuncLib.Funcs do
-        func()
+        task.spawn(func)
     end
 end
 
@@ -55,7 +55,7 @@ end)
 
 table.insert(GlobalQuestFuncLib.Funcs, function()
     QuestBindables.InterSkyTowerQuest:Connect(function(plr: Player)
-        HarukaQuest.GiveQuest(plr, "InterSkyTower")
+        QuestLib.GiveQuest(plr, "InterSkyTower")
     end)
 end)
 

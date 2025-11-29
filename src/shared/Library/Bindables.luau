@@ -19,13 +19,7 @@ return {
     PlayerChatted = Signal.new(),
 
     --@params: `(anim: string)`
-    PlayAnimation_S = Signal.new(),
-
-    --@params: `(anim: string)`
-    PlayRawAnimation = Signal.new(),
-
-    --@params: `(anim: string)`
-    CancelRawAnimation = Signal.new(),
+    PlayClassAnim = Signal.new(),
 
     --@params: `(data: {TweenInfo: string, Goal: { [string]: any }, Objs: { Instance }, UseHarukaTween: boolean?} )`
     ClientTween = Signal.new(),

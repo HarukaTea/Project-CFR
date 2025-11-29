@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -10,12 +11,18 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
+
+local CURRENCY_ICONS = AssetBook.CurrencyIcons
+
+
 return function(scope: Fusion.Scope, props: {
     ProductId: string,
     UniqueId: string,
 
     CurrentSelectedItem: Fusion.Value<string>,
-    CurrentSelectedItemUniqueId: Fusion.Value<string>
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+
+    CurrencyId: string
 })
 
     local info = ItemBook:GetItemInfo(props.ProductId)
@@ -151,10 +158,8 @@ return function(scope: Fusion.Scope, props: {
                                         [Children] = {
                                             Components.RoundUICorner(scope),
                                             Components.UIPadding(scope, {
-                                                PaddingTop = UDim.new(0.1, 0),
-                                                PaddingBottom = UDim.new(0.1, 0),
-                                                PaddingLeft = UDim.new(0, 4),
-                                                PaddingRight = UDim.new(0, 4)
+                                                PaddingLeft = UDim.new(0, 12),
+                                                PaddingRight = UDim.new(0, 12)
                                             })
                                         }
                                     }),
@@ -175,7 +180,7 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     Components.IconImageLabel(scope, {
-                                        Image = "rbxassetid://18421784947",
+                                        Image = CURRENCY_ICONS[props.CurrencyId],
                                         LayoutOrder = 1,
                                     }),
 

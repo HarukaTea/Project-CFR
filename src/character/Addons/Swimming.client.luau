@@ -3,9 +3,10 @@ local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
@@ -21,6 +22,14 @@ local camera = workspace.CurrentCamera
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
+ClientLib:InitCharDeadTrackers({
+    Add = Add,
+    Empty = Empty,
+    Char = char,
+    Player = plr
+})
+
+
 
 local waterParts = CollectionService:GetTagged("WaterPart")
 Add(CollectionService:GetInstanceAddedSignal("WaterPart"):Connect(function(part)
@@ -33,28 +42,20 @@ Add(CollectionService:GetInstanceAddedSignal("WaterEqualizer"):Connect(function(
 end))
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		Empty()
-	end
-end))
-Add(script.Destroying:Connect(Empty))
-Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-    if health <= 0 then
-        Empty()
-    end
-end))
-Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-    local newParent = char
-    if newParent then
-        if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-            Empty()
-            return
-        end
-    else
-        Empty()
-    end
-end))
+
+local animator = char.Humanoid.Animator :: Animator
+local swimAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.Swim)
+local swimIdleAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.SwimIdle)
+
+Add(swimAnim)
+Add(swimIdleAnim)
+
+local ANIMS = {
+    Swim = swimAnim,
+    SwimIdle = swimIdleAnim
+}
+
+
 
 if camera:FindFirstChild("WaterBlur") then camera.WaterBlur:Destroy() end
 if camera:FindFirstChild("WaterColor") then camera.WaterColor:Destroy() end
@@ -86,10 +87,14 @@ local function playSwimAnim(newAnim: string?)
 
     if newAnim ~= oldAnim then
         if oldAnim then
-            Bindables.CancelRawAnimation:Fire(oldAnim)
+            if ANIMS[oldAnim] then
+                ANIMS[oldAnim]:Stop()
+            end
         end
         if newAnim then
-            Bindables.PlayRawAnimation:Fire(newAnim)
+            if ANIMS[newAnim] then
+                ANIMS[newAnim]:Play()
+            end
         end
 
         animState = newAnim

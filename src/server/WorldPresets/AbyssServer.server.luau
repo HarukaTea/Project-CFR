@@ -1,4 +1,7 @@
 
+repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+
+
 local CollectionService = game:GetService("CollectionService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local Players = game:GetService("Players")
@@ -63,7 +66,7 @@ function AbyssWorldLib:Init()
     Promise.try(AbyssWorldLib.Funcs[1]):await()
 
     for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
-        func()
+        task.spawn(func)
     end
 end
 
@@ -212,4 +215,4 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
     end)
 end)
 
-return AbyssWorldLib
+AbyssWorldLib:Init()

@@ -7,7 +7,7 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Trail = require(RepS.HarukaShared.Library.TrailAlgoBook)
+local TrailMath = require(RepS.HarukaShared.Shared.HarmonyLib.TrailMath)
 
 
 local Types = require(script.Parent.Parent.Types)
@@ -26,6 +26,9 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     if not ClientLib.IsCharValid(targetingEnemy) then return end
 
 
+    local trailMathObj = TrailMath.new()
+
+
     local combatLocation = char:GetAttribute("CombatLocation") :: CFrame
     local centerPos = combatLocation.Position :: Vector3
 
@@ -39,7 +42,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     Debris:AddItem(echoRay, 10)
 
 
-    Trail:Init(echoRay, {
+    trailMathObj:Init(echoRay, {
         Origin = echoRay.CFrame * CFrame.new(0, -40, 0),
         Projectile = RepS.Packages.SkillProjectiles:FindFirstChild("EchoTrail", true):Clone() :: BasePart,
         Index = 7,
@@ -106,4 +109,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     }):Play()
 
     Debris:AddItem(echoRay, 1.5)
+
+
+    trailMathObj:Destroy()
 end

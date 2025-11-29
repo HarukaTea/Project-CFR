@@ -11,7 +11,10 @@ export type Self = {
     char: Model,
     scope: Fusion.Scope,
 
-    IsUIShown: Fusion.Value<boolean>
+    IsUIShown: Fusion.Value<boolean>,
+
+    BadgeCompletedCount: Fusion.Value<number>,
+    HasGottenReward: Fusion.Value<boolean>,
 }
 
 
@@ -25,6 +28,10 @@ return function (self: Self)
     self.IsUIShown = Value(false)
 
 
+    self.BadgeCompletedCount = Value(0)
+    self.HasGottenReward = Value(false)
+
+
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
@@ -33,6 +40,25 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "Achievements")
         end
     }))
+
+
+    --// track badge count
+    table.insert(scope, HarukaLib.Clock(5, function()
+        local badgeCompletes = self.plr:GetAttributes()
+
+        local count = 0
+        for badgeId, val in badgeCompletes do
+            if string.find(badgeId, "BADGE_") and val then
+                count += 1
+            end
+        end
+        self.BadgeCompletedCount:set(count)
+
+    end, true))
+    table.insert(scope, HarukaLib.Clock(5, function()
+        self.HasGottenReward:set(self.plr.Items:FindFirstChild("FuriosoFist") ~= nil)
+    end, true))
+
 
 
     --// track ui blur

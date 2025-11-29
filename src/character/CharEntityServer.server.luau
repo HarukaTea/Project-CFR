@@ -47,8 +47,8 @@ end))
 function CharLib:Init()
 	self:_RagdollInit()
 
-	for _, func: () -> nil in CharLib.Funcs do
-        func()
+	for _, func: () -> nil in self.Funcs do
+        task.spawn(func)
     end
 
 	char:SetAttribute("Haruka_CharServerInited", true)
@@ -75,10 +75,9 @@ end
 table.insert(CharLib.Funcs, function()
 	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
-			CharLib:Destroy()
 			pcall(CharLib._TriggerRagdoll, CharLib)
 
-			char.Humanoid.Health = -1
+			CharLib:Destroy()
 		end
 	end))
 	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()

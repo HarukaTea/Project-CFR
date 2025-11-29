@@ -67,7 +67,11 @@ return function(plr: Player)
                     Shield = self.Shield, MaxShield = self.MaxShield,
 
                     MinDMG = self.MinDMG, MaxDMG = self.MaxDMG,
-                    Magic = self.Magic
+                    Magic = self.Magic,
+
+
+                    HalloweenCandy = self.HalloweenCandy,
+                    Gold = self.Gold,
                 }),
 
 

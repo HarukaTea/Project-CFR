@@ -46,7 +46,6 @@ return function(scope: Fusion.Scope, props: {
         Name = "ExecuteButton",
         AutoButtonColor = true,
         BackgroundColor3 = Components.WHITE_COLOR,
-        TextColor3 = Components.HarukaColorLab.Genshin.Background,
 
         AnchorPoint = props.AnchorPoint,
         LayoutOrder = props.LayoutOrder,
@@ -88,7 +87,7 @@ return function(scope: Fusion.Scope, props: {
                 Name = "ButtonText",
                 LayoutOrder = 2,
                 Size = UDim2.fromScale(0.8, 0.9),
-                TextColor3 = Color3.fromRGB(44, 49, 62),
+                TextColor3 = Components.BLACK_COLOR,
 
                 Text = props.ButtonText,
 

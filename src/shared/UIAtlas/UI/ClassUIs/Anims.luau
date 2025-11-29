@@ -23,6 +23,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
     local bottom = UI.Bottom :: Frame
 
 
+    --// reverb
     table.insert(scope, Events.Class_ReverberationSupport.On(function(num: number)
         if not bottom then return end
         if not bottom:FindFirstChild("ClassAbilityDiv_Bottom") then return end
@@ -48,8 +49,6 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         SoundService.SFXs.DiceRoll:Play()
     end))
-
-
     table.insert(scope, Events.Class_ReverberationEnemySupport.On(function(data)
         local enemy = data.Enemy
         if not ClientLib.IsCharValid(enemy) then return end
@@ -63,5 +62,33 @@ return function (UI: ScreenGui, self: Pinia.Self)
         pointUI.Parent = enemy.Head
 
         table.insert(scope, pointUI)
+    end))
+
+
+    --// furioso
+    table.insert(scope, Events.Class_FuriosoSupport.On(function(num: number)
+        if not bottom then return end
+        if not bottom:FindFirstChild("ClassAbilityDiv_Bottom") then return end
+        if not bottom.ClassAbilityDiv_Bottom:FindFirstChild("FuriosoStyle") then return end
+
+
+        local newScope = Fusion.scoped()
+
+        local pk = ReverberationPK(newScope, {
+            Num = num
+        })
+        pk.Parent = bottom.ClassAbilityDiv_Bottom.FuriosoStyle
+
+        Debris:AddItem(pk, 2.5)
+
+        Promise.delay(2.5):andThen(function()
+            Fusion.doCleanup(newScope)
+        end):catch(function() end)
+
+
+        HarukaLib:UITween(pk, "Out", { TweenTime = 0.5, DelayTime = 2 })
+
+
+        SoundService.SFXs.DiceRoll:Play()
     end))
 end

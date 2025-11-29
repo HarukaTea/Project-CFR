@@ -39,31 +39,12 @@ end
 
 
 
-Add(Players.PlayerRemoving:Connect(function(plr: Player)
-	if player == plr then
-		Empty()
-	end
-end))
-Add(script.Destroying:Connect(function()
-    Empty()
-end))
-Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-    if health <= 0 then
-        Empty()
-    end
-end))
-Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-    local newParent = char
-    if newParent then
-        if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-            Empty()
-            return
-        end
-    else
-        Empty()
-    end
-end))
-
+ClientLib:InitCharDeadTrackers({
+    Add = Add,
+    Empty = Empty,
+    Char = char,
+    Player = player
+})
 
 
 type EntityLibClass = {

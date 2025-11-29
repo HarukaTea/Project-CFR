@@ -54,8 +54,8 @@ end))
 
 
 function CharLib:Init()
-    for _, func: () -> nil in CharLib.Funcs do
-        func()
+    for _, func: () -> nil in self.Funcs do
+        task.spawn(func)
     end
 
 
@@ -64,8 +64,6 @@ function CharLib:Init()
             pcall(self.__Destroy, self)
             pcall(self.Destroy, self)
             pcall(self._TriggerRagdoll, self)
-
-            char.Humanoid.Health = -1
         end
     end))
     Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
@@ -165,7 +163,7 @@ function CharLib:__Destroy()
     deathBlur.Parent = workspace.CurrentCamera
 
     if workspace:GetAttribute("AllowFreecam") then
-        local Freecam = require(ReplicatedStorage.HarukaShared.Library.Freecam)
+        local Freecam = require(ReplicatedStorage.HarukaShared.Shared.Freecam)
 
         Freecam.Toggle(false)
     end
@@ -253,15 +251,6 @@ table.insert(CharLib.Funcs, function()
     self.CLASS_ANIMS = CLASS_ANIMS
     Add(self.CLASS_ANIMS)
 
-
-    self.RawAnimations = {}
-    for _, anim: Animation in ReplicatedStorage.Packages.Anims.CFMechanics:GetDescendants() do
-        self.RawAnimations[anim.Name] = animator:LoadAnimation(anim)
-        self.RawAnimations[anim.Name].Priority = Enum.AnimationPriority.Action3
-    end
-    Add(self.RawAnimations)
-
-
     self.OldAnim = nil :: AnimationTrack?
 
 
@@ -270,23 +259,8 @@ table.insert(CharLib.Funcs, function()
 
         self.ClassAttackAnims[anim]:Play()
     end
-    Add(Bindables.PlayAnimation_S:Connect(_playAnim))
-    Add(Events.PlayAnimation_S.On(_playAnim))
-
-
-    local function _playRawAnim(animId: string)
-        if not self.RawAnimations[animId] then warn(`Can't found raw animation: {animId} !`) return end
-
-        self.RawAnimations[animId]:Play()
-    end
-    local function _cancelRawAnim(animId: string)
-        if not self.RawAnimations[animId] then warn(`Can't found raw animation: {animId} !`) return end
-
-        self.RawAnimations[animId]:Stop()
-    end
-    Add(Bindables.PlayRawAnimation:Connect(_playRawAnim))
-    Add(Bindables.CancelRawAnimation:Connect(_cancelRawAnim))
-
+    Add(Bindables.PlayClassAnim:Connect(_playAnim))
+    Add(Events.PlayClassAnim_S.On(_playAnim))
 
 
 

@@ -113,8 +113,12 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     end
 
 
+    local baseDMG = ClassAttackLib._CalDMG("DMG", char)
+    local totalDMG = math.ceil(baseDMG * (1 + 0.1 * combo))
+
+
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = ClassAttackLib._CalDMG("DMG", char),
+        DMG = totalDMG,
         DMGType = "DMG",
         Attacker = "ClassAttacks"
     })
@@ -129,6 +133,8 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
 	local totalDMG = math.ceil(baseDMG * (0.5 + combo))
 
 
+    char:SetAttribute("ChainCombo", 0)
+
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
         DMG = totalDMG,
         DMGType = "DMG",
@@ -141,9 +147,6 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
     Debris:AddItem(comboEff, 1)
 
     ServerLib.ShowText(char, "SEAL!", ClassBook.Chain.Color)
-
-
-    char:SetAttribute("ChainCombo", 0)
 end
 ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -190,7 +193,6 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
 
-    local now = DateTime.now().UnixTimestamp
 	local arrowCount = char:GetAttribute("BurstArrow") or 0
 	local piercingCount = char:GetAttribute("BurstArrowPiercing") or 0
 
@@ -290,6 +292,62 @@ ClassAttackLib.HEAL_ATTACK_Burst = ClassAttackLib.HEAL_ATTACK
 
 
 
+ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+    ClassAttackLib._AddClassUltCharge(plr, 15)
+
+
+    local marked = char:GetAttribute("FlowMark") or 0
+    marked += 1
+    marked = math.clamp(marked, 0, 3)
+    char:SetAttribute("FlowMark", marked)
+
+
+    if marked < 3 then
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            Attacker = "ClassAttacks",
+            DMG = ClassAttackLib._CalDMG("Magic", char),
+            DMGType = "Magic"
+        })
+    else
+        char:SetAttribute("FlowMark", 0)
+
+        local dmg = ClassAttackLib._CalDMG("Magic", char)
+
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            Attacker = "ClassAttacks",
+            DMG = math.ceil(dmg * 4),
+            DMGType = "Magic"
+        })
+    end
+end
+ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
+    local char, targeting = _getCharAndTargeting(plr)
+    if not _charAndTargetingCheck(char, targeting) then return end
+
+
+    ClassAttackLib._FireClassUltCasted(char, {
+        ClassId = "Flow",
+        DMGType = "Magic",
+        Target = targeting
+    })
+
+
+    _castUltPromiseUtil(function()
+        ServerBindables.RToCastSpell:Fire(plr, char, "FireballSpell", {
+            IsClassUlt = true
+        })
+
+    end, function() end)
+end
+ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
+
+
+
+
+
 ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -361,57 +419,79 @@ ClassAttackLib.HEAL_ATTACK_Reverberation = ClassAttackLib.HEAL_ATTACK
 
 
 
-ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
+ClassAttackLib.Furioso = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
-
-    local marked = char:GetAttribute("FlowMark") or 0
-    marked += 1
-    marked = math.clamp(marked, 0, 3)
-    char:SetAttribute("FlowMark", marked)
-
-
-    if marked < 3 then
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            Attacker = "ClassAttacks",
-            DMG = ClassAttackLib._CalDMG("Magic", char),
-            DMGType = "Magic"
+    local diceRoll = HarukaLib:RollLoot({
+        ["1"] = 70,
+        ["2"] = 25,
+        ["3"] = 5,
+    })
+    if char:FindFirstChild("IsInFuriosoUltPeriod") then
+        diceRoll = HarukaLib:RollLoot({
+            ["2"] = 50,
+            ["3"] = 50
         })
-    else
-        char:SetAttribute("FlowMark", 0)
+    end
+    diceRoll = tonumber(diceRoll)
 
-        local dmg = ClassAttackLib._CalDMG("Magic", char)
 
+    local rollCounter = char:GetAttribute("FuriosoRollCounter") or 0
+    if diceRoll >= 2 then
+        rollCounter += 1
+        char:SetAttribute("FuriosoRollCounter", rollCounter)
+    end
+    if rollCounter >= 4 then
+        char:SetAttribute("FuriosoRollCounter", 0)
+
+        diceRoll = 3
+        ServerLib.ShowText(char, "FURIOUS!", ClassBook.Furioso.Color)
+    end
+
+
+
+    Events.Class_FuriosoSupport.Fire(plr, diceRoll)
+
+
+    for i = 1, diceRoll do
         ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            Attacker = "ClassAttacks",
-            DMG = math.ceil(dmg * 4),
-            DMGType = "Magic"
+            DMG = ClassAttackLib._CalDMG("DMG", char),
+            DMGType = "DMG",
+            Attacker = "ClassAttacks"
         })
     end
 end
-ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
+ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Flow",
-        DMGType = "Magic",
-        Target = targeting
-    })
-
-
     _castUltPromiseUtil(function()
-        ServerBindables.RToCastSpell:Fire(plr, char, "FireballSpell", {
-            IsClassUlt = true
-        })
+        Events.OpenCastTimeBar_S.Fire(plr, 1)
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
-    end, function() end)
+    end, function()
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.FaceTargetingEnemy_S.Fire(plr)
+
+
+        local ultPeriodSymbol = Instance.new("BoolValue")
+        ultPeriodSymbol.Name = "IsInFuriosoUltPeriod"
+        ultPeriodSymbol.Value = true
+        ultPeriodSymbol.Parent = char
+
+        Debris:AddItem(ultPeriodSymbol, 7)
+
+
+        StatusLib.CreateCustomEffect("FuriosoUlt", char, {
+            Duration = 7
+        })
+    end)
 end
-ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
+ClassAttackLib.HEAL_ATTACK_Furioso = ClassAttackLib.HEAL_ATTACK
 
 
 

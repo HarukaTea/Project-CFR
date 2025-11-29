@@ -1,4 +1,5 @@
 
+
 local RepS = game:GetService("ReplicatedStorage")
 
 
@@ -7,20 +8,19 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Parent.Parent.Pinia)
 
 
 return function(scope: Fusion.Scope, self: Pinia.Self)
     return Components.Frame(scope, {
-        Name = "ReverberationStyle",
+        Name = "FuriosoStyle",
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.fromScale(0.5, -1.7),
         Size = UDim2.fromScale(0.9, 1),
 
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(self.Class) == "Reverberation" and use(self.IsInCombat)
+            return use(self.Class) == "Furioso" and use(self.IsInCombat)
         end),
 
 

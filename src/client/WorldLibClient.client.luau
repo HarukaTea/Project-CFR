@@ -12,13 +12,14 @@ local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
 
 
+local Fusion = require(ReplicatedStorage.HarukaShared.Shared.Fusion)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local ComplexVFXLib = require(ReplicatedStorage.HarukaShared.Library.ComplexVFXLib)
-local Bezier = require(ReplicatedStorage.HarukaShared.Library.BezierAlgoBook)
+local BezierMath = require(ReplicatedStorage.HarukaShared.Shared.HarmonyLib.BezierMath)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
@@ -27,7 +28,14 @@ local wait = task.wait
 local plr = Players.LocalPlayer
 
 
-local ClientWorldLib = {}
+type ClientWorldLibClass = {
+    Funcs: { [string]: () -> nil },
+
+    Init: (self: ClientWorldLibClass) -> nil
+}
+
+
+local ClientWorldLib = {} :: ClientWorldLibClass
 ClientWorldLib.Funcs = {}
 
 
@@ -42,10 +50,15 @@ HarukaLib:Hydrate(workspace, {
 
 
 function ClientWorldLib:Init()
-    for _, func: () -> nil in ClientWorldLib.Funcs do
-        func()
+    for _, func: () -> nil in self.Funcs do
+        task.spawn(func)
     end
 end
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    require(ReplicatedStorage.HarukaShared.Shared.HarukaDebris)
+end)
 
 
 
@@ -627,7 +640,7 @@ table.insert(ClientWorldLib.Funcs, function()
             while true do
                 elapsed += RunService.RenderStepped:Wait() * 1.5
 
-                local curvePos = Bezier.CubicBezier(elapsed, start.Position, mid1, mid2, hit.Position)
+                local curvePos = BezierMath.CubicBezier(elapsed, start.Position, mid1, mid2, hit.Position)
 
                 if elapsed >= 1 then
                     _destroyItemSphere(itemSphere)
@@ -695,38 +708,31 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("SkyGalleon"):Connect(_handleGalleon)
 
 
-
-    task.spawn(function()
-        while wait(0.01) do
-            for _, wing: Model in windmillWings do
+    HarukaLib.Clock(0.01, function()
+        for _, wing: Model in windmillWings do
+            pcall(function()
+                wing.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
+            end)
+        end
+    end)
+    HarukaLib.Clock(1, function()
+        for _ = 1, 50 do
+            for _, galleon: Model in galleons do
                 pcall(function()
-                    wing.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
+                    galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
                 end)
             end
+            wait(0.01)
+        end
+        for _ = 1, 50 do
+            for _, galleon: Model in galleons do
+                pcall(function()
+                    galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
+                end)
+            end
+            wait(0.01)
         end
     end)
-    task.spawn(function()
-        while wait(0.01) do
-            for _ = 1, 50 do
-                for _, galleon: Model in galleons do
-                    pcall(function()
-                        galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
-                    end)
-                end
-                wait(0.01)
-            end
-            for _ = 1, 50 do
-                for _, galleon: Model in galleons do
-                    pcall(function()
-                        galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
-                    end)
-                end
-                wait(0.01)
-            end
-        end
-    end)
-
-
     HarukaLib.Clock(2, function()
         for _, wing: Model in windmillWings do
             pcall(function()
@@ -783,6 +789,138 @@ table.insert(ClientWorldLib.Funcs, function()
         HarukaLib:FreezePlayerControls("Unfreeze")
 
         GuiService.SelectedObject = nil
+    end)
+end)
+
+
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    --// party init
+    local Components = require(ReplicatedStorage.HarukaShared.UIAtlas.HarukaComponents)
+
+    local plr = Players.LocalPlayer
+    local mouse = plr:GetMouse()
+
+    local isInviting = false
+    local isHovered = false
+
+
+    local partyScope = Fusion.scoped()
+
+
+    local function _targetCheck(target: BasePart) : Model | nil
+        if isInviting then return end
+        if not target then return end
+        if not target.Parent then return end
+        if not target.Parent.Parent then return end
+        if target.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent end
+        if target.Parent.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent.Parent end
+        if target == plr.Character then return end
+
+
+
+        local thatPlr = Players:GetPlayerFromCharacter(target)
+        if not thatPlr then return end
+
+        local distance = thatPlr:DistanceFromCharacter(plr.Character.PrimaryPart.Position)
+        if distance > 33 or distance <= 0 then return end
+
+        return target
+    end
+
+    mouse.Button1Down:Connect(function()
+        local char = plr.Character
+        if not ClientLib.IsCharValid(char) then return end
+        if char:GetAttribute("IsInCombat") then return end
+
+        local target = mouse.Target
+
+        target = _targetCheck(target)
+        if not target then return end
+
+        local thatPlr = Players:GetPlayerFromCharacter(target)
+
+        local criRPGSettings = thatPlr:FindFirstChild("CriRPGSettings") :: Configuration
+        if not criRPGSettings then return end
+
+
+        if criRPGSettings:FindFirstChild("AllowPartyInvites") then
+            local boolean = criRPGSettings.AllowPartyInvites.Value
+            if boolean == false then
+                Bindables.CreateNotify:Fire("Player can not be invited due to their privacy settings!")
+                return
+            end
+        end
+        if thatPlr:GetAttribute("IsInParty") then
+            Bindables.CreateNotify:Fire("Player is already in a party!")
+            return
+        end
+        if target:GetAttribute("IsInCombat") then
+            Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
+            return
+        end
+        isInviting = true
+
+        local choice = Components:CreateConfirmPrompt(partyScope, {
+            Hint = `Send party invite to <yellow>{thatPlr.DisplayName}</font>?`,
+            ConfirmText = "YES",
+            CancelText = "NO",
+            ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
+        }):Wait()
+
+        isInviting = false
+
+        if choice ~= "YES" then return end
+
+        Events.PartyInvite_C.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
+    end)
+    mouse.Move:Connect(function()
+        local target = mouse.Target
+
+        target = _targetCheck(target)
+        if not target then
+            if isHovered then
+                local highlights = CollectionService:GetTagged("PartyHighlight")
+                for _, highlight: Highlight in highlights do highlight:Destroy() end
+
+                isHovered = false
+                return
+            end
+            return
+        end
+
+        isHovered = true
+        if target:FindFirstChild("PartyHighlight") then target.PartyHighlight:Destroy() end
+
+        local partyHighlight = ReplicatedStorage.Packages.Effects.PartyHighlight:Clone() :: Highlight
+        partyHighlight.Adornee = target
+        partyHighlight:AddTag("PartyHighlight")
+        partyHighlight.Parent = target
+    end)
+
+    --- handling party invite
+    Events.PartyInviteResult_S.On(function(data)
+        local option, inviter = data.Option, data.PlayerName
+        local char = plr.Character
+
+        if option == "Invite" then
+            if not ClientLib.IsCharValid(char) then return end
+            if plr.PlayerGui:FindFirstChild("ConfirmPrompt") then return end
+
+
+            local choice = Components:CreateConfirmPrompt(partyScope, {
+                Hint = `Accept party invite from <yellow>{Players[inviter].DisplayName}</font>?`,
+                ConfirmText = "YES",
+                CancelText = "NO",
+                ConfirmUniqueId = "ConfirmInviteAccept"..HarukaLib:GenerateUUID(),
+            }):Wait()
+            if choice == "YES" then
+                Events.PartyInvite_C.Fire({ Option = "InviteAccept", PlayerName = inviter })
+            elseif choice == "NO" then
+                Events.PartyInvite_C.Fire({ Option = "InviteDecline", PlayerName = inviter })
+            end
+        end
     end)
 end)
 

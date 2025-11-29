@@ -1,4 +1,7 @@
 
+repeat task.wait() until workspace:GetAttribute("Haruka_ServerValidated")
+
+
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -18,20 +21,6 @@ type Dict = { [string]: {any} }
 local nowClock = os.clock()
 
 
-do
-    if RunService:IsClient() then
-        warn("Invalid runtime environment")
-
-        workspace:SetAttribute("Haruka_ServerLocked", true)
-
-
-        for _, plr: Player in Players:GetPlayers() do
-            plr:Kick("This server is shutting down, please do server hopping or wait for a while.")
-        end
-        return
-    end
-end
-
 --// Init server settings
 do
 	Players.CharacterAutoLoads = false
@@ -47,10 +36,10 @@ end
 --// Init server modules
 do
     require(SSS.HarukaServer.Services.ServerWorldLib):Init()
-    require(SSS.HarukaServer.Shared.GlobalTimer)
     require(SSS.HarukaServer.Services.GlobalCriRPGLib):Init()
     require(SSS.HarukaServer.Services.GlobalQuestFuncLib):Init()
 
+    require(SSS.HarukaServer.Shared.GlobalTimer)
     require(RepS.HarukaShared.Shared.HarukaDebris)
 end
 
@@ -58,14 +47,10 @@ end
 --// Init game debug
 do
     local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMD)
-    local CommandBook = require(SSS.HarukaServer.Library.CommandBook)
 
     local harukaCMDObj = HarukaCMD.new()
     harukaCMDObj:Init()
-
-    for _, command in CommandBook do
-        harukaCMDObj:AddCommand(command)
-    end
+    harukaCMDObj:AddCommandBook(require(SSS.HarukaServer.Library.CommandBook))
 end
 
 
@@ -123,50 +108,4 @@ do
 
         CADimension:RemoveFromDimension()
     end)
-end
-
-
-
-
---// add to live servers
-do
-    local worldIdWhiteList = { "InitusWorld" }
-    local worldId = workspace:GetAttribute("WorldId") or "Unknown"
-
-    if not table.find(worldIdWhiteList, worldId) then return end
-
-    CADimension:Init()
-    CADimension:AddToDimension()
-
-    local serverSymbolContainer = workspace.MapComponents.GlobalServers :: Folder
-
-    HarukaLib.Clock(15, function()
-        local currentWorldServers = CADimension:GetWorlds()
-
-        serverSymbolContainer:ClearAllChildren()
-
-        for _, server: CADimension.ServerInfo in currentWorldServers do
-            if not server.JobId then continue end
-            if #server.PlayerUserIds <= 0 then continue end
-
-
-            local symbol = Instance.new("IntValue")
-            symbol.Name = server.JobId
-            symbol.Value = #server.PlayerUserIds
-
-            for _, userId in server.PlayerUserIds do
-                local idSymbol = Instance.new("BoolValue")
-                idSymbol.Name = userId
-                idSymbol.Value = true
-                idSymbol.Parent = symbol
-            end
-
-            symbol:SetAttribute("CityLocation", server.CityLocation)
-            symbol:SetAttribute("ServerLocation", server.ServerLocation)
-            symbol:SetAttribute("WorldId", server.WorldId)
-
-            symbol.Parent = serverSymbolContainer
-        end
-
-    end, true)
 end

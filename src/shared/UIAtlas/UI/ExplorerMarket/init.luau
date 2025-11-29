@@ -8,8 +8,8 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 
-local ProductBar = require(script.Components.ProductBar)
-local PurchasePrompt = require(script.Components.PurchasePrompt)
+local MKProductBar = require(RepS.HarukaShared.UIAtlas.Components.MKProductBar)
+local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
 local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
 local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarEcoSlot)
 local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
@@ -83,12 +83,14 @@ return function (plr: Player)
                                 ProductId: string,
                                 ProductUniqueId: string,
                             })
-                                return ProductBar(scope, {
+                                return MKProductBar(scope, {
                                     ProductId = itemInfo.ProductId,
                                     UniqueId = itemInfo.ProductUniqueId,
 
                                     CurrentSelectedItem = self.CurrentSelectedItem,
                                     CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+
+                                    CurrencyId = "Gold"
                                 })
                             end)
                         }
@@ -137,7 +139,7 @@ return function (plr: Player)
                                 local category = use(self.CurrentItemCategory) :: string
 
                                 if category == "Misc" then
-                                    category = { "Recipe", "Quest", "Cosmetic" }
+                                    category = { "Recipe", "Quest", "CosmeticArmor", "CosmeticWeapon" }
                                 elseif category == "Active" then
                                     category = { "Consumable", "Active" }
                                 elseif category == "Accessory" then
@@ -567,7 +569,7 @@ return function (plr: Player)
                 Fusion.Computed(scope, function(use: Fusion.Use, _)
                     if not use(self.IsPurchasing) then return nil end
 
-                    return PurchasePrompt(scope, {
+                    return MKPurchasePrompt(scope, {
                         ProductId = use(self.CurrentSelectedItem),
                         UniqueId = use(self.CurrentSelectedItemUniqueId),
 
@@ -576,6 +578,8 @@ return function (plr: Player)
 
                         CurrentSelectedItem = self.CurrentSelectedItem,
                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+
+                        CurrencyId = "Gold",
                     })
                 end)
             }

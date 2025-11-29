@@ -32,15 +32,25 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local player = Players.LocalPlayer
 
 
-local PreloadPlayerLib = {}
+type PreloadPlayerLibClass = {
+    Funcs: { [string]: () -> nil },
+
+    Init: (self: PreloadPlayerLibClass) -> nil
+}
+
+
+local PreloadPlayerLib = {} :: PreloadPlayerLibClass
+PreloadPlayerLib.Funcs = {}
 
 
 function PreloadPlayerLib:Init()
-    self:_InitUI()
+    for _, func in self.Funcs do
+        task.spawn(func)
+    end
 end
 
 
-function PreloadPlayerLib:_InitUI()
+table.insert(PreloadPlayerLib.Funcs, function()
     for _, module in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
         if string.find(module.Name, ".spec") then continue end
         if not string.find(module.Name, "_preload") then continue end
@@ -49,7 +59,6 @@ function PreloadPlayerLib:_InitUI()
             warn(tostring(err))
         end)
     end
-end
-
+end)
 
 PreloadPlayerLib:Init()

@@ -5,7 +5,7 @@ local SSS = game:GetService("ServerScriptService")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
-
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -38,38 +38,19 @@ local ClassMechanicLib = {} :: ClassMechanicLibClass
 
 
 
-
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		ClassMechanicLib:Destroy()
-	end
-end))
-Add(script.Destroying:Connect(function()
-    ClassMechanicLib:Destroy()
-end))
-
-
-
 function ClassMechanicLib:Init()
     ClassMechanicLib:_ListenClassTracker()
 
 
-    Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-		if health <= 0 then
-			self:Destroy()
-		end
-	end))
-	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-		local newParent = char
-        if newParent then
-            if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-                self:Destroy()
-                return
-            end
-        else
+    ClientLib:InitCharDeadTrackers({
+        Add = Add,
+        Empty = function()
             self:Destroy()
-        end
-	end))
+        end,
+
+        Char = char,
+        Player = plr,
+    })
 end
 
 function ClassMechanicLib:Destroy()

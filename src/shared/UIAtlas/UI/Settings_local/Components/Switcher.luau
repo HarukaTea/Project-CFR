@@ -123,7 +123,7 @@ return function(scope: Fusion.Scope, props: {
 				end), AssetBook.TweenInfos.twiceHalf),
 
 				BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-					return if use(props.BooleanValue) then Components.HarukaColorLab.AzurPromilia.Background else Components.HarukaColorLab.AzurPromilia.Background:Lerp(Color3.fromRGB(), 0.5)
+					return if use(props.BooleanValue) then Components.WHITE_COLOR else Components.WHITE_COLOR:Lerp(Color3.fromRGB(), 0.5)
 				end),
 
 

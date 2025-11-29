@@ -3,15 +3,15 @@ local RunService = game:GetService("RunService")
 local RepS = game:GetService("ReplicatedStorage")
 
 
-local BezierAlgoBook = require(RepS.HarukaShared.Library.BezierAlgoBook)
+local BezierMath = require(RepS.HarukaShared.Shared.HarmonyLib.BezierMath)
 
 
 
-export type TrailAlgoLibClass = {
-	__index: TrailAlgoLibClass,
+export type TrailMathLibClass = {
+	__index: TrailMathLibClass,
 
-	new: () -> TrailAlgoLibClass,
-	Init: (self: TrailAlgoLibClass, part: BasePart, props: {
+	new: () -> TrailMathLibClass,
+	Init: (self: TrailMathLibClass, part: BasePart, props: {
 		Origin: Vector3?,
 		Duration: number?,
 		radius: number?,
@@ -24,8 +24,8 @@ export type TrailAlgoLibClass = {
 		Transparency: number?,
 		Lifetime: number?
 	}) -> nil,
-	Disconnect: (self: TrailAlgoLibClass) -> nil,
-	Destroy: (self: TrailAlgoLibClass) -> nil,
+	Disconnect: (self: TrailMathLibClass) -> nil,
+	Destroy: (self: TrailMathLibClass) -> nil,
 
 
 	Active: boolean
@@ -33,14 +33,14 @@ export type TrailAlgoLibClass = {
 
 
 
-local TrailAlgoBook = {} :: TrailAlgoLibClass
-TrailAlgoBook.__index = TrailAlgoBook
+local TrailMath = {} :: TrailMathLibClass
+TrailMath.__index = TrailMath
 
 
 
 --// Constructor
-function TrailAlgoBook.new()
-    local self = setmetatable({}, TrailAlgoBook)
+function TrailMath.new()
+    local self = setmetatable({}, TrailMath)
 
     self.Active = false
 
@@ -49,7 +49,7 @@ end
 
 
 
-function TrailAlgoBook:Init(part: BasePart, props: {
+function TrailMath:Init(part: BasePart, props: {
     Origin: Vector3?,
     Duration: number?,
     radius: number?,
@@ -112,7 +112,7 @@ function TrailAlgoBook:Init(part: BasePart, props: {
 		local conn; conn = RunService.RenderStepped:Connect(function()
 			local alpha = (os.clock() - startTime) / duration
 
-			local cubicCurve = BezierAlgoBook.CubicBezier(alpha, startPos.Position, midPoint, midPoint2, endPos.Position)
+			local cubicCurve = BezierMath.CubicBezier(alpha, startPos.Position, midPoint, midPoint2, endPos.Position)
 
 			if (alpha >= 1) then
 				projectile.Position = endPos.Position
@@ -134,15 +134,15 @@ function TrailAlgoBook:Init(part: BasePart, props: {
 	self.Active = false
 end
 
-function TrailAlgoBook:Disconnect()
+function TrailMath:Disconnect()
 	self.Active = false
 end
 
 
-function TrailAlgoBook:Destroy()
+function TrailMath:Destroy()
     self:Disconnect()
     self = nil
 end
 
 
-return TrailAlgoBook
+return TrailMath

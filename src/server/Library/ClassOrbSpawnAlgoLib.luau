@@ -32,7 +32,7 @@ end
 
 
 ClassOrbSpawnAlgoLib.Furioso = function(spawnCallback: (orbName: string) -> nil)
-
+    spawnCallback("FuriosoOrb")
 end
 
 

@@ -8,10 +8,9 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-local HarukaColorLab = require(RepS.HarukaShared.UIAtlas.HarukaColorLab)
+local CriRPGColorLab = require(RepS.HarukaShared.UIAtlas.CriRPGColorLab)
 
 local HarukaComponents = {}
-HarukaComponents.HarukaColorLab = HarukaColorLab
 HarukaComponents.FusionComponents = FusionComponents
 
 
@@ -19,16 +18,17 @@ local DESIGN_VP_SIZE = Vector2.new(1168, 478.4)
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
 
 
-local WHITE_BG_COLOR = HarukaColorLab.WHITE_COLOR
-local BLACK_BG_COLOR = HarukaColorLab.BLACK_COLOR
+local WHITE_BG_COLOR = CriRPGColorLab.WHITE_COLOR
+local BLACK_BG_COLOR = CriRPGColorLab.BLACK_COLOR
 
 
 --// legacy references
-HarukaComponents.BLACK_COLOR = HarukaColorLab.BLACK_COLOR
-HarukaComponents.WHITE_COLOR = HarukaColorLab.WHITE_COLOR
-HarukaComponents.RED_COLOR = HarukaColorLab.RED_COLOR
-HarukaComponents.GREEN_COLOR = HarukaColorLab.GREEN_COLOR
-HarukaComponents.BLUE_COLOR = HarukaColorLab.BLUE_COLOR
+HarukaComponents.BLACK_COLOR = CriRPGColorLab.BLACK_COLOR
+HarukaComponents.WHITE_COLOR = CriRPGColorLab.WHITE_COLOR
+HarukaComponents.RED_COLOR = CriRPGColorLab.RED_COLOR
+HarukaComponents.GREEN_COLOR = CriRPGColorLab.GREEN_COLOR
+HarukaComponents.GREY_COLOR = CriRPGColorLab.GREY_COLOR
+HarukaComponents.BLUE_COLOR = CriRPGColorLab.BLUE_COLOR
 
 
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }

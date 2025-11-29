@@ -2,8 +2,10 @@
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
@@ -19,28 +21,18 @@ repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		Empty()
-	end
-end))
-Add(script.Destroying:Connect(Empty))
-Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-    if health <= 0 then
-        Empty()
-    end
-end))
-Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-    local newParent = char
-    if newParent then
-        if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-            Empty()
-            return
-        end
-    else
-        Empty()
-    end
-end))
+ClientLib:InitCharDeadTrackers({
+    Add = Add,
+    Empty = Empty,
+    Char = char,
+    Player = plr
+})
+
+
+local animator = char.Humanoid.Animator :: Animator
+local slideAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.Slide)
+
+Add(slideAnim)
 
 
 local canSlide = true
@@ -51,7 +43,7 @@ local function _cancelSlide()
 
     canSlide = true
 
-    Bindables.CancelRawAnimation:Fire("Slide")
+    slideAnim:Stop()
 end
 local function _slide()
     while RS.Heartbeat:Wait() do
@@ -62,8 +54,7 @@ local function _slide()
     end
 
     humanoid.HipHeight = -1.5
-    Bindables.PlayRawAnimation:Fire("Slide")
-
+    slideAnim:Play()
 
 
     local currentVel = char.PrimaryPart.AssemblyLinearVelocity

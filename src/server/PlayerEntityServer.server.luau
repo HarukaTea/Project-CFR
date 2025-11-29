@@ -1,4 +1,6 @@
 
+repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+
 local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
 local AnalyticsService = game:GetService("AnalyticsService")
@@ -20,22 +22,19 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
-local HarukaQuest = require(ServerScriptService.HarukaServer.Services.HarukaQuest)
+local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
 
 
-export type PlayerLibClass = {
+type PlayerLibClass = {
     __index: PlayerLibClass,
 
     new: (player: Player) -> PlayerLibClass,
 
     Destroy: (self: PlayerLibClass) -> nil,
     Init: (self: PlayerLibClass) -> nil,
-
-    GetPlayerObjByUniqueId: (uniqueId: string) -> PlayerLibClass,
-    _GetCurrentDonation: (profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) -> nil,
 
     _Remove: (self: PlayerLibClass) -> nil,
     _SaveData: (self: PlayerLibClass) -> nil,
@@ -220,16 +219,16 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         end
 
 
-        HarukaQuest.InitPlayer(plr)
+        QuestLib.InitPlayer(plr)
 
 
         local isAbyss = workspace:GetAttribute("AbyssId")
         local isDungeon = workspace:GetAttribute("DungeonId")
 
         if not isAbyss and not isDungeon then
-            HarukaQuest.LoadSavedTable(plr, validatedData.QuestsV3)
+            QuestLib.LoadSavedTable(plr, validatedData.QuestsV3)
             self.Add(function()
-                HarukaQuest.StopTrackingPlayer(plr)
+                QuestLib.StopTrackingPlayer(plr)
             end)
         end
 
@@ -566,6 +565,7 @@ function PlayerLib:Init()
 
     --// Load in datastore
     profileObj:Init()
+    self.Add(profileObj)
 
 
     local profileContainer = Instance.new("Folder")
@@ -602,13 +602,6 @@ function PlayerLib:Init()
 
     plr:SetAttribute("_PlayerProfileInited", true)
 end
-
-
-
-function PlayerLib.GetPlayerObjByUniqueId(uniqueId: string)
-    return allPlayerObjPool[uniqueId]
-end
-
 
 
 
@@ -709,7 +702,7 @@ function PlayerLib:_SaveData()
 
         if not isAbyss and not isDungeon then
             --- im not 100% sure if this will work correctly, better pcall it
-            local questData = HarukaQuest.ExportDataTable(self.Player)
+            local questData = QuestLib.ExportDataTable(self.Player)
             if questData then
                 profileAttrs.QuestsV3 = questData
             end
@@ -765,4 +758,30 @@ end
 
 
 
-return PlayerLib
+local function initPlayer(player: Player)
+    if #Players:GetPlayers() > Players.MaxPlayers then
+        player:Kick("Server is full")
+        return
+    end
+    if workspace:GetAttribute("Haruka_ServerLocked") then
+        player:Kick("This server is shutting down, please do server hopping or wait for a while.")
+        return
+    end
+    if player.AccountAge < 2 and not RunService:IsStudio() then
+        player:Kick("You must be at least 2 days old in Roblox Platform to play!")
+        return
+    end
+
+    local playerObj = PlayerLib.new(player)
+    if playerObj then
+        playerObj:Init()
+    end
+end
+for _, player: Player in Players:GetPlayers() do
+    Promise.try(initPlayer, player)
+end
+Players.PlayerAdded:Connect(initPlayer)
+
+
+
+workspace:SetAttribute("Haruka_ServerPlayerLibInited", true)

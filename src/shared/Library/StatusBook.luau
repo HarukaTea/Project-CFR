@@ -45,6 +45,10 @@ return {
         Icon = "rbxassetid://120613067089872",
         Color = Color3.fromHex('#34ace0'),
     },
+    FuriosoUltBoost = {
+        Icon = "rbxassetid://128714575176870",
+        Color = Color3.fromHex('#ffffff'),
+    },
     BurstUltBoost = {
         Icon = "rbxassetid://76032666495313",
 		Color = Color3.fromHex('#7bed9f'),

@@ -11,15 +11,25 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local player = Players.LocalPlayer
 
 
-local PlayerLib = {}
+type PlayerLibClass = {
+    Funcs: { [string]: () -> nil },
+
+    Init: (self: PlayerLibClass) -> nil
+}
+
+
+local PlayerLib = {} :: PlayerLibClass
+PlayerLib.Funcs = {}
 
 
 function PlayerLib:Init()
-    self:_InitUI()
+    for _, func in self.Funcs do
+        task.spawn(func)
+    end
 end
 
 
-function PlayerLib:_InitUI()
+table.insert(PlayerLib.Funcs, function()
     for _, module in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
         if string.find(module.Name, ".spec") then continue end
         if not string.find(module.Name, "_local") then continue end
@@ -28,7 +38,7 @@ function PlayerLib:_InitUI()
             warn(tostring(err))
         end)
     end
-end
+end)
 
 
 PlayerLib:Init()

@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
+local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
@@ -47,46 +48,28 @@ local CriRPGLib = {} :: CriRPGLibClass
 CriRPGLib.Funcs = {}
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		CriRPGLib:Destroy()
-	end
-end))
-Add(script.Destroying:Connect(function()
-    CriRPGLib:Destroy()
-end))
-
-
-
 function CriRPGLib:Init()
-    Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-		if health <= 0 then
-			self:Destroy()
-		end
-	end))
-	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-		local newParent = char
-        if newParent then
-            if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-                self:Destroy()
-                return
-            end
-        else
-            self:Destroy()
-        end
-	end))
-
     self:_SpawnToLastLocation()
     self:_InitAttrs()
 
-    for _, func: () -> nil in CriRPGLib.Funcs do
-        func()
+    for _, func: () -> nil in self.Funcs do
+        task.spawn(func)
     end
 
     self:_AutoEquipItems()
 
     char:SetAttribute("Haruka_CriRPGServerInited", true)
     char:AddTag("PlayerCharEntity")
+
+
+    ClientLib:InitCharDeadTrackers({
+        Char = char,
+        Player = plr,
+        Add = Add,
+        Empty = function()
+            self:Destroy()
+        end
+    })
 end
 
 

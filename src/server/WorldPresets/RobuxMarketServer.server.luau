@@ -1,4 +1,7 @@
 
+repeat task.wait() until workspace:GetAttribute("Haruka_ServerPlayerLibInited")
+
+
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,13 +12,8 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
-local PlayerLib = require(ServerScriptService.HarukaServer.Services.PlayerLib)
-
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
-
-
-local RobuxMarketLib = {}
 
 
 local wait = task.wait
@@ -51,9 +49,9 @@ local function processReceipt(receiptInfo: {[string]: any})
         wait()
 
         if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
-            local playerObj = PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
-            if playerObj then
-                local profile = playerObj.ProfileObj.Profile
+            local profileObj = PlayerProfileLib:GetObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
+            if profileObj then
+                local profile = profileObj.Profile
                 if profile then
                     local handler = productFunctions[tostring(productId)]
                     local success, result = pcall(handler, receiptInfo, player, profile)
@@ -83,10 +81,10 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     if not player then return end
     if player.Parent ~= Players then return end
 
-    local playerObj = PlayerLib.GetPlayerObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
-    if not playerObj then return end
+    local profileObj = PlayerProfileLib:GetObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
+    if not profileObj then return end
 
-    local profile = playerObj.ProfileObj.Profile
+    local profile = profileObj.Profile
     if not profile then return end
 
 
@@ -118,6 +116,3 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
     profile:SaveProfileAsync()
     PlayerProfileLib.CalDonationAndSave(profile, player)
 end)
-
-
-return RobuxMarketLib

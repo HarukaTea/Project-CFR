@@ -12,8 +12,7 @@ local FusionComponents = {}
 local wait = task.wait
 
 
-export type ValObjects = IntValue | StringValue | BoolValue | ObjectValue | CFrameValue |
-RayValue | Vector3Value | Color3Value | NumberValue | BrickColorValue | IntConstrainedValue
+export type ValObjects = ValueBase
 
 
 FusionComponents.useTagged = function(scope: Fusion.Scope, tag: string) : Fusion.Value<{ Instance }>

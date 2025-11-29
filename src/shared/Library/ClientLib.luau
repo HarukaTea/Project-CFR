@@ -319,4 +319,42 @@ function ClientLib.LoadLightingPreset(presetId: string)
 end
 
 
+
+function ClientLib:InitCharDeadTrackers(props: {
+	Add: (item: any) -> any,
+	Empty: () -> nil,
+
+	Char: Model,
+	Player: Player,
+})
+	local Add, Empty = props.Add, props.Empty
+	local char = props.Char
+	local plr = props.Player
+
+
+	Add(Players.PlayerRemoving:Connect(function(player: Player)
+		if player == plr then
+			Empty()
+		end
+	end))
+	Add(script.Destroying:Connect(Empty))
+	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
+		if health <= 0 then
+			Empty()
+		end
+	end))
+	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
+		local newParent = char
+		if newParent then
+			if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+				Empty()
+				return
+			end
+		else
+			Empty()
+		end
+	end))
+end
+
+
 return ClientLib

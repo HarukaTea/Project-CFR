@@ -21,7 +21,7 @@ return function (scope: Fusion.Scope, props: {
     ItemUniqueId: string,
     EquippingItems: Fusion.Value<{ StringValue }>,
 
-    Items: { any }?,
+    Items: { IntConstrainedValue }?,
     IsMarket: boolean?,
     IsCrafting: boolean?,
 })

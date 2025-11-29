@@ -112,7 +112,7 @@ return function (scope: Fusion.Scope, props: {
                     PlaceholderText = "Item Name Here",
                     TextXAlignment = Enum.TextXAlignment.Left,
                     BackgroundTransparency = 0,
-                    BackgroundColor3 = Components.HarukaColorLab.Muelsyse.BackgroundLighter,
+                    BackgroundColor3 = Components.GREY_COLOR,
 
                     Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(props.FilterItemText)
@@ -170,10 +170,10 @@ return function (scope: Fusion.Scope, props: {
 
 
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.HarukaColorLab.Muelsyse.BackgroundLighter
+                                    return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.GREY_COLOR
                                 end),
                                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.FilterTierList[index]) then Components.HarukaColorLab.Muelsyse.BackgroundLighter else Components.WHITE_COLOR
+                                    return if use(props.FilterTierList[index]) then Components.GREY_COLOR else Components.WHITE_COLOR
                                 end),
 
 
@@ -274,10 +274,10 @@ return function (scope: Fusion.Scope, props: {
                                 Size = UDim2.fromScale(0.95, 0.32),
 
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.SortMethodList[index]) then Components.WHITE_COLOR else Components.HarukaColorLab.Muelsyse.BackgroundLighter
+                                    return if use(props.SortMethodList[index]) then Components.WHITE_COLOR else Components.GREY_COLOR
                                 end),
                                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return if use(props.SortMethodList[index]) then Components.HarukaColorLab.Muelsyse.BackgroundLighter else Components.WHITE_COLOR
+                                    return if use(props.SortMethodList[index]) then Components.GREY_COLOR else Components.WHITE_COLOR
                                 end),
 
 

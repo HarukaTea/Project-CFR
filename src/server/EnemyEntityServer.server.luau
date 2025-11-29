@@ -1,4 +1,6 @@
 
+repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
@@ -28,7 +30,7 @@ local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTe
 
 
 
-export type EntityLibClass = {
+type EntityLibClass = {
     __index: EntityLibClass,
 
     new: (locator: BasePart) -> EntityLibClass,
@@ -1369,4 +1371,20 @@ end
 
 
 
-return EntityLib
+local function initLocator(locator: BasePart)
+    if not locator:IsA("BasePart") then return end
+    if locator.Parent:IsA("BasePart") then return end
+
+
+    locator.Transparency = 1
+
+
+    local entityObj = EntityLib.new(locator)
+    if entityObj then
+        entityObj:Init()
+    end
+end
+for _, locator: BasePart in CollectionService:GetTagged("EnemyLocatorEntity") do
+    Promise.try(initLocator, locator)
+end
+CollectionService:GetInstanceAddedSignal("EnemyLocatorEntity"):Connect(initLocator)

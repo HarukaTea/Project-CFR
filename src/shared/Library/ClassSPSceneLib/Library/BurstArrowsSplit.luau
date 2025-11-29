@@ -6,7 +6,7 @@ local RunService = game:GetService("RunService")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Bezier = require(RepS.HarukaShared.Library.BezierAlgoBook)
+local BezierMath = require(RepS.HarukaShared.Shared.HarmonyLib.BezierMath)
 
 
 local Types = require(script.Parent.Parent.Types)
@@ -65,7 +65,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             while true do
                 elapsed += RunService.RenderStepped:Wait() * 1.5
 
-                local curvePos = Bezier.CubicBezier(elapsed, start.Position, mid1, mid2, endCF.Position)
+                local curvePos = BezierMath.CubicBezier(elapsed, start.Position, mid1, mid2, endCF.Position)
 
                 if elapsed >= 1 then
                     arrow:Destroy()

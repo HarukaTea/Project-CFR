@@ -6,7 +6,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-local color3New, v2New, udNew = Color3.new, Vector2.new, UDim.new
+local v2New = Vector2.new
 local fromScale = UDim2.fromScale
 local nsNew, nsKPNew = NumberSequence.new, NumberSequenceKeypoint.new
 local clamp = math.clamp

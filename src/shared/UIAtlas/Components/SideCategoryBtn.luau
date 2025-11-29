@@ -25,7 +25,7 @@ return function (scope: Fusion.Scope, props: {
         LayoutOrder = props.LayoutOrder,
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-            return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.HarukaColorLab.AzurPromilia.Background else Components.BLACK_COLOR
+            return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.WHITE_COLOR else Components.BLACK_COLOR
         end),
 
         [Children] = {
@@ -36,7 +36,7 @@ return function (scope: Fusion.Scope, props: {
                 TextXAlignment = Enum.TextXAlignment.Left,
 
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-                    return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.BLACK_COLOR else Components.HarukaColorLab.AzurPromilia.Background
+                    return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.BLACK_COLOR else Components.WHITE_COLOR
                 end),
 
                 [Children] = {

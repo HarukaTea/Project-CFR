@@ -48,7 +48,7 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
             IsClassUlt = false
         })
         Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
-        Events.PlayAnimation_S.Fire(player, "MagicCasted1")
+        Events.PlayClassAnim_S.Fire(player, "MagicCasted1")
         Events.FaceTargetingEnemy_S.Fire(player)
 
 

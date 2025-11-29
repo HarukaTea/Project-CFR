@@ -7,6 +7,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 
 local ReverberationFrame = require(script.Components.ReverberationFrame)
+local FuriosoFrame = require(script.Components.FuriosoFrame)
 
 local Children = Fusion.Children
 
@@ -40,24 +41,6 @@ return function(plr: Player)
             return use(self.IsUIShown) and use(self.IsUIShown2)
         end),
 
-        [Children] = {
-            Fusion.New(scope, "Folder")({
-                Name = "ClassMarkers_Support",
-
-                [Children] = {
-                    Fusion.ForPairs(scope, self.TargetingList, function(use: Fusion.Use, scope: Fusion.Scope, index: number, symbol: ObjectValue)
-                        if not ClientLib.IsCharValid(symbol.Value) then
-                            return index, nil
-                        end
-                        local class = use(self.Class)
-
-
-                        return index, nil
-                    end)
-                }
-            }),
-        }
-
 	}, {
         CenterProps = {
             [Children] = {
@@ -87,7 +70,8 @@ return function(plr: Player)
                             Scale = 1
                         }),
 
-                        ReverberationFrame(scope, self)
+                        ReverberationFrame(scope, self),
+                        FuriosoFrame(scope, self)
                     }
                 })
 

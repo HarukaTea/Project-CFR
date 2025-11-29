@@ -26,6 +26,10 @@ export type PlayerDataJSON = {
     EXP: number,
     Gold: number,
     Astra: number,
+
+    -- event fields
+    HalloweenCandy: number,
+
     PerkPoints: number,
     STRPoints: number,
     INTPoints: number,
@@ -93,6 +97,8 @@ local playerStats = {
 
             Gold = 0,
             Astra = 0,
+
+            HalloweenCandy = 0,
 
             PerkPoints = 2,
             STRPoints = 0,

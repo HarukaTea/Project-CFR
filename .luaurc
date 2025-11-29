@@ -4,7 +4,7 @@
     "lintErrors": false,
     "lint": {
         "LocalShadow": false,
-        "LocalUnused": false,
+        "LocalUnused": true,
         "SameLineStatement": false,
         "ImplicitReturn": false,
         "ComparisonPrecedence": false,

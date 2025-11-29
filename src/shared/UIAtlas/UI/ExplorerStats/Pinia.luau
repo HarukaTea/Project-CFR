@@ -1,5 +1,4 @@
 
-local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -189,6 +188,11 @@ return function (self: Self)
 
 
     self.MenuSelectionShown = Value(false)
+
+
+    self.Gold = Value(0)
+    self.HalloweenCandy = Value(0)
+
 
     --// track server
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -501,7 +505,7 @@ return function (self: Self)
             end
         end
 
-        Bindables.PlayAnimation_S:Fire("Dash")
+        Bindables.PlayClassAnim:Fire("Dash")
     end)
 
 
@@ -693,6 +697,19 @@ return function (self: Self)
             val = val or 0
 
             self.AbyssTime:set(val)
+        end
+    }))
+
+
+    --// track currency
+    table.insert(scope, HarukaLib:Hydrate(plr, {
+        ["Attr-Gold"] = function(val: number)
+            val = val or 0
+            self.Gold:set(val)
+        end,
+        ["Attr-HalloweenCandy"] = function(val: number)
+            val = val or 0
+            self.HalloweenCandy:set(val)
         end
     }))
 end

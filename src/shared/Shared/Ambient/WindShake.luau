@@ -6,7 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local VectorMap = require(ReplicatedStorage.HarukaShared.Shared.RbxUtility.VectorMap)
+local VectorMap = require(ReplicatedStorage.HarukaShared.Shared.HarmonyLib.VectorMap)
 
 
 local FALLBACK_SETTINGS = {

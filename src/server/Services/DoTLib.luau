@@ -7,7 +7,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 
 
-type DoTInfo = {
+export type DoTInfo = {
     Target: Model,
     Type: string,
     Creator: Model,

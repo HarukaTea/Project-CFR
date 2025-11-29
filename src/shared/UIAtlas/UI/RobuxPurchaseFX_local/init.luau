@@ -10,15 +10,12 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local RobuxPurchaseFX = require(script.Components.RobuxPurchaseFX)
 
-local wait = task.wait
 
 return function (plr: Player)
 	local self = {}
 
 	self.plr = plr
 	self.scope = Fusion.scoped()
-
-	local scope = self.scope :: Fusion.Scope
 
 	--// receive requests
 	local function _onPurchaseRequest()

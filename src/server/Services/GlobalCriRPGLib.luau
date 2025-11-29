@@ -26,8 +26,8 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
-local HarukaParty = require(SSS.HarukaServer.Services.HarukaParty)
-local HarukaQuest = require(SSS.HarukaServer.Services.HarukaQuest)
+local PartyLib = require(SSS.HarukaServer.Services.PartyLib)
+local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 
 
 type Dict = { [string]: any }
@@ -52,7 +52,7 @@ local wait = task.wait
 
 function GlobalCriRPGLib:Init()
     for _, func: () -> nil in GlobalCriRPGLib.Funcs do
-        func()
+        task.spawn(func)
     end
 end
 
@@ -572,7 +572,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local thatOrbStyle = symbol:GetAttribute("OrbStyle") :: string
         local thatOrbSubStyle = symbol:GetAttribute("OrbSubStyle") :: string
 
-        local orbPos = symbol.Value :: CFrame
         local check = true
         local whiteList = { "HEAL_ATTACK" }
 
@@ -856,7 +855,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local quests = npcModel:FindFirstChild("Quests")
         if quests then
             for _, questVal: BoolValue in quests:GetChildren() do
-                HarukaQuest.GiveQuest(plr, questVal.Name)
+                QuestLib.GiveQuest(plr, questVal.Name)
             end
         end
     end)
@@ -895,7 +894,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
+        local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "CosmeticArmor", "CosmeticWeapon" }
         if not table.find(whiteList, itemInfo.Type) then
             Events.CreateNotify_S.Fire(plr, "You can't equip this item! Invalid Item Type")
             return
@@ -931,7 +930,31 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
             return
+
+        --// equip cosmetic armor
+        elseif itemInfo.Type == "CosmeticArmor" then
+            local armor1Symbol = plr.EquippingItems:FindFirstChild("Cosmetic1") :: StringValue
+            if not armor1Symbol then
+                armor1Symbol = Instance.new("StringValue")
+                armor1Symbol.Name = "Cosmetic1"
+            end
+
+            ServerLib.UnequipItem(plr, armor1Symbol:GetAttribute("HarukaUniqueId"))
+
+            armor1Symbol:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
+            armor1Symbol.Value = data.ItemId
+            armor1Symbol.Parent = plr.EquippingItems
+
+            _refresh()
+            ServerLib.EquipItem(plr, data.ItemUniqueId)
+
+            Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
+            return
         end
+
+
+
+
 
 
         local equipping = plr.EquippingItems :: Folder
@@ -1012,9 +1035,11 @@ end)
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.BuyItem_C.SetCallback(function(plr: Player, data)
         local product, purchaseAmount = data.ProductId, data.PurchaseAmount
+        local currency = data.CurrencyId
         if product == nil then return end
         if data.ProductUniqueId == nil then return end
         if purchaseAmount == nil then return end
+        if currency == nil then return end
 
         if purchaseAmount > 99 then
             Events.CreateNotify_S.Fire(plr, "You can't purchase more than 99 items at once!")
@@ -1046,18 +1071,23 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local itemInfo = ItemBook:GetItemInfo(product)
         if not itemInfo then return end
 
+        if table.find(itemInfo.TagsDesync, "EventLimited") and currency == "Gold" then
+            Events.CreateNotify_S.Fire(plr, "You can't use Gold to purchase this item!")
+            return
+        end
+
 
         local totalPrice = itemInfo.Price * purchaseAmount
-        local curGold = plr:GetAttribute("Gold") :: number
+        local curGold = plr:GetAttribute(currency) :: number
 
         if curGold < totalPrice then
-            Events.CreateNotify_S.Fire(plr, "You don't have enough Gold to purchase this item!")
+            Events.CreateNotify_S.Fire(plr, "You don't have enough currency to purchase this item!")
             return
         end
 
         Events.CreateNotify_S.Fire(plr, "Purchase successful! Welcome back!")
 
-        HarukaLib:AddAttr(plr, "Gold", -totalPrice)
+        HarukaLib:AddAttr(plr, currency, -totalPrice)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
 
         ServerLib.GiveItemDrop(plr, product, purchaseAmount)
@@ -1114,7 +1144,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
         --// found in statue
-        if itemInfo.TagsDesync.Statue then
+        if table.find(itemInfo.TagsDesync, "Statue") then
             Events.CreateNotify_S.Fire(plr, "You can't sell your weapons obtained from Statues!")
             return
         end
@@ -1242,7 +1272,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
         --// found in statue
-        if itemInfo.TagsDesync.Statue then
+        if table.find(itemInfo.TagsDesync, "Statue") then
             if item == "Crescendo" then
                 local amount = 0
 
@@ -1613,19 +1643,19 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not target then return end
 
         if option == "Invite" then
-            HarukaParty:Invite(plr, target)
+            PartyLib:Invite(plr, target)
 
         elseif option == "InviteAccept" then
-            HarukaParty:Accept(plr, target)
+            PartyLib:Accept(plr, target)
 
         elseif option == "InviteDecline" then
-            HarukaParty:Decline(plr, target)
+            PartyLib:Decline(plr, target)
 
         elseif option == "PartyKick" then
-            HarukaParty:Kick(plr, target)
+            PartyLib:Kick(plr, target)
 
         elseif option == "PartyLeave" then
-            HarukaParty:Leave(plr)
+            PartyLib:Leave(plr)
         end
     end
     Events.PartyInvite_C.SetCallback(function(plr: Player, data)
@@ -1782,6 +1812,30 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.ClaimBadgeReward_C.SetCallback(function(plr: Player)
+        local badgeCompletes = plr:GetAttributes()
+
+        local count = 0
+        for badgeId, val in badgeCompletes do
+            if string.find(badgeId, "BADGE_") and val then
+                count += 1
+            end
+        end
+        if count < 6 then return end
+
+        if plr.Items:FindFirstChild("FuriosoFist") then
+            Events.CreateNotify_S.Fire(plr, "You already have the reward!")
+            return
+        end
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.ChestDrop)
+
+
+        ServerLib.GiveItemDrop(plr, "FuriosoFist", 1)
+    end)
+end)
 
 
 return GlobalCriRPGLib

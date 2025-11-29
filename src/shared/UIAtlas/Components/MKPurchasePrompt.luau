@@ -15,6 +15,9 @@ local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton
 local Children = Fusion.Children
 
 
+local CURRENCY_ICONS = AssetBook.CurrencyIcons
+
+
 return function(scope: Fusion.Scope, props: {
     ProductId: string,
     UniqueId: string,
@@ -23,7 +26,9 @@ return function(scope: Fusion.Scope, props: {
     Action: string,
 
     CurrentSelectedItem: Fusion.Value<string>,
-    CurrentSelectedItemUniqueId: Fusion.Value<string>
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+
+    CurrencyId: string
 })
 
     local info = ItemBook:GetItemInfo(props.ProductId)
@@ -324,7 +329,10 @@ return function(scope: Fusion.Scope, props: {
 
                                         [Children] = {
                                             Components.RoundUICorner(scope),
-                                            Components.UIPadding(scope, {})
+                                            Components.UIPadding(scope, {
+                                                PaddingLeft = UDim.new(0, 15),
+                                                PaddingRight = UDim.new(0, 15)
+                                            })
                                         }
                                     })
                                 }
@@ -360,7 +368,7 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     Components.IconImageLabel(scope, {
-                                        Image = "rbxassetid://18421784947",
+                                        Image = CURRENCY_ICONS[props.CurrencyId],
                                         LayoutOrder = 2
                                     }),
 
@@ -418,7 +426,8 @@ return function(scope: Fusion.Scope, props: {
                                     Events.BuyItem_C.Fire({
                                         ProductId = Fusion.peek(props.ProductId),
                                         ProductUniqueId = Fusion.peek(props.UniqueId),
-                                        PurchaseAmount = curAmount
+                                        PurchaseAmount = curAmount,
+                                        CurrencyId = props.CurrencyId
                                     })
                                 end
                             })

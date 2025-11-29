@@ -1610,7 +1610,7 @@
         "Price": "60",
         "SellPrice": "30",
         "ExtraStatInfo": "",
-        "Tags": "Magical, Ego",
+        "Tags": "Statue,NoRandom,NoDuplicate",
         "ArtifactId": "",
         "Recipe": ""
     },
@@ -1646,6 +1646,23 @@
         "ExtraStatInfo": "CD(1)",
         "Tags": "Heal",
         "ArtifactId": "Blessing",
+        "Recipe": ""
+    },
+    {
+        "ItemId": "WinterMageCosmetic",
+        "Name": "Frostwarden Armor",
+        "Type": "CosmeticArmor",
+        "Tier": "5",
+        "Level": "1",
+        "Desc": "A stacking barrier that hardens on impact",
+        "Stat": "Changes your looking",
+        "StatInfo": "",
+        "Icon": "85647986046139",
+        "Price": "3000",
+        "SellPrice": "1",
+        "ExtraStatInfo": "",
+        "Tags": "EventLimited",
+        "ArtifactId": "",
         "Recipe": ""
     }
 ]

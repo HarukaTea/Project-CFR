@@ -43,15 +43,6 @@ CriRPGLib.Funcs = {}
 local wait = task.wait
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		CriRPGLib:Destroy()
-	end
-end))
-Add(script.Destroying:Connect(function()
-    CriRPGLib:Destroy()
-end))
-
 --// Helper functions
 
 local function _fadeOrb(orb: Model)
@@ -89,27 +80,20 @@ end
 
 
 function CriRPGLib:Init()
-    for _, func: () -> nil in CriRPGLib.Funcs do
-        func()
+    for _, func: () -> nil in self.Funcs do
+        task.spawn(func)
     end
 
 
-    Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-		if health <= 0 then
-			self:Destroy()
-		end
-	end))
-	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-		local newParent = char
-        if newParent then
-            if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-                self:Destroy()
-                return
-            end
-        else
+    ClientLib:InitCharDeadTrackers({
+        Char = char,
+        Player = plr,
+
+        Add = Add,
+        Empty = function()
             self:Destroy()
         end
-	end))
+    })
 end
 
 
@@ -501,9 +485,9 @@ table.insert(CriRPGLib.Funcs, function()
 
                 local customAnim = orb:GetAttribute("CustomAnim") :: string
                 if customAnim then
-                    Bindables.PlayAnimation_S:Fire(customAnim)
+                    Bindables.PlayClassAnim:Fire(customAnim)
                 else
-                    Bindables.PlayAnimation_S:Fire(`{class}Attack{if animStep == 1 then "" else "2"}`)
+                    Bindables.PlayClassAnim:Fire(`{class}Attack{if animStep == 1 then "" else "2"}`)
                 end
 
                 animStep = if animStep == 1 then 2 else 1

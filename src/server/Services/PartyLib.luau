@@ -7,21 +7,21 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 
 
-export type PartyClassStruct = {
-    __index: PartyClassStruct,
+export type PartyLibClass = {
+    __index: PartyLibClass,
 
     Leader: Player,
     Members: { [Player]: boolean },
     MaxSize: number,
     Holder: Folder,
 
-    new: (leader: Player) -> PartyClassStruct,
+    new: (leader: Player) -> PartyLibClass,
 
-    AddMember: (self: PartyClassStruct, plr: Player) -> boolean,
-    RemoveMember: (self: PartyClassStruct, plr: Player) -> nil,
-    IsFull: (self: PartyClassStruct) -> boolean,
-    GetAllMembers: (self: PartyClassStruct) -> { Player },
-    Disband: (self: PartyClassStruct) -> nil
+    AddMember: (self: PartyLibClass, plr: Player) -> boolean,
+    RemoveMember: (self: PartyLibClass, plr: Player) -> nil,
+    IsFull: (self: PartyLibClass) -> boolean,
+    GetAllMembers: (self: PartyLibClass) -> { Player },
+    Disband: (self: PartyLibClass) -> nil
 }
 
 
@@ -48,12 +48,12 @@ end)
 
 
 
-local PartyClass = {} :: PartyClassStruct
-PartyClass.__index = PartyClass
+local PartyLib = {} :: PartyLibClass
+PartyLib.__index = PartyLib
 
 
-function PartyClass.new(leader: Player)
-	local self = setmetatable({}, PartyClass)
+function PartyLib.new(leader: Player)
+	local self = setmetatable({}, PartyLib)
 
 	self.Leader = leader
 	self.Members = {
@@ -74,7 +74,7 @@ function PartyClass.new(leader: Player)
 end
 
 
-function PartyClass:AddMember(plr: Player) : boolean
+function PartyLib:AddMember(plr: Player) : boolean
 	if self:IsFull() then return false end
     if self.Members[plr] then return false end
 
@@ -86,7 +86,7 @@ end
 
 
 
-function PartyClass:RemoveMember(plr: Player)
+function PartyLib:RemoveMember(plr: Player)
 	self.Members[plr] = nil
 
     local memberSymbol = self.Holder:FindFirstChild(plr.Name)
@@ -95,17 +95,17 @@ end
 
 
 
-function PartyClass:IsFull() : boolean
+function PartyLib:IsFull() : boolean
     return HarukaLib.TableUtils.CountDictLength(self.Members) >= self.MaxSize
 end
 
 
-function PartyClass:GetAllMembers() : { Player }
+function PartyLib:GetAllMembers() : { Player }
 	return HarukaLib.TableUtils.Keys(self.Members)
 end
 
 
-function PartyClass:Disband()
+function PartyLib:Disband()
 	for member: Player in self.Members do
 		member:SetAttribute("IsInParty", false)
 	end
@@ -122,13 +122,13 @@ local PlayerPartyDataClass = {}
 local playerToPartyPool = {}
 
 
-function PlayerPartyDataClass:SetParty(plr: Player, party: PartyClassStruct)
+function PlayerPartyDataClass:SetParty(plr: Player, party: PartyLibClass)
 	playerToPartyPool[plr] = party
 
 	plr:SetAttribute("IsInParty", party ~= nil)
 end
 
-function PlayerPartyDataClass:GetParty(plr: Player) : PartyClassStruct
+function PlayerPartyDataClass:GetParty(plr: Player) : PartyLibClass
 	return playerToPartyPool[plr]
 end
 
@@ -144,10 +144,10 @@ end
 
 
 
-local HarukaParty = {}
+local PartyLibPublic = {}
 
 
-function HarukaParty:Invite(inviter: Player, target: Player)
+function PartyLibPublic:Invite(inviter: Player, target: Player)
 	if PlayerPartyDataClass:IsInParty(target) then
 		Events.CreateNotify_S.Fire(inviter, "Player already in a party!")
 		return
@@ -161,11 +161,11 @@ function HarukaParty:Invite(inviter: Player, target: Player)
 end
 
 
-function HarukaParty:Accept(inviter: Player, invitee: Player)
+function PartyLibPublic:Accept(inviter: Player, invitee: Player)
 	local inviterParty = PlayerPartyDataClass:GetParty(inviter)
 
 	if not inviterParty then
-		inviterParty = PartyClass.new(inviter)
+		inviterParty = PartyLib.new(inviter)
 
 		PlayerPartyDataClass:SetParty(inviter, inviterParty)
 	end
@@ -186,12 +186,12 @@ function HarukaParty:Accept(inviter: Player, invitee: Player)
 end
 
 
-function HarukaParty:Decline(inviter: Player, invitee: Player)
+function PartyLibPublic:Decline(inviter: Player, invitee: Player)
 	Events.CreateNotify_S.Fire(inviter, invitee.DisplayName .. " declined your invitation.")
 end
 
 
-function HarukaParty:Kick(leader: Player, target: Player)
+function PartyLibPublic:Kick(leader: Player, target: Player)
 	local party = PlayerPartyDataClass:GetParty(leader)
 
 	if not party or party.Leader ~= leader then
@@ -213,7 +213,7 @@ end
 
 
 
-function HarukaParty:Leave(plr: Player)
+function PartyLibPublic:Leave(plr: Player)
 	local party = PlayerPartyDataClass:GetParty(plr)
 	if not party then return end
 
@@ -239,6 +239,6 @@ end
 
 
 
-return HarukaParty
+return PartyLibPublic
 
 

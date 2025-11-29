@@ -181,17 +181,10 @@ function HarukaCMD:Init()
 end
 
 
-function HarukaCMD:AddCommand(commandProps: {
-    Name: string,
-    Alias: string,
-    Callback: (...any) -> nil,
-    RankReq: number,
-    Args: {
-        Name: string,
-        Type: string
-    }
-})
-    table.insert(self.Commands, commandProps)
+function HarukaCMD:AddCommandBook(commandBook: { CommandJSON })
+    for _, commandProps in commandBook do
+        table.insert(self.Commands, commandProps)
+    end
 end
 
 

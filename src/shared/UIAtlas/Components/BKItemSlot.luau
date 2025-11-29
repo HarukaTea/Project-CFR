@@ -262,7 +262,7 @@ return function(scope: Fusion.Scope, props: {
                 TextColor3 = Components.BLACK_COLOR,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    local stackableList = { "Accessory", "Weapon", "Active", "Passive" }
+                    local stackableList = AssetBook.StackableItemTypes
 
                     if table.find(stackableList, info.Type) then
                         return `Lv.{info.Level}`

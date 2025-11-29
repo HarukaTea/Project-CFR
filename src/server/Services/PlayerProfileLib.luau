@@ -25,6 +25,7 @@ export type PlayerProfileLibClass = {
 
     new: (player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) -> PlayerProfileLibClass,
     Init: (self: PlayerProfileLibClass) -> nil,
+    Destroy: (self: PlayerProfileLibClass) -> nil,
 
 
     Player: Player,
@@ -36,12 +37,16 @@ export type PlayerProfileLibClass = {
 
     CalDonationAndSave: (profile: HarukaDatastore.Profile<PlayerTemplate.JSON>, plr: Player) -> nil,
     UpdateDonationRank: (self: PlayerProfileLibClass) -> nil,
+
+    GetObjByUniqueId: (self: PlayerProfileLibClass, uniqueId: string) -> PlayerProfileLibClass?,
 }
+
+
+local allProfiles = {} :: { [string]: PlayerProfileLibClass }
 
 
 local PlayerProfileLib = {} :: PlayerProfileLibClass
 PlayerProfileLib.__index = PlayerProfileLib
-
 
 
 function PlayerProfileLib.new(player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>)
@@ -49,6 +54,11 @@ function PlayerProfileLib.new(player: Player, profile: HarukaDatastore.Profile<P
 
     self.Player = player
     self.Profile = profile
+
+    self.UniqueId = player:GetAttribute("HarukaUniqueId")
+
+
+    allProfiles[self.UniqueId] = self
 
     return self
 end
@@ -62,6 +72,18 @@ function PlayerProfileLib:Init()
     profile:AddUserId(plr.UserId)
 end
 
+
+
+function PlayerProfileLib:Destroy()
+    allProfiles[self.UniqueId] = nil
+end
+
+
+
+
+function PlayerProfileLib:GetObjByUniqueId(uniqueId: string)
+    return allProfiles[uniqueId]
+end
 
 
 

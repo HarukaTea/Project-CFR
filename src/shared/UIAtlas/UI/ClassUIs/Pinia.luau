@@ -18,12 +18,6 @@ export type Self = {
 
     IsInCombat: Fusion.Value<boolean>,
     Class: Fusion.Value<string>,
-
-    ChainCombo: Fusion.Value<number>,
-    ReverberationPitch: Fusion.Value<number>,
-
-
-    TargetingList: Fusion.Value<{ ObjectValue }>,
 }
 
 
@@ -36,13 +30,6 @@ return function (self: Self)
     local scope = self.scope :: Fusion.Scope
 
     self.IsUIShown = Value(true)
-
-    self.ChainCombo = Value(0)
-    self.ReverberationPitch = Value(0)
-
-    local char = self.char :: Model
-    self.TargetingList = FusionComponents.useChildren(scope, char:WaitForChild("TargetingList", 999))
-
 
     self.Class = Value("Chain")
     self.IsInCombat = Value(false)
@@ -66,22 +53,6 @@ return function (self: Self)
             self.IsUIShown2:set(not state)
         end
     }))
-
-
-    --// track class vals
-    table.insert(scope, HarukaLib:Hydrate(self.char, {
-        ["Attr-ChainCombo"] = function(val: number)
-            val = val or 0
-
-            self.ChainCombo:set(val)
-        end,
-        ["Attr-ReverberationPitch"] = function(val: number)
-            val = val or 0
-
-            self.ReverberationPitch:set(val)
-        end
-    }))
-
 
 
     table.insert(scope, HarukaLib:Hydrate(self.plr, {

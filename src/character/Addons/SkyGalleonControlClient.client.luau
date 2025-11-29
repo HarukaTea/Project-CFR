@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 
+local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 
@@ -19,28 +20,15 @@ local currentGalleon: Model? = nil
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		Empty()
-	end
-end))
-Add(script.Destroying:Connect(Empty))
-Add(char.Humanoid.HealthChanged:Connect(function(health: number)
-    if health <= 0 then
-        Empty()
-    end
-end))
-Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-    local newParent = char
-    if newParent then
-        if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
-            Empty()
-            return
-        end
-    else
-        Empty()
-    end
-end))
+
+ClientLib:InitCharDeadTrackers({
+    Add = Add,
+    Empty = Empty,
+    Char = char,
+    Player = plr
+})
+
+
 Add(HarukaLib:Hydrate(char.Humanoid, {
     ["Prop-SeatPart"] = function(part: BasePart)
         if part == nil then

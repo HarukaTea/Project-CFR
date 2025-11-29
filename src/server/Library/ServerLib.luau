@@ -292,7 +292,7 @@ function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 		end
 	end
 
-	local stackableList = { "Accessory", "Weapon" }
+	local stackableList = AssetBook.StackableItemTypes
 	if table.find(stackableList, itemInfo.Type) then
 		for _ = 1, amount do
 			_createNewSymbol(1)
@@ -410,6 +410,15 @@ end
 
 function ServerLib.UnequipItem(plr: Player, itemUniqueId: string)
 	ServerLib.EquipItem(plr, itemUniqueId, "Unequip")
+end
+
+
+
+function ServerLib.EquipCosmetic(plr: Player, itemUniqueId: string, method: string?)
+
+end
+function ServerLib.UnequipCosmetic(plr: Player, itemUniqueId: string)
+	ServerLib.EquipCosmetic(plr, itemUniqueId, "Unequip")
 end
 
 

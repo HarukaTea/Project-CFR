@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -16,10 +17,7 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
-    local ICONS = {
-        Gold = "rbxassetid://18421784947",
-        Astra = "rbxassetid://93309091471652",
-    }
+    local ICONS = AssetBook.CurrencyIcons
 
     return Components.HoverImageButton(scope, {
         Name = props.Currency,

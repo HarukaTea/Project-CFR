@@ -1,4 +1,7 @@
 
+repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
+
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -9,6 +12,19 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
+
+
+
+type LBLibClass = {
+    Funcs: { [string]: () -> nil },
+
+    Init: (self: LBLibClass) -> nil
+}
+
+
+
+local LBLib = {} :: LBLibClass
+LBLib.Funcs = {}
 
 
 local TOP3_BADGE_ID = 2495465107761594
@@ -111,34 +127,6 @@ local function refreshLeaderboard(store: OrderedDataStore, folder: Folder)
         end)
     end
 end
-
-HarukaLib.Clock(180, function()
-    refreshLeaderboard(abyssSpeedrunStore.orderedDataStore, abyssSpeedrunContainer)
-end, true)
-HarukaLib.Clock(60, function()
-    refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)
-end, true)
-
-
-
-
-
-ServerBindables.RToUpdateLeaderboardRank:Connect(function(key: string, value: number, storeName: string)
-    if not storeName then return end
-    if not STORE_LIST[storeName] then return end
-    if not key then return end
-    if not value then return end
-    if type(value) ~= "number" then return end
-    if value <= 0 then return end
-
-
-
-    local store = STORE_LIST[storeName]
-
-    store:UpdateAsync(key, value)
-end)
-
-
 local function _checkIsDataValid(data) : boolean?
     if not data then return end
     if not data[1] then return end
@@ -154,25 +142,64 @@ local function _checkIsDataValid(data) : boolean?
 
     return true
 end
-ServerBindables.RToAwardLeaderboardRank:Connect(function(plr: Player, storeName: string)
-    if storeName == "Donation" then
-        donationStore:GetOrderedPositionAsync("Player_"..plr.UserId, true):andThen(function(data)
-            --// data[1]: rank, data[2]: {key: string, value: number}
-            if not _checkIsDataValid(data) then return end
 
-            ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
 
-        end):catch(function() end)
-
-    elseif storeName == "Abyss" then
-        --// TODO: Implement Abyss Speedrun Leaderboard
-
-        abyssSpeedrunStore:GetOrderedPositionAsync("Player_"..plr.UserId, false):andThen(function(data)
-            --// data[1]: rank, data[2]: {key: string, value: number}
-
-            if not _checkIsDataValid(data) then return end
-
-            ServerLib.GiveBadge(TOP3_SPEEDRUN_BADGE_ID, plr)
-        end)
+function LBLib:Init()
+    for _, func in self.Funcs do
+        task.spawn(func)
     end
+end
+
+
+
+
+
+table.insert(LBLib.Funcs, function()
+    HarukaLib.Clock(180, function()
+        refreshLeaderboard(abyssSpeedrunStore.orderedDataStore, abyssSpeedrunContainer)
+    end, true)
+    HarukaLib.Clock(60, function()
+        refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)
+    end, true)
+end)
+
+
+table.insert(LBLib.Funcs, function()
+    ServerBindables.RToUpdateLeaderboardRank:Connect(function(key: string, value: number, storeName: string)
+        if not storeName then return end
+        if not STORE_LIST[storeName] then return end
+        if not key then return end
+        if not value then return end
+        if type(value) ~= "number" then return end
+        if value <= 0 then return end
+
+
+
+        local store = STORE_LIST[storeName]
+
+        store:UpdateAsync(key, value)
+    end)
+
+    ServerBindables.RToAwardLeaderboardRank:Connect(function(plr: Player, storeName: string)
+        if storeName == "Donation" then
+            donationStore:GetOrderedPositionAsync("Player_"..plr.UserId, true):andThen(function(data)
+                --// data[1]: rank, data[2]: {key: string, value: number}
+                if not _checkIsDataValid(data) then return end
+
+                ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
+
+            end):catch(function() end)
+
+        elseif storeName == "Abyss" then
+            --// TODO: Implement Abyss Speedrun Leaderboard
+
+            abyssSpeedrunStore:GetOrderedPositionAsync("Player_"..plr.UserId, false):andThen(function(data)
+                --// data[1]: rank, data[2]: {key: string, value: number}
+
+                if not _checkIsDataValid(data) then return end
+
+                ServerLib.GiveBadge(TOP3_SPEEDRUN_BADGE_ID, plr)
+            end)
+        end
+    end)
 end)

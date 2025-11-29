@@ -11,7 +11,10 @@ local udNew = UDim.new
 
 local statIcons = {
     DMG = "rbxassetid://2965862892",
-    Magic = "rbxassetid://2965863231"
+    Magic = "rbxassetid://2965863231",
+
+    HalloweenCandy = "rbxassetid://101642799593354",
+    Gold = "rbxassetid://18421784947"
 }
 
 return function (scope: Fusion.Scope, props: {
@@ -19,10 +22,13 @@ return function (scope: Fusion.Scope, props: {
 
     StatValue: Fusion.Value<number>,
     StatValue2: Fusion.Value<number>?,
+
+    LayoutOrder: number,
 })
 
     return Components.Frame(scope, {
         Name = props.StatId,
+        LayoutOrder = props.LayoutOrder,
 
         [Children] = {
             Components.UIListLayout(scope, {

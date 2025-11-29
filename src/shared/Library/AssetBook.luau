@@ -22,7 +22,7 @@ AssetBook.TweenInfos = {
 }
 
 
-AssetBook.StackableItemTypes = { "Accessory", "Weapon" }
+AssetBook.StackableItemTypes = { "Accessory", "Weapon", "Passive", "CosmeticArmor", "CosmeticWeapon" }
 
 
 AssetBook.ExtraIcons = {
@@ -218,6 +218,14 @@ AssetBook.BadgeIds = {
 	--// SkyAdventurer = 2140109709187125,
 }
 
+
+
+AssetBook.CurrencyIcons = {
+    Gold = "rbxassetid://18421784947",
+    Astra = "rbxassetid://93309091471652",
+
+	HalloweenCandy = "rbxassetid://118291405899454",
+}
 
 
 AssetBook.PlaceIds = {
