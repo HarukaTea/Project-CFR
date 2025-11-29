@@ -48,8 +48,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib.IsCharValid(entity) then return false end
-        if not ServerLib.IsCharValid(target) then return false end
+        if not ServerLib:IsCharValid(entity) then return false end
+        if not ServerLib:IsCharValid(target) then return false end
 
         return true
     end

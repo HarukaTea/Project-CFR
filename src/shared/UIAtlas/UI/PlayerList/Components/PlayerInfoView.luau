@@ -12,8 +12,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 
-local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
-
 local New, Children, Computed = Fusion.New, Fusion.Children, Fusion.Computed
 
 local v2New, udNew = Vector2.new, UDim.new
@@ -144,11 +142,6 @@ return function (scope: Fusion.Scope, props: {
 
                         [Children] = {
                             New(scope, "UICorner")({ CornerRadius = udNew(0.05, 0) }),
-
-                            FrameBorderTex(scope, {
-                                BorderType = "Outer",
-                                Offset = 3
-                            }),
                         }
                     }),
                     Components.IconImageLabel(scope, {
@@ -283,7 +276,7 @@ return function (scope: Fusion.Scope, props: {
                                             if not criRPGSettings then return end
 
                                             local character = thatPlr.Character
-                                            if not ClientLib.IsCharValid(character) then
+                                            if not ClientLib:IsCharValid(character) then
                                                 Bindables.CreateNotify:Fire("Player is dead!")
                                                 return
                                             end

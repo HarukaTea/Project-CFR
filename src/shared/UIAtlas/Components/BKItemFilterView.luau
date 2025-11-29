@@ -254,15 +254,13 @@ return function (scope: Fusion.Scope, props: {
                         Components.PaddingFrame(scope, "AAA"),
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, {"AZ", "ZA", "T1", "T5"}, function(_, scope: Fusion.Scope, index: number, sortMethod: string)
+                        Fusion.ForPairs(scope, {"T5", "T1"}, function(_, scope: Fusion.Scope, index: number, sortMethod: string)
 
                             local isSelecting = Fusion.Value(scope, false)
 
                             local TEXTS = {
-                                AZ = "Sort By Name (A-Z)",
-                                ZA = "Sort By Name (Z-A)",
-                                T1 = "Sort By Tier (I-V)",
                                 T5 = "Sort By Tier (V-I)",
+                                T1 = "Sort By Tier (I-V)",
                             }
 
                             return index,  Components.TextButton(scope, {

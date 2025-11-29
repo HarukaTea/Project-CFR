@@ -45,8 +45,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib.IsCharValid(entity) then return false end
-        if not ServerLib.IsCharValid(target) then return false end
+        if not ServerLib:IsCharValid(entity) then return false end
+        if not ServerLib:IsCharValid(target) then return false end
 
         return true
     end
@@ -55,7 +55,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _spike(target: Model)
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -68,7 +68,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
     local function _allAreaBurnCombo()
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position)
+        local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position)
 
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -82,7 +82,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     local function _allAreaBurnCombo2(target: Model)
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,

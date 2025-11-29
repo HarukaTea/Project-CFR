@@ -79,7 +79,7 @@ function AbyssWorldLib.GiveLoot()
         Promise.try(function()
             local char = player.Character
             local luck = 1
-            if ServerLib.IsCharValid(char) then
+            if ServerLib:IsCharValid(char) then
                 luck = char:GetAttribute("Luck") / 100 or 1
             end
             luck = math.max(1, luck)
@@ -89,7 +89,7 @@ function AbyssWorldLib.GiveLoot()
 
                 local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot(), luck)
 
-                ServerLib.GiveItemDrop(player, result, AbyssWorldLib.AbyssId * 10)
+                ServerLib:GiveItemDrop(player, result, AbyssWorldLib.AbyssId * 10)
                 wait(0.15)
             end
         end)

@@ -45,9 +45,6 @@ return {
     --@params: `(data: {Hint: string, ConfirmText: string, CancelText: string, ConfirmUniqueId: string} )`
     CreateConfirmPrompt = Signal.new(),
 
-    --@params: `(data: {Hint: string, ConfirmText: string, ConfirmUniqueId: string} )`
-    CreateInfoPrompt = Signal.new(),
-
     --@params: `(text: string, showBar: boolean)`
     CreateCenterNotify = Signal.new(),
 
@@ -60,7 +57,8 @@ return {
     --@params: `None`
     DevProductPurchasing = Signal.new(),
 
-
+    --@params: `(state: boolean)`
+    SetChatEnabled = Signal.new(),
 
 
     --@params: `None`

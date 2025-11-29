@@ -56,7 +56,7 @@ return function (self: Types.CastItemLib)
             Events.FaceTargetingEnemy_S.Fire(player)
 
 
-            Events.PlayVFXScene_S.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+            Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
                 SceneId = "FireballSpell",
                 Caster = char,
                 ProjectileUniqueId = uniqueId,
@@ -81,7 +81,7 @@ return function (self: Types.CastItemLib)
 
         Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
 
-        StatusLib.NormalBoostForEntity("Speed", char, {
+        StatusLib:Boost("Speed", char, {
             Power = 0.5,
             Duration = 6
         })
@@ -113,7 +113,7 @@ return function (self: Types.CastItemLib)
 
         Events.Spell_ExtraJumpSupport.Fire(player)
 
-        Events.PlayVFXScene_S.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "ChainJump",
             Caster = char,
             ProjectileUniqueId = "nil"

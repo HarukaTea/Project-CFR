@@ -25,7 +25,7 @@ CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function(part)
 end)
 
 
-function ClientLib.WeldModel(part: BasePart, welded: Model)
+function ClientLib:WeldModel(part: BasePart, welded: Model)
 	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
 	local C = welded:GetChildren()
 	if welded:FindFirstChild("Meshes") then
@@ -63,7 +63,7 @@ function ClientLib.WeldModel(part: BasePart, welded: Model)
 end
 
 
-function ClientLib.FindGroundByRay(givenPos: Vector3) : Vector3
+function ClientLib:FindGroundByRay(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 35, -Vector3.yAxis * 159, terrainPartRaycastParams)
 	if rayResult then return rayResult.Position end
 
@@ -71,7 +71,7 @@ function ClientLib.FindGroundByRay(givenPos: Vector3) : Vector3
 end
 
 
-function ClientLib.WeldWeapon(weapon: Model, char: Model)
+function ClientLib:WeldWeapon(weapon: Model, char: Model)
 	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
 	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
 
@@ -87,7 +87,7 @@ function ClientLib.WeldWeapon(weapon: Model, char: Model)
 end
 
 
-function ClientLib.FindGroundByRayForOrb(givenPos: Vector3) : Vector3
+function ClientLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 7, -Vector3.yAxis * (26 + 7), terrainPartRaycastParams)
 	if rayResult then return rayResult.Position end
 
@@ -95,7 +95,7 @@ function ClientLib.FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 end
 
 
-function ClientLib.IsModelValid(model: Instance?) : boolean
+function ClientLib:IsModelValid(model: Instance?) : boolean
 	if not model then return false end
     if not model.Parent then return false end
     if not model.PrimaryPart then return false end
@@ -104,8 +104,8 @@ function ClientLib.IsModelValid(model: Instance?) : boolean
 end
 
 
-function ClientLib.IsCharValid(char: Instance?) : boolean
-	if not ClientLib.IsModelValid(char) then return false end
+function ClientLib:IsCharValid(char: Instance?) : boolean
+	if not ClientLib:IsModelValid(char) then return false end
 
 	local humanoid = char:FindFirstChild("Humanoid")
 	if not humanoid then return false end
@@ -116,7 +116,7 @@ function ClientLib.IsCharValid(char: Instance?) : boolean
 end
 
 
-function ClientLib.GetPlayerByUniqueId(uniqueId: string) : Player?
+function ClientLib:GetPlayerByUniqueId(uniqueId: string) : Player?
 	local player: Player = nil
 
 	for _, thatPlayer: Player in CollectionService:GetTagged("PlayerEntity") do
@@ -132,7 +132,7 @@ function ClientLib.GetPlayerByUniqueId(uniqueId: string) : Player?
 end
 
 
-function ClientLib.PlayWorldSound(sound: Sound, pos: Vector3)
+function ClientLib:PlayWorldSound(sound: Sound, pos: Vector3)
 	local part = HarukaLib:CreateMockPart()
 	part.Name = "WorldSound_"..sound.Name
 	part.CFrame = CFrame.new(pos)
@@ -150,7 +150,7 @@ function ClientLib.PlayWorldSound(sound: Sound, pos: Vector3)
 end
 
 
-function ClientLib.TrackEffectListToUI(props: {
+function ClientLib:TrackEffectListToUI(props: {
 	Target: Model,
 	Scope: Fusion.Scope,
 	GuiContainer: GuiObject,
@@ -247,7 +247,7 @@ function ClientLib.TrackEffectListToUI(props: {
 end
 
 
-function ClientLib.TrackInputTextbox(props: {
+function ClientLib:TrackInputTextbox(props: {
 	Scope: Fusion.Scope,
 	TextBox: TextBox,
 
@@ -283,7 +283,7 @@ end
 
 
 
-function ClientLib.LoadLightingPreset(presetId: string)
+function ClientLib:LoadLightingPreset(presetId: string)
 	local lightingPresets = RepS.Packages.LightingPresets :: Folder
 
 	if not lightingPresets:FindFirstChild(presetId) then

@@ -65,8 +65,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib.IsCharValid(entity) then return false end
-        if not ServerLib.IsCharValid(target) then return false end
+        if not ServerLib:IsCharValid(entity) then return false end
+        if not ServerLib:IsCharValid(target) then return false end
 
         return true
     end
@@ -78,7 +78,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _moving()
-        local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
+        local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
             Vector3.new(math.random(-32, 32), 0, math.random(-32, 32)))
 
         entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, 7, 0) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
@@ -94,7 +94,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -133,7 +133,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         _lookAt(target)
 
         local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("BeeMove3", true):Clone() :: Model
-        local post = ServerLib.FindGroundByRay(entity.PrimaryPart.Position)
+        local post = ServerLib:FindGroundByRay(entity.PrimaryPart.Position)
 
         projectileSupport:PivotTo(CFrame.new(post, post + entity.PrimaryPart.CFrame.LookVector))
 
@@ -173,7 +173,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _, child: BasePart in projectileSupport:GetDescendants() do
                 if child.Name ~= "Position"..hasProjectiles then continue end
 
-                local postR = ServerLib.FindGroundByRay(child.Position)
+                local postR = ServerLib:FindGroundByRay(child.Position)
 
                 HarukaLib:Tween(entity, AssetBook.TweenInfos.twiceHalfOne, {
                     Pivot = CFrame.new(postR) * CFrame.new(0, 7, 0) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0)

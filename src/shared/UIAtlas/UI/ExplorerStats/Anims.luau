@@ -46,7 +46,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// track effect list
-    ClientLib.TrackEffectListToUI({
+    ClientLib:TrackEffectListToUI({
         Target = self.char,
         Scope = scope,
         GuiContainer = bottom.EffectList

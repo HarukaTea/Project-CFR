@@ -32,8 +32,8 @@ AccessoryUniversal.RegisterEnemyOnHit = function(
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
-        if not ServerLib.IsCharValid(targeting) then return end
-        if not ServerLib.IsCharValid(attacker) then return end
+        if not ServerLib:IsCharValid(targeting) then return end
+        if not ServerLib:IsCharValid(attacker) then return end
         if not dmgProps then return end
         if not dmgProps.DMG then return end
         if not dmgProps.Attacker then return end
@@ -55,8 +55,8 @@ AccessoryUniversal.RegisterStatusApplied = function(
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
-        if not ServerLib.IsCharValid(targeting) then return end
-        if not ServerLib.IsCharValid(attacker) then return end
+        if not ServerLib:IsCharValid(targeting) then return end
+        if not ServerLib:IsCharValid(attacker) then return end
         if not statusProps then return end
         if not statusProps.Type then return end
 
@@ -74,8 +74,8 @@ AccessoryUniversal.RegisterEnemyStatusRemoved = function(
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
-        if not ServerLib.IsCharValid(targeting) then return end
-        if not ServerLib.IsCharValid(attacker) then return end
+        if not ServerLib:IsCharValid(targeting) then return end
+        if not ServerLib:IsCharValid(attacker) then return end
         if not statusProps then return end
         if not statusProps.Type then return end
 

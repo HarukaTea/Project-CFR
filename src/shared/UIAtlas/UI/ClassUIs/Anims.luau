@@ -51,7 +51,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
     end))
     table.insert(scope, Events.Class_ReverberationEnemySupport.On(function(data)
         local enemy = data.Enemy
-        if not ClientLib.IsCharValid(enemy) then return end
+        if not ClientLib:IsCharValid(enemy) then return end
 
         repeat task.wait(0.5) until enemy:FindFirstChild("Head")
 

@@ -186,7 +186,7 @@ table.insert(LBLib.Funcs, function()
                 --// data[1]: rank, data[2]: {key: string, value: number}
                 if not _checkIsDataValid(data) then return end
 
-                ServerLib.GiveBadge(TOP3_BADGE_ID, plr)
+                ServerLib:GiveBadge(TOP3_BADGE_ID, plr)
 
             end):catch(function() end)
 
@@ -198,7 +198,7 @@ table.insert(LBLib.Funcs, function()
 
                 if not _checkIsDataValid(data) then return end
 
-                ServerLib.GiveBadge(TOP3_SPEEDRUN_BADGE_ID, plr)
+                ServerLib:GiveBadge(TOP3_SPEEDRUN_BADGE_ID, plr)
             end)
         end
     end)

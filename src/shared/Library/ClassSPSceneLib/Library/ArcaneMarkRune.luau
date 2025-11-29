@@ -12,10 +12,10 @@ local Types = require(script.Parent.Parent.Types)
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    if not ClientLib.IsCharValid(char) then return end
+    if not ClientLib:IsCharValid(char) then return end
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib.IsCharValid(targetingEnemy) then return end
+    if not ClientLib:IsCharValid(targetingEnemy) then return end
 
 
     local mark = RepS.Packages.SkillProjectiles:FindFirstChild("ArcaneMarkRune", true):Clone() :: Model

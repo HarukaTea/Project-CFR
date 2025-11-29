@@ -13,12 +13,6 @@ return function (scope: Fusion.Scope, props: {
     CutsceneUISignal: RBXScriptSignal
 }) : ScreenGui
 
-    local ICONS = {
-        Play = "rbxassetid://124997253539716",
-        Credits = "rbxassetid://76184661737952",
-        Tutorial = "rbxassetid://70702384179449"
-    }
-
     local isShown = Fusion.Value(scope, true)
 
     table.insert(scope, props.CutsceneUISignal:Connect(function()
@@ -28,6 +22,7 @@ return function (scope: Fusion.Scope, props: {
         isShown:set(false)
     end))
 
+    local isSelecting = Fusion.Value(scope, false)
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "OuterTitlescreen",
@@ -41,113 +36,63 @@ return function (scope: Fusion.Scope, props: {
         BottomProps = {
             [Children] = {
                 Components.Frame(scope, {
-                    Name = "SidePanel",
+                    Name = "PressAnyKey",
                     AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, -1),
-                    Size = UDim2.fromScale(0.95, 1),
+                    BackgroundTransparency = 0,
+                    Position = UDim2.fromScale(0.5, -0.2),
+                    Size = UDim2.fromScale(0.5, 0.7),
+
+                    BackgroundColor3 = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use)
+                        return if use(isSelecting) then Components.WHITE_COLOR else Components.BLACK_COLOR
+                    end), Components.DefaultTween),
 
                     [Children] = {
-                        Components.UIListLayout(scope, {
-                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                            Padding = UDim.new(0.5, 0)
+                        Components.UIGradient(scope, {
+                            Transparency = NumberSequence.new({
+                                NumberSequenceKeypoint.new(0, 1),
+                                NumberSequenceKeypoint.new(0.25, 0),
+                                NumberSequenceKeypoint.new(0.75, 0),
+                                NumberSequenceKeypoint.new(1, 1)
+                            })
                         }),
 
-                        Fusion.ForPairs(scope, { "Play" }, function(_, scope: Fusion.Scope, index: number, panelId: string)
-                            local isSelecting = Fusion.Value(scope, false)
+                        Components.TextLabel(scope, {
+                            Name = "Tip",
+                            Text = "PRESS HERE TO PLAY",
 
-                            return index, Components.Frame(scope, {
-                                Name = panelId,
-                                Size = UDim2.fromScale(0.2, 0.7),
-                                BackgroundTransparency = 0,
-                                LayoutOrder = index,
+                            TextColor3 = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use)
+                                return if use(isSelecting) then Color3.new() else Components.WHITE_COLOR
+                            end), Components.DefaultTween),
 
-                                BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-                                    return if use(isSelecting) then Components.WHITE_COLOR else Components.BLACK_COLOR
-                                end),
-
-                                [Children] = {
-                                    Components.RoundUICorner(scope),
-
-                                    Components.TextLabel(scope, {
-                                        Name = "Title",
-                                        Text = string.upper(panelId),
-                                        TextXAlignment = Enum.TextXAlignment.Left,
-
-                                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
-                                            return if use(isSelecting) then Color3.new() else Components.WHITE_COLOR
-                                        end),
-
-                                        [Children] = {
-                                            Components.UIPadding(scope, {})
-                                        }
-                                    }),
-
-                                    Components.IconImageLabel(scope, {
-                                        AnchorPoint = Vector2.new(0, 0.5),
-                                        Position = UDim2.fromScale(1.05, 0.5),
-                                        Size = UDim2.fromScale(1.5, 1.5),
-
-                                        Image = ICONS[panelId],
-                                    }),
-
-                                    Components.HoverImageButton(scope, {
-                                        [Fusion.OnEvent("MouseEnter")] = function()
-                                            isSelecting:set(true)
-                                        end,
-                                        [Fusion.OnEvent("MouseLeave")] = function()
-                                            isSelecting:set(false)
-                                        end,
+                            [Children] = {
+                                Components.UIPadding(scope, {
+                                    PaddingLeft = UDim.new(0.15, 0),
+                                    PaddingBottom = UDim.new(0.15, 0),
+                                    PaddingRight = UDim.new(0.15, 0),
+                                    PaddingTop = UDim.new(0.15, 0),
+                                })
+                            }
+                        }),
 
 
-                                        [Fusion.OnEvent("MouseButton1Click")] = function()
-                                            if panelId == "Play" then
-                                                props.SlotUISignal:Fire()
+                        Components.HoverImageButton(scope, {
+                            [Fusion.OnEvent("MouseEnter")] = function()
+                                isSelecting:set(true)
+                            end,
+                            [Fusion.OnEvent("MouseLeave")] = function()
+                                isSelecting:set(false)
+                            end,
 
-                                            elseif panelId == "Tutorial" then
-                                                local result = Components:CreateConfirmPrompt(scope, {
-                                                    CancelText = "No",
-                                                    ConfirmText = "Yes",
-                                                    Hint = "Play the tutorial?",
-                                                    ConfirmUniqueId = "TutorialConfirm"
-                                                }):Wait()
-
-                                                if result == "YES" then
-                                                    Events.Titlescreen_PlayTutorial_C.Fire()
-                                                end
-                                            end
-                                        end,
-                                    })
-                                }
-                            })
-                        end)
+                            [Fusion.OnEvent("MouseButton1Click")] = function()
+                                props.SlotUISignal:Fire()
+                            end
+                        })
                     }
                 })
             }
         },
     })
 
-
-
-    local shownObserver = Fusion.Observer(scope, isShown)
-    shownObserver:onBind(function()
-        local shown = Fusion.peek(isShown) :: boolean
-        if shown then
-            HarukaLib:UITween(UI.Bottom, "In", {
-                FollowOriPropsWhenIn = true,
-
-                TweenTime = 0.5,
-                PosTweenStyle = "FromL2R",
-                PosTweenBaseElement = UI.Bottom.SidePanel
-            })
-        else
-            HarukaLib:UITween(UI.Bottom, "Out", {
-                SetOriPropsWhenOut = true,
-
-                PosTweenStyle = "FromR2L",
-                PosTweenBaseElement = UI.Bottom.SidePanel,
-            })
-        end
-    end)
 
     return UI
 end

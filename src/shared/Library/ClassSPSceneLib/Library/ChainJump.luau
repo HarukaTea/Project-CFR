@@ -13,7 +13,7 @@ local Types = require(script.Parent.Parent.Types)
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    if not ClientLib.IsCharValid(char) then return end
+    if not ClientLib:IsCharValid(char) then return end
 
     local projectile = RepS.Packages.SkillProjectiles:FindFirstChild("ExtraJumpFade", true):Clone() :: Model
     projectile:PivotTo(char.PrimaryPart.CFrame * CFrame.new(0, -3, 0))

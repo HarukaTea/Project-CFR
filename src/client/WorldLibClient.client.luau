@@ -137,7 +137,7 @@ table.insert(ClientWorldLib.Funcs, function()
         if part.Name == "ResetCamera" then
             camera.CameraType = Enum.CameraType.Custom
 
-            if not ClientLib.IsCharValid(plr.Character) then return end
+            if not ClientLib:IsCharValid(plr.Character) then return end
             camera.CameraSubject = plr.Character.Humanoid
             return
         end
@@ -289,7 +289,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
             local lifeTime = orb:GetAttribute("Duration") :: number
             Promise.delay(lifeTime - 5):andThen(function()
-                if not ClientLib.IsModelValid(orb) then return end
+                if not ClientLib:IsModelValid(orb) then return end
 
                 local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
                 countdown.Transparency = 1
@@ -300,7 +300,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
                 Promise.try(function()
                     for i = 5, 1, -1 do
-                        if not ClientLib.IsModelValid(orb) then break end
+                        if not ClientLib:IsModelValid(orb) then break end
                         if countdown == nil then break end
 
                         countdown.BillboardGui.TextLabel.Text = tostring(i)
@@ -310,7 +310,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
             end):catch(function() end)
             Promise.delay(lifeTime - 0.5):andThen(function()
-                if not ClientLib.IsModelValid(orb) then return end
+                if not ClientLib:IsModelValid(orb) then return end
 
                 orb:RemoveTag("OrbEntity")
 
@@ -459,7 +459,7 @@ end)
 
 table.insert(ClientWorldLib.Funcs, function()
     local function _onHit(entity: Model)
-        if not ClientLib.IsModelValid(entity) then return end
+        if not ClientLib:IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
 
         local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
@@ -560,7 +560,7 @@ table.insert(ClientWorldLib.Funcs, function()
         location += Vector3.new(
             RNG:NextInteger(-6, 6), 0, RNG:NextInteger(-6, 6)
         )
-        location = ClientLib.FindGroundByRay(location)
+        location = ClientLib:FindGroundByRay(location)
 
         for _ = 1, data.ItemAmount do
             local itemSphere = ReplicatedStorage.Packages.Effects.ItemDisplay:Clone() :: BasePart
@@ -659,7 +659,7 @@ end)
 
 table.insert(ClientWorldLib.Funcs, function()
     Events.OpeningChest_S.On(function(chest)
-        if not ClientLib.IsModelValid(chest) then return end
+        if not ClientLib:IsModelValid(chest) then return end
 
         SoundService.SFXs.ChestDrop:Play()
 
@@ -759,7 +759,7 @@ table.insert(ClientWorldLib.Funcs, function()
             warn("Invalid adornee for proximity prompt")
             return
         end
-        if not ClientLib.IsCharValid(char) then return end
+        if not ClientLib:IsCharValid(char) then return end
 
         local distance = plr:DistanceFromCharacter(adornee.Position)
         if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
@@ -831,7 +831,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
     mouse.Button1Down:Connect(function()
         local char = plr.Character
-        if not ClientLib.IsCharValid(char) then return end
+        if not ClientLib:IsCharValid(char) then return end
         if char:GetAttribute("IsInCombat") then return end
 
         local target = mouse.Target
@@ -905,7 +905,7 @@ table.insert(ClientWorldLib.Funcs, function()
         local char = plr.Character
 
         if option == "Invite" then
-            if not ClientLib.IsCharValid(char) then return end
+            if not ClientLib:IsCharValid(char) then return end
             if plr.PlayerGui:FindFirstChild("ConfirmPrompt") then return end
 
 

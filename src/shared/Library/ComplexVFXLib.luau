@@ -14,7 +14,7 @@ ComplexVFXLib.Healing = function(part: BasePart)
     if not adornee:IsA("Model") then return end
 
     local conn; conn = RunService.RenderStepped:Connect(function()
-        if not ClientLib.IsModelValid(adornee) then conn:Disconnect() return end
+        if not ClientLib:IsModelValid(adornee) then conn:Disconnect() return end
 
         part.CFrame = adornee.PrimaryPart.CFrame * CFrame.new(0, -2.7, 0)
     end)

@@ -252,7 +252,9 @@ function HarukaLib:Hydrate(obj: Instance, props: { [string]: (val: any) -> nil }
 			local _, endPos = string.find(prop, "Attr")
 			local attr = string.sub(prop, endPos + 2)
 
-			local success, err = pcall(func, obj:GetAttribute(attr))
+			local success, err = pcall(function()
+				task.spawn(func, obj:GetAttribute(attr))
+			end)
 			if not success then
 				warn(err)
 			end
@@ -265,7 +267,9 @@ function HarukaLib:Hydrate(obj: Instance, props: { [string]: (val: any) -> nil }
 			local _, endPos = string.find(prop, "Prop")
 			local propName = string.sub(prop, endPos + 2)
 
-			local success, err = pcall(func, obj[propName])
+			local success, err = pcall(function()
+				task.spawn(func, obj[propName])
+			end)
 			if not success then
 				warn(err)
 			end
@@ -349,7 +353,9 @@ function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean
 	local dropTime = tickTime * 10
 
 	if runInstantly then
-		local success, result = pcall(func)
+		local success, result = pcall(function()
+			task.spawn(func)
+		end)
 		if not success then
 			warn(result)
 		end

@@ -55,7 +55,7 @@ end)
 
 table.insert(GlobalQuestFuncLib.Funcs, function()
     QuestBindables.InterSkyTowerQuest:Connect(function(plr: Player)
-        QuestLib.GiveQuest(plr, "InterSkyTower")
+        QuestLib:GiveQuest(plr, "InterSkyTower")
     end)
 end)
 

@@ -7,7 +7,6 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local ConfirmPrompt = require(script.Components.ConfirmPrompt)
-local InfoPrompt = require(script.Components.InfoPrompt)
 
 
 return function (plr: Player)
@@ -97,73 +96,4 @@ return function (plr: Player)
 	end
 	table.insert(scope, Bindables.CreateConfirmPrompt:Connect(_createConfirmPrompt))
 	table.insert(scope, self.ConfirmPromptsQueue.ElementAdded:Connect(_onConfirmPromptAdded))
-
-
-	--// receive info prompt requests
-	local function _createInfoPrompt(data: {
-		Hint: string,
-		ConfirmText: string,
-
-		ConfirmUniqueId: string
-	})
-		self.InfoPromptsQueue:Push(data)
-	end
-	local function _onInfoPromptAdded()
-		if self.InfoPromptsQueue:IsLocked() then return end
-		if self.InfoPromptsQueue:IsEmpty() then return end
-
-		self.InfoPromptsQueue:SetLockState(true)
-
-		local nextPrompt = self.InfoPromptsQueue:Pop() :: {
-			Hint: string,
-			ConfirmText: string,
-			ConfirmUniqueId: string
-		}
-
-
-		local confirmScope = Fusion.scoped()
-		local resultSignal = Signal.new()
-		table.insert(confirmScope, resultSignal)
-
-		local UI = InfoPrompt(confirmScope, {
-			Hint = nextPrompt.Hint,
-			ConfirmText = nextPrompt.ConfirmText,
-
-			ResultSignal = resultSignal,
-		})
-		UI.Parent = self.plr.PlayerGui
-
-
-		HarukaLib:UITween(UI, "In", {
-			TweenTime = 0.5,
-
-			PosTweenStyle = "FromT2B",
-			PosTweenBaseElement = UI.Center.InfoPrompt,
-		})
-
-
-		local finalResult = resultSignal:Wait()
-
-		Bindables.ConfirmPromptChosen:Fire(nextPrompt.ConfirmUniqueId, finalResult)
-
-		HarukaLib:UITween(UI, "Out", {
-			TweenCallback = function(tweenOutUI)
-				Fusion.doCleanup(confirmScope)
-
-				tweenOutUI.Full:Destroy()
-
-				HarukaLib:UITween(tweenOutUI, "Out", {
-					PosTweenStyle = "FromT2B",
-					PosTweenBaseElement = tweenOutUI.Center.InfoPrompt,
-				})
-			end
-		})
-
-		--// process next prompt
-		self.InfoPromptsQueue:SetLockState(false)
-
-		_onConfirmPromptAdded()
-	end
-	table.insert(scope, Bindables.CreateInfoPrompt:Connect(_createInfoPrompt))
-	table.insert(scope, self.InfoPromptsQueue.ElementAdded:Connect(_onInfoPromptAdded))
 end

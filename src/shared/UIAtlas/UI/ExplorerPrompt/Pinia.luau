@@ -98,7 +98,7 @@ return function (self: Self)
 
 	table.insert(scope, task.spawn(function()
 		while wait(0.1599) do
-			local isAlive = ClientLib.IsCharValid(char)
+			local isAlive = ClientLib:IsCharValid(char)
 			local sitting = char.Humanoid.SeatPart
 
 			local nearbyPrompts = {}

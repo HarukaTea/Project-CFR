@@ -3,7 +3,6 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -46,7 +45,7 @@ return function(plr: Player)
 
             Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return if use(self.IsUIFolded) then UDim2.fromScale(1.5, 1.5) else UDim2.fromScale(1, 1.5)
-            end), AssetBook.TweenInfos.half),
+            end), Components.TweenInfos.half),
 
             Size = UDim2.fromScale(0.22, 4),
 
@@ -137,7 +136,7 @@ return function(plr: Player)
                 Components.Frame(scope, {
                     Name = "PlayerList",
                     AnchorPoint = Vector2.xAxis,
-                    Position = UDim2.fromScale(1, 0),
+                    Position = UDim2.fromScale(0.99, 0),
 
                     [Children] = {
                         Components.UIScale(scope, {
@@ -153,7 +152,7 @@ return function(plr: Player)
 
                             Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 return if use(self.IsUIFolded) then UDim2.fromScale(1.5, 1.5) else UDim2.fromScale(1, 1.5)
-                            end), AssetBook.TweenInfos.half),
+                            end), Components.TweenInfos.half),
 
                             [Children] = {
                                 Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope, index: number, player: Player)
@@ -167,7 +166,7 @@ return function(plr: Player)
                             }
                         }, {
                             Padding = UDim.new(0, 6),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
                         }),
 
                         PlayerInfoView(scope, {
@@ -188,7 +187,7 @@ return function(plr: Player)
 
                     Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return if use(self.IsUIFolded) then UDim2.new(0.99, 0, 1.5, 6) else UDim2.new(0.76, 0, 1.5, 6)
-                    end), AssetBook.TweenInfos.half),
+                    end), Components.TweenInfos.half),
 
                     Size = UDim2.fromScale(0.03, 0.5),
 

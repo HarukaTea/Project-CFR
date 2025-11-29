@@ -82,18 +82,18 @@ QuestLib._checkIsReqCompleted = _checkIsReqCompleted
 
 
 
-function QuestLib.InitPlayer(plr: Player)
+function QuestLib:InitPlayer(plr: Player)
     QuestLib.ActiveQuests[plr] = {}
 end
 
 
-function QuestLib.StopTrackingPlayer(plr: Player)
+function QuestLib:StopTrackingPlayer(plr: Player)
     QuestLib.ActiveQuests[plr] = nil
 end
 
 
 
-function QuestLib.GiveQuest(plr: Player, questId: string)
+function QuestLib:GiveQuest(plr: Player, questId: string)
     local questData = QuestBook[questId] :: QuestBook.QuestJSON
     if not questData then return  warn("Quest not found:", questId) end
 
@@ -123,7 +123,7 @@ end
 
 
 
-function QuestLib.AddProgress(plr: Player, questId: string, objectiveId: string, amount: number)
+function QuestLib:AddProgress(plr: Player, questId: string, objectiveId: string, amount: number)
     if not QuestLib.ActiveQuests[plr][questId] then return end
 
     local container = QuestLib.ActiveQuests[plr][questId].Container
@@ -132,14 +132,14 @@ function QuestLib.AddProgress(plr: Player, questId: string, objectiveId: string,
 
 
     HarukaLib:AddAttr(container, objectiveId, amount)
-    QuestLib.CheckQuestCompletion(plr, questId)
+    QuestLib:CheckQuestCompletion(plr, questId)
 end
 
 
 
 
 
-function QuestLib.CheckQuestCompletion(plr: Player, questId: string)
+function QuestLib:CheckQuestCompletion(plr: Player, questId: string)
     if not QuestLib.ActiveQuests[plr][questId] then return end
 
     local questData = QuestLib.ActiveQuests[plr][questId].Data
@@ -152,12 +152,12 @@ function QuestLib.CheckQuestCompletion(plr: Player, questId: string)
     end
 
 
-    QuestLib.CompleteQuest(plr, questId)
+    QuestLib:CompleteQuest(plr, questId)
 end
 
 
 
-function QuestLib.CompleteQuest(plr: Player, questId: string)
+function QuestLib:CompleteQuest(plr: Player, questId: string)
     if not QuestLib.ActiveQuests[plr][questId] then return end
 
     QuestLib.ActiveQuests[plr][questId].Container:SetAttribute("IsCompleted", true)
@@ -169,7 +169,7 @@ end
 
 
 
-function QuestLib.ExportDataTable(plr: Player) : SavedQuestData
+function QuestLib:ExportDataTable(plr: Player) : SavedQuestData
     local result = {}
 
     for _, questFolder: Folder in plr.Quests:GetChildren() do
@@ -192,11 +192,11 @@ function QuestLib.ExportDataTable(plr: Player) : SavedQuestData
 end
 
 
-function QuestLib.LoadSavedTable(plr: Player, savedData: SavedQuestData)
+function QuestLib:LoadSavedTable(plr: Player, savedData: SavedQuestData)
     for questId, state in savedData do
         if not QuestBook[questId] then continue end
 
-        QuestLib.GiveQuest(plr, questId)
+        QuestLib:GiveQuest(plr, questId)
         local container = plr.Quests:FindFirstChild(questId)
 
         for objId, value in state.Objectives do
@@ -209,12 +209,12 @@ function QuestLib.LoadSavedTable(plr: Player, savedData: SavedQuestData)
 end
 
 
-function QuestLib.GetAllQuests(plr: Player) : { [string]: QuestLibData }
+function QuestLib:GetAllQuests(plr: Player) : { [string]: QuestLibData }
     return QuestLib.ActiveQuests[plr]
 end
 
 
-function QuestLib.GetDoingQuests(plr: Player) : { [string]: QuestLibData }
+function QuestLib:GetDoingQuests(plr: Player) : { [string]: QuestLibData }
     local result = {}
 
     for questId: string, questData: QuestLibData in QuestLib.ActiveQuests[plr] do
@@ -227,7 +227,7 @@ function QuestLib.GetDoingQuests(plr: Player) : { [string]: QuestLibData }
 end
 
 
-function QuestLib.GetCompletedQuests(plr: Player) : { [string]: QuestLibData }
+function QuestLib:GetCompletedQuests(plr: Player) : { [string]: QuestLibData }
     local result = {}
 
     for questId: string, questData: QuestLibData in QuestLib.ActiveQuests[plr] do
@@ -240,7 +240,7 @@ function QuestLib.GetCompletedQuests(plr: Player) : { [string]: QuestLibData }
 end
 
 
-function QuestLib.GetQuestData(plr: Player, questId: string) : QuestBook.QuestJSON?
+function QuestLib:GetQuestData(plr: Player, questId: string) : QuestBook.QuestJSON?
     if not QuestLib.ActiveQuests[plr][questId] then return nil end
 
     return QuestLib.ActiveQuests[plr][questId].Data

@@ -51,8 +51,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib.IsCharValid(entity) then return false end
-        if not ServerLib.IsCharValid(target) then return false end
+        if not ServerLib:IsCharValid(entity) then return false end
+        if not ServerLib:IsCharValid(target) then return false end
 
         return true
     end
@@ -62,7 +62,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
     local function _moving()
-        local projectilePos = ServerLib.FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
+        local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position +
             Vector3.new(math.random(-32, 32), 0, math.random(-32, 32)))
 
         entity:PivotTo(CFrame.new(projectilePos) * CFrame.new(0, entity.PrimaryPart.Size.Y / 2, 0))
@@ -101,7 +101,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -122,7 +122,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
                 if i == 1 then
                     random = Vector3.zero
                 end
-                local post = ServerLib.FindGroundByRay(projectilePos + random)
+                local post = ServerLib:FindGroundByRay(projectilePos + random)
 
 
                 Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
@@ -142,7 +142,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         })
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
-        local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
+        local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
         projectilePos = HarukaLib:CFLookAt(projectilePos, entity.PrimaryPart.Position)
 

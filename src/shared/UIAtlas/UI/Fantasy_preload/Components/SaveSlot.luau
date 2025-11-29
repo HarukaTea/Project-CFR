@@ -15,9 +15,7 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
-local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
 local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
-
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 
@@ -129,13 +127,16 @@ return function (scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
-
+            Components.UICorner(scope, {
+                CornerRadius = UDim.new(0.05, 0),
+            }),
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.015,
-                Color = Color3.new(),
-            }),
 
+                Color = Fusion.Computed(scope, function(use: Fusion.Scope, _)
+                    return if use(isSelecting) then Components.WHITE_COLOR else Color3.fromRGB()
+                end)
+            }),
 
             Fusion.Computed(scope, function(use: Fusion.Scope, _)
                 if use(posX) == 0.2 then
@@ -187,25 +188,8 @@ return function (scope: Fusion.Scope, props: {
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     props.SaveSlotClickedSignal:Fire(props.SlotId)
                 end,
-
-
-                [Children] = {
-                    Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
-
-                    Components.ScaledUIStroke(scope, {
-                        Thickness = 0.015,
-
-                        Enabled = Fusion.Computed(scope, function(use: Fusion.Scope, _)
-                            return use(isSelecting)
-                        end),
-                    }),
-                }
             }),
 
-            FrameBorderTex(scope, {
-                BorderType = "Outer",
-                Size = UDim2.fromScale(0.07, 0.07)
-            }),
             CAPatternTex(scope, {}),
 
 
@@ -337,7 +321,7 @@ return function (scope: Fusion.Scope, props: {
                             weapon = weapon:Clone()
                             weapon:AddTag("ClassWeapon")
 
-                            ClientLib.WeldWeapon(weapon, charClone)
+                            ClientLib:WeldWeapon(weapon, charClone)
                         end
 
                         repeat wait() until vpFrame.Parent
@@ -383,7 +367,6 @@ return function (scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(1, 0.1),
 
                 Text = "EMPTY",
-                TextColor3 = Color3.fromRGB(159, 159, 159),
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Scope, _)
                     return use(isEmpty)

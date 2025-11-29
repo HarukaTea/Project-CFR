@@ -62,8 +62,8 @@ local function _getCharAndTargeting(plr: Player) : (Model?, Model?)
 end
 local function _charAndTargetingCheck(char: Model, targeting: Model) : boolean
     if char == nil or targeting == nil then return false end
-    if not ServerLib.IsCharValid(char) then return false end
-    if not ServerLib.IsCharValid(targeting) then return false end
+    if not ServerLib:IsCharValid(char) then return false end
+    if not ServerLib:IsCharValid(targeting) then return false end
 
     return true
 end
@@ -83,7 +83,7 @@ ClassAttackLib.HEAL_ATTACK = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-    StatusLib.Heal(char, math.ceil(char.Humanoid.MaxHealth * 0.12))
+    StatusLib:Heal(char, math.ceil(char.Humanoid.MaxHealth * 0.12))
 end
 
 
@@ -146,7 +146,7 @@ ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
     comboEff.Parent = targeting.PrimaryPart
     Debris:AddItem(comboEff, 1)
 
-    ServerLib.ShowText(char, "SEAL!", ClassBook.Chain.Color)
+    ServerLib:ShowText(char, "SEAL!", ClassBook.Chain.Color)
 end
 ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
@@ -176,7 +176,7 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
 
         Debris:AddItem(ultPeriodSymbol, 6)
 
-        StatusLib.CreateCustomEffect("ComboUlt", char, {
+        StatusLib:CreateCustomStatus("ComboUlt", char, {
             Duration = 6
         })
     end)
@@ -215,7 +215,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 		DMGType = "DMG",
 		Attacker = "ClassAttacks"
 	})
-	ServerLib.ShowText(char, "BURST SHOT!", ClassBook.Burst.Color)
+	ServerLib:ShowText(char, "BURST SHOT!", ClassBook.Burst.Color)
 
 
 	char:SetAttribute("BurstArrow", 0)
@@ -250,7 +250,7 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         Debris:AddItem(ultPeriodSymbol, 8)
 
 
-        StatusLib.CreateCustomEffect("BurstUlt", char, {
+        StatusLib:CreateCustomStatus("BurstUlt", char, {
             Duration = 8
         })
     end)
@@ -372,7 +372,7 @@ ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     if targetingPitch == orbPitch or targetingPitch == orbPitch2 then
         dmg = math.ceil(dmg * 2)
 
-        ServerLib.ShowText(targeting, "ECHO!", ClassBook.Reverberation.Color)
+        ServerLib:ShowText(targeting, "ECHO!", ClassBook.Reverberation.Color)
     end
 
     ClassAttackLib._DealDamageToEnemy(char, targeting, {
@@ -410,7 +410,7 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
         Debris:AddItem(ultPeriodSymbol, 8)
 
 
-        StatusLib.CreateCustomEffect("ReverberationUlt", char, {
+        StatusLib:CreateCustomStatus("ReverberationUlt", char, {
             Duration = 8
         })
     end)
@@ -448,7 +448,7 @@ ClassAttackLib.Furioso = function(plr: Player, symbolAttrs: Dict)
         char:SetAttribute("FuriosoRollCounter", 0)
 
         diceRoll = 3
-        ServerLib.ShowText(char, "FURIOUS!", ClassBook.Furioso.Color)
+        ServerLib:ShowText(char, "FURIOUS!", ClassBook.Furioso.Color)
     end
 
 
@@ -486,7 +486,7 @@ ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
         Debris:AddItem(ultPeriodSymbol, 7)
 
 
-        StatusLib.CreateCustomEffect("FuriosoUlt", char, {
+        StatusLib:CreateCustomStatus("FuriosoUlt", char, {
             Duration = 7
         })
     end)
@@ -501,7 +501,7 @@ ClassAttackLib.Execution = function(plr: Player, symbolAttrs: Dict)
 
     if math.random(1, 3) == 2 then
         local dmg = ClassAttackLib._CalDMG("DMG", char)
-        StatusLib.Heal(char, math.ceil(dmg / 3))
+        StatusLib:Heal(char, math.ceil(dmg / 3))
     end
 
 
@@ -570,7 +570,7 @@ function ClassAttackLib._CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
         isCrit = result == "Crit"
     end
     if isCrit then
-        ServerLib.ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
+        ServerLib:ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
     end
 
 
@@ -624,7 +624,7 @@ function ClassAttackLib._AddClassUltCharge(plr: Player, amount: number)
     HarukaLib:AddAttr(char, "ClassUltProgress", math.ceil(amount * char:GetAttribute("ClassUltCharge") / 100))
 end
 
-function ClassAttackLib:_DamageDealMiddler(char: Model, targeting: Model, dmgProps: {
+function ClassAttackLib._DamageDealMiddler(char: Model, targeting: Model, dmgProps: {
     DMG: number,
     DMGType: string,
     Attacker: string
@@ -652,7 +652,7 @@ function ClassAttackLib:_DamageDealMiddler(char: Model, targeting: Model, dmgPro
         dmgProps.DMG /= 2
         dmgProps.DMG = math.ceil(dmgProps.DMG)
 
-        ServerLib.ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
+        ServerLib:ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
     end
 
 
@@ -665,15 +665,15 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
     DMGType: string,
     Attacker: string
 })
-    if not ServerLib.IsCharValid(targeting) then return end
+    if not ServerLib:IsCharValid(targeting) then return end
     if dmgProps.DMG <= 0 then
-        ServerLib.ShowText(targeting, "MISS!", Color3.fromHex('#ffffff'))
-        ServerLib.ApplyHitStatus(targeting)
+        ServerLib:ShowText(targeting, "MISS!", Color3.fromHex('#ffffff'))
+        ServerLib:ApplyHitStatus(targeting)
         return
     end
 
     --// middler
-    dmgProps.DMG = ClassAttackLib:_DamageDealMiddler(char, targeting, dmgProps)
+    dmgProps.DMG = ClassAttackLib._DamageDealMiddler(char, targeting, dmgProps)
 
 
     local targetingHumanoid = targeting.Humanoid :: Humanoid
@@ -692,8 +692,8 @@ function ClassAttackLib._DealDamageToEnemy(char: Model, targeting: Model, dmgPro
 
         local class = player:GetAttribute("Class") :: string
 
-        ServerLib.ShowNumber(targeting, dmgProps.DMG, ClassBook[class].Color)
-        ServerLib.ApplyHitStatus(targeting)
+        ServerLib:ShowNumber(targeting, dmgProps.DMG, ClassBook[class].Color)
+        ServerLib:ApplyHitStatus(targeting)
 
 	end):catch(function(err)
         if RunService:IsStudio() then warn(tostring(err)) end

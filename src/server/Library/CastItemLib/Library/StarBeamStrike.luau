@@ -52,7 +52,7 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
         Events.FaceTargetingEnemy_S.Fire(player)
 
 
-        Events.PlayVFXScene_S.FireList(ServerLib.GetNearbyPlayers(char.PrimaryPart.Position), {
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "StarBeamStrike",
             Caster = char,
             ProjectileUniqueId = uniqueId,

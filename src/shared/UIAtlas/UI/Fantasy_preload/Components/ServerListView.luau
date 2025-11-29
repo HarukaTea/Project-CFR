@@ -8,7 +8,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
 
-local FrameBorderTex = require(RepS.HarukaShared.UIAtlas.Components.FrameBorderTex)
 local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
 local Children = Fusion.Children
@@ -60,10 +59,6 @@ return function (scope: Fusion.Scope, props: {
                 Color = Color3.new(),
             }),
 
-            FrameBorderTex(scope, {
-                BorderType = "Outer",
-                Size = UDim2.fromScale(0.07, 0.07)
-            }),
             CAPatternTex(scope, {
                 TileSize = UDim2.fromScale(0.07, 0.15)
             }),

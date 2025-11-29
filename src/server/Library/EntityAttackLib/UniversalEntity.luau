@@ -28,7 +28,7 @@ local function _getCharsByRadius(pos: Vector3, radius: number)
     local charList = {}
 
     for _, char: Model in CollectionService:GetTagged("PlayerCharEntity") do
-        if not ServerLib.IsCharValid(char) then continue end
+        if not ServerLib:IsCharValid(char) then continue end
         if not char:GetAttribute("Haruka_CriRPGServerInited") then continue end
 
         local plr = Players:GetPlayerFromCharacter(char)
@@ -58,7 +58,7 @@ UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ()
 
 
     local function _checkIsValid()
-        if not ServerLib.IsModelValid(entity) then
+        if not ServerLib:IsModelValid(entity) then
             resolveObj()
         end
     end
@@ -125,7 +125,7 @@ UniversalEntity.InitAttackTasks = function(_, self: Types.EntityAttackObj, resol
         end
         lastFunc = rFunc
 
-        if not ServerLib.IsCharValid(rTarget) then continue end
+        if not ServerLib:IsCharValid(rTarget) then continue end
 
 
         self.AttackFuncs[rFunc](rTarget)
@@ -196,7 +196,7 @@ UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTar
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
     end
-    if not ServerLib.IsCharValid(entity) then
+    if not ServerLib:IsCharValid(entity) then
         return false, "Dead"
     end
 

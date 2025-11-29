@@ -33,39 +33,39 @@ end)
 
 --// Helper functions
 
-function ServerLib.WeldModel(part: BasePart, welded: Model)
-	ClientLib.WeldModel(part, welded)
+function ServerLib:WeldModel(part: BasePart, welded: Model)
+	ClientLib:WeldModel(part, welded)
 end
 
-function ServerLib.FindGroundByRay(givenPos: Vector3)
-	return ClientLib.FindGroundByRay(givenPos)
+function ServerLib:FindGroundByRay(givenPos: Vector3)
+	return ClientLib:FindGroundByRay(givenPos)
 end
 
-function ServerLib.FindGroundByRayForOrb(givenPos: Vector3)
-	return ClientLib.FindGroundByRayForOrb(givenPos)
+function ServerLib:FindGroundByRayForOrb(givenPos: Vector3)
+	return ClientLib:FindGroundByRayForOrb(givenPos)
 end
 
-function ServerLib.WeldWeapon(weapon: Model, char: Model)
-	ClientLib.WeldWeapon(weapon, char)
+function ServerLib:WeldWeapon(weapon: Model, char: Model)
+	ClientLib:WeldWeapon(weapon, char)
 end
 
-function ServerLib.IsModelValid(model: Model)
-	return ClientLib.IsModelValid(model)
+function ServerLib:IsModelValid(model: Model)
+	return ClientLib:IsModelValid(model)
 end
 
-function ServerLib.IsCharValid(char: Model)
-	return ClientLib.IsCharValid(char)
+function ServerLib:IsCharValid(char: Model)
+	return ClientLib:IsCharValid(char)
 end
 
-function ServerLib.GetPlayerByUniqueId(uniqueId: string)
-	return ClientLib.GetPlayerByUniqueId(uniqueId)
+function ServerLib:GetPlayerByUniqueId(uniqueId: string)
+	return ClientLib:GetPlayerByUniqueId(uniqueId)
 end
 
-function ServerLib.PlayWorldSound(sound: Sound, pos: Vector3)
-	ClientLib.PlayWorldSound(sound, pos)
+function ServerLib:PlayWorldSound(sound: Sound, pos: Vector3)
+	ClientLib:PlayWorldSound(sound, pos)
 end
 
-function ServerLib.FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
+function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 15, -Vector3.yAxis * 159, terrainParams)
 	if rayResult then return rayResult.Position end
 
@@ -73,13 +73,13 @@ function ServerLib.FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
 end
 
 
-function ServerLib.GetNearbyPlayers(position: Vector3)
+function ServerLib:GetNearbyPlayers(position: Vector3)
 	local players = {}
 	local playerEntities = CollectionService:GetTagged("PlayerEntity") :: { Player }
 
 	for _, player in playerEntities do
 		if not player then continue end
-		if not ServerLib.IsCharValid(player.Character) then continue end
+		if not ServerLib:IsCharValid(player.Character) then continue end
 
 		local distance = player:DistanceFromCharacter(position)
 		if distance > 0 and distance <= 159 * 2.599 then
@@ -90,7 +90,7 @@ function ServerLib.GetNearbyPlayers(position: Vector3)
 	return players
 end
 
-function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
+function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 	local orbLocation = CFrame.identity
 	local MAGNITUDE = 30
 
@@ -99,7 +99,7 @@ function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 
 		local rng = Random.new()
 		local rX, rZ = rng:NextInteger(-MAGNITUDE, MAGNITUDE), rng:NextInteger(-MAGNITUDE, MAGNITUDE)
-		local pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(rX, 0, rZ))
+		local pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(rX, 0, rZ))
 
 		while repeatedTimes <= 15 do
 			-- we gonna try to find a valid position, if we can't, we'll try again
@@ -113,7 +113,7 @@ function ServerLib.GenerateOrbPos(combatLocation: CFrame) : CFrame
 
 			rng = Random.new()
 			rX, rZ = rng:NextInteger(-MAGNITUDE, MAGNITUDE), rng:NextInteger(-MAGNITUDE, MAGNITUDE)
-			pos = ServerLib.FindGroundByRayForOrb(combatLocation.Position + Vector3.new(rX, 0, rZ))
+			pos = ServerLib:FindGroundByRayForOrb(combatLocation.Position + Vector3.new(rX, 0, rZ))
 
 			repeatedTimes += 1
 		end
@@ -133,14 +133,14 @@ end
 
 
 
-function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
-	if not ServerLib.IsCharValid(target) then return end
+function ServerLib:ShowNumber(target: Model, number: number, color: Color3?)
+	if not ServerLib:IsCharValid(target) then return end
 
 	local pos = target.PrimaryPart.Position
 	local cf, size = target:GetBoundingBox()
 
 
-	Events.ShowDMGNumber_S.FireList(ServerLib.GetNearbyPlayers(pos), {
+	Events.ShowDMGNumber_S.FireList(ServerLib:GetNearbyPlayers(pos), {
 		DMGPos = pos,
 		DMGCF = cf,
 		DMGSize = size,
@@ -150,15 +150,15 @@ function ServerLib.ShowNumber(target: Model, number: number, color: Color3?)
 end
 
 
-function ServerLib.ShowText(target: Model, text: string, color: Color3?)
-	if not ServerLib.IsCharValid(target) then return end
+function ServerLib:ShowText(target: Model, text: string, color: Color3?)
+	if not ServerLib:IsCharValid(target) then return end
 
 
 	local pos = target.PrimaryPart.Position
 	local cf, size = target:GetBoundingBox()
 
 
-	Events.ShowText_S.FireList(ServerLib.GetNearbyPlayers(pos), {
+	Events.ShowText_S.FireList(ServerLib:GetNearbyPlayers(pos), {
 		TextPos = pos,
 		TextCF = cf,
 		TextSize = size,
@@ -168,18 +168,18 @@ function ServerLib.ShowText(target: Model, text: string, color: Color3?)
 end
 
 
-function ServerLib.ApplyHitStatus(target: Model)
-	if not ServerLib.IsCharValid(target) then return end
+function ServerLib:ApplyHitStatus(target: Model)
+	if not ServerLib:IsCharValid(target) then return end
 
 
-	Events.PlayVFXStatusToEntity_S.FireList(ServerLib.GetNearbyPlayers(target.PrimaryPart.Position), {
+	Events.PlayVFXStatusToEntity_S.FireList(ServerLib:GetNearbyPlayers(target.PrimaryPart.Position), {
 		StatusId = "Hit",
 		Entity = target
 	})
 end
 
 
-function ServerLib.PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3, autoPickup: boolean)
+function ServerLib:PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3, autoPickup: boolean)
 	local itemUniqueId = HttpService:GenerateGUID(false)
 	local container = ServerStorage.ItemSphereSymbolContainer :: Folder
 
@@ -203,7 +203,7 @@ end
 
 
 
-function ServerLib.GiveRandomStatForItem(itemId: string) : string
+function ServerLib:GiveRandomStatForItem(itemId: string) : string
 	if not ItemBook:GetItemInfo(itemId) then return "" end
 
 	local itemInfo = ItemBook:GetItemInfo(itemId)
@@ -238,7 +238,7 @@ function ServerLib.GiveRandomStatForItem(itemId: string) : string
 end
 
 
-function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
+function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 	if not ItemBook:GetItemInfo(itemId) then return end
 
 
@@ -246,7 +246,7 @@ function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 	local itemInfo = ItemBook:GetItemInfo(itemId)
 
 	local function _createNewSymbol(forcedAmount: number?)
-		local randomStat = ServerLib.GiveRandomStatForItem(itemId)
+		local randomStat = ServerLib:GiveRandomStatForItem(itemId)
 
 		local itemVal = Instance.new("IntConstrainedValue")
 		itemVal.MinValue = 0
@@ -325,7 +325,7 @@ function ServerLib.GiveItemDrop(plr: Player, itemId: string, amount: number)
 end
 
 
-function ServerLib.GiveEXPRewards(plr: Player, exp: number)
+function ServerLib:GiveEXPRewards(plr: Player, exp: number)
 	exp = exp or 0
 	if exp <= 0 then return end
 
@@ -340,7 +340,7 @@ function ServerLib.GiveEXPRewards(plr: Player, exp: number)
 end
 
 
-function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
+function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	method = method or "Equip"
 
 	local itemSymbol = nil
@@ -359,7 +359,7 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	end
 
 	local char = plr.Character :: Model
-	if not ServerLib.IsCharValid(char) then
+	if not ServerLib:IsCharValid(char) then
 		Events.CreateNotify_S.Fire(plr, "[Error] Cannot equip item, character not found")
 		return
 	end
@@ -408,22 +408,22 @@ function ServerLib.EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	end
 end
 
-function ServerLib.UnequipItem(plr: Player, itemUniqueId: string)
-	ServerLib.EquipItem(plr, itemUniqueId, "Unequip")
+function ServerLib:UnequipItem(plr: Player, itemUniqueId: string)
+	ServerLib:EquipItem(plr, itemUniqueId, "Unequip")
 end
 
 
 
-function ServerLib.EquipCosmetic(plr: Player, itemUniqueId: string, method: string?)
+function ServerLib:EquipCosmetic(plr: Player, itemUniqueId: string, method: string?)
 
 end
-function ServerLib.UnequipCosmetic(plr: Player, itemUniqueId: string)
+function ServerLib:UnequipCosmetic(plr: Player, itemUniqueId: string)
 	ServerLib.EquipCosmetic(plr, itemUniqueId, "Unequip")
 end
 
 
 
-function ServerLib.CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -> ()?, failureHandler: () -> ()?)
+function ServerLib:CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -> ()?, failureHandler: () -> ()?)
 	Promise.new(function()
 		local hasBadge = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
 		if hasBadge and callBack then callBack() end
@@ -433,7 +433,7 @@ function ServerLib.CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -
 		if RunService:IsStudio() then warn(tostring(err)) end
 	end)
 end
-function ServerLib.GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
+function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 	if game.GameId ~= AssetBook.CFUniverseId_Main then return end
 
 

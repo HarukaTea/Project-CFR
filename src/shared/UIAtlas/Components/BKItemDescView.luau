@@ -423,12 +423,12 @@ return function (scope: Fusion.Scope, props: {
                         Name = "AAA_ItemIcon",
                         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                         BackgroundTransparency = 0,
-                        Size = UDim2.fromScale(1, 0.3),
+                        Size = UDim2.fromScale(0.95, 0.3),
                         LayoutOrder = 0,
                         ClipsDescendants = true,
 
                         [Children] = {
-                            Components.UIAspectRatioConstraint(scope, 3.844),
+                            Components.UIAspectRatioConstraint(scope, 3.652),
                             Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
 
                             Components.UIGradient(scope, {

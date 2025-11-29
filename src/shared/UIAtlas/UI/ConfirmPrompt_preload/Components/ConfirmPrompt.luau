@@ -91,10 +91,11 @@ return function (scope: Fusion.Scope, props: {
                                     Padding = UDim.new(0.025, 0),
                                     FillDirection = Enum.FillDirection.Horizontal,
                                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                                    SortOrder = Enum.SortOrder.Name,
                                 }),
 
                                 ExecuteButton(scope, {
-                                    LayoutOrder = 2,
+                                    Id = "Confirm",
                                     Size = UDim2.fromScale(0.45, 0.75),
                                     ButtonText = props.ConfirmText,
                                     ButtonType = "Confirm",
@@ -103,7 +104,8 @@ return function (scope: Fusion.Scope, props: {
                                     end
                                 }),
                                 ExecuteButton(scope, {
-                                    LayoutOrder = 1,
+                                    Id = "Decline",
+                                    LayoutOrder = 2,
                                     Size = UDim2.fromScale(0.45, 0.75),
                                     ButtonText = props.CancelText,
                                     ButtonType = "Cancel",

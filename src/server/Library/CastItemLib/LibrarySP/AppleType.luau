@@ -26,7 +26,7 @@ return function (self: Types.CastItemLib)
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib.HealPercentage(char, 5)
 
-            ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+            ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
         return nil
     end
@@ -45,7 +45,7 @@ return function (self: Types.CastItemLib)
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib.HealPercentage(char, 10)
 
-            ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+            ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
 
         return nil
@@ -66,9 +66,9 @@ return function (self: Types.CastItemLib)
 
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib.HealPercentage(char, 15)
-            ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+            ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
 
-            StatusLib.DMGBoost(char, {
+            StatusLib:ATKBoost(char, {
                 DMGPower = 0.5,
                 Duration = 6
             })

@@ -60,7 +60,7 @@ end
 
 
 function DoTLib:Activate()
-    if not ServerLib.IsCharValid(self.Target) then return end
+    if not ServerLib:IsCharValid(self.Target) then return end
 
     local effectSymbol = Instance.new("StringValue")
     effectSymbol.Name = "EffectSymbol"
@@ -93,10 +93,10 @@ function DoTLib:Activate()
 
     for i = 1, self.Duration do
         table.insert(self.Tasks, GlobalTimer:AddTask(i, function()
-            if not ServerLib.IsCharValid(self.Target) then return end
+            if not ServerLib:IsCharValid(self.Target) then return end
 
-            if StatusLib[self.Type] then
-                StatusLib[self.Type](self.Target, self)
+            if StatusLib.DoT[self.Type] then
+                StatusLib.DoT[self.Type](self.Target, self)
             end
         end))
     end
@@ -167,7 +167,7 @@ end
 
 
 
-function DoTLib.GetEffectsByTarget(target: Model)
+function DoTLib:GetEffectsByTarget(target: Model)
     local objs = {}
 
     for _, thatObj in allDoTObjs do
@@ -180,7 +180,7 @@ function DoTLib.GetEffectsByTarget(target: Model)
     return objs
 end
 
-function DoTLib.GetAffectedTargetsByEffectId(effectId: string)
+function DoTLib:GetAffectedTargetsByEffectId(effectId: string)
     local objs = {}
 
     for _, thatObj in allDoTObjs do

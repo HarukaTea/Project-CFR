@@ -19,10 +19,10 @@ local wait = task.wait
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    if not ClientLib.IsCharValid(char) then return end
+    if not ClientLib:IsCharValid(char) then return end
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib.IsCharValid(targetingEnemy) then return end
+    if not ClientLib:IsCharValid(targetingEnemy) then return end
 
 
     local combatLocation = char:GetAttribute("CombatLocation") :: CFrame
@@ -42,7 +42,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     for _, pos in positions do
         Promise.try(function()
             local astral = RepS.Packages.SkillProjectiles:FindFirstChild("ChainTargetCircle", true):Clone() :: BasePart
-            astral.CFrame = CFrame.new(ClientLib.FindGroundByRay(pos))
+            astral.CFrame = CFrame.new(ClientLib:FindGroundByRay(pos))
             astral.Parent = workspace.Terrain
             Debris:AddItem(astral, 3)
 
@@ -61,7 +61,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
 
             for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
-                if not ClientLib.IsCharValid(symbol.Value) then continue end
+                if not ClientLib:IsCharValid(symbol.Value) then continue end
 
                 local entity = symbol.Value :: Model
                 local enemyPos = entity.PrimaryPart.Position

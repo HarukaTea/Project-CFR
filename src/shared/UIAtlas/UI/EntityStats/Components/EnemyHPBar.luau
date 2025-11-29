@@ -14,7 +14,7 @@ return function (scope: Fusion.Scope, props: {
     Enemy: Model,
 })
 
-    if not ClientLib.IsCharValid(props.Enemy) then return nil end
+    if not ClientLib:IsCharValid(props.Enemy) then return nil end
     if not EntityBook[props.Enemy.Name] then return nil end
 
 
@@ -80,7 +80,7 @@ return function (scope: Fusion.Scope, props: {
 
 
     --// track effect list
-    ClientLib.TrackEffectListToUI({
+    ClientLib:TrackEffectListToUI({
         Target = props.Enemy,
         Scope = scope,
         GuiContainer = billboardGui.EffectList

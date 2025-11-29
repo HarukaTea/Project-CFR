@@ -66,7 +66,7 @@ return function (self: Self)
         local hrp = char.PrimaryPart
 
         RS:BindToRenderStep("ShiftLockUpdate", Enum.RenderPriority.Camera.Value + 1, function()
-            if not ClientLib.IsCharValid(char) then return end
+            if not ClientLib:IsCharValid(char) then return end
 
             humanoid.AutoRotate = false
 

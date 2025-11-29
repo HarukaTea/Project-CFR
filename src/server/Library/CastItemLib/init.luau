@@ -32,7 +32,7 @@ local function _preCheck(props: {
     if not player or not char then
         return false
     end
-    if not ServerLib.IsCharValid(char) then
+    if not ServerLib:IsCharValid(char) then
         return false
     end
     if not ItemBook:GetItemInfo(data.ItemId) then
@@ -52,7 +52,7 @@ local function _preCheck(props: {
         end
 
         local enemy = char.TargetingEnemy.Value :: Model
-        if not ServerLib.IsCharValid(enemy) then
+        if not ServerLib:IsCharValid(enemy) then
             Events.CreateNotify_S.Fire(player, "[Error] Invalid Target Entity")
             return false
         end
@@ -62,14 +62,14 @@ local function _preCheck(props: {
 end
 local function _eatSoundFunc(char: Model, func: () -> nil)
     local eatSound = SoundService.SFXs.EatSound :: Sound
-    ServerLib.PlayWorldSound(eatSound, char.PrimaryPart.Position)
+    ServerLib:PlayWorldSound(eatSound, char.PrimaryPart.Position)
 
 
     task.delay(eatSound.TimeLength / 2, func)
 end
 local function _drinkSoundFunc(char: Model, func: () -> nil)
     local drinkSound = SoundService.SFXs.DrinkSound :: Sound
-    ServerLib.PlayWorldSound(drinkSound, char.PrimaryPart.Position)
+    ServerLib:PlayWorldSound(drinkSound, char.PrimaryPart.Position)
 
 
     task.delay(drinkSound.TimeLength / 2, func)

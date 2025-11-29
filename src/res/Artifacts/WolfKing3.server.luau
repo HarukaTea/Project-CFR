@@ -21,7 +21,7 @@ local function _giveATK()
     if health <= maxHealth / 2 then
         if char.EffectList:FindFirstChild("WolfHowl") then return end
 
-        StatusLib.NormalBoostForEntity("WolfHowl", char, {
+        StatusLib:Boost("WolfHowl", char, {
             Duration = 12,
             Ex = 25,
             Power = 0,

@@ -32,7 +32,7 @@ return function (self: Types.CastItemLib)
         CastItemLib._drinkSoundFunc(char, function()
             local amount = StatusLib.HealPercentage(char, 20)
 
-            ServerLib.ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
+            ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
 
         return nil
@@ -52,7 +52,7 @@ return function (self: Types.CastItemLib)
 
 
         CastItemLib._drinkSoundFunc(char, function()
-            StatusLib.DMGBoost(char, {
+            StatusLib:ATKBoost(char, {
                 DMGPower = 0.75,
                 Duration = 8
             })
@@ -75,7 +75,7 @@ return function (self: Types.CastItemLib)
 
 
         CastItemLib._drinkSoundFunc(char, function()
-            StatusLib.NormalBoostForEntity("Magic", char, {
+            StatusLib:Boost("Magic", char, {
                 Power = 0.75,
                 Duration = 8
             })
@@ -100,7 +100,7 @@ return function (self: Types.CastItemLib)
 
 
         CastItemLib._drinkSoundFunc(char, function()
-            StatusLib.NormalBoostForEntity("Speed", char, {
+            StatusLib:Boost("Speed", char, {
                 Power = 0.5,
                 Duration = 6
             })

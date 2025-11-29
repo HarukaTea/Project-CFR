@@ -58,7 +58,7 @@ local commands: CommandJSON = {
 
             for _, thatPlr in players do
                 if not thatPlr then continue end
-                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
 
                 local noclip = RepS.Packages.Unloads.Noclip:Clone() :: Tool
                 noclip.Parent = thatPlr.Backpack
@@ -86,7 +86,7 @@ local commands: CommandJSON = {
 
             for _, thatPlr in players do
                 if not thatPlr then continue end
-                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
 
                 thatPlr.Character.Humanoid.Health = -1
             end
@@ -122,8 +122,8 @@ local commands: CommandJSON = {
 
 
                 local thatChar = thatPlr.Character
-                if not ServerLib.IsCharValid(thatChar) then continue end
-                if not ServerLib.IsCharValid(destinationPlayer.Character) then break end
+                if not ServerLib:IsCharValid(thatChar) then continue end
+                if not ServerLib:IsCharValid(destinationPlayer.Character) then break end
 
 
                 HarukaLib:TeleportPlayer(thatChar, destinationPlayer.Character.PrimaryPart.CFrame)
@@ -151,7 +151,7 @@ local commands: CommandJSON = {
 
             for _, thatPlr in players do
                 if not thatPlr then continue end
-                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
 
                 thatPlr.Character:SetAttribute("ClassUltProgress", thatPlr.Character:GetAttribute("MaxClassUltProgress"))
             end
@@ -194,7 +194,7 @@ local commands: CommandJSON = {
 
             for _, thatPlr in players do
                 if not thatPlr then continue end
-                if not ServerLib.IsCharValid(thatPlr.Character) then continue end
+                if not ServerLib:IsCharValid(thatPlr.Character) then continue end
 
                 thatPlr.Character:SetAttribute(props.Args[2], props.Args[3])
             end
@@ -240,10 +240,10 @@ local commands: CommandJSON = {
                     end
 
                     for _, itemId: string in allItems do
-                        ServerLib.GiveItemDrop(thatPlr, itemId, props.Args[3])
+                        ServerLib:GiveItemDrop(thatPlr, itemId, props.Args[3])
                     end
                 else
-                    ServerLib.GiveItemDrop(thatPlr, item, props.Args[3])
+                    ServerLib:GiveItemDrop(thatPlr, item, props.Args[3])
                 end
             end
 
@@ -472,12 +472,12 @@ local commands: CommandJSON = {
 
         Callback = function(props: CallbackProps)
             local char = props.Executor.Character
-            if not ServerLib.IsCharValid(char) then
+            if not ServerLib:IsCharValid(char) then
                 props.ResolveObj()
                 return
             end
 
-            local pos = ServerLib.FindGroundByRay(char.PrimaryPart.Position)
+            local pos = ServerLib:FindGroundByRay(char.PrimaryPart.Position)
 
             Events.CreateNotify_S.Fire(props.Executor, "Spawning Entity...")
 
@@ -521,7 +521,7 @@ local commands: CommandJSON = {
                 if not thatPlr then continue end
 
                 local char = props.Executor.Character
-                if not ServerLib.IsCharValid(char) then continue end
+                if not ServerLib:IsCharValid(char) then continue end
 
                 local map = workspace.Maps:FindFirstChild(props.Args[1], true)
                 if not map then break end

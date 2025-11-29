@@ -18,11 +18,11 @@ local wait = task.wait
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    if not ClientLib.IsCharValid(char) then return end
+    if not ClientLib:IsCharValid(char) then return end
 
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib.IsCharValid(targetingEnemy) then return end
+    if not ClientLib:IsCharValid(targetingEnemy) then return end
 
 
     local centerPos = char:GetAttribute("CombatLocation").Position :: Vector3
@@ -63,7 +63,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             Debris:AddItem(droplet, 4)
 
 
-            local floorPos = ClientLib.FindGroundByRay(droplet.Position)
+            local floorPos = ClientLib:FindGroundByRay(droplet.Position)
 
             HarukaLib:CreateTween(droplet, TweenInfo.new(0.6, Enum.EasingStyle.Circular, Enum.EasingDirection.Out), {
                 Position = floorPos
@@ -81,7 +81,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
 
                 for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
-                    if not ClientLib.IsCharValid(symbol.Value) then continue end
+                    if not ClientLib:IsCharValid(symbol.Value) then continue end
 
                     local entity = symbol.Value :: Model
                     local enemyPos = entity.PrimaryPart.Position

@@ -50,15 +50,15 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
-        if not ServerLib.IsCharValid(entity) then return false end
-        if not ServerLib.IsCharValid(target) then return false end
+        if not ServerLib:IsCharValid(entity) then return false end
+        if not ServerLib:IsCharValid(target) then return false end
 
         return true
     end
 
     local function _lookAt(target: Model)
-        if not ServerLib.IsCharValid(entity) then return end
-        if not ServerLib.IsCharValid(target) then return end
+        if not ServerLib:IsCharValid(entity) then return end
+        if not ServerLib:IsCharValid(target) then return end
 
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end

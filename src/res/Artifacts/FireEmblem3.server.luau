@@ -28,7 +28,7 @@ Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(targe
     end
     if stack >= 3 then return end
 
-    StatusLib.NormalBoostForEntity("FireEmblem", char, {
+    StatusLib:Boost("FireEmblem", char, {
         Duration = 10,
         Ex = 10,
         Power = 0,

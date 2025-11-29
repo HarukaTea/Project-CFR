@@ -17,8 +17,8 @@ local StatusLib = {}
 
 --// Helper functions
 
-StatusLib.Heal = function(char: Model, healAmount: number) : number?
-    if not ServerLib.IsCharValid(char) then return end
+function StatusLib:Heal(char: Model, healAmount: number) : number?
+    if not ServerLib:IsCharValid(char) then return end
 
     local plr = Players:GetPlayerFromCharacter(char)
     if plr == nil then return end
@@ -36,27 +36,133 @@ StatusLib.Heal = function(char: Model, healAmount: number) : number?
 	healEff.Parent = char
 	Debris:AddItem(healEff, 1.5)
 
-    ServerLib.PlayWorldSound(SoundService.SFXs.Healing, char.PrimaryPart.Position)
+    ServerLib:PlayWorldSound(SoundService.SFXs.Healing, char.PrimaryPart.Position)
 
     Events.PlayHealedScreenFX_S.Fire(plr)
 
     return healAmount
 end
-StatusLib.HealPercentage = function(char: Model, percentage: number) : number?
-    if not ServerLib.IsCharValid(char) then return end
+function StatusLib:HealPercentage(char: Model, percentage: number) : number?
+    if not ServerLib:IsCharValid(char) then return end
 
-    return StatusLib.Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
+    return StatusLib:Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
 end
 
 
 
 
-StatusLib.CreateCustomEffect = function(eff: string, char: Model, props: {
+function StatusLib:Boost(eff: string, char: Model, props: {
+    Power: number?,
+    Ex: number?,
+    Duration: number,
+
+    TrueEffectId: string?
+})
+    local effId = eff
+
+    if props.TrueEffectId then
+        effId = props.TrueEffectId
+    end
+    if not ServerLib:IsCharValid(char) then return end
+
+    local power = props.Power or 0
+    local ex = props.Ex or 0
+    local exAttr = effId.."Ex"
+    local powerAttr = effId.."ExPower"
+
+    if power == 0 and ex == 0 then return end
+
+    if not char:GetAttribute(exAttr) then
+        warn("Invalid boost effect: "..effId)
+        return
+    end
+    if not char:GetAttribute(powerAttr) then
+        warn("Invalid boost effect: "..effId)
+        return
+    end
+
+    HarukaLib:AddAttr(char, exAttr, ex)
+    HarukaLib:AddAttr(char, powerAttr, power)
+
+
+    local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
+        if not ServerLib:IsCharValid(char) then return end
+
+        HarukaLib:AddAttr(char, exAttr, -ex)
+        HarukaLib:AddAttr(char, powerAttr, -power)
+    end)
+
+
+    local effectSymbol = Instance.new("StringValue")
+    effectSymbol.Name = eff
+    effectSymbol.Value = eff.."Boost"
+
+    effectSymbol:SetAttribute("Ex", ex)
+    effectSymbol:SetAttribute("ExPower", power)
+    effectSymbol:SetAttribute("EndClock", DateTime.now().UnixTimestamp + props.Duration)
+
+    effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
+
+    effectSymbol.Parent = char.EffectList
+    Debris:AddItem(effectSymbol, props.Duration)
+end
+
+
+function StatusLib:ATKBoost(char: Model, props: {
+    DMGPower: number?,
+    DMG: number?,
+
+    Duration: number,
+})
+    if not ServerLib:IsCharValid(char) then return end
+
+    local plr = Players:GetPlayerFromCharacter(char)
+    if plr == nil then return end
+
+
+    local power = props.DMGPower or 0
+    local ex = props.DMG or 0
+
+    Events.PlayStatPoweredScreenFX_S.Fire(plr)
+
+
+    HarukaLib:AddAttr(char, "MaxDMGEx", ex)
+    HarukaLib:AddAttr(char, "MinDMGEx", ex)
+    HarukaLib:AddAttr(char, "MaxDMGExPower", power)
+    HarukaLib:AddAttr(char, "MinDMGExPower", power)
+
+
+    local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
+        if not ServerLib:IsCharValid(char) then return end
+
+        HarukaLib:AddAttr(char, "MaxDMGEx", -ex)
+        HarukaLib:AddAttr(char, "MinDMGEx", -ex)
+        HarukaLib:AddAttr(char, "MaxDMGExPower", -power)
+        HarukaLib:AddAttr(char, "MinDMGExPower", -power)
+    end)
+
+
+    local effectSymbol = Instance.new("StringValue")
+    effectSymbol.Name = "ATK"
+    effectSymbol.Value = "ATKBoost"
+
+    effectSymbol:SetAttribute("Ex", ex)
+    effectSymbol:SetAttribute("ExPower", power)
+    effectSymbol:SetAttribute("EndClock", DateTime.now().UnixTimestamp + props.Duration)
+
+    effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
+
+    effectSymbol.Parent = char.EffectList
+    Debris:AddItem(effectSymbol, props.Duration)
+end
+
+
+function StatusLib:CreateCustomStatus(eff: string, char: Model, props: {
     Duration: number,
     PlayerOnly: string?,
     IsDebuff: boolean?,
 })
-    if not ServerLib.IsCharValid(char) then return end
+    if not ServerLib:IsCharValid(char) then return end
 
     local boostStr = "Boost"
     if props.IsDebuff then
@@ -81,115 +187,6 @@ StatusLib.CreateCustomEffect = function(eff: string, char: Model, props: {
 end
 
 
-
-StatusLib.NormalBoostForEntity = function(eff: string, char: Model, props: {
-    Power: number?,
-    Ex: number?,
-    Duration: number,
-
-    TrueEffectId: string?
-})
-    local effId = eff
-
-    if props.TrueEffectId then
-        effId = props.TrueEffectId
-    end
-    if not ServerLib.IsCharValid(char) then return end
-
-    local power = props.Power or 0
-    local ex = props.Ex or 0
-    local exAttr = effId.."Ex"
-    local powerAttr = effId.."ExPower"
-
-    if power == 0 and ex == 0 then return end
-
-    if not char:GetAttribute(exAttr) then
-        warn("Invalid boost effect: "..effId)
-        return
-    end
-    if not char:GetAttribute(powerAttr) then
-        warn("Invalid boost effect: "..effId)
-        return
-    end
-
-    HarukaLib:AddAttr(char, exAttr, ex)
-    HarukaLib:AddAttr(char, powerAttr, power)
-
-
-    local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
-        if not ServerLib.IsCharValid(char) then return end
-
-        HarukaLib:AddAttr(char, exAttr, -ex)
-        HarukaLib:AddAttr(char, powerAttr, -power)
-    end)
-
-
-    local effectSymbol = Instance.new("StringValue")
-    effectSymbol.Name = eff
-    effectSymbol.Value = eff.."Boost"
-
-    effectSymbol:SetAttribute("Ex", ex)
-    effectSymbol:SetAttribute("ExPower", power)
-    effectSymbol:SetAttribute("EndClock", DateTime.now().UnixTimestamp + props.Duration)
-
-    effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
-
-    effectSymbol.Parent = char.EffectList
-    Debris:AddItem(effectSymbol, props.Duration)
-end
-
-
-
-StatusLib.DMGBoost = function(char: Model, props: {
-    DMGPower: number?,
-    DMG: number?,
-
-    Duration: number,
-})
-    if not ServerLib.IsCharValid(char) then return end
-
-    local plr = Players:GetPlayerFromCharacter(char)
-    if plr == nil then return end
-
-
-    local power = props.DMGPower or 0
-    local ex = props.DMG or 0
-
-    Events.PlayStatPoweredScreenFX_S.Fire(plr)
-
-
-    HarukaLib:AddAttr(char, "MaxDMGEx", ex)
-    HarukaLib:AddAttr(char, "MinDMGEx", ex)
-    HarukaLib:AddAttr(char, "MaxDMGExPower", power)
-    HarukaLib:AddAttr(char, "MinDMGExPower", power)
-
-
-    local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
-        if not ServerLib.IsCharValid(char) then return end
-
-        HarukaLib:AddAttr(char, "MaxDMGEx", -ex)
-        HarukaLib:AddAttr(char, "MinDMGEx", -ex)
-        HarukaLib:AddAttr(char, "MaxDMGExPower", -power)
-        HarukaLib:AddAttr(char, "MinDMGExPower", -power)
-    end)
-
-
-    local effectSymbol = Instance.new("StringValue")
-    effectSymbol.Name = "ATK"
-    effectSymbol.Value = "ATKBoost"
-
-    effectSymbol:SetAttribute("Ex", ex)
-    effectSymbol:SetAttribute("ExPower", power)
-    effectSymbol:SetAttribute("EndClock", DateTime.now().UnixTimestamp + props.Duration)
-
-    effectSymbol:SetAttribute("TaskUniqueId", taskUniqueId)
-
-    effectSymbol.Parent = char.EffectList
-    Debris:AddItem(effectSymbol, props.Duration)
-end
-
-
-
 local function _calDoTDMG(char: Model, dmgType: "DMG" | "Magic")
     if dmgType == "DMG" then
         local minDMG, maxDMG = char:GetAttribute("MinDMG"), char:GetAttribute("MaxDMG")
@@ -205,8 +202,11 @@ local function _calDoTDMG(char: Model, dmgType: "DMG" | "Magic")
     end
 end
 
+--// DoT Effects
 
-StatusLib.Burn = function(target: Model, info: {
+StatusLib.DoT = {}
+
+StatusLib.DoT.Burn = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,
@@ -223,11 +223,11 @@ StatusLib.Burn = function(target: Model, info: {
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
-    ServerLib.ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
+    ServerLib:ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
 end
 
 
-StatusLib.Bleed = function(target: Model, info: {
+StatusLib.DoT.Bleed = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,
@@ -243,9 +243,9 @@ StatusLib.Bleed = function(target: Model, info: {
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
-    ServerLib.ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
+    ServerLib:ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
 end
-StatusLib.BloodButchered = function(target: Model, info: {
+StatusLib.DoT.BloodButchered = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,
@@ -261,11 +261,11 @@ StatusLib.BloodButchered = function(target: Model, info: {
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
-    ServerLib.ShowNumber(target, dmg, StatusBook.BloodButcheredDebuff.Color)
+    ServerLib:ShowNumber(target, dmg, StatusBook.BloodButcheredDebuff.Color)
 end
 
 
-StatusLib.Poison = function(target: Model, info: {
+StatusLib.DoT.Poison = function(target: Model, info: {
     Type: string,
     Creator: Model,
     Power: number,
@@ -281,7 +281,7 @@ StatusLib.Poison = function(target: Model, info: {
     local targetHumanoid = target.Humanoid :: Humanoid
 
     targetHumanoid:TakeDamage(dmg)
-    ServerLib.ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
+    ServerLib:ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
 end
 
 

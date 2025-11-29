@@ -153,7 +153,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
 
 
         if not itemInfo.ItemStat then
-            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId)
+            data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
         end
         if table.find(trueItemInfo.TagsDesync, "NoRandom") then
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
@@ -181,7 +181,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
                         ItemId = itemInfo.ItemId,
                         Amount = 1,
                         UniqueId = itemUniqueId,
-                        ItemStat = ServerLib.GiveRandomStatForItem(itemInfo.ItemId),
+                        ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId),
                         IsFav = false,
                         IsLocked = false
                     }
@@ -210,12 +210,12 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     end
 
 
-    --// check "NoDuplicate" tag item
+    --// check "NoDuplicate" or "Chest" tag item
     local noDuplicateUniqueIds = {}
     for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
 
-        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") then
+        if table.find(trueItemInfo.TagsDesync, "NoDuplicate") or table.find(trueItemInfo.TagsDesync, "Chest") then
             if noDuplicateUniqueIds[trueItemInfo.ItemId] == nil then
                 noDuplicateUniqueIds[trueItemInfo.ItemId] = {}
             end
@@ -228,6 +228,17 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             for i = 2, #uniqueIds do
                 data.ItemsSQL[uniqueIds[i]] = nil
             end
+        end
+    end
+
+
+    --// check if the accessory has ItemStat
+    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
+        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
+        local itemStat = string.gsub(itemInfo.ItemStat, " ", "")
+
+        if (trueItemInfo.Type == "Accessory" or trueItemInfo.Type == "Weapon") and itemStat == "" then
+            data.ItemsSQL[itemInfo.UniqueId] = nil
         end
     end
 
@@ -363,7 +374,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             ItemId = starterClassWeapons["Chain"],
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
-            ItemStat = ServerLib.GiveRandomStatForItem(starterClassWeapons["Chain"]),
+            ItemStat = ServerLib:GiveRandomStatForItem(starterClassWeapons["Chain"]),
             IsFav = false,
             IsLocked = false
         }

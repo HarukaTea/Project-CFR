@@ -69,7 +69,7 @@ Add(Events.DriveSkyGalleon_C.On(function(plr: Player, moveVector: Vector3)
 
     if not galleon:FindFirstChild("Owner") then return end
     if galleon.Owner.Value ~= plr then return end
-    if not ServerLib.IsModelValid(galleon) then return end
+    if not ServerLib:IsModelValid(galleon) then return end
     if not galleon.PrimaryPart:FindFirstChild("AlignPosition") then return end
 
     if not galleon.PrimaryPart.Position:FuzzyEq(pos) then

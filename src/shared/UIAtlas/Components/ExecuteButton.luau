@@ -14,7 +14,9 @@ return function(scope: Fusion.Scope, props: {
     Size: UDim2?,
     ButtonText: string?,
     ButtonClickFunc: () -> nil,
-    ButtonType: "Confirm" | "Cancel" | "Info"
+    ButtonType: "Confirm" | "Cancel" | "Info",
+
+    Id: string?
 })
     props.AnchorPoint = props.AnchorPoint or Vector2.new()
     props.LayoutOrder = props.LayoutOrder or 1
@@ -23,6 +25,8 @@ return function(scope: Fusion.Scope, props: {
     props.ButtonType = props.ButtonType or "Confirm"
     props.ButtonText = props.ButtonText or "Execute"
     props.ButtonClickFunc = props.ButtonClickFunc or function () end
+
+    props.Id = props.Id or props.ButtonText
 
 
     local ICONS = {
@@ -43,7 +47,7 @@ return function(scope: Fusion.Scope, props: {
 
 
 	return Components.TextButton(scope, {
-        Name = "ExecuteButton",
+        Name = "ExecuteButton_"..props.Id,
         AutoButtonColor = true,
         BackgroundColor3 = Components.WHITE_COLOR,
 

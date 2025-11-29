@@ -81,10 +81,10 @@ return function (self: Self)
     self.SortMethodList = {
 
     }
-    for _ = 1, 4 do
+    for _ = 1, 2 do
         table.insert(self.SortMethodList, Value(false))
     end
-    self.SortMethodList[4]:set(true)
+    self.SortMethodList[1]:set(true)
 
 
     self.Currency = {

@@ -31,6 +31,25 @@ HarukaComponents.GREY_COLOR = CriRPGColorLab.GREY_COLOR
 HarukaComponents.BLUE_COLOR = CriRPGColorLab.BLUE_COLOR
 
 
+HarukaComponents.TweenInfos = {
+	fourHalf = TweenInfo.new(0.05),
+	threeHalf = TweenInfo.new(0.15),
+	twiceHalf = TweenInfo.new(0.2),
+	onceHalf = TweenInfo.new(0.3),
+	half = TweenInfo.new(0.5),
+	halfBack = TweenInfo.new(0.5, Enum.EasingStyle.Back),
+	twiceHalfOne = TweenInfo.new(0.75),
+	threeHalfOne = TweenInfo.new(0.9),
+	one = TweenInfo.new(1),
+	oneHalf = TweenInfo.new(1.5),
+	two = TweenInfo.new(2),
+	four = TweenInfo.new(4),
+	six = TweenInfo.new(6),
+	fifteen = TweenInfo.new(15, Enum.EasingStyle.Linear)
+}
+HarukaComponents.DefaultTween = HarukaComponents.TweenInfos.twiceHalf
+
+
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
 
 
@@ -593,28 +612,6 @@ function HarukaComponents:CreateConfirmPrompt(scope: Fusion.Scope, data: {
 	end))
 
 	Bindables.CreateConfirmPrompt:Fire(data)
-
-	return waitSignal
-end
-function HarukaComponents:CreateInfoPrompt(scope: Fusion.Scope, data: {
-	Hint: string,
-	ConfirmText: string,
-	ConfirmUniqueId: string
-})
-	local innerScope = Fusion.innerScope(scope)
-	local waitSignal = Signal.new()
-	table.insert(innerScope, waitSignal)
-
-	table.insert(innerScope, Bindables.ConfirmPromptChosen:Connect(function(uniqueId: string, result: "YES" | "NO")
-		if uniqueId ~= data.ConfirmUniqueId then return end
-
-		waitSignal:Fire(result)
-
-		Fusion.doCleanup(innerScope)
-	end))
-
-
-	Bindables.CreateInfoPrompt:Fire(data)
 
 	return waitSignal
 end

@@ -30,8 +30,8 @@ ArtifactUniversal.RegisterEnemyOnHit = function(
         if source == nil then return end
         if source.Parent == nil then return end
         if attacker ~= char then return end
-        if not ServerLib.IsCharValid(targeting) then return end
-        if not ServerLib.IsCharValid(attacker) then return end
+        if not ServerLib:IsCharValid(targeting) then return end
+        if not ServerLib:IsCharValid(attacker) then return end
         if not dmgProps then return end
         if not dmgProps.DMG then return end
         if not dmgProps.Attacker then return end
@@ -51,8 +51,8 @@ ArtifactUniversal.RegisterClassUltCasted = function(
         if source == nil then return end
         if source.Parent == nil then return end
         if caster ~= char then return end
-        if not ServerLib.IsCharValid(ultProps.Target) then return end
-        if not ServerLib.IsCharValid(caster) then return end
+        if not ServerLib:IsCharValid(ultProps.Target) then return end
+        if not ServerLib:IsCharValid(caster) then return end
         if not ultProps then return end
         if not ultProps.ClassId then return end
 

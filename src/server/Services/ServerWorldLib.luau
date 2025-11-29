@@ -558,7 +558,7 @@ table.insert(ServerWorldLib.Funcs, function()
         for _, child: Instance in mob:GetChildren() do
             if child:IsA("BasePart") and mob:FindFirstChild(child.Name .. "Model") then
                 local model = mob[child.Name .. "Model"] :: Model
-                ServerLib.WeldModel(child, model)
+                ServerLib:WeldModel(child, model)
             end
         end
     end

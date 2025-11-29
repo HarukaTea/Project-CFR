@@ -20,10 +20,10 @@ local wait = task.wait
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
     local ClassSPSceneLib = self
-    if not ClientLib.IsCharValid(char) then return end
+    if not ClientLib:IsCharValid(char) then return end
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib.IsCharValid(targetingEnemy) then return end
+    if not ClientLib:IsCharValid(targetingEnemy) then return end
 
 
     local directionCF = HarukaLib:CFLookAt(char.PrimaryPart.Position, targetingEnemy.PrimaryPart.Position)
@@ -176,7 +176,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             local pos = flowProjectile.Position
 
             for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
-                if not ClientLib.IsCharValid(symbol.Value) then continue end
+                if not ClientLib:IsCharValid(symbol.Value) then continue end
 
                 local obj = symbol.Value :: Instance
                 local uniqueId = obj:GetAttribute("HarukaUniqueId") :: string

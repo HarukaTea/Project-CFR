@@ -219,16 +219,16 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         end
 
 
-        QuestLib.InitPlayer(plr)
+        QuestLib:InitPlayer(plr)
 
 
         local isAbyss = workspace:GetAttribute("AbyssId")
         local isDungeon = workspace:GetAttribute("DungeonId")
 
         if not isAbyss and not isDungeon then
-            QuestLib.LoadSavedTable(plr, validatedData.QuestsV3)
+            QuestLib:LoadSavedTable(plr, validatedData.QuestsV3)
             self.Add(function()
-                QuestLib.StopTrackingPlayer(plr)
+                QuestLib:StopTrackingPlayer(plr)
             end)
         end
 
@@ -371,7 +371,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
 
         --// Alpha Player badge
-        ServerLib.GiveBadge(3358503633424175, plr)
+        ServerLib:GiveBadge(3358503633424175, plr)
 
 
 
@@ -702,7 +702,7 @@ function PlayerLib:_SaveData()
 
         if not isAbyss and not isDungeon then
             --- im not 100% sure if this will work correctly, better pcall it
-            local questData = QuestLib.ExportDataTable(self.Player)
+            local questData = QuestLib:ExportDataTable(self.Player)
             if questData then
                 profileAttrs.QuestsV3 = questData
             end

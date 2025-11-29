@@ -19,11 +19,11 @@ local wait = task.wait
 --// Main
 
 return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    if not ClientLib.IsCharValid(char) then return end
+    if not ClientLib:IsCharValid(char) then return end
 
 
     local targetingEnemy = char.TargetingEnemy.Value
-    if not ClientLib.IsCharValid(targetingEnemy) then return end
+    if not ClientLib:IsCharValid(targetingEnemy) then return end
 
 
     local trailMathObj = TrailMath.new()
@@ -74,7 +74,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
         while true do
             RunService.Heartbeat:Wait()
 
-            local post = ClientLib.FindGroundByRayForOrb(echoRay.Position)
+            local post = ClientLib:FindGroundByRayForOrb(echoRay.Position)
 
             HarukaLib:CreateTween(echoRay, normalInfo, {
                 Position = targetingEnemy.PrimaryPart.Position + Vector3.yAxis * 30

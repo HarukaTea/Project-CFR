@@ -11,6 +11,45 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
+
+
+local function _getNamePriority(rawName: string?)
+    local name = tostring(rawName or "")
+
+    name = string.gsub(name, "%s+", "")
+    if name == "" then
+        return 14500000
+    end
+
+    name = name :: string
+    name = string.lower(name)
+
+    local BASE = 27
+    local maxChars = 5
+    local key = 0
+
+    for i = 1, math.min(#name, maxChars) do
+        local ch = string.sub(name, i, i)
+        local v
+
+        if string.match(ch, "%a") then
+            v = string.byte(ch) - string.byte("a")
+            if v < 0 or v > 25 then
+                v = 26
+            end
+        else
+            v = 26
+        end
+
+        key = key * BASE + v
+    end
+    if key > 14500000 then
+        key = 14500000
+    end
+
+    return key
+end
+
 return function(scope: Fusion.Scope, props: {
     ItemSymbol: IntConstrainedValue,
     EquippingItems: Fusion.Value<{ StringValue }>,
@@ -84,50 +123,33 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            local priority = 3
+
             if use(isFav) and props.IsBackpack then
-                return -1
-            end
-            if use(isEquipping) then
-                return 0
-            end
-            local AZSort = use(props.CurrentSortOrderList[1])
-            local ZASort = use(props.CurrentSortOrderList[2])
-
-            local T1Sort = use(props.CurrentSortOrderList[3])
-            local T5Sort = use(props.CurrentSortOrderList[4])
-
-            if AZSort or ZASort then
-                local firstChar = string.sub(info.Name, 1, 1)
-                local charCode = string.byte(firstChar)
-
-                if string.match(firstChar, "%a") then
-                    local baseCode
-                    if charCode >= 65 and charCode <= 90 then
-                        baseCode = 65
-                    elseif charCode >= 97 and charCode <= 122 then
-                        baseCode = 97
-                    else
-                        return 1
-                    end
-
-                    if AZSort then
-                        return charCode - baseCode + 1
-                    elseif ZASort then
-                        return 27 - (charCode - baseCode)
-                    end
-                else
-                    return 1
-                end
-
-            elseif T1Sort or T5Sort then
-                if T1Sort then
-                    return info.Tier
-                elseif T5Sort then
-                    return 6 - info.Tier
-                end
+                priority = 0
+            elseif use(isEquipping) then
+                priority = 1
+            elseif use(isNew) then
+                priority = 2
             end
 
-            return 1
+            local T5Sort = use(props.CurrentSortOrderList[1])
+            local T1Sort = use(props.CurrentSortOrderList[2])
+
+            local tier = info.Tier or 1
+            local nameKey = _getNamePriority(info.Name)
+
+            local tierOrder = 0
+            if T1Sort then
+                tierOrder = tier
+            elseif T5Sort then
+                tierOrder = 6 - tier
+            end
+
+            local perGroupOrder = tierOrder * 20000000 + nameKey
+            local layoutOrder = priority * 200000000 + perGroupOrder
+
+            return layoutOrder
         end),
 
 
@@ -172,30 +194,10 @@ return function(scope: Fusion.Scope, props: {
             Components.IconImageLabel(scope, {
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.49, 0.35),
-                Size = UDim2.fromScale(0.5, 0.5),
+                Size = UDim2.fromScale(0.55, 0.55),
                 SizeConstraint = Enum.SizeConstraint.RelativeXX,
 
                 Image = info.Icon,
-            }),
-
-            Components.Frame(scope, {
-                Name = "TierShowcase",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.62),
-                Size = UDim2.fromScale(1, 0.17),
-                ZIndex = 2,
-
-                [Children] = {
-                    Components.UIListLayout(scope, {
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                    }),
-
-                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
-                        return StarTierSymbol(scope, {})
-                    end)
-                }
             }),
 
             Components.Frame(scope, {
@@ -227,7 +229,7 @@ return function(scope: Fusion.Scope, props: {
             Components.Frame(scope, {
                 Name = "IsLocked",
                 AnchorPoint = Vector2.one,
-                Position = UDim2.fromScale(0.95, 0.65),
+                Position = UDim2.fromScale(0.95, 0.7),
                 Size = UDim2.fromScale(0.2, 0.2),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 BackgroundColor3 = Color3.fromRGB(),

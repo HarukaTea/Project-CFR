@@ -53,7 +53,7 @@ return function (scope: Fusion.Scope, props: {
         Name = props.Player.Name,
         BackgroundTransparency = 0,
         LayoutOrder = props.Index,
-        Size = UDim2.fromScale(0.97, 0.15),
+        Size = UDim2.fromScale(1, 0.15),
 
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -109,13 +109,17 @@ return function (scope: Fusion.Scope, props: {
                         Name = "PlayerLevel",
                         AutomaticSize = Enum.AutomaticSize.X,
                         Size = UDim2.fromScale(0, 0.8),
-                        BackgroundColor3 = Components.WHITE_COLOR,
                         BackgroundTransparency = 0,
                         LayoutOrder = 233,
-                        TextColor3 = Components.BLACK_COLOR,
 
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(thatLevel)}`
+                        end),
+                        BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return if use(props.PlayerSelecting) == props.Player then Components.BLACK_COLOR else Components.WHITE_COLOR
+                        end),
+                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return if use(props.PlayerSelecting) == props.Player then Components.WHITE_COLOR else Components.BLACK_COLOR
                         end),
 
                         [Children] = {

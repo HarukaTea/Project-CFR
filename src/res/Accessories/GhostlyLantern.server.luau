@@ -13,7 +13,7 @@ local char = script:FindFirstAncestorOfClass("Model")
 
 
 Add(char.TargetingList.ChildRemoved:Connect(function(child: ObjectValue)
-    if not ServerLib.IsCharValid(char) then return end
+    if not ServerLib:IsCharValid(char) then return end
     if not child:IsA("ObjectValue") then return end
 
 

@@ -56,7 +56,7 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
 
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
-    local projectilePos = ServerLib.FindGroundByRay(target.PrimaryPart.Position)
+    local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
     Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
@@ -77,7 +77,7 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
             if i == 1 then
                 random = Vector3.zero
             end
-            local post = ServerLib.FindGroundByRay(projectilePos + random)
+            local post = ServerLib:FindGroundByRay(projectilePos + random)
 
             Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
                 ProjectileUniqueId = projectileUniqueId,

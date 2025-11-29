@@ -142,7 +142,7 @@ table.insert(CriRPGLib.Funcs, function()
                 local targetingEnemy = char:FindFirstChild("TargetingEnemy") :: ObjectValue
                 if targetingEnemy then
                     targetingEnemy = targetingEnemy.Value
-                    if ClientLib.IsCharValid(targetingEnemy) then
+                    if ClientLib:IsCharValid(targetingEnemy) then
                         if targetingEnemy:GetAttribute("IsBoss") then
                             isBoss = true
                             targetMusicId = targetingEnemy:GetAttribute("MusicId")
@@ -373,7 +373,7 @@ table.insert(CriRPGLib.Funcs, function()
         orb:SetAttribute("Duration", data.OrbDuration)
         orb:PivotTo(CFrame.new(orbPos))
 
-        ClientLib.WeldModel(orb:FindFirstChild("Base") or orb:FindFirstChild("Middle"), orb)
+        ClientLib:WeldModel(orb:FindFirstChild("Base") or orb:FindFirstChild("Middle"), orb)
 
         orb.Parent = orbContainer
 
@@ -412,7 +412,7 @@ table.insert(CriRPGLib.Funcs, function()
         if not hit then return end
         if not hit.Parent then return end
 
-        if not ClientLib.IsCharValid(char) then return end
+        if not ClientLib:IsCharValid(char) then return end
 
         if hit.Parent:HasTag("OrbEntity") then
             local orb = hit.Parent
@@ -425,7 +425,7 @@ table.insert(CriRPGLib.Funcs, function()
             if not table.find(whiteList, style) then
                 if style ~= class then return end
             end
-            if not ClientLib.IsCharValid(char) then return end
+            if not ClientLib:IsCharValid(char) then return end
 
             local humanoid = char.Humanoid :: Humanoid
             local orbUniqueId = orb:GetAttribute("HarukaUniqueId") :: string
@@ -493,7 +493,7 @@ table.insert(CriRPGLib.Funcs, function()
                 animStep = if animStep == 1 then 2 else 1
 
                 local enemy = char.TargetingEnemy :: ObjectValue?
-                if not ClientLib.IsCharValid(enemy.Value) then return end
+                if not ClientLib:IsCharValid(enemy.Value) then return end
 
                 char.PrimaryPart.CFrame = HarukaLib:CFLookAt(char.PrimaryPart.Position, enemy.Value.PrimaryPart.Position)
             end
@@ -566,7 +566,7 @@ table.insert(CriRPGLib.Funcs, function()
         local projectileOwner = data.ProjectileOwner
 
         if projectileOwner == nil then return end
-        if not ClientLib.IsCharValid(projectileOwner) then return end
+        if not ClientLib:IsCharValid(projectileOwner) then return end
 
         local projectile = RepS.Packages.EnemyAttacks:FindFirstChild(projectileId, true) :: Model
 
@@ -602,7 +602,7 @@ table.insert(CriRPGLib.Funcs, function()
 
 
         if projectileOwner == nil then return end
-        if not ClientLib.IsCharValid(projectileOwner) then return end
+        if not ClientLib:IsCharValid(projectileOwner) then return end
 
         local projectile = RepS.Packages.EnemyAttacks:FindFirstChild(projectileId, true) :: Model
 
@@ -679,7 +679,7 @@ table.insert(CriRPGLib.Funcs, function()
     Add(Events.FaceTargetingEnemy_S.On(function()
         local targeting = char.TargetingEnemy :: ObjectValue?
 
-        if not ClientLib.IsCharValid(targeting.Value) then return end
+        if not ClientLib:IsCharValid(targeting.Value) then return end
 
         targeting = targeting.Value :: Model
 

@@ -21,7 +21,7 @@ return function (scope: Fusion.Scope, props: {
         for _, symbol in use(props.TargetingList) do
             local model = symbol.Value :: Model
 
-            if not ClientLib.IsCharValid(model) then continue end
+            if not ClientLib:IsCharValid(model) then continue end
             if not EntityBook[model.Name] then continue end
 
             if EntityBook[model.Name].IsBoss then
@@ -344,7 +344,7 @@ return function (scope: Fusion.Scope, props: {
 
 
             --// track effect list
-            ClientLib.TrackEffectListToUI({
+            ClientLib:TrackEffectListToUI({
                 Target = targeting,
                 Scope = scope,
                 GuiContainer = frame.EffectList

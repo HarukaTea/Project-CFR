@@ -165,8 +165,6 @@ do
                 Fusion.doCleanup(scope)
             end
         })
-    else
-        LoadingTextVal:set("Getting up from bed in Initus Sailor Lodge...")
     end
     workspace:SetAttribute("Haruka_CompletedPreload", true)
 
@@ -183,7 +181,7 @@ do
         SoundService.Musics.Titlescreen:Play()
 
         local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-        ClientLib.LoadLightingPreset("Titlescreen")
+        ClientLib:LoadLightingPreset("Titlescreen")
     end
 
 
@@ -206,7 +204,7 @@ do
             local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
             local worldId = workspace:GetAttribute("WorldId") or "InitusWorld"
-            ClientLib.LoadLightingPreset(worldId)
+            ClientLib:LoadLightingPreset(worldId)
         end
 
 
@@ -226,6 +224,14 @@ do
         Debris:AddItem(SoundService.Musics.Titlescreen, 5)
     end
     workspace:SetAttribute("Haruka_GameEntered", true)
+
+
+
+    pcall(function()
+        local Bindables = require(RepS.HarukaShared.Library.Bindables)
+
+        Bindables.SetChatEnabled:Fire(true)
+    end)
 
 
     Debris:AddItem(script, 15)
