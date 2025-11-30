@@ -133,7 +133,7 @@ return function(scope: Fusion.Scope, props: {
                         Image = EntityBook[targeting.Name].Icon,
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
-                            self.SwitchTargetFunc()
+                            self.ForceSwitchTargetFunc(targeting)
                         end,
 
                         [Children] = {

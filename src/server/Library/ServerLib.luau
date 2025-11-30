@@ -340,7 +340,6 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	method = method or "Equip"
 
 	local itemSymbol = nil
-
 	local items = plr.Items :: Folder
 
 	for _, item in items:GetChildren() do
@@ -355,10 +354,7 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	end
 
 	local char = plr.Character :: Model
-	if not ServerLib:IsCharValid(char) then
-		Events.CreateNotify_S.Fire(plr, "[Error] Cannot equip item, character not found")
-		return
-	end
+	if not ServerLib:IsCharValid(char) then return end
 
 
 	local itemStat = itemSymbol:GetAttribute("ItemStat") :: string

@@ -56,6 +56,9 @@ end
 
 --// Init server location
 do
+    local serverNameList = { "Initus Bay", "Venator Village", "Primis Field", "Eursida Lake", "Aurora Desert" }
+
+    workspace:SetAttribute("ServerName", serverNameList[math.random(1, #serverNameList)])
     workspace:SetAttribute("ServerLocation", "Unknown")
     workspace:SetAttribute("CityLocation", "Unknown")
 

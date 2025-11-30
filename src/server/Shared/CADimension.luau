@@ -33,7 +33,8 @@ export type ServerInfo = {
     WorldId: string,
     JobId: string,
     ServerLocation: string,
-    CityLocation: string
+    CityLocation: string,
+    ServerName: string
 }
 
 
@@ -93,13 +94,15 @@ function CADimensions:AddToDimension()
             local serverLocation = workspace:GetAttribute("ServerLocation") or "Unknown"
             local cityLocation = workspace:GetAttribute("CityLocation") or "Unknown"
             local worldId = workspace:GetAttribute("WorldId") or "Unknown"
+            local serverName = workspace:GetAttribute("ServerName") or "The Initia"
 
             local dataToUpload = {
                 PlayerUserIds = playerIds,
                 WorldId = worldId,
                 JobId = game.JobId,
                 ServerLocation = serverLocation,
-                CityLocation = cityLocation
+                CityLocation = cityLocation,
+                ServerName = serverName
             } :: ServerInfo
 
             liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)

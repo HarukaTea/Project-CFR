@@ -27,7 +27,8 @@ export type Self = {
     TargetingEnemy: Fusion.Value<Instance>,
     TargetArrowPos: Fusion.Value<UDim2>,
 
-    SwitchTargetFunc: () -> nil
+    SwitchTargetFunc: () -> nil,
+    ForceSwitchTargetFunc: (target: Model) -> nil,
 }
 
 
@@ -112,6 +113,12 @@ return function (self: Self)
 
 
         Events.SwitchTargetEnemy_C.Fire(nextTarget)
+    end
+    self.ForceSwitchTargetFunc = function(target: Model)
+        local curTarget = char.TargetingEnemy.Value
+        if curTarget == target then return end
+
+        Events.SwitchTargetEnemy_C.Fire(target)
     end
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)
         if gpe then return end

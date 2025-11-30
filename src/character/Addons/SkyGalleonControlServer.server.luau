@@ -49,6 +49,11 @@ Add(Events.DriveSkyGalleon_C.On(function(plr: Player, moveVector: Vector3)
     if not moveVector then return end
 
 
+    local x, y, z = moveVector.X, moveVector.Y, moveVector.Z
+    x, y, z = math.clamp(x, -1, 1), math.clamp(y, -1, 1), math.clamp(z, -1, 1)
+    moveVector = Vector3.new(x, y, z)
+
+
     local currentCFrame = currentGalleon.PrimaryPart.CFrame
     local rotationInput = -moveVector.X
     local targetVelocity = currentCFrame.LookVector * -moveVector.Z * 66

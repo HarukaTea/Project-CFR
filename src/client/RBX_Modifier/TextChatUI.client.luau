@@ -6,8 +6,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 
-
-
 local chatWindow = TextChatService.ChatWindowConfiguration
 local chatInput = TextChatService.ChatInputBarConfiguration
 local bubbleChat = TextChatService.BubbleChatConfiguration
@@ -19,7 +17,6 @@ chatWindow.FontFace = Font.fromEnum(Enum.Font.SourceSansBold)
 chatWindow.TextSize = 17
 chatWindow.WidthScale = 0.1599 * 5
 chatWindow.TextColor3 = Components.WHITE_COLOR
-chatWindow.VerticalAlignment = Enum.VerticalAlignment.Bottom
 
 chatInput.BackgroundColor3 = Components.BLACK_COLOR:Lerp(Color3.fromRGB(), 0.5)
 chatInput.BackgroundTransparency = 0.3
@@ -36,19 +33,8 @@ bubbleChat.TextSize = 16
 bubbleChat.TextColor3 = Components.WHITE_COLOR
 bubbleChat.BubbleDuration = 6
 bubbleChat.LocalPlayerStudsOffset = -Vector3.yAxis * 2
-bubbleChat.VerticalStudsOffset = 2
+bubbleChat.VerticalStudsOffset = 1.7
 bubbleChat.MaxDistance = 159
-bubbleChat.AdorneeName = "Head"
+bubbleChat.AdorneeName = "HumanoidRootPart"
 
 channelTab.Enabled = false
-
-
-
-chatInput.Enabled = false
-chatWindow.Enabled = false
-
-
-Bindables.SetChatEnabled:Connect(function(state: boolean)
-    chatWindow.Enabled = state
-    chatInput.Enabled = state
-end)

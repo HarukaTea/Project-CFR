@@ -6,7 +6,6 @@ local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
-local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
@@ -749,9 +748,7 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, player: Player)
-        if plr ~= player then return end
-
+    Bindables.PromptTriggered:Connect(function(prompt: ProximityPrompt)
         local adornee = prompt.Parent :: BasePart
         local char = plr.Character
 

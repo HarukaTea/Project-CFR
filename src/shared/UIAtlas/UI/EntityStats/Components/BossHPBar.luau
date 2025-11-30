@@ -277,7 +277,7 @@ return function (scope: Fusion.Scope, props: {
                                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     local breakState, maxBreakState = use(breakProgress) :: number, use(totalBreakProgress) :: number
 
-                                    local x = (maxBreakState - breakState) / maxBreakState
+                                    local x = breakState / maxBreakState
                                     if x ~= x then x = 0 end
 
                                     x = math.clamp(x, 0, 1)
@@ -300,7 +300,7 @@ return function (scope: Fusion.Scope, props: {
                                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     local breakState, maxBreakState = use(breakProgress) :: number, use(totalBreakProgress) :: number
 
-                                    local x = (maxBreakState - breakState) / maxBreakState
+                                    local x = breakState / maxBreakState
                                     if x ~= x then x = 0 end
 
                                     x = math.clamp(x, 0, 1)

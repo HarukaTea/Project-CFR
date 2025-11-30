@@ -116,10 +116,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
     end
 
     local self = playerObj
-    if self.Slot then
-        Events.CreateNotify_S.Fire(plr, "[Error] You've already chosen a slot!")
-        return
-    end
+    if self.Slot then return end
 
 
     --// Load in datastore
@@ -525,10 +522,8 @@ function PlayerLib:Init()
         end):timeout(6):catch(function(err)
             if Promise.Error.isKind(err, Promise.Error.Kind.TimedOut) then
                 Events.CreateNotify_S.Fire(plr, "Roblox server is running slower than usual, we're trying to load...")
-                warn("Roblox server is handling data requests slowly [Timeout]")
             else
                 Events.CreateNotify_S.Fire(plr, "Roblox server is handling requests slowly, we're trying to load...")
-
                 if RunService:IsStudio() then
                     warn(tostring(err))
                 end

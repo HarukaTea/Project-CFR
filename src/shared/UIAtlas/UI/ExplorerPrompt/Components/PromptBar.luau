@@ -7,6 +7,8 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
@@ -253,7 +255,8 @@ return function (scope: Fusion.Scope, props: {
                     props.CurrentPromptIndex:set(props.LayoutOrder)
                 end,
                 [Fusion.OnEvent("MouseButton1Click")] = function()
-                    props.PromptObject:InputHoldBegin()
+                    Bindables.PromptTriggered:Fire(props.PromptObject)
+                    Events.PromptTriggered_C.Fire(props.PromptObject)
                 end
             }),
 

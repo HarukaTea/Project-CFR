@@ -100,24 +100,34 @@ return function (scope: Fusion.Scope, props: {
                     Components.PaddingFrame(scope, "AAA"),
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.ForPairs(scope, serversAvailable, function(_, scope: Fusion.Scope, index: string, symbol: IntValue)
+                    Fusion.ForPairs(scope, serversAvailable, function(_, scope: Fusion.Scope, index: number, symbol: IntValue)
                         local isSelecting = Fusion.Value(scope, false)
-
-                        --// TODO: in the future, add how many friends are in this server UI
-                        --local adventurersPlaying = Components.FusionComponents.useChildren(scope, symbol)
 
                         local info = symbol:GetAttributes() :: {
                             CityLocation: string,
                             WorldId: string,
-                            ServerLocation: string
+                            ServerLocation: string,
+                            ServerName: string
                         }
+                        info.ServerLocation = info.ServerLocation or "Unknown"
+                        info.CityLocation = info.CityLocation or "Unknown"
+                        info.ServerName = info.ServerName or "The Initia"
+                        info.WorldId = info.WorldId or "InitusWorld"
+
+
+                        local id = string.sub(symbol.Name, 1, 8)
+                        if symbol.Name == game.JobId then
+                            id = "Current Server"
+                        end
+
 
                         return index, Components.HoverImageButton(scope, {
-                            Name = "C-Ready-"..string.sub(symbol.Name, 1, 8),
-
+                            Name = "Server_"..index,
                             Size = UDim2.fromScale(0.94, 0.2),
                             BackgroundColor3 = Color3.new(),
                             BackgroundTransparency = 0,
+
+                            LayoutOrder = 999 - symbol.Value,
 
                             [Fusion.OnEvent("MouseEnter")] = function()
                                 isSelecting:set(true)
@@ -158,7 +168,7 @@ return function (scope: Fusion.Scope, props: {
                                     TextXAlignment = Enum.TextXAlignment.Left,
                                     AutoLocalize = false,
 
-                                    Text = [[The Initia <font color="#666666">]].."[ "..info.ServerLocation..", "..info.CityLocation.." / "..string.sub(symbol.Name, 1, 8).."]</font>"
+                                    Text = info.ServerName..[[<font color="#444444">]].." [ "..info.ServerLocation..", "..info.CityLocation.." / "..id.."]</font>"
                                 }),
                                 Components.TextLabel(scope, {
                                     Name = "PlayerCount",
@@ -166,7 +176,7 @@ return function (scope: Fusion.Scope, props: {
                                     Size = UDim2.fromScale(0.85, 0.35),
                                     TextXAlignment = Enum.TextXAlignment.Left,
 
-                                    Text = "Adventurers: "..symbol.Value.." / 20",
+                                    Text = symbol.Value.." / 20",
                                     TextColor3 = Fusion.Computed(scope, function()
                                         return if symbol.Value < 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
                                     end)
@@ -210,8 +220,7 @@ return function (scope: Fusion.Scope, props: {
                 }
             }, {
                 Padding = UDim.new(0, 8),
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                SortOrder = Enum.SortOrder.Name
+                HorizontalAlignment = Enum.HorizontalAlignment.Center
             }),
         }
     })

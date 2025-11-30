@@ -38,16 +38,10 @@ HarukaLib.Clock(15, function()
         symbol.Name = server.JobId
         symbol.Value = #server.PlayerUserIds
 
-        for _, userId in server.PlayerUserIds do
-            local idSymbol = Instance.new("BoolValue")
-            idSymbol.Name = userId
-            idSymbol.Value = true
-            idSymbol.Parent = symbol
-        end
-
         symbol:SetAttribute("CityLocation", server.CityLocation)
         symbol:SetAttribute("ServerLocation", server.ServerLocation)
         symbol:SetAttribute("WorldId", server.WorldId)
+        symbol:SetAttribute("ServerName", server.ServerName)
 
         symbol.Parent = serverSymbolContainer
     end

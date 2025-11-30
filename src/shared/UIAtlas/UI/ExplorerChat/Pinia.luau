@@ -248,7 +248,8 @@ return function (self: Self)
                 local prompt = adornee:FindFirstChild("Market") :: ProximityPrompt
                 if not prompt then Bindables.CreateNotify:Fire("[Error] Invalid Market Prompt") return end
 
-                prompt:InputHoldBegin()
+                Bindables.PromptTriggered:Fire(prompt)
+                Events.PromptTriggered_C.Fire(prompt)
             else
                 Bindables.CreateNotify:Fire("[Error] Invalid Market Id")
             end
@@ -264,7 +265,8 @@ return function (self: Self)
                 local prompt = station:FindFirstChild("Crafting") :: ProximityPrompt
                 if not prompt then Bindables.CreateNotify:Fire("[Error] Invalid Crafting Prompt") return end
 
-                prompt:InputHoldBegin()
+                Bindables.PromptTriggered:Fire(prompt)
+                Events.PromptTriggered_C.Fire(prompt)
             else
                 Bindables.CreateNotify:Fire("[Error] Invalid Crafting Id")
             end

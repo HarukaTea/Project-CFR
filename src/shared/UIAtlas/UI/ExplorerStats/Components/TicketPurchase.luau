@@ -9,7 +9,8 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    MerchantId: string
+    MerchantId: string,
+    Price: number
 })
 
     local blur = Instance.new("BlurEffect")
@@ -145,7 +146,7 @@ return function (scope: Fusion.Scope, props: {
                                 AutomaticSize = Enum.AutomaticSize.X,
                                 Size = UDim2.fromScale(0, 0.8),
                                 LayoutOrder = 3,
-                                Text = "599"
+                                Text = tostring(props.Price)
                             }),
                         }
                     }),

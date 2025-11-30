@@ -1,11 +1,9 @@
 
-local AnalyticsService = game:GetService("AnalyticsService")
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local Players = game:GetService("Players")
-local ProximityPromptService = game:GetService("ProximityPromptService")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
@@ -92,22 +90,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         wait(1.5)
         TeleportService:TeleportAsync(game.PlaceId, { plr }, teleportOptions)
-    end)
-end)
-
-
-table.insert(GlobalCriRPGLib.Funcs, function()
-    Events.Titlescreen_PlayTutorial_C.SetCallback(function(plr: Player)
-        local teleportOptions = Instance.new("TeleportOptions")
-
-        local tutorialPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].Tutorial
-        local code = TeleportService:ReserveServer(tutorialPlaceId)
-
-        teleportOptions.ReservedServerAccessCode = code
-
-        TeleportService:TeleportAsync(tutorialPlaceId, { plr }, teleportOptions)
-
-        Events.CreateFSNotify_S.Fire(plr, "Teleporting to tutorial...", 15)
     end)
 end)
 
@@ -260,7 +242,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             galleon.PrimaryPart:SetNetworkOwner(nil)
         end)
     end
-    ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, plr: Player)
+    Events.PromptTriggered_C.SetCallback(function(plr: Player, prompt: ProximityPrompt)
+        if prompt == nil then return end
+        if prompt.Parent == nil then return end
         if prompt.Enabled == false then return end
 
         local adornee = prompt.Parent :: BasePart
@@ -315,7 +299,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 return
             end
             if chest:GetAttribute("Receiver_"..plr.Name) then
-                Events.CreateNotify_S.Fire(plr, "You have already opened this treasure chest!")
+                Events.CreateNotify_S.Fire(plr, "You have already opened this chest!")
                 return
             end
 
@@ -412,8 +396,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         elseif prompt.Name == "PurchaseTicket" then
             local merchantId = adornee.Name
+            local price = adornee:GetAttribute("Price") :: number
 
-            Events.OpenTravelTicketUI_S.Fire(plr, merchantId)
+            Events.OpenTravelTicketUI_S.Fire(plr, {
+                MerchantId = merchantId,
+                Price = price
+            })
 
         elseif prompt.Name == "Material" then
             local material = prompt:FindFirstAncestorOfClass("Model")
@@ -427,7 +415,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             if material:GetAttribute("Profession") then
                 if not char:GetAttribute(material:GetAttribute("Profession")) then
-                    Events.CreateNotify_S.Fire(plr, "You cannot gather this material. Maybe you need a tool.")
+                    Events.CreateNotify_S.Fire(plr, "You cannot get this material. Maybe you need a tool.")
                     return
                 end
             end
@@ -552,19 +540,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if orbUniqueId == nil then return end
 
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Character")
-            return
-        end
-        if not ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Orb Identity")
-            warn("Invalid orb identity")
-
-            pcall(function()
-                AnalyticsService:LogCustomEvent(plr, "InvalidOrbIdentity", 1)
-            end)
-            return
-        end
+        if not ServerLib:IsCharValid(char) then return end
+        if not ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) then return end
 
         local symbol = ServerStorage.OrbSymbolContainer:FindFirstChild(orbUniqueId, true) :: CFrameValue
         if symbol:GetAttribute("Owner") ~= char.Name then return end
@@ -587,7 +564,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end):catch(function(reason: string)
             check = false
 
-            if tostring(reason) == "Distance" then Events.CreateNotify_S.Fire(plr, "You are too far away from orb!") end
             if tostring(reason) == "ClassId" then
                 warn("Invalid ClassId for orb")
             end
@@ -625,41 +601,24 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     Events.CastItem_C_Request.SetCallback(function(plr: Player, slotId)
         if slotId == nil then return end
 
-
         local char = plr.Character
-        if not ServerLib:IsCharValid(char) then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Character")
-            return
-        end
-
+        if not ServerLib:IsCharValid(char) then return end
 
         local equippingItems = plr.EquippingItems :: Folder
         local equippingInfo = equippingItems:FindFirstChild(slotId) :: StringValue
 
-        if not equippingInfo then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Equip Info")
-            return
-        end
+        if not equippingInfo then return end
 
         local itemInfo = ItemBook:GetItemInfo(equippingInfo.Value)
-        if not itemInfo then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Item Info")
-            return
-        end
+        if not itemInfo then return end
 
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(equippingInfo.Value) :: IntConstrainedValue
 
-        if not itemSymbol then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Item")
-            return
-        end
+        if not itemSymbol then return end
 
         local amount = items[equippingInfo.Value].Value or 0 :: number
-        if amount <= 0 then
-            Events.CreateNotify_S.Fire(plr, "[Error] Invalid Amount")
-            return
-        end
+        if amount <= 0 then return end
 
 
         local inCDCheck = false
@@ -675,10 +634,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
         local realCD = tonumber(itemInfo.ExtraStatInfoDesync.CD)
-        if not realCD then
-            warn("Invalid CD for item")
-            return
-        end
+        if not realCD then return end
 
         --// intensity
         local intensity = char:GetAttribute("Intensity") or 0
@@ -1641,13 +1597,15 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local merchant = workspace.MapComponents.TravelTickets:FindFirstChild(merchantId)
         if not merchant then return end
 
+        local goldNeeded = merchant:GetAttribute("Price") :: number
+
         local goldAmount = plr:GetAttribute("Gold")
-        if goldAmount < 599 then
+        if goldAmount < goldNeeded then
             Events.CreateNotify_S.Fire(plr, "You don't have enough gold to purchase a ticket!")
             return
         end
 
-        HarukaLib:AddAttr(plr, "Gold", -599)
+        HarukaLib:AddAttr(plr, "Gold", -goldNeeded)
 
         Events.CreateNotify_S.Fire(plr, "Have a safe journey!")
         Events.CreateCircularFade_S.Fire(plr, 2)

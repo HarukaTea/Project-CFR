@@ -160,12 +160,6 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     DMGStat(scope, {
-                                        StatId = "HalloweenCandy",
-                                        StatValue = props.HalloweenCandy,
-                                        LayoutOrder = 0
-                                    }),
-
-                                    DMGStat(scope, {
                                         StatId = "Gold",
                                         StatValue = props.Gold,
                                         LayoutOrder = -1

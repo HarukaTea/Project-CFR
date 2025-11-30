@@ -11,6 +11,8 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
@@ -143,9 +145,7 @@ return function (self: Self)
 
 
 
-	table.insert(scope, PPS.PromptTriggered:Connect(function(thatPrompt: ProximityPrompt, thatPlayer: Player)
-		if thatPlayer ~= self.plr then return end
-
+	table.insert(scope, Bindables.PromptTriggered:Connect(function(thatPrompt: ProximityPrompt)
 		SoundService.SFXs.ChatNext:Play()
 
 		thatPrompt.Enabled = false
@@ -231,17 +231,18 @@ return function (self: Self)
 			local currentPrompt = currentPromptSymbol.Value :: ProximityPrompt
 			if currentPrompt == nil then return end
 
-			if self.plr:FindFirstChild("PromptInputHoldBeginCD") then return end
+			if self.plr:FindFirstChild("PromptTriggerCD") then return end
 
 
 			local cdSymbol = Instance.new("BoolValue")
-			cdSymbol.Name = "PromptInputHoldBeginCD"
+			cdSymbol.Name = "PromptTriggerCD"
 			cdSymbol.Value = true
 			cdSymbol.Parent = self.plr
 			Debris:AddItem(cdSymbol, 0.2)
 
 
-			currentPrompt:InputHoldBegin()
+			Bindables.PromptTriggered:Fire(currentPrompt)
+			Events.PromptTriggered_C.Fire(currentPrompt)
 		end
 	end))
 end
