@@ -85,6 +85,8 @@ end
 
 function CriRPGLib:_SpawnToLastLocation()
     local lastLocation = plr:GetAttribute("LastSeen") :: string
+
+    lastLocation = lastLocation or "UnknownBase"
     local map = workspace.Maps:FindFirstChild(lastLocation, true) :: Folder
 
     if map then

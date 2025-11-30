@@ -5,6 +5,8 @@ from pathlib import Path
 REMOVE_LINES = {
     "--!strict",
     "--!nocheck",
+    "--!native",
+    "--!optimize 2"
     "--!nolint LocalUnused",
     "--!nolint LocalShadow",
     "--!nolint SameLineStatement",

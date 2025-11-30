@@ -1,5 +1,4 @@
 
-
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 local RepS = game:GetService("ReplicatedStorage")

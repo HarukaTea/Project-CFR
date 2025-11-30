@@ -255,7 +255,7 @@ function HarukaLib:Hydrate(obj: Instance, props: { [string]: (val: any) -> nil }
 			local success, err = pcall(function()
 				task.spawn(func, obj:GetAttribute(attr))
 			end)
-			if not success then
+			if not success and RunService:IsStudio() then
 				warn(err)
 			end
 
@@ -270,7 +270,7 @@ function HarukaLib:Hydrate(obj: Instance, props: { [string]: (val: any) -> nil }
 			local success, err = pcall(function()
 				task.spawn(func, obj[propName])
 			end)
-			if not success then
+			if not success and RunService:IsStudio() then
 				warn(err)
 			end
 

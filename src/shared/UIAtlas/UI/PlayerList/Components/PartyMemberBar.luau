@@ -15,6 +15,7 @@ return function (scope: Fusion.Scope, props: {
     Member: ObjectValue
 })
     local member = props.Member.Value
+    if member == nil then return nil end
 
 
     return Components.Frame(scope, {

@@ -53,7 +53,7 @@ return function (scope: Fusion.Scope, props: {
         Name = props.Player.Name,
         BackgroundTransparency = 0,
         LayoutOrder = props.Index,
-        Size = UDim2.fromScale(1, 0.15),
+        Size = UDim2.fromScale(0.95, 0.15),
 
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)

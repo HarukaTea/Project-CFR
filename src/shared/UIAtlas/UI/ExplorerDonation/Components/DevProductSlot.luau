@@ -24,6 +24,7 @@ return function(scope: Fusion.Scope, props: {
         pcall(function()
             info = MarketplaceService:GetProductInfo(props.AssetId, Enum.InfoType[props.Type])
         end)
+        info = info or {}
 
         productInfo:set(info)
     end))

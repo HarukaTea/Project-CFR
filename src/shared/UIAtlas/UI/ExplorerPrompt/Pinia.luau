@@ -75,6 +75,9 @@ return function (self: Self)
 
 
 		local part = prompt.Parent :: BasePart
+		if not part then return end
+		if not part.Parent then return end
+
 		if not part:IsA("BasePart") then
 			warn("Invalid prompt parent object")
 			return

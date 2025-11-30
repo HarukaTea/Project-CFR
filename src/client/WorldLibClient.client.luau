@@ -714,22 +714,24 @@ table.insert(ClientWorldLib.Funcs, function()
             end)
         end
     end)
-    HarukaLib.Clock(1, function()
-        for _ = 1, 50 do
-            for _, galleon: Model in galleons do
-                pcall(function()
-                    galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
-                end)
+    task.spawn(function()
+        while wait(0.01) do
+            for _ = 1, 50 do
+                for _, galleon: Model in galleons do
+                    pcall(function()
+                        galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
+                    end)
+                end
+                wait(0.01)
             end
-            wait(0.01)
-        end
-        for _ = 1, 50 do
-            for _, galleon: Model in galleons do
-                pcall(function()
-                    galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
-                end)
+            for _ = 1, 50 do
+                for _, galleon: Model in galleons do
+                    pcall(function()
+                        galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
+                    end)
+                end
+                wait(0.01)
             end
-            wait(0.01)
         end
     end)
     HarukaLib.Clock(2, function()
@@ -814,11 +816,12 @@ table.insert(ClientWorldLib.Funcs, function()
         if target.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent end
         if target.Parent.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent.Parent end
         if target == plr.Character then return end
-
+        if not ClientLib:IsCharValid(plr.Character) then return end
 
 
         local thatPlr = Players:GetPlayerFromCharacter(target)
         if not thatPlr then return end
+        if not ClientLib:IsCharValid(thatPlr.Character) then return end
 
         local distance = thatPlr:DistanceFromCharacter(plr.Character.PrimaryPart.Position)
         if distance > 33 or distance <= 0 then return end

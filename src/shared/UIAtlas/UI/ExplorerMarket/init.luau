@@ -246,7 +246,7 @@ return function (plr: Player)
                         UniqueId = use(self.CurrentSelectedItemUniqueId),
 
                         IsPurchasing = self.IsPurchasing,
-                        Action = "Market",
+                        Action = "Purchase",
 
                         CurrentSelectedItem = self.CurrentSelectedItem,
                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,

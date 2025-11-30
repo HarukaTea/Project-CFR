@@ -77,6 +77,7 @@ return function (plr: Player)
                                     pcall(function()
                                         info = BadgeService:GetBadgeInfoAsync(badgeId)
                                     end)
+                                    info = info or {}
                                     badgeInfo:set(info)
                                 end))
                                 table.insert(scope, task.spawn(function()

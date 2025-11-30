@@ -568,6 +568,9 @@ table.insert(CriRPGLib.Funcs, function()
         if projectileOwner == nil then return end
         if not ClientLib:IsCharValid(projectileOwner) then return end
 
+        --// 1130 bug: rare times, this will be nil
+        if not RepS.Packages:FindFirstChild("EnemyAttacks") then return end
+
         local projectile = RepS.Packages.EnemyAttacks:FindFirstChild(projectileId, true) :: Model
 
         if not projectile then
@@ -677,6 +680,12 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     Add(Events.FaceTargetingEnemy_S.On(function()
+        if not ClientLib:IsCharValid(char) then return end
+        if not char:GetAttribute("IsInCombat") then return end
+
+        if not char:FindFirstChild("TargetingEnemy") then return end
+
+
         local targeting = char.TargetingEnemy :: ObjectValue?
 
         if not ClientLib:IsCharValid(targeting.Value) then return end

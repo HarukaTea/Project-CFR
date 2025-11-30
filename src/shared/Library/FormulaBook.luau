@@ -48,7 +48,7 @@ local formulas = {
     EnemyEXPCurveCal = function(props: {
         Level: number
     })
-        return math.floor(35 * props.Level + 15 * props.Level)
+        return math.floor(40 * props.Level + 15.99 * props.Level)
     end,
 
 
@@ -72,7 +72,7 @@ local formulas = {
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
         local envir = props.EnvironmentBonus :: number
-        props.EnvironmentBonus = math.min(1.5, envir)
+        props.EnvironmentBonus = math.min(1.75, envir)
 
         local f = 4 * props.Level * envir
 
@@ -102,9 +102,9 @@ local formulas = {
         ATKType: string
     })
 
-        local baseFactor = 37
+        local baseFactor = 30
         if props.ATKType == "Max" then
-            baseFactor = 45
+            baseFactor = 50
         end
         local extra = 1 + ((props.DMGPoints * baseFactor) / 100)
 
@@ -149,9 +149,9 @@ local formulas = {
 }
 
 
-if game.PlaceId == AssetBook.PlaceIds.AbyssLevelTest then formulas.EXPEvent = 80 end
-if game.PlaceId == AssetBook.PlaceIds.MainworldTest then formulas.EXPEvent = 80 end
-
+if game.GameId ~= AssetBook.CFUniverseId_Main then
+    formulas.EXPEvent = 80
+end
 if formulas.EXPEvent > 1 then
     print("[WARNING] EXP Event Enabled")
 end

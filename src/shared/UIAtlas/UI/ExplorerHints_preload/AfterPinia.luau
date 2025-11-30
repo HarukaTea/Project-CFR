@@ -45,6 +45,11 @@ return function (self: Self)
 	--// receive hint requests
 	local order = 1
 	local function _createHint(text: string)
+		if not self then return end
+		if not self.UI then return end
+		if not self.UI:FindFirstChild("Top") then return end
+
+
 		order += 1
 		if order > 999 then order = 1 end
 

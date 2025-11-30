@@ -186,7 +186,7 @@ return function(scope: Fusion.Scope, props: {
                                 ActiveInfo = self.ActiveList[1],
 
                                 ForcePosition = UDim2.fromScale(0.625, -0.75),
-                                ForceSize = UDim2.fromScale(1.5, 1.5)
+                                ForceSize = UDim2.fromScale(1.3, 1.3),
                             }, self),
 
                             ActiveSlot(scope, {
@@ -194,7 +194,7 @@ return function(scope: Fusion.Scope, props: {
                                 ActiveInfo = self.ActiveList[2],
 
                                 ForcePosition = UDim2.fromScale(0.6, -2.75),
-                                ForceSize = UDim2.fromScale(1.5, 1.5)
+                                ForceSize = UDim2.fromScale(1.3, 1.3),
                             }, self),
 
                             ActiveSlot(scope, {
@@ -202,15 +202,15 @@ return function(scope: Fusion.Scope, props: {
                                 ActiveInfo = self.ActiveList[3],
 
                                 ForcePosition = UDim2.fromScale(0.775, -4),
-                                ForceSize = UDim2.fromScale(1.5, 1.5)
+                                ForceSize = UDim2.fromScale(1.3, 1.3),
                             }, self),
 
 
                             AbilitySlot(scope, {
                                 ActiveInfo = self.CharAbilityList[1],
 
-                                ForcePosition = UDim2.fromScale(0.15, -0.25),
-                                ForceSize = UDim2.fromScale(1.5, 1.5)
+                                ForcePosition = UDim2.fromScale(0.95, -4),
+                                ForceSize = UDim2.fromScale(1.3, 1.3),
                             }, self)
                         }
                     })

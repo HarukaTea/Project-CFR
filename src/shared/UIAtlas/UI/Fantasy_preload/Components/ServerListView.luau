@@ -176,7 +176,7 @@ return function (scope: Fusion.Scope, props: {
                                     Size = UDim2.fromScale(0.85, 0.35),
                                     TextXAlignment = Enum.TextXAlignment.Left,
 
-                                    Text = symbol.Value.." / 20",
+                                    Text = "Adventurers: "..symbol.Value.." / 20",
                                     TextColor3 = Fusion.Computed(scope, function()
                                         return if symbol.Value < 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
                                     end)

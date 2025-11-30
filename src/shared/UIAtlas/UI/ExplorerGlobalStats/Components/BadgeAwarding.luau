@@ -20,6 +20,7 @@ return function(scope: Fusion.Scope, props: {
         pcall(function()
             info = BadgeService:GetBadgeInfoAsync(props.BadgeId)
         end)
+        info = info or {}
         badgeInfo:set(info)
     end))
 
