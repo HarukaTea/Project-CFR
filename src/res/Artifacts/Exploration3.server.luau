@@ -24,7 +24,7 @@ Add(HarukaLib:Hydrate(char, {
             trueBefore = false
 
             if not ServerLib:IsCharValid(char) then return end
-            StatusLib.HealPercentage(char, 30)
+            StatusLib:HealPercentage(char, 30)
         end
     end
 }))

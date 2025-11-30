@@ -18,6 +18,9 @@ local charStats = {
     MaxShield = 1,
     ShieldRegenWaitTime = 10,
 
+    Mana = 100,
+    MaxMana = 100,
+
     BaseSpeed = 40,
     BaseSpeedCombat = 30,
     BaseJumpPower = 50,
@@ -65,8 +68,6 @@ local charStats = {
 
 
     --- misc
-    IsHPRecovering = false,
-    IsShieldRepairing = false,
     IsClimbing = false,
     IsSwimming = false,
 
@@ -79,7 +80,7 @@ local charStats = {
 
 local exAndExPowerList = {
     "MinDMG", "MaxDMG", "Magic",
-    "MaxHealth", "HealthRegenWaitTime", "MaxShield", "ShieldRegenWaitTime", "HealBonus",
+    "MaxHealth", "HealthRegenWaitTime", "MaxShield", "MaxMana", "ShieldRegenWaitTime", "HealBonus",
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge", "ClassUltDMGBonus",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",

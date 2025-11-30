@@ -89,17 +89,11 @@ FusionComponents.useXboxControllerHotInput = function(scope: Fusion.Scope) : Fus
         if input == Enum.UserInputType.Keyboard then
             lastInput:set("Keyboard")
 
-        elseif input == Enum.UserInputType.Gamepad1 then
+        elseif string.find(input.Name, "Gamepad") then
             lastInput:set("Controller")
 
-        elseif input == Enum.UserInputType.Gamepad2 then
-            lastInput:set("Controller")
-
-        elseif input == Enum.UserInputType.Gamepad3 then
-            lastInput:set("Controller")
-
-        elseif input == Enum.UserInputType.Gamepad4 then
-            lastInput:set("Controller")
+        elseif input == Enum.UserInputType.Touch then
+            lastInput:set("MobileDevice")
         end
     end
     _setLastInput(UserInputService:GetLastInputType())
@@ -112,7 +106,6 @@ FusionComponents.useXboxControllerHotInput = function(scope: Fusion.Scope) : Fus
             lastInput:set("Keyboard")
         end
     end
-
     table.insert(scope, UserInputService.LastInputTypeChanged:Connect(_setLastInput))
 
     return lastInput

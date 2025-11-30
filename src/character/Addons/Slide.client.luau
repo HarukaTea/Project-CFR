@@ -31,6 +31,8 @@ ClientLib:InitCharDeadTrackers({
 
 local animator = char.Humanoid.Animator :: Animator
 local slideAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.Slide)
+slideAnim.Priority = Enum.AnimationPriority.Action3
+slideAnim.Looped = false
 
 Add(slideAnim)
 

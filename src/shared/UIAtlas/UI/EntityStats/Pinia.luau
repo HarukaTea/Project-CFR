@@ -118,6 +118,9 @@ return function (self: Self)
         local curTarget = char.TargetingEnemy.Value
         if curTarget == target then return end
 
+
+        SoundService.SFXs.MobSelect:Play()
+
         Events.SwitchTargetEnemy_C.Fire(target)
     end
     table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)

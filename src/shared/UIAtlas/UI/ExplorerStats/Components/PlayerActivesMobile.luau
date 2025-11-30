@@ -12,9 +12,6 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
 
-
-local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
-
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -27,62 +24,9 @@ return function(scope: Fusion.Scope, props: {
     CastClassUlt_C: Signal.SignalClass,
     ActiveList: {},
     CharAbilityList: {}
-})
+}) : Frame
 
     local isSelectingUlt = Fusion.Value(scope, false)
-
-
-    local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
-    local refreshBoolean = Fusion.Value(scope, false)
-    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
-        refreshBoolean:set(not Fusion.peek(refreshBoolean))
-    end))
-
-
-    local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-        local input = use(lastInput) :: string
-        local boolean = use(refreshBoolean)
-
-        boolean = boolean
-
-        if input == "Controller" then
-            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.ClassUlt.Name] or KeybindsBook.Console.ClassUlt.Name
-
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                Text = keybind,
-                Size = UDim2.fromScale(0.25, 0.4),
-                AutomaticSize = Enum.AutomaticSize.X,
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
-                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
-                ZIndex = 2,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
-            })
-        else
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.ClassUlt.Name] or KeybindsBook.PC.ClassUlt.Name,
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0.25, 0.4),
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                ZIndex = 2,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
-            })
-        end
-    end)
 
 
     local frame = Components.Frame(scope, {
@@ -106,16 +50,10 @@ return function(scope: Fusion.Scope, props: {
                         Name = "PlayerControls",
 
                         [Children] = {
-                            Components.UIListLayout(scope, {
-                                FillDirection = Enum.FillDirection.Horizontal,
-                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                                Padding = UDim.new(0.015, 0)
-                            }),
-
                             Components.Frame(scope, {
                                 Name = "ClassQUlt",
-                                LayoutOrder = 233,
+                                AnchorPoint = Vector2.new(1, 0),
+                                Position = UDim2.fromScale(0.4, -1),
                                 Size = UDim2.fromScale(1.8, 1.8),
                                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                                 BackgroundTransparency = 0,
@@ -166,7 +104,7 @@ return function(scope: Fusion.Scope, props: {
                                             local classInfo = ClassBook[use(props.Class)]
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                            return classInfo.Skills["UltSkillIcon"] or ""
+                                            return classInfo.Icon
                                         end),
                                     }),
                                     Components.IconImageLabel(scope, {
@@ -177,7 +115,7 @@ return function(scope: Fusion.Scope, props: {
                                             local classInfo = ClassBook[use(props.Class)]
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                            return classInfo.Skills["UltSkillIcon"] or ""
+                                            return classInfo.Icon
                                         end),
                                         ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local classInfo = ClassBook[use(props.Class)]
@@ -240,29 +178,39 @@ return function(scope: Fusion.Scope, props: {
                                             Components.ScaledTextUIStroke(scope, {})
                                         }
                                     }),
-
-                                    key
                                 }
                             }),
 
                             ActiveSlot(scope, {
                                 Index = 1,
-                                ActiveInfo = self.ActiveList[1]
+                                ActiveInfo = self.ActiveList[1],
+
+                                ForcePosition = UDim2.fromScale(0.625, -0.75),
+                                ForceSize = UDim2.fromScale(1.5, 1.5)
                             }, self),
 
                             ActiveSlot(scope, {
                                 Index = 2,
-                                ActiveInfo = self.ActiveList[2]
+                                ActiveInfo = self.ActiveList[2],
+
+                                ForcePosition = UDim2.fromScale(0.6, -2.75),
+                                ForceSize = UDim2.fromScale(1.5, 1.5)
                             }, self),
 
                             ActiveSlot(scope, {
                                 Index = 3,
-                                ActiveInfo = self.ActiveList[3]
+                                ActiveInfo = self.ActiveList[3],
+
+                                ForcePosition = UDim2.fromScale(0.775, -4),
+                                ForceSize = UDim2.fromScale(1.5, 1.5)
                             }, self),
 
 
                             AbilitySlot(scope, {
-                                ActiveInfo = self.CharAbilityList[1]
+                                ActiveInfo = self.CharAbilityList[1],
+
+                                ForcePosition = UDim2.fromScale(0.15, -0.25),
+                                ForceSize = UDim2.fromScale(1.5, 1.5)
                             }, self)
                         }
                     })

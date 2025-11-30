@@ -5,7 +5,6 @@ export type ClassJSON = {
     Type: string,
 
     Skills: {
-        UltSkillIcon: string,
         UltSkill_WithoutRecolor: boolean?
     },
     BaseStats: {
@@ -24,11 +23,7 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://2965862892",
-            UltSkill_WithoutRecolor = true
         },
-
-
         BaseStats = {
             OrbBounce = 210
         }
@@ -41,8 +36,6 @@ return {
 		Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://2965863905",
-            UltSkill_WithoutRecolor = true
         },
 
 
@@ -56,8 +49,6 @@ return {
 		Type = "Magic",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://2965863231",
-            UltSkill_WithoutRecolor = true
         },
 
 
@@ -71,7 +62,6 @@ return {
 		Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://121488236607929",
         },
 
 
@@ -88,7 +78,6 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://2965863677",
             UltSkill_WithoutRecolor = true
         },
 
@@ -100,11 +89,10 @@ return {
 
     Furioso = {
         Icon = "rbxassetid://128714575176870",
-        Color = Color3.fromHex('#ffffff'),
+        Color = Color3.fromHex('#666666'),
         Type = "Magic",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://118519686473047",
             UltSkill_WithoutRecolor = true
         },
 
@@ -119,13 +107,13 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://114059978330713",
-            UltSkill_WithoutRecolor = true
         },
 
         BaseStats = {
             ShockingChance = 10
-        }
+        },
+
+        DevClass = true
     },
 
 
@@ -135,11 +123,12 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
 	},
 	Repeater = {
 		Icon = "rbxassetid://12190533959",
@@ -147,11 +136,12 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
 	},
 	Striker = {
 		Icon = "rbxassetid://12190535870",
@@ -159,11 +149,12 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
 	},
 	Alchemist = {
 		Icon = "rbxassetid://12236618949",
@@ -171,11 +162,12 @@ return {
         Type = "Magic",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
 	},
 	Illusionist = {
 		Icon = "rbxassetid://15875390788",
@@ -183,11 +175,12 @@ return {
         Type = "Magic",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
 	},
     Juggernaut = {
         Icon = "rbxassetid://16654290906",
@@ -195,11 +188,12 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
     },
     Reaper = {
         Icon = "rbxassetid://17667241921",
@@ -207,11 +201,12 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
     },
     WindDancer = {
         Icon = "rbxassetid://18423401512",
@@ -219,10 +214,11 @@ return {
         Type = "DMG",
 
         Skills = {
-            UltSkillIcon = "rbxassetid://0",
             UltSkill_WithoutRecolor = true
         },
 
-        BaseStats = {}
+        BaseStats = {},
+
+        DevClass = true
     },
 }

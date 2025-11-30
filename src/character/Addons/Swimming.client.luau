@@ -46,6 +46,8 @@ end))
 local animator = char.Humanoid.Animator :: Animator
 local swimAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.Swim)
 local swimIdleAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.SwimIdle)
+swimAnim.Priority = Enum.AnimationPriority.Action2
+swimIdleAnim.Priority = Enum.AnimationPriority.Action3
 
 Add(swimAnim)
 Add(swimIdleAnim)

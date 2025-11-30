@@ -754,10 +754,6 @@ table.insert(CriRPGLib.Funcs, function()
 
     local function _healthRecover()
         healEmpty()
-
-        char:SetAttribute("IsHPRecovering", false)
-
-
         healAdd(task.spawn(function()
             local waitTime = char:GetAttribute("HealthRegenWaitTime") or 15
 
@@ -766,12 +762,9 @@ table.insert(CriRPGLib.Funcs, function()
                 if char.Humanoid.Health <= 0
                     or char.Humanoid.Health >= char.Humanoid.MaxHealth
                     or char:FindFirstChild("AntiHeal") then
-
-                    char:SetAttribute("IsHPRecovering", false)
                     break
                 end
 
-                char:SetAttribute("IsHPRecovering", true)
                 char.Humanoid.Health += math.ceil(char.Humanoid.MaxHealth * 0.01)
             end
         end))
@@ -796,21 +789,15 @@ table.insert(CriRPGLib.Funcs, function()
 
     local function _shieldRecover()
         repairEmpty()
-
-        char:SetAttribute("IsShieldRepairing", false)
-
-
         repairAdd(task.spawn(function()
             local waitTime = char:GetAttribute("ShieldRegenWaitTime") or 10
 
             wait(waitTime)
             while wait(0.15) do
                 if char:GetAttribute("Shield") >= char:GetAttribute("MaxShield") then
-                    char:SetAttribute("IsShieldRepairing", false)
                     break
                 end
 
-                char:SetAttribute("IsShieldRepairing", true)
                 HarukaLib:AddAttr(char, "Shield", math.ceil(char:GetAttribute("MaxShield") * 0.01))
             end
         end))

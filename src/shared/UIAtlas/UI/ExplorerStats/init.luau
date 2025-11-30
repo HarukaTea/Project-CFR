@@ -6,13 +6,17 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 
 local CharacterStatsView = require(script.Components.CharacterStatsView)
-local PlayerActive = require(script.Components.PlayerActives)
+local PlayerActivesPC = require(script.Components.PlayerActivesPC)
+local PlayerActivesMobile = require(script.Components.PlayerActivesMobile)
 local MenuSelections = require(script.Components.MenuSelections)
 
 local MenuSlot = require(script.Components.MenuSlot)
 local LevelTimer = require(script.Components.LevelTimer)
 local LevelStarterComponent = require(script.Components.LevelStarterBtn)
 
+
+local HPBar = require(script.Components.HPBar)
+local ManaBar = require(script.Components.ManaBar)
 
 
 local Children = Fusion.Children
@@ -57,36 +61,64 @@ return function(plr: Player)
 
             [Children] = {
                 CharacterStatsView(scope, {
-                    Class = self.Class,
-                    EquippingPassives = self.PassiveList,
-                    EquippingItems = self.EquippingItems,
-
-                    HP = self.HP, MaxHP = self.MaxHP,
-                    IsHPRecovering = self.IsHPRecovering,
-
-                    Shield = self.Shield, MaxShield = self.MaxShield,
-
                     MinDMG = self.MinDMG, MaxDMG = self.MaxDMG,
                     Magic = self.Magic,
-
 
                     HalloweenCandy = self.HalloweenCandy,
                     Gold = self.Gold,
                 }),
 
 
-                PlayerActive(scope, {
-                    ClassUltProgress = self.ClassUltProgress,
-                    MaxClassUltProgress = self.MaxClassUltProgress,
+                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    local inputType = use(self.LastInputType)
 
-                    Class = self.Class,
-                }, self),
+                    if inputType == "MobileDevice" then
+                        return PlayerActivesMobile(scope, {
+                            ClassUltProgress = self.ClassUltProgress,
+                            MaxClassUltProgress = self.MaxClassUltProgress,
+
+                            Class = self.Class,
+                        }, self)
+                    else
+                        return PlayerActivesPC(scope, {
+                            ClassUltProgress = self.ClassUltProgress,
+                            MaxClassUltProgress = self.MaxClassUltProgress,
+
+                            Class = self.Class,
+                        }, self)
+                    end
+                end),
+
+
+                Components.Frame(scope, {
+                    Name = "StatsFrame",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 0.3),
+                    Size = UDim2.fromScale(1, 0.42),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            Padding = UDim.new(0.01, 0),
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            FillDirection = Enum.FillDirection.Horizontal,
+                        }),
+
+                        HPBar(scope, {
+                            HP = self.HP, MaxHP = self.MaxHP,
+                            Shield = self.Shield, MaxShield = self.MaxShield
+                        }),
+
+                        ManaBar(scope, {
+                            Mana = self.Mana, MaxMana = self.MaxMana,
+                        })
+                    },
+                }),
 
 
                 Components.Frame(scope, {
                     Name = "EffectList",
                     AnchorPoint = Vector2.new(0.5, 1),
-                    Position = UDim2.fromScale(0.5, 0.3),
+                    Position = UDim2.fromScale(0.5, -0.1),
                     Size = UDim2.fromScale(1, 0.7),
 
                     [Children] = {
@@ -102,19 +134,27 @@ return function(plr: Player)
 
                 Components.TextLabel(scope, {
                     Name = "ServerLocation",
-                    Position = UDim2.fromScale(0, 0.5),
+                    AnchorPoint = Vector2.yAxis,
+                    Position = UDim2.fromScale(0, 0.9),
                     Size = UDim2.fromScale(1, 0.3),
                     FontFace = Font.fromName("Ubuntu", Enum.FontWeight.Bold),
                     TextTransparency = 0.3,
                     AutoLocalize = false,
+                    TextXAlignment = Enum.TextXAlignment.Left,
 
                     Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                        return use(self.ServerLocation)..", "..use(self.CityLocation).." / "..require(RepS.VERSION)
+                        return use(self.ServerLocation).." / "..require(RepS.VERSION)
                     end),
 
                     [Children] = {
                         Components.UITextSizeConstraint(scope, {
                             MaxTextSize = 14
+                        }),
+                        Components.UIPadding(scope, {
+                            PaddingTop = UDim.new(0, 0),
+                            PaddingBottom = UDim.new(0, 0),
+                            PaddingLeft = UDim.new(0.01, 0),
+                            PaddingRight = UDim.new(0, 0)
                         })
                     }
                 })

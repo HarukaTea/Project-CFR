@@ -33,6 +33,9 @@ export type Self = {
     Shield: Fusion.Value<number>,
     MaxShield: Fusion.Value<number>,
 
+    Mana: Fusion.Value<number>,
+    MaxMana: Fusion.Value<number>,
+
     Level: Fusion.Value<number>,
     Class: Fusion.Value<string>,
     ClassUltProgress: Fusion.Value<number>,
@@ -47,16 +50,9 @@ export type Self = {
     TargetingList: Fusion.Value<{ ObjectValue }>,
     TargetingEnemy: Fusion.Value<Model?>,
 
-    IsHPRecovering: Fusion.Value<boolean>,
-    IsShieldRepairing: Fusion.Value<boolean>,
-
     IsMenuShown: Fusion.Value<boolean>,
     IsUIShown: Fusion.Value<boolean>,
     IsUIShown2: Fusion.Value<boolean>,
-
-    PassiveBGAbsContentSize: Fusion.Value<Vector2>,
-
-    CurrentHoveringPassive: Fusion.Value<string>,
 
     DungeonId: Fusion.Value<string?>,
     DungeonStarted: Fusion.Value<boolean>,
@@ -74,6 +70,8 @@ export type Self = {
 
     Items: Fusion.Value<{ IntConstrainedValue }>,
     EquippingItems: Fusion.Value<{ StringValue }>,
+
+    LastInputType: Fusion.Value<string>,
 
 
     ActiveList: {
@@ -143,6 +141,9 @@ return function (self: Self)
     self.Shield = Value(0)
     self.MaxShield = Value(10)
 
+    self.Mana = Value(0)
+    self.MaxMana = Value(100)
+
     self.EXP = Value(50)
     self.MaxEXP = Value(100)
 
@@ -162,16 +163,8 @@ return function (self: Self)
     self.TargetingList = targeting :: Fusion.Value<{ ObjectValue }>
     self.TargetingEnemy = FusionComponents.useValue(scope, self.char:WaitForChild("TargetingEnemy"))
 
-    self.IsHPRecovering = Value(false)
-    self.IsShieldRepairing = Value(false)
-
-
     self.IsMenuShown = Value(false)
     self.IsUIShown = Value(true)
-
-    self.PassiveBGAbsContentSize = Value(Vector2.zero)
-
-    self.CurrentHoveringPassive = Value("")
 
     self.DungeonId = Fusion.Value(self.scope, nil)
     self.DungeonStarted = Value(false)
@@ -192,6 +185,10 @@ return function (self: Self)
 
     self.Gold = Value(0)
     self.HalloweenCandy = Value(0)
+
+
+    self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
+
 
 
     --// track server
@@ -590,11 +587,11 @@ return function (self: Self)
         ["Attr-MaxShield"] = function(val: number)
             self.MaxShield:set(val)
         end,
-        ["Attr-IsHPRecovering"] = function(val: boolean)
-            self.IsHPRecovering:set(val)
+        ["Attr-Mana"] = function(val: number)
+            self.Mana:set(val)
         end,
-        ["Attr-IsShieldRepairing"] = function(val: boolean)
-            self.IsShieldRepairing:set(val)
+        ["Attr-MaxMana"] = function(val: number)
+            self.MaxMana:set(val)
         end
     }))
 

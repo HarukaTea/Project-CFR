@@ -31,7 +31,11 @@ return function(scope: Fusion.Scope, props: {
         CastCD: boolean,
         DisplayOrder: number,
         KeyDisplay: string
-    }
+    },
+
+
+    ForcePosition: UDim2?,
+    ForceSize: UDim2?,
 
 }, self: {
     plr: Player,
@@ -80,7 +84,7 @@ return function(scope: Fusion.Scope, props: {
                     Components.UIPadding(scope, {})
                 }
             })
-        else
+        elseif input == "Keyboard" then
             return Components.TextLabel(scope, {
                 Name = "Key",
                 AnchorPoint = Vector2.one,
@@ -97,6 +101,8 @@ return function(scope: Fusion.Scope, props: {
                     Components.UIPadding(scope, {})
                 }
             })
+        else
+            return nil
         end
     end)
 
@@ -126,9 +132,12 @@ return function(scope: Fusion.Scope, props: {
     return Components.Frame(scope, {
         Name = "Active"..props.Index,
         BackgroundTransparency = 0,
-        Size = UDim2.fromScale(1.2, 1.2),
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = if props.Index == 3 then 159 else props.Index,
+
+        AnchorPoint = if props.ForcePosition then Vector2.xAxis else Vector2.zero,
+        Position = props.ForcePosition or UDim2.fromScale(0, 0),
+        Size = props.ForceSize or UDim2.fromScale(1.2, 1.2),
 
 
         [Children] = {
