@@ -5,6 +5,7 @@ local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 local RepS = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
+local HttpService = game:GetService("HttpService")
 
 
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
@@ -93,71 +94,37 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
+
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
 
-    local isInUltPeriod = char:FindFirstChild("IsInComboUltPeriod") ~= nil
-    if isInUltPeriod then
-        HarukaLib:AddAttr(char, "ChainCombo", 1)
-    end
-
 
     local combo = char:GetAttribute("ChainCombo") :: number
 
-    if combo % 3 == 0 then
-        ServerBindables.RToSpawnOrb:Fire(char.Name, "ChainSealOrb")
+    if combo >= 2 then
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib._CalDMG("DMG", char) * combo),
+            DMGType = "DMG",
+            Attacker = "ClassAttacks"
+        })
 
-    elseif combo % 3 == 1 and isInUltPeriod then
-        ServerBindables.RToSpawnOrb:Fire(char.Name, "ChainSealOrb")
+        local comboEff = RepS.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
+		comboEff.Parent = targeting.PrimaryPart
+		Debris:AddItem(comboEff, 1)
+
+        ServerLib.ShowText(char, "COMBO!", ClassBook.Chain.Color)
+    else
+        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+            DMG = ClassAttackLib._CalDMG("DMG", char),
+            DMGType = "DMG",
+            Attacker = "ClassAttacks"
+        })
     end
-
-
-    local baseDMG = ClassAttackLib._CalDMG("DMG", char)
-    local totalDMG = math.ceil(baseDMG * (1 + 0.1 * combo))
-
-
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = totalDMG,
-        DMGType = "DMG",
-        Attacker = "ClassAttacks"
-    })
-end
-ClassAttackLib.Chain_Seal = function(plr: Player, symbolAttrs: Dict)
-    local char, targeting = _getCharAndTargeting(plr)
-    if not _charAndTargetingCheck(char, targeting) then return end
-
-
-    local combo = char:GetAttribute("ChainCombo") :: number
-    local baseDMG = ClassAttackLib._CalDMG("DMG", char)
-	local totalDMG = math.ceil(baseDMG * (0.5 + combo))
-
-
-    char:SetAttribute("ChainCombo", 0)
-
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = totalDMG,
-        DMGType = "DMG",
-        Attacker = "ClassAttacks"
-    })
-
-
-    local comboEff = RepS.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
-    comboEff.Parent = targeting.PrimaryPart
-    Debris:AddItem(comboEff, 1)
-
-    ServerLib:ShowText(char, "SEAL!", ClassBook.Chain.Color)
 end
 ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Chain",
-        DMGType = "DMG",
-        Target = targeting
-    })
 
 
     _castUltPromiseUtil(function()
@@ -165,19 +132,31 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        ClassAttackLib._FireClassUltCasted(char, {
+            ClassId = "Chain",
+            DMGType = "DMG",
+            Target = targeting
+        })
+
+
+        local uniqueId = HttpService:GenerateGUID(false)
+
+        ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+            ProjectileId = "ChainSlash",
+            Duration = 10,
+            ProjectileUniqueId = uniqueId,
+            ProjectileType = "OverTime",
+            DMGType = "DMG",
+            DoTType = "Burn",
+            DMGBonus = 1,
+            IsClassUlt = true
+        })
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
-        Events.FaceTargetingEnemy_S.Fire(plr)
-
-
-        local ultPeriodSymbol = Instance.new("BoolValue")
-        ultPeriodSymbol.Name = "IsInComboUltPeriod"
-        ultPeriodSymbol.Value = true
-        ultPeriodSymbol.Parent = char
-
-        Debris:AddItem(ultPeriodSymbol, 6)
-
-        StatusLib:CreateCustomStatus("ComboUlt", char, {
-            Duration = 6
+        Events.PlayClassAnim_S.Fire(plr, "BurstSpinAttack")
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "ChainSlash",
+            Caster = char,
+            ProjectileUniqueId = uniqueId
         })
     end)
 end
@@ -193,11 +172,42 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
     ClassAttackLib._AddClassUltCharge(plr, 15)
 
 
+    local now = DateTime.now().UnixTimestamp
 	local arrowCount = char:GetAttribute("BurstArrow") or 0
+    local lastBurst = char:GetAttribute("LastBurstTime") or 0
 	local piercingCount = char:GetAttribute("BurstArrowPiercing") or 0
 
 
-    local totalConsumed = arrowCount + piercingCount
+    local consumeNormal = 0
+	local consumePiercing = 0
+    if not char:FindFirstChild("IsInBurstUltPeriod") then
+        if piercingCount > 0 and arrowCount > 0 then
+            consumePiercing = 1
+            consumeNormal = 1
+
+        elseif (now - lastBurst) > 2 then
+            consumeNormal = math.min(1, arrowCount)
+        else
+            consumeNormal = math.min(2, arrowCount)
+        end
+    else
+        if piercingCount > 0 and arrowCount > 0 then
+            consumePiercing = 1
+            consumeNormal = math.clamp(arrowCount, 1, 2)
+
+        elseif (now - lastBurst) > 2 then
+            consumeNormal = math.min(1, arrowCount)
+            if piercingCount > 0 then
+                consumePiercing = 1
+            end
+        else
+            consumeNormal = math.min(3, arrowCount)
+        end
+    end
+
+
+    local totalConsumed = consumeNormal + consumePiercing
+
 	if totalConsumed <= 0 then
 		ClassAttackLib._DealDamageToEnemy(char, targeting, {
 			DMG = ClassAttackLib._CalDMG("DMG", char),
@@ -208,7 +218,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 	end
 
 	local baseDMG = ClassAttackLib._CalDMG("DMG", char)
-	local totalDMG = math.ceil(baseDMG * (1 + 0.5 * arrowCount + 1 * piercingCount))
+	local totalDMG = math.ceil(baseDMG * (1 + 1 * arrowCount + 2 * piercingCount))
 
 	ClassAttackLib._DealDamageToEnemy(char, targeting, {
 		DMG = totalDMG,
@@ -218,19 +228,13 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 	ServerLib:ShowText(char, "BURST SHOT!", ClassBook.Burst.Color)
 
 
-	char:SetAttribute("BurstArrow", 0)
-	char:SetAttribute("BurstArrowPiercing", 0)
+    char:SetAttribute("BurstArrow", math.max(arrowCount - consumeNormal, 0))
+	char:SetAttribute("BurstArrowPiercing", math.max(piercingCount - consumePiercing, 0))
+	char:SetAttribute("LastBurstTime", now)
 end
 ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
-
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Burst",
-        DMGType = "DMG",
-        Target = targeting
-    })
 
 
     _castUltPromiseUtil(function()
@@ -238,6 +242,13 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        ClassAttackLib._FireClassUltCasted(char, {
+            ClassId = "Burst",
+            DMGType = "DMG",
+            Target = targeting
+        })
+
+
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
         Events.FaceTargetingEnemy_S.Fire(plr)
 
@@ -253,6 +264,41 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         StatusLib:CreateCustomStatus("BurstUlt", char, {
             Duration = 8
         })
+
+
+
+        local linearVelocity = Instance.new("LinearVelocity")
+        linearVelocity.Name = "ExtraUpBV"
+        linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+        linearVelocity.ForceLimitsEnabled = false
+        linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 50 * 1.8
+        linearVelocity.Parent = char.PrimaryPart
+        Debris:AddItem(linearVelocity, 0.05)
+
+
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "ChainJump",
+            Caster = char,
+            ProjectileUniqueId = "nil"
+        })
+        Events.PlayClassAnim_S.Fire(plr, "BurstSpinAttack")
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "BurstArrowsSplit",
+            Caster = char,
+            ProjectileUniqueId = "nil"
+        })
+
+        Promise.delay(0.9):andThen(function()
+            for _ = 1, 3 do
+                ClassAttackLib._DealDamageToEnemy(char, targeting, {
+                    DMG = ClassAttackLib._CalDMG("DMG", char),
+                    DMGType = "DMG",
+                    Attacker = "SkillProjectile"
+                })
+                task.wait(0.05)
+            end
+        end):catch(function() end)
     end)
 end
 ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
@@ -328,19 +374,41 @@ ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Flow",
-        DMGType = "Magic",
-        Target = targeting
-    })
-
 
     _castUltPromiseUtil(function()
         ServerBindables.RToCastSpell:Fire(plr, char, "FireballSpell", {
             IsClassUlt = true
         })
 
-    end, function() end)
+    end, function()
+        ClassAttackLib._FireClassUltCasted(char, {
+            ClassId = "Flow",
+            DMGType = "Magic",
+            Target = targeting
+        })
+
+        local uniqueId = HttpService:GenerateGUID(false)
+
+        ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
+            ProjectileId = "FlowAyakaUlt",
+            ProjectileType = "OneTime",
+            Duration = 3,
+            ProjectileUniqueId = uniqueId,
+            DMGType = "Magic",
+            DoTType = "None",
+            DMGBonus = 1,
+            IsClassUlt = true
+        })
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.PlayClassAnim_S.Fire(plr, "MagicCasted1")
+        Events.FaceTargetingEnemy_S.Fire(plr)
+
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "FlowAyakaUlt",
+            Caster = char,
+            ProjectileUniqueId = uniqueId
+        })
+    end)
 end
 ClassAttackLib.HEAL_ATTACK_Flow = ClassAttackLib.HEAL_ATTACK
 
@@ -386,18 +454,18 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
 
-    ClassAttackLib._FireClassUltCasted(char, {
-        ClassId = "Reverberation",
-        DMGType = "DMG",
-        Target = targeting
-    })
-
-
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        ClassAttackLib._FireClassUltCasted(char, {
+            ClassId = "Reverberation",
+            DMGType = "DMG",
+            Target = targeting
+        })
+
+
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
         Events.FaceTargetingEnemy_S.Fire(plr)
 
@@ -413,6 +481,32 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
         StatusLib:CreateCustomStatus("ReverberationUlt", char, {
             Duration = 8
         })
+
+
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
+        Events.PlayClassAnim_S.Fire(plr, "BurstSpinAttack")
+        Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            SceneId = "BlueEchoUlt",
+            Caster = char,
+            ProjectileUniqueId = "nil"
+        })
+
+        Promise.delay(0.7):andThen(function()
+            for _ = 1, 5 do
+                char, targeting = _getCharAndTargeting(plr)
+                if not _charAndTargetingCheck(char, targeting) then break end
+
+
+                ClassAttackLib._DealDamageToEnemy(char, targeting, {
+                    DMG = ClassAttackLib._CalDMG("DMG", char, {
+                        ForceMaxDMG = true
+                    }),
+                    DMGType = "DMG",
+                    Attacker = "SkillProjectile"
+                })
+                task.wait(0.5)
+            end
+        end):catch(function() end)
     end)
 end
 ClassAttackLib.HEAL_ATTACK_Reverberation = ClassAttackLib.HEAL_ATTACK

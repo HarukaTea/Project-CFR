@@ -69,7 +69,7 @@ return function(plr: Player)
                 }),
 
 
-                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                     local inputType = use(self.LastInputType)
 
                     if inputType == "MobileDevice" then

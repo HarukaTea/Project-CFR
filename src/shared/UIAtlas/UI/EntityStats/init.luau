@@ -93,7 +93,7 @@ return function (plr: Player)
                 Components.Frame(scope, {
                     Name = "TargetingListDiv",
                     AnchorPoint = Vector2.new(1, 0),
-                    Position = UDim2.fromScale(1, 0),
+                    Position = UDim2.fromScale(0.95, 0),
 
                     [Children] = {
                         Components.UIScale(scope, {}),

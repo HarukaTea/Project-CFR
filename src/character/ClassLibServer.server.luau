@@ -90,6 +90,15 @@ ClassMechanicLib._CLASS_Chain = function(self)
     end
 
 
+    local function _airCheck(state: Enum.HumanoidStateType)
+        if state == Enum.HumanoidStateType.Landed
+            or state ~= Enum.HumanoidStateType.Jumping
+            or state ~= Enum.HumanoidStateType.Freefall then
+
+            _classAbilityClear()
+        end
+    end
+    ClassAdd(char.Humanoid.StateChanged:Connect(_airCheck))
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear,
     }))
@@ -128,6 +137,7 @@ ClassMechanicLib._CLASS_Burst = function(self)
 
         char:SetAttribute("BurstArrow", 0)
         char:SetAttribute("BurstArrowPiercing", 0)
+        char:SetAttribute("LastBurstTime", nil)
     end
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear

@@ -50,11 +50,11 @@ return function(scope: Fusion.Scope, props: {
             Components.UICorner(scope, {
                 CornerRadius = UDim.new(0.1, 0),
             }),
-            Components.UIAspectRatioConstraint(scope, 8.218),
+            Components.UIAspectRatioConstraint(scope, 11.203),
 
             Components.IconImageLabel(scope, {
                 AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromScale(0.03, 0.5),
+                Position = UDim2.fromScale(0.02, 0.5),
                 Size = UDim2.fromScale(0.8, 0.8),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
@@ -65,7 +65,7 @@ return function(scope: Fusion.Scope, props: {
 
             Components.TextLabel(scope, {
                 Name = "Title",
-                Position = UDim2.fromScale(0.15, 0.1),
+                Position = UDim2.fromScale(0.115, 0.1),
                 Size = UDim2.fromScale(0.8, 0.35),
                 TextColor3 = Components.BLACK_COLOR,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -77,7 +77,7 @@ return function(scope: Fusion.Scope, props: {
             }),
             Components.TextLabel(scope, {
                 Name = "Desc",
-                Position = UDim2.fromScale(0.15, 0.53),
+                Position = UDim2.fromScale(0.115, 0.53),
                 Size = UDim2.fromScale(0.8, 0.25),
                 TextColor3 = Components.BLACK_COLOR,
                 TextXAlignment = Enum.TextXAlignment.Left,
