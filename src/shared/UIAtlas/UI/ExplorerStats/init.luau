@@ -148,7 +148,8 @@ return function(plr: Player)
 
                     [Children] = {
                         Components.UITextSizeConstraint(scope, {
-                            MaxTextSize = 14
+                            MaxTextSize = 14,
+                            MinTextSize = 1
                         }),
                         Components.UIPadding(scope, {
                             PaddingTop = UDim.new(0, 0),

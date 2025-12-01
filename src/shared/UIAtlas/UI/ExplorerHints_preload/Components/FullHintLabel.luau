@@ -32,6 +32,7 @@ return function (scope: Fusion.Scope, props: {
                         [Children] = {
                             Components.UITextSizeConstraint(scope, {
                                 MaxTextSize = 36,
+                                MinTextSize = 1
                             })
                         },
                     }),

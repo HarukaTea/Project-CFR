@@ -115,9 +115,13 @@ return function (scope: Fusion.Scope, props: {
                         info.WorldId = info.WorldId or "InitusWorld"
 
 
+                        local order = 999 - symbol.Value
+
+
                         local id = string.sub(symbol.Name, 1, 8)
                         if symbol.Name == game.JobId then
                             id = "Current Server"
+                            order = 5
                         end
 
 
@@ -127,7 +131,7 @@ return function (scope: Fusion.Scope, props: {
                             BackgroundColor3 = Color3.new(),
                             BackgroundTransparency = 0,
 
-                            LayoutOrder = 999 - symbol.Value,
+                            LayoutOrder = order,
 
                             [Fusion.OnEvent("MouseEnter")] = function()
                                 isSelecting:set(true)

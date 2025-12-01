@@ -189,7 +189,6 @@ do
     repeat wait() until plr.Character.PrimaryPart
     repeat wait() until plr.Character:GetAttribute("Haruka_CriRPGServerInited")
 
-
     workspace:SetAttribute("Haruka_TitlescreenDestroying", true)
 
     if shouldSkipTitlescreen then

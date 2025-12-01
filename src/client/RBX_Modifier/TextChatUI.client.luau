@@ -33,7 +33,7 @@ bubbleChat.TextSize = 16
 bubbleChat.TextColor3 = Components.WHITE_COLOR
 bubbleChat.BubbleDuration = 6
 bubbleChat.LocalPlayerStudsOffset = -Vector3.yAxis * 2
-bubbleChat.VerticalStudsOffset = 1.7
+bubbleChat.VerticalStudsOffset = 2
 bubbleChat.MaxDistance = 159
 bubbleChat.AdorneeName = "HumanoidRootPart"
 

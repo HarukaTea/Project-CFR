@@ -7,8 +7,6 @@ local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local StarterGui = game:GetService("StarterGui")
-local StarterPlayer = game:GetService("StarterPlayer")
 local SSS = game:GetService("ServerScriptService")
 
 local Promise = require(RepS.HarukaShared.Shared.Promise)
@@ -23,12 +21,6 @@ local nowClock = os.clock()
 
 --// Init server settings
 do
-	Players.CharacterAutoLoads = false
-	StarterPlayer.CharacterUseJumpPower = true
-    StarterPlayer.EnableMouseLockOption = false
-    StarterGui.ScreenOrientation = Enum.ScreenOrientation.LandscapeSensor
-    StarterPlayer.CameraMaxZoomDistance = 159
-
     Lighting.GlobalShadows = true
 end
 

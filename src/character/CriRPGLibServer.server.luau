@@ -42,6 +42,11 @@ type CriRPGLibClass = {
 
     Init: (self: CriRPGLibClass) -> nil,
     Destroy: (self: CriRPGLibClass) -> nil,
+
+
+    _SpawnToLastLocation: () -> nil,
+    _InitAttrs: () -> nil,
+    _AutoEquipItems: () -> nil,
 }
 
 local CriRPGLib = {} :: CriRPGLibClass
