@@ -14,4 +14,22 @@ if RunService:IsClient() then
 end
 
 
+if Players.CharacterAutoLoads then
+    error("[ERROR] You forgot to disable CharacterAutoLoads!")
+    return
+end
+if not workspace:FindFirstChild("Maps") then
+    error("[ERROR] You forgot to create a 'Maps' folder!")
+    return
+end
+if not workspace:FindFirstChild("MapComponents") then
+    error("[ERROR] You forgot to create a 'MapComponents' folder!")
+    return
+end
+if not workspace:FindFirstChild("Enemies") then
+    error("[ERROR] You forgot to create a 'Enemies' folder!")
+    return
+end
+
+
 workspace:SetAttribute("Haruka_ServerValidated", true)

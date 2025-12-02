@@ -21,21 +21,12 @@ return function(scope: Fusion.Scope, props: {
     EquippingItems: Fusion.Value<{ StringValue }>,
 })
 
-    local isSelecting = Fusion.Value(scope, false)
-
     return Components.IconImageLabel(scope, {
         Name = "Weapon",
         AnchorPoint = Vector2.yAxis,
         Position = UDim2.fromScale(0, 1),
         Size = UDim2.fromScale(1.7, 1.7),
         ZIndex = 10,
-
-        [Fusion.OnEvent("MouseEnter")] = function()
-            isSelecting:set(true)
-        end,
-        [Fusion.OnEvent("MouseLeave")] = function()
-            isSelecting:set(false)
-        end,
 
         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
             local equippingItems = use(props.EquippingItems) :: { any }
@@ -64,14 +55,6 @@ return function(scope: Fusion.Scope, props: {
 
 
         [Children] = {
-            Components.ScaledUIStroke(scope, {
-                Thickness = 0.03,
-
-                Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(isSelecting)
-                end)
-            }),
-
             Components.IconImageLabel(scope, {
                 Name = "Class",
                 AnchorPoint = Vector2.yAxis,
@@ -98,8 +81,8 @@ return function(scope: Fusion.Scope, props: {
 
                 [Children] = {
                     Fusion.ForPairs(scope, props.EquippingPassives, function(use: Fusion.Use, scope: Fusion.Scope, index: number, info)
-                        local RADIANS = { -40, -80, -120 }
-                        local r = 0.8
+                        local RADIANS = { -35, 0, 35 }
+                        local r = 0.85
 
                         local item = use(info.ItemId) :: string
                         local itemInfo = ItemBook:GetItemInfo(item)

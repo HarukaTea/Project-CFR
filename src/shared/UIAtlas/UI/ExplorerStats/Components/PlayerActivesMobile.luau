@@ -20,13 +20,51 @@ return function(scope: Fusion.Scope, props: {
 
     Class: Fusion.Value<string>,
 
+    UIViewportSize: Fusion.Value<Vector2>,
+
 }, self: {
     CastClassUlt_C: Signal.SignalClass,
     ActiveList: {},
     CharAbilityList: {}
 }) : Frame
 
-    local isSelectingUlt = Fusion.Value(scope, false)
+    local function Value<T>(val: T) : Fusion.Value<T>
+        return Fusion.Value(scope, val)
+    end
+    local isSelectingUlt = Value(false)
+
+    local forceLocationsMobile = {
+        UDim2.fromScale(-0.81, 0.5),
+        UDim2.fromScale(-0.66, -0.2),
+        UDim2.fromScale(-0.06, -0.7),
+
+        UDim2.fromScale(0.61, -0.85),
+
+        UDim2.fromScale(-1.46, 0.5)
+    }
+    local forceDivLocationMobile = Value(UDim2.fromOffset(0, 0))
+    local forceSizeMobile = Value(UDim2.fromOffset(0, 0))
+    local forceJumpButtonSize = Value(0)
+
+
+
+    Fusion.Observer(scope, props.UIViewportSize):onBind(function()
+        local vpSize = Fusion.peek(props.UIViewportSize)
+
+        local minAxis = math.min(vpSize.X, vpSize.Y)
+        local isSmallScreen = minAxis <= 500
+        local jumpButtonSize = if isSmallScreen then 70 else 120
+
+        forceJumpButtonSize:set(jumpButtonSize)
+
+
+        forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 2, jumpButtonSize / 2))
+        if isSmallScreen then
+            forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize - 20))
+        else
+            forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize * 1.75))
+        end
+    end)
 
 
     local frame = Components.Frame(scope, {
@@ -35,15 +73,18 @@ return function(scope: Fusion.Scope, props: {
         Position = UDim2.fromScale(1, 1),
 
         [Children] = {
-            Components.UIScale(scope, {
-                Scale = 1
-            }),
-
             Components.Frame(scope, {
                 Name = "Div",
-                AnchorPoint = Vector2.xAxis,
-                Position = UDim2.fromScale(0.985, -0.2),
-                Size = UDim2.fromScale(0.33, 1),
+                AnchorPoint = Vector2.zero,
+
+                Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(forceDivLocationMobile)
+                end),
+                Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    local size = use(forceJumpButtonSize)
+
+                    return UDim2.fromOffset(size, size)
+                end),
 
                 [Children] = {
                     Components.Frame(scope, {
@@ -52,12 +93,16 @@ return function(scope: Fusion.Scope, props: {
                         [Children] = {
                             Components.Frame(scope, {
                                 Name = "ClassQUlt",
-                                AnchorPoint = Vector2.new(1, 0),
-                                Position = UDim2.fromScale(0.4, -1),
-                                Size = UDim2.fromScale(1.8, 1.8),
+                                AnchorPoint = Vector2.zero,
                                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                                 BackgroundTransparency = 0,
                                 BackgroundColor3 = Color3.new(),
+
+                                Position = forceLocationsMobile[5],
+
+                                Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    return use(forceSizeMobile)
+                                end),
 
                                 [Children] = {
                                     Components.RoundUICorner(scope),
@@ -185,32 +230,32 @@ return function(scope: Fusion.Scope, props: {
                                 Index = 1,
                                 ActiveInfo = self.ActiveList[1],
 
-                                ForcePosition = UDim2.fromScale(0.625, -0.75),
-                                ForceSize = UDim2.fromScale(1.3, 1.3),
+                                ForcePosition = forceLocationsMobile[1],
+                                ForceSize = forceSizeMobile,
                             }, self),
 
                             ActiveSlot(scope, {
                                 Index = 2,
                                 ActiveInfo = self.ActiveList[2],
 
-                                ForcePosition = UDim2.fromScale(0.6, -2.75),
-                                ForceSize = UDim2.fromScale(1.3, 1.3),
+                                ForcePosition = forceLocationsMobile[2],
+                                ForceSize = forceSizeMobile,
                             }, self),
 
                             ActiveSlot(scope, {
                                 Index = 3,
                                 ActiveInfo = self.ActiveList[3],
 
-                                ForcePosition = UDim2.fromScale(0.775, -4),
-                                ForceSize = UDim2.fromScale(1.3, 1.3),
+                                ForcePosition = forceLocationsMobile[3],
+                                ForceSize = forceSizeMobile,
                             }, self),
 
 
                             AbilitySlot(scope, {
                                 ActiveInfo = self.CharAbilityList[1],
 
-                                ForcePosition = UDim2.fromScale(0.95, -4),
-                                ForceSize = UDim2.fromScale(1.3, 1.3),
+                                ForcePosition = forceLocationsMobile[4],
+                                ForceSize = forceSizeMobile,
                             }, self)
                         }
                     })

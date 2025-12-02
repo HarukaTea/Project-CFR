@@ -207,10 +207,7 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
 	if not ItemBook:GetItemInfo(itemId) then return "" end
 
 	local itemInfo = ItemBook:GetItemInfo(itemId)
-	if table.find(itemInfo.TagsDesync, "NoRandom") then
-		return itemInfo.StatInfo
-	end
-	if table.find(itemInfo.TagsDesync, "Chest") then
+	if table.find(itemInfo.TagsDesync, "NoRandom") or table.find(itemInfo.TagsDesync, "Chest") or table.find(itemInfo.TagsDesync, "Statue") then
 		return itemInfo.StatInfo
 	end
 	local statInfoDesync = itemInfo.StatInfoDesync

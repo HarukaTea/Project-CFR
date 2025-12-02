@@ -88,7 +88,7 @@ return {
 
 
     Furioso = {
-        Icon = "rbxassetid://128714575176870",
+        Icon = "rbxassetid://125763677365170",
         Color = Color3.fromHex('#666666'),
         Type = "Magic",
 

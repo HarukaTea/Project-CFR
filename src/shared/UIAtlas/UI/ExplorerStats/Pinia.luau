@@ -73,6 +73,8 @@ export type Self = {
 
     LastInputType: Fusion.Value<string>,
 
+    UIViewportSize: Fusion.Value<Vector2>,
+    Device: "PC" | "Xbox" | "PlayStation" | "Phone" | "Tablet" | "VR",
 
     ActiveList: {
         {
@@ -188,6 +190,17 @@ return function (self: Self)
 
 
     self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
+
+    self.UIViewportSize = Value(workspace.CurrentCamera.ViewportSize)
+    self.Device = HarukaLib:GetAccurateDevice()
+
+
+    --// track viewport size
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-UIViewportSize"] = function(vpSize: Vector2)
+            self.UIViewportSize:set(vpSize)
+        end
+    }))
 
 
 

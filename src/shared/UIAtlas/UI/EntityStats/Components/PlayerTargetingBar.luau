@@ -60,9 +60,9 @@ return function(scope: Fusion.Scope, props: {
 
                 Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local sizeCon = use(absContentSize).X
-                    sizeCon = math.clamp(sizeCon, 30, 999)
+                    sizeCon = math.clamp(sizeCon, 15, 999)
 
-                    sizeCon += 15
+                    sizeCon += 8
 
                     return UDim2.new(1.05, sizeCon * -1, 0, 0)
                 end)
@@ -77,9 +77,9 @@ return function(scope: Fusion.Scope, props: {
 
                 Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local sizeCon = use(absContentSize).X
-                    sizeCon = math.clamp(sizeCon, 30, 999)
+                    sizeCon = math.clamp(sizeCon, 15, 999)
 
-                    sizeCon += 15
+                    sizeCon += 8
 
                     return UDim2.new(0.05, sizeCon, 1, 0)
                 end),

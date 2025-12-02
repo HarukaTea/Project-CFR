@@ -32,7 +32,7 @@ return function(scope: Fusion.Scope, props: {
 
 
     ForcePosition: UDim2?,
-    ForceSize: UDim2?,
+    ForceSize: Fusion.Value<UDim2>?,
 
 }, self: {
     plr: Player,
@@ -104,10 +104,13 @@ return function(scope: Fusion.Scope, props: {
         BackgroundTransparency = 0,
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = 0,
-
-        AnchorPoint = if props.ForcePosition then Vector2.xAxis else Vector2.zero,
+        AnchorPoint = Vector2.zero,
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
-        Size = props.ForceSize or UDim2.fromScale(1.2, 1.2),
+
+
+        Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            return use(props.ForceSize) or UDim2.fromScale(1.2, 1.2)
+        end),
 
 
         [Children] = {

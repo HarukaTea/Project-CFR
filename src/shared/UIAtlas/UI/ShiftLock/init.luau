@@ -60,7 +60,7 @@ return function(plr: Player)
 					Name = "ShiftLock",
 					Size = UDim2.fromScale(0.8, 0.8),
 					SizeConstraint = Enum.SizeConstraint.RelativeYY,
-					Position = UDim2.fromScale(0.99, 0.5),
+					Position = UDim2.fromScale(0.99, -1),
 					AnchorPoint = Vector2.new(1, 0.5),
 
 					Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)

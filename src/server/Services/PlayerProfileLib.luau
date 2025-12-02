@@ -154,12 +154,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         if not itemInfo.ItemStat then
             data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
         end
-        if table.find(trueItemInfo.TagsDesync, "NoRandom") then
-            if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
-                data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
-            end
-        end
-        if table.find(trueItemInfo.TagsDesync, "Chest") then
+        if table.find(trueItemInfo.TagsDesync, "NoRandom") or table.find(trueItemInfo.TagsDesync, "Chest") or table.find(trueItemInfo.TagsDesync, "Statue") then
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
                 data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
             end

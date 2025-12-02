@@ -61,6 +61,10 @@ return function(plr: Player)
 
             [Children] = {
                 CharacterStatsView(scope, {
+                    Class = self.Class,
+                    EquippingPassives = self.PassiveList,
+                    EquippingItems = self.EquippingItems,
+
                     MinDMG = self.MinDMG, MaxDMG = self.MaxDMG,
                     Magic = self.Magic,
 
@@ -76,6 +80,8 @@ return function(plr: Player)
                         return PlayerActivesMobile(scope, {
                             ClassUltProgress = self.ClassUltProgress,
                             MaxClassUltProgress = self.MaxClassUltProgress,
+
+                            UIViewportSize = self.UIViewportSize,
 
                             Class = self.Class,
                         }, self)
@@ -102,6 +108,11 @@ return function(plr: Player)
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             FillDirection = Enum.FillDirection.Horizontal,
                         }),
+
+                        Components.UIScale(scope, {
+                            Scale = if self.Device == "Phone" or self.Device == "Tablet" then 1.1 else 1
+                        }),
+
 
                         HPBar(scope, {
                             HP = self.HP, MaxHP = self.MaxHP,
