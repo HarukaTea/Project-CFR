@@ -155,6 +155,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         r6Char.Archivable = true
         r6Char.Name = plr.Name
         r6Char:PivotTo(CFrame.new(Vector3.yAxis * 159))
+        r6Char.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 
         r6Humanoid.DisplayName = plr.DisplayName
         r6Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
@@ -167,7 +168,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         r6Char:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
         local alignMoverAtt = Instance.new("Attachment")
-        alignMoverAtt.Name = "AlignMoverAttachment"
+        alignMoverAtt.Name = "CF_RootNode"
         alignMoverAtt.Parent = r6Char.PrimaryPart
 
         HarukaLib:SetCollisionGroup(r6Char, "PlayerBodyPart")
@@ -198,50 +199,6 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    local function _sitGalleon(galleon: Model, plr: Player)
-        local seat = galleon:FindFirstChildOfClass("Seat")
-        if not seat then return end
-
-
-
-        galleon.PrimaryPart.Anchored = false
-        galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-
-
-        seat:Sit(plr.Character.Humanoid)
-        seat:GetPropertyChangedSignal("Occupant"):Connect(function()
-            local occupant = seat.Occupant
-            if occupant == nil then
-                if not ServerLib:IsModelValid(galleon) then return end
-
-                if galleon.PrimaryPart:FindFirstChild("AlignPosition") then
-                    galleon.PrimaryPart:FindFirstChild("AlignPosition"):Destroy()
-                end
-                galleon.PrimaryPart.Anchored = true
-                galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-            end
-        end)
-
-
-        if galleon.PrimaryPart:FindFirstChild("AlignPosition") then
-            galleon.PrimaryPart:FindFirstChild("AlignPosition"):Destroy()
-        end
-
-        local alignPos = Instance.new("AlignPosition")
-        alignPos.Mode = Enum.PositionAlignmentMode.OneAttachment
-        alignPos.Attachment0 = Instance.new("Attachment", galleon.PrimaryPart)
-        alignPos.ForceLimitMode = Enum.ForceLimitMode.PerAxis
-        alignPos.ForceRelativeTo = Enum.ActuatorRelativeTo.Attachment0
-        alignPos.MaxAxesForce = Vector3.one * 5000000
-        alignPos.Responsiveness = 15
-        alignPos.Position = galleon.PrimaryPart.Position
-        alignPos.Parent = galleon.PrimaryPart
-
-
-        pcall(function()
-            galleon.PrimaryPart:SetNetworkOwner(nil)
-        end)
-    end
     Events.PromptTriggered_C.SetCallback(function(plr: Player, prompt: ProximityPrompt)
         if prompt == nil then return end
         if prompt.Parent == nil then return end
@@ -336,47 +293,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         elseif prompt.Name == "AbyssView" then
             Events.OpenAbyssUI_S.Fire(plr)
-
-
-        elseif prompt.Name == "BoatSummon" then
-            for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
-                if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
-
-                if galleon.Owner.Value == plr then
-                    galleon:Destroy()
-                    continue
-                end
-            end
-
-            local galleon = RepS.Packages.Unloads.SkyDriveGalleon:Clone() :: Model
-            galleon:PivotTo(adornee._DOCK.CFrame * CFrame.new(0, 10, 0))
-
-
-            HarukaLib:SetCollisionGroup(galleon, "EnemyProjectile")
-            galleon.PrimaryPart.CustomPhysicalProperties = PhysicalProperties.new(Enum.Material.Wood)
-            galleon.Humanoid.WalkSpeed = 80
-
-
-            local owner = Instance.new("ObjectValue")
-            owner.Name = "Owner"
-            owner.Value = plr
-            owner.Parent = galleon
-
-
-            galleon:AddTag("SkyDriveGalleon")
-            galleon.PrimaryPart.Anchored = false
-            galleon.PrimaryPart.Massless = false
-            galleon.Parent = workspace.MapComponents.SkyGalleonsContainer
-
-
-            _sitGalleon(galleon, plr)
-
-        elseif prompt.Name == "BoatEnter" then
-            local galleon = prompt:FindFirstAncestorOfClass("Model")
-            if not galleon then return end
-
-            _sitGalleon(galleon, plr)
-
 
         elseif prompt.Name == "DungeonPortal" then
             char:PivotTo(prompt.Destination.Value.CFrame)
@@ -691,26 +607,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             SlotId = slotId,
             CooldownTime = realCD
         })
-    end)
-
-
-    ServerBindables.RToCastSpell:Connect(function(plr: Player, char: Model, spellId: string, extraProps: Dict)
-        local badStatus = false
-        Promise.try(function()
-            local statusCode = CastItemLib[spellId](plr, char, extraProps or {}) :: number?
-
-            if statusCode and statusCode == 0 then
-                badStatus = true
-            end
-        end):catch(function(err)
-            warn(tostring(err))
-        end)
-        if badStatus then
-            if RunService:IsStudio() then
-                Events.CreateNotify_S.Fire(plr, "[Error] Invalid Function Status Code (Studio DEBUG)")
-            end
-            return
-        end
     end)
 end)
 
@@ -1309,8 +1205,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        ClassAttackLib._DealDamageToEnemy(char, entity, {
-            DMG = math.ceil(ClassAttackLib._CalDMG(style, char, {
+        ClassAttackLib:DealDamageToEnemy(char, entity, {
+            DMG = math.ceil(ClassAttackLib:CalDMG(style, char, {
                 ForceMaxDMG = true
             }) * trueDMGBonus),
             Attacker = attacker,
@@ -1579,7 +1475,7 @@ end)
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.SetServerCharAttr_C.SetCallback(function(plr: Player, data)
         if not data.AttrId then return end
-        if not data.State then return end
+        if data.State == nil then return end
 
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end

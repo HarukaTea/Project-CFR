@@ -8,6 +8,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local ReverberationFrame = require(script.Components.ReverberationFrame)
 local FuriosoFrame = require(script.Components.FuriosoFrame)
+local ChainBar = require(script.Components.ChainBar)
 
 local Children = Fusion.Children
 
@@ -42,24 +43,6 @@ return function(plr: Player)
         end),
 
 	}, {
-        CenterProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "ClassAbilityDiv_Center",
-                    AnchorPoint = Vector2.zero,
-                    Position = UDim2.fromScale(0, 1.5),
-
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 0.95
-                        }),
-
-
-                    }
-                })
-            }
-        },
-
         BottomProps = {
             [Children] = {
                 Components.Frame(scope, {
@@ -71,7 +54,12 @@ return function(plr: Player)
                         }),
 
                         ReverberationFrame(scope, self),
-                        FuriosoFrame(scope, self)
+                        FuriosoFrame(scope, self),
+
+                        ChainBar(scope, {
+                            ClassVal = self.ChainCombo,
+                            Char = self.char
+                        })
                     }
                 })
 

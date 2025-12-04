@@ -73,16 +73,18 @@ function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
 end
 
 
-function ServerLib:GetNearbyPlayers(position: Vector3)
+function ServerLib:GetNearbyPlayers(position: Vector3, distance: number?)
 	local players = {}
 	local playerEntities = CollectionService:GetTagged("PlayerEntity") :: { Player }
+
+	distance = distance or 200
 
 	for _, player in playerEntities do
 		if not player then continue end
 		if not ServerLib:IsCharValid(player.Character) then continue end
 
-		local distance = player:DistanceFromCharacter(position)
-		if distance > 0 and distance <= 159 * 2.599 then
+		local thatDistance = player:DistanceFromCharacter(position)
+		if thatDistance > 0 and thatDistance <= distance then
 			table.insert(players, player)
 		end
 	end

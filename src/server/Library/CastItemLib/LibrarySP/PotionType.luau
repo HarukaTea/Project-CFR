@@ -1,5 +1,4 @@
 
-local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
@@ -106,14 +105,10 @@ return function (self: Types.CastItemLib)
             })
 
 
-            local eff = RepS.Packages.Effects.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
-            eff.Parent = char.PrimaryPart
-            Debris:AddItem(eff, 6)
-
-
-            Promise.delay(5):andThen(function()
-                eff.Enabled = false
-            end):catch(function() end)
+            Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 200), {
+                StatusId = "SpeedBoost",
+                Character = char
+            })
 
             Events.PlayStatPoweredScreenFX_S.Fire(player)
         end)
@@ -139,10 +134,10 @@ return function (self: Types.CastItemLib)
 
             HarukaLib:AddAttr(char, "Shield", math.floor(maxShield * 0.5))
 
-            local repairingEff = RepS.Packages.Effects.Repairing:Clone() :: BasePart
-            repairingEff.Parent = char
-
-            Debris:AddItem(repairingEff, 1.5)
+            Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 150), {
+                StatusId = "Repairing",
+                Character = char
+            })
         end)
 
         return nil

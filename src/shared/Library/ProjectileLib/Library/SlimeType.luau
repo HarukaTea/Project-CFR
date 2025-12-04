@@ -122,14 +122,12 @@ return function (self: Types.ProjectileLib)
 
         wait(0.5)
         for i = 1, 2 do
-            for _, part: BasePart in projectile:GetDescendants() do
-                if part.Name == "Position"..i then
-                    local pos = ClientLib:FindGroundByRay(part.Position)
+            for _, part: BasePart in projectile:QueryDescendants("#Position"..i) do
+                local pos = ClientLib:FindGroundByRay(part.Position)
 
-                    ProjectileLib._spawnProjectile(projectile, container, 5, function(sProjectile: Model)
-                        sProjectile:PivotTo(CFrame.new(pos, pos + part.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
-                    end)
-                end
+                ProjectileLib._spawnProjectile(projectile, container, 5, function(sProjectile: Model)
+                    sProjectile:PivotTo(CFrame.new(pos, pos + part.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
+                end)
             end
             wait(0.1)
         end

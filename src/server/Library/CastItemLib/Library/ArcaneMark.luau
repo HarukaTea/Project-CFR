@@ -33,7 +33,7 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib._CalCastingTime(char, 2)
+    local castTime = ClassAttackLib:CalCastingTime(char, 2)
 
 
     Events.OpenCastTimeBar_S.Fire(player, castTime)
@@ -56,8 +56,8 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
         local targeting = char.TargetingEnemy.Value :: Model
 
 
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
-            DMG = math.ceil(ClassAttackLib._CalDMG("Magic", char, {
+        ClassAttackLib:DealDamageToEnemy(char, targeting, {
+            DMG = math.ceil(ClassAttackLib:CalDMG("Magic", char, {
                 ForceMaxDMG = true
             }) * 2),
             DMGType = "Magic",

@@ -5,6 +5,24 @@ local RS = game:GetService("RunService")
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
+export type RainParticleClass = {
+	__index: RainParticleClass,
+
+	new: () -> RainParticleClass,
+	Enable: (self: RainParticleClass) -> nil,
+	Disable: (self: RainParticleClass) -> nil,
+	SetRainCastParticleRate: (self: RainParticleClass, rate: number) -> nil,
+
+	RainCastParts: { BasePart },
+	RainCastContainer: Folder,
+
+	Add: (item: any) -> any,
+	Empty: () -> nil,
+
+	Enabled: boolean,
+}
+
+
 --// Variables
 
 local rainCastContainer = Instance.new("Folder")
@@ -43,7 +61,7 @@ end
 
 --// Constructor
 
-local Particles = {}
+local Particles = {} :: RainParticleClass
 Particles.__index = Particles
 
 
@@ -85,10 +103,8 @@ end
 
 function Particles:SetRainCastParticleRate(rate: number)
 	for _, part: BasePart in self.RainCastParts do
-		for _, particle in part:GetDescendants() do
-			if particle:IsA("ParticleEmitter") then
-				particle.Rate = rate
-			end
+		for _, particle in part:QueryDescendants("ParticleEmitter") do
+			particle.Rate = rate
 		end
 	end
 end

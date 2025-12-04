@@ -207,11 +207,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-IsInCombat"] = _checkCombatState
     }))
     Add(_destroyCombatBorder)
-    Add(function()
-        if char.Humanoid.Health <= 0 and char:GetAttribute("IsInCombat") then
-            SoundService.SFXs.CombatFailed:Play()
-        end
-    end)
 
     _destroyCombatBorder()
 end)
@@ -233,11 +228,12 @@ table.insert(CriRPGLib.Funcs, function()
 
         return Color3.fromRGB(y, y, y)
     end
+
     local function _changeLocation()
         if areaQueue:IsLocked() then return end
         if areaQueue:IsEmpty() then return end
 
-        areaQueue:SetLockState(true)
+        areaQueue:SpawnMutex(1.5)
 
         local location = areaQueue:Pop() :: string
 
@@ -293,20 +289,6 @@ table.insert(CriRPGLib.Funcs, function()
             end))
 
             ---// apply lighting
-            HarukaLib:CreateTween(Lighting, AssetBook.TweenInfos.half, LocationBook[location].LightingInfo):Play()
-            HarukaLib:CreateTween(Lighting, AssetBook.TweenInfos.one, {
-                ClockTime = LocationBook[location].ClockTime
-            }):Play()
-
-            if workspace.Terrain:FindFirstChildOfClass("Clouds") then
-                HarukaLib:CreateTween(workspace.Terrain:FindFirstChildOfClass("Clouds"), AssetBook.TweenInfos.one, {
-                    Color = _calculateColor(LocationBook[location].LightingInfo.ClockTime)
-                }):Play()
-            end
-
-            --- apply rain
-            Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel or 0)
-
 
             local colorEff = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
             local depthEff = Lighting:FindFirstChildOfClass("DepthOfFieldEffect")
@@ -314,30 +296,65 @@ table.insert(CriRPGLib.Funcs, function()
             local cloudEff = workspace.Terrain:FindFirstChildOfClass("Clouds")
             local bloomEff = Lighting:FindFirstChildOfClass("BloomEffect")
 
+            local currentId = workspace:GetAttribute("AreaLightingId") or "Unknown"
+
+            local lightingInfo = HarukaLib.TableUtils.DeepCopy(LocationBook[location].LightingInfo)
+            local lightingInfoId = lightingInfo.Id
+
+            lightingInfo.Id = nil
+
+            if currentId ~= lightingInfoId then
+                workspace:SetAttribute("AreaLightingId", lightingInfoId)
+
+                HarukaLib:CreateTween(Lighting, AssetBook.TweenInfos.half, lightingInfo):Play()
+            end
+
+            local clockTime = LocationBook[location].ClockTime
+            if clockTime ~= Lighting.ClockTime then
+                HarukaLib:CreateTween(Lighting, AssetBook.TweenInfos.one, {
+                    ClockTime = LocationBook[location].ClockTime
+                }):Play()
+
+                if cloudEff then
+                    HarukaLib:CreateTween(cloudEff, AssetBook.TweenInfos.one, {
+                        Color = _calculateColor(LocationBook[location].LightingInfo.ClockTime)
+                    }):Play()
+                end
+            end
+
+
+            --- apply rain
+            Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel or 0)
+
 
             --- apply atmosphere
-            if colorEff then
-                HarukaLib:CreateTween(colorEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.ColorCorrection):Play()
-            end
-            if depthEff then
-                HarukaLib:CreateTween(depthEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.DepthOfField):Play()
-            end
-            if sunEff then
-                HarukaLib:CreateTween(sunEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.SunRays):Play()
-            end
-            if cloudEff then
-                HarukaLib:CreateTween(cloudEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Clouds):Play()
-            end
-            if bloomEff then
-                HarukaLib:CreateTween(bloomEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Bloom):Play()
+
+            local atmosphereId = workspace:GetAttribute("AreaAtmosphereId") or "Unknown"
+            local atmosphereInfoId = LocationBook[location].AtmosphereInfo.Id
+
+            if atmosphereId ~= atmosphereInfoId then
+                workspace:SetAttribute("AreaAtmosphereId", atmosphereInfoId)
+
+                if colorEff then
+                    HarukaLib:CreateTween(colorEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.ColorCorrection):Play()
+                end
+                if depthEff then
+                    HarukaLib:CreateTween(depthEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.DepthOfField):Play()
+                end
+                if sunEff then
+                    HarukaLib:CreateTween(sunEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.SunRays):Play()
+                end
+                if cloudEff then
+                    HarukaLib:CreateTween(cloudEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Clouds):Play()
+                end
+                if bloomEff then
+                    HarukaLib:CreateTween(bloomEff, AssetBook.TweenInfos.half, LocationBook[location].AtmosphereInfo.Bloom):Play()
+                end
             end
         end
-
-        wait(1.5)
-        areaQueue:SetLockState(false)
-        _changeLocation()
     end
     areaQueue.ElementAdded:Connect(_changeLocation)
+    areaQueue.MutexUnlocked:Connect(_changeLocation)
 
     Add(HarukaLib:Hydrate(char, {
         ["Attr-AreaIn"] = function(region: string)
@@ -349,7 +366,7 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     local orbContainer = Instance.new("Folder")
-    orbContainer.Name = "OrbContainer_"..plr.Name
+    orbContainer.Name = "OrbContainer_Client"
     orbContainer.Parent = ServerStorage
     Add(orbContainer)
 
@@ -383,10 +400,9 @@ table.insert(CriRPGLib.Funcs, function()
 
     local function _checkCombatState(state: boolean)
         if not state then
-            orbContainer.Parent = ServerStorage
-
             RunService.Heartbeat:Wait()
             orbContainer:ClearAllChildren()
+            orbContainer.Parent = ServerStorage
         else
             orbContainer:ClearAllChildren()
             orbContainer.Parent = workspace.MapComponents
@@ -474,7 +490,7 @@ table.insert(CriRPGLib.Funcs, function()
 
                 local linearVelocity = Instance.new("LinearVelocity")
                 linearVelocity.Name = "OrbBV"
-                linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+                linearVelocity.Attachment0 = char.PrimaryPart.CF_RootNode
                 linearVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
                 linearVelocity.ForceLimitsEnabled = false
                 linearVelocity.VectorVelocity = vectorVelocity
@@ -545,13 +561,13 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
-    projectileContainer.Name = "ProjectileContainer_"..plr.Name
+    projectileContainer.Name = "ProjectileContainer_Client"
     projectileContainer.Parent = ServerStorage
     Add(projectileContainer)
 
 
     local uniProjectileContainer = Instance.new("Folder")
-    uniProjectileContainer.Name = "UniProjectileContainer_"..plr.Name
+    uniProjectileContainer.Name = "UniProjectileContainer_Client"
     uniProjectileContainer.Parent = workspace.MapComponents
     Add(uniProjectileContainer)
 
@@ -703,44 +719,6 @@ table.insert(CriRPGLib.Funcs, function()
 end)
 
 
-
-table.insert(CriRPGLib.Funcs, function()
-    local function _clearAnyTransparentTrees()
-        for _, tree: Model in CollectionService:GetTagged("TreeEntity_Transparent") do
-            tree:RemoveTag("TreeEntity_Transparent")
-
-            for _, part in tree:GetDescendants() do
-                if HarukaLib:IsBasePartType(part) then
-                    part.LocalTransparencyModifier = 0
-                end
-            end
-        end
-    end
-    Add(HarukaLib:Hydrate(char, {
-        ["Attr-IsInCombat"] = function(state: boolean)
-            if state then
-                for _, tree: Model in CollectionService:GetTagged("TreeEntity") do
-                    local distance = plr:DistanceFromCharacter(tree.WorldPivot.Position)
-
-                    if distance < 115.99 and distance > 0 then
-                        tree:AddTag("TreeEntity_Transparent")
-
-                        for _, part in tree:GetDescendants() do
-                            if HarukaLib:IsBasePartType(part) then
-                                part.LocalTransparencyModifier = 0.5
-                            end
-                        end
-                    end
-                end
-            else
-                _clearAnyTransparentTrees()
-            end
-        end
-    }))
-    Add(_clearAnyTransparentTrees)
-end)
-
-
 table.insert(CriRPGLib.Funcs, function()
     Add(Events.Spell_ExtraJumpSupport.On(function()
         SoundService.SFXs.EXP:Play()
@@ -761,7 +739,7 @@ table.insert(CriRPGLib.Funcs, function()
 
         local linearVelocity = Instance.new("LinearVelocity")
         linearVelocity.Name = "DoubleJumpVel"
-        linearVelocity.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+        linearVelocity.Attachment0 = char.PrimaryPart.CF_RootNode
         linearVelocity.ForceLimitsEnabled = false
         linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 80 + Vector3.yAxis * vel
         linearVelocity.Parent = char.PrimaryPart

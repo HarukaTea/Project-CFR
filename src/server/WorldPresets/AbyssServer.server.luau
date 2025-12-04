@@ -3,6 +3,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
 local CollectionService = game:GetService("CollectionService")
+local DSS = game:GetService("DataStoreService")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -18,9 +19,13 @@ export type AbyssWorldLibClass = {
 
     Started: boolean,
     AbyssId: number,
+    AbyssStartTime: number,
 
     Init: (self: AbyssWorldLibClass) -> nil,
-    GiveLoot: () -> nil
+
+
+    GiveLoot: (self: AbyssWorldLibClass) -> nil,
+    UpdateSpeedrunTime: (self: AbyssWorldLibClass, runTime: number) -> nil
 }
 
 
@@ -58,6 +63,16 @@ end
 
 
 
+local abyssSpeedrunDatastore = DSS:GetOrderedDataStore("_AbyssSpeedrun")
+
+
+--// helper functions
+
+local function _notifyFireAll(text: string)
+    Events.CreateNotify_S.Fire(CollectionService:GetTagged("PlayerEntity"), text)
+end
+
+
 
 local wait = task.wait
 
@@ -74,7 +89,7 @@ end
 --// Private functions
 
 
-function AbyssWorldLib.GiveLoot()
+function AbyssWorldLib:GiveLoot()
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
         Promise.try(function()
             local char = player.Character
@@ -93,6 +108,20 @@ function AbyssWorldLib.GiveLoot()
                 wait(0.15)
             end
         end)
+    end
+end
+function AbyssWorldLib:UpdateSpeedrunTime(runTime: number)
+    for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+        local userIdStr = tostring(player.UserId)
+        local currentRecord = abyssSpeedrunDatastore:GetAsync("Player_"..userIdStr)
+
+        if currentRecord and currentRecord <= runTime then
+            Events.CreateNotify_S.Fire(player, "You haven't beaten the previous record.")
+            continue
+        end
+
+        Events.CreateNotify_S.Fire(player, "Your record has been updated!")
+        ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..userIdStr, runTime, "Abyss")
     end
 end
 
@@ -155,9 +184,11 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         if AbyssWorldLib.Started then return end
         AbyssWorldLib.Started = true
 
-        Events.CreateCenterNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), "CHALLENGE STARTED!", true)
-
+        _notifyFireAll("CHALLENGE STARTED!")
         workspace:SetAttribute("AbyssStarted", true)
+
+
+        AbyssWorldLib.AbyssStartTime = DateTime.now().UnixTimestamp
 
         abyssAirwall:Destroy()
     end)
@@ -181,7 +212,23 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
 
 
     workspace:SetAttribute("AbyssFinished", true)
-    task.delay(1, AbyssWorldLib.GiveLoot)
+    task.delay(1, AbyssWorldLib.GiveLoot, AbyssWorldLib)
+
+
+    --// count speedrun if it's f6
+    if AbyssWorldLib.AbyssId == 6 and AbyssWorldLib.AbyssStartTime then
+        local now = DateTime.now().UnixTimestamp
+        local runTime = now - AbyssWorldLib.AbyssStartTime
+
+
+        if runTime <= 3 then
+            _notifyFireAll("Invalid record! (Less than 3 seconds)")
+            return
+        end
+
+        _notifyFireAll("Updating your record...please wait...")
+        AbyssWorldLib:UpdateSpeedrunTime(runTime)
+    end
 end)
 
 

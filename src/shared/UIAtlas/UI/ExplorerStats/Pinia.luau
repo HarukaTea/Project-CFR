@@ -487,7 +487,7 @@ return function (self: Self)
 
         local linearVelo = Instance.new("LinearVelocity")
         linearVelo.Name = "Dash"
-        linearVelo.Attachment0 = char.PrimaryPart.AlignMoverAttachment
+        linearVelo.Attachment0 = char.PrimaryPart.CF_RootNode
         linearVelo.RelativeTo = Enum.ActuatorRelativeTo.World
         linearVelo.MaxForce = 1500 * char.PrimaryPart.AssemblyMass
         linearVelo.VectorVelocity = direction * 100

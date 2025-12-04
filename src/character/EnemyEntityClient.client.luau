@@ -21,8 +21,6 @@ local Add, Empty = HarukaLib.Bin()
 local player = Players.LocalPlayer
 local char = script:FindFirstAncestorOfClass("Model")
 
-local RNG = Random.new()
-
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
@@ -127,9 +125,9 @@ Add(Events.PlayEnemyAnim_S.On(function(data)
         end
     end
 end))
-Add(HarukaLib.Clock(1, function()
-    local entityRenderDistance = workspace:GetAttribute("EntityRenderDistance") or 189
 
+local entityRenderDistance = 189
+Add(HarukaLib.Clock(1, function()
     for _, entityObj in allEntityPool do
         if not ClientLib:IsModelValid(entityObj.Entity) then continue end
 
@@ -187,34 +185,6 @@ Add(HarukaLib.Clock(0.5, function()
         encounterCD = true
         task.delay(4, function()
             encounterCD = false
-        end)
-    end
-end))
-Add(HarukaLib.Clock(1.2, function()
-    for _, entity: Model in CollectionService:GetTagged("BossEnemyEntity") do
-        if entity.Parent ~= workspace.Entities then continue end
-        if not entity:IsA("Model") then continue end
-        if not entity:GetAttribute("HarukaUniqueId") then continue end
-        if not allEntityPool[entity:GetAttribute("HarukaUniqueId")] then continue end
-
-        if entity:GetAttribute("IsDead") then continue end
-        if entity:GetAttribute("EnteringCombat") then continue end
-        if entity:GetAttribute("IsInCombat") then continue end
-        if entity:GetAttribute("NoRotate") then continue end
-        if entity:GetAttribute("NearestChar") then continue end
-
-        Promise.try(function()
-            wait(RNG:NextNumber() * RNG:NextInteger(1, 3))
-            local rotating = RNG:NextInteger(5, 20)
-            local direction = RNG:NextInteger(-2, 2)
-
-            for _ = 1, rotating do
-                if not ClientLib:IsModelValid(entity) then break end
-                if entity:GetAttribute("NearestChar") then break end
-
-                entity.PrimaryPart.CFrame *= CFrame.Angles(0, math.rad(direction * 5), 0)
-                wait(0.01)
-            end
         end)
     end
 end))
@@ -467,17 +437,16 @@ function EntityLib:_ListenAttributeTracker()
             if distance >= 159 or distance <= 0 then return end
 
 
-            for _, child in entity:GetDescendants() do
+            for _, child in entity:QueryDescendants(HarukaLib.BasePartSelector) do
                 if child.Parent == entity then continue end
                 if child.Name == "Middle" then continue end
                 if child.Name == "Base" then continue end
 
+                child.Transparency = 0.4
+                child.Color = Color3.fromHex('#70a1ff')
 
-                if HarukaLib:IsBasePartType(child) then
-                    child.Transparency = 0.4
-                    child.Color = Color3.fromHex('#70a1ff')
-
-                    if child:IsA("UnionOperation") then child.UsePartColor = true end
+                if child:IsA("UnionOperation") then
+                    child.UsePartColor = true
                 end
             end
         end,
@@ -526,25 +495,6 @@ function EntityLib:_ListenAttributeTracker()
 
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
             if distance >= 159 or distance <= 0 then return end
-
-
-            for _, child in entity:GetDescendants() do
-                if child.Parent == entity then continue end
-                if child.Name == "Middle" then continue end
-                if child.Name == "Base" then continue end
-
-                if HarukaLib:IsBasePartType(child) then
-                    child.Transparency = 0.4
-                    child.Color = Color3.new(1, 1, 1)
-
-                    HarukaLib:CreateTween(child, AssetBook.TweenInfos.one, {
-                        Transparency = 1
-                    }):Play()
-
-
-                    if child:IsA("UnionOperation") then child.UsePartColor = true end
-                end
-            end
 
             local location = entity.PrimaryPart.CFrame
 

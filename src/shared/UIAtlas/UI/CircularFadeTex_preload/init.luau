@@ -36,7 +36,7 @@ return function (plr: Player)
 		if self.cirularFadeQueue:IsLocked() then return end
 		if self.cirularFadeQueue:IsEmpty() then return end
 
-		self.cirularFadeQueue:SetLockState(true)
+		self.cirularFadeQueue:SpawnMutex(1)
 
 		local nextCircularFade = self.cirularFadeQueue:Pop() :: {
 			Duration: number
@@ -61,15 +61,10 @@ return function (plr: Player)
 		HarukaLib:CreateTween(UI.Circle, AssetBook.TweenInfos.half, {
 			Size = UDim2.fromScale(3, 3)
 		}):Play()
-
-
-		wait(1)
-		--// process next prompt
-		self.cirularFadeQueue:SetLockState(false)
-
-		_onCircularFadeAdded()
 	end
     table.insert(scope, Events.CreateCircularFade_S.On(_createCircularFade))
 	table.insert(scope, Bindables.CreateCircularFade:Connect(_createCircularFade))
-	table.insert(scope, self.cirularFadeQueue.ElementAdded:Connect(_onCircularFadeAdded))
+
+	self.cirularFadeQueue.ElementAdded:Connect(_onCircularFadeAdded)
+	self.cirularFadeQueue.MutexUnlocked:Connect(_onCircularFadeAdded)
 end

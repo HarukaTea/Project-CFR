@@ -14,7 +14,7 @@ local SideCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.SideCategor
 
 
 local DevProductSlot = require(script.Components.DevProductSlot)
-local DonationRankSlot = require(script.Components.DonationRankSlot)
+local DonationRankSlot = require(RepS.HarukaShared.UIAtlas.Components.LBRankSlot)
 
 
 local Children = Fusion.Children
@@ -127,7 +127,7 @@ return function (plr: Player)
                     [Children] = {
                         Components.PaddingFrame(scope, "AAA"),
 
-                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: NumberValue)
+                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: IntValue)
                             return index, DonationRankSlot(scope, {
                                 Index = val:GetAttribute("Order"),
                                 Value = val.Value,

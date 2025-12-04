@@ -127,16 +127,17 @@ table.insert(ServerWorldLib.Funcs, function()
 
     local treeContainer = Instance.new("Folder")
     treeContainer.Name = "TreeContainer"
-    treeContainer.Parent = workspace
+    treeContainer.Parent = workspace.MapComponents
 
 
-    for _, tree: Model in workspace.Maps:GetDescendants() do
-        if tree:IsA("Model") and string.find(string.lower(tree.Name), "tree") then
+    for _, tree: Model in workspace.Maps:QueryDescendants("Model") do
+        if string.find(string.lower(tree.Name), "tree") then
             tree:AddTag("TreeEntity")
+            tree.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
             tree.Parent = treeContainer
 
-            for _, part in tree:GetDescendants() do
-                if HarukaLib:IsBasePartType(part) and part.Material == Enum.Material.Grass then
+            for _, part in tree:QueryDescendants(HarukaLib.BasePartSelector) do
+                if part.Material == Enum.Material.Grass then
                     part.CanCollide = false
                     part.CastShadow = math.random(1, 2) == 1
                     part.CanQuery = false
@@ -160,30 +161,41 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    for _, pathLink: PackageLink in ReplicatedStorage:GetDescendants() do
-        if pathLink:IsA("PackageLink") then
-            pathLink:Destroy()
-        end
+    for _, pathLink: PackageLink in ReplicatedStorage:QueryDescendants("PackageLink") do
+        pathLink:Destroy()
     end
-    for _, part: BasePart in workspace.Maps:GetDescendants() do
-        if HarukaLib:IsBasePartType(part) then
-            part.EnableFluidForces = false
-            part.CanTouch = false
-            part.Massless = true
-            part.Locked = true
-        end
+    for _, part: BasePart in workspace.Maps:QueryDescendants(HarukaLib.BasePartSelector) do
+        part.EnableFluidForces = false
+        part.CanTouch = false
+        part.Massless = true
+        part.Locked = true
     end
 
 
     local function _optimize(container: Instance)
-        for _, part in container:GetDescendants() do
-            if HarukaLib:IsBasePartType(part) then
-                part.EnableFluidForces = false
-            end
+        for _, part in container:QueryDescendants(HarukaLib.BasePartSelector) do
+            part.EnableFluidForces = false
         end
     end
     _optimize(workspace)
     _optimize(ReplicatedStorage)
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    for _, model: Model in ReplicatedStorage:QueryDescendants("Model") do
+        model.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+    end
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    for _, model: Model in CollectionService:GetTagged("WindmillWings") do
+        model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+    end
+    for _, model: Model in CollectionService:GetTagged("SkyGalleon") do
+        model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+    end
 end)
 
 
@@ -209,12 +221,8 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    for _, orb: Model in ReplicatedStorage.Packages.ClassAttacks:GetDescendants() do
-        if not orb:HasTag("OrbEntity") then continue end
-
-        for _, part in orb:GetDescendants() do
-            if not part:IsA("BasePart") then continue end
-
+    for _, orb: Model in ReplicatedStorage.Packages.ClassAttacks:QueryDescendants(".OrbEntity") do
+        for _, part in orb:QueryDescendants(HarukaLib.BasePartSelector) do
             part.CanTouch = false
             part.CanQuery = false
             part.CanCollide = false
@@ -224,7 +232,7 @@ table.insert(ServerWorldLib.Funcs, function()
 
         --// orb rotation support
         local alignMoverAttachment = Instance.new("Attachment")
-        alignMoverAttachment.Name = "AlignMoverAttachment"
+        alignMoverAttachment.Name = "CF_RootNode"
         alignMoverAttachment.Parent = orb.PrimaryPart
 
         local linearVel = Instance.new("LinearVelocity")
@@ -260,29 +268,29 @@ end)
 table.insert(ServerWorldLib.Funcs, function()
     local terrainFolders = {}
 
-    for _, folder: Folder in workspace.Maps:GetDescendants() do
-        if folder:IsA("Folder") and folder.Name == "Terrain" then
-            table.insert(terrainFolders, folder)
-        end
+    for _, folder: Folder in workspace.Maps:QueryDescendants("Folder#Terrain") do
+        table.insert(terrainFolders, folder)
     end
 
 
-    for _, part: BasePart in workspace.Maps:GetDescendants() do
-        if HarukaLib:IsBasePartType(part) then
-            if part:HasTag("IgnoreTerrain") then continue end
+    for _, part: BasePart in workspace.Maps:QueryDescendants(HarukaLib.BasePartSelector) do
+        if part:HasTag("IgnoreTerrain") then continue end
 
 
-            local isInTerrainFolder = false
-            for _, folder: Folder in terrainFolders do
-                if part:IsDescendantOf(folder) then
-                    isInTerrainFolder = true
-                    break
-                end
-            end
-            if isInTerrainFolder then
-                part:AddTag("TerrainPart")
+        local isInTerrainFolder = false
+        for _, folder: Folder in terrainFolders do
+            if part:IsDescendantOf(folder) then
+                isInTerrainFolder = true
+                break
             end
         end
+        if isInTerrainFolder then
+            part:AddTag("TerrainPart")
+        end
+    end
+
+    for _, model in workspace.Maps:QueryDescendants("Model") do
+        model.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
     end
 end)
 
@@ -306,8 +314,8 @@ table.insert(ServerWorldLib.Funcs, function()
             end
         end
     end
-    for _, child: Instance in ReplicatedStorage.Packages.EnemyAttacks:GetDescendants() do
-        if child:IsA("Sound") then child.SoundGroup = SoundService.SFXs end
+    for _, child: Instance in ReplicatedStorage.Packages.EnemyAttacks:QueryDescendants("Sound") do
+        child.SoundGroup = SoundService.SFXs
     end
 
     if ReplicatedStorage:FindFirstChild("LocalPackages") then
@@ -344,8 +352,8 @@ table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Markets") then return end
 
 
-    for _, npc: Model in workspace.MapComponents.Markets:GetDescendants() do
-        if npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid") then
+    for _, npc: Model in workspace.MapComponents.Markets:QueryDescendants("Model,ProximityPrompt") do
+        if npc:FindFirstChildOfClass("Humanoid") then
             HarukaLib:SetCollisionGroup(npc, "NoCollision")
 
 
@@ -389,9 +397,14 @@ table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("NPCs") then return end
 
 
-    for _, npc: Model in workspace.MapComponents.NPCs:GetDescendants() do
-        if npc:IsA("Model") and (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
+    for _, npc: Model in workspace.MapComponents.NPCs:QueryDescendants("Model") do
+        if (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
+            npc.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+
+            if string.find(npc.Name, "Narrator") then
+                npc.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+            end
 
             if npc.PrimaryPart.Anchored then continue end
             if not npc:FindFirstChild("Humanoid") then continue end
@@ -415,6 +428,20 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
+    if not workspace.MapComponents:FindFirstChild("Non-NPCs") then return end
+
+
+    for _, npc: Model in workspace.MapComponents["Non-NPCs"]:QueryDescendants("Model") do
+        if (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
+            npc.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+        end
+    end
+end)
+
+
+
+
+table.insert(ServerWorldLib.Funcs, function()
     local areaZones = Instance.new("Folder")
     areaZones.Name = "AreaZones"
 
@@ -423,17 +450,15 @@ table.insert(ServerWorldLib.Funcs, function()
         areaZones = ServerStorage.Packages.AreaZones
     end
 
-    for _, part: BasePart in areaZones:GetDescendants() do
-        if HarukaLib:IsBasePartType(part) then
-            part.Transparency = 1
-            part.CanCollide = false
-            part.CanQuery = false
-            part.Massless = true
-            part.CastShadow = false
-            part.Locked = true
-            part.CanTouch = false
-            part:AddTag("ZoneEntity")
-        end
+    for _, part: BasePart in areaZones:QueryDescendants(HarukaLib.BasePartSelector) do
+        part.Transparency = 1
+        part.CanCollide = false
+        part.CanQuery = false
+        part.Massless = true
+        part.CastShadow = false
+        part.Locked = true
+        part.CanTouch = false
+        part:AddTag("ZoneEntity")
     end
     areaZones.Parent = workspace:FindFirstChild("MapComponents") or workspace
 end)
@@ -445,44 +470,41 @@ end)
 table.insert(ServerWorldLib.Funcs, function()
     local flowerContainer = Instance.new("Folder")
     flowerContainer.Name = "FlowerContainer"
-    flowerContainer.Parent = workspace
+    flowerContainer.Parent = workspace.MapComponents
 
 
     local whiteList = { "Flower", "Grass", "Bush" }
-    for _, child: Instance in workspace.Maps:GetDescendants() do
-        if child:IsA("Model") then
-            local check = false
+    for _, child: Instance in workspace.Maps:QueryDescendants("Model") do
+        local check = false
+        for _, name in whiteList do
+            if string.find(child.Name, name) then
+                check = true
+                break
+            end
+        end
+
+
+        if child.Parent:IsA("Model") then
             for _, name in whiteList do
-                if string.find(child.Name, name) then
-                    check = true
+                if string.find(child.Parent.Name, name) then
+                    check = false
                     break
                 end
             end
+        end
+        if not check then continue end
 
+        child:AddTag("FlowerEntity")
+        child:AddTag("RaycastIgnoreEntity")
+        child.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+        child.Parent = flowerContainer
 
-            if child.Parent:IsA("Model") then
-                for _, name in whiteList do
-                    if string.find(child.Parent.Name, name) then
-                        check = false
-                        break
-                    end
-                end
-            end
-            if not check then continue end
-
-            child:AddTag("FlowerEntity")
-            child:AddTag("RaycastIgnoreEntity")
-            child.Parent = flowerContainer
-
-            for _, meshPart in child:GetDescendants() do
-                if HarukaLib:IsBasePartType(meshPart) then
-                    meshPart.CastShadow = false
-                    meshPart.CanCollide = false
-                    meshPart.CanQuery = false
-                    meshPart.CanTouch = false
-                    meshPart.CollisionGroup = CollisionBook.Group.NoCollision
-                end
-            end
+        for _, meshPart in child:QueryDescendants(HarukaLib.BasePartSelector) do
+            meshPart.CastShadow = false
+            meshPart.CanCollide = false
+            meshPart.CanQuery = false
+            meshPart.CanTouch = false
+            meshPart.CollisionGroup = CollisionBook.Group.NoCollision
         end
     end
 end)
@@ -511,7 +533,7 @@ table.insert(ServerWorldLib.Funcs, function()
 
         prompt:AddTag("PromptEntity")
 	end
-	for _, child: Instance in workspace:GetDescendants() do
+	for _, child: Instance in workspace:QueryDescendants("ProximityPrompt") do
 		_updatePrompt(child)
 	end
 	workspace.DescendantAdded:Connect(_updatePrompt)
@@ -542,19 +564,31 @@ end)
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Chests") then return end
 
-
     for _, chest: Model in workspace.MapComponents.Chests:GetChildren() do
         if chest:IsA("Model") and chest:FindFirstChild("Giver") then
             chest:AddTag("ChestEntity")
+            chest.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
         end
     end
 end)
 
 
-table.insert(ServerWorldLib.Funcs, function()
-    for _, mob: Model in ReplicatedStorage.Packages.EnemyModels:GetDescendants() do
-        if not mob:IsA("Model") then continue end
 
+table.insert(ServerWorldLib.Funcs, function()
+    if not workspace.MapComponents:FindFirstChild("Gifts") then return end
+
+    for _, gift: Model in workspace.MapComponents.Gifts:GetChildren() do
+        if gift:IsA("Model") then
+            gift:AddTag("GiftEntity")
+            gift.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+        end
+    end
+end)
+
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    for _, mob: Model in ReplicatedStorage.Packages.EnemyModels:QueryDescendants("Model") do
         for _, child: Instance in mob:GetChildren() do
             if child:IsA("BasePart") and mob:FindFirstChild(child.Name .. "Model") then
                 local model = mob[child.Name .. "Model"] :: Model
@@ -562,14 +596,12 @@ table.insert(ServerWorldLib.Funcs, function()
             end
         end
     end
-    for _, mob: BasePart in ReplicatedStorage.Packages.EnemyModels:GetDescendants() do
-        if mob.Name == "HumanoidRootPart" then
-            mob.CanCollide = true
-            mob.CanTouch = false
-            mob.CanQuery = false
+    for _, mob: BasePart in ReplicatedStorage.Packages.EnemyModels:QueryDescendants("#HumanoidRootPart") do
+        mob.CanCollide = true
+        mob.CanTouch = false
+        mob.CanQuery = false
 
-            mob.CustomPhysicalProperties = PhysicalProperties.new(100, 2, 1)
-        end
+        mob.CustomPhysicalProperties = PhysicalProperties.new(100, 2, 1)
     end
 end)
 
@@ -591,8 +623,8 @@ table.insert(ServerWorldLib.Funcs, function()
 
     local givers = {}
 
-    for _, giver: BasePart in workspace.MapComponents.Materials:GetDescendants() do
-        if giver.Name == "Giver" and HarukaLib:IsBasePartType(giver) and giver:FindFirstChildOfClass("ProximityPrompt") then
+    for _, giver: BasePart in workspace.MapComponents.Materials:QueryDescendants("#Giver") do
+        if HarukaLib:IsBasePartType(giver) and giver:FindFirstChildOfClass("ProximityPrompt") then
             table.insert(givers, giver)
         end
     end

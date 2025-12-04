@@ -56,9 +56,9 @@ function ClientLib:WeldModel(part: BasePart, welded: Model)
 		Y.Parent = Y.Part0
 	end
 
-	local h = welded:GetDescendants()
+	local h = welded:QueryDescendants(HarukaLib.BasePartSelector)
 	for _, child: BasePart in h do
-		if HarukaLib:IsBasePartType(child) then child.Anchored = false end
+		child.Anchored = false
 	end
 end
 

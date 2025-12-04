@@ -1,5 +1,4 @@
 
-local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
@@ -33,7 +32,7 @@ return function (self: Types.CastItemLib)
 
 
         local uniqueId = HttpService:GenerateGUID(false)
-        local castTime = ClassAttackLib._CalCastingTime(char, 1)
+        local castTime = ClassAttackLib:CalCastingTime(char, 1)
 
 
         Events.OpenCastTimeBar_S.Fire(player, castTime)
@@ -86,15 +85,10 @@ return function (self: Types.CastItemLib)
             Duration = 6
         })
 
-
-        local eff = RepS.Packages.Effects.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
-        eff.Parent = char.PrimaryPart
-        Debris:AddItem(eff, 6)
-
-
-        Promise.delay(5):andThen(function()
-            eff.Enabled = false
-        end):catch(function() end)
+        Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 200), {
+            StatusId = "SpeedBoost",
+            Character = char
+        })
 
         return nil
     end

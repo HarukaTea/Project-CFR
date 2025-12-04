@@ -184,16 +184,16 @@ table.insert(CharLib.Funcs, function()
     self.Animator = animator
 
     self.ClassAttackAnims = {}
-    for _, anim: Animation in animationsClass:GetDescendants() do
-        if string.find(anim.Name, "Attack") and anim:IsA("Animation") then
+    for _, anim: Animation in animationsClass:QueryDescendants("Animation") do
+        if string.find(anim.Name, "Attack") then
             self.ClassAttackAnims[anim.Name] = animator:LoadAnimation(anim)
         end
     end
     self.ClassAttackAnims.MagicCasted1 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted1", true))
     self.ClassAttackAnims.MagicCasted2 = animator:LoadAnimation(animationsClass:FindFirstChild("MagicCasted2", true))
     self.ClassAttackAnims.Dash = animator:LoadAnimation(animationsClass:FindFirstChild("Dash", true))
-    for _, anim in animationsClass:GetDescendants() do
-        if string.find(anim.Name, "Attack") and anim:IsA("ObjectValue") then
+    for _, anim in animationsClass:QueryDescendants("ObjectValue") do
+        if string.find(anim.Name, "Attack") then
             self.ClassAttackAnims[anim.Name] = self.ClassAttackAnims[anim.Value.Name]
         end
     end

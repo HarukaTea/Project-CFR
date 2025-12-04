@@ -28,8 +28,6 @@ LBLib.Funcs = {}
 
 
 local TOP3_BADGE_ID = 2495465107761594
-local TOP3_SPEEDRUN_BADGE_ID = 3055867327519680
-
 
 local abyssSpeedrunContainer = Instance.new("Folder")
 abyssSpeedrunContainer.Name = "AbyssSpeedrunContainer"
@@ -45,7 +43,7 @@ local userNameCache = {}
 local userThumbnailCache = {}
 
 
-local abyssSpeedrunStore = ODSModule.new("_AbyssSpeedrun_Nov2025", true)
+local abyssSpeedrunStore = ODSModule.new("_AbyssSpeedrun", true)
 local donationStore = ODSModule.new("_Donation", true)
 
 
@@ -189,17 +187,6 @@ table.insert(LBLib.Funcs, function()
                 ServerLib:GiveBadge(TOP3_BADGE_ID, plr)
 
             end):catch(function() end)
-
-        elseif storeName == "Abyss" then
-            --// TODO: Implement Abyss Speedrun Leaderboard
-
-            abyssSpeedrunStore:GetOrderedPositionAsync("Player_"..plr.UserId, false):andThen(function(data)
-                --// data[1]: rank, data[2]: {key: string, value: number}
-
-                if not _checkIsDataValid(data) then return end
-
-                ServerLib:GiveBadge(TOP3_SPEEDRUN_BADGE_ID, plr)
-            end)
         end
     end)
 end)

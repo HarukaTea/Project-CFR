@@ -24,17 +24,15 @@ return function (self: Types.ProjectileLib)
 
         local delayTime = 0.2
 
-        for _, part: BasePart in projectile:GetDescendants() do
-            if part.Name == "Part" then
-                Promise.delay(delayTime):andThen(function()
-                    ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
-                        sProjectile:PivotTo(part.CFrame)
-                    end)
+        for _, part: BasePart in projectile:QueryDescendants("#Part") do
+            Promise.delay(delayTime):andThen(function()
+                ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
+                    sProjectile:PivotTo(part.CFrame)
+                end)
 
-                end):catch(function() end)
+            end):catch(function() end)
 
-                delayTime += 0.1
-            end
+            delayTime += 0.1
         end
     end
 
@@ -48,17 +46,13 @@ return function (self: Types.ProjectileLib)
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 1.2, 0))
 
 
-        for _, part: BasePart in projectile:GetDescendants() do
-            if part.Name == "Part" then
-                part.Transparency = 0.8
-            end
+        for _, part: BasePart in projectile:QueryDescendants("#Part") do
+            part.Transparency = 0.8
         end
         pcall(function()
             wait(0.5)
-            for _, part: BasePart in projectile:GetDescendants() do
-                if part.Name == "Part" then
-                    part.Transparency = 0
-                end
+            for _, part: BasePart in projectile:QueryDescendants("#Part") do
+                part.Transparency = 0
             end
             projectile:AddTag("DMGEntity")
         end)

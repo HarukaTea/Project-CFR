@@ -8,10 +8,8 @@ local EntityAttackLib = {} :: EntityAttackLib
 
 
 
-for _, module: ModuleScript in script.Library:GetDescendants() do
-    if module:IsA("ModuleScript") then
-        EntityAttackLib[module.Name] = require(module)
-    end
+for _, module: ModuleScript in script.Library:QueryDescendants("ModuleScript") do
+    EntityAttackLib[module.Name] = require(module)
 end
 
 

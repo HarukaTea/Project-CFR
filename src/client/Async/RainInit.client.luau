@@ -20,6 +20,9 @@ rainSound.Volume = 0
 --// Private functions
 
 local function adjustRain(rainLevel: number)
+	rainLevel = math.clamp(rainLevel, 0, 5)
+
+
 	if rainLevel <= 0 or not workspace:GetAttribute("RainEffectEnabled") then
 		Particles:Disable()
 

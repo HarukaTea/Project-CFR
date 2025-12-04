@@ -241,6 +241,11 @@ AssetBook.PlaceIds = {
 		AbyssLevel = 17737750943,
 		Mainworld = 118088243313343,
 		Tutorial = 18502526655,
+	},
+
+	-- CFT
+	["7793504190"] = {
+		Mainworld = 124519565742104,
 	}
 }
 

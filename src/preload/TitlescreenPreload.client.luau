@@ -48,7 +48,7 @@ local function _createTempHolderGui()
     bottom.ZIndex = 1
 
     local uiAspectRatio = Instance.new("UIAspectRatioConstraint")
-    uiAspectRatio.AspectRatio = 25.627
+    uiAspectRatio.AspectRatio = 24
     uiAspectRatio.Parent = bottom
 
 

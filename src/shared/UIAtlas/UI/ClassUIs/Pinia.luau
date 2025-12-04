@@ -18,6 +18,9 @@ export type Self = {
 
     IsInCombat: Fusion.Value<boolean>,
     Class: Fusion.Value<string>,
+
+
+    ChainCombo: Fusion.Value<number>,
 }
 
 
@@ -33,6 +36,10 @@ return function (self: Self)
 
     self.Class = Value("Chain")
     self.IsInCombat = Value(false)
+
+
+
+    self.ChainCombo = Value(0)
 
 
     --// track menu
@@ -67,6 +74,14 @@ return function (self: Self)
             state = state or false
 
             self.IsInCombat:set(state)
+        end
+    }))
+
+
+    --// track class vals
+    table.insert(scope, HarukaLib:Hydrate(self.char, {
+        ["Attr-ChainCombo"] = function(val: number)
+            self.ChainCombo:set(val)
         end
     }))
 end

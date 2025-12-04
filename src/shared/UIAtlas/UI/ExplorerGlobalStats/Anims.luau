@@ -130,7 +130,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
 
-        expDropQueue:SetLockState(true)
+        expDropQueue:SpawnMutex(2)
 
 
         local exp = expDropQueue:Pop()
@@ -150,16 +150,13 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         HarukaLib:UITween(expBar, "In", {})
         HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 1.5 })
-
-        wait(2)
-        expDropQueue:SetLockState(false)
-
-        _onNewEXPAdded()
     end
-    table.insert(scope, expDropQueue.ElementAdded:Connect(_onNewEXPAdded))
     table.insert(scope, Events.OpenEXPAwardBar_S.On(function(expGained)
         expDropQueue:Push(expGained)
     end))
+
+    expDropQueue.ElementAdded:Connect(_onNewEXPAdded)
+    expDropQueue.MutexUnlocked:Connect(_onNewEXPAdded)
 
 
     --// track region in
@@ -176,7 +173,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
 
-        regionQueue:SetLockState(true)
+        regionQueue:SpawnMutex(1.5)
 
         local nextRegion = regionQueue:Pop() :: string
         local newScope = Fusion.scoped()
@@ -195,13 +192,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         HarukaLib:UITween(regionBar, "In", {})
         HarukaLib:UITween(regionBar, "Out", { TweenTime = 0.5, DelayTime = 2.5 })
-
-        wait(1.5)
-        regionQueue:SetLockState(false)
-
-        _onNewRegionAdded()
     end
-    table.insert(scope, regionQueue.ElementAdded:Connect(_onNewRegionAdded))
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-AreaIn"] = function(region: string)
             if region == nil or region == "" or region == "None" then return end
@@ -209,6 +200,10 @@ return function (UI: ScreenGui, self: Pinia.Self)
             regionQueue:Push(region)
         end
     }))
+    _onNewRegionAdded()
+
+    regionQueue.ElementAdded:Connect(_onNewRegionAdded)
+    regionQueue.MutexUnlocked:Connect(_onNewRegionAdded)
 
 
     --// track cast cd
@@ -244,7 +239,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if achivementQueue:IsLocked() then return end
         if achivementQueue:IsEmpty() then return end
 
-        achivementQueue:SetLockState(true)
+        achivementQueue:SpawnMutex(4)
 
 
 
@@ -268,14 +263,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         HarukaLib:UITween(expBar, "In", { TweenTime = 0.6 })
         HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
-
-        wait(4)
-        achivementQueue:SetLockState(false)
-
-        _onNewAchievementAdded()
     end
-    table.insert(scope, achivementQueue.ElementAdded:Connect(_onNewAchievementAdded))
     table.insert(scope, Events.PlayBadgeNotify_S.On(function(badgeId: string)
         achivementQueue:Push(badgeId)
     end))
+
+    achivementQueue.ElementAdded:Connect(_onNewAchievementAdded)
+    achivementQueue.MutexUnlocked:Connect(_onNewAchievementAdded)
 end

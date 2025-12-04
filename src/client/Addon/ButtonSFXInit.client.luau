@@ -24,7 +24,7 @@ end
 
 
 do
-    for _, gui in plrGui:GetDescendants() do
+    for _, gui in plrGui:QueryDescendants("TextButton,ImageButton") do
         _updateButton(gui)
     end
     plrGui.DescendantAdded:Connect(_updateButton)

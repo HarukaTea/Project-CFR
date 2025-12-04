@@ -53,9 +53,7 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
 
     local hasProjectiles = 5
     for i = 1, hasProjectiles do
-        for _, child: BasePart in projectileSupport:GetDescendants() do
-            if child.Name ~= "Position"..i then continue end
-
+        for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..i) do
             if (child.Position - entity:GetAttribute("CombatLocation").Position).Magnitude > 15.99 * 3 then
                 child:Destroy()
                 hasProjectiles -= 1
@@ -83,9 +81,7 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
 
 
     Promise.delay(0.5):andThen(function()
-        for _, child: BasePart in projectileSupport:GetDescendants() do
-            if child.Name ~= "Position"..hasProjectiles then continue end
-
+        for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..hasProjectiles) do
             local postR = ServerLib:FindGroundByRay(child.Position)
 
             HarukaLib:Tween(entity, AssetBook.TweenInfos.twiceHalfOne, {

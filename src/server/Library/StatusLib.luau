@@ -32,13 +32,13 @@ function StatusLib:Heal(char: Model, healAmount: number) : number?
 
     char.Humanoid.Health += healAmount
 
-    local healEff = RepS.Packages.Effects.Healing:Clone() :: BasePart
-	healEff.Parent = char
-	Debris:AddItem(healEff, 1.5)
-
     ServerLib:PlayWorldSound(SoundService.SFXs.Healing, char.PrimaryPart.Position)
 
     Events.PlayHealedScreenFX_S.Fire(plr)
+    Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 100), {
+        StatusId = "Healing",
+        Character = char,
+    })
 
     return healAmount
 end

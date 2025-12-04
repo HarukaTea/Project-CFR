@@ -268,9 +268,6 @@ table.insert(CriRPGLib.Funcs, function()
             local orbPos = extraProps.ForceLocation or ServerLib:GenerateOrbPos(char:GetAttribute("CombatLocation"))
             local orbFadeTime = char:GetAttribute("OrbFadeTime") or 12 :: number
 
-            if orbName == "BuffOrb" or orbName == "HealOrb" then
-                orbFadeTime = 8
-            end
             if extraProps.Offset then
                 orbPos *= CFrame.new(extraProps.Offset)
             end
@@ -311,13 +308,6 @@ table.insert(CriRPGLib.Funcs, function()
 
         ClassOrbSpawnAlgoLib[class](_spawnOrb_done)
     end
-    local function _spawnBuffOrb()
-        local resultOrb, _, _ = HarukaLib:RollLoot({
-            ["HealOrb"] = 22,
-            ["None"] = 23 + 55
-        })
-        if resultOrb == "HealOrb" then _spawnOrb_done("HealOrb", { IsSpecialOrb = true }) end
-    end
     local function orbSpawnHandler(state: boolean)
         if state then
             orbSpawnEmpty()
@@ -330,9 +320,6 @@ table.insert(CriRPGLib.Funcs, function()
             end))
             orbSpawnAdd(HarukaLib.Clock(orbSpawnTime, function()
                 if char:GetAttribute("IsInCombat") then _spawnOrb() end
-            end))
-            orbSpawnAdd(HarukaLib.Clock(8, function()
-                if char:GetAttribute("IsInCombat") then _spawnBuffOrb() end
             end))
         else
             orbSpawnEmpty()
@@ -439,12 +426,10 @@ table.insert(CriRPGLib.Funcs, function()
                 ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
 
 
-                local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
-		        levelUpEffect.Parent = char.PrimaryPart
-		        Debris:AddItem(levelUpEffect, 5)
-
-                HarukaLib:EmitParticles(levelUpEffect)
-
+                Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+                    StatusId = "LevelUp",
+                    Character = char,
+                })
 
                 char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
                 char.Humanoid.Health = char.Humanoid.MaxHealth

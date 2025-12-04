@@ -153,7 +153,7 @@ if game.GameId ~= AssetBook.CFUniverseId_Main then
     formulas.EXPEvent = 80
 end
 if formulas.EXPEvent > 1 then
-    print("[WARNING] EXP Event Enabled")
+    warn("[WARNING] EXP Event Enabled")
 end
 
 

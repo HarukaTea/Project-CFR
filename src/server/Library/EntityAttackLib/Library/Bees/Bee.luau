@@ -56,7 +56,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         local linearVel = Instance.new("LinearVelocity")
         linearVel.ForceLimitsEnabled = false
-        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("AlignMoverAttachment")
+        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("CF_RootNode")
         linearVel.VectorVelocity = Vector3.zero
         linearVel.Parent = entity.PrimaryPart
     end

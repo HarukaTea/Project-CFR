@@ -17,6 +17,8 @@ export type Self = {
     IsUIShown: Fusion.Value<boolean>,
     AbyssIndexSelected: Fusion.Value<number>,
     AbyssInfo: Fusion.Value<AbyssTeambook.AbyssTeamJSON>,
+
+    AbyssRanks: Fusion.Value<{ IntValue }>,
 }
 
 
@@ -31,6 +33,10 @@ return function (self: Self)
 
     self.AbyssIndexSelected = Fusion.Value(scope, nil)
     self.AbyssInfo = Value({})
+
+
+    local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("AbyssSpeedrunContainer", 999))
+    self.AbyssRanks = ranks :: Fusion.Value<{ IntValue }>
 
 
     --// track abyss index selected

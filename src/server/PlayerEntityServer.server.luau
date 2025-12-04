@@ -729,26 +729,15 @@ function PlayerLib:RemoveMapComponents()
         end,
 
         function()
-            for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
-                if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
-
-                if galleon.Owner.Value == self.Player then
-                    galleon:Destroy()
-                end
-            end
-        end,
-
-        function()
             local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name, true) :: ObjectValue?
             if not party then return end
 
             ServerBindables.PartyInvite:Fire(self.Player, "PartyLeave", self.Player.Name)
         end,
     }
-
-    pcall(funcs[1])
-    pcall(funcs[2])
-    pcall(funcs[3])
+    for i = 1, #funcs do
+        pcall(funcs[i])
+    end
 end
 
 

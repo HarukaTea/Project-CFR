@@ -12,6 +12,7 @@ local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
 local AbyssLevelSlot = require(script.Components.AbyssLevelSlot)
 local AbyssEnemySlot = require(script.Components.AbyssEnemySlot)
+local AbyssRankSlot = require(RepS.HarukaShared.UIAtlas.Components.LBRankSlot)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
@@ -68,10 +69,40 @@ return function (plr: Player)
 
         CenterProps = {
             [Children] = {
+                Components.ScrollingFrame(scope, {
+                    Name = "AbyssSpeedrunLeaderboard",
+                    AnchorPoint = Vector2.new(0, 0.5),
+                    Position = UDim2.fromScale(0.02, 1),
+                    Size = UDim2.fromScale(0.4, 7.3),
+                    ScrollBarThickness = 5,
+                    ScrollingDirection = Enum.ScrollingDirection.Y,
+
+                    [Children] = {
+                        Components.PaddingFrame(scope, "AAA"),
+
+                        Fusion.ForPairs(scope, self.AbyssRanks, function(_, scope: Fusion.Scope, index: number, val: IntValue)
+                            return index, AbyssRankSlot(scope, {
+                                Index = val:GetAttribute("Order"),
+                                Value = val.Value,
+                                PlayerName = val:GetAttribute("PlayerName"),
+                                AvatarId = val:GetAttribute("PlayerThumbnail"),
+
+                                IsAbyss = true
+                            })
+                        end)
+                    }
+
+                }, {
+                    Padding = UDim.new(0, 0),
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                }),
+
+
                 Components.Frame(scope, {
                     Name = "AbyssList",
-                    Size = UDim2.fromScale(1, 7),
-                    Position = UDim2.fromScale(0.5, 1),
+                    AnchorPoint = Vector2.new(0, 0.5),
+                    Size = UDim2.fromScale(0.55, 7),
+                    Position = UDim2.fromScale(0.42, 1),
 
 
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -224,6 +255,17 @@ return function (plr: Player)
                         }),
                     }
                 }),
+
+
+                Components.TextLabel(scope, {
+                    Name = "Tip",
+                    AnchorPoint = Vector2.new(0.5, 1),
+                    Position = UDim2.fromScale(0.5, 0.7),
+                    Size = UDim2.fromScale(0.95, 0.5),
+                    Text = "FLOOR 6 SPEEDRUN LEADERBOARD",
+                    TextTransparency = 0.5,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                })
             }
         }
     })

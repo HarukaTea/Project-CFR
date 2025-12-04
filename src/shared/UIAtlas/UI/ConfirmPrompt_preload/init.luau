@@ -18,14 +18,6 @@ return function (plr: Player)
 
 	local scope = self.scope :: Fusion.Scope
 
-
-	self.ConfirmPromptsQueue = HarukaLib.Queue()
-	table.insert(scope, self.ConfirmPromptsQueue)
-
-	self.InfoPromptsQueue = HarukaLib.Queue()
-	table.insert(scope, self.InfoPromptsQueue)
-
-
 	--// receive confirm prompt requests
 	local function _createConfirmPrompt(data: {
 		Hint: string,
@@ -34,30 +26,14 @@ return function (plr: Player)
 
 		ConfirmUniqueId: string
 	})
-		self.ConfirmPromptsQueue:Push(data)
-	end
-	local function _onConfirmPromptAdded()
-		if self.ConfirmPromptsQueue:IsLocked() then return end
-		if self.ConfirmPromptsQueue:IsEmpty() then return end
-
-		self.ConfirmPromptsQueue:SetLockState(true)
-
-		local nextPrompt = self.ConfirmPromptsQueue:Pop() :: {
-			Hint: string,
-			ConfirmText: string,
-			CancelText: string,
-			ConfirmUniqueId: string
-		}
-
-
 		local confirmScope = Fusion.scoped()
 		local resultSignal = Signal.new()
 		table.insert(confirmScope, resultSignal)
 
 		local UI = ConfirmPrompt(confirmScope, {
-			Hint = nextPrompt.Hint,
-			ConfirmText = nextPrompt.ConfirmText,
-			CancelText = nextPrompt.CancelText,
+			Hint = data.Hint,
+			ConfirmText = data.ConfirmText,
+			CancelText = data.CancelText,
 
 			ResultSignal = resultSignal,
 		})
@@ -74,7 +50,7 @@ return function (plr: Player)
 
 		local finalResult = resultSignal:Wait()
 
-		Bindables.ConfirmPromptChosen:Fire(nextPrompt.ConfirmUniqueId, finalResult)
+		Bindables.ConfirmPromptChosen:Fire(data.ConfirmUniqueId, finalResult)
 
 		HarukaLib:UITween(UI, "Out", {
 			TweenCallback = function(tweenOutUI)
@@ -88,12 +64,6 @@ return function (plr: Player)
 				})
 			end
 		})
-
-		--// process next prompt
-		self.ConfirmPromptsQueue:SetLockState(false)
-
-		_onConfirmPromptAdded()
 	end
 	table.insert(scope, Bindables.CreateConfirmPrompt:Connect(_createConfirmPrompt))
-	table.insert(scope, self.ConfirmPromptsQueue.ElementAdded:Connect(_onConfirmPromptAdded))
 end

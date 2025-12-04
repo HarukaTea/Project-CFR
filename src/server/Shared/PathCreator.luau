@@ -58,6 +58,11 @@ visualWaypoint.Shape = Enum.PartType.Ball
 visualWaypoint.Transparency = 0
 
 
+local visualPointContainer = Instance.new("Folder")
+visualPointContainer.Name = "VisualPathPoints"
+visualPointContainer.Parent = workspace.Terrain
+
+
 --// Helper functions
 
 
@@ -66,7 +71,7 @@ local function createVisualWaypoints(waypoints)
 	for _, waypoint in ipairs(waypoints) do
 		local visualWaypointClone = visualWaypoint:Clone()
 		visualWaypointClone.Position = waypoint.Position
-		visualWaypointClone.Parent = workspace.Terrain
+		visualWaypointClone.Parent = visualPointContainer
 		visualWaypointClone.Color =
 			(waypoint == waypoints[#waypoints] and Color3.fromRGB(0, 255, 0))
 			or (waypoint.Action == Enum.PathWaypointAction.Jump and Color3.fromRGB(255, 0, 0))

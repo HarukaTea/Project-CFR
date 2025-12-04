@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 
 export type Self = {
@@ -43,7 +44,7 @@ return function (self: Self)
 
 
     --// track badge count
-    table.insert(scope, HarukaLib.Clock(5, function()
+    local function _checkBadgeCount()
         local badgeCompletes = self.plr:GetAttributes()
 
         local count = 0
@@ -53,11 +54,10 @@ return function (self: Self)
             end
         end
         self.BadgeCompletedCount:set(count)
-
-    end, true))
-    table.insert(scope, HarukaLib.Clock(5, function()
         self.HasGottenReward:set(self.plr.Items:FindFirstChild("FuriosoFist") ~= nil)
-    end, true))
+    end
+    _checkBadgeCount()
+    table.insert(scope, Events.PlayBadgeNotify_S.On(_checkBadgeCount))
 
 
 

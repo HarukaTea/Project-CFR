@@ -78,4 +78,19 @@ abyss[5] = {
 }
 
 
+abyss[6] = {
+    Icon = "rbxassetid://16483654080",
+    Team = {
+        LavaWolf = {
+            Level = 300,
+            EnvironmentBonus = 10
+        },
+        SpikeFox = {
+            Level = 200,
+            EnvironmentBonus = 10
+        }
+    }
+}
+
+
 return abyss

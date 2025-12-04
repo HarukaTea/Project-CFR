@@ -2,7 +2,6 @@
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -47,14 +46,8 @@ return function (self: Self)
 
     workspace:SetAttribute("UIScaleFactor", 1)
     workspace:SetAttribute("HideUIFactor", false)
-    workspace:SetAttribute("EntityRenderDistance", 159)
-    workspace:SetAttribute("FocusRenderDistance", 486)
-    workspace:SetAttribute("TreeRenderDistance", 888)
-    workspace:SetAttribute("FlowerRenderDistance", 555)
 
     workspace:SetAttribute("RainEffectEnabled", true)
-    workspace:SetAttribute("WindEffectEnabled", true)
-    workspace:SetAttribute("WaveEffectEnabled", true)
 
     workspace:SetAttribute("CombatMode", "Public")
 
@@ -228,114 +221,82 @@ return function (self: Self)
     self.INFO.Interface.Includes.UIScale.ValChanged:Connect(function(val: number)
         workspace:SetAttribute("UIScaleFactor", val)
 
-        for _, ui in self.plr.PlayerGui:GetDescendants() do
-            if ui:IsA("UIScale") then
-                ui.Scale = (ui:GetAttribute("BaseScale") or 1) * val
-            end
+        for _, ui in self.plr.PlayerGui:QueryDescendants("UIScale") do
+            ui.Scale = (ui:GetAttribute("BaseScale") or 1) * val
         end
-    end)
-
-
-    self.INFO.Graphics.Includes.EntityRenderDistance.ValChanged:Connect(function(val: number)
-        workspace:SetAttribute("EntityRenderDistance", val)
-    end)
-    self.INFO.Graphics.Includes.FocusRenderDistance.ValChanged:Connect(function(val: number)
-        workspace:SetAttribute("FocusRenderDistance", val)
-    end)
-    self.INFO.Graphics.Includes.TreeRenderDistance.ValChanged:Connect(function(val: number)
-        workspace:SetAttribute("TreeRenderDistance", val)
-    end)
-    self.INFO.Graphics.Includes.FlowerRenderDistance.ValChanged:Connect(function(val: number)
-        workspace:SetAttribute("FlowerRenderDistance", val)
     end)
 
 
 
     --// track graphics
-    local LDMObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.LowDetailMode)
-    LDMObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Graphics.LowDetailMode)
+    local function _changePartToPlastic(part: BasePart)
+        if part == nil then return end
+        if part.Parent == nil then return end
+        if not HarukaLib:IsBasePartType(part) then return end
 
+        part:SetAttribute("OriMaterial", part.Material)
+        part:SetAttribute("OriColor", part.Color)
+
+        part.Material = Enum.Material.Plastic
+        part.Color = part.Color:Lerp(Color3.fromRGB(), 0.4)
+
+        part:AddTag("LDMTerrainPart")
+    end
+    local function _changePartToOriginal(part: BasePart)
+        if part == nil then return end
+        if part.Parent == nil then return end
+        if not HarukaLib:IsBasePartType(part) then return end
+
+        if not part:GetAttribute("OriMaterial") then return end
+        if not part:GetAttribute("OriColor") then return end
+
+        local oriMaterial, oriColor =
+            part:GetAttribute("OriMaterial") :: Enum.Material,
+            part:GetAttribute("OriColor") :: Color3
+
+        part.Material = oriMaterial
+        part.Color = oriColor
+
+        part:RemoveTag("LDMTerrainPart")
+    end
+    local function _func1(state: boolean)
         if state then
-            local function _changePartToPlastic(part: BasePart)
-                if part == nil then return end
-                if part.Parent == nil then return end
-                if not HarukaLib:IsBasePartType(part) then return end
-
-                part:SetAttribute("OriMaterial", part.Material)
-                part:SetAttribute("OriColor", part.Color)
-
-                part.Material = Enum.Material.Plastic
-                part.Color = part.Color:Lerp(Color3.fromRGB(), 0.4)
-
-                part:AddTag("LDMTerrainPart")
-            end
             for _, part in CollectionService:GetTagged("TerrainPart") do
                 _changePartToPlastic(part)
             end
             for _, tree: Model in CollectionService:GetTagged("TreeEntity") do
-                for _, part in tree:GetDescendants() do
+                for _, part in tree:QueryDescendants(HarukaLib.BasePartSelector) do
                     _changePartToPlastic(part)
                 end
             end
             for _, flower: Model in CollectionService:GetTagged("FlowerEntity") do
-                for _, part in flower:GetDescendants() do
+                for _, part in flower:QueryDescendants(HarukaLib.BasePartSelector) do
                     _changePartToPlastic(part)
                 end
             end
-
         else
             for _, part: BasePart in CollectionService:GetTagged("LDMTerrainPart") do
-                if part == nil then return end
-                if part.Parent == nil then return end
-                if not HarukaLib:IsBasePartType(part) then return end
-
-                if not part:GetAttribute("OriMaterial") then return end
-                if not part:GetAttribute("OriColor") then return end
-
-                local oriMaterial, oriColor =
-                    part:GetAttribute("OriMaterial") :: Enum.Material,
-                    part:GetAttribute("OriColor") :: Color3
-
-                part.Material = oriMaterial
-                part.Color = oriColor
-
-                part:RemoveTag("LDMTerrainPart")
+                _changePartToOriginal(part)
             end
         end
+    end
+
+    local LDMObserver = Fusion.Observer(scope, self.SwitcherVals.Game.LowDetailMode)
+    LDMObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
+
+        _func1(state)
     end)
+    table.insert(scope, HarukaLib.Clock(5, function()
+        local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
+
+        _func1(state)
+    end))
 
 
-    --// track trees
-    local treesObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.Trees)
-    treesObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Graphics.Trees)
-
-        local folder = workspace:FindFirstChild("TreeContainer") :: Folder
-        local folder2 = workspace:FindFirstChild("FlowerContainer") :: Folder
-
-        local folder3 = ServerStorage:FindFirstChild("TreeContainer") :: Folder
-        local folder4 = ServerStorage:FindFirstChild("FlowerContainer") :: Folder
-
-
-        local finalContainer = folder or folder3
-        local finalContainer2 = folder2 or folder4
-
-        if not finalContainer or not finalContainer2 then return end
-
-        if state then
-            finalContainer.Parent = workspace
-            finalContainer2.Parent = workspace
-        else
-            finalContainer.Parent = ServerStorage
-            finalContainer2.Parent = ServerStorage
-        end
-    end)
-
-
-    local shadowsObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.GlobalShadows)
+    local shadowsObserver = Fusion.Observer(scope, self.SwitcherVals.Game.GlobalShadows)
     shadowsObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Graphics.GlobalShadows)
+        local state = Fusion.peek(self.SwitcherVals.Game.GlobalShadows)
 
         Lighting.GlobalShadows = state
     end)
@@ -350,26 +311,12 @@ return function (self: Self)
     end)
 
 
-    --// track wind & rain
-    local windObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.WindEffect)
-    windObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Graphics.WindEffect)
-
-        workspace:SetAttribute("WindEffectEnabled", state)
-    end)
-
-    local rainObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.RainEffect)
+    --// track rain
+    local rainObserver = Fusion.Observer(scope, self.SwitcherVals.Game.RainEffect)
     rainObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Graphics.RainEffect)
+        local state = Fusion.peek(self.SwitcherVals.Game.RainEffect)
 
         workspace:SetAttribute("RainEffectEnabled", state)
-    end)
-
-    local waveObserver = Fusion.Observer(scope, self.SwitcherVals.Graphics.WaveEffect)
-    waveObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Graphics.WaveEffect)
-
-        workspace:SetAttribute("WaveEffectEnabled", state)
     end)
 
 

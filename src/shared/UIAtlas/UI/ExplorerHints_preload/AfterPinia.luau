@@ -13,10 +13,6 @@ local CenterHintLabel = require(script.Parent.Components.CenterHintLabel)
 local FullHintLabel = require(script.Parent.Components.FullHintLabel)
 
 
-local wait = task.wait
-
-
-
 export type Self = {
 	plr: Player,
 	char: Model,
@@ -86,12 +82,12 @@ return function (self: Self)
 		if self.fsHintsQueue:IsLocked() then return end
 		if self.fsHintsQueue:IsEmpty() then return end
 
-		self.fsHintsQueue:SetLockState(true)
-
 		local nextHint = self.fsHintsQueue:Pop() :: {
 			Text: string, Duration: number
 		}
 		local newScope = Fusion.scoped()
+
+		self.fsHintsQueue:SpawnMutex(nextHint.Duration)
 
 
 		local fullNotify = FullHintLabel(newScope, {
@@ -108,16 +104,12 @@ return function (self: Self)
 
 		HarukaLib:UITween(fullNotify, "In", {})
 		HarukaLib:UITween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
-
-
-		wait(nextHint.Duration)
-		self.fsHintsQueue:SetLockState(false)
-
-		_onFSHintAdded()
 	end
 	table.insert(scope, Events.CreateFSNotify_S.On(_createFSHint))
 	table.insert(scope, Bindables.CreateFSNotify:Connect(_createFSHint))
-	table.insert(scope, self.fsHintsQueue.ElementAdded:Connect(_onFSHintAdded))
+
+	self.fsHintsQueue.ElementAdded:Connect(_onFSHintAdded)
+	self.fsHintsQueue.MutexUnlocked:Connect(_onFSHintAdded)
 
 
 	--// receive center hint requests
@@ -130,7 +122,7 @@ return function (self: Self)
 		if self.centerHintsQueue:IsLocked() then return end
 		if self.centerHintsQueue:IsEmpty() then return end
 
-		self.centerHintsQueue:SetLockState(true)
+		self.centerHintsQueue:SpawnMutex(1.5)
 
 
 		local nextHint = self.centerHintsQueue:Pop() :: {
@@ -154,13 +146,10 @@ return function (self: Self)
 
 		HarukaLib:UITween(notifyBar, "In", { TweenTime = 0.5 })
 		HarukaLib:UITween(notifyBar, "Out", { TweenTime = 0.5, DelayTime = 0.9 })
-
-		wait(1.5)
-		self.centerHintsQueue:SetLockState(false)
-
-		_onCenterHintAdded()
 	end
 	table.insert(scope, Events.CreateCenterNotify_S.On(_createCenterNotify))
 	table.insert(scope, Bindables.CreateCenterNotify:Connect(_createCenterNotify))
-	table.insert(scope, self.centerHintsQueue.ElementAdded:Connect(_onCenterHintAdded))
+
+	self.centerHintsQueue.ElementAdded:Connect(_onCenterHintAdded)
+	self.centerHintsQueue.MutexUnlocked:Connect(_onCenterHintAdded)
 end

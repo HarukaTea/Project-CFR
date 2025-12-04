@@ -24,15 +24,15 @@ event2.Parent = script
 
 
 Add(AccessoryUniversal.RegisterStatusApplied(script, event, char, function(targeting, attacker, statusProps)
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = math.ceil(ClassAttackLib._CalDMG("Magic", char) * 0.15),
+    ClassAttackLib:DealDamageToEnemy(char, targeting, {
+        DMG = math.ceil(ClassAttackLib:CalDMG("Magic", char) * 0.15),
         DMGType = "Magic",
         Attacker = "VolatileGem"
     })
 end))
 Add(AccessoryUniversal.RegisterEnemyStatusRemoved(script, event2, char, function(targeting, attacker, statusProps)
-    ClassAttackLib._DealDamageToEnemy(char, targeting, {
-        DMG = math.ceil(ClassAttackLib._CalDMG("Magic", char) * 0.05),
+    ClassAttackLib:DealDamageToEnemy(char, targeting, {
+        DMG = math.ceil(ClassAttackLib:CalDMG("Magic", char) * 0.05),
         DMGType = "Magic",
         Attacker = "VolatileGem"
     })

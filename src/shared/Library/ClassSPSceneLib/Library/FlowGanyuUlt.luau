@@ -44,10 +44,8 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local sequences = RepS.Packages.SkillProjectiles:FindFirstChild("FlowGanyuSequences", true) :: Folder
     Promise.try(function()
-        for _, child: Instance in orb:GetDescendants() do
-            if child:IsA("Beam") then
-                child.Transparency = sequences[child.Name].Transparency
-            end
+        for _, child: Instance in orb:QueryDescendants("Beam") do
+            child.Transparency = sequences[child.Name].Transparency
         end
     end):catch(function() end)
 
@@ -108,10 +106,8 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     HarukaLib:ZonitoToggleParticles(orb, false, false, false)
 
     Promise.try(function()
-        for _, child: Instance in orb:GetDescendants() do
-            if child:IsA("Beam") then
-                child.Transparency = NumberSequence.new(1, 1)
-            end
+        for _, child: Instance in orb:QueryDescendants("Beam") do
+            child.Transparency = NumberSequence.new(1, 1)
         end
     end):catch(function() end)
 end

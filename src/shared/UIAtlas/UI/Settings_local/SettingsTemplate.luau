@@ -1,8 +1,8 @@
 
 local RepS = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
 local Signal = require(RepS.HarukaShared.Shared.Signal)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
@@ -100,7 +100,7 @@ local template = {
 
 				Min = 0.8,
 				Max = 1.2,
-				DefaultValue = if UserInputService.TouchEnabled then 1.1 else 1,
+				DefaultValue = if HarukaLib:GetAccurateDevice() == "Phone" or HarukaLib:GetAccurateDevice() == "Tablet" then 1.1 else 1,
 
 				ValChanged = Signal.new()
 			},
@@ -113,8 +113,8 @@ local template = {
 			},
 		}
 	},
-	Graphics = {
-		PanelTitle = "Graphics",
+	Game = {
+		PanelTitle = "Game",
 		LayoutOrder = 1,
 
 		Includes = {
@@ -125,24 +125,10 @@ local template = {
 
 				DefaultValue = false
 			},
-			Trees = {
-				OptionTitle = "Trees",
-				Type = "Switcher",
-				LayoutOrder = 2,
-
-				DefaultValue = true,
-			},
 			GlobalShadows = {
 				OptionTitle = "Shadows",
 				Type = "Switcher",
 				LayoutOrder = 3,
-
-				DefaultValue = true,
-			},
-			WindEffect = {
-				OptionTitle = "Wind Effect",
-				Type = "Switcher",
-				LayoutOrder = 4,
 
 				DefaultValue = true,
 			},
@@ -153,65 +139,10 @@ local template = {
 
 				DefaultValue = true,
 			},
-			EntityRenderDistance = {
-				OptionTitle = "Enemy Render Distance",
-				Type = "Slider",
-				LayoutOrder = 7,
-				AllowDecimals = false,
-
-				Min = 159,
-				Max = 999,
-				DefaultValue = 189,
-
-				ValChanged = Signal.new()
-			},
-			FocusRenderDistance = {
-				OptionTitle = "Text Render Distance",
-				Type = "Slider",
-				LayoutOrder = 8,
-				AllowDecimals = false,
-
-				Min = 159,
-				Max = 999,
-				DefaultValue = 486,
-
-				ValChanged = Signal.new()
-			},
-			TreeRenderDistance = {
-				OptionTitle = "Tree Render Distance",
-				Type = "Slider",
-				LayoutOrder = 9,
-				AllowDecimals = false,
-
-				Min = 159,
-				Max = 999,
-				DefaultValue = 888,
-
-				ValChanged = Signal.new()
-			},
-			FlowerRenderDistance = {
-				OptionTitle = "Flower Render Distance",
-				Type = "Slider",
-				LayoutOrder = 9,
-				AllowDecimals = false,
-
-				Min = 159,
-				Max = 999,
-				DefaultValue = 555,
-
-				ValChanged = Signal.new()
-			}
-		}
-	},
-	Game = {
-		PanelTitle = "Game",
-		LayoutOrder = 2,
-
-		Includes = {
 			CombatMode = {
 				OptionTitle = "Combat Mode",
 				Type = "Dropdown",
-				LayoutOrder = 1,
+				LayoutOrder = 6,
 				DropdownOptions = { "Solo", "Public", "Party" },
 
 				DefaultValue = "Public",
@@ -219,7 +150,7 @@ local template = {
 			AllowPartyInvites = {
 				OptionTitle = "Allow Party Invites",
 				Type = "Switcher",
-				LayoutOrder = 2,
+				LayoutOrder = 7,
 
 				DefaultValue = true,
 			},

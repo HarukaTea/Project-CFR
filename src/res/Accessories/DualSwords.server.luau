@@ -29,7 +29,7 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
         ["None"] = 100 - 15
     })
     if result == "Dual" then
-        ClassAttackLib._DealDamageToEnemy(char, targeting, {
+        ClassAttackLib:DealDamageToEnemy(char, targeting, {
             DMG = dmgProps.DMG,
             DMGType = "DMG",
             Attacker = "DualSwords"

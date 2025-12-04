@@ -716,7 +716,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 		Enum.EasingStyle.Sine,
 		Enum.EasingDirection.Out
 	)
-	local tweenObjs = ui:GetDescendants()
+	local tweenObjs = ui:QueryDescendants("Frame,TextLabel,TextButton,ImageLabel,ImageButton,ScrollingFrame,CanvasGroup,UIStroke")
 	local tweenObjs: { GuiObject } = tweenObjs
 
 	table.insert(tweenObjs, ui)
@@ -949,29 +949,31 @@ end
 export type HarukaQueue = {
 	IsEmpty: (self: HarukaQueue) -> boolean,
 	GetItemsInQueue: (self: HarukaQueue) -> number,
-	SetLockState: (self: HarukaQueue, state: boolean) -> nil,
 	IsLocked: (self: HarukaQueue) -> boolean,
 
 	Push: (self: HarukaQueue, value: any) -> nil,
 	Pop: (self: HarukaQueue) -> any?,
 	Destroy: (self: HarukaQueue) -> nil,
 
-	ElementAdded: Signal.SignalClass
+	SpawnMutex: (self: HarukaQueue, delay: number) -> nil,
+
+	ElementAdded: Signal.SignalClass,
+	MutexUnlocked: Signal.SignalClass,
 }
 function HarukaLib.Queue() : HarukaQueue
-	local Queue = {}
+	local Queue = {} :: HarukaQueue
 	Queue.__index = Queue
 
-	function Queue.new()
-		local self = setmetatable({
-			First = 0,
-			Last = -1,
-			Queue = {},
-			Locked = false,
+	function Queue.new() : HarukaQueue
+		local self = setmetatable({}, Queue)
 
-			ElementAdded = Signal.new(),
+		self.First = 0
+		self.Last = -1
+		self.Queue = {}
+		self.Locked = false
 
-		}, Queue)
+		self.ElementAdded = Signal.new()
+		self.MutexUnlocked = Signal.new()
 
 		return self
 	end
@@ -984,8 +986,13 @@ function HarukaLib.Queue() : HarukaQueue
 		return #self.Queue
 	end
 
-	function Queue:SetLockState(state: boolean)
-		self.Locked = state
+	function Queue:SpawnMutex(delay: number)
+		self.Locked = true
+
+		task.delay(delay, function()
+			self.Locked = false
+			self.MutexUnlocked:Fire()
+		end)
 	end
 	function Queue:IsLocked() : boolean
 		return self.Locked
@@ -1016,6 +1023,7 @@ function HarukaLib.Queue() : HarukaQueue
 
 	function Queue:Destroy()
 		self.ElementAdded:Destroy()
+		self.MutexUnlocked:Destroy()
 	end
 
 	return Queue.new()
@@ -1039,9 +1047,7 @@ function HarukaLib:EmitParticles(obj: Instance, childrenOnly: boolean?)
 			child:Emit(child:GetAttribute("EmitCount") or 0)
 		end
 	else
-		for _, child in obj:GetDescendants() do
-			if not child:IsA("ParticleEmitter") then continue end
-
+		for _, child in obj:QueryDescendants("ParticleEmitter") do
 			child:Emit(child:GetAttribute("EmitCount") or 0)
 		end
 	end
@@ -1054,6 +1060,7 @@ end
 function HarukaLib:IsBasePartType(obj: Instance) : boolean
 	return obj:IsA("BasePart") or obj:IsA("UnionOperation") or obj:IsA("CornerWedgePart")
 end
+HarukaLib.BasePartSelector = "BasePart,UnionOperation,CornerWedgePart"
 
 
 --[[
@@ -1104,9 +1111,7 @@ function HarukaLib:SetParticleState(obj: Instance, state: boolean, childrenOnly:
 			child.Enabled = state
 		end
 	else
-		for _, child in obj:GetDescendants() do
-			if not child:IsA("ParticleEmitter") then continue end
-
+		for _, child in obj:QueryDescendants("ParticleEmitter") do
 			child.Enabled = state
 		end
 	end

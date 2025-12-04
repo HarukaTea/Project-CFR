@@ -3,6 +3,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
@@ -11,8 +12,17 @@ return function (scope: Fusion.Scope, props: {
     Index: number,
     PlayerName: string,
     Value: number,
-    AvatarId: string
+    AvatarId: string,
+
+    IsAbyss: boolean?
 })
+
+    local text = `{props.Value}`
+    if props.IsAbyss then
+        text = HarukaLib:TimeifyNumber(props.Value)
+    end
+
+
     return Components.Frame(scope, {
         Name = props.PlayerName,
         BackgroundColor3 = Color3.fromRGB(),
@@ -43,12 +53,12 @@ return function (scope: Fusion.Scope, props: {
                 }
             }),
             Components.TextLabel(scope, {
-                Name = "RobuxDonated",
+                Name = "ValShow",
                 AnchorPoint = Vector2.xAxis,
                 Position = UDim2.fromScale(0.95, 0),
                 Size = UDim2.fromScale(0.3, 1),
                 TextXAlignment = Enum.TextXAlignment.Right,
-                Text = `{props.Value}`,
+                Text = text,
 
 
                 [Children] = {

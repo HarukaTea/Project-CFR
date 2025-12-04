@@ -38,16 +38,6 @@ local ClientWorldLib = {} :: ClientWorldLibClass
 ClientWorldLib.Funcs = {}
 
 
-local focusRenderDistance = 486
-HarukaLib:Hydrate(workspace, {
-    ["Attr-FocusRenderDistance"] = function(val: number)
-        val = val or 486
-
-        focusRenderDistance = val
-    end
-})
-
-
 function ClientWorldLib:Init()
     for _, func: () -> nil in self.Funcs do
         task.spawn(func)
@@ -74,25 +64,6 @@ table.insert(ClientWorldLib.Funcs, function()
         if not style then return end
 
         for _, obj: Instance in objs do
-            if HarukaLib:IsBasePartType(obj) then
-                local distance = plr:DistanceFromCharacter(obj.Position)
-                if distance <= 0 or distance > focusRenderDistance then
-                    continue
-                end
-            end
-            if obj:IsA("Model") then
-                local pos = obj.WorldPivot.Position
-                if obj.PrimaryPart then
-                    pos = obj.PrimaryPart.Position
-                end
-
-                local distance = plr:DistanceFromCharacter(pos)
-                if distance <= 0 or distance > focusRenderDistance then
-                    continue
-                end
-            end
-
-
             pcall(function()
                 if not useHarukaTween then
                     HarukaLib:CreateTween(obj, style, goal):Play()
@@ -109,13 +80,11 @@ table.insert(ClientWorldLib.Funcs, function()
     local function playSound(sound: Sound, timePos: number?)
         if not sound then return end
         if sound.Name == "ResetSound" then
-            for _, music: Sound in SoundService:GetDescendants() do
-                if music:IsA("Sound") then
-                    if music:IsDescendantOf(SoundService.Environment) then continue end
-                    if music:IsDescendantOf(SoundService.FS_SFXs) then continue end
+            for _, music: Sound in SoundService:QueryDescendants("Sound") do
+                if music:IsDescendantOf(SoundService.Environment) then continue end
+                if music:IsDescendantOf(SoundService.FS_SFXs) then continue end
 
-                    music:Stop()
-                end
+                music:Stop()
             end
             return
         end
@@ -160,19 +129,19 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
+    local function _handleChest(chest: Model)
         local prompt = chest:FindFirstChildWhichIsA("ProximityPrompt", true)
-        if not prompt then continue end
+        if not prompt then return end
 
         prompt.Enabled = false
 
         local itemInfo = ItemBook:GetItemInfo(chest.Name)
-        if itemInfo == nil then continue end
+        if itemInfo == nil then return end
 
         prompt.Enabled = true
 
         local blackList = { "Consumable" }
-        if table.find(blackList, itemInfo.Type) then continue end
+        if table.find(blackList, itemInfo.Type) then return end
 
         local items = plr.Items :: Folder
 
@@ -181,6 +150,10 @@ table.insert(ClientWorldLib.Funcs, function()
             prompt.Enabled = false
         end
     end
+    for _, chest: Model in CollectionService:GetTagged("ChestEntity") do
+        _handleChest(chest)
+    end
+    CollectionService:GetInstanceAddedSignal("ChestEntity"):Connect(_handleChest)
 end)
 
 
@@ -195,7 +168,7 @@ table.insert(ClientWorldLib.Funcs, function()
             repeat wait() until border.Border:FindFirstChild("Owner")
 
             local distance = plr:DistanceFromCharacter(border.PrimaryPart.Position)
-            if distance <= 0 or distance > focusRenderDistance then
+            if distance <= 0 or distance > 200 then
                 wait()
                 border:Destroy()
 
@@ -349,10 +322,6 @@ table.insert(ClientWorldLib.Funcs, function()
     local random = Random.new()
 
     local function _spawnDMGNumber(pos: Vector3, BCF: CFrame, Bsize: Vector3, text: string, color: Color3)
-        local distance = plr:DistanceFromCharacter(pos)
-        if distance <= 0 or distance > focusRenderDistance then return end
-
-
         if text == "0" then text = "MISS" end
 
         Promise.try(function()
@@ -409,9 +378,6 @@ table.insert(ClientWorldLib.Funcs, function()
 
 
     local function _spawnText(pos: Vector3, BCF: CFrame, Bsize: Vector3, text: string, color: Color3)
-        local distance = plr:DistanceFromCharacter(pos)
-        if distance <= 0 or distance > focusRenderDistance then return end
-
         Promise.try(function()
             pos += Vector3.new(
                 random:NextNumber(-2, 2),
@@ -461,10 +427,6 @@ table.insert(ClientWorldLib.Funcs, function()
         if not ClientLib:IsModelValid(entity) then return end
         if not entity:IsDescendantOf(workspace) then return end
 
-        local distance = plr:DistanceFromCharacter(entity.PrimaryPart.Position)
-        if distance <= 0 or distance > focusRenderDistance then return end
-
-
         Promise.try(function()
             local hitHighlight = ReplicatedStorage.Packages.Effects.HitHighlight:Clone() :: Highlight
             hitHighlight.Adornee = entity
@@ -507,9 +469,6 @@ table.insert(ClientWorldLib.Funcs, function()
     local function _doSimpleVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
 
-        local distance = plr:DistanceFromCharacter(holder.Position)
-        if distance <= 0 or distance > focusRenderDistance then return end
-
         HarukaLib:EmitParticles(holder)
     end
     CollectionService:GetInstanceAddedSignal("VFXEntity"):Connect(_doSimpleVFXEntity)
@@ -517,9 +476,6 @@ table.insert(ClientWorldLib.Funcs, function()
 
     local function _doComplexVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
-
-        local distance = plr:DistanceFromCharacter(holder.Position)
-        if distance <= 0 or distance > focusRenderDistance then return end
 
         if not ComplexVFXLib[holder.Name] then
             warn("Invalid Complex VFX ID: ".. holder.Name)
@@ -586,10 +542,8 @@ table.insert(ClientWorldLib.Funcs, function()
             itemSphere.Trail.Color = ColorSequence.new(color)
             itemSphere.BillboardGui.Icon.Image = info.Icon
 
-            for _, child: Instance in itemSphere:GetDescendants() do
-                if child:IsA("ParticleEmitter") then
-                    child.Color = ColorSequence.new(color)
-                end
+            for _, child: Instance in itemSphere:QueryDescendants("ParticleEmitter") do
+                child.Color = ColorSequence.new(color)
             end
             itemSphere.A0.Beam.Color = ColorSequence.new(color)
             itemSphere.A1.PointLight.Color = color
@@ -672,15 +626,6 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    local clientObjContainerAFK = Instance.new("Folder")
-    clientObjContainerAFK.Name = "ClientObjsContainerAFK"
-    clientObjContainerAFK.Parent = game:GetService("ServerStorage")
-
-    local clientObjContainer = Instance.new("Folder")
-    clientObjContainer.Name = "ClientObjsContainer"
-    clientObjContainer.Parent = workspace.MapComponents
-
-
     local windmillWings = {}
     local galleons = {}
 
@@ -706,12 +651,27 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("WindmillWings"):Connect(_handleWindmill)
     CollectionService:GetInstanceAddedSignal("SkyGalleon"):Connect(_handleGalleon)
 
+    CollectionService:GetInstanceRemovedSignal("WindmillWings"):Connect(function(windmill: Model)
+        local index = table.find(windmillWings, windmill)
+        if index then
+            table.remove(windmillWings, index)
+        end
+    end)
+    CollectionService:GetInstanceRemovedSignal("SkyGalleon"):Connect(function(galleon: Model)
+        local index = table.find(galleons, galleon)
+        if index then
+            table.remove(galleons, index)
+        end
+    end)
 
-    HarukaLib.Clock(0.01, function()
-        for _, wing: Model in windmillWings do
-            pcall(function()
-                wing.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
-            end)
+
+    task.spawn(function()
+        while wait(0.01) do
+            for _, wing: Model in windmillWings do
+                pcall(function()
+                    wing.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
+                end)
+            end
         end
     end)
     task.spawn(function()
@@ -732,18 +692,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 end
                 wait(0.01)
             end
-        end
-    end)
-    HarukaLib.Clock(2, function()
-        for _, wing: Model in windmillWings do
-            pcall(function()
-                local distance = plr:DistanceFromCharacter(wing.PrimaryPart.Position)
-                if distance <= 0 or distance > focusRenderDistance then
-                    wing.Parent = clientObjContainerAFK
-                else
-                    wing.Parent = clientObjContainer
-                end
-            end)
         end
     end)
 end)
@@ -923,6 +871,110 @@ table.insert(ClientWorldLib.Funcs, function()
         end
     end)
 end)
+
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    Events.SpawnEnemyTimer_S.On(function(data)
+        local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
+        countdown.Transparency = 1
+        countdown.CFrame = data.CFrame
+        countdown.Parent = workspace.MapComponents
+        Debris:AddItem(countdown, data.RespawnTime)
+
+        Promise.try(function()
+            for i = data.RespawnTime, 1, -1 do
+                if countdown == nil then break end
+
+                countdown.BillboardGui.TextLabel.Text = tostring(i)
+                wait(1)
+            end
+        end):catch(function() end)
+    end)
+end)
+
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    Events.PlayVFXStatusToEntity_S.On(function(data)
+        if not ClientLib:IsModelValid(data.Entity) then return end
+
+        if data.StatusId == "ChainCombo" then
+            local comboEff = ReplicatedStorage.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
+            comboEff.Parent = data.Entity.PrimaryPart
+
+            Debris:AddItem(comboEff, 1)
+        end
+    end)
+end)
+
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    Events.PlayVFXStatusToPlayer_S.On(function(data)
+        if not ClientLib:IsCharValid(data.Character) then return end
+
+
+        if data.StatusId == "Healing" then
+            local healEff = ReplicatedStorage.Packages.Effects.Healing:Clone() :: BasePart
+            healEff.Parent = data.Character
+
+            Debris:AddItem(healEff, 1.5)
+
+        elseif data.StatusId == "SpeedBoost" then
+            local eff = ReplicatedStorage.Packages.Effects.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
+            eff.Parent = data.Character.PrimaryPart
+
+            Debris:AddItem(eff, 6)
+
+            Promise.delay(5):andThen(function()
+                eff.Enabled = false
+            end):catch(function() end)
+
+        elseif data.StatusId == "Repairing" then
+            local repairingEff = ReplicatedStorage.Packages.Effects.Repairing:Clone() :: BasePart
+            repairingEff.Parent = data.Character
+
+            Debris:AddItem(repairingEff, 1.5)
+
+        elseif data.StatusId == "LevelUp" then
+            local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
+            levelUpEffect.Parent = data.Character.PrimaryPart
+            Debris:AddItem(levelUpEffect, 2)
+
+            HarukaLib:EmitParticles(levelUpEffect)
+        end
+    end)
+end)
+
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    Events.DoT_PlayVFXEff_S.On(function(data)
+        if not ClientLib:IsModelValid(data.Target) then return end
+
+
+        if data.StatusId == "Clear" then
+            for _, particle: Instance in data.Target.PrimaryPart:GetChildren() do
+                if (particle:GetAttribute("HarukaUniqueId") or "/") == data.UniqueId then
+                    particle:Destroy()
+                end
+            end
+            return
+        end
+
+        local effectParticle = ReplicatedStorage.Packages.Effects.Status:FindFirstChild(data.StatusId, true) :: BasePart
+        if effectParticle then
+            effectParticle = effectParticle.Attachment:Clone()
+            effectParticle:SetAttribute("HarukaUniqueId", data.UniqueId)
+
+            effectParticle.Parent = data.Target.PrimaryPart
+
+            Debris:AddItem(effectParticle, data.Duration)
+        end
+    end)
+end)
+
 
 
 ClientWorldLib:Init()

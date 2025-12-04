@@ -481,8 +481,8 @@ end
 
 
 function HarukaComponents.UIAspectRatioConstraint(scope: Fusion.Scope, aspect: number?) : UIAspectRatioConstraint
-	return _createNewCompoent(scope, { AspectRatio = aspect or 25.627 }, "UIAspectRatioConstraint", {
-		AspectRatio = 25.627
+	return _createNewCompoent(scope, { AspectRatio = aspect or 24 }, "UIAspectRatioConstraint", {
+		AspectRatio = 24
 	})
 end
 

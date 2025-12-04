@@ -58,7 +58,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         local linearVel = Instance.new("LinearVelocity")
         linearVel.ForceLimitsEnabled = false
-        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("AlignMoverAttachment")
+        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("CF_RootNode")
         linearVel.VectorVelocity = Vector3.zero
         linearVel.Parent = entity.PrimaryPart
     end
@@ -140,9 +140,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         local hasProjectiles = 5
         for i = 1, hasProjectiles do
-            for _, child: BasePart in projectileSupport:GetDescendants() do
-                if child.Name ~= "Position"..i then continue end
-
+            for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..i) do
                 if (child.Position - entity:GetAttribute("CombatLocation").Position).Magnitude > 15.99 * 3 then
                     child:Destroy()
                     hasProjectiles -= 1
@@ -170,7 +168,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
 
         Promise.delay(0.5):andThen(function()
-            for _, child: BasePart in projectileSupport:GetDescendants() do
+            for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..hasProjectiles) do
                 if child.Name ~= "Position"..hasProjectiles then continue end
 
                 local postR = ServerLib:FindGroundByRay(child.Position)

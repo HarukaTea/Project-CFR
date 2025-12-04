@@ -20,12 +20,15 @@ export type DoTLibClass = {
 
     new: (info: DoTInfo) -> DoTLibClass,
 
+    UniqueId: string,
+    Cancelled: boolean,
+
     Activate: (self: DoTLibClass) -> nil,
     Cancel: (self: DoTLibClass) -> nil,
 
     GetEffectsByTarget: (target: Model) -> { DoTLibClass },
     GetAffectedTargetsByEffectId: (effectId: string) -> { DoTLibClass },
-}
+} & DoTInfo
 
 
 local DoTLib = {} :: DoTLibClass
@@ -35,6 +38,7 @@ local GlobalTimer = require(ServerScriptService.HarukaServer.Shared.GlobalTimer)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
+local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 
 
 local allDoTObjs = {}
@@ -79,15 +83,13 @@ function DoTLib:Activate()
     self.EffectSymbol = effectSymbol
 
 
-    local effectParticle = ReplicatedStorage.Packages.Effects.Status:FindFirstChild(self.Type, true) :: BasePart
-    if effectParticle then
-        effectParticle = effectParticle.Attachment:Clone()
-        effectParticle.Parent = self.Target.PrimaryPart
-        Debris:AddItem(effectParticle, self.Duration)
+    Events.DoT_PlayVFXEff_S.FireList(ServerLib:GetNearbyPlayers(self.Target.WorldPivot.Position), {
+        StatusId = self.Type,
+        Entity = self.Target,
 
-        self.EffectParticle = effectParticle
-    end
-
+        UniqueId = self.UniqueId,
+        Duration = self.Duration,
+    })
 
     self.Tasks = {}
 
@@ -107,16 +109,14 @@ function DoTLib:Activate()
     if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then
         local char = self.Creator :: Model
 
-        for _, bindable: BindableEvent in char:GetDescendants() do
-            if bindable:IsA("BindableEvent") and bindable.Name == "EnemyStatusApplied" then
-                bindable:Fire(self.Target, self.Creator, {
-                    Target = self.Target,
-                    Type = self.Type,
-                    Creator = self.Creator,
-                    Power = self.Power,
-                    Duration = self.Duration,
-                })
-            end
+        for _, bindable: BindableEvent in char:QueryDescendants("BindableEvent#EnemyStatusApplied") do
+            bindable:Fire(self.Target, char, {
+                Target = self.Target,
+                Type = self.Type,
+                Creator = char,
+                Power = self.Power,
+                Duration = self.Duration,
+            })
         end
     end
 end
@@ -137,10 +137,12 @@ function DoTLib:Cancel()
         self.EffectSymbol:Destroy()
         self.EffectSymbol = nil
     end
-    if self.EffectParticle then
-        self.EffectParticle:Destroy()
-        self.EffectParticle = nil
-    end
+    Events.DoT_PlayVFXEff_S.FireList(ServerLib:GetNearbyPlayers(self.Target.WorldPivot.Position), {
+        Duration = 0,
+        StatusId = "Clear",
+        Entity = self.Target,
+        UniqueId = self.UniqueId,
+    })
 
 
     allDoTObjs[self.UniqueId] = nil
@@ -150,16 +152,14 @@ function DoTLib:Cancel()
     if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then
         local char = self.Creator :: Model
 
-        for _, bindable: BindableEvent in char:GetDescendants() do
-            if bindable:IsA("BindableEvent") and bindable.Name == "EnemyStatusRemoved" then
-                bindable:Fire(self.Target, self.Creator, {
-                    Target = self.Target,
-                    Type = self.Type,
-                    Creator = self.Creator,
-                    Power = self.Power,
-                    Duration = self.Duration,
-                })
-            end
+        for _, bindable: BindableEvent in char:QueryDescendants("BindableEvent#EnemyStatusRemoved") do
+            bindable:Fire(self.Target, char, {
+                Target = self.Target,
+                Type = self.Type,
+                Creator = char,
+                Power = self.Power,
+                Duration = self.Duration,
+            })
         end
     end
 end

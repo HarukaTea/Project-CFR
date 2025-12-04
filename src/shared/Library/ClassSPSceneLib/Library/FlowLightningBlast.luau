@@ -108,12 +108,10 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
             Size = Vector3.new(80, 0.1, 0)
         }):Play()
 
-        for _, child: Instance in flowMark:GetDescendants() do
-            if child:IsA("Decal") then
-                HarukaLib:CreateTween(child, sineTweenLong, {
-                    Transparency = 1
-                }):Play()
-            end
+        for _, child: Instance in flowMark:QueryDescendants("Decal") do
+            HarukaLib:CreateTween(child, sineTweenLong, {
+                Transparency = 1
+            }):Play()
         end
 
     end):catch(function() end)
@@ -289,12 +287,10 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     }):Play()
 
 
-    for _, child: Instance in HarukaLib.TableUtils.Merge(flowSideBeams:GetDescendants(), flowSideBeams2:GetDescendants()) do
-        if child:IsA("Beam") then
-            HarukaLib:CreateTween(child, sineTween, {
-                Width1 = 0,
-                Width0 = 0
-            }):Play()
-        end
+    for _, child: Instance in HarukaLib.TableUtils.Merge(flowSideBeams:QueryDescendants("Beam"), flowSideBeams2:QueryDescendants("Beam")) do
+        HarukaLib:CreateTween(child, sineTween, {
+            Width1 = 0,
+            Width0 = 0
+        }):Play()
     end
 end

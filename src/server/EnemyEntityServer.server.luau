@@ -62,7 +62,7 @@ type EntityLibClass = {
     UniqueId: string,
     Entity: Model,
     BoundingSize: number,
-    NearestChar: Model?,
+    NearestChar: string?,
 
 
     EntityObj: EntityAttackLib.EntityAttackLib,
@@ -104,7 +104,7 @@ local PATH_COSTS = {
 }
 
 
-local allEntityPool = {}
+local allEntityPool = {} :: { [string]: EntityLibClass }
 
 local wait = task.wait
 
@@ -114,13 +114,19 @@ borderSize = borderSize.X
 
 --// Helper functions
 
-local function _getCharsByRadius(pos: Vector3, radius: number)
+local function _getCharsByRadius(pos: Vector3, radius: number) : { Model }
     local charList = {}
     local chars = CollectionService:GetTagged("PlayerCharEntity") :: { Model }
 
     for _, char in chars do
         if not ServerLib:IsCharValid(char) then continue end
         if not char:GetAttribute("Haruka_CriRPGServerInited") then continue end
+
+        if char:FindFirstChild("CombatCooldown") then continue end
+        if char:GetAttribute("IsInCombat") then continue end
+
+        if char:GetAttribute("IsSwimming") then continue end
+        if char:GetAttribute("IsClimbing") then continue end
 
         if (char.PrimaryPart.Position - pos).Magnitude < radius then
             table.insert(charList, char)
@@ -222,20 +228,10 @@ enemyDiedSignal:Connect(function(uniqueId: string)
         entityObj:EntityInit()
     end)
 
-    local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
-    countdown.Transparency = 1
-    countdown.CFrame = entityObj.Locator.CFrame
-    countdown.Parent = workspace.MapComponents
-    Debris:AddItem(countdown, respawnTime)
-
-    Promise.try(function()
-        for i = respawnTime, 1, -1 do
-            if countdown == nil then break end
-
-            countdown.BillboardGui.TextLabel.Text = tostring(i)
-            wait(1)
-        end
-    end):catch(function() end)
+    Events.SpawnEnemyTimer_S.FireList(ServerLib:GetNearbyPlayers(entityObj.Locator.Position, 100), {
+        RespawnTime = respawnTime,
+        CFrame = entityObj.Locator.CFrame
+    })
 end)
 Events.StartCombat_C.SetCallback(function(plr: Player, data)
     local entity = data.Entity
@@ -442,7 +438,7 @@ function EntityLib:_SpawnModel()
     end
 
     local alignMoverAtt = Instance.new("Attachment")
-    alignMoverAtt.Name = "AlignMoverAttachment"
+    alignMoverAtt.Name = "CF_RootNode"
     alignMoverAtt.Parent = hrp
 
     model.PrimaryPart = hrp
@@ -655,40 +651,51 @@ function EntityLib:_RoamTask()
     self.NearestChar = nil
 
 
+    local function _checkValid()
+        if not ServerLib:IsCharValid(entity) then return false end
+        if entity:GetAttribute("IsInCombat") then return false end
+
+        if self.CombatInfo.IsInCombat then return false end
+
+        return true
+    end
+    local function _checkAlivedAndNear(pos: Vector3, radius: number) : { Model }
+        local charList = {}
+        local chars = CollectionService:GetTagged("PlayerCharEntity") :: { Model }
+
+        for _, char in chars do
+            if not ServerLib:IsCharValid(char) then continue end
+            if not char:GetAttribute("Haruka_CriRPGServerInited") then continue end
+
+            if (char.PrimaryPart.Position - pos).Magnitude < radius then
+                table.insert(charList, char)
+            end
+        end
+
+        return charList
+    end
+
+
     --// roaming
     self.RoamAdd(task.spawn(function()
         if entity.Humanoid.WalkSpeed <= 0 then return end
         if locator:GetAttribute("NoEnemyRoaming") then return end
 
-        local AREA_MAG = 15.99
-
-        while wait(1.5 + math.random(10) / 10) do
-            if not ServerLib:IsCharValid(entity) then break end
-            if entity:GetAttribute("IsInCombat") then break end
-
+        while wait(1 + math.random(10) / 10) do
+            if _checkValid() == false then break end
             if self.NearestChar then continue end
-            if self.CombatInfo.IsInCombat then break end
-            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 1 then continue end
+
+            --// server optimization
+            if #_checkAlivedAndNear(locator.Position, 195) <= 0 then continue end
 
 
             local success, err = pcall(function()
                 local randomScatterPos = locator.CFrame.Position + Vector3.new(
-                    math.random(-AREA_MAG, AREA_MAG),
+                    math.random(-15, 15),
                     0,
-                    math.random(-AREA_MAG, AREA_MAG)
+                    math.random(-15, 15)
                 )
-
-                local isValid = false
-                local repeatTimes = 0
-                local rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
-                while repeatTimes <= 15 do
-                    if isValid then break end
-
-                    rPos = ServerLib:FindGroundByRayForOrb(randomScatterPos)
-
-                    isValid = path:IsPathValid(rPos)
-                    repeatTimes += 1
-                end
+                local rPos = ServerLib:FindGroundByRay(randomScatterPos)
 
                 path:Stop()
                 path:Run(rPos)
@@ -705,15 +712,8 @@ function EntityLib:_RoamTask()
         if entity.Humanoid.WalkSpeed <= 0 then return end
         if locator:GetAttribute("NoEnemyRoaming") then return end
 
-        while wait(0.07) do
-            if not ServerLib:IsCharValid(entity) then break end
-
-
-            if entity:GetAttribute("IsInCombat") then break end
-            if self.CombatInfo.IsInCombat then break end
-            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 1 then continue end
-
-
+        while wait(0.1) do
+            if _checkValid() == false then break end
 
             Promise.new(function(resolve)
                 local curPos = entity.PrimaryPart.Position :: Vector3
@@ -723,15 +723,9 @@ function EntityLib:_RoamTask()
                 local nearestDist = 999
 
                 for _, char in nearestChars do
-                    if not ServerLib:IsCharValid(char) then continue end
-
-                    if char:GetAttribute("IsInCombat") then continue end
-                    if char:FindFirstChild("CombatCooldown") then continue end
-
-
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
-                    if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
+                    if mag > 0 and mag < nearestDist then
                         if path:IsPathValid(char.PrimaryPart.Position) then
                             nearestDist = mag
                             nearestChar = char
@@ -739,16 +733,20 @@ function EntityLib:_RoamTask()
                     end
                 end
 
-                if nearestChar and ServerLib:IsCharValid(nearestChar) then
+                if nearestChar then
                     local targetPos = nearestChar.PrimaryPart.Position :: Vector3
                     if (targetPos - locator.CFrame.Position).Magnitude > 80 then
+                        self.NearestChar = nil
+                        entity:SetAttribute("NearestChar", nil)
+
+
                         path:Run(locator.CFrame.Position)
                         resolve()
                         return
                     end
 
-                    local lastNearestChar = self.NearestChar
-                    if lastNearestChar == nil then
+
+                    if self.NearestChar == nil then
                         Events.PlayVFXStatusToEntity_S.FireList(ServerLib:GetNearbyPlayers(curPos), {
                             StatusId = "Found",
                             Entity = entity
@@ -763,12 +761,15 @@ function EntityLib:_RoamTask()
                     path:Run(targetPos)
                 else
                     self.NearestChar = nil
+
                     entity:SetAttribute("NearestChar", nil)
                 end
 
                 resolve()
             end):catch(function(err)
-                warn(tostring(err))
+                if RunService:IsStudio() then
+                    warn(tostring(err))
+                end
             end):await()
         end
     end))
@@ -777,11 +778,7 @@ function EntityLib:_RoamTask()
     --// encountering
     self.RoamAdd(task.spawn(function()
         while wait(2) do
-            if not ServerLib:IsCharValid(entity) then break end
-
-            if entity:GetAttribute("IsInCombat") then break end
-            if self.CombatInfo.IsInCombat then break end
-            if DateTime.now().UnixTimestamp - entity:GetAttribute("SpawnClock") <= 1 then continue end
+            if _checkValid() == false then break end
 
             Promise.new(function(resolve)
                 local curPos = entity.PrimaryPart.Position :: Vector3
@@ -791,37 +788,31 @@ function EntityLib:_RoamTask()
                 local nearestDist = 999
 
                 for _, char in nearestChars do
-                    if not ServerLib:IsCharValid(char) then continue end
-
-                    if char:GetAttribute("IsInCombat") then continue end
-                    if char:FindFirstChild("CombatCooldown") then continue end
-                    if char:GetAttribute("IsClimbing") then continue end
-                    if char:GetAttribute("IsSwimming") then continue end
-
-
                     local mag = (char.PrimaryPart.Position - curPos).Magnitude
 
-                    if mag > 0 and mag < nearestDist and ServerLib:IsCharValid(char) then
+                    if mag > 0 and mag < nearestDist then
                         nearestDist = mag
                         nearestChar = char
                     end
                 end
-
-                if nearestChar and ServerLib:IsCharValid(nearestChar) then
-                    local player = Players:GetPlayerFromCharacter(nearestChar)
-                    if not player then
-                        resolve()
-                        return
-                    end
-
-                    local criRPGSettings = player.CriRPGSettings :: Configuration
-                    local combatMode = "Public"
-                    if criRPGSettings:FindFirstChild("CombatMode") then
-                        combatMode = criRPGSettings.CombatMode.Value
-                    end
-
-                    enterCombatSignal:Fire(entity, nearestChar, combatMode)
+                if not nearestChar then
+                    resolve()
+                    return
                 end
+
+                local player = Players:GetPlayerFromCharacter(nearestChar)
+                if not player then
+                    resolve()
+                    return
+                end
+
+                local criRPGSettings = player.CriRPGSettings :: Configuration
+                local combatMode = "Public"
+                if criRPGSettings:FindFirstChild("CombatMode") then
+                    combatMode = criRPGSettings.CombatMode.Value
+                end
+
+                enterCombatSignal:Fire(entity, nearestChar, combatMode)
 
                 resolve()
             end):catch(function(err)
@@ -921,6 +912,9 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         encounterBorder:PivotTo(combatLocation)
         encounterBorder:SetAttribute("Owner", target.Name)
         encounterBorder:SetAttribute("CombatMode", combatMode)
+
+        encounterBorder.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+
         encounterBorder.Parent = workspace.MapComponents
         Debris:AddItem(encounterBorder, 5)
 
@@ -956,21 +950,17 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
 
     if not hasPosVal then
-        local waitTime = 1.599
+        local waitTime = 1.15
 
-        if self.Entity:HasTag("BossEnemyEntity") then
-            waitTime *= 2.599
+        if combatMode and combatMode == "Solo" then
+            waitTime = 0.65
         end
-        if combatMode then
-            if combatMode == "Solo" then
-                waitTime = 1
-            elseif combatMode == "Party" then
-                waitTime = 2
 
-                if self.Entity:HasTag("BossEnemyEntity") then
-                    waitTime *= 2.599
-                end
-            end
+        local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
+        local isDungeon = workspace:GetAttribute("DungeonId") ~= nil
+
+        if isAbyss or isDungeon then
+            waitTime = 0.65
         end
         wait(waitTime)
     end
@@ -1063,10 +1053,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
             if combatMode == "Public" then
                 for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
                     if nearbyChar.Name == target.Name then continue end
-                    if not ServerLib:IsCharValid(nearbyChar) then continue end
-
-                    if nearbyChar:GetAttribute("IsInCombat") then continue end
-                    if nearbyChar:FindFirstChild("CombatCooldown") then continue end
 
                     nearbyCharCount += 1
                     _addInCombat(nearbyChar)
@@ -1083,11 +1069,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
                 if partyContainer then
                     for _, nearbyChar: Model in _getCharsByRadius(combatLocation.Position, borderSize / 1.5) do
                         if nearbyChar.Name == target.Name then continue end
-                        if not ServerLib:IsCharValid(nearbyChar) then continue end
-                        if not partyContainer:FindFirstChild(nearbyChar.Name) then continue end
-
-                        if nearbyChar:GetAttribute("IsInCombat") then continue end
-                        if nearbyChar:FindFirstChild("CombatCooldown") then continue end
 
                         nearbyCharCount += 1
                         _addInCombat(nearbyChar)

@@ -22,15 +22,17 @@ return function(scope: Fusion.Scope, props: {
     local isSelecting = Fusion.Value(scope, false)
 
 
-    local aspectRatioConstraint = Components.UIAspectRatioConstraint(scope, 0.325)
+    local aspectRatioConstraint = Components.UIAspectRatioConstraint(scope, 0.336)
+    local size = UDim2.fromScale(0.15, 0.9)
     if props.IsInfoUI then
         aspectRatioConstraint = nil
+        size = UDim2.fromScale(0.08, 0.9)
     end
 
     return Components.Frame(scope, {
         Name = "AbyssLevelSlot"..props.Index,
         LayoutOrder = props.Index,
-        Size = UDim2.fromScale(0.08, 0.9),
+        Size = size,
         BackgroundColor3 = Components.BLACK_COLOR,
         BackgroundTransparency = 0,
         AnchorPoint = Vector2.new(0, 0.5),
