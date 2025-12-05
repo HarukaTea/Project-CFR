@@ -1,25 +1,20 @@
 
-local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
-local Events = require(RepS.HarukaShared.Library.Events)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
+local RankBook = require(RepS.HarukaShared.Library.RankBook)
 
 local New, Children, Computed = Fusion.New, Fusion.Children, Fusion.Computed
 
 local v2New, udNew = Vector2.new, UDim.new
 local fromScale = UDim2.fromScale
 local fromRGB = Color3.fromRGB
-
-
-local isInviting = false
 
 
 return function (scope: Fusion.Scope, props: {
@@ -38,15 +33,15 @@ return function (scope: Fusion.Scope, props: {
                 return Fusion.Value(scope, val)
             end
             local level = Value(1)
-            local role = Value("")
+            local playerRoleTitle = Value("")
             local class = Value("Burst")
             local equippingItems = Components.FusionComponents.useChildren(scope, player.EquippingItems)
             local playTime = Value(0)
 
 
             table.insert(scope, HarukaLib:Hydrate(player, {
-                ["Attr-Role"] = function(thatRole: string)
-                    role:set(thatRole)
+                ["Attr-Title"] = function(thatTitle: string)
+                    playerRoleTitle:set(thatTitle)
                 end
             }))
             table.insert(scope, HarukaLib:Hydrate(player, {
@@ -130,20 +125,11 @@ return function (scope: Fusion.Scope, props: {
                 Position = fromScale(0.72, 1.5),
                 Size = fromScale(0.15, 4.5),
                 ZIndex = 10,
+                BackgroundTransparency = 0.1,
 
                 [Children] = {
-                    Components.Frame(scope, {
-                        Name = "DescBG",
-                        AnchorPoint = v2New(),
-                        Position = fromScale(0, 0),
-                        BackgroundTransparency = 0.1,
-                        ZIndex = 0,
-                        Size = UDim2.fromScale(1, 0.925),
+                    New(scope, "UICorner")({ CornerRadius = udNew(0.05, 0) }),
 
-                        [Children] = {
-                            New(scope, "UICorner")({ CornerRadius = udNew(0.05, 0) }),
-                        }
-                    }),
                     Components.IconImageLabel(scope, {
                         Name = "Class",
                         Position = fromScale(0.05, 0.055),
@@ -243,85 +229,38 @@ return function (scope: Fusion.Scope, props: {
                     PlayerItemSlot(7),
 
 
-                    Components.Frame(scope, {
-                        Name = "Actions",
+                    Components.TextButton(scope, {
+                        Name = "InviteParty",
+                        Size = UDim2.fromScale(0.9, 0.075),
                         AnchorPoint = Vector2.new(0.5, 0),
                         Position = UDim2.fromScale(0.5, 0.78),
-                        Size = UDim2.fromScale(0.9, 0.15),
+                        BackgroundColor3 = Components.GREEN_COLOR,
+                        TextColor3 = Components.BLACK_COLOR,
+                        Text = "INVITE TO PARTY",
+
+                        [Fusion.OnEvent("MouseButton1Click")] = function()
+                            Bindables.RToCreatePartyInvite:Fire(player)
+                        end,
 
                         [Children] = {
-                            Components.UIListLayout(scope, {
-                                Padding = UDim.new(0.1, 0),
-                                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            }),
-
-                            Fusion.ForValues(scope, { "InviteParty" }, function(_, scope: Fusion.Scope, action: string)
-                                return Components.TextButton(scope, {
-                                    Name = action,
-                                    Size = UDim2.fromScale(1, 0.5),
-                                    BackgroundColor3 = Components.GREEN_COLOR,
-                                    TextColor3 = Components.BLACK_COLOR,
-                                    Text = "INVITE TO PARTY",
-
-                                    [Fusion.OnEvent("MouseButton1Click")] = function()
-                                        if action == "InviteParty" then
-                                            if player == Players.LocalPlayer then
-                                                Bindables.CreateNotify:Fire("You can't invite yourself!")
-                                                return
-                                            end
-                                            if isInviting then return end
-                                            local thatPlr = player
-
-                                            local criRPGSettings = thatPlr:FindFirstChild("CriRPGSettings") :: Configuration
-                                            if not criRPGSettings then return end
-
-                                            local character = thatPlr.Character
-                                            if not ClientLib:IsCharValid(character) then
-                                                Bindables.CreateNotify:Fire("Player is dead!")
-                                                return
-                                            end
-
-
-                                            if criRPGSettings:FindFirstChild("AllowPartyInvites") then
-                                                local boolean = criRPGSettings.AllowPartyInvites.Value
-                                                if boolean == false then
-                                                    Bindables.CreateNotify:Fire("Player can not be invited due to their privacy settings!")
-                                                    return
-                                                end
-                                            end
-                                            if thatPlr:GetAttribute("IsInParty") then
-                                                Bindables.CreateNotify:Fire("Player is already in a party!")
-                                                return
-                                            end
-                                            if character:GetAttribute("IsInCombat") then
-                                                Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
-                                                return
-                                            end
-                                            isInviting = true
-
-                                            local choice = Components:CreateConfirmPrompt(scope, {
-                                                Hint = `Send party invite to <yellow>{thatPlr.DisplayName}</font>?`,
-                                                ConfirmText = "YES",
-                                                CancelText = "NO",
-                                                ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
-                                            }):Wait()
-
-                                            isInviting = false
-
-                                            if choice ~= "YES" then return end
-
-                                            Events.PartyInvite_C.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
-                                        end
-                                    end,
-
-                                    [Children] = {
-                                        Components.RoundUICorner(scope)
-                                    }
-                                })
-                            end)
+                            Components.RoundUICorner(scope)
                         }
-                    })
-                },
+                    }),
+
+
+                    Components.TextLabel(scope, {
+                        Name = "PlayerTitle",
+                        Position = fromScale(0.06, 0.9),
+                        Size = fromScale(0.866, 0.077),
+
+                        TextColor3 = Computed(scope, function(use: Fusion.Use)
+                            return Color3.fromHex(RankBook.PlayerTitleInfo[use(playerRoleTitle)].Color)
+                        end),
+                        Text = Computed(scope, function(use: Fusion.Use)
+                            return `- {use(playerRoleTitle)} -`
+                        end)
+                    }),
+                }
             })
         end
     end)

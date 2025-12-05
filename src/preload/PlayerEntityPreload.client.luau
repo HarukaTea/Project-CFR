@@ -24,7 +24,6 @@ repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
 repeat wait() until workspace:WaitForChild("MapComponents", 999)
-repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
 
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 

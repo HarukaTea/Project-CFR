@@ -91,7 +91,10 @@ return function (plr: Player)
                                 isVisible = true
 
 
-                                local state = use(self.FilterTierList[info.Tier])
+                                local tierNum = info.Tier - ((info.Tier - 1) % 2)
+                                tierNum = math.clamp(tierNum, 1, 3)
+
+                                local state = use(self.FilterTierList[tierNum])
                                 isVisibleFactor2 = state
 
 

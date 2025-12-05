@@ -67,5 +67,5 @@ return {
 
 
     --@params: `None`
-    Titlescreen_CameraCFrameChanged = Signal.new(),
+    RToCreatePartyInvite = Signal.new(),
 }

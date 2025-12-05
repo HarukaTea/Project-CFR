@@ -61,7 +61,7 @@ return function (self: Self)
 
     }
     self.FilterItemText = Value("")
-    for _ = 1, 5 do
+    for _ = 1, 3 do
         table.insert(self.FilterTierList, Value(true))
     end
 

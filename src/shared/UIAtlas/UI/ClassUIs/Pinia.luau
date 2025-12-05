@@ -81,6 +81,8 @@ return function (self: Self)
     --// track class vals
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-ChainCombo"] = function(val: number)
+            val = val or 0
+
             self.ChainCombo:set(val)
         end
     }))

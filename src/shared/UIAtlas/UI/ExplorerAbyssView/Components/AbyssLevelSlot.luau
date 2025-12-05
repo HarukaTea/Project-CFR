@@ -1,10 +1,11 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
-local AbyssTeambook = require(RepS.HarukaShared.Library.AbyssTeambook)
+local AbyssBook = require(RepS.HarukaShared.Library.AbyssBook)
 
 local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
@@ -17,16 +18,13 @@ return function(scope: Fusion.Scope, props: {
     IsInfoUI: boolean
 })
 
-    if not AbyssTeambook[props.Index] then return nil end
-
     local isSelecting = Fusion.Value(scope, false)
 
 
-    local aspectRatioConstraint = Components.UIAspectRatioConstraint(scope, 0.336)
-    local size = UDim2.fromScale(0.15, 0.9)
-    if props.IsInfoUI then
-        aspectRatioConstraint = nil
-        size = UDim2.fromScale(0.08, 0.9)
+    local aspectRatioConstraint = nil
+    local size = UDim2.fromScale(0.15, 0.8)
+    if not props.IsInfoUI then
+        aspectRatioConstraint = Components.UIAspectRatioConstraint(scope, 0.378)
     end
 
     return Components.Frame(scope, {
@@ -36,7 +34,7 @@ return function(scope: Fusion.Scope, props: {
         BackgroundColor3 = Components.BLACK_COLOR,
         BackgroundTransparency = 0,
         AnchorPoint = Vector2.new(0, 0.5),
-        Position = UDim2.fromScale(0.2, 0.5),
+        Position = UDim2.fromScale(0.05, 0.5),
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -75,7 +73,7 @@ return function(scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(0.5, 0.1),
                 Size = UDim2.fromScale(0.7, 0.7),
                 SizeConstraint = Enum.SizeConstraint.RelativeXX,
-                Image = AbyssTeambook[props.Index].Icon or "",
+                Image = AbyssBook.ModifierIcons[AbyssBook.Modifiers[props.Index]],
             }),
 
             Components.TextLabel(scope, {

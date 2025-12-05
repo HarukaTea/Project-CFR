@@ -43,7 +43,7 @@ local userNameCache = {}
 local userThumbnailCache = {}
 
 
-local abyssSpeedrunStore = ODSModule.new("_AbyssSpeedrun", true)
+local abyssSpeedrunStore = ODSModule.new(require(ServerScriptService.ABYSS_DS_VERSION), true)
 local donationStore = ODSModule.new("_Donation", true)
 
 
@@ -53,7 +53,7 @@ local STORE_LIST = {
 }
 
 
-local function _getTop50Players(store: OrderedDataStore) : {
+local function _getTop50Players(store: OrderedDataStore, isAscending: boolean?) : {
     {
         PlayerId: number,
         Val: number
@@ -61,8 +61,8 @@ local function _getTop50Players(store: OrderedDataStore) : {
 }
     if store == nil then return {} end
 
+    isAscending = isAscending or false
 
-    local isAscending = false
     local pageSize = 50
     local pages = store:GetSortedAsync(isAscending, pageSize)
     local top50 = pages:GetCurrentPage()
@@ -80,11 +80,11 @@ local function _getTop50Players(store: OrderedDataStore) : {
 
     return topList
 end
-local function refreshLeaderboard(store: OrderedDataStore, folder: Folder)
+local function refreshLeaderboard(store: OrderedDataStore, folder: Folder, isAscending: boolean?)
     folder:ClearAllChildren()
 
 
-    local top50 = _getTop50Players(store)
+    local top50 = _getTop50Players(store, isAscending)
     for rank: number, data in ipairs(top50) do
         if (data.Val or 0) <= 0 then continue end
 
@@ -154,7 +154,7 @@ end
 
 table.insert(LBLib.Funcs, function()
     HarukaLib.Clock(180, function()
-        refreshLeaderboard(abyssSpeedrunStore.orderedDataStore, abyssSpeedrunContainer)
+        refreshLeaderboard(abyssSpeedrunStore.orderedDataStore, abyssSpeedrunContainer, true)
     end, true)
     HarukaLib.Clock(60, function()
         refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)

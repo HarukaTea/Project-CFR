@@ -101,14 +101,14 @@ function CriRPGLib:_SpawnToLastLocation()
             if #spawnPointChildern > 0 then
                 local rSpawnPoint = spawnPointChildern[math.random(1, #spawnPointChildern)]
 
-                HarukaLib:TeleportPlayer(char, rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
+                char:PivotTo(rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
                 return
             end
         end
     end
     local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
 
-    HarukaLib:TeleportPlayer(char, baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
+    char:PivotTo(baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
 end
 
 
@@ -627,10 +627,7 @@ table.insert(CriRPGLib.Funcs, function()
         local shieldExBuff = char:GetAttribute("MaxShieldExPower") :: number
 
 
-        local shield = FormulaBook.PlayerShieldCurveCal({
-            BaseShield = baseShield,
-            DEFPoints = plr:GetAttribute("DEFPoints")
-        })
+        local shield = baseShield
 
         local final = math.ceil((shield + shieldBuff) * shieldExBuff)
 
@@ -651,9 +648,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-BaseMaxShield"] = _updateShield,
         ["Attr-MaxShieldEx"] = _updateShield,
         ["Attr-MaxShieldExPower"] = _updateShield,
-    }))
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-DEFPoints"] = _updateShield,
     }))
 
 

@@ -142,7 +142,7 @@ local template = {
 			CombatMode = {
 				OptionTitle = "Combat Mode",
 				Type = "Dropdown",
-				LayoutOrder = 6,
+				LayoutOrder = 7,
 				DropdownOptions = { "Solo", "Public", "Party" },
 
 				DefaultValue = "Public",
@@ -150,7 +150,7 @@ local template = {
 			AllowPartyInvites = {
 				OptionTitle = "Allow Party Invites",
 				Type = "Switcher",
-				LayoutOrder = 7,
+				LayoutOrder = 6,
 
 				DefaultValue = true,
 			},

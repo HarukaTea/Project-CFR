@@ -273,20 +273,6 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 	end
 
 
-	--// dev item checks
-	if itemInfo.ItemId == "Dawnbreak" then
-		local whiteList = { 304008764, 503716687, 1030029371 }
-		if not table.find(whiteList, plr.UserId) and plr:GetAttribute("Rank") < 2 then
-			HarukaLib:BanPlayerByUserId(plr.UserId, {
-				Duration = 60 * 60 * 24,
-				DisplayReason = "DevItem Detected",
-				PrivateReason = "DevItem Detected",
-				ExcludeAltAccounts = false
-			})
-			return
-		end
-	end
-
 	local stackableList = AssetBook.StackableItemTypes
 	if table.find(stackableList, itemInfo.Type) then
 		for _ = 1, amount do

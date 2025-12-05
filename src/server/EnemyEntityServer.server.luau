@@ -23,6 +23,10 @@ local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityAttackLib)
+local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
+
+
+local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
@@ -47,6 +51,8 @@ type EntityLibClass = {
     _EnterCombat: (self: EntityLibClass, target: Model, combatMode: string?) -> nil,
     _ClearEffectListTask: (self: EntityLibClass) -> nil,
     _CombatEnd: (self: EntityLibClass) -> nil,
+
+    _ApplyAbyssModifier: (self: EntityLibClass) -> nil,
 
 
     Locator: BasePart,
@@ -311,6 +317,7 @@ function EntityLib:Init()
     self:EntityInit()
 
 
+    --// for abyss
     self.WholeAdd(HarukaLib:Hydrate(self.Locator, {
         ["Attr-_RESPAWN_SYMBOL"] = function(state: boolean)
             if state == nil then return end
@@ -347,6 +354,12 @@ function EntityLib:EntityInit()
 
     table.clear(self.CombatInfo)
     self.EntityDestroyed = false
+
+
+    local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
+    if isAbyss then
+        self:_ApplyAbyssModifier()
+    end
 end
 
 
@@ -537,7 +550,6 @@ function EntityLib:_ListenStatsTracker()
     end
 
     entity:SetAttribute("Level", self.Locator:GetAttribute("Level"))
-    entity:SetAttribute("Tier", entityInfo.Tier)
     entity:SetAttribute("SpawnClock", DateTime.now().UnixTimestamp)
     entity:SetAttribute("IsBoss", entityInfo.IsBoss)
 
@@ -545,9 +557,6 @@ function EntityLib:_ListenStatsTracker()
 
     local envirBonus = self.Locator:GetAttribute("EnvironmentBonus") or entityInfo.EnvironmentBonus
     entity:SetAttribute("EnvironmentBonus", envirBonus)
-
-    local tier = self.Locator:GetAttribute("Tier") or entityInfo.Tier
-    entity:SetAttribute("Tier", tier)
 
     if entityInfo.IsBoss then
         entity:AddTag("BossEnemyEntity")
@@ -564,7 +573,6 @@ function EntityLib:_ListenStatsTracker()
 
         local finalHealth = FormulaBook.EnemyHealthCurveCal({
             Level = entity:GetAttribute("Level"),
-            IsBoss = isBoss,
             EnvironmentBonus = entity:GetAttribute("EnvironmentBonus"),
         })
 
@@ -1349,6 +1357,42 @@ function EntityLib:_CombatEnd()
         resolve(true)
     end):await()
 end
+
+
+
+function EntityLib:_ApplyAbyssModifier()
+    local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
+    if not isAbyss then return end
+
+    local levelId = workspace:GetAttribute("AbyssLevelId")
+    if not levelId then return end
+
+    local modifiers = HarukaLib.TableUtils.Cut(AbyssBook.Modifiers, levelId) :: { string }
+    for _, modifier in modifiers do
+        if string.find(modifier, "HealthBoost") then
+            local boost = string.match(modifier, "%d")
+            boost = tonumber(boost)
+            boost = boost or 1
+
+
+            StatusLib:Boost("MaxHealth", self.Entity, {
+                Duration = 9999,
+                Ex = 0,
+                Power = boost,
+            })
+
+        elseif modifier == "ATKBoost1" then
+            StatusLib:Boost("DMG", self.Entity, {
+                Duration = 9999,
+                Ex = 0,
+                Power = 1
+            })
+        end
+    end
+end
+
+
+
 
 
 

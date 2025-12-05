@@ -4,7 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
 local formulas = {
-    ENEMY_MAX_LEVEL = 950,
+    ENEMY_MAX_LEVEL = 1599,
     PLAYER_MAX_LEVEL = 190,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_TALENT_POINT_PER_LEVEL = 1,
@@ -17,28 +17,25 @@ local formulas = {
         Level: number
     })
         if props.Level <= 15 then
-            return math.floor(15 * props.Level)
+            return math.floor(12 * props.Level)
 
         elseif props.Level > 15 and props.Level <= 45 then
-            return math.floor(45 * props.Level)
+            return math.floor(40 * props.Level)
 
         elseif props.Level > 45 and props.Level <= 100 then
-            return math.floor(89 * props.Level)
+            return math.floor(80 * props.Level)
 
         elseif props.Level > 100 and props.Level <= 170 then
-            return math.floor(125 * props.Level)
+            return math.floor(120 * props.Level)
 
         elseif props.Level > 170 and props.Level <= 180 then
-            return math.floor(166 * props.Level)
+            return math.floor(155 * props.Level)
 
         elseif props.Level > 180 and props.Level <= 190 then
-            return math.floor(211 * props.Level)
+            return math.floor(195 * props.Level)
 
-        elseif props.Level > 190 and props.Level <= 200 then
-            return math.floor(300 * props.Level)
-
-        elseif props.Level > 200 then
-            return math.floor(1599 * 40 * props.Level)
+        elseif props.Level > 190 then
+            return math.floor(255 * props.Level)
         end
     end,
 
@@ -48,20 +45,27 @@ local formulas = {
     EnemyEXPCurveCal = function(props: {
         Level: number
     })
-        return math.floor(40 * props.Level + 15.99 * props.Level)
+        return math.floor(61 * props.Level)
     end,
 
 
     EnemyHealthCurveCal = function(props: {
         Level: number,
-        IsBoss: boolean,
         EnvironmentBonus: number?
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
-        local f = 115 * props.Level * 1.599 ^ 1.1599 - 50
+        local l = props.Level :: number
+        local base = 100 + 40 * l
 
-        return math.ceil(f * props.EnvironmentBonus)
+        if l > 45 and l < 100 then
+            base = 300 + 80 * l ^ 1.1599
+        end
+        if l > 100 then
+            base = 550 + 160 * l ^ 1.1599
+        end
+
+        return math.ceil(base * props.EnvironmentBonus)
     end,
 
 
@@ -71,12 +75,9 @@ local formulas = {
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
-        local envir = props.EnvironmentBonus :: number
-        props.EnvironmentBonus = math.min(1.75, envir)
+        local f = 8 + 3.5 * props.Level
 
-        local f = 4 * props.Level * envir
-
-        return math.ceil(f)
+        return math.ceil(f * props.EnvironmentBonus)
     end,
 
     EnemyGoldCurveCal = function(props: {
@@ -92,7 +93,7 @@ local formulas = {
         BaseHealth: number,
         HealthPoints: number
     })
-        return math.floor(props.BaseHealth + 35 * props.HealthPoints)
+        return math.floor(props.BaseHealth + 50 * props.HealthPoints)
     end,
 
     PlayerDMGCurveCal = function(props: {
@@ -117,18 +118,11 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 60) / 100)
+        local extra = 1 + ((props.MagicPoints * 55) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,
 
-
-    PlayerShieldCurveCal = function(props: {
-        BaseShield: number,
-        DEFPoints: number
-    })
-        return math.floor(props.BaseShield + 20 * props.DEFPoints)
-    end,
 
     PlayerCriChanceCurveCal = function(props: {
         BaseCritChance: number,

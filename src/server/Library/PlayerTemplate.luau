@@ -35,7 +35,6 @@ export type PlayerDataJSON = {
     INTPoints: number,
     VITPoints: number,
     DEXPoints: number,
-    DEFPoints: number,
     TalentPoints: number,
     Talents: {},
     PlayTime: number,
@@ -52,6 +51,9 @@ export type PlayerDataJSON = {
         [string]: PlayerQuestDataJSON
     },
     CombatWonTimes: number,
+
+    --// new fields
+    Title: string,
 
     --// legacy fields
     Settings: {}?
@@ -105,7 +107,6 @@ local playerStats = {
             INTPoints = 0,
             VITPoints = 0,
             DEXPoints = 0,
-            DEFPoints = 0,
 
             TalentPoints = 1,
             Talents = {},
@@ -121,6 +122,8 @@ local playerStats = {
             QuestsV3 = {},
 
             CombatWonTimes = 0,
+
+            Title = "Adventurer"
         }
     },
 

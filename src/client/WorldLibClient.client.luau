@@ -750,6 +750,7 @@ table.insert(ClientWorldLib.Funcs, function()
     local mouse = plr:GetMouse()
 
     local isInviting = false
+    local isInvitingTo = false
     local isHovered = false
 
 
@@ -869,6 +870,55 @@ table.insert(ClientWorldLib.Funcs, function()
                 Events.PartyInvite_C.Fire({ Option = "InviteDecline", PlayerName = inviter })
             end
         end
+    end)
+
+
+    Bindables.RToCreatePartyInvite:Connect(function(player: Player)
+        if player == Players.LocalPlayer then
+            Bindables.CreateNotify:Fire("You can't invite yourself!")
+            return
+        end
+        if isInvitingTo then return end
+        local thatPlr = player
+
+        local criRPGSettings = thatPlr:FindFirstChild("CriRPGSettings") :: Configuration
+        if not criRPGSettings then return end
+
+        local character = thatPlr.Character
+        if not ClientLib:IsCharValid(character) then
+            Bindables.CreateNotify:Fire("Player is dead!")
+            return
+        end
+
+
+        if criRPGSettings:FindFirstChild("AllowPartyInvites") then
+            local boolean = criRPGSettings.AllowPartyInvites.Value
+            if boolean == false then
+                Bindables.CreateNotify:Fire("Player can not be invited due to their privacy settings!")
+                return
+            end
+        end
+        if thatPlr:GetAttribute("IsInParty") then
+            Bindables.CreateNotify:Fire("Player is already in a party!")
+            return
+        end
+        if character:GetAttribute("IsInCombat") then
+            Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
+            return
+        end
+        isInvitingTo = true
+
+        local choice = Components:CreateConfirmPrompt(partyScope, {
+            Hint = `Send party invite to <yellow>{thatPlr.DisplayName}</font>?`,
+            ConfirmText = "YES",
+            CancelText = "NO",
+            ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
+        }):Wait()
+
+        isInvitingTo = false
+        if choice ~= "YES" then return end
+
+        Events.PartyInvite_C.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
     end)
 end)
 

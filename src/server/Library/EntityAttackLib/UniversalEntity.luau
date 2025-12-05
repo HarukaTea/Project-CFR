@@ -55,8 +55,6 @@ end
 
 
 UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ())
-
-
     local function _checkIsValid()
         if not ServerLib:IsModelValid(entity) then
             resolveObj()
@@ -143,8 +141,6 @@ end
 
 --- combat related functions
 UniversalEntity.GetTargets = function(_, entity: Model) : { Player }
-
-
     local players = {}
     for _, targetingSymbol: ObjectValue in entity.TargetingList:GetChildren() do
         table.insert(players, Players:GetPlayerFromCharacter(targetingSymbol.Value))
@@ -155,8 +151,6 @@ end
 
 
 UniversalEntity.GetNearbyPlayers = function(_, entity: Model) : { Player }
-
-
     local nearbyChars = _getCharsByRadius(entity.PrimaryPart.Position, 486)
     local players = {}
 
@@ -187,12 +181,16 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
     projectileSymbol.Parent = ServerStorage.ProjectileSymbolContainer
 
     Debris:AddItem(projectileSymbol, 10)
+
+
+    --// manually add dot status effect
+    if workspace:GetAttribute("_Modifier_BurnInflict") then
+        projectileSymbol:SetAttribute("DoTStatus", "Burn")
+    end
 end
 
 
 UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
-
-
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
     end
@@ -205,8 +203,6 @@ end
 
 
 UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
-
-
     local targetingList = entity.TargetingList:GetChildren()
     local rIndex = Random.new():NextInteger(1, #targetingList)
 

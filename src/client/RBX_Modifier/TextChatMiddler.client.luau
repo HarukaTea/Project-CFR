@@ -48,6 +48,32 @@ TextChatService.OnIncomingMessage = function(message: TextChatMessage)
                 roleInfo.Color,
                 string.upper(roleInfo.ChatRole),
                 properties.PrefixText)
+
+            return properties
+        end
+
+        if sender:GetAttribute("Title") then
+            local title = sender:GetAttribute("Title") :: string
+            local titleInfo: RankBook.PlayerTitleJSON = nil
+
+            for _, titleinfo in RankBook.PlayerTitleInfo do
+                if titleinfo.Title == title then titleInfo = titleinfo break end
+            end
+
+            if not titleInfo then
+                return properties
+            end
+            if not titleInfo.ChatRole then
+                return properties
+            end
+
+            properties.PrefixText = string.format(
+                "<font color='#%s'><b>[%s]</b></font> %s",
+                titleInfo.Color,
+                string.upper(titleInfo.ChatRole),
+                properties.PrefixText)
+
+            return properties
         end
     end
 

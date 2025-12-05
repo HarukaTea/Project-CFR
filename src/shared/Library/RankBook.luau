@@ -9,17 +9,24 @@ export type CustomRoleJSON = {
     ChatRole: string
 }
 
+export type PlayerTitleJSON = {
+    Title: string,
+    Color: string,
+    ChatRole: string?
+}
 
-local Ranks = {}
 
-Ranks.RankRoleInfo = {
+local RankBook = {}
+
+RankBook.RankRoleInfo = {
     [2] = {
         Role = "Tester",
         Color = "#70a1ff"
     },
     [3] = {
         Role = "Content Creator",
-        Color = "#ffffff"
+        Color = "#d63031",
+        ChatRole = "YT"
     },
     [4] = {
         Role = "Translator",
@@ -35,29 +42,29 @@ Ranks.RankRoleInfo = {
     },
     [128] = {
         Role = "Developer",
-        Color = "#ffffff",
-        ChatRole = "DEV"
+        Color = "#ffeaa7",
+        ChatRole = "Dev"
     },
     [129] = {
         Role = "Lead Developer",
-        Color = "#ffffff",
-        ChatRole = "DEV"
+        Color = "#81ecec",
+        ChatRole = "Lead"
     },
     [254] = {
         Role = "Herman",
         Color = "#e91e63"
     },
 }
-Ranks.CustomRoleInfo = {
+RankBook.CustomRoleInfo = {
     ["304008764"] = {
         Role = "CF Founder",
-        Color = "#ffffff",
-        ChatRole = "DEV"
+        Color = "#ffa502",
+        ChatRole = "Leaf"
     },
     ["68027875"] = {
         Role = "CW Founder",
         Color = "#ffa502",
-        ChatRole = "Eth"
+        ChatRole = "Ethyrias"
     },
     ["2040399306"] = {
         Role = "CSV Founder",
@@ -66,11 +73,13 @@ Ranks.CustomRoleInfo = {
     },
     ["1097119343"] = {
         Role = "CV Founder",
-        Color = "#ffa502"
+        Color = "#ffa502",
+        ChatRole = "FrenchCat"
     },
     ["3563941913"] = {
         Role = "CO Founder",
-        Color = "#ffa502"
+        Color = "#ffa502",
+        ChatRole = "Pika"
     },
     ["91364976"] = {
         Role = "CR Founder",
@@ -79,12 +88,26 @@ Ranks.CustomRoleInfo = {
     },
     ["28635029"] = {
         Role = "CL2 Founder",
-        Color = "#ffa502"
+        Color = "#ffa502",
+        ChatRole = "Levon"
     },
     ["224796939"] = {
         Role = "CE Founder",
         Color = "#ffa502",
+        ChatRole = "Lychee"
     }
 }
 
-return Ranks
+
+
+
+RankBook.PlayerTitleInfo = {
+    Adventurer = {
+        Role = "Adventurer",
+        Color = "#ffffff"
+    }
+}
+
+
+
+return RankBook

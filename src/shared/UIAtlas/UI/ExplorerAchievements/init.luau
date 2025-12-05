@@ -58,8 +58,8 @@ return function (plr: Player)
 
                     Components.ScrollingFrame(scope, {
                         Name = "AchievementsList",
-                        Position = UDim2.fromScale(0.25, 0),
-                        Size = UDim2.fromScale(0.75, 1),
+                        Position = UDim2.fromScale(0.35, 0),
+                        Size = UDim2.fromScale(0.65, 1),
                         ScrollingDirection = Enum.ScrollingDirection.Y,
 
 

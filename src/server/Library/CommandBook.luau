@@ -125,7 +125,7 @@ local commands: CommandJSON = {
                 if not ServerLib:IsCharValid(destinationPlayer.Character) then break end
 
 
-                HarukaLib:TeleportPlayer(thatChar, destinationPlayer.Character.PrimaryPart.CFrame)
+                thatChar:PivotTo(destinationPlayer.Character.PrimaryPart.CFrame)
             end
 
             props.ResolveObj()
@@ -233,12 +233,7 @@ local commands: CommandJSON = {
 
                 local item = props.Args[2]
                 if item == "all" then
-                    local allItems = ItemBook:GetAllItems()
-                    if table.find(allItems, "Dawnbreak") then
-                        table.remove(allItems, table.find(allItems, "Dawnbreak"))
-                    end
-
-                    for _, itemId: string in allItems do
+                    for _, itemId: string in ItemBook:GetAllItems() do
                         ServerLib:GiveItemDrop(thatPlr, itemId, props.Args[3])
                     end
                 else
@@ -279,7 +274,7 @@ local commands: CommandJSON = {
                 thatPlr:SetAttribute("DEXPoints", 0)
                 thatPlr:SetAttribute("INTPoints", 0)
                 thatPlr:SetAttribute("VITPoints", 0)
-                thatPlr:SetAttribute("DEFPoints", 0)
+
                 thatPlr:SetAttribute("Level", props.Args[2])
             end
 

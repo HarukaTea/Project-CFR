@@ -188,17 +188,21 @@ end
 
 
 local function _calDoTDMG(char: Model, dmgType: "DMG" | "Magic")
-    if dmgType == "DMG" then
-        local minDMG, maxDMG = char:GetAttribute("MinDMG"), char:GetAttribute("MaxDMG")
-        if minDMG > maxDMG then
-            maxDMG, minDMG = minDMG, maxDMG
+    if char:HasTag("PlayerCharEntity") then
+        if dmgType == "DMG" then
+            local minDMG, maxDMG = char:GetAttribute("MinDMG"), char:GetAttribute("MaxDMG")
+            if minDMG > maxDMG then
+                maxDMG, minDMG = minDMG, maxDMG
+            end
+            return minDMG
+        elseif dmgType == "Magic" then
+            local magic = char:GetAttribute("Magic")
+
+            return magic
         end
 
-        return minDMG
-    elseif dmgType == "Magic" then
-        local magic = char:GetAttribute("Magic")
-
-        return magic
+    elseif char:HasTag("EnemyEntity") then
+        return char:GetAttribute("DMG")
     end
 end
 

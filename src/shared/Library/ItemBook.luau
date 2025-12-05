@@ -166,22 +166,6 @@ ItemBook.GetAllMaterialsLoot = function(_) : { [string]: number }
 end
 
 
-ItemBook.GetAllRareWeaponsLoot = function(_) : { [string]: number }
-    local rareWeaponsLoot = {}
-
-    for _, itemInfo in ItemRawBook do
-        if itemInfo.Type == "Weapon" and itemInfo.Tier == 5 and table.find(itemInfo.TagsDesync, "BossDrop") then
-            rareWeaponsLoot[itemInfo.ItemId] = 1
-        end
-    end
-
-    rareWeaponsLoot["None"] = 100
-
-    return rareWeaponsLoot
-end
-
-
-
 
 
 --// handle item book

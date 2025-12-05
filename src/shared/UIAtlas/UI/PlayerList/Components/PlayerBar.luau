@@ -160,14 +160,8 @@ return function (scope: Fusion.Scope, props: {
                         LayoutOrder = 231,
                         RichText = true,
                         AutoLocalize = false,
+                        Text = props.Player.DisplayName,
 
-                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            if use(props.PlayerSelecting) == props.Player then
-                                return `<u>@{props.Player.Name}</u>`
-                            else
-                                return props.Player.DisplayName
-                            end
-                        end),
                         TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             if use(props.PlayerSelecting) == props.Player then
                                 return Components.BLACK_COLOR

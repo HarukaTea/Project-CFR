@@ -14,10 +14,7 @@ local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
     MobId: string,
-    MobInfo: {
-        Level: number,
-        EnvironmentBonus: number
-    }
+    Level: number
 })
 
     if not EntityBook[props.MobId] then return nil end
@@ -28,6 +25,7 @@ return function(scope: Fusion.Scope, props: {
         Name = props.MobId,
         BackgroundTransparency = 0,
         BackgroundColor3 = Color3.fromRGB(),
+        Size = UDim2.fromScale(0.425, 1),
 
         [Fusion.OnEvent("MouseEnter")] = function()
             isSelecting:set(true)
@@ -37,7 +35,6 @@ return function(scope: Fusion.Scope, props: {
         end,
 
         [Children] = {
-            Components.UIAspectRatioConstraint(scope, 3.513),
             Components.UICorner(scope, {
                 CornerRadius = UDim.new(0.2, 0)
             }),
@@ -81,7 +78,7 @@ return function(scope: Fusion.Scope, props: {
                 TextColor3 = Color3.fromRGB(255, 255, 127),
                 TextXAlignment = Enum.TextXAlignment.Left,
 
-                Text = `Lv.{props.MobInfo.Level}`
+                Text = `Lv.{props.Level}`
             }),
         }
     })

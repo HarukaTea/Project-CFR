@@ -31,5 +31,8 @@ return {
     PartyInvite = Signal.new(),
 
     --@params: `player: Player, questId: string`
-    QuestCompleted = Signal.new()
+    QuestCompleted = Signal.new(),
+
+    --@params: `msg: string`
+    RToSendMsgToDiscord = Signal.new(),
 }

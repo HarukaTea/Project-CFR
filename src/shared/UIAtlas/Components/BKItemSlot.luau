@@ -116,7 +116,7 @@ return function(scope: Fusion.Scope, props: {
     return Components.Frame(scope, {
         Name = props.ItemSymbol.Name,
         BackgroundTransparency = 0,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundColor3 = AssetBook.ItemTierColors[info.Tier],
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(isVisible) and use(isVisibleFactor2) and use(isVisibleFactor3)
@@ -143,7 +143,7 @@ return function(scope: Fusion.Scope, props: {
             if T1Sort then
                 tierOrder = tier
             elseif T5Sort then
-                tierOrder = 6 - tier
+                tierOrder = 7 - tier
             end
 
             local perGroupOrder = tierOrder * 20000000 + nameKey
@@ -155,11 +155,6 @@ return function(scope: Fusion.Scope, props: {
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
-
-            Components.UIGradient(scope, {
-                Color = ColorSequence.new(AssetBook.ItemTierColors[info.Tier]),
-                Rotation = 45
-            }),
 
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.035,

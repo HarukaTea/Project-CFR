@@ -44,7 +44,10 @@ return function(scope: Fusion.Scope, self: { [string]: any }, isBackpackUI: bool
                 isVisible = table.find(category, info.Type) ~= nil
 
 
-                local state = use(self.FilterTierList[info.Tier])
+                local tierNum = info.Tier - ((info.Tier - 1) % 2)
+                tierNum = math.clamp(tierNum, 1, 3)
+
+                local state = use(self.FilterTierList[tierNum])
                 isVisibleFactor2 = state
 
 

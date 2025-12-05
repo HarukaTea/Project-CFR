@@ -7,6 +7,8 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
+local AbyssBook = require(RepS.HarukaShared.Library.AbyssBook)
+
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
 
@@ -122,7 +124,7 @@ return function (plr: Player)
                                 Components.PaddingFrame(scope, "ZZZ"),
 
 
-                                Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope, index: number, _)
+                                Fusion.ForPairs(scope, table.create(6, true), function(_, scope: Fusion.Scope, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
                                         Index = index,
                                         AbyssIndexSelected = self.AbyssIndexSelected,
@@ -136,14 +138,29 @@ return function (plr: Player)
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                             VerticalAlignment = Enum.VerticalAlignment.Center,
                             FillDirection = Enum.FillDirection.Horizontal,
+                        }),
+
+                        Components.TextLabel(scope, {
+                            Name = "AbyssModifierTitle",
+                            Position = UDim2.fromScale(0, -0.025),
+                            Size = UDim2.fromScale(1, 0.08),
+                            Text = "SELECT MODIFIER",
+                            TextColor3 = Color3.fromRGB(255, 255, 127),
+
+                            [Children] = {
+                                Components.ScaledTextUIStroke(scope, {
+                                    Thickness = 0.1
+                                })
+                            }
                         })
                     }
                 }),
 
                 Components.Frame(scope, {
                     Name = "AbyssLevelInfo",
-                    Size = UDim2.fromScale(1, 7),
-                    Position = UDim2.fromScale(0.5, 1),
+                    AnchorPoint = Vector2.new(0, 0.5),
+                    Size = UDim2.fromScale(0.55, 7),
+                    Position = UDim2.fromScale(0.42, 1),
 
 
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -160,45 +177,70 @@ return function (plr: Player)
                             })
                         end),
 
-                        Components.TextLabel(scope, {
-                            Name = "Floor",
-                            Position = UDim2.fromScale(0.325, 0.075),
-                            Size = UDim2.fromScale(0.5, 0.1),
-                            FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                            TextXAlignment = Enum.TextXAlignment.Left,
-
-                            Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                return `Floor {use(self.AbyssIndexSelected)}`
-                            end)
-                        }),
-
                         Components.Frame(scope, {
                             Name = "EnemyList",
-                            AnchorPoint = Vector2.zero,
-                            Position = UDim2.fromScale(0.325, 0.27),
-                            Size = UDim2.fromScale(0.5, 0.67),
+                            AnchorPoint = Vector2.yAxis,
+                            Position = UDim2.fromScale(0.23, 0.95),
+                            Size = UDim2.fromScale(0.8, 0.2),
 
                             [Children] = {
-                                Components.UIGridLayout(scope, {
+                                Components.UIListLayout(scope, {
                                     FillDirection = Enum.FillDirection.Horizontal,
-                                    VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                                    StartCorner = Enum.StartCorner.BottomLeft,
-
-                                    CellPadding = UDim2.fromOffset(12, 12),
-                                    CellSize = UDim2.fromScale(0.45, 0.35)
+                                    Padding = UDim.new(0.03, 0),
                                 }),
 
-
-                                Fusion.ForPairs(scope, self.AbyssInfo, function(_, scope: Fusion.Scope, mobId: string, mobInfo: {
-                                    Level: number,
-                                    EnvironmentBonus: number
-                                })
-                                    return mobId, AbyssEnemySlot(scope, {
-                                        MobId = mobId,
-                                        MobInfo = mobInfo
+                                Fusion.ForValues(scope, AbyssBook.TeamConfigs, function(_, scope: Fusion.Scope, mobInfo: AbyssBook.AbyssTeamJSON)
+                                    return AbyssEnemySlot(scope, {
+                                        MobId = mobInfo.MobId,
+                                        Level = mobInfo.Level
                                     })
                                 end)
                             }
+                        }),
+
+
+                        Components.ScrollingFrame(scope, {
+                            Name = "ModifierList",
+                            AnchorPoint = Vector2.zero,
+                            Position = UDim2.fromScale(0.23, 0),
+                            Size = UDim2.fromScale(0.7, 0.7),
+                            ScrollingDirection = Enum.ScrollingDirection.Y,
+
+                            [Children] = {
+                                Components.PaddingFrame(scope, "AAA"),
+
+                                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    return Fusion.ForValues(scope, self.AbyssModifierList, function(_, scope: Fusion.Scope, modifier: string)
+                                        return Components.Frame(scope, {
+                                            Name = "Modifier_"..modifier,
+                                            BackgroundTransparency = 0,
+                                            Size = UDim2.fromScale(0.95, 0.12),
+
+                                            [Children] = {
+                                                Components.UIAspectRatioConstraint(scope, 15.941),
+                                                Components.RoundUICorner(scope),
+                                                Components.ScaledUIStroke(scope, {
+                                                    Thickness = 0.05,
+                                                    Color = Color3.fromHex('#ff7675')
+                                                }),
+
+                                                Components.TextLabel(scope, {
+                                                    Name = "ModifierTitle",
+                                                    Text = AbyssBook.ModifierInfo[modifier],
+                                                    TextXAlignment = Enum.TextXAlignment.Left,
+
+                                                    [Children] = {
+                                                        Components.UIPadding(scope, {})
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    end)
+                                end)
+                            }
+                        }, {
+                            Padding = UDim.new(0, 12),
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         })
                     }
                 })
@@ -262,7 +304,7 @@ return function (plr: Player)
                     AnchorPoint = Vector2.new(0.5, 1),
                     Position = UDim2.fromScale(0.5, 0.7),
                     Size = UDim2.fromScale(0.95, 0.5),
-                    Text = "FLOOR 6 SPEEDRUN LEADERBOARD",
+                    Text = "SPEEDRUN RECORDS (MODIFIER 6)",
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
                 })

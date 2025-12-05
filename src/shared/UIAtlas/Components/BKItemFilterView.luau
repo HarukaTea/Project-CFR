@@ -156,14 +156,14 @@ return function (scope: Fusion.Scope, props: {
                         Components.PaddingFrame(scope, "AAA"),
                         Components.PaddingFrame(scope, "ZZZ"),
 
-                        Fusion.ForPairs(scope, {"I", "II", "III", "IV", "V"}, function(_, scope: Fusion.Scope, index: number, tier: string)
+                        Fusion.ForPairs(scope, {"I", "III", "V"}, function(_, scope: Fusion.Scope, index: number, tier: string)
 
                             local isSelecting = Fusion.Value(scope, false)
 
                             return index,  Components.TextButton(scope, {
                                 Name = "Tier"..index,
 
-                                Text = "Tier "..tier,
+                                Text = "Tier "..tier.."+",
                                 TextXAlignment = Enum.TextXAlignment.Right,
                                 LayoutOrder = index,
                                 Size = UDim2.fromScale(0.95, 0.32),

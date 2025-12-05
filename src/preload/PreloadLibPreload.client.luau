@@ -136,10 +136,6 @@ function PreloadSceneLib.Cleanup()
     local camera = workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Custom
     camera.CameraSubject = Players.LocalPlayer.Character.Humanoid
-
-
-    wait(0.15)
-    Bindables.Titlescreen_CameraCFrameChanged:Fire()
 end
 
 

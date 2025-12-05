@@ -553,6 +553,12 @@ function PlayerLib:Init()
     if plr.Parent ~= Players then return end
 
 
+    --// load titlescreen (streaming)
+    pcall(function()
+        plr:RequestStreamAroundAsync(Vector3.one * 1599, 5)
+    end)
+
+
 
     local profileObj = PlayerProfileLib.new(plr, profile)
     self.ProfileObj = profileObj

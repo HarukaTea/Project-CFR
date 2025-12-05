@@ -154,7 +154,7 @@ return function(plr: Player)
                     TextXAlignment = Enum.TextXAlignment.Left,
 
                     Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                        return use(self.ServerLocation).." / "..require(RepS.VERSION)
+                        return use(self.ServerLocation)..", "..use(self.CityLocation).." / "..require(RepS.VERSION)
                     end),
 
                     [Children] = {

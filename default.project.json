@@ -39,6 +39,9 @@
             },
             "DS_VERSION": {
                 "$path": "src/DS_VERSION.luau"
+            },
+            "ABYSS_DS_VERSION": {
+                "$path": "src/ABYSS_DS_VERSION.luau"
             }
         },
         "StarterPlayer": {

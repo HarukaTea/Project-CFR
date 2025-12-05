@@ -6,7 +6,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local AbyssTeambook = require(RepS.HarukaShared.Library.AbyssTeambook)
+local AbyssBook = require(RepS.HarukaShared.Library.AbyssBook)
 
 
 export type Self = {
@@ -16,9 +16,10 @@ export type Self = {
 
     IsUIShown: Fusion.Value<boolean>,
     AbyssIndexSelected: Fusion.Value<number>,
-    AbyssInfo: Fusion.Value<AbyssTeambook.AbyssTeamJSON>,
 
     AbyssRanks: Fusion.Value<{ IntValue }>,
+
+    AbyssModifierList: Fusion.Value<{ string }>,
 }
 
 
@@ -32,19 +33,21 @@ return function (self: Self)
     self.IsUIShown = Value(false)
 
     self.AbyssIndexSelected = Fusion.Value(scope, nil)
-    self.AbyssInfo = Value({})
 
 
     local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("AbyssSpeedrunContainer", 999))
     self.AbyssRanks = ranks :: Fusion.Value<{ IntValue }>
 
 
+    self.AbyssModifierList = Value({})
+
     --// track abyss index selected
     Fusion.Observer(scope, self.AbyssIndexSelected):onBind(function()
-        local index = Fusion.peek(self.AbyssIndexSelected)
-        if not AbyssTeambook[index] then self.AbyssInfo:set({}) return end
+        local index = Fusion.peek(self.AbyssIndexSelected) or 0
+        if index == 0 then self.AbyssModifierList:set({}) return end
 
-        self.AbyssInfo:set(AbyssTeambook[index].Team)
+
+        self.AbyssModifierList:set(HarukaLib.TableUtils.Cut(AbyssBook.Modifiers, index))
     end)
 
 

@@ -6,7 +6,6 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local ServerScriptService = game:GetService("ServerScriptService")
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
 
@@ -442,64 +441,36 @@ end
 	return a tuple of `(item, weight, entry)`
 ]]
 function HarukaLib:RollLoot(loots: { [string]: number }, luck: number?) : (string, number, number)
-	local luck = luck or 1
+	luck = luck or 1
 
-	local lowestBound = 1e-3
-	local weightAdjustment = 1e9
-
-	luck = math.clamp(luck, lowestBound, math.huge)
-
-	--// add items
 	local items = {}
-	local total = #items
-	local totalWeight = 0
+	local totalEffectiveWeight = 0
 
-	for loot: string, weight: number in loots do
-		local newWeight = weight * weightAdjustment
-		local position = math.max(1, total + 1)
+	for name, weight in pairs(loots) do
+		if weight > 0 then
+			local effective = weight ^ (1 / luck)
+			table.insert(items, {
+				Name = name,
+				Weight = weight,
+				Effective = effective,
+			})
 
-		if total > 0 then
-			for index = total, 1, -1 do
-				local item = items[index]
-				if item.Weight <= newWeight then
-					position = index
-				else
-					break
-				end
-			end
-		end
-
-		table.insert(items, position, {
-			Weight = weight,
-			Item = loot
-		})
-
-		totalWeight += weight
-	end
-
-	--// roll
-	local RNG = Random.new()
-	local bestScore, bestItem, entry = math.huge, nil, nil
-	local value = math.max(lowestBound, totalWeight - math.floor(totalWeight * RNG:NextNumber() ^ luck))
-	local upperBound = 0
-
-	for index = #items, 1, -1 do
-		local item = items[index]
-		upperBound += item.Weight
-
-		if value <= upperBound and item.Weight < bestScore then
-			bestScore, bestItem, entry = item.Weight, item.Item, index
-			break
+			totalEffectiveWeight += effective
 		end
 	end
-	if not bestItem then
-		local item = items[1]
-		bestScore = item.Weight
-		bestItem = item.Item
-		entry = 1
+
+	local r = Random.new():NextNumber() * totalEffectiveWeight
+	local cumulative = 0
+
+	for index, item in ipairs(items) do
+		cumulative += item.Effective
+		if r <= cumulative then
+			return item.Name, item.Weight, index
+		end
 	end
 
-	return bestItem, bestScore / weightAdjustment, entry
+	local last = items[#items]
+	return last.Name, last.Weight, #items
 end
 
 
@@ -556,27 +527,6 @@ function HarukaLib:PlayCutscene(pointsTable: { BasePart }, duration: number)
 	end)
 
 	return cutsceneSignal
-end
-
-
---[[
-	This is the util for `UIStrokeAdjustor`, return accurate thickness based on viewport size
-]]
-function HarukaLib:CalculateStrokeThickness(thickness: number, scale: number) : number
-	local VPSize = workspace.CurrentCamera.ViewportSize
-	local DESIGN_VP_SIZE = Vector2.new(1172, 462.4)
-
-	local function _calScreenRatio() : number
-		local x = VPSize.X / DESIGN_VP_SIZE.X
-		local y = VPSize.Y / DESIGN_VP_SIZE.Y
-
-		return (x + y) / 2
-	end
-
-	local finalThickness = thickness * _calScreenRatio() * scale
-    finalThickness = math.clamp(finalThickness, 0, 999)
-
-	return finalThickness
 end
 
 
@@ -1194,31 +1144,6 @@ function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, s
 	end
 
 	return result
-end
-
-
---// teleport the character, and face the cframe, snippet code
-function HarukaLib:TeleportPlayer(char: Model, target: CFrame)
-	char:PivotTo(target)
-
-
-	local sharedEvents = nil
-	if RunService:IsClient() then
-		sharedEvents = require(RepS.HarukaShared.Library.Bindables)
-
-	elseif RunService:IsServer() then
-		sharedEvents = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-	end
-
-	if sharedEvents then
-		if RunService:IsServer() then
-			local player = Players:GetPlayerFromCharacter(char)
-			sharedEvents.UpdateCameraCF_S.Fire(player, target)
-
-		elseif RunService:IsClient() then
-			sharedEvents.UpdateCameraCF:Fire(target)
-		end
-	end
 end
 
 

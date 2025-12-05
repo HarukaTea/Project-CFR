@@ -124,13 +124,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             data.ItemsSQL[itemInfo.UniqueId] = nil
             continue
         end
-        if trueItemInfo.ItemId == "Dawnbreak" then
-            local whiteList = { 304008764, 503716687, 1030029371 }
-            if not table.find(whiteList, self.Player.UserId) then
-                data.ItemsSQL[itemInfo.UniqueId] = nil
-                continue
-            end
-        end
 
 
         --- clear up old data to save data storage space
@@ -292,13 +285,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             data.EquippingItemsSQL[thatSlot] = nil
             continue
         end
-        if trueItemInfo.ItemId == "Dawnbreak" then
-            local whiteList = { 304008764, 503716687, 1030029371 }
-            if not table.find(whiteList, self.Player.UserId) then
-                data.EquippingItemsSQL[thatSlot] = nil
-                continue
-            end
-        end
 
 
         --// check type
@@ -410,7 +396,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     totalPoints += data.INTPoints
     totalPoints += data.STRPoints
     totalPoints += data.DEXPoints
-    totalPoints += data.DEFPoints
 
     if totalPoints ~= shouldPoint then
         data.PerkPoints = shouldPoint
@@ -418,7 +403,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         data.INTPoints = 0
         data.STRPoints = 0
         data.DEXPoints = 0
-        data.DEFPoints = 0
     end
 
     local shouldReset = false
@@ -426,7 +410,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     if data.INTPoints < 0 then shouldReset = true end
     if data.STRPoints < 0 then shouldReset = true end
     if data.DEXPoints < 0 then shouldReset = true end
-    if data.DEFPoints < 0 then shouldReset = true end
     if data.DEXPoints > FormulaBook.PLAYER_MAX_DEX_POINTS then shouldReset = true end
 
     if shouldReset then
@@ -435,7 +418,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         data.INTPoints = 0
         data.STRPoints = 0
         data.DEXPoints = 0
-        data.DEFPoints = 0
     end
 
 

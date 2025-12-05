@@ -29,7 +29,7 @@ return function(scope: Fusion.Scope, props: {
         Name = "BadgeRewards",
         AnchorPoint = Vector2.new(0, 0.5),
         Position = UDim2.fromScale(0.02, 1),
-        Size = UDim2.fromScale(0.25, 7),
+        Size = UDim2.fromScale(0.325, 7),
 
         [Children] = {
             Components.Frame(scope, {

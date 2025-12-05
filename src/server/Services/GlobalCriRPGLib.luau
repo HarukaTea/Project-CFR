@@ -447,6 +447,25 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             Events.PlayGotHitScreenFX_S.Fire(plr)
         end
+
+        if data.DoTStatus or symbol:GetAttribute("DoTStatus") then
+            local DoTStatus = data.DoTStatus or symbol:GetAttribute("DoTStatus")
+            if DoTStatus == nil then return end
+            if DoTStatus == "Normal" then return end
+
+
+            local dotList = DoTLib:GetEffectsByTarget(char, DoTStatus)
+            if #dotList > 1 then return end
+
+            local DoTObj = DoTLib.new({
+                Target = char,
+                Type = DoTStatus,
+                Creator = owner,
+                Power = 1,
+                Duration = 4
+            })
+            DoTObj:Activate()
+        end
     end)
 end)
 
@@ -1145,7 +1164,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         plr:SetAttribute("DEXPoints", 0)
         plr:SetAttribute("INTPoints", 0)
         plr:SetAttribute("VITPoints", 0)
-        plr:SetAttribute("DEFPoints", 0)
     end)
 end)
 
@@ -1550,6 +1568,33 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         ServerLib:GiveItemDrop(plr, "FuriosoFist", 1)
+    end)
+end)
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    ServerBindables.RToSendMsgToDiscord:Connect(function(msg: string)
+        if not RunService:IsStudio() then
+            Promise.try(function()
+                local WEBHOOK_URL = "http://rainyleaf.xyz:1599/roblox-message-std"
+
+                local JSONData = {
+                    message = msg,
+                    secretKey = "1599mkk40_fallen_forever"
+                }
+                local JSONBody = HttpService:JSONEncode(JSONData)
+
+                local success, response = pcall(function()
+                    return HttpService:PostAsync(WEBHOOK_URL, JSONBody, Enum.HttpContentType.ApplicationJson, false)
+                end)
+                if not success then
+                    warn("Failed to send message to webhook: "..tostring(response))
+                end
+
+            end):catch(function(err)
+                warn(tostring(err))
+            end)
+        end
     end)
 end)
 

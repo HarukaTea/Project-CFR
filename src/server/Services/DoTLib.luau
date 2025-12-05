@@ -26,8 +26,8 @@ export type DoTLibClass = {
     Activate: (self: DoTLibClass) -> nil,
     Cancel: (self: DoTLibClass) -> nil,
 
-    GetEffectsByTarget: (target: Model) -> { DoTLibClass },
-    GetAffectedTargetsByEffectId: (effectId: string) -> { DoTLibClass },
+    GetEffectsByTarget: (self: DoTLibClass, target: Model, effectId: string?) -> { DoTLibClass },
+    GetAffectedTargetsByEffectId: (self: DoTLibClass, effectId: string) -> { DoTLibClass },
 } & DoTInfo
 
 
@@ -41,7 +41,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 
 
-local allDoTObjs = {}
+local allDoTObjs = {} :: { [string]: DoTLibClass }
 
 
 --// Constructor
@@ -167,8 +167,9 @@ end
 
 
 
-function DoTLib:GetEffectsByTarget(target: Model)
-    local objs = {}
+function DoTLib:GetEffectsByTarget(target: Model, effectId: string?)
+    local objs = {} :: { DoTLibClass }
+    local realObjs = {} :: { DoTLibClass }
 
     for _, thatObj in allDoTObjs do
         if thatObj.Target == target then
@@ -176,12 +177,23 @@ function DoTLib:GetEffectsByTarget(target: Model)
             break
         end
     end
+    if effectId then
+        for _, thatObj in objs do
+            if thatObj.Type == effectId then
+                table.insert(realObjs, thatObj)
+            end
+        end
+    else
+        realObjs = objs
+    end
 
-    return objs
+
+    return realObjs
 end
 
+
 function DoTLib:GetAffectedTargetsByEffectId(effectId: string)
-    local objs = {}
+    local objs = {} :: { DoTLibClass }
 
     for _, thatObj in allDoTObjs do
         if thatObj.Type == effectId then

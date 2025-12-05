@@ -21,7 +21,6 @@ return {
         Name = "Bee",
         Icon = "rbxassetid://86944111865792",
 
-        Tier = 1,
         BaseSpeed = 15,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -38,7 +37,6 @@ return {
         Name = "Queen Bee",
         Icon = "rbxassetid://138540677700873",
 
-        Tier = 8,
         BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,
@@ -63,7 +61,6 @@ return {
         Name = "Green Slime",
         Icon = "rbxassetid://127989665826507",
 
-        Tier = 1,
         BaseSpeed = 10,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -80,7 +77,6 @@ return {
         Name = "Wheat Slime",
         Icon = "rbxassetid://95488531429137",
 
-        Tier = 2,
         BaseSpeed = 10,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -97,7 +93,6 @@ return {
         Name = "Blue Slime",
         Icon = "rbxassetid://16483649460",
 
-        Tier = 2,
         BaseSpeed = 10,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -114,7 +109,6 @@ return {
         Name = "Lapis Slime",
         Icon = "rbxassetid://16483649287",
 
-        Tier = 3,
         BaseSpeed = 10,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -131,7 +125,6 @@ return {
         Name = "Purple Slime",
         Icon = "rbxassetid://18859513334",
 
-        Tier = 4,
         BaseSpeed = 10,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -148,7 +141,6 @@ return {
         Name = "Evolved Slime",
         Icon = "rbxassetid://127989665826507",
 
-        Tier = 5,
         BaseSpeed = 10,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -165,7 +157,6 @@ return {
         Name = "King Slime",
         Icon = "rbxassetid://127989665826507",
 
-        Tier = 6,
         BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,
@@ -184,7 +175,6 @@ return {
         Name = "Crimson Slime",
         Icon = "rbxassetid://17543155439",
 
-        Tier = 6,
         BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,
@@ -206,7 +196,6 @@ return {
         Name = "Spike Fox",
         Icon = "rbxassetid://83984279260426",
 
-        Tier = 1,
         BaseSpeed = 20,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -223,7 +212,6 @@ return {
         Name = "Spike Wolf",
         Icon = "rbxassetid://84531227101465",
 
-        Tier = 2,
         BaseSpeed = 25,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -240,7 +228,6 @@ return {
         Name = "Thorn Wolf",
         Icon = "rbxassetid://84531227101465",
 
-        Tier = 2,
         BaseSpeed = 25,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -257,7 +244,6 @@ return {
         Name = "Needle Wolf",
         Icon = "rbxassetid://84531227101465",
 
-        Tier = 3,
         BaseSpeed = 25,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -274,7 +260,6 @@ return {
         Name = "Ice Wolf",
         Icon = "rbxassetid://18857836675",
 
-        Tier = 4,
         BaseSpeed = 25,
         BaseJumpPower = 0,
         EnvironmentBonus = 1,
@@ -291,7 +276,6 @@ return {
         Name = "Hardmode Wolf",
         Icon = "rbxassetid://90390582857611",
 
-        Tier = 7,
         BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,
@@ -317,7 +301,6 @@ return {
         Name = "Leaf Dragon",
         Icon = "rbxassetid://105149911325359",
 
-        Tier = 10,
         BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,
@@ -338,7 +321,6 @@ return {
         Name = "Sylvarion",
         Icon = "rbxassetid://95284011272925",
 
-        Tier = 10,
         BaseSpeed = 0,
         BaseJumpPower = 0,
         EnvironmentBonus = 2,

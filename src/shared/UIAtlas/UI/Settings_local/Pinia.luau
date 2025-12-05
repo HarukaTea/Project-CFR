@@ -57,7 +57,7 @@ return function (self: Self)
         Bindables.CreateNotify:Fire("[System] Loaded Saved Settings!")
     end
 
-    self.PanelSelected = Value("Graphics")
+    self.PanelSelected = Value("Game")
     self.IsSettingsShown = Value(false)
 
     self.ValidInputBegan = Signal.new()

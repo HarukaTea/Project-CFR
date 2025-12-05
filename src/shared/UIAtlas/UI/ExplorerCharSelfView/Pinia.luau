@@ -58,8 +58,7 @@ return function (self: Self)
         STR = Value(0),
         DEX = Value(0),
         INT = Value(0),
-        VIT = Value(0),
-        DEF = Value(0)
+        VIT = Value(0)
     }
 
 
@@ -144,9 +143,6 @@ return function (self: Self)
         end,
         ["Attr-VITPoints"] = function(val: number)
             self.Points.VIT:set(val)
-        end,
-        ["Attr-DEFPoints"] = function(val: number)
-            self.Points.DEF:set(val)
         end
     }))
 

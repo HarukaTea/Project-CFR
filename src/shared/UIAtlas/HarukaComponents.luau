@@ -14,8 +14,10 @@ local HarukaComponents = {}
 HarukaComponents.FusionComponents = FusionComponents
 
 
-local DESIGN_VP_SIZE = Vector2.new(1168, 478.4)
+local DESIGN_VP_SIZE = Vector2.new(1172, 479.2)
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
+
+local UIASPECT_RATIO = 25.628
 
 
 local WHITE_BG_COLOR = CriRPGColorLab.WHITE_COLOR
@@ -481,8 +483,8 @@ end
 
 
 function HarukaComponents.UIAspectRatioConstraint(scope: Fusion.Scope, aspect: number?) : UIAspectRatioConstraint
-	return _createNewCompoent(scope, { AspectRatio = aspect or 24 }, "UIAspectRatioConstraint", {
-		AspectRatio = 24
+	return _createNewCompoent(scope, { AspectRatio = aspect or UIASPECT_RATIO }, "UIAspectRatioConstraint", {
+		AspectRatio = UIASPECT_RATIO
 	})
 end
 

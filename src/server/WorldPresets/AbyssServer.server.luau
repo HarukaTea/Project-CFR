@@ -4,6 +4,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 local CollectionService = game:GetService("CollectionService")
 local DSS = game:GetService("DataStoreService")
+local Lighting = game:GetService("Lighting")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -25,7 +26,8 @@ export type AbyssWorldLibClass = {
 
 
     GiveLoot: (self: AbyssWorldLibClass) -> nil,
-    UpdateSpeedrunTime: (self: AbyssWorldLibClass, runTime: number) -> nil
+    UpdateSpeedrunTime: (self: AbyssWorldLibClass, runTime: number) -> nil,
+    ApplyModifier: (self: AbyssWorldLibClass) -> nil
 }
 
 
@@ -41,7 +43,7 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 
-local AbyssTeambook = require(ReplicatedStorage.HarukaShared.Library.AbyssTeambook)
+local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
 
@@ -63,13 +65,13 @@ end
 
 
 
-local abyssSpeedrunDatastore = DSS:GetOrderedDataStore("_AbyssSpeedrun")
+local abyssSpeedrunDatastore = DSS:GetOrderedDataStore(require(ServerScriptService.ABYSS_DS_VERSION))
 
 
 --// helper functions
 
 local function _notifyFireAll(text: string)
-    Events.CreateNotify_S.Fire(CollectionService:GetTagged("PlayerEntity"), text)
+    Events.CreateNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), text)
 end
 
 
@@ -92,20 +94,31 @@ end
 function AbyssWorldLib:GiveLoot()
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
         Promise.try(function()
-            local char = player.Character
-            local luck = 1
-            if ServerLib:IsCharValid(char) then
-                luck = char:GetAttribute("Luck") / 100 or 1
-            end
-            luck = math.max(1, luck)
-
             for _ = 1, 3 do
                 Events.PlaySound_S.Fire(player, SoundService.SFXs.LootDropped)
 
-                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot(), luck)
+                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot())
 
-                ServerLib:GiveItemDrop(player, result, AbyssWorldLib.AbyssId * 10)
+                ServerLib:GiveItemDrop(player, result, Random.new():NextInteger(9, 13) * AbyssWorldLib.AbyssId)
                 wait(0.15)
+            end
+            if AbyssWorldLib.AbyssId < 5 then return end
+
+
+            local devLuck = workspace:GetAttribute("__SecretLuck")
+            devLuck = devLuck or 1
+
+            wait(1)
+            local rareDrop = HarukaLib:RollLoot({
+                Dawn = 0.5,
+                None = 100
+            }, devLuck)
+            if rareDrop == "Dawn" then
+                Events.PlaySound_S.Fire(player, SoundService.SFXs.LootDropped)
+                Events.Abyss_RareDropObtained_S.Fire(player)
+
+                ServerLib:GiveItemDrop(player, "Dawnbreak", 1)
+                ServerBindables.RToSendMsgToDiscord:Fire(player.Name.. " has obtained a rare drop with 1% chance! Dawnbreak!")
             end
         end)
     end
@@ -151,14 +164,14 @@ table.insert(AbyssWorldLib.Funcs, function()
 
     local totalMobs = abyssMobsContainer:GetChildren() :: { BasePart }
     local index = 1
-    for mobId: string, mobInfo in AbyssTeambook[abyssId].Team do
+    for _, mobInfo: AbyssBook.AbyssTeamJSON in AbyssBook.TeamConfigs do
         if not totalMobs[index] then break end
 
         local locator = totalMobs[index] :: BasePart
 
-        locator.Name = mobId
+        locator.Name = mobInfo.MobId
         locator:SetAttribute("Level", mobInfo.Level)
-        locator:SetAttribute("EnvironmentBonus", mobInfo.EnvironmentBonus)
+        locator:SetAttribute("EnvironmentBonus", abyssId)
 
         locator:SetAttribute("_RESPAWN_SYMBOL", true)
 
@@ -173,6 +186,18 @@ table.insert(AbyssWorldLib.Funcs, function()
     end
 
     workspace:SetAttribute("AbyssStarted", false)
+
+
+    --// modifiers
+    local modifiers = HarukaLib.TableUtils.Cut(AbyssBook.Modifiers, abyssId) :: { string }
+    if table.find(modifiers, "BurnInflict") then
+        workspace:SetAttribute("_Modifier_BurnInflict", true)
+    end
+    if table.find(modifiers, "BlurEffect") then
+        local blurEffect = Instance.new("BlurEffect")
+        blurEffect.Enabled = true
+        blurEffect.Parent = Lighting
+    end
 end)
 
 
@@ -221,8 +246,8 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         local runTime = now - AbyssWorldLib.AbyssStartTime
 
 
-        if runTime <= 3 then
-            _notifyFireAll("Invalid record! (Less than 3 seconds)")
+        if runTime <= 5 then
+            _notifyFireAll("Invalid record! (Less than 5 seconds)")
             return
         end
 

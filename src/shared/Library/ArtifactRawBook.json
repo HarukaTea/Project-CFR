@@ -33,7 +33,7 @@
         "ArtifactId": "QueenBee",
         "ArtifactTitle": "The Queen Bee",
         "TwoPieceEff": "Class Ult DMG +20%",
-        "ThreePieceEff": "Using an Class Ult increases your ATK by 40% for 12s. This effect cannot stack"
+        "ThreePieceEff": "Using Class Ult increases your ATK by 40% for 12s. This effect cannot stack"
     },
     {
         "ArtifactId": "Library",

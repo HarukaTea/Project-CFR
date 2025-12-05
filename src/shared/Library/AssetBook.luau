@@ -38,6 +38,7 @@ AssetBook.ItemTierColors = {
 	fromHex('#57789c'),
 	fromHex('#6f639f'),
 	fromHex('#ac712c'),
+	fromHex('#a72424')
 }
 
 AssetBook.QuestTypeColors = {

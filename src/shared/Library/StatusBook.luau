@@ -33,7 +33,7 @@ return {
         Icon = "rbxassetid://82541180063318",
         Color = Color3.fromHex('#7bed9f'),
     },
-    HealthBoost = {
+    MaxHealthBoost = {
         Icon = "rbxassetid://104142948728530",
         Color = Color3.fromHex('#7bed9f'),
         IconColor = Color3.fromHex('#2ed573')
@@ -110,4 +110,11 @@ return {
 
     --// special custom
 
+
+
+    --// enemy effects
+    DMGBoost = {
+        Icon = "rbxassetid://2965862892",
+        Color = Color3.fromRGB(255, 100, 100)
+    },
 }
