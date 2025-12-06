@@ -50,19 +50,13 @@ local charStats = {
     OrbFadeTime = 12,
     OrbBounce = 100, --- percentage
 
-    Intensity = 0, --- percentage
-    Warding = 0, --- percentage
-    Drawback = 0, --- percentage
-    Luck = 0, --- percentage
-
-
     EffectList = {},
     TargetingList = {},
     TargetingEnemy = "_OBJECT",
 
     --- item related
     CanMine = false,
-    CanYellowLight = false,
+    CanLight = false,
     CanClimb = false,
 
 
@@ -84,7 +78,7 @@ local exAndExPowerList = {
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge", "ClassUltDMGBonus",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",
-    "OrbSpawnTimesAtStart", "OrbSpawnTime", "OrbFadeTime", "OrbBounce", "Intensity", "Warding", "Drawback", "Luck",
+    "OrbSpawnTimesAtStart", "OrbSpawnTime", "OrbFadeTime", "OrbBounce",
 }
 for _, attr: string in exAndExPowerList do
     charStats[attr.."Ex"] = 0

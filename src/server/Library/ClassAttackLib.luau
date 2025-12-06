@@ -23,7 +23,6 @@ type Dict = { [string]: any }
 export type ClassAttackLibClass = {
     [string]: (plr: Player, symbolAttrs: Dict) -> nil,
 
-    CalCastingTime: (self: ClassAttackLibClass, char: Model, baseTime: number) -> number,
     CalDMG: (self: ClassAttackLibClass, dmgType: "DMG" | "Magic", char: Model, props: {
         ForceMaxDMG: boolean?,
         ForceDMG: number?,
@@ -669,19 +668,6 @@ end
 
 
 --// Private Methods
-
-function ClassAttackLib:CalCastingTime(char: Model, baseTime: number) : number
-    baseTime = baseTime or 1
-
-    local intensity = char:GetAttribute("Intensity") or 0
-    local reduce = baseTime * (intensity / 100)
-
-    local castingTime = baseTime - reduce
-    castingTime = math.ceil(castingTime)
-    castingTime = math.max(0, castingTime)
-
-    return castingTime
-end
 
 
 function ClassAttackLib:CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {

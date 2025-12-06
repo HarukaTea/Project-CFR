@@ -623,6 +623,10 @@ table.insert(CriRPGLib.Funcs, function()
         if projectileOwner == nil then return end
         if not ClientLib:IsCharValid(projectileOwner) then return end
 
+        --// 1130 bug: rare times, this will be nil
+        if not RepS.Packages:FindFirstChild("EnemyAttacks") then return end
+
+
         local projectile = RepS.Packages.EnemyAttacks:FindFirstChild(projectileId, true) :: Model
 
         if not projectile then

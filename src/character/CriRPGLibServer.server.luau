@@ -183,7 +183,7 @@ table.insert(CriRPGLib.Funcs, function()
     light.Parent = char.PrimaryPart
 
     Add(HarukaLib:Hydrate(char, {
-        ["Attr-CanYellowLight"] = function(state: boolean)
+        ["Attr-CanLight"] = function(state: boolean)
             light.Enabled = state or false
         end
     }))

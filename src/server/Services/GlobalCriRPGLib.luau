@@ -354,9 +354,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             amount = math.floor(amount)
 
 
-            ServerLib:PlaceItemDropPart(plr, finalMaterial, amount, adornee.Position + Vector3.new(
-                math.random(-8, 8), 0, math.random(-8, 8)
-            ), true)
+            ServerLib:GiveItemDrop(plr, finalMaterial, amount)
 
             Promise.delay(math.random(60, 100)):andThen(function()
                 material.Parent = workspace.MapComponents.Materials
@@ -449,7 +447,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
         if data.DoTStatus or symbol:GetAttribute("DoTStatus") then
-            local DoTStatus = data.DoTStatus or symbol:GetAttribute("DoTStatus")
+            local DoTStatus = symbol:GetAttribute("DoTStatus") or data.DoTStatus
             if DoTStatus == nil then return end
             if DoTStatus == "Normal" then return end
 
@@ -461,8 +459,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 Target = char,
                 Type = DoTStatus,
                 Creator = owner,
-                Power = 1,
-                Duration = 4
+                Power = 0.5,
+                Duration = 3
             })
             DoTObj:Activate()
         end
@@ -570,17 +568,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local realCD = tonumber(itemInfo.ExtraStatInfoDesync.CD)
         if not realCD then return end
-
-        --// intensity
-        local intensity = char:GetAttribute("Intensity") or 0
-
-        local reduce = realCD * (intensity / 100)
-        reduce = math.max(0, reduce)
-
-        realCD -= reduce
-        realCD = math.ceil(realCD)
-        realCD = math.max(0, realCD)
-
 
         if itemInfo.Type == "Consumable" then
             itemSymbol.Value -= 1

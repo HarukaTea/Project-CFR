@@ -9,11 +9,11 @@ export type AbyssTeamJSON = {
 
 AbyssBook.TeamConfigs = {
     {
-        MobId = "HardmodeWolf",
+        MobId = "CrimsonSlime",
         Level = 100
     },
     {
-        MobId = "SpikeFox",
+        MobId = "KingSlime",
         Level = 100
     }
 }

@@ -25,8 +25,8 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
 
 
     local result = HarukaLib:RollLoot({
-        ["Dual"] = 15,
-        ["None"] = 100 - 15
+        ["Dual"] = 10,
+        ["None"] = 100 - 10
     })
     if result == "Dual" then
         ClassAttackLib:DealDamageToEnemy(char, targeting, {

@@ -110,7 +110,7 @@ function AbyssWorldLib:GiveLoot()
 
             wait(1)
             local rareDrop = HarukaLib:RollLoot({
-                Dawn = 0.5,
+                Dawn = 1,
                 None = 100
             }, devLuck)
             if rareDrop == "Dawn" then

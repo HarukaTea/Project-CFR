@@ -29,7 +29,7 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = ClassAttackLib:CalCastingTime(char, 3)
+    local castTime = 3
 
 
     Events.OpenCastTimeBar_S.Fire(player, castTime)

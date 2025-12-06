@@ -85,7 +85,6 @@ return function (self: Types.CastItemLib)
         return nil
     end
 
-    --// Mana potion is not mana potion, it's speed potion
     CastItemLib.ManaPotion = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
             ReqCombat = false,
@@ -99,16 +98,7 @@ return function (self: Types.CastItemLib)
 
 
         CastItemLib._drinkSoundFunc(char, function()
-            StatusLib:Boost("Speed", char, {
-                Power = 0.5,
-                Duration = 6
-            })
-
-
-            Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 200), {
-                StatusId = "SpeedBoost",
-                Character = char
-            })
+            --// TODO: Implement mana potion effect
 
             Events.PlayStatPoweredScreenFX_S.Fire(player)
         end)
@@ -132,7 +122,7 @@ return function (self: Types.CastItemLib)
         CastItemLib._drinkSoundFunc(char, function()
             local maxShield = char:GetAttribute("MaxShield") :: number
 
-            HarukaLib:AddAttr(char, "Shield", math.floor(maxShield * 0.5))
+            HarukaLib:AddAttr(char, "Shield", math.ceil(maxShield))
 
             Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 150), {
                 StatusId = "Repairing",

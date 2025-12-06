@@ -58,7 +58,7 @@ return function(scope: Fusion.Scope, props: {
         forceJumpButtonSize:set(jumpButtonSize)
 
 
-        forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 2, jumpButtonSize / 2))
+        forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 1.8, jumpButtonSize / 1.8))
         if isSmallScreen then
             forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize - 20))
         else

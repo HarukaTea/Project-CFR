@@ -93,7 +93,7 @@ return function (self: Self)
 
     local statsList = {
         "MAGIC", "HP", "SHIELD", "SPD", "JMP",
-        "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE", "LUCK"
+        "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE",
     }
     local baseStatsList = {}
     for _, stat: string in statsList do
@@ -196,9 +196,6 @@ return function (self: Self)
         end,
         ["Attr-BurnChance"] = function(val: number)
             _setVal("BURN CHANCE", val)
-        end,
-        ["Attr-Luck"] = function(val: number)
-            _setVal("LUCK", val)
         end
     }))
     table.insert(scope, HarukaLib:Hydrate(self.char, {
@@ -230,9 +227,6 @@ return function (self: Self)
         end,
         ["Attr-BaseBurnChance"] = function(val: number)
             _setBaseVal("BURN CHANCE", val)
-        end,
-        ["Attr-BaseLuck"] = function(val: number)
-            _setBaseVal("LUCK", val)
         end
     }))
 

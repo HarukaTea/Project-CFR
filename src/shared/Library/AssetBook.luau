@@ -49,8 +49,6 @@ AssetBook.QuestTypeColors = {
 
 
 AssetBook.ItemEffectIcons = {
-	CanYellowLight = "rbxassetid://2965771738",
-	CanBlueLight = "rbxassetid://2965771738",
 	CanLight = "rbxassetid://2965771738",
 	CanMine = "rbxassetid://12118509077",
 	CanClimb = "rbxassetid://119170658838472",
@@ -83,7 +81,6 @@ AssetBook.ItemEffectIcons = {
 
 AssetBook.ItemEffectIconColors = {
 	CriChance = fromHex('#ffeaa7'),
-	Luck = fromHex('#2ed573'),
 	MaxHealth = fromHex('#2ed573'),
 	MaxShield = fromHex('#ffeaa7'),
 	FreezeChance = fromHex('#81ecec')
@@ -96,10 +93,7 @@ AssetBook.ItemEffectNames = {
 	SpeedEx = "Speed",
 	MagicEx = "Magic",
 	MaxHealthEx = "Health",
-	IntensityEx = "Intensity",
-	LuckEx = "Luck",
 	MaxShieldEx = "Shield",
-	WardingEx = "Warding",
 	PoisonChanceEx = "Poison Chance",
 	BurnChanceEx = "Burn Chance",
 	BleedChanceEx = "Bleed Chance",
@@ -109,9 +103,6 @@ AssetBook.ItemEffectNames = {
 AssetBook.ItemEffectIsPercentage = {
 	CriChanceEx = true,
 	CriDMGEx = true,
-	IntensityEx = true,
-	LuckEx = true,
-	WardingEx = true,
 	PoisonChanceEx = true,
 	BurnChanceEx = true,
 	BleedChanceEx = true,
@@ -234,14 +225,14 @@ AssetBook.PlaceIds = {
 	["7037847546"] = {
 		AbyssLevel = 18331795211,
 		Mainworld = 124519565742104,
-		Tutorial = 1043446942,
+		WaveDefense = 1043446942,
 	},
 
 	-- CFT_but_public
 	["6754928573"] = {
 		AbyssLevel = 17737750943,
 		Mainworld = 118088243313343,
-		Tutorial = 18502526655,
+		WaveDefense = 18502526655,
 	},
 
 	-- CFT

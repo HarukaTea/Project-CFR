@@ -58,11 +58,11 @@ local formulas = {
         local l = props.Level :: number
         local base = 100 + 40 * l
 
-        if l > 45 and l < 100 then
-            base = 300 + 80 * l ^ 1.1599
+        if l >= 45 and l < 100 then
+            base = 325 + 100 * l ^ 1.1599
         end
-        if l > 100 then
-            base = 550 + 160 * l ^ 1.1599
+        if l >= 100 then
+            base = 555 + 170 * l ^ 1.1599
         end
 
         return math.ceil(base * props.EnvironmentBonus)
@@ -75,7 +75,7 @@ local formulas = {
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
-        local f = 8 + 3.5 * props.Level
+        local f = 8 + 3 * props.Level
 
         return math.ceil(f * props.EnvironmentBonus)
     end,

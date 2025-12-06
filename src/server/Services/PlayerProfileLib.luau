@@ -257,6 +257,23 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     end
 
 
+    --// mirgration3: check if there is unneeded stat
+    local removeList = { "WardingEx", "DrawbackEx", "IntensityEx", "LuckEx" }
+    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
+        local itemStat = itemInfo.ItemStat
+
+        for _, key in removeList do
+            itemStat = string.gsub(itemStat, key.."%([^)]*%)%,?", "")
+        end
+
+        itemStat = string.gsub(itemStat, "^,", "")
+        itemStat = string.gsub(itemStat, ",$", "")
+        itemStat = string.gsub(itemStat, ",+", ",")
+
+        data.ItemsSQL[itemInfo.UniqueId].ItemStat = itemStat
+    end
+
+
     --// clean up old settings
     data.Settings = nil
 

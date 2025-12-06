@@ -479,8 +479,6 @@ function PlayerLib:Init()
     local profileFailedTimes = 0
 
 
-    local worldId = workspace:GetAttribute("WorldId") or "Unknown"
-
     while profile == nil do
         wait(0.5)
         if not plr then break end
@@ -489,7 +487,7 @@ function PlayerLib:Init()
 
 
         Promise.new(function(resolve, reject)
-            profile = profileStoreMain:CreateProfileAsync("Player_"..plr.UserId, (worldId == "TutorialPlace"))
+            profile = profileStoreMain:CreateProfileAsync("Player_"..plr.UserId, false)
 
             if profile == nil then
                 reject("Failed to fetch profile")
@@ -498,7 +496,7 @@ function PlayerLib:Init()
 
 
             --// transfer data!! (V0.5.5)
-            if not profile._IsTransferred and worldId ~= "TutorialPlace" then
+            if not profile._IsTransferred then
                 local success, result = profile:TransferDataAsync(DS_Version.OldId, "Player_"..plr.UserId)
                 if success then
                     profile._IsTransferred = true
@@ -627,11 +625,6 @@ function PlayerLib:_SaveData()
     if not self.ProfileObj.Profile then return end
     if not self.Slot then return end
     if self.Player:GetAttribute("Haruka_DataLocked") then return end
-
-
-    local worldId = workspace:GetAttribute("WorldId") or "Unknown"
-    if worldId == "TutorialPlace" then return end
-
 
     local profileAttrs = self.ProfileObj.Profile.Data[self.Slot].Attrs :: { any }
     local nowAttrs = self.Player:GetAttributes()

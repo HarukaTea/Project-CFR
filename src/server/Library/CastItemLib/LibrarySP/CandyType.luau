@@ -27,7 +27,6 @@ return function (self: Types.CastItemLib)
 
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 10)
-            HarukaLib:AddAttr(char, "LuckEx", 20)
 
             ServerLib:ShowNumber(char, amount, Color3.fromHex('#7bed9f'))
         end)
