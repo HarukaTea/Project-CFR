@@ -1,5 +1,4 @@
---!native
---!optimize 2
+
 --!nocheck
 --!nolint
 --#selene: allow(unused_variable, global_usage)

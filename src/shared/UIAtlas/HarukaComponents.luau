@@ -8,7 +8,18 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-local CriRPGColorLab = require(RepS.HarukaShared.UIAtlas.CriRPGColorLab)
+
+
+local CriRPGColorLab = {}
+
+CriRPGColorLab.BLACK_COLOR = Color3.fromHex('#191a1f')
+CriRPGColorLab.WHITE_COLOR = Color3.fromHex('#ece5d8')
+CriRPGColorLab.RED_COLOR = Color3.fromHex('#ff7675')
+CriRPGColorLab.GREEN_COLOR = Color3.fromHex('#7bd99f')
+CriRPGColorLab.GREY_COLOR = Color3.fromHex('#25292f')
+CriRPGColorLab.BLUE_COLOR = Color3.fromHex('#7ce4f8')
+
+
 
 local HarukaComponents = {}
 HarukaComponents.FusionComponents = FusionComponents

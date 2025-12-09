@@ -96,11 +96,6 @@ Players.PlayerRemoving:Connect(function(player)
     if playerObj then
         playerObj:Destroy()
     end
-
-    --- this is equal to `PlayerDestroyBehavior` property to true in workspace
-    if player.Character then
-        player.Character:Destroy()
-    end
 end)
 Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
     if not netData.ActionId then return end
@@ -551,13 +546,6 @@ function PlayerLib:Init()
     if plr.Parent ~= Players then return end
 
 
-    --// load titlescreen (streaming)
-    pcall(function()
-        plr:RequestStreamAroundAsync(Vector3.one * 1599, 5)
-    end)
-
-
-
     local profileObj = PlayerProfileLib.new(plr, profile)
     self.ProfileObj = profileObj
 
@@ -607,13 +595,14 @@ end
 function PlayerLib:Destroy()
     allPlayerObjPool[self.UniqueId] = nil
 
+    self:RemoveMapComponents()
+    self.Empty()
+
+
     local success, err = pcall(self._SaveData, self)
     if not success then
         warn(err)
     end
-
-    self:RemoveMapComponents()
-    self.Empty()
 end
 
 

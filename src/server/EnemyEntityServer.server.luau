@@ -450,9 +450,9 @@ function EntityLib:_SpawnModel()
         hrp:FindFirstChildOfClass("Motor6D"):Destroy()
     end
 
-    local alignMoverAtt = Instance.new("Attachment")
-    alignMoverAtt.Name = "CF_RootNode"
-    alignMoverAtt.Parent = hrp
+    local cfRootNodeAtt = Instance.new("Attachment")
+    cfRootNodeAtt.Name = "CF_RootNode"
+    cfRootNodeAtt.Parent = hrp
 
     model.PrimaryPart = hrp
 	model.PrimaryPart.CollisionGroup = "EnemyBodyPart"
@@ -1374,18 +1374,19 @@ function EntityLib:_ApplyAbyssModifier()
             boost = tonumber(boost)
             boost = boost or 1
 
+            local power = 0.5 * boost
 
             StatusLib:Boost("MaxHealth", self.Entity, {
                 Duration = 9999,
                 Ex = 0,
-                Power = boost,
+                Power = power,
             })
 
         elseif modifier == "ATKBoost1" then
             StatusLib:Boost("DMG", self.Entity, {
                 Duration = 9999,
                 Ex = 0,
-                Power = 1
+                Power = 0.5
             })
         end
     end

@@ -120,13 +120,10 @@ function HarukaLib:ClearAllAttributes(obj: Instance)
 end
 
 
-local abs = math.abs
 --[[
 	Detect if the given position is inside any of the given regions.
 ]]
 function HarukaLib:IsInRegion(position: Vector3, regions: { BasePart }) : BasePart?
-	local region: BasePart = nil
-
 	for _, child: BasePart in regions do
 		if child == nil then continue end
 		if not child:IsA("BasePart") then continue end
@@ -134,16 +131,17 @@ function HarukaLib:IsInRegion(position: Vector3, regions: { BasePart }) : BasePa
 		local point = child.CFrame:PointToObjectSpace(position)
 		local size = child.Size
 
-		if abs(point.X) < size.X / 2
-			and abs(point.Y) < size.Y / 2
-			and abs(point.Z) < size.Z / 2 then
+		local sx, sy, sz = size.X / 2, size.Y / 2, size.Z / 2
 
-			region = child
-			break
+		if math.abs(point.X) <= sx + 0.01
+			and math.abs(point.Y) <= sy + 0.01
+			and math.abs(point.Z) <= sz + 0.01 then
+
+			return child
 		end
 	end
 
-	return region
+	return nil
 end
 
 
@@ -352,12 +350,7 @@ function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean
 	local dropTime = tickTime * 10
 
 	if runInstantly then
-		local success, result = pcall(function()
-			task.spawn(func)
-		end)
-		if not success then
-			warn(result)
-		end
+		task.spawn(func)
 	end
 
 	local connection = RunService.Heartbeat:Connect(function(deltaTime)
@@ -365,17 +358,20 @@ function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean
 
 		if nowTime > dropTime then
 			nowTime = 0
-			task.spawn(func)
+			func()
 
 		elseif nowTime > tickTime then
 			nowTime -= tickTime
 
-			task.spawn(func)
+			func()
 		end
 	end)
 
 	return function ()
-		connection:Disconnect()
+		if connection then
+			connection:Disconnect()
+			connection = nil
+		end
 	end
 end
 

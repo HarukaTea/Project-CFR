@@ -31,13 +31,13 @@ AbyssBook.ModifierIcons = {
     BurnInflict = "rbxassetid://18857805491"
 }
 AbyssBook.ModifierInfo = {
-    HealthBoost1 = "Enemy Health +100%",
-    HealthBoost2 = "Enemy Health +200%",
+    HealthBoost1 = "Enemy Health +50%",
+    HealthBoost2 = "Enemy Health +100%",
 
-    ATKBoost1 = "Enemy Damage +100%",
+    ATKBoost1 = "Enemy Damage +50%",
     BlurEffect = "Makes screen blurry",
 
-    HealthBoost3 = "Enemy Health +300%",
+    HealthBoost3 = "Enemy Health +150%",
     BurnInflict = "Enemy's attack will inflict Burn"
 }
 

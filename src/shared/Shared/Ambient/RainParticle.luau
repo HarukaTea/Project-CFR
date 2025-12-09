@@ -9,8 +9,11 @@ export type RainParticleClass = {
 	__index: RainParticleClass,
 
 	new: () -> RainParticleClass,
+
 	Enable: (self: RainParticleClass) -> nil,
 	Disable: (self: RainParticleClass) -> nil,
+	Destroy: (self: RainParticleClass) -> nil,
+
 	SetRainCastParticleRate: (self: RainParticleClass, rate: number) -> nil,
 
 	RainCastParts: { BasePart },
@@ -40,9 +43,13 @@ local rainParts = {
 	[3] = rainCastPart:Clone(),
 	[4] = rainCastPart:Clone(),
 }
-for _, part: BasePart in rainParts do
+local rainPartsCFrames = {
+}
+for index, part: BasePart in rainParts do
 	part.CFrame = CFrame.new(Vector3.one * 1599 * 40)
 	part.Parent = rainCastContainer
+
+	rainPartsCFrames[index] = part.CFrame
 end
 
 --// Helper functions
@@ -50,11 +57,12 @@ end
 local function _replicatePos(cameraCFrame: CFrame)
 	local CF = cameraCFrame + Vector3.yAxis * 50
 
+	rainPartsCFrames[1] = CF
+	rainPartsCFrames[2] = CF + (CF.RightVector * 45)
+	rainPartsCFrames[3] = CF - (CF.RightVector * 45)
+	rainPartsCFrames[4] = CF + (CF.LookVector * 45)
 
-	rainParts[1].CFrame = CF
-	rainParts[2].CFrame = CF + (CF.RightVector * 45)
-	rainParts[3].CFrame = CF - (CF.RightVector * 45)
-	rainParts[4].CFrame = CF + (CF.LookVector * 45)
+	workspace:BulkMoveTo(rainParts, rainPartsCFrames, Enum.BulkMoveMode.FireCFrameChanged)
 end
 
 
@@ -99,6 +107,7 @@ function Particles:Disable()
 
 	self:SetRainCastParticleRate(0)
 end
+Particles.Destroy = Particles.Disable
 
 
 function Particles:SetRainCastParticleRate(rate: number)

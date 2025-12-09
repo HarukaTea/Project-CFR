@@ -242,56 +242,44 @@ return function (self: Self)
 
         part:AddTag("LDMTerrainPart")
     end
-    local function _changePartToOriginal(part: BasePart)
-        if part == nil then return end
-        if part.Parent == nil then return end
-        if not HarukaLib:IsBasePartType(part) then return end
+    local LDMObserver = Fusion.Observer(scope, self.SwitcherVals.Game.LowDetailMode)
+    LDMObserver:onBind(function()
+        local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
 
-        if not part:GetAttribute("OriMaterial") then return end
-        if not part:GetAttribute("OriColor") then return end
-
-        local oriMaterial, oriColor =
-            part:GetAttribute("OriMaterial") :: Enum.Material,
-            part:GetAttribute("OriColor") :: Color3
-
-        part.Material = oriMaterial
-        part.Color = oriColor
-
-        part:RemoveTag("LDMTerrainPart")
-    end
-    local function _func1(state: boolean)
         if state then
             for _, part in CollectionService:GetTagged("TerrainPart") do
                 _changePartToPlastic(part)
             end
             for _, tree: Model in CollectionService:GetTagged("TreeEntity") do
-                for _, part in tree:QueryDescendants(HarukaLib.BasePartSelector) do
+                for _, part in tree:GetDescendants() do
                     _changePartToPlastic(part)
                 end
             end
             for _, flower: Model in CollectionService:GetTagged("FlowerEntity") do
-                for _, part in flower:QueryDescendants(HarukaLib.BasePartSelector) do
+                for _, part in flower:GetDescendants() do
                     _changePartToPlastic(part)
                 end
             end
         else
             for _, part: BasePart in CollectionService:GetTagged("LDMTerrainPart") do
-                _changePartToOriginal(part)
+                if part == nil then return end
+                if part.Parent == nil then return end
+                if not HarukaLib:IsBasePartType(part) then return end
+
+                if not part:GetAttribute("OriMaterial") then return end
+                if not part:GetAttribute("OriColor") then return end
+
+                local oriMaterial, oriColor =
+                    part:GetAttribute("OriMaterial") :: Enum.Material,
+                    part:GetAttribute("OriColor") :: Color3
+
+                part.Material = oriMaterial
+                part.Color = oriColor
+
+                part:RemoveTag("LDMTerrainPart")
             end
         end
-    end
-
-    local LDMObserver = Fusion.Observer(scope, self.SwitcherVals.Game.LowDetailMode)
-    LDMObserver:onBind(function()
-        local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
-
-        _func1(state)
     end)
-    table.insert(scope, HarukaLib.Clock(5, function()
-        local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
-
-        _func1(state)
-    end))
 
 
     local shadowsObserver = Fusion.Observer(scope, self.SwitcherVals.Game.GlobalShadows)

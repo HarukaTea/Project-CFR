@@ -9,7 +9,6 @@ local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
-local StarterPlayer = game:GetService("StarterPlayer")
 local TeleportService = game:GetService("TeleportService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
@@ -101,59 +100,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if plr:GetAttribute("IsLeaving") then return end
 
 
-        if plr.Character then
-            wait(Players.RespawnTime)
-            if plr.Character then
-                plr.Character:Destroy()
-                plr.Character = nil
-            end
-        end
+        plr:LoadCharacterAsync()
 
-
-        if not plr then return end
-        if not plr:IsDescendantOf(Players) then return end
-        if plr:GetAttribute("IsLeaving") then return end
-
-        local r6Char: Model
-
-        Promise.new(function(resolve)
-            local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-            r6Char = Players:CreateHumanoidModelFromDescription(humanoidDesc, Enum.HumanoidRigType.R6)
-            r6Char.Name = plr.Name
-
-            resolve("Completed")
-
-        end):timeout(5):catch(function()
-
-            r6Char = RepS.Packages.Unloads.DummyH:Clone() :: Model
-        end):await()
-
-        --- keep retrying
-        if r6Char.Name == "DummyH" then
-            Promise.retryWithDelay(function()
-                return Promise.new(function(resolve)
-                    local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-
-                    resolve(humanoidDesc)
-
-                end):timeout(5):catch(function()
-
-                end)
-
-            end, 3, 6):andThen(function(humanoidDesc: HumanoidDescription)
-                local r6Humanoid = r6Char.Humanoid :: Humanoid
-
-                r6Humanoid:ApplyDescription(humanoidDesc)
-
-            end):catch(function()
-
-            end)
-        end
-
+        local r6Char = plr.Character :: Model
         local r6Humanoid = r6Char.Humanoid :: Humanoid
 
         r6Char.Archivable = true
-        r6Char.Name = plr.Name
         r6Char:PivotTo(CFrame.new(Vector3.yAxis * 159))
         r6Char.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 
@@ -162,18 +114,21 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         r6Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
         r6Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
 
-        r6Char.Animate:Destroy()
+        if r6Char:FindFirstChild("Animate") then
+            r6Char.Animate:Destroy()
+        end
+        if r6Char:FindFirstChild("Health") then
+            r6Char.Health:Destroy()
+        end
         r6Char.PrimaryPart = r6Humanoid.RootPart
 
         r6Char:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
 
-        local alignMoverAtt = Instance.new("Attachment")
-        alignMoverAtt.Name = "CF_RootNode"
-        alignMoverAtt.Parent = r6Char.PrimaryPart
+        local cfRootNodeAtt = Instance.new("Attachment")
+        cfRootNodeAtt.Name = "CF_RootNode"
+        cfRootNodeAtt.Parent = r6Char.PrimaryPart
 
         HarukaLib:SetCollisionGroup(r6Char, "PlayerBodyPart")
-
-        plr.Character = r6Char
 
 
         --// clear collision box
@@ -189,11 +144,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         r6Char:SetAttribute("SpawnClock", DateTime.now().UnixTimestamp)
         r6Char.Parent = workspace.EntitiesPlayerChar
-
-
-        for _, thatScript: Instance in StarterPlayer.StarterCharacterScripts:GetChildren() do
-            thatScript:Clone().Parent = r6Char
-        end
     end)
 end)
 

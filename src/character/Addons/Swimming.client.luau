@@ -6,6 +6,12 @@ local RS = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local swimConfig = worldConfig:GetAttribute("CanSwim") :: boolean
+
+if not swimConfig then return end
+
+
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
@@ -158,7 +164,7 @@ local function swimOut()
     })
 end
 
-Add(char.PrimaryPart.Touched:Connect(function(water: BasePart)
+Add(char.Head.Touched:Connect(function(water: BasePart)
     if water:IsA("BasePart") and string.find(water.Name, "_Liquid") then
         swimIn()
         if not table.find(watersIn, water) then
@@ -166,7 +172,7 @@ Add(char.PrimaryPart.Touched:Connect(function(water: BasePart)
         end
     end
 end))
-Add(char.PrimaryPart.TouchEnded:Connect(function(water: BasePart)
+Add(char.Head.TouchEnded:Connect(function(water: BasePart)
     if water:IsA("BasePart") and string.find(water.Name, "_Liquid") then
         if table.find(watersIn, water) then
             table.remove(watersIn, table.find(watersIn, water))

@@ -5,6 +5,13 @@ local RS = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local slideConfig = worldConfig:GetAttribute("CanSlide") :: boolean
+
+if not slideConfig then return end
+
+
+
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)

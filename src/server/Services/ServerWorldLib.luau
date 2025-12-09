@@ -49,6 +49,18 @@ end
 --// Private functions
 
 
+table.insert(ServerWorldLib.Funcs, function()
+    local spawnPoint = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true) :: SpawnLocation
+    if not spawnPoint then
+        error("No SpawnLocation found in Maps folder")
+        return
+    end
+
+    spawnPoint.Enabled = true
+    spawnPoint.Duration = 0
+end)
+
+
 
 table.insert(ServerWorldLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
@@ -231,18 +243,18 @@ table.insert(ServerWorldLib.Funcs, function()
         end
 
         --// orb rotation support
-        local alignMoverAttachment = Instance.new("Attachment")
-        alignMoverAttachment.Name = "CF_RootNode"
-        alignMoverAttachment.Parent = orb.PrimaryPart
+        local cfRootNodeAttachment = Instance.new("Attachment")
+        cfRootNodeAttachment.Name = "CF_RootNode"
+        cfRootNodeAttachment.Parent = orb.PrimaryPart
 
         local linearVel = Instance.new("LinearVelocity")
         linearVel.ForceLimitsEnabled = false
-        linearVel.Attachment0 = alignMoverAttachment
+        linearVel.Attachment0 = cfRootNodeAttachment
         linearVel.VectorVelocity = Vector3.zero
         linearVel.Parent = orb.PrimaryPart
 
         local angularVelocity = Instance.new("AngularVelocity")
-        angularVelocity.Attachment0 = alignMoverAttachment
+        angularVelocity.Attachment0 = cfRootNodeAttachment
         angularVelocity.AngularVelocity = Vector3.yAxis * 2
         angularVelocity.RelativeTo = Enum.ActuatorRelativeTo.Attachment0
         angularVelocity.MaxTorque = math.huge
@@ -533,10 +545,10 @@ table.insert(ServerWorldLib.Funcs, function()
 
         prompt:AddTag("PromptEntity")
 	end
-	for _, child: Instance in workspace:QueryDescendants("ProximityPrompt") do
+	for _, child: Instance in workspace.MapComponents:QueryDescendants("ProximityPrompt") do
 		_updatePrompt(child)
 	end
-	workspace.DescendantAdded:Connect(_updatePrompt)
+	workspace.MapComponents.DescendantAdded:Connect(_updatePrompt)
 end)
 
 

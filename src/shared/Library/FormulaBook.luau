@@ -59,10 +59,10 @@ local formulas = {
         local base = 100 + 40 * l
 
         if l >= 45 and l < 100 then
-            base = 325 + 100 * l ^ 1.1599
+            base = 325 + 100 * l
         end
         if l >= 100 then
-            base = 555 + 170 * l ^ 1.1599
+            base = 555 + 170 * l
         end
 
         return math.ceil(base * props.EnvironmentBonus)

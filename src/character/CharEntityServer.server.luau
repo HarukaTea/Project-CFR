@@ -27,7 +27,6 @@ type CharLibClass = {
     Destroy: (self: CharLibClass) -> nil,
     Init: (self: CharLibClass) -> nil,
 
-	_RagdollInit: (self: CharLibClass) -> nil,
 	_TriggerRagdoll: (self: CharLibClass) -> nil,
 }
 
@@ -37,19 +36,8 @@ CharLib.Funcs = {}
 
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		CharLib:Destroy()
-	end
-end))
-Add(script.Destroying:Connect(function()
-    CharLib:Destroy()
-end))
-
 
 function CharLib:Init()
-	self:_RagdollInit()
-
 	for _, func: () -> nil in self.Funcs do
         task.spawn(func)
     end
@@ -58,17 +46,16 @@ function CharLib:Init()
 end
 
 
-
 function CharLib:Destroy()
     if isDead then return end
 
     isDead = true
     Empty()
 
+	char.PlayerDied:Fire()
+
 	ServerBindables.PlayerDied:Fire(plr.Name)
     ServerBindables.RToSpawnChar:Fire(plr)
-
-	char.PlayerDied:Fire()
 end
 
 
@@ -76,6 +63,9 @@ end
 
 
 table.insert(CharLib.Funcs, function()
+	Add(plr.CharacterRemoving:Connect(function()
+		CharLib:Destroy()
+	end))
 	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
 			pcall(CharLib._TriggerRagdoll, CharLib)
@@ -83,14 +73,13 @@ table.insert(CharLib.Funcs, function()
 			CharLib:Destroy()
 		end
 	end))
-	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-		local newParent = char
-        if newParent then
-            if newParent.PrimaryPart == nil and newParent:FindFirstChild("Humanoid") then
+	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function(newParent)
+        if newParent and newParent:IsA("Model") then
+            if newParent.PrimaryPart == nil and newParent:FindFirstChildOfClass("Humanoid") then
                 newParent.Humanoid.Health = -1
                 return
             end
-            if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+            if newParent.PrimaryPart == nil and not newParent:FindFirstChildOfClass("Humanoid") then
                 CharLib:Destroy()
                 return
             end
@@ -101,13 +90,13 @@ table.insert(CharLib.Funcs, function()
 end)
 
 
-
-function CharLib:_RagdollInit()
+table.insert(CharLib.Funcs, function()
 	local humanoid = char.Humanoid :: Humanoid
 
 	humanoid.BreakJointsOnDeath = false
 	humanoid.RequiresNeck = false
-end
+end)
+
 
 
 function CharLib:_TriggerRagdoll()
@@ -184,10 +173,8 @@ end
 
 table.insert(CharLib.Funcs, function()
     Add(HarukaLib.Clock(0.5, function()
-		if not ServerLib:IsModelValid(char) then return end
 		if not plr then return end
-
-
+		if not ServerLib:IsModelValid(char) then return end
 		if char:GetAttribute("IsInCombat") then return end
 
 

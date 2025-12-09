@@ -196,6 +196,7 @@ table.insert(AbyssWorldLib.Funcs, function()
     if table.find(modifiers, "BlurEffect") then
         local blurEffect = Instance.new("BlurEffect")
         blurEffect.Enabled = true
+        blurEffect.Size = 10
         blurEffect.Parent = Lighting
     end
 end)

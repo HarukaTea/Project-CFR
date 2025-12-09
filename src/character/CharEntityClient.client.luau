@@ -23,6 +23,9 @@ local wait = task.wait
 repeat wait() until char:HasTag("PlayerCharEntity")
 
 
+local isDead = false
+
+
 type CharLibClass = {
     Funcs: { () -> nil },
 
@@ -38,20 +41,6 @@ local CharLib = {} :: CharLibClass
 CharLib.Funcs = {}
 
 
-Add(Players.PlayerRemoving:Connect(function(player: Player)
-	if player == plr then
-		pcall(CharLib.__Destroy, CharLib)
-
-        CharLib:Destroy()
-	end
-end))
-Add(script.Destroying:Connect(function()
-    pcall(CharLib.__Destroy, CharLib)
-
-    CharLib:Destroy()
-end))
-
-
 
 function CharLib:Init()
     for _, func: () -> nil in self.Funcs do
@@ -59,6 +48,11 @@ function CharLib:Init()
     end
 
 
+    Add(plr.CharacterRemoving:Connect(function()
+        pcall(CharLib.__Destroy, CharLib)
+
+        CharLib:Destroy()
+    end))
     Add(char.Humanoid.HealthChanged:Connect(function(health: number)
         if health <= 0 then
             pcall(self.__Destroy, self)
@@ -66,14 +60,13 @@ function CharLib:Init()
             pcall(self._TriggerRagdoll, self)
         end
     end))
-    Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-        local newParent = char
-        if newParent then
-            if newParent.PrimaryPart == nil and newParent:FindFirstChild("Humanoid") then
+    Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function(newParent)
+        if newParent and newParent:IsA("Model") then
+            if newParent.PrimaryPart == nil and newParent:FindFirstChildOfClass("Humanoid") then
                 newParent.Humanoid.Health = -1
                 return
             end
-            if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+            if newParent.PrimaryPart == nil and not newParent:FindFirstChildOfClass("Humanoid") then
                 pcall(self.__Destroy, self)
                 pcall(self.Destroy, self)
                 return
@@ -91,6 +84,9 @@ end
 
 
 function CharLib:Destroy()
+    if isDead then return end
+
+    isDead = true
     Empty()
 end
 
@@ -102,6 +98,8 @@ function CharLib:__Init()
     Bindables.UpdateCameraPart:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
 
     SoundService.Musics.Overworld:Play()
+
+
     CharLib:__Init_Abyss()
 
     local camera = workspace.CurrentCamera
@@ -319,14 +317,14 @@ table.insert(CharLib.Funcs, function()
         local emote = ""
 
         -- don't ask me why this messy code is here, because of dawg luau-lsp type-checking
-        if msg == "/e dance" then
+        if msg == "//e dance" then
             emote = "dance"..math.random(1, 3)
         end
-        if not msg == "/e dance" then
-            if (string.sub(msg, 1, 3) == "/e ") then
+        if not msg == "//e dance" then
+            if (string.sub(msg, 1, 3) == "//e ") then
                 emote = string.sub(msg, 4)
 
-            elseif (string.sub(msg, 1, 7) == "/emote ") then
+            elseif (string.sub(msg, 1, 7) == "//emote ") then
                 emote = string.sub(msg, 8)
             end
         end
@@ -372,15 +370,13 @@ table.insert(CharLib.Funcs, function()
                 lastMaterialSFX = nil
             end
 
-            for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
-                if not sound:IsA("Sound") then continue end
+            for _, sound: Sound in SoundService.FS_SFXs:QueryDescendants("Sound") do
                 sound.Playing = false
             end
         end
     end))
     Add(function()
-        for _, sound: Sound in SoundService.FS_SFXs:GetChildren() do
-            if not sound:IsA("Sound") then continue end
+        for _, sound: Sound in SoundService.FS_SFXs:QueryDescendants("Sound") do
             sound.Playing = false
         end
     end)

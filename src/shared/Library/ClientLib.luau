@@ -332,21 +332,17 @@ function ClientLib:InitCharDeadTrackers(props: {
 	local plr = props.Player
 
 
-	Add(Players.PlayerRemoving:Connect(function(player: Player)
-		if player == plr then
-			Empty()
-		end
+	Add(plr.CharacterRemoving:Connect(function()
+		Empty()
 	end))
-	Add(script.Destroying:Connect(Empty))
 	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
 			Empty()
 		end
 	end))
-	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
-		local newParent = char
-		if newParent then
-			if newParent.PrimaryPart == nil and not newParent:FindFirstChild("Humanoid") then
+	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function(newParent)
+		if newParent and newParent:IsA("Model") then
+			if newParent.PrimaryPart == nil and not newParent:FindFirstChildOfClass("Humanoid") then
 				Empty()
 				return
 			end

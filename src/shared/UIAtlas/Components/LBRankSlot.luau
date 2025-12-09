@@ -59,6 +59,7 @@ return function (scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(0.3, 1),
                 TextXAlignment = Enum.TextXAlignment.Right,
                 Text = text,
+                AutoLocalize = false,
 
 
                 [Children] = {

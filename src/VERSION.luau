@@ -7,4 +7,4 @@ if RunService:IsStudio() then
 end
 
 
-return "CF_ALPHA0.6_V"..game.PlaceVersion
+return "CF_ALPHA0.7_V"..game.PlaceVersion

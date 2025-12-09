@@ -1,5 +1,4 @@
 
-local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -34,34 +33,27 @@ return function (self: Self)
         table.insert(self.CharVals, Fusion.Value(scope, nil))
     end
 
-    table.insert(scope, task.spawn(function()
-        Promise.new(function(resolve)
-            local humanoidDesc = Players:GetHumanoidDescriptionFromUserId(Players.LocalPlayer.UserId)
-            local r6Char = Players:CreateHumanoidModelFromDescription(humanoidDesc, Enum.HumanoidRigType.R6)
 
-            resolve(r6Char)
+    --// Rigging
+    do
+        local r6Char = RepS.Packages.Unloads.DummyH:Clone() :: Model
+        local r6CharHumanoid = r6Char.Humanoid :: Humanoid
 
-        end):andThen(function(r6Char: Model)
-            local r6CharHumanoid = r6Char.Humanoid :: Humanoid
+        r6Char.Name = "Rig"
+        r6Char.PrimaryPart = r6CharHumanoid.RootPart
 
-            r6Char.Name = "Rig"
-            r6Char.PrimaryPart = r6CharHumanoid.RootPart
+        r6CharHumanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        r6CharHumanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
 
-            r6CharHumanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-            r6CharHumanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+        r6Char.Animate:Destroy()
+        r6Char.Parent = workspace.MapComponents.Titlescreen
 
-            r6Char.Animate:Destroy()
-            r6Char.Parent = workspace.MapComponents.Titlescreen
+        for _, val in self.CharVals do
+            local clonedChar = r6Char:Clone()
+            clonedChar:PivotTo(workspace.MapComponents.Titlescreen.CharPreviewLocator.CFrame)
+            clonedChar.Parent = workspace.MapComponents.Titlescreen
 
-
-            for _, val in self.CharVals do
-                local clonedChar = r6Char:Clone()
-                clonedChar:PivotTo(workspace.MapComponents.Titlescreen.CharPreviewLocator.CFrame)
-                clonedChar.Parent = workspace.MapComponents.Titlescreen
-
-                val:set(clonedChar)
-            end
-
-        end):catch(function() end)
-    end))
+            val:set(clonedChar)
+        end
+    end
 end

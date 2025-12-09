@@ -124,7 +124,7 @@ return function (self: Self)
         HarukaLib:FreezePlayerControls("Unfreeze")
         GuiService.SelectedObject = nil
 
-        if npcChatting then
+        if npcChatting and typeof(npcChatting) == "Instance" and npcChatting:IsA("Model") then
             Events.FinishNPCChat_C.Fire({
                 NPCId = npcChatting.Name,
                 SeriesId = seriesId

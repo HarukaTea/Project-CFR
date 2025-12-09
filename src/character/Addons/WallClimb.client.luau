@@ -4,7 +4,14 @@ local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+
+
+
+local worldConfig = RepS:FindFirstChild("WorldConfig") :: Configuration
+local wallClimbConfig = worldConfig:GetAttribute("CanWallClimb") :: boolean
+
+if not wallClimbConfig then return end
+
 
 
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
@@ -21,9 +28,9 @@ local animator = humanoid.Animator :: Animator
 local plr = Players.LocalPlayer
 
 
-local IS_PC = HarukaLib:GetDevice() == "PC"
-
 local WallClimb = {}
+WallClimb.IsClimbing = false
+WallClimb.IsNearWall = false
 
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
@@ -59,11 +66,6 @@ climbingAnim.Priority = Enum.AnimationPriority.Action3
 Add(climbingAnim)
 
 
-local MOVEMENT_KEYS = {
-    [Enum.KeyCode.W] = true,
-    [Enum.KeyCode.S] = true,
-    [Enum.KeyCode.Space] = true
-}
 local function getKeyMovement(key: Enum.KeyCode | string): Vector3?
     if key == Enum.KeyCode.W or key == "W" then
         return char.PrimaryPart.CFrame.UpVector
@@ -107,7 +109,6 @@ local function climbFunction(key)
     end
 end
 
-WallClimb.IsClimbing = false
 
 function WallClimb:Init()
     if WallClimb.IsClimbing then return end
@@ -197,20 +198,21 @@ function WallClimb:Stop()
 end
 
 
-Add(RunService.Heartbeat:Connect(function()
-    if IS_PC then
-        local pressedKeys = UserInputService:GetKeysPressed()
 
-        for _, key in pressedKeys do
-            if not MOVEMENT_KEYS[key.KeyCode] then continue end
+Add(HarukaLib.Clock(1, function()
+    WallClimb.IsNearWall = false
 
-            climbFunction(key.KeyCode)
+    for _, wall: BasePart in CollectionService:GetTagged("WallClimbPart") do
+        local distance = plr:DistanceFromCharacter(wall.Position)
+        if distance > 0 and distance <= 80 then
+            WallClimb.IsNearWall = true
+            break
         end
-        if #pressedKeys <= 0 and WallClimb.IsClimbing then
-            climbingAnim:AdjustSpeed(0)
-        end
-    else
-        local key = getKeyFromMoveDirection()
-        climbFunction(key)
     end
+end))
+Add(RunService.Heartbeat:Connect(function()
+    if not WallClimb.IsNearWall then return end
+
+    local key = getKeyFromMoveDirection()
+    climbFunction(key)
 end))
