@@ -102,24 +102,36 @@ function AbyssWorldLib:GiveLoot()
                 ServerLib:GiveItemDrop(player, result, Random.new():NextInteger(9, 13) * AbyssWorldLib.AbyssId)
                 wait(0.15)
             end
-            if AbyssWorldLib.AbyssId < 5 then return end
 
+            local baseChance = 0.7
+            local bonusChance = (AbyssWorldLib.AbyssId - 1) * 0.3
+            local finalChance = baseChance + bonusChance
+            local finalChanceStr = string.format("%.1f", tostring(finalChance))
 
-            local devLuck = workspace:GetAttribute("__SecretLuck")
-            devLuck = devLuck or 1
+            local abyssDropPity = player:GetAttribute("AbyssDropPity") or 0
+            local luck = 1
+            if abyssDropPity >= 75 then
+                luck = 159940
+            end
 
             wait(1)
             local rareDrop = HarukaLib:RollLoot({
-                Dawn = 1,
-                None = 100
-            }, devLuck)
+                Dawn = finalChance,
+                None = 100 - finalChance
+            }, luck)
             if rareDrop == "Dawn" then
                 Events.PlaySound_S.Fire(player, SoundService.SFXs.LootDropped)
                 Events.Abyss_RareDropObtained_S.Fire(player)
 
                 ServerLib:GiveItemDrop(player, "Dawnbreak", 1)
-                ServerBindables.RToSendMsgToDiscord:Fire(player.Name.. " has obtained a rare drop with 1% chance! Dawnbreak!")
+                ServerBindables.RToSendMsgToDiscord:Fire(player.DisplayName.. "(@".. player.Name.. ") has obtained Dawnbreak with "..finalChanceStr.."% chance!")
+
+                player:SetAttribute("AbyssDropPity", 0)
+            else
+                HarukaLib:AddAttr(player, "AbyssDropPity", 1)
             end
+        end):catch(function(err)
+            warn(tostring(err))
         end)
     end
 end
@@ -171,7 +183,7 @@ table.insert(AbyssWorldLib.Funcs, function()
 
         locator.Name = mobInfo.MobId
         locator:SetAttribute("Level", mobInfo.Level)
-        locator:SetAttribute("EnvironmentBonus", abyssId)
+        locator:SetAttribute("EnvironmentBonus", mobInfo.EnvironmentBonus * abyssId)
 
         locator:SetAttribute("_RESPAWN_SYMBOL", true)
 
@@ -242,13 +254,13 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
 
 
     --// count speedrun if it's f6
-    if AbyssWorldLib.AbyssId == 6 and AbyssWorldLib.AbyssStartTime then
+    if AbyssWorldLib.AbyssId == 4 and AbyssWorldLib.AbyssStartTime then
         local now = DateTime.now().UnixTimestamp
         local runTime = now - AbyssWorldLib.AbyssStartTime
 
 
-        if runTime <= 5 then
-            _notifyFireAll("Invalid record! (Less than 5 seconds)")
+        if runTime <= 2 then
+            _notifyFireAll("Invalid record! (Less than 2 seconds)")
             return
         end
 

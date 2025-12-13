@@ -19,7 +19,7 @@ flowerAFKContainer.Name = "FlowerAFKContainer"
 flowerAFKContainer.Parent = game:GetService("ServerStorage")
 
 
-HarukaLib.Clock(3, function()
+HarukaLib.Clock(1.59, function()
     for _, flower: Model in CollectionService:GetTagged("FlowerEntity") do
         local distance = plr:DistanceFromCharacter(flower.WorldPivot.Position)
         if distance > flowerRenderDistance or distance <= 0 then

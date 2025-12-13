@@ -626,21 +626,20 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    local windmillWings = {}
-    local galleons = {}
-
+    local windmillWings: { BasePart } = {}
+    local galleons: { BasePart } = {}
 
     local function _handleWindmill(windmill: Model)
         repeat wait() until windmill and windmill.PrimaryPart
 
         wait()
-        table.insert(windmillWings, windmill)
+        table.insert(windmillWings, windmill.PrimaryPart)
     end
     local function _handleGalleon(galleon: Model)
         repeat wait() until galleon and galleon.PrimaryPart
 
         wait()
-        table.insert(galleons, galleon)
+        table.insert(galleons, galleon.PrimaryPart)
     end
     for _, wings: Model in CollectionService:GetTagged("WindmillWings") do
         _handleWindmill(wings)
@@ -651,44 +650,19 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("WindmillWings"):Connect(_handleWindmill)
     CollectionService:GetInstanceAddedSignal("SkyGalleon"):Connect(_handleGalleon)
 
-    CollectionService:GetInstanceRemovedSignal("WindmillWings"):Connect(function(windmill: Model)
-        local index = table.find(windmillWings, windmill)
-        if index then
-            table.remove(windmillWings, index)
-        end
-    end)
-    CollectionService:GetInstanceRemovedSignal("SkyGalleon"):Connect(function(galleon: Model)
-        local index = table.find(galleons, galleon)
-        if index then
-            table.remove(galleons, index)
-        end
-    end)
-
 
     task.spawn(function()
         while wait(0.01) do
-            for _, wing: Model in windmillWings do
-                pcall(function()
-                    wing.PrimaryPart.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
-                end)
+            for _, wing in windmillWings do
+                wing.CFrame *= CFrame.Angles(math.rad(-1.7), 0, 0)
             end
         end
     end)
     task.spawn(function()
         while wait(0.01) do
-            for _ = 1, 50 do
-                for _, galleon: Model in galleons do
-                    pcall(function()
-                        galleon.PrimaryPart.CFrame *= CFrame.new(0, 0.04, 0)
-                    end)
-                end
-                wait(0.01)
-            end
-            for _ = 1, 50 do
-                for _, galleon: Model in galleons do
-                    pcall(function()
-                        galleon.PrimaryPart.CFrame *= CFrame.new(0, -0.04, 0)
-                    end)
+            for i = 1, 100 do
+                for _, galleon in galleons do
+                    galleon.CFrame *= CFrame.new(0, 0.04 * (if i > 50 then -1 else 1), 0)
                 end
                 wait(0.01)
             end

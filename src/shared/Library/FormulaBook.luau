@@ -118,7 +118,7 @@ local formulas = {
         BaseMagic: number,
         MagicPoints: number
     })
-        local extra = 1 + ((props.MagicPoints * 55) / 100)
+        local extra = 1 + ((props.MagicPoints * 80) / 100)
 
         return math.ceil(props.BaseMagic * extra)
     end,

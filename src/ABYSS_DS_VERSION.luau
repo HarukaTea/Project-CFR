@@ -1,2 +1,2 @@
 
-return "_AbyssSpeedrun_S1"
+return "_AbyssSpeedrun_S2"

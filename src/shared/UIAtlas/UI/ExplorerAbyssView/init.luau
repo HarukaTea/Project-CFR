@@ -124,7 +124,7 @@ return function (plr: Player)
                                 Components.PaddingFrame(scope, "ZZZ"),
 
 
-                                Fusion.ForPairs(scope, table.create(6, true), function(_, scope: Fusion.Scope, index: number, _)
+                                Fusion.ForPairs(scope, table.create(4, true), function(_, scope: Fusion.Scope, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
                                         Index = index,
                                         AbyssIndexSelected = self.AbyssIndexSelected,
@@ -304,7 +304,7 @@ return function (plr: Player)
                     AnchorPoint = Vector2.new(0.5, 1),
                     Position = UDim2.fromScale(0.5, 0.7),
                     Size = UDim2.fromScale(0.95, 0.5),
-                    Text = "SPEEDRUN RECORDS (MODIFIER 6)",
+                    Text = "SPEEDRUN RECORDS (MODIFIER 4) [WEEK 2]",
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
                 })

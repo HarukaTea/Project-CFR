@@ -83,7 +83,9 @@ return {
 
         BaseStats = {
             MaxHealth = 200
-        }
+        },
+
+        DevClass = true
     },
 
 

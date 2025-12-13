@@ -10,6 +10,7 @@ local Children = Fusion.Children
 return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     TileSize: UDim2?,
+    Color: Color3?,
 
     [Fusion.SpecialKey]: Components.FusionPropsEntry,
 })
@@ -17,6 +18,8 @@ return function (scope: Fusion.Scope, props: {
 
     props.Transparency = props.Transparency or 0.975
     props.TileSize = props.TileSize or UDim2.fromScale(0.15, 0.15)
+
+    props.Color = props.Color or Color3.fromRGB(255, 255, 255)
 
     props[Fusion.Children] = props[Fusion.Children] or {}
 
@@ -29,6 +32,7 @@ return function (scope: Fusion.Scope, props: {
 
         Image = "rbxassetid://91666280221875",
         ImageTransparency = props.Transparency,
+        ImageColor3 = props.Color,
 
         ScaleType = Enum.ScaleType.Tile,
         TileSize = props.TileSize,

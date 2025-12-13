@@ -12,8 +12,8 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local CriRPGColorLab = {}
 
-CriRPGColorLab.BLACK_COLOR = Color3.fromHex('#191a1f')
-CriRPGColorLab.WHITE_COLOR = Color3.fromHex('#ece5d8')
+CriRPGColorLab.BLACK_COLOR = Color3.fromHex('#111111')
+CriRPGColorLab.WHITE_COLOR = Color3.fromHex('#e8e2dd')
 CriRPGColorLab.RED_COLOR = Color3.fromHex('#ff7675')
 CriRPGColorLab.GREEN_COLOR = Color3.fromHex('#7bd99f')
 CriRPGColorLab.GREY_COLOR = Color3.fromHex('#25292f')

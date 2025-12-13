@@ -54,6 +54,7 @@ export type PlayerDataJSON = {
 
     --// new fields
     Title: string,
+    AbyssDropPity: number,
 
     --// legacy fields
     Settings: {}?
@@ -123,7 +124,8 @@ local playerStats = {
 
             CombatWonTimes = 0,
 
-            Title = "Adventurer"
+            Title = "Adventurer",
+            AbyssDropPity = 0,
         }
     },
 
