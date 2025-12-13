@@ -35,7 +35,8 @@ return function (scope: Fusion.Scope, props: {
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         Position = UDim2.fromScale(0.5, -1),
         Size = UDim2.fromScale(1.5, 1.5),
-        Image = "rbxassetid://92765950574050",
+        Image = "rbxassetid://74364175030818",
+        BackgroundTransparency = 1,
 
         [Children] = {
             Components.UICorner(scope, {

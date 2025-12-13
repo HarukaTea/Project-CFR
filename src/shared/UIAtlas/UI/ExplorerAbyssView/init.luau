@@ -124,7 +124,7 @@ return function (plr: Player)
                                 Components.PaddingFrame(scope, "ZZZ"),
 
 
-                                Fusion.ForPairs(scope, table.create(4, true), function(_, scope: Fusion.Scope, index: number, _)
+                                Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
                                         Index = index,
                                         AbyssIndexSelected = self.AbyssIndexSelected,
@@ -141,10 +141,10 @@ return function (plr: Player)
                         }),
 
                         Components.TextLabel(scope, {
-                            Name = "AbyssModifierTitle",
+                            Name = "AbyssFloorTitle",
                             Position = UDim2.fromScale(0, -0.025),
                             Size = UDim2.fromScale(1, 0.08),
-                            Text = "SELECT MODIFIER",
+                            Text = "SELECT FLOOR",
                             TextColor3 = Color3.fromRGB(255, 255, 127),
 
                             [Children] = {
@@ -168,6 +168,31 @@ return function (plr: Player)
                     end),
 
                     [Children] = {
+                        Components.TextLabel(scope, {
+                            Name = "AbyssModifierTitle",
+                            Position = UDim2.fromScale(0, -0.075),
+                            Size = UDim2.fromScale(1, 0.08),
+                            TextColor3 = Color3.fromRGB(255, 255, 127),
+
+
+                            Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                local amount = 0
+                                for _, chosen in self.ModifierChosen do
+                                    if use(chosen) then
+                                        amount += 1
+                                    end
+                                end
+
+                                return `SELECT MODIFIER ({amount})`
+                            end),
+
+                            [Children] = {
+                                Components.ScaledTextUIStroke(scope, {
+                                    Thickness = 0.1
+                                })
+                            }
+                        }),
+
                         Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return AbyssLevelSlot(scope, {
                                 Index = use(self.AbyssIndexSelected) or 1,
@@ -189,11 +214,15 @@ return function (plr: Player)
                                     Padding = UDim.new(0.03, 0),
                                 }),
 
-                                Fusion.ForValues(scope, AbyssBook.TeamConfigs, function(_, scope: Fusion.Scope, mobInfo: AbyssBook.AbyssTeamJSON)
-                                    return AbyssEnemySlot(scope, {
-                                        MobId = mobInfo.MobId,
-                                        Level = mobInfo.Level
-                                    })
+                                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                    local index = use(self.AbyssIndexSelected) or 1
+
+                                    return Fusion.ForValues(scope, AbyssBook.TeamConfigs[index], function(_, scope: Fusion.Scope, mobInfo: AbyssBook.AbyssTeamJSON)
+                                        return AbyssEnemySlot(scope, {
+                                            MobId = mobInfo.MobId,
+                                            Level = mobInfo.Level
+                                        })
+                                    end)
                                 end)
                             }
                         }),
@@ -209,33 +238,50 @@ return function (plr: Player)
                             [Children] = {
                                 Components.PaddingFrame(scope, "AAA"),
 
-                                Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return Fusion.ForValues(scope, self.AbyssModifierList, function(_, scope: Fusion.Scope, modifier: string)
-                                        return Components.Frame(scope, {
-                                            Name = "Modifier_"..modifier,
-                                            BackgroundTransparency = 0,
-                                            Size = UDim2.fromScale(0.95, 0.12),
+                                Fusion.ForValues(scope, AbyssBook.Modifiers, function(_, scope: Fusion.Scope, modifier: string)
+                                    local isSelecting = Fusion.Value(scope, false)
 
-                                            [Children] = {
-                                                Components.UIAspectRatioConstraint(scope, 15.941),
-                                                Components.RoundUICorner(scope),
-                                                Components.ScaledUIStroke(scope, {
-                                                    Thickness = 0.05,
-                                                    Color = Color3.fromHex('#ff7675')
-                                                }),
+                                    return Components.Frame(scope, {
+                                        Name = "Modifier_"..modifier,
+                                        BackgroundTransparency = 0,
+                                        Size = UDim2.fromScale(0.95, 0.12),
 
-                                                Components.TextLabel(scope, {
-                                                    Name = "ModifierTitle",
-                                                    Text = AbyssBook.ModifierInfo[modifier],
-                                                    TextXAlignment = Enum.TextXAlignment.Left,
+                                        [Children] = {
+                                            Components.UIAspectRatioConstraint(scope, 15.941),
+                                            Components.RoundUICorner(scope),
+                                            Components.ScaledUIStroke(scope, {
+                                                Thickness = 0.05,
+                                                Color = Color3.fromHex('#ff7675'),
 
-                                                    [Children] = {
-                                                        Components.UIPadding(scope, {})
-                                                    }
-                                                })
-                                            }
-                                        })
-                                    end)
+                                                Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                                    return use(isSelecting) or use(self.ModifierChosen[modifier])
+                                                end)
+                                            }),
+
+                                            Components.TextLabel(scope, {
+                                                Name = "ModifierTitle",
+                                                Text = AbyssBook.ModifierInfo[modifier],
+                                                TextXAlignment = Enum.TextXAlignment.Left,
+
+                                                [Children] = {
+                                                    Components.UIPadding(scope, {})
+                                                }
+                                            }),
+
+                                            Components.HoverImageButton(scope, {
+                                                [Fusion.OnEvent("MouseButton1Click")] = function()
+                                                    self.ModifierChosen[modifier]:set(not Fusion.peek(self.ModifierChosen[modifier]))
+                                                end,
+
+                                                [Fusion.OnEvent("MouseEnter")] = function()
+                                                    isSelecting:set(true)
+                                                end,
+                                                [Fusion.OnEvent("MouseLeave")] = function()
+                                                    isSelecting:set(false)
+                                                end
+                                            })
+                                        }
+                                    })
                                 end)
                             }
                         }, {
@@ -275,7 +321,10 @@ return function (plr: Player)
                             ButtonText = "Challenge",
                             ButtonType = "Confirm",
                             ButtonClickFunc = function()
-                                if self.Cooldown then return end
+                                if self.Cooldown then
+                                    Bindables.CreateNotify:Fire("Challenging Abyss is on cooldown for 10 seconds.")
+                                    return
+                                end
 
                                 self.Cooldown = true
                                 task.delay(9, function()
@@ -283,7 +332,17 @@ return function (plr: Player)
                                 end)
                                 Bindables.CreateNotify:Fire("Teleporting to Abyss...")
 
-                                Events.StartAbyss_C.Fire(Fusion.peek(self.AbyssIndexSelected))
+                                local modifiers = {}
+                                for modifier, chosen in self.ModifierChosen do
+                                    if Fusion.peek(chosen) then
+                                        table.insert(modifiers, modifier)
+                                    end
+                                end
+
+                                Events.StartAbyss_C.Fire({
+                                    AbyssId = Fusion.peek(self.AbyssIndexSelected),
+                                    Modifiers = modifiers
+                                })
                             end
                         }),
                         ExecuteButton(scope, {
@@ -293,6 +352,9 @@ return function (plr: Player)
                             ButtonType = "Cancel",
                             ButtonClickFunc = function()
                                 self.AbyssIndexSelected:set(nil)
+                                for _, modifier in self.ModifierChosen do
+                                    modifier:set(false)
+                                end
                             end
                         }),
                     }
@@ -304,7 +366,7 @@ return function (plr: Player)
                     AnchorPoint = Vector2.new(0.5, 1),
                     Position = UDim2.fromScale(0.5, 0.7),
                     Size = UDim2.fromScale(0.95, 0.5),
-                    Text = "SPEEDRUN RECORDS (MODIFIER 4) [WEEK 2]",
+                    Text = "SPEEDRUN RECORDS (FLOOR 4) [WEEK 2]",
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
                 })
@@ -316,7 +378,5 @@ return function (plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

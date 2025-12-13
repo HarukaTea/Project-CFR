@@ -13,6 +13,7 @@ local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
+local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local PassiveLib = require(SSS.HarukaServer.Library.PassiveLib)
@@ -421,8 +422,9 @@ function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 			local badgeMarketInfo = BadgeService:GetBadgeInfoAsync(badgeId)
 
 			if badgeMarketInfo.IsEnabled then
-				BadgeService:AwardBadge(plr.UserId, badgeId)
+				BadgeService:AwardBadgeAsync(plr.UserId, badgeId)
 
+				ServerBindables.RToCheckPlayerBadges:Fire(plr)
 				Events.PlayBadgeNotify_S.Fire(plr, tostring(badgeId))
 			end
 		end

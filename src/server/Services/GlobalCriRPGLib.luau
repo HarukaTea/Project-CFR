@@ -1,4 +1,5 @@
 
+local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
@@ -99,6 +100,17 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not plr:IsDescendantOf(Players) then return end
         if plr:GetAttribute("IsLeaving") then return end
 
+        if plr.Character then
+            wait(Players.RespawnTime)
+            if plr.Character then
+                plr.Character:Destroy()
+                plr.Character = nil
+            end
+        end
+
+        if not plr then return end
+        if not plr:IsDescendantOf(Players) then return end
+        if plr:GetAttribute("IsLeaving") then return end
 
         plr:LoadCharacterAsync()
 
@@ -1337,13 +1349,17 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    local function _challengeAbyss(plr: Player, abyssId: number?)
-        if not abyssId then return end
+    local function _challengeAbyss(plr: Player, data: {
+        AbyssId: number,
+        Modifiers: { string }
+    })
+        if not data.AbyssId then return end
+        if not data.Modifiers then return end
 
 
-        local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData")
+        local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData_V2")
         pcall(function()
-            abyssHashMap:SetAsync("Player_"..plr.UserId, abyssId, 60 * 5)
+            abyssHashMap:SetAsync("Player_"..plr.UserId, data, 60 * 5)
         end)
 
         local teleportOptions = Instance.new("TeleportOptions")
@@ -1531,6 +1547,29 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end):catch(function(err)
                 warn(tostring(err))
             end)
+        end
+    end)
+end)
+
+
+
+table.insert(GlobalCriRPGLib.Funcs, function()
+    ServerBindables.RToCheckPlayerBadges:Connect(function(player: Player)
+        if not player then return end
+
+        pcall(function()
+            local allBadges = HarukaLib.TableUtils.Values(AssetBook.BadgeIds)
+            local badgesPlayerOwned = BadgeService:CheckUserBadgesAsync(player.UserId, allBadges)
+
+            for _, badgeId: number in badgesPlayerOwned do
+                player:SetAttribute("BADGE_"..badgeId, true)
+            end
+        end)
+    end)
+
+    HarukaLib.Clock(60, function()
+        for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+            ServerBindables.RToCheckPlayerBadges:Fire(player)
         end
     end)
 end)

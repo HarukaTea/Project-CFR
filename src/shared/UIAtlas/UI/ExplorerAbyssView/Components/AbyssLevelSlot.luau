@@ -73,7 +73,7 @@ return function(scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(0.5, 0.1),
                 Size = UDim2.fromScale(0.7, 0.7),
                 SizeConstraint = Enum.SizeConstraint.RelativeXX,
-                Image = AbyssBook.ModifierIcons[AbyssBook.Modifiers[props.Index]],
+                Image = AbyssBook.TeamConfigIcons[props.Index],
             }),
 
             Components.TextLabel(scope, {

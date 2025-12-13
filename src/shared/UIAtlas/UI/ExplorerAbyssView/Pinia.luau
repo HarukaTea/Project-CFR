@@ -18,8 +18,7 @@ export type Self = {
     AbyssIndexSelected: Fusion.Value<number>,
 
     AbyssRanks: Fusion.Value<{ IntValue }>,
-
-    AbyssModifierList: Fusion.Value<{ string }>,
+    ModifierChosen: { [string]: Fusion.Value<boolean> },
 }
 
 
@@ -39,16 +38,10 @@ return function (self: Self)
     self.AbyssRanks = ranks :: Fusion.Value<{ IntValue }>
 
 
-    self.AbyssModifierList = Value({})
-
-    --// track abyss index selected
-    Fusion.Observer(scope, self.AbyssIndexSelected):onBind(function()
-        local index = Fusion.peek(self.AbyssIndexSelected) or 0
-        if index == 0 then self.AbyssModifierList:set({}) return end
-
-
-        self.AbyssModifierList:set(HarukaLib.TableUtils.Cut(AbyssBook.Modifiers, index))
-    end)
+    self.ModifierChosen = {}
+    for _, modifier: string in AbyssBook.Modifiers do
+        self.ModifierChosen[modifier] = Fusion.Value(scope, false)
+    end
 
 
     --// track menu

@@ -1364,10 +1364,9 @@ function EntityLib:_ApplyAbyssModifier()
     local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
     if not isAbyss then return end
 
-    local levelId = workspace:GetAttribute("AbyssLevelId")
-    if not levelId then return end
+    local modifierStr = workspace:GetAttribute("AbyssModifiers") or ""
+    local modifiers = string.split(modifierStr, ",")
 
-    local modifiers = HarukaLib.TableUtils.Cut(AbyssBook.Modifiers, levelId) :: { string }
     for _, modifier in modifiers do
         if string.find(modifier, "HealthBoost") then
             local boost = string.match(modifier, "%d")

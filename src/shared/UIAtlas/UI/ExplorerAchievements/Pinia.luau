@@ -56,8 +56,8 @@ return function (self: Self)
         self.BadgeCompletedCount:set(count)
         self.HasGottenReward:set(self.plr.Items:FindFirstChild("FuriosoFist") ~= nil)
     end
-    _checkBadgeCount()
     table.insert(scope, Events.PlayBadgeNotify_S.On(_checkBadgeCount))
+    table.insert(scope, HarukaLib.Clock(5, _checkBadgeCount, true))
 
 
 

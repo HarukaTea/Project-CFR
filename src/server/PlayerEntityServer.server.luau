@@ -1,7 +1,6 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
 local AnalyticsService = game:GetService("AnalyticsService")
 local HttpService = game:GetService("HttpService")
@@ -313,26 +312,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
 
         --// load in player badges
-        Promise.try(function()
-            local allBadgeIds = HarukaLib.TableUtils.Values(AssetBook.BadgeIds)
-
-            local multipleCalls = {}
-            for _ = 1, math.ceil(#allBadgeIds / 10) do
-                table.insert(multipleCalls, {})
-            end
-            for index: number, badgeId: number in allBadgeIds do
-                local realIndex = math.ceil(index / 10)
-                table.insert(multipleCalls[realIndex], badgeId)
-            end
-
-            for _, badgeIds: { number } in multipleCalls do
-                local badgesPlayerOwned = BadgeService:CheckUserBadgesAsync(plr.UserId, badgeIds)
-                for _, badgeId: number in badgesPlayerOwned do
-                    plr:SetAttribute("BADGE_"..badgeId, true)
-                end
-            end
-
-        end):catch(function() end)
+        ServerBindables.RToCheckPlayerBadges:Fire(plr)
 
 
         --// load in player gamepass and dev products

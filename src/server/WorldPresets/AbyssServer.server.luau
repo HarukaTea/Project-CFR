@@ -21,6 +21,7 @@ export type AbyssWorldLibClass = {
     Started: boolean,
     AbyssId: number,
     AbyssStartTime: number,
+    Modifiers: { string },
 
     Init: (self: AbyssWorldLibClass) -> nil,
 
@@ -103,15 +104,16 @@ function AbyssWorldLib:GiveLoot()
                 wait(0.15)
             end
 
-            local baseChance = 0.7
-            local bonusChance = (AbyssWorldLib.AbyssId - 1) * 0.3
-            local finalChance = baseChance + bonusChance
+            local baseChance = 0.2
+            local bonusChance = (AbyssWorldLib.AbyssId - 1) * 0.1
+            local bonusChance2 = #AbyssWorldLib.Modifiers * 0.15
+            local finalChance = baseChance + bonusChance + bonusChance2
             local finalChanceStr = string.format("%.1f", tostring(finalChance))
 
             local abyssDropPity = player:GetAttribute("AbyssDropPity") or 0
             local luck = 1
             if abyssDropPity >= 75 then
-                luck = 159940
+                luck = 1599400
             end
 
             wait(1)
@@ -157,33 +159,39 @@ table.insert(AbyssWorldLib.Funcs, function()
     repeat wait(0.5) until Players:FindFirstChildOfClass("Player")
 
     local player = Players:FindFirstChildOfClass("Player")
-    local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData")
+    local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData_V2")
 
     local abyssId = 1
+    local modifiers = {}
     local success, _ = pcall(function()
-        abyssId = abyssHashMap:GetAsync("Player_"..player.UserId)
+        local data = abyssHashMap:GetAsync("Player_"..player.UserId)
+
+        abyssId = data.AbyssId or 1
+        modifiers = data.Modifiers or {}
     end)
     if not success then
         abyssId = 1
+        modifiers = {}
     end
-    abyssId = abyssId or 1
-
 
     AbyssWorldLib.AbyssId = abyssId
+    AbyssWorldLib.Modifiers = modifiers
+
     workspace:SetAttribute("AbyssLevelId", abyssId)
+    workspace:SetAttribute("AbyssModifiers", table.concat(modifiers, ","))
     workspace:SetAttribute("AbyssTime", 0)
 
 
     local totalMobs = abyssMobsContainer:GetChildren() :: { BasePart }
     local index = 1
-    for _, mobInfo: AbyssBook.AbyssTeamJSON in AbyssBook.TeamConfigs do
+    for _, mobInfo: AbyssBook.AbyssTeamJSON in AbyssBook.TeamConfigs[abyssId] do
         if not totalMobs[index] then break end
 
         local locator = totalMobs[index] :: BasePart
 
         locator.Name = mobInfo.MobId
         locator:SetAttribute("Level", mobInfo.Level)
-        locator:SetAttribute("EnvironmentBonus", mobInfo.EnvironmentBonus * abyssId)
+        locator:SetAttribute("EnvironmentBonus", 8)
 
         locator:SetAttribute("_RESPAWN_SYMBOL", true)
 
@@ -201,7 +209,6 @@ table.insert(AbyssWorldLib.Funcs, function()
 
 
     --// modifiers
-    local modifiers = HarukaLib.TableUtils.Cut(AbyssBook.Modifiers, abyssId) :: { string }
     if table.find(modifiers, "BurnInflict") then
         workspace:SetAttribute("_Modifier_BurnInflict", true)
     end
@@ -295,7 +302,10 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
             )
 
         elseif actionId == "Restart" then
-            ServerBindables.RToChallengeAbyss:Fire(plr, AbyssWorldLib.AbyssId)
+            ServerBindables.RToChallengeAbyss:Fire(plr, {
+                AbyssId = AbyssWorldLib.AbyssId,
+                Modifiers = AbyssWorldLib.Modifiers
+            })
         end
     end)
 end)

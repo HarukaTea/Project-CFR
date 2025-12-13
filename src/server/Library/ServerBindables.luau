@@ -35,4 +35,7 @@ return {
 
     --@params: `msg: string`
     RToSendMsgToDiscord = Signal.new(),
+
+    --@params: `player: Player`
+    RToCheckPlayerBadges = Signal.new(),
 }
