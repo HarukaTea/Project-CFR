@@ -5,7 +5,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
-local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
@@ -13,6 +12,8 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
 local ClassOrbCallbackLib = require(ServerScriptService.HarukaServer.Library.ClassOrbCallbackLib)
+
+local ServerTable = require(ServerScriptService.HarukaServer.Library.ServerTable)
 
 local ArtifactBook = require(ReplicatedStorage.HarukaShared.Library.ArtifactBook)
 local ArtifactLib = require(ServerScriptService.HarukaServer.Library.ArtifactLib)
@@ -58,7 +59,7 @@ function CriRPGLib:Init()
     self:_InitAttrs()
 
     for _, func: () -> nil in self.Funcs do
-        task.spawn(func)
+        func()
     end
 
     self:_AutoEquipItems()
@@ -114,20 +115,20 @@ end
 
 function CriRPGLib:_InitAttrs()
     for attr, val in table.clone(CharTemplate) do
-        if typeof(val) == "table" then
-            local folder = Instance.new("Folder")
-            folder.Name = attr
-            folder.Parent = char
-            continue
-        end
         if val == "_OBJECT" then
             local objVal = Instance.new("ObjectValue")
             objVal.Name = attr
             objVal.Value = nil
             objVal.Parent = char
             continue
-        end
-        if val == "_EVENT" then
+
+        elseif val == "_FOLDER" then
+            local folder = Instance.new("Folder")
+            folder.Name = attr
+            folder.Parent = char
+            continue
+
+        elseif val == "_EVENT" then
             local bindable = Instance.new("BindableEvent")
             bindable.Name = attr
             bindable.Parent = char
@@ -230,31 +231,31 @@ end)
 
 table.insert(CriRPGLib.Funcs, function()
     local orbResContainer = ReplicatedStorage.Packages.ClassAttacks :: Folder
+    local charUniqueId = char:GetAttribute("HarukaUniqueId")
 
-    local orbSymbolContainer = Instance.new("Folder")
-    orbSymbolContainer.Name = "OrbSymbols_"..char:GetAttribute("HarukaUniqueId")
-    orbSymbolContainer.Parent = ServerStorage.OrbSymbolContainer
-    Add(orbSymbolContainer)
+    ServerTable.OrbSymbols[charUniqueId] = {}
 
 
     local orbSpawnAdd, orbSpawnEmpty = HarukaLib.Bin()
-    local function _spawnOrb_Callback(orbSymbol: CFrameValue)
+    local function _spawnOrb_Callback(orbData: ClassOrbCallbackLib.ClassOrbData)
         local class = plr:GetAttribute("Class") or "Burst"
 
         if ClassOrbCallbackLib[class] then
-            ClassOrbCallbackLib[class](orbSymbol, char)
+            ClassOrbCallbackLib[class](orbData, char)
         end
     end
     local function _spawnOrb_done(orbName: string, extraProps: {
         Offset: Vector3?,
         ForceLocation: CFrame?,
-        IsSpecialOrb: boolean?
+
+        NeedCallback: boolean?
     }?)
         local enemy = char.TargetingEnemy.Value :: Model
         local extraProps = extraProps or {
             ForceLocation = nil,
             Offset = nil,
-            IsSpecialOrb = false
+
+            NeedCallback = false
         }
 
         if ServerLib:IsCharValid(enemy) and char.Humanoid.Health > 0 then
@@ -272,17 +273,19 @@ table.insert(CriRPGLib.Funcs, function()
                 orbPos *= CFrame.new(extraProps.Offset)
             end
 
-            local symbol = Instance.new("CFrameValue")
-            symbol.Name = orbUniqueId
-            symbol.Value = orbPos
 
-            symbol:SetAttribute("OrbStyle", orb:GetAttribute("Style"))
-            symbol:SetAttribute("OrbSubStyle", orb:GetAttribute("SubStyle"))
-            symbol:SetAttribute("OrbId", orb.Name)
-            symbol:SetAttribute("Owner", char.Name)
-
-            symbol.Parent = orbSymbolContainer
-            Debris:AddItem(symbol, orbFadeTime + 5)
+            ServerTable.OrbSymbols[charUniqueId][orbUniqueId] = {
+                UniqueId = orbUniqueId,
+                OrbId = orb.Name,
+                OrbStyle = orb:GetAttribute("Style"),
+                OrbSubStyle = orb:GetAttribute("SubStyle"),
+                OrbUniStyle = orb:GetAttribute("UniStyle"),
+                OrbDuration = orbFadeTime,
+                OrbLocation = orbPos,
+                Owner = char.Name,
+                CreatedTimeMS = DateTime.now().UnixTimestampMillis
+            }
+            ServerTable:AddItem(ServerTable.OrbSymbols[charUniqueId], orbUniqueId, orbFadeTime)
 
 
             Events.PlaceOrb_S.Fire(plr, {
@@ -293,8 +296,8 @@ table.insert(CriRPGLib.Funcs, function()
             })
 
 
-            if extraProps.IsSpecialOrb == false then
-                _spawnOrb_Callback(symbol)
+            if extraProps.NeedCallback then
+                _spawnOrb_Callback(ServerTable.OrbSymbols[charUniqueId][orbUniqueId])
             end
         end
     end
@@ -346,38 +349,17 @@ end)
 
 
 table.insert(CriRPGLib.Funcs, function()
-    local projectileContainer = Instance.new("Folder")
-    projectileContainer.Name = "SkillProjectiles_"..char:GetAttribute("HarukaUniqueId")
-    projectileContainer.Parent = ServerStorage.SkillProjectileContainer
-    Add(projectileContainer)
+    local charUniqueId = char:GetAttribute("HarukaUniqueId") :: string
 
+    ServerTable.SkillProjectileSymbols[charUniqueId] = {}
 
-    Add(ServerBindables.RToCreateProjectileSymbol:Connect(function(charId: string, props: {
-        ProjectileId: string,
-        ProjectileType: "OneTime" | "OverTime",
-        Duration: number,
-        ProjectileUniqueId: string,
-        DMGType: "DMG" | "Magic",
-        DoTType: string,
-        DMGBonus: number,
-        IsClassUlt: boolean
-    })
+    Add(ServerBindables.RToCreateProjectileSymbol:Connect(function(charId: string, props: ServerTable.SkillProjectileData)
         if charId ~= char.Name then return end
 
+        props.Owner = char.Name
+        ServerTable.SkillProjectileSymbols[charUniqueId][props.ProjectileUniqueId] = props
 
-        local symbol = Instance.new("StringValue")
-        symbol.Name = props.ProjectileUniqueId
-        symbol.Value = props.ProjectileId
-
-        symbol:SetAttribute("DMGType", props.DMGType)
-        symbol:SetAttribute("ProjectileType", props.ProjectileType)
-        symbol:SetAttribute("Owner", charId)
-        symbol:SetAttribute("DoTType", props.DoTType)
-        symbol:SetAttribute("DMGBonus", props.DMGBonus)
-        symbol:SetAttribute("IsClassUlt", props.IsClassUlt)
-
-        symbol.Parent = projectileContainer
-        Debris:AddItem(symbol, props.Duration)
+        ServerTable:AddItem(ServerTable.SkillProjectileSymbols[charUniqueId], props.ProjectileUniqueId, props.LifeTime)
     end))
 end)
 
@@ -410,7 +392,7 @@ table.insert(CriRPGLib.Funcs, function()
                 if plr:GetAttribute("Level") + totalLevelShouldGive > FormulaBook.PLAYER_MAX_LEVEL then
                     totalLevelShouldGive = FormulaBook.PLAYER_MAX_LEVEL - plr:GetAttribute("Level")
 
-                    Events.CreateNotify_S.Fire(plr, "You've reached the maximum level!")
+                    Events.CreateNotify_S.Fire(plr, "You've hit the level cap!")
                 end
                 if totalLevelShouldGive <= 0 then
                     plr:SetAttribute("EXP", 0)
@@ -442,7 +424,7 @@ table.insert(CriRPGLib.Funcs, function()
             if level > FormulaBook.PLAYER_MAX_LEVEL then
                 plr:SetAttribute("Level", FormulaBook.PLAYER_MAX_LEVEL)
 
-                Events.CreateNotify_S.Fire(plr, "You've reached the maximum level!")
+                Events.CreateNotify_S.Fire(plr, "You've hit the level cap!")
             end
         end
     }))

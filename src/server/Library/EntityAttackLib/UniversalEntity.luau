@@ -1,15 +1,14 @@
 
 local CollectionService = game:GetService("CollectionService")
-local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
+local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
 
 
 local Types = require(script.Parent.Types)
@@ -167,26 +166,21 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
         projectilePos = projectilePos.Position
     end
 
-    local projectileSymbol = Instance.new("Vector3Value")
-    projectileSymbol.Name = projectileUniqueId
-    projectileSymbol.Value = projectilePos
-    projectileSymbol:SetAttribute("Damage", entity:GetAttribute("DMG"))
-    projectileSymbol:SetAttribute("Level", entity:GetAttribute("Level"))
-
-    local owner = Instance.new("ObjectValue")
-    owner.Name = "Owner"
-    owner.Value = entity
-    owner.Parent = projectileSymbol
-
-    projectileSymbol.Parent = ServerStorage.ProjectileSymbolContainer
-
-    Debris:AddItem(projectileSymbol, 10)
-
+    local projectileData = {
+        UniqueId = projectileUniqueId,
+        ProjectilePos = projectilePos,
+        ProjectileDMG = entity:GetAttribute("DMG"),
+        ProjectileLevel = entity:GetAttribute("Level"),
+        Owner = entity,
+    }
 
     --// manually add dot status effect
     if workspace:GetAttribute("_Modifier_BurnInflict") then
-        projectileSymbol:SetAttribute("DoTStatus", "Burn")
+        projectileData.DoTStatus = "Burn"
     end
+
+    ServerTable.EnemyProjectileSymbols[projectileUniqueId] = projectileData
+    ServerTable:AddItem(ServerTable.EnemyProjectileSymbols, projectileUniqueId, 15)
 end
 
 

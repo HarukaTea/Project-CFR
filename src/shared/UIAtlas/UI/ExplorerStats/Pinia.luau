@@ -236,7 +236,7 @@ return function (self: Self)
 
     --// track skills
     local skillCDContainer = Instance.new("Folder")
-    skillCDContainer.Name = "HARUKA_SkillCDs"
+    skillCDContainer.Name = "UI_SkillCDs"
     skillCDContainer.Parent = game:GetService("ServerStorage")
     table.insert(scope, skillCDContainer)
 
@@ -393,14 +393,11 @@ return function (self: Self)
         local itemSymbol = equippingItems[slotIdStr] :: StringValue
 
         local itemInfo = ItemBook:GetItemInfo(itemSymbol.Value)
-        if not itemInfo then
-            Bindables.CreateNotify:Fire("[Error] Invalid Item Id")
-            return
-        end
+        if not itemInfo then return end
 
         local castWhiteList = { "Active", "Consumable" }
         if not table.find(castWhiteList, itemInfo.Type) then
-            Bindables.CreateNotify:Fire("[Error] Invalid Item Type")
+            Bindables.CreateNotify:Fire("[Error] Invalid item type")
             return
         end
 
@@ -412,7 +409,7 @@ return function (self: Self)
             end
         end
         if inCDCheck then
-            Bindables.CreateNotify:Fire("The item is still on cooldown!")
+            Bindables.CreateNotify:Fire("Still on cooldown")
             return
         end
 

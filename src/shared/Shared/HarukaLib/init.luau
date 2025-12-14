@@ -350,7 +350,10 @@ function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean
 	local dropTime = tickTime * 10
 
 	if runInstantly then
-		task.spawn(func)
+		local success, err = pcall(func)
+		if not success then
+			warn(err)
+		end
 	end
 
 	local connection = RunService.Heartbeat:Connect(function(deltaTime)

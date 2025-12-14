@@ -36,24 +36,22 @@ local function _preCheck(props: {
         return false
     end
     if not ItemBook:GetItemInfo(data.ItemId) then
-        Events.CreateNotify_S.Fire(player, "[Error] Invalid Item Id")
         return false
     end
     if props.ReqCombat then
         if not char:GetAttribute("IsInCombat") then
-            Events.CreateNotify_S.Fire(player, "You need to be in combat mode to use this item!")
+            Events.CreateNotify_S.Fire(player, "Can only be used in combat")
             return false
         end
     end
     if props.ReqEnemy then
         if not char.TargetingEnemy.Value then
-            Events.CreateNotify_S.Fire(player, "You need to have a target monster to use this item!")
+            Events.CreateNotify_S.Fire(player, "No target selected")
             return false
         end
 
         local enemy = char.TargetingEnemy.Value :: Model
         if not ServerLib:IsCharValid(enemy) then
-            Events.CreateNotify_S.Fire(player, "[Error] Invalid Target Entity")
             return false
         end
     end

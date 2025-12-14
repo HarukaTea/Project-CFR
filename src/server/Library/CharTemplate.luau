@@ -50,8 +50,8 @@ local charStats = {
     OrbFadeTime = 12,
     OrbBounce = 100, --- percentage
 
-    EffectList = {},
-    TargetingList = {},
+    EffectList = "_FOLDER",
+    TargetingList = "_FOLDER",
     TargetingEnemy = "_OBJECT",
 
     --- item related

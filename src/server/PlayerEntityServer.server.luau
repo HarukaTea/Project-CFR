@@ -260,7 +260,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
                 plr:SetAttribute("Role", RankBook.CustomRoleInfo[playerUID].Role)
             end
 
-            local rank = plr:GetRankInGroup(16912246)
+            local rank = plr:GetRankInGroupAsync(16912246)
             plr:SetAttribute("Rank", rank)
 
 
@@ -280,7 +280,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         Promise.try(function()
             local isPremium = (plr.MembershipType == Enum.MembershipType.Premium)
 
-            local rank = plr:GetRankInGroup(16912246)
+            local rank = plr:GetRankInGroupAsync(16912246)
             local isDev = (rank >= 124)
             local isTester = (rank >= 2)
             local isCC = (rank >= 3)
@@ -324,7 +324,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
                     local ownedGamepass = MarketplaceService:UserOwnsGamePassAsync(plr.UserId, gamepassId)
                     if not ownedGamepass then return end
 
-                    local gamepassInfo = MarketplaceService:GetProductInfo(gamepassId, Enum.InfoType.GamePass)
+                    local gamepassInfo = MarketplaceService:GetProductInfoAsync(gamepassId, Enum.InfoType.GamePass)
                     if not gamepassInfo then return end
                     if not gamepassInfo.IsForSale then return end
 

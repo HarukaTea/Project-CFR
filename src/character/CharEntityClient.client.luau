@@ -44,7 +44,7 @@ CharLib.Funcs = {}
 
 function CharLib:Init()
     for _, func: () -> nil in self.Funcs do
-        task.spawn(func)
+        func()
     end
 
 

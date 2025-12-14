@@ -22,7 +22,7 @@ return function(scope: Fusion.Scope, props: {
     table.insert(scope, task.spawn(function()
         local info
         pcall(function()
-            info = MarketplaceService:GetProductInfo(props.AssetId, Enum.InfoType[props.Type])
+            info = MarketplaceService:GetProductInfoAsync(props.AssetId, Enum.InfoType[props.Type])
         end)
         info = info or {}
 

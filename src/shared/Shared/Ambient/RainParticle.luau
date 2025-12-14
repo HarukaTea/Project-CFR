@@ -29,7 +29,7 @@ export type RainParticleClass = {
 --// Variables
 
 local rainCastContainer = Instance.new("Folder")
-rainCastContainer.Name = "RainCast_Projectile"
+rainCastContainer.Name = "RainCastProjectile"
 rainCastContainer.Parent = workspace.Terrain
 
 

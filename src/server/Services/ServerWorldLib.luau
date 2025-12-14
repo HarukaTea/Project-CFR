@@ -63,29 +63,17 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    local projectileContainer = Instance.new("Folder")
-    projectileContainer.Name = "ProjectileSymbolContainer"
-    projectileContainer.Parent = ServerStorage
-
     local itemCDSymbolContainer = Instance.new("Folder")
     itemCDSymbolContainer.Name = "ItemCDSymbolContainer"
     itemCDSymbolContainer.Parent = workspace.MapComponents
-
-    local itemSphereSymbolContainer = Instance.new("Folder")
-    itemSphereSymbolContainer.Name = "ItemSphereSymbolContainer"
-    itemSphereSymbolContainer.Parent = ServerStorage
 
     local entityContainer = Instance.new("Folder")
     entityContainer.Name = "EntitiesPlayerChar"
     entityContainer.Parent = workspace
 
-    local orbContainer = Instance.new("Folder")
-    orbContainer.Name = "OrbSymbolContainer"
-    orbContainer.Parent = ServerStorage
-
-    local skillProjectileContainer = Instance.new("Folder")
-    skillProjectileContainer.Name = "SkillProjectileContainer"
-    skillProjectileContainer.Parent = ServerStorage
+    local entityContainer = Instance.new("Folder")
+    entityContainer.Name = "Entities"
+    entityContainer.Parent = workspace
 
     local craftingProductContainer = Instance.new("Folder")
     craftingProductContainer.Name = "CraftingProductContainer"
@@ -100,13 +88,14 @@ table.insert(ServerWorldLib.Funcs, function()
     globalServersContainer.Parent = workspace.MapComponents
 
 
-    local skyGalleonContainer = Instance.new("Folder")
-    skyGalleonContainer.Name = "SkyGalleonsContainer"
-    skyGalleonContainer.Parent = workspace.MapComponents
-
-
     if workspace:FindFirstChild("Accessory Storage") then
         workspace["Accessory Storage"]:Destroy()
+    end
+    if workspace.Terrain:FindFirstChild("DO_NOT_REMOVE_ForgeTextureCache") then
+        workspace.Terrain["DO_NOT_REMOVE_ForgeTextureCache"]:Destroy()
+    end
+    if workspace.Terrain:FindFirstChild("DO_NOT_REMOVE_ForgeSharedPartCache") then
+        workspace.Terrain["DO_NOT_REMOVE_ForgeSharedPartCache"]:Destroy()
     end
 end)
 
@@ -168,6 +157,49 @@ table.insert(ServerWorldLib.Funcs, function()
         part.Parent = tree
 
         pathModifier:Clone().Parent = part
+    end
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    local flowerContainer = Instance.new("Folder")
+    flowerContainer.Name = "FlowerContainer"
+    flowerContainer.Parent = workspace.MapComponents
+
+
+    local whiteList = { "Flower", "Grass", "Bush" }
+    for _, child: Instance in workspace.Maps:QueryDescendants("Model") do
+        local check = false
+        for _, name in whiteList do
+            if string.find(child.Name, name) then
+                check = true
+                break
+            end
+        end
+
+
+        if child.Parent:IsA("Model") then
+            for _, name in whiteList do
+                if string.find(child.Parent.Name, name) then
+                    check = false
+                    break
+                end
+            end
+        end
+        if not check then continue end
+
+        child:AddTag("FlowerEntity")
+        child:AddTag("RaycastIgnoreEntity")
+        child.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+        child.Parent = flowerContainer
+
+        for _, meshPart in child:QueryDescendants(HarukaLib.BasePartSelector) do
+            meshPart.CastShadow = false
+            meshPart.CanCollide = false
+            meshPart.CanQuery = false
+            meshPart.CanTouch = false
+            meshPart.CollisionGroup = CollisionBook.Group.NoCollision
+        end
     end
 end)
 
@@ -279,15 +311,12 @@ end)
 
 table.insert(ServerWorldLib.Funcs, function()
     local terrainFolders = {}
-
     for _, folder: Folder in workspace.Maps:QueryDescendants("Folder#Terrain") do
         table.insert(terrainFolders, folder)
     end
 
-
     for _, part: BasePart in workspace.Maps:QueryDescendants(HarukaLib.BasePartSelector) do
         if part:HasTag("IgnoreTerrain") then continue end
-
 
         local isInTerrainFolder = false
         for _, folder: Folder in terrainFolders do
@@ -297,13 +326,61 @@ table.insert(ServerWorldLib.Funcs, function()
             end
         end
         if isInTerrainFolder then
-            part:AddTag("TerrainPart")
+            part:AddTag("TerrainPartEntity")
         end
     end
 
     for _, model in workspace.Maps:QueryDescendants("Model") do
         model.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
     end
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    local modelContainer = Instance.new("Folder")
+    modelContainer.Name = "MapModelContainer"
+    modelContainer.Parent = workspace.Maps
+
+    local modelContainers = {}
+    for _, container: Folder in workspace.Maps:QueryDescendants("Folder#Models") do
+        table.insert(modelContainers, container)
+    end
+
+    for _, model: Model in workspace.Maps:QueryDescendants("Model") do
+        if model:HasTag("TreeEntity") then continue end
+        if model:HasTag("FlowerEntity") then continue end
+
+
+        local isInModelContainer = false
+        for _, container: Folder in modelContainers do
+            if model:IsDescendantOf(container) then
+                isInModelContainer = true
+                break
+            end
+        end
+        if isInModelContainer then
+            model:AddTag("MapModelPartEntity")
+            model.Parent = modelContainer
+        end
+    end
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    local MAX_SIZE_THRESHOLD = 5
+    local count = 0
+
+    for _, part: BasePart in workspace:QueryDescendants(HarukaLib.BasePartSelector) do
+        local isSmall = math.max(part.Size.X, part.Size.Y, part.Size.Z) < MAX_SIZE_THRESHOLD
+        local isTransparent = part.Transparency > 0.5
+
+        if (isSmall or isTransparent) then
+            part.CastShadow = false
+            count += 1
+        end
+    end
+
+    print("[HarukaServer] Disabled shadow casting for "..count.." parts")
 end)
 
 
@@ -406,45 +483,38 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    if not workspace.MapComponents:FindFirstChild("NPCs") then return end
-
+    if not workspace.MapComponents:FindFirstChild("NPCs") then
+        local folder = Instance.new("Folder")
+        folder.Name = "NPCs"
+        folder.Parent = workspace.MapComponents
+    end
 
     for _, npc: Model in workspace.MapComponents.NPCs:QueryDescendants("Model") do
         if (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NPCEntity")
             npc.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
 
+            if npc:FindFirstChild("AnimSaves") then
+                npc.AnimSaves:Destroy()
+            end
             if string.find(npc.Name, "Narrator") then
                 npc.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
             end
-
-            if npc.PrimaryPart.Anchored then continue end
-            if not npc:FindFirstChild("Humanoid") then continue end
-
-            local npcHumanoid = npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")
-
-            if not npcHumanoid:FindFirstChildOfClass("Animator") then
-                local animator = Instance.new("Animator")
-                animator.Parent = npcHumanoid
-            end
-
-            local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
-            local animTrack = npcHumanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[anim]) :: AnimationTrack
-
-            animTrack.Looped = true
-            animTrack.Priority = Enum.AnimationPriority.Idle
-            animTrack:Play()
         end
     end
 end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    if not workspace.MapComponents:FindFirstChild("Non-NPCs") then return end
-
+    if not workspace.MapComponents:FindFirstChild("Non-NPCs") then
+        local folder = Instance.new("Folder")
+        folder.Name = "Non-NPCs"
+        folder.Parent = workspace.MapComponents
+    end
 
     for _, npc: Model in workspace.MapComponents["Non-NPCs"]:QueryDescendants("Model") do
         if (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
+            npc:AddTag("NonNPCEntity")
             npc.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
         end
     end
@@ -472,53 +542,7 @@ table.insert(ServerWorldLib.Funcs, function()
         part.CanTouch = false
         part:AddTag("ZoneEntity")
     end
-    areaZones.Parent = workspace:FindFirstChild("MapComponents") or workspace
-end)
-
-
-
-
-
-table.insert(ServerWorldLib.Funcs, function()
-    local flowerContainer = Instance.new("Folder")
-    flowerContainer.Name = "FlowerContainer"
-    flowerContainer.Parent = workspace.MapComponents
-
-
-    local whiteList = { "Flower", "Grass", "Bush" }
-    for _, child: Instance in workspace.Maps:QueryDescendants("Model") do
-        local check = false
-        for _, name in whiteList do
-            if string.find(child.Name, name) then
-                check = true
-                break
-            end
-        end
-
-
-        if child.Parent:IsA("Model") then
-            for _, name in whiteList do
-                if string.find(child.Parent.Name, name) then
-                    check = false
-                    break
-                end
-            end
-        end
-        if not check then continue end
-
-        child:AddTag("FlowerEntity")
-        child:AddTag("RaycastIgnoreEntity")
-        child.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
-        child.Parent = flowerContainer
-
-        for _, meshPart in child:QueryDescendants(HarukaLib.BasePartSelector) do
-            meshPart.CastShadow = false
-            meshPart.CanCollide = false
-            meshPart.CanQuery = false
-            meshPart.CanTouch = false
-            meshPart.CollisionGroup = CollisionBook.Group.NoCollision
-        end
-    end
+    areaZones.Parent = workspace.MapComponents
 end)
 
 

@@ -30,8 +30,7 @@ freecamCommand.Enabled = true
 
 freecamCommand.Triggered:Connect(function(textSource: TextSource)
     if textSource.UserId == plr.UserId then
-        Bindables.CreateNotify:Fire("Initializing Freecam...")
-        Bindables.CreateNotify:Fire("You can exit Freecam mode by pressing the Esc key.")
+        Bindables.CreateNotify:Fire("Press Esc to exit Freecam.")
 
         wait(2)
         Freecam.Toggle(true)

@@ -81,7 +81,7 @@ end
 
 function CriRPGLib:Init()
     for _, func: () -> nil in self.Funcs do
-        task.spawn(func)
+        func()
     end
 
 
@@ -390,6 +390,11 @@ table.insert(CriRPGLib.Funcs, function()
         orb:SetAttribute("Duration", data.OrbDuration)
         orb:PivotTo(CFrame.new(orbPos))
 
+        local orbCooldown = Instance.new("BoolValue")
+        orbCooldown.Name = "SpawnCooldown"
+        orbCooldown.Parent = orb
+        Debris:AddItem(orbCooldown, 0.25)
+
         ClientLib:WeldModel(orb:FindFirstChild("Base") or orb:FindFirstChild("Middle"), orb)
 
         orb.Parent = orbContainer
@@ -400,9 +405,13 @@ table.insert(CriRPGLib.Funcs, function()
 
     local function _checkCombatState(state: boolean)
         if not state then
+            orbContainer:ClearAllChildren()
+
             RunService.Heartbeat:Wait()
             orbContainer:ClearAllChildren()
             orbContainer.Parent = ServerStorage
+
+            orbContainer:ClearAllChildren()
         else
             orbContainer:ClearAllChildren()
             orbContainer.Parent = workspace.MapComponents
@@ -432,6 +441,9 @@ table.insert(CriRPGLib.Funcs, function()
 
         if hit.Parent:HasTag("OrbEntity") then
             local orb = hit.Parent
+            if orb:FindFirstChild("SpawnCooldown") then return end
+
+
             local whiteList = { "HEAL_ATTACK", "BUFF_ATTACK" }
             local style = orb:GetAttribute("Style") :: string
 
@@ -446,12 +458,7 @@ table.insert(CriRPGLib.Funcs, function()
             local humanoid = char.Humanoid :: Humanoid
             local orbUniqueId = orb:GetAttribute("HarukaUniqueId") :: string
 
-            if not orbUniqueId then
-                warn("Invalid orb uniqueId when attacking")
-
-                Bindables.CreateNotify:Fire("Invalid Orb UniqueId")
-                return
-            end
+            if not orbUniqueId then return end
 
 
             task.delay(0.25, function()

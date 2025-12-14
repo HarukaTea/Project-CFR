@@ -149,7 +149,7 @@ local PartyLibPublic = {}
 
 function PartyLibPublic:Invite(inviter: Player, target: Player)
 	if PlayerPartyDataClass:IsInParty(target) then
-		Events.CreateNotify_S.Fire(inviter, "Player already in a party!")
+		Events.CreateNotify_S.Fire(inviter, "Player is already in a party!")
 		return
 	end
 
@@ -187,7 +187,7 @@ end
 
 
 function PartyLibPublic:Decline(inviter: Player, invitee: Player)
-	Events.CreateNotify_S.Fire(inviter, invitee.DisplayName .. " declined your invitation.")
+	Events.CreateNotify_S.Fire(inviter, invitee.DisplayName .. " declined your invitation")
 end
 
 
@@ -199,7 +199,7 @@ function PartyLibPublic:Kick(leader: Player, target: Player)
         return
 	end
 	if not party.Members[target] then
-		Events.CreateNotify_S.Fire(leader, "Player not in your party!")
+		Events.CreateNotify_S.Fire(leader, "Player is not in your party!")
         return
 	end
 
@@ -232,7 +232,7 @@ function PartyLibPublic:Leave(plr: Player)
 		end
 	else
 		for _, member in party:GetAllMembers() do
-			Events.CreateNotify_S.Fire(member, plr.DisplayName .. " has left the party.")
+			Events.CreateNotify_S.Fire(member, plr.DisplayName .. " has left the party")
 		end
 	end
 end

@@ -24,7 +24,7 @@ PlayerLib.Funcs = {}
 
 function PlayerLib:Init()
     for _, func in self.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 

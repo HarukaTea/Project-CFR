@@ -54,7 +54,7 @@ return function (self: Self)
     self.SettingsFolder = self.plr:WaitForChild("CriRPGSettings", 999) :: Folder
 
     if #self.SettingsFolder:GetChildren() > 0 then
-        Bindables.CreateNotify:Fire("[System] Loaded Saved Settings!")
+        Bindables.CreateNotify:Fire("[System] Settings loaded")
     end
 
     self.PanelSelected = Value("Game")
@@ -247,7 +247,7 @@ return function (self: Self)
         local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
 
         if state then
-            for _, part in CollectionService:GetTagged("TerrainPart") do
+            for _, part in CollectionService:GetTagged("TerrainPartEntity") do
                 _changePartToPlastic(part)
             end
             for _, tree: Model in CollectionService:GetTagged("TreeEntity") do

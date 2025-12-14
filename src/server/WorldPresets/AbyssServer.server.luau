@@ -6,7 +6,6 @@ local CollectionService = game:GetService("CollectionService")
 local DSS = game:GetService("DataStoreService")
 local Lighting = game:GetService("Lighting")
 local MemoryStoreService = game:GetService("MemoryStoreService")
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -84,7 +83,7 @@ function AbyssWorldLib:Init()
     Promise.try(AbyssWorldLib.Funcs[1]):await()
 
     for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
-        task.spawn(func)
+        func()
     end
 end
 
@@ -143,7 +142,7 @@ function AbyssWorldLib:UpdateSpeedrunTime(runTime: number)
         local currentRecord = abyssSpeedrunDatastore:GetAsync("Player_"..userIdStr)
 
         if currentRecord and currentRecord <= runTime then
-            Events.CreateNotify_S.Fire(player, "You haven't beaten the previous record.")
+            Events.CreateNotify_S.Fire(player, "You haven't beaten the previous record")
             continue
         end
 
@@ -156,15 +155,17 @@ end
 
 
 table.insert(AbyssWorldLib.Funcs, function()
-    repeat wait(0.5) until Players:FindFirstChildOfClass("Player")
-
-    local player = Players:FindFirstChildOfClass("Player")
     local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData_V2")
 
     local abyssId = 1
     local modifiers = {}
+    local privateServerId = game.PrivateServerId
+    if privateServerId == "" then
+        privateServerId = "Mock"
+    end
+
     local success, _ = pcall(function()
-        local data = abyssHashMap:GetAsync("Player_"..player.UserId)
+        local data = abyssHashMap:GetAsync("Session_"..privateServerId)
 
         abyssId = data.AbyssId or 1
         modifiers = data.Modifiers or {}
@@ -233,7 +234,7 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         workspace:SetAttribute("AbyssStarted", true)
 
 
-        AbyssWorldLib.AbyssStartTime = DateTime.now().UnixTimestamp
+        AbyssWorldLib.AbyssStartTime = DateTime.now().UnixTimestampMillis
 
         abyssAirwall:Destroy()
     end)
@@ -261,12 +262,12 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
 
 
     --// count speedrun if it's f6
-    if AbyssWorldLib.AbyssId == 4 and AbyssWorldLib.AbyssStartTime then
-        local now = DateTime.now().UnixTimestamp
+    if AbyssWorldLib.AbyssId == 6 and AbyssWorldLib.AbyssStartTime then
+        local now = DateTime.now().UnixTimestampMillis
         local runTime = now - AbyssWorldLib.AbyssStartTime
 
 
-        if runTime <= 2 then
+        if runTime <= 2000 then
             _notifyFireAll("Invalid record! (Less than 2 seconds)")
             return
         end

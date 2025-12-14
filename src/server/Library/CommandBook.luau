@@ -283,38 +283,6 @@ local commands: CommandJSON = {
     },
 
     {
-        Name = "BanPlayerInGame",
-        Alias = "/ban_player_ingame",
-
-        RankReq = 127,
-        Args = {
-            {
-                Name = "player_id",
-                Type = "player"
-            },
-            {
-                Name = "duration/hour",
-                Type = "number",
-
-                ShouldBeInteger = true,
-                RangeMin = 1,
-                RangeMax = 24 * 365 * 10
-            }
-        },
-
-        Callback = function(props: CallbackProps)
-            HarukaLib:BanPlayerByUserId(props.Args[1].UserId, {
-                Duration = props.Args[2] * 60 * 60,
-                DisplayReason = "Banned by Shroomhaven Temple",
-                PrivateReason = "Banned by Shroomhaven Panel",
-                ExcludeAltAccounts = false
-            })
-            Events.CreateNotify_S.Fire(props.Executor, "[Haven] Banned successfully!")
-
-            props.ResolveObj()
-        end
-    },
-    {
         Name = "SpawnMob",
         Alias = "/spawn_mob",
 
@@ -344,7 +312,7 @@ local commands: CommandJSON = {
 
             local pos = ServerLib:FindGroundByRay(char.PrimaryPart.Position)
 
-            Events.CreateNotify_S.Fire(props.Executor, "Spawning Entity...")
+            Events.CreateNotify_S.Fire(props.Executor, "[HarukaCMD] Spawning Entity...")
 
             wait(2)
             local locator = HarukaLib:CreateMockPart()

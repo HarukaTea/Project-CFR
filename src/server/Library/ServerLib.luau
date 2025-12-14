@@ -5,7 +5,6 @@ local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
@@ -17,6 +16,7 @@ local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local PassiveLib = require(SSS.HarukaServer.Library.PassiveLib)
+local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
 
 local ServerLib = {}
 
@@ -24,10 +24,10 @@ local ServerLib = {}
 
 local terrainParams = RaycastParams.new()
 terrainParams.IgnoreWater = true
-terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPartEntity")
 terrainParams.FilterType = Enum.RaycastFilterType.Include
 
-CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function(part)
+CollectionService:GetInstanceAddedSignal("TerrainPartEntity"):Connect(function(part)
 	terrainParams:AddToFilter(part)
 end)
 
@@ -107,7 +107,7 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 		while repeatedTimes <= 15 do
 			-- we gonna try to find a valid position, if we can't, we'll try again
 			local isTheSame = pos:FuzzyEq(combatLocation.Position, 1)
-			local isInsidePart = HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPart"))
+			local isInsidePart = HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPartEntity"))
 
 			if not isTheSame and not isInsidePart then
 				break
@@ -184,16 +184,14 @@ end
 
 function ServerLib:PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3, autoPickup: boolean)
 	local itemUniqueId = HttpService:GenerateGUID(false)
-	local container = ServerStorage.ItemSphereSymbolContainer :: Folder
 
-	local symbol = Instance.new("IntValue")
-	symbol.Name = itemUniqueId
-	symbol.Value = amount
-	symbol.Parent = container
-
-	symbol:SetAttribute("ItemId", itemId)
-	symbol:SetAttribute("Receiver", plr.Name)
-
+	ServerTable.ItemDropSymbols[itemUniqueId] = {
+		UniqueId = itemUniqueId,
+		ItemId = itemId,
+		Amount = amount,
+		Receiver = plr
+	}
+	ServerTable:AddItem(ServerTable.ItemDropSymbols, itemUniqueId, 30)
 
 	Events.SpawnItemDrop_S.Fire(plr, {
 		ItemUniqueId = itemUniqueId,
@@ -334,10 +332,7 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 			break
 		end
 	end
-	if not itemSymbol then
-		Events.CreateNotify_S.Fire(plr, "[Error] Cannot equip item, item not found")
-		return
-	end
+	if not itemSymbol then return end
 
 	local char = plr.Character :: Model
 	if not ServerLib:IsCharValid(char) then return end

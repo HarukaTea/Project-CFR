@@ -243,15 +243,13 @@ return function (self: Self)
             local market = workspace.MapComponents.Markets:FindFirstChild(marketId, true)
             if market and market:IsA("Model") then
                 local adornee = market:FindFirstChild("Prompt")
-                if not adornee then Bindables.CreateNotify:Fire("[Error] Invalid Market Adornee") return end
+                if not adornee then return end
 
                 local prompt = adornee:FindFirstChild("Market") :: ProximityPrompt
-                if not prompt then Bindables.CreateNotify:Fire("[Error] Invalid Market Prompt") return end
+                if not prompt then return end
 
                 Bindables.PromptTriggered:Fire(prompt)
                 Events.PromptTriggered_C.Fire(prompt)
-            else
-                Bindables.CreateNotify:Fire("[Error] Invalid Market Id")
             end
 
             __endChatting()
@@ -263,12 +261,10 @@ return function (self: Self)
             local station = workspace.MapComponents.CraftingStations:FindFirstChild(craftingStationId, true)
             if station then
                 local prompt = station:FindFirstChild("Crafting") :: ProximityPrompt
-                if not prompt then Bindables.CreateNotify:Fire("[Error] Invalid Crafting Prompt") return end
+                if not prompt then return end
 
                 Bindables.PromptTriggered:Fire(prompt)
                 Events.PromptTriggered_C.Fire(prompt)
-            else
-                Bindables.CreateNotify:Fire("[Error] Invalid Crafting Id")
             end
 
             __endChatting()

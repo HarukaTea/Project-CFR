@@ -41,6 +41,8 @@ do
 
     require(SSS.HarukaServer.Shared.GlobalTimer)
     require(RepS.HarukaShared.Shared.HarukaDebris)
+
+    require(SSS.HarukaServer.Library.ServerTable)
 end
 
 

@@ -60,7 +60,7 @@ return function (self: Self)
 
 
 	local promptSymbolContainer = Instance.new("Folder")
-	promptSymbolContainer.Name = "HARUKA_PromptSymbols"
+	promptSymbolContainer.Name = "UI_PromptSymbols"
 	promptSymbolContainer.Parent = game:GetService("ServerStorage")
 	table.insert(scope, promptSymbolContainer)
 

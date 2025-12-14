@@ -143,12 +143,6 @@ local function _getCharsByRadius(pos: Vector3, radius: number) : { Model }
 end
 
 
---// Init once
-local entityContainer = Instance.new("Folder")
-entityContainer.Name = "Entities"
-entityContainer.Parent = workspace
-
-
 
 --// Init once
 local enemyDiedSignal = Signal.new()
@@ -489,7 +483,7 @@ function EntityLib:_SpawnModel()
 
     model:SetAttribute("MusicId", enemyModel:GetAttribute("MusicId"))
 
-	model.Parent = entityContainer
+	model.Parent = workspace.Entities
 
 	self.Entity = model
     self.BoundingSize = select(2, model:GetBoundingBox())
@@ -532,17 +526,17 @@ function EntityLib:_ListenStatsTracker()
 
 
     for attr, val in table.clone(EntityTemplate) do
-        if typeof(val) == "table" then
-            local folder = Instance.new("Folder")
-            folder.Name = attr
-            folder.Parent = entity
-            continue
-        end
         if val == "_OBJECT" then
             local objVal = Instance.new("ObjectValue")
             objVal.Name = attr
             objVal.Value = nil
             objVal.Parent = entity
+            continue
+
+        elseif val == "_FOLDER" then
+            local folder = Instance.new("Folder")
+            folder.Name = attr
+            folder.Parent = entity
             continue
         end
 

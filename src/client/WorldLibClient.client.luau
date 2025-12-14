@@ -40,7 +40,7 @@ ClientWorldLib.Funcs = {}
 
 function ClientWorldLib:Init()
     for _, func: () -> nil in self.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 
@@ -502,9 +502,9 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    local itemDisplayContainer = Instance.new("Folder")
-    itemDisplayContainer.Name = "ItemDisplayContainer"
-    itemDisplayContainer.Parent = workspace.MapComponents
+    local itemDropsContainer = Instance.new("Folder")
+    itemDropsContainer.Name = "ItemDropsContainer_Client"
+    itemDropsContainer.Parent = workspace.MapComponents
 
     local RNG = Random.new()
 
@@ -547,7 +547,7 @@ table.insert(ClientWorldLib.Funcs, function()
             end
             itemSphere.A0.Beam.Color = ColorSequence.new(color)
             itemSphere.A1.PointLight.Color = color
-            itemSphere.Parent = itemDisplayContainer
+            itemSphere.Parent = itemDropsContainer
         end
     end)
 
@@ -764,39 +764,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
         local thatPlr = Players:GetPlayerFromCharacter(target)
 
-        local criRPGSettings = thatPlr:FindFirstChild("CriRPGSettings") :: Configuration
-        if not criRPGSettings then return end
-
-
-        if criRPGSettings:FindFirstChild("AllowPartyInvites") then
-            local boolean = criRPGSettings.AllowPartyInvites.Value
-            if boolean == false then
-                Bindables.CreateNotify:Fire("Player can not be invited due to their privacy settings!")
-                return
-            end
-        end
-        if thatPlr:GetAttribute("IsInParty") then
-            Bindables.CreateNotify:Fire("Player is already in a party!")
-            return
-        end
-        if target:GetAttribute("IsInCombat") then
-            Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
-            return
-        end
-        isInviting = true
-
-        local choice = Components:CreateConfirmPrompt(partyScope, {
-            Hint = `Send party invite to <yellow>{thatPlr.DisplayName}</font>?`,
-            ConfirmText = "YES",
-            CancelText = "NO",
-            ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
-        }):Wait()
-
-        isInviting = false
-
-        if choice ~= "YES" then return end
-
-        Events.PartyInvite_C.Fire({ Option = "Invite", PlayerName = thatPlr.Name })
+        Bindables.RToCreatePartyInvite:Fire(thatPlr)
     end)
     mouse.Move:Connect(function()
         local target = mouse.Target
@@ -849,7 +817,7 @@ table.insert(ClientWorldLib.Funcs, function()
 
     Bindables.RToCreatePartyInvite:Connect(function(player: Player)
         if player == Players.LocalPlayer then
-            Bindables.CreateNotify:Fire("You can't invite yourself!")
+            Bindables.CreateNotify:Fire("Can't invite yourself...")
             return
         end
         if isInvitingTo then return end
@@ -859,31 +827,28 @@ table.insert(ClientWorldLib.Funcs, function()
         if not criRPGSettings then return end
 
         local character = thatPlr.Character
-        if not ClientLib:IsCharValid(character) then
-            Bindables.CreateNotify:Fire("Player is dead!")
-            return
-        end
+        if not ClientLib:IsCharValid(character) then return end
 
 
         if criRPGSettings:FindFirstChild("AllowPartyInvites") then
             local boolean = criRPGSettings.AllowPartyInvites.Value
             if boolean == false then
-                Bindables.CreateNotify:Fire("Player can not be invited due to their privacy settings!")
+                Bindables.CreateNotify:Fire("This player isn't accepting invites...")
                 return
             end
         end
         if thatPlr:GetAttribute("IsInParty") then
-            Bindables.CreateNotify:Fire("Player is already in a party!")
+            Bindables.CreateNotify:Fire("That player is already in a party...")
             return
         end
         if character:GetAttribute("IsInCombat") then
-            Bindables.CreateNotify:Fire("Player is in combat! Try again later?")
+            Bindables.CreateNotify:Fire("That player is in the middle of a fight! Try again in a bit?")
             return
         end
         isInvitingTo = true
 
         local choice = Components:CreateConfirmPrompt(partyScope, {
-            Hint = `Send party invite to <yellow>{thatPlr.DisplayName}</font>?`,
+            Hint = `Invite <yellow>{thatPlr.DisplayName}</font> to your party?`,
             ConfirmText = "YES",
             CancelText = "NO",
             ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
@@ -997,6 +962,34 @@ table.insert(ClientWorldLib.Funcs, function()
             Debris:AddItem(effectParticle, data.Duration)
         end
     end)
+end)
+
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    local function _handleNPC(npc: Model)
+        if not npc or not npc.PrimaryPart then return end
+        if npc.PrimaryPart.Anchored then return end
+
+        local npcHumanoid = npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")
+        if not npcHumanoid then return end
+
+        if not npcHumanoid:FindFirstChildOfClass("Animator") then
+            local animator = Instance.new("Animator")
+            animator.Parent = npcHumanoid
+        end
+
+        local anim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
+        local animTrack = npcHumanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[anim]) :: AnimationTrack
+
+        animTrack.Looped = true
+        animTrack.Priority = Enum.AnimationPriority.Idle
+        animTrack:Play()
+    end
+    for _, npc in CollectionService:GetTagged("NPCEntity") do
+        _handleNPC(npc)
+    end
+    CollectionService:GetInstanceAddedSignal("NPCEntity"):Connect(_handleNPC)
 end)
 
 

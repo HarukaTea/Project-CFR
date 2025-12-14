@@ -134,7 +134,7 @@ return function(scope: Fusion.Scope, props: {
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if Fusion.peek(props.BadgeCompletedCount) < 6 then
-                        Bindables.CreateNotify:Fire("You need to complete 6 badges to claim this prize")
+                        Bindables.CreateNotify:Fire("Collect 6 badges to claim this reward")
                         return
                     end
 

@@ -24,7 +24,7 @@ local productFunctions = {}
 
 for _, productId in AssetBook.DevProductIds do
     productFunctions[tostring(productId)] = function(receipt: {[string]: any}, player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>)
-        local productInfo = MarketplaceService:GetProductInfo(receipt.ProductId, Enum.InfoType.Product)
+        local productInfo = MarketplaceService:GetProductInfoAsync(receipt.ProductId, Enum.InfoType.Product)
         assert(productInfo)
 
         table.insert(profile.Data.DevProductsPurchaseLogs, {
@@ -89,7 +89,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
 
 
     pcall(function()
-        local gamepassInfo = MarketplaceService:GetProductInfo(gamePassId, Enum.InfoType.GamePass)
+        local gamepassInfo = MarketplaceService:GetProductInfoAsync(gamePassId, Enum.InfoType.GamePass)
         if not gamepassInfo then return end
         if not gamepassInfo.IsForSale then return end
 

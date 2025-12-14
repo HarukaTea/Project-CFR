@@ -77,6 +77,8 @@ do
         game.Loaded:Wait()
     end
 
+    repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
+
     --// replicated first service sometimes wont load
     repeat wait() until RepS:WaitForChild("HarukaShared", 999)
     repeat wait() until RepS.HarukaShared:WaitForChild("Shared", 999)
@@ -223,14 +225,6 @@ do
         Debris:AddItem(SoundService.Musics.Titlescreen, 5)
     end
     workspace:SetAttribute("Haruka_GameEntered", true)
-
-
-
-    pcall(function()
-        local Bindables = require(RepS.HarukaShared.Library.Bindables)
-
-        Bindables.SetChatEnabled:Fire(true)
-    end)
 
 
     Debris:AddItem(script, 15)

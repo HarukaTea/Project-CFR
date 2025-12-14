@@ -19,7 +19,7 @@ return function (scope: Fusion.Scope, props: {
 
     local text = `{props.Value}`
     if props.IsAbyss then
-        text = HarukaLib:TimeifyNumber(props.Value)
+        text = HarukaLib:TimeifyNumber(props.Value, true)
     end
 
 

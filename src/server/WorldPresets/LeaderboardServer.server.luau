@@ -144,7 +144,7 @@ end
 
 function LBLib:Init()
     for _, func in self.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 

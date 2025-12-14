@@ -17,10 +17,10 @@ local ClientLib = {}
 
 local terrainPartRaycastParams = RaycastParams.new()
 terrainPartRaycastParams.FilterType = Enum.RaycastFilterType.Include
-terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPart")
+terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPartEntity")
 terrainPartRaycastParams.IgnoreWater = true
 
-CollectionService:GetInstanceAddedSignal("TerrainPart"):Connect(function(part)
+CollectionService:GetInstanceAddedSignal("TerrainPartEntity"):Connect(function(part)
 	terrainPartRaycastParams:AddToFilter(part)
 end)
 

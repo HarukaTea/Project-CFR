@@ -9,6 +9,9 @@ if not game.Loaded then
     game.Loaded:Wait()
 end
 
+repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
+
+
 repeat wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
 repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 999)
 repeat wait() until workspace:GetAttribute("Haruka_ServerInited")

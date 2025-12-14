@@ -1,4 +1,5 @@
 
+local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
@@ -18,3 +19,9 @@ if workspace:GetAttribute("Haruka_ServerLocked") then
     plr:Kick("This server is shutting down, please do server hopping or wait for a while.")
     return
 end
+
+
+workspace:SetAttribute("Haruka_ClientValidated", true)
+
+
+Debris:AddItem(script, 15)

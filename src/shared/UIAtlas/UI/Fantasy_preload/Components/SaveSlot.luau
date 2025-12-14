@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
@@ -159,13 +158,9 @@ return function (scope: Fusion.Scope, props: {
                             ButtonClickFunc = function()
                                 props.IsUIShown:set(false)
                                 props.ReadyToTeleportSignal:Fire()
-                                Bindables.CreateCircularFade:Fire(2)
 
-                                wait(0.5)
-                                Events.Titlescreen_SlotActions_C.Fire({
-                                    ActionId = "Play",
-                                    SlotId = "Slot"..props.SlotId
-                                })
+                                workspace:SetAttribute("Titlescreen_SlotId", props.SlotId)
+                                workspace:SetAttribute("Titlescreen_LoadSlot", true)
                             end,
                             ButtonType = "Confirm"
                         })
@@ -418,7 +413,7 @@ return function (scope: Fusion.Scope, props: {
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         if id == "Erase" then
                                             local result = Components:CreateConfirmPrompt(scope, {
-                                                Hint = "Are you sure you wish to erase this save file?",
+                                                Hint = "Delete this save file? This action cannot be undone.",
                                                 ConfirmText = "YES",
                                                 CancelText = "NO",
 
@@ -428,7 +423,7 @@ return function (scope: Fusion.Scope, props: {
                                             if result == "NO" then return end
 
                                             local result = Components:CreateConfirmPrompt(scope, {
-                                                Hint = "Are you <red>ABSOLUTELY</font> sure you wish to erase this save file?",
+                                                Hint = "This will <red>PERMANENTLY DELETE</font> your save. Are you sure?",
                                                 ConfirmText = "YES",
                                                 CancelText = "NO",
 

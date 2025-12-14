@@ -8,10 +8,10 @@ local entityStats = {
     EnteringCombat = false,
     EnteredCombat = false,
 
-    EffectList = {},
-    TargetingList = {},
-    TeamUpEnemies = {},
-    PartyMembers = {},
+    EffectList = "_FOLDER",
+    TargetingList = "_FOLDER",
+    TeamUpEnemies = "_FOLDER",
+    PartyMembers = "_FOLDER",
     TargetingPlayer = "_OBJECT",
 
     CombatLocation = CFrame.identity,

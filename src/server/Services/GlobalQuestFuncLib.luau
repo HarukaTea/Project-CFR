@@ -28,7 +28,7 @@ GlobalQuestFuncLib.Funcs = {}
 
 function GlobalQuestFuncLib:Init()
     for _, func: () -> nil in GlobalQuestFuncLib.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 
@@ -46,7 +46,6 @@ table.insert(GlobalQuestFuncLib.Funcs, function()
         end
 
 
-        Events.CreateNotify_S.Fire(plr, "Quest completed! Well done!")
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.QuestCompleted)
     end)
 end)

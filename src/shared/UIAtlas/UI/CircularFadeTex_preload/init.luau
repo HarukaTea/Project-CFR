@@ -36,12 +36,13 @@ return function (plr: Player)
 		if self.cirularFadeQueue:IsLocked() then return end
 		if self.cirularFadeQueue:IsEmpty() then return end
 
-		self.cirularFadeQueue:SpawnMutex(1)
-
 		local nextCircularFade = self.cirularFadeQueue:Pop() :: {
 			Duration: number
 		}
 		local newScope = Fusion.scoped()
+
+
+		self.cirularFadeQueue:SpawnMutex(nextCircularFade.Duration)
 
         local UI = CircularFadeTex(newScope)
 		UI.Parent = self.plr.PlayerGui

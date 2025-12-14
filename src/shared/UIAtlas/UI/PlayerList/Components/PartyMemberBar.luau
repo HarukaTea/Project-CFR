@@ -58,7 +58,7 @@ return function (scope: Fusion.Scope, props: {
                         return
                     end
                     if Players.LocalPlayer.Name ~= member.Parent.Name then
-                        Bindables.CreateNotify:Fire("You can't kick party members if you're not the leader!")
+                        Bindables.CreateNotify:Fire("Only the party leader can kick members")
                         return
                     end
 

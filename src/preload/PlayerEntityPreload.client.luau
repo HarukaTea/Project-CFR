@@ -9,6 +9,8 @@ end
 
 local wait = task.wait
 
+repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
+
 
 
 repeat wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
@@ -44,7 +46,7 @@ PreloadPlayerLib.Funcs = {}
 
 function PreloadPlayerLib:Init()
     for _, func in self.Funcs do
-        task.spawn(func)
+        func()
     end
 end
 

@@ -201,7 +201,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         if game.JobId == symbol.Name then
-                                            Bindables.CreateNotify:Fire("You are already in this server!")
+                                            Bindables.CreateNotify:Fire("Already in this server")
                                             return
                                         end
 
