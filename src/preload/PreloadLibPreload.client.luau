@@ -51,8 +51,15 @@ function PreloadSceneLib._LoadPreloadAssets()
     placeHolderGui.Parent = Players.LocalPlayer.PlayerGui
 
     local totalAssets = {}
+    local totalImages = AssetBook.PreloadAssets.Images
 
-    for _, imageId: string in AssetBook.PreloadAssets.Images do
+    for _, particle: ParticleEmitter in ReplicatedStorage.Packages:QueryDescendants("ParticleEmitter") do
+        table.insert(totalImages, particle.Texture)
+    end
+    for _, beam: Beam in ReplicatedStorage.Packages:QueryDescendants("Beam") do
+        table.insert(totalImages, beam.Texture)
+    end
+    for _, imageId: string in totalImages do
         local image = Instance.new("ImageLabel")
         image.Name = "ImageForPreload"
         image.Image = imageId

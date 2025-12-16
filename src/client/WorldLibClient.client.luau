@@ -17,10 +17,14 @@ local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
-local ComplexVFXLib = require(ReplicatedStorage.HarukaShared.Library.ComplexVFXLib)
 local BezierMath = require(ReplicatedStorage.HarukaShared.Shared.HarmonyLib.BezierMath)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
+local VFXSceneLib = require(ReplicatedStorage.HarukaShared.Library.VFXSceneLib)
+
+
+
+local effectsFolder = ReplicatedStorage.Packages.Effects :: Folder
 
 
 local wait = task.wait
@@ -88,7 +92,7 @@ table.insert(ClientWorldLib.Funcs, function()
             end
             return
         end
-
+        if sound.IsPlaying then sound:Stop() end
 
         sound:Play()
         if timePos then sound.TimePosition = timePos end
@@ -263,7 +267,7 @@ table.insert(ClientWorldLib.Funcs, function()
             Promise.delay(lifeTime - 5):andThen(function()
                 if not ClientLib:IsModelValid(orb) then return end
 
-                local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
+                local countdown = effectsFolder.RespawnTimer:Clone() :: BasePart
                 countdown.Transparency = 1
                 countdown.BillboardGui.TextLabel.TextColor3 = Color3.fromHex('#ffffff')
                 countdown.CFrame = orb.PrimaryPart.CFrame
@@ -321,31 +325,39 @@ end)
 table.insert(ClientWorldLib.Funcs, function()
     local random = Random.new()
 
-    local function _spawnDMGNumber(pos: Vector3, BCF: CFrame, Bsize: Vector3, text: string, color: Color3)
+    local function _spawnDMGNumber(target: Model, text: string, color: Color3)
         if text == "0" then text = "MISS" end
+        local targetPart = target.PrimaryPart
 
         Promise.try(function()
-            pos += Vector3.new(
-                random:NextNumber(-2, 2),
+            local randomOffset = Vector3.new(
+                random:NextNumber(-5, 5),
                 0,
-                random:NextNumber(-2, 2)
+                random:NextNumber(-5, 5)
             )
-            if pos.Y <= BCF.Position.Y + (Bsize.Y / 2) then
-                pos = Vector3.new(
-                    pos.X,
-                    BCF.Position.Y + (Bsize.Y / 2) + random:NextNumber(0,0.5),
-                    pos.Z
-                )
-            end
-            local part = ReplicatedStorage.Packages.Effects.DMGNumber:Clone() :: BasePart
+
+            local part = effectsFolder.DMGNumber:Clone() :: BasePart
             part.Transparency = 1
-            part.CFrame = CFrame.new(pos)
             part.Parent = workspace.Terrain
             Debris:AddItem(part, 5)
 
+            local heightValue = Instance.new("NumberValue")
+            heightValue.Value = 0
+            heightValue.Parent = part
 
-            HarukaLib:CreateTween(part, AssetBook.TweenInfos.two, { Position = pos + Vector3.yAxis * 15 }):Play()
+            HarukaLib:CreateTween(heightValue, AssetBook.TweenInfos.two, { Value = 15 }):Play()
 
+            local promise; promise = Promise.new(function(resolve, reject)
+                while RunService.Heartbeat:Wait() do
+                    if not part.Parent or not targetPart.Parent then
+                        if part.Parent then part:Destroy() end
+                        promise:cancel()
+                        return
+                    end
+
+                    part.CFrame = CFrame.new(targetPart.Position + randomOffset + Vector3.new(0, heightValue.Value, 0))
+                end
+            end):catch(function() end)
 
             RunService.Heartbeat:Wait()
 
@@ -353,10 +365,10 @@ table.insert(ClientWorldLib.Funcs, function()
             ui.Text = text
             ui.TextColor3 = color or Color3.new(1, 1, 1)
 
-            part.BillboardGui.Size = UDim2.fromScale(12 * 3, 12 * 3)
+            part.BillboardGui.Size = UDim2.fromScale(15, 15)
 
-            HarukaLib:CreateTween(part.BillboardGui, AssetBook.TweenInfos.half, {
-                Size = UDim2.fromScale(6, 6)
+            HarukaLib:CreateTween(part.BillboardGui, AssetBook.TweenInfos.twiceHalfOne, {
+                Size = UDim2.fromScale(5, 5)
             }):Play()
 
             Promise.delay(1.5):andThen(function()
@@ -365,10 +377,12 @@ table.insert(ClientWorldLib.Funcs, function()
 
             end):catch(function() end)
 
-        end):catch(function() end)
+        end):catch(function(err)
+            if RunService:IsStudio() then warn(tostring(err)) end
+        end)
     end
     Events.ShowDMGNumber_S.On(function(data)
-        _spawnDMGNumber(data.DMGPos, data.DMGCF, data.DMGSize, data.DMGNumber, data.DMGColor)
+        _spawnDMGNumber(data.Target, data.DMGNumber, data.DMGColor)
     end)
 end)
 
@@ -376,29 +390,38 @@ end)
 table.insert(ClientWorldLib.Funcs, function()
     local random = Random.new()
 
+    local function _spawnText(target: Model, text: string, color: Color3)
+        local targetPart = target.PrimaryPart
 
-    local function _spawnText(pos: Vector3, BCF: CFrame, Bsize: Vector3, text: string, color: Color3)
         Promise.try(function()
-            pos += Vector3.new(
-                random:NextNumber(-2, 2),
-                0,
-                random:NextNumber(-2, 2)
+            local randomOffset = Vector3.new(
+                random:NextNumber(-5, 5),
+                -1,
+                random:NextNumber(-5, 5)
             )
-            if pos.Y <= BCF.Position.Y + (Bsize.Y / 2) then
-                pos = Vector3.new(
-                    pos.X,
-                    BCF.Position.Y + (Bsize.Y / 2) + random:NextNumber(0,0.5),
-                    pos.Z
-                )
-            end
-            local part = ReplicatedStorage.Packages.Effects.Text:Clone() :: BasePart
+
+            local part = effectsFolder.Text:Clone() :: BasePart
             part.Transparency = 1
-            part.CFrame = CFrame.new(pos)
             part.Parent = workspace.Terrain
             Debris:AddItem(part, 5)
 
+            local heightValue = Instance.new("NumberValue")
+            heightValue.Value = 0
+            heightValue.Parent = part
 
-            HarukaLib:CreateTween(part, AssetBook.TweenInfos.two, { Position = pos + Vector3.yAxis * 15 }):Play()
+            HarukaLib:CreateTween(heightValue, AssetBook.TweenInfos.two, { Value = 15 }):Play()
+
+            local promise; promise = Promise.new(function(resolve, reject)
+                while RunService.Heartbeat:Wait() do
+                    if not part.Parent or not target.Parent then
+                        if part.Parent then part:Destroy() end
+                        promise:cancel()
+                        return
+                    end
+
+                    part.CFrame = CFrame.new(targetPart.Position + randomOffset + Vector3.new(0, heightValue.Value, 0))
+                end
+            end):catch(function() end)
 
             RunService.Heartbeat:Wait()
 
@@ -406,6 +429,7 @@ table.insert(ClientWorldLib.Funcs, function()
             ui.Text = text
             ui.TextColor3 = color or Color3.new(1, 1, 1)
 
+            part.BillboardGui.Size = UDim2.fromScale(30 / 1.5, 4 / 1.5)
 
             Promise.delay(1.5):andThen(function()
                 HarukaLib:CreateTween(ui, AssetBook.TweenInfos.half, { TextTransparency = 1 }):Play()
@@ -413,10 +437,12 @@ table.insert(ClientWorldLib.Funcs, function()
 
             end):catch(function() end)
 
-        end):catch(function() end)
+        end):catch(function(err)
+            if RunService:IsStudio() then warn(tostring(err)) end
+        end)
     end
     Events.ShowText_S.On(function(data)
-        _spawnText(data.TextPos, data.TextCF, data.TextSize, data.Text, data.TextColor)
+        _spawnText(data.Target, data.Text, data.TextColor)
     end)
 end)
 
@@ -428,7 +454,7 @@ table.insert(ClientWorldLib.Funcs, function()
         if not entity:IsDescendantOf(workspace) then return end
 
         Promise.try(function()
-            local hitHighlight = ReplicatedStorage.Packages.Effects.HitHighlight:Clone() :: Highlight
+            local hitHighlight = effectsFolder.HitHighlight:Clone() :: Highlight
             hitHighlight.Adornee = entity
             hitHighlight.Parent = entity
 
@@ -440,7 +466,7 @@ table.insert(ClientWorldLib.Funcs, function()
             }):Play()
 
 
-            local hitEff = ReplicatedStorage.Packages.Effects.HitEffect.BillboardGui:Clone() :: BillboardGui
+            local hitEff = effectsFolder.HitEffect.BillboardGui:Clone() :: BillboardGui
             hitEff.Adornee = entity.PrimaryPart
             hitEff.Hit.Rotation = math.random(1, 360)
             hitEff.Parent = entity
@@ -477,12 +503,12 @@ table.insert(ClientWorldLib.Funcs, function()
     local function _doComplexVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
 
-        if not ComplexVFXLib[holder.Name] then
+        if not VFXSceneLib.LockedPartTypes[holder.Name] then
             warn("Invalid Complex VFX ID: ".. holder.Name)
             return
         end
 
-        Promise.try(ComplexVFXLib[holder.Name], holder):catch(function(err)
+        Promise.try(VFXSceneLib.LockedPartTypes[holder.Name], holder):catch(function(err)
             if RunService:IsStudio() then warn(tostring(err)) end
         end)
     end
@@ -518,7 +544,7 @@ table.insert(ClientWorldLib.Funcs, function()
         location = ClientLib:FindGroundByRay(location)
 
         for _ = 1, data.ItemAmount do
-            local itemSphere = ReplicatedStorage.Packages.Effects.ItemDisplay:Clone() :: BasePart
+            local itemSphere = effectsFolder.ItemDisplay:Clone() :: BasePart
 
             itemSphere.CFrame = CFrame.new(location) * CFrame.new(0, itemSphere.Size.Y / 2, 0)
 
@@ -784,7 +810,7 @@ table.insert(ClientWorldLib.Funcs, function()
         isHovered = true
         if target:FindFirstChild("PartyHighlight") then target.PartyHighlight:Destroy() end
 
-        local partyHighlight = ReplicatedStorage.Packages.Effects.PartyHighlight:Clone() :: Highlight
+        local partyHighlight = effectsFolder.PartyHighlight:Clone() :: Highlight
         partyHighlight.Adornee = target
         partyHighlight:AddTag("PartyHighlight")
         partyHighlight.Parent = target
@@ -865,7 +891,7 @@ end)
 
 table.insert(ClientWorldLib.Funcs, function()
     Events.SpawnEnemyTimer_S.On(function(data)
-        local countdown = ReplicatedStorage.Packages.Effects.RespawnTimer:Clone() :: BasePart
+        local countdown = effectsFolder.RespawnTimer:Clone() :: BasePart
         countdown.Transparency = 1
         countdown.CFrame = data.CFrame
         countdown.Parent = workspace.MapComponents
@@ -888,50 +914,23 @@ table.insert(ClientWorldLib.Funcs, function()
     Events.PlayVFXStatusToEntity_S.On(function(data)
         if not ClientLib:IsModelValid(data.Entity) then return end
 
-        if data.StatusId == "ChainCombo" then
-            local comboEff = ReplicatedStorage.Packages.Effects.ComboEffect.Attachment:Clone() :: Attachment
-            comboEff.Parent = data.Entity.PrimaryPart
-
-            Debris:AddItem(comboEff, 1)
+        if VFXSceneLib[data.StatusId] then
+            Promise.try(VFXSceneLib[data.StatusId], plr.Character, "EntityVFXStatusEvent"):catch(function(err)
+                if RunService:IsStudio() then warn(tostring(err)) end
+            end)
         end
     end)
 end)
-
 
 
 table.insert(ClientWorldLib.Funcs, function()
     Events.PlayVFXStatusToPlayer_S.On(function(data)
         if not ClientLib:IsCharValid(data.Character) then return end
 
-
-        if data.StatusId == "Healing" then
-            local healEff = ReplicatedStorage.Packages.Effects.Healing:Clone() :: BasePart
-            healEff.Parent = data.Character
-
-            Debris:AddItem(healEff, 1.5)
-
-        elseif data.StatusId == "SpeedBoost" then
-            local eff = ReplicatedStorage.Packages.Effects.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
-            eff.Parent = data.Character.PrimaryPart
-
-            Debris:AddItem(eff, 6)
-
-            Promise.delay(5):andThen(function()
-                eff.Enabled = false
-            end):catch(function() end)
-
-        elseif data.StatusId == "Repairing" then
-            local repairingEff = ReplicatedStorage.Packages.Effects.Repairing:Clone() :: BasePart
-            repairingEff.Parent = data.Character
-
-            Debris:AddItem(repairingEff, 1.5)
-
-        elseif data.StatusId == "LevelUp" then
-            local levelUpEffect = ReplicatedStorage.Packages.Effects.LevelUpEffect.Attachment:Clone() :: Attachment
-            levelUpEffect.Parent = data.Character.PrimaryPart
-            Debris:AddItem(levelUpEffect, 2)
-
-            HarukaLib:EmitParticles(levelUpEffect)
+        if VFXSceneLib[data.StatusId] then
+            Promise.try(VFXSceneLib[data.StatusId], data.Character, "PlayerVFXStatusEvent"):catch(function(err)
+                if RunService:IsStudio() then warn(tostring(err)) end
+            end)
         end
     end)
 end)
@@ -942,25 +941,28 @@ table.insert(ClientWorldLib.Funcs, function()
     Events.DoT_PlayVFXEff_S.On(function(data)
         if not ClientLib:IsModelValid(data.Target) then return end
 
-
-        if data.StatusId == "Clear" then
-            for _, particle: Instance in data.Target.PrimaryPart:GetChildren() do
-                if (particle:GetAttribute("HarukaUniqueId") or "/") == data.UniqueId then
-                    particle:Destroy()
+        Promise.try(function()
+            if data.StatusId == "Clear" then
+                for _, particle: Instance in data.Target.PrimaryPart:GetChildren() do
+                    if (particle:GetAttribute("HarukaUniqueId") or "/") == data.UniqueId then
+                        particle:Destroy()
+                    end
                 end
+                return
             end
-            return
-        end
 
-        local effectParticle = ReplicatedStorage.Packages.Effects.Status:FindFirstChild(data.StatusId, true) :: BasePart
-        if effectParticle then
-            effectParticle = effectParticle.Attachment:Clone()
-            effectParticle:SetAttribute("HarukaUniqueId", data.UniqueId)
+            local effectParticle = effectsFolder.Status:FindFirstChild(data.StatusId, true) :: BasePart
+            if effectParticle then
+                effectParticle = effectParticle.Attachment:Clone()
+                effectParticle:SetAttribute("HarukaUniqueId", data.UniqueId)
 
-            effectParticle.Parent = data.Target.PrimaryPart
+                effectParticle.Parent = data.Target.PrimaryPart
 
-            Debris:AddItem(effectParticle, data.Duration)
-        end
+                Debris:AddItem(effectParticle, data.Duration)
+            end
+        end):catch(function(err)
+            if RunService:IsStudio() then warn(tostring(err)) end
+        end)
     end)
 end)
 

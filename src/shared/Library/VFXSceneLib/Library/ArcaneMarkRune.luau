@@ -11,7 +11,7 @@ local Types = require(script.Parent.Parent.Types)
 
 --// Main
 
-return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
+return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
     local targetingEnemy = char.TargetingEnemy.Value
@@ -20,6 +20,11 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
     local mark = RepS.Packages.SkillProjectiles:FindFirstChild("ArcaneMarkRune", true):Clone() :: Model
     mark:PivotTo(targetingEnemy.PrimaryPart.CFrame * CFrame.new(0, 2.5, 0))
+
+    mark.Air.Transparency = 1
+    mark.Ground.Transparency = 1
+    mark.Base.Transparency = 1
+
     mark.PrimaryPart.Anchored = true
     mark.Parent = workspace.Terrain
     Debris:AddItem(mark, 5)

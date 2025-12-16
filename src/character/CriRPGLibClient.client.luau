@@ -9,7 +9,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local ClassSPSceneLib = require(RepS.HarukaShared.Library.ClassSPSceneLib)
+local VFXSceneLib = require(RepS.HarukaShared.Library.VFXSceneLib)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local LocationBook = require(RepS.HarukaShared.Library.LocationBook)
@@ -671,6 +671,7 @@ table.insert(CriRPGLib.Funcs, function()
 
     local function _checkCombatState(state: boolean)
         if not state then
+            projectileContainer:ClearAllChildren()
             projectileContainer.Parent = ServerStorage
 
             RunService.Heartbeat:Wait()
@@ -691,12 +692,12 @@ table.insert(CriRPGLib.Funcs, function()
     Add(Events.PlayVFXScene_S.On(function(data)
         local sceneId = data.SceneId
 
-        if ClassSPSceneLib[sceneId] == nil then
+        if VFXSceneLib[sceneId] == nil then
             warn(`Invalid class SP scene id: {sceneId}`)
             return
         end
 
-        Promise.try(ClassSPSceneLib[sceneId], data.Caster, data.ProjectileUniqueId):catch(function(err)
+        Promise.try(VFXSceneLib[sceneId], data.Caster, data.ProjectileUniqueId):catch(function(err)
             if RunService:IsStudio() then
                 warn(tostring(err))
             end

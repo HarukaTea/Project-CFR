@@ -1,4 +1,9 @@
 
+local RepS = game:GetService("ReplicatedStorage")
+
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
+
 local charStats = {
     --- misc
     IsInCombat = false,
@@ -87,7 +92,7 @@ end
 
 
 
-local cloned = table.clone(charStats)
+local cloned = HarukaLib.TableUtils.DeepCopy(charStats)
 
 --[[
     for some reasons, the original table can not access Ex and ExPower sometimes
@@ -99,4 +104,4 @@ for attr, val in charStats do
     end
 end
 
-return table.clone(cloned)
+return cloned

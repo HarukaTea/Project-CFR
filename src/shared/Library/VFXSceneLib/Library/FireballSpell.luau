@@ -15,7 +15,7 @@ local Types = require(script.Parent.Parent.Types)
 
 --// Main
 
-return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
+return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
 
@@ -28,7 +28,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     fireball.CFrame = HarukaLib:CFLookAt(fireball.Position, targetingEnemy.PrimaryPart.Position)
     fireball.Anchored = true
     fireball.Parent = workspace.Terrain
-    Debris:AddItem(fireball, 3)
+    Debris:AddItem(fireball, 1.5)
 
 
     HarukaLib:CreateTween(fireball, AssetBook.TweenInfos.one, {
@@ -64,6 +64,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
                     local hitVFX = RepS.Packages.SkillProjectiles:FindFirstChild("FireballHitVFX", true):Clone() :: BasePart
                     hitVFX.CFrame = entity.PrimaryPart.CFrame
+                    hitVFX.Transparency = 1
                     hitVFX.Anchored = true
                     hitVFX.Parent = workspace.Terrain
                     Debris:AddItem(hitVFX, 5)

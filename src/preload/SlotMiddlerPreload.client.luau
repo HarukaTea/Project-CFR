@@ -4,8 +4,7 @@ repeat task.wait() until workspace:GetAttribute("Titlescreen_LoadSlot")
 local RepS = game:GetService("ReplicatedStorage")
 local AvatarEditorService = game:GetService("AvatarEditorService")
 local Debris = game:GetService("Debris")
-local SocialService = game:GetService("SocialService")
-
+local Players = game:GetService("Players")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
@@ -23,19 +22,25 @@ local wait = task.wait
 
 local slotId = workspace:GetAttribute("Titlescreen_SlotId") or 1
 
+local profileContainer = Players.LocalPlayer.ProfileContainer :: Folder
 
-local enableFeedback = false
-local enableFav = false
-local enableMobileSettings = false
+local playTime = profileContainer:GetAttribute("Slot"..slotId.."_PlayTime") or 0 :: number
+local isFav = profileContainer:GetAttribute("Slot"..slotId.."_FavActionDone") or false :: boolean
+
+
+local enableFav = playTime >= 60 * 60 * 1 and isFav == false
 local scope = Fusion.scoped()
 local loadViewUI: ScreenGui = nil
 
 
-local shouldShow = enableFav or enableMobileSettings
+local shouldShow = enableFav
 
+
+Bindables.CreateCircularFade:Fire(2)
 
 
 if shouldShow then
+    wait(1)
     local LoadView = require(RepS.HarukaShared.UIAtlas.Components.LoadView)
     local LoadingTextVal = Fusion.Value(scope, "Taking a break...")
 
@@ -43,13 +48,10 @@ if shouldShow then
         LoadingText = LoadingTextVal
     })
     HarukaLib:UITween(loadViewUI, "In")
+
+    wait(2.5)
 end
 
-
-
-if enableMobileSettings then
-
-end
 
 
 if enableFav then
@@ -61,34 +63,12 @@ if enableFav then
     }):Wait()
 
     if result == "YES" then
-        AvatarEditorService:PromptSetFavorite(AssetBook.PlaceIds["7037847546"].Mainworld, Enum.AvatarItemType.Asset, true)
-        wait(2)
-    end
-end
-
-
-
-if enableFeedback then
-    local result = Components:CreateConfirmPrompt(scope, {
-        CancelText = "No",
-        ConfirmText = "Yes",
-        Hint = "You've played for an hour! Got a minute to give us some feedback?",
-        ConfirmUniqueId = "FavTitlescreen"
-    }):Wait()
-
-    if result == "YES" then
-        local success, err = pcall(function()
-            SocialService:PromptFeedbackSubmissionAsync()
+        pcall(function()
+            AvatarEditorService:PromptSetFavorite(AssetBook.PlaceIds["7037847546"].Mainworld, Enum.AvatarItemType.Asset, true)
         end)
-        if not success then
-            print(err)
-        end
-        wait(2)
     end
+    wait(2)
 end
-
-
-
 
 
 
@@ -99,16 +79,20 @@ if shouldShow then
             Fusion.doCleanup(scope)
         end
     })
+
+    Bindables.CreateCircularFade:Fire(2)
 end
 
 
 
 --// entering the game
-Bindables.CreateCircularFade:Fire(2)
-
 Events.Titlescreen_SlotActions_C.Fire({
     ActionId = "Play",
     SlotId = "Slot"..slotId
+})
+Events.Titlescreen_SlotMiddler_C.Fire({
+    SlotId = "Slot"..slotId,
+    Favorited = enableFav,
 })
 
 

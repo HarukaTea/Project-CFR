@@ -524,8 +524,7 @@ function EntityLib:_ListenStatsTracker()
     local entity = self.Entity :: Model
     local entityInfo = EntityBook[entity.Name]
 
-
-    for attr, val in table.clone(EntityTemplate) do
+    for attr, val in HarukaLib.TableUtils.DeepCopy(EntityTemplate) do
         if val == "_OBJECT" then
             local objVal = Instance.new("ObjectValue")
             objVal.Name = attr

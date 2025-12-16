@@ -1,4 +1,9 @@
 
+local RepS = game:GetService("ReplicatedStorage")
+
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
+
 local entityStats = {
     Level = 1,
 
@@ -45,7 +50,7 @@ local entityStats = {
     EnvironmentBonus = 1,
 }
 
-local cloned = table.clone(entityStats)
+local cloned = HarukaLib.TableUtils.DeepCopy(entityStats)
 
 -- for some reason, the original table can not access Ex and ExPower sometimes
 -- so we need to manually clone one
@@ -56,4 +61,4 @@ for attr, val in entityStats do
 end
 
 
-return table.clone(cloned)
+return cloned

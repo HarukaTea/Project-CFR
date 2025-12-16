@@ -140,13 +140,9 @@ function ServerLib:ShowNumber(target: Model, number: number, color: Color3?)
 	if not ServerLib:IsCharValid(target) then return end
 
 	local pos = target.PrimaryPart.Position
-	local cf, size = target:GetBoundingBox()
-
 
 	Events.ShowDMGNumber_S.FireList(ServerLib:GetNearbyPlayers(pos), {
-		DMGPos = pos,
-		DMGCF = cf,
-		DMGSize = size,
+		Target = target,
 		DMGNumber = tostring(number),
 		DMGColor = color or Color3.new(1, 1, 1)
 	})
@@ -156,15 +152,10 @@ end
 function ServerLib:ShowText(target: Model, text: string, color: Color3?)
 	if not ServerLib:IsCharValid(target) then return end
 
-
 	local pos = target.PrimaryPart.Position
-	local cf, size = target:GetBoundingBox()
-
 
 	Events.ShowText_S.FireList(ServerLib:GetNearbyPlayers(pos), {
-		TextPos = pos,
-		TextCF = cf,
-		TextSize = size,
+		Target = target,
 		Text = text,
 		TextColor = color or Color3.new(1, 1, 1)
 	})

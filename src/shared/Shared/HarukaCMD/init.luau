@@ -105,7 +105,7 @@ function HarukaCMD:Init()
         self.Commands = {}
 
         self.RefreshCommandBookFunc = function()
-            local afterCommands = table.clone(CommandBook)
+            local afterCommands = HarukaLib.TableUtils.DeepCopy(CommandBook)
 
             for index: number, cmd in afterCommands do
                 if cmd.RankReq > Fusion.peek(self.Rank) then
@@ -470,7 +470,7 @@ end
 
 
 function HarukaCMD:_ValidateCmd(realCMD: CommandJSON, cmdArgs: { string }) : (boolean, CommandJSON | {})
-    local realCMDArgs = table.clone(cmdArgs)
+    local realCMDArgs = HarukaLib.TableUtils.DeepCopy(cmdArgs)
 
     local args = realCMD.Args
     local check = true

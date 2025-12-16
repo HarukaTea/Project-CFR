@@ -18,8 +18,8 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    local ClassSPSceneLib = self
+return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
+    local VFXSceneLib = self
     if not ClientLib:IsCharValid(char) then return end
 
 
@@ -28,6 +28,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
 
     local flowCharge = RepS.Packages.SkillProjectiles:FindFirstChild("FlowCharge", true):Clone() :: BasePart
+    flowCharge.Transparency = 1
     flowCharge.CFrame = char.PrimaryPart.CFrame
     flowCharge.Parent = workspace.Terrain
     Debris:AddItem(flowCharge, 1)
@@ -35,7 +36,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     HarukaLib:EmitParticles(flowCharge)
 
 
-    local tempMarkedContainer = ClassSPSceneLib._createMarkContainer()
+    local tempMarkedContainer = VFXSceneLib._createMarkContainer()
 
 
     for _, angle: number in { -8, 8 } do
@@ -140,7 +141,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
                     else
                         Debris:AddItem(flowIce, 2)
 
-                        local val = ClassSPSceneLib._tweenValue(3, 0.135, 20)
+                        local val = VFXSceneLib._tweenValue(3, 0.135, 20)
                         HarukaLib:CreateTween(flowIce.Attachment.PointLight, AssetBook.TweenInfos.twiceHalf, {Range = 35}):Play()
 
                         flowIce.Attachment.Smoke.Enabled = false

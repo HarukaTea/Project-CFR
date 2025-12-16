@@ -8,10 +8,10 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Types = require(script.Types)
 
 
-export type ClassSPSceneLib = Types.ClassSPSceneLib
+export type VFXSceneLib = Types.VFXSceneLib
 
 
-local ClassSPSceneLib = {} :: ClassSPSceneLib
+local VFXSceneLib = {} :: VFXSceneLib
 
 
 local function _tweenValue(start: number, duration: number, endTime: number)
@@ -33,16 +33,19 @@ local function _createMarkContainer() : Folder
 end
 
 
-ClassSPSceneLib._tweenValue = _tweenValue
-ClassSPSceneLib._createMarkContainer = _createMarkContainer
+VFXSceneLib._tweenValue = _tweenValue
+VFXSceneLib._createMarkContainer = _createMarkContainer
 
 
 
 for _, module: ModuleScript in script.Library:GetChildren() do
-    ClassSPSceneLib[module.Name] = function(caster: Model, uniqueId: string)
-		require(module)(ClassSPSceneLib, caster, uniqueId)
+    VFXSceneLib[module.Name] = function(caster: Model, uniqueId: string)
+		require(module)(VFXSceneLib, caster, uniqueId)
 	end
+end
+for _, module: ModuleScript in script.LibrarySP:GetChildren() do
+    require(module)(VFXSceneLib)
 end
 
 
-return ClassSPSceneLib
+return VFXSceneLib

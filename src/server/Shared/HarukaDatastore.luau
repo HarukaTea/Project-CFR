@@ -68,7 +68,7 @@ function Profile:SaveProfileAsync()
 
 
     local success, result = pcall(function()
-        self.Store:UpdateAsync(self.Key, function(oldValue: Dict, keyInfo: DataStoreKeyInfo)
+        return self.Store:UpdateAsync(self.Key, function(oldValue: Dict, keyInfo: DataStoreKeyInfo)
             keyInfo = keyInfo or KEYINFO_MOCK
 
             local userIds = keyInfo:GetUserIds()

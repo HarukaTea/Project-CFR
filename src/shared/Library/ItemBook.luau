@@ -2,6 +2,7 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local ItemRawBook = require(RepS.HarukaShared.Library.ItemRawBook)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ItemBook = {}
 
@@ -171,7 +172,7 @@ end
 --// handle item book
 
 for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
-    local itemInfo = table.clone(itemInfo)
+    local itemInfo = HarukaLib.TableUtils.DeepCopy(itemInfo)
 
     itemInfo.ExtraStatInfoDesync = {}
     itemInfo.StatInfoDesync = {}

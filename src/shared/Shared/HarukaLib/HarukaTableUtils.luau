@@ -138,7 +138,7 @@ end
 
 
 
-tableUtils.DeepCopy = function (t: Dict)
+tableUtils.DeepCopy = function (t: Dict) : Dict
 	local copy = {}
 	for key, value in t do
 		if type(value) == "table" then

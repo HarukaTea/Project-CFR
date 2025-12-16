@@ -169,6 +169,11 @@ end
 
 
 
+function CharLib:_TriggerRagdoll()
+    char.Torso:ApplyImpulse(char.Torso.CFrame.LookVector * -100)
+end
+
+
 
 table.insert(CharLib.Funcs, function()
     local humanoid = char.Humanoid :: Humanoid
@@ -253,7 +258,7 @@ table.insert(CharLib.Funcs, function()
 
 
     local function _playAnim(anim: string)
-        if not self.ClassAttackAnims[anim] then warn(`Can't found animation: {anim} !`) return end
+        if not self.ClassAttackAnims[anim] then warn(`Can't found animation: {anim}!`) return end
 
         self.ClassAttackAnims[anim]:Play()
     end
@@ -381,11 +386,6 @@ table.insert(CharLib.Funcs, function()
         end
     end)
 end)
-
-
-function CharLib:_TriggerRagdoll()
-    char.Torso:ApplyImpulse(char.Torso.CFrame.LookVector * -100)
-end
 
 
 

@@ -689,15 +689,7 @@ end)
 
 table.insert(ServerWorldLib.Funcs, function()
     if ReplicatedStorage.Packages:FindFirstChild("Titlescreen") then
-        local model = Instance.new("Model")
-
-        ReplicatedStorage.Packages.Titlescreen.Parent = model
-
-        model:PivotTo(CFrame.new(Vector3.one * 1599))
-        model.Parent = workspace.MapComponents
-
-        model.Titlescreen.Parent = workspace.MapComponents
-        model:Destroy()
+        ReplicatedStorage.Packages.Titlescreen.Parent = workspace.MapComponents
     end
 end)
 

@@ -103,6 +103,7 @@ function TrailMath:Init(part: BasePart, props: {
 		local midPoint2 = startPos.Position:Lerp(endPos.Position, 0.65) + defaultCurveOffset
 
 		projectile = projectile:Clone()
+		projectile.Transparency = 1
 		projectile.Position = startPos.Position
 		projectile.A0.Trail.Enabled = true
 		projectile.Parent = workspace.Terrain

@@ -1,4 +1,9 @@
 
+local RepS = game:GetService("ReplicatedStorage")
+
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
+
 export type PlayerItemDataJSON = {
     ItemId: string,
     Amount: number,
@@ -55,6 +60,10 @@ export type PlayerDataJSON = {
     --// new fields
     Title: string,
     AbyssDropPity: number,
+
+    --// new fields 2
+    FavActionDone: boolean,
+    MobileSettingsActionDone: boolean,
 
     --// legacy fields
     Settings: {}?
@@ -126,6 +135,8 @@ local playerStats = {
 
             Title = "Adventurer",
             AbyssDropPity = 0,
+            FavActionDone = false,
+            MobileSettingsActionDone = false,
         }
     },
 
@@ -137,8 +148,8 @@ local playerStats = {
 
     Settings = {}
 }
-playerStats.Slot2 = table.clone(playerStats.Slot1)
-playerStats.Slot3 = table.clone(playerStats.Slot1)
+playerStats.Slot2 = HarukaLib.TableUtils.DeepCopy(playerStats.Slot1)
+playerStats.Slot3 = HarukaLib.TableUtils.DeepCopy(playerStats.Slot1)
 
 
-return table.clone(playerStats)
+return playerStats

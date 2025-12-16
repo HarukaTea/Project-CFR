@@ -15,8 +15,8 @@ local Types = require(script.Parent.Parent.Types)
 
 --// Main
 
-return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
-    local ClassSPSceneLib = self
+return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
+    local VFXSceneLib = self
     if not ClientLib:IsCharValid(char) then return end
 
 
@@ -40,7 +40,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
     end):timeout(7):catch(function() end)
 
 
-    local tempMarkedContainer = ClassSPSceneLib._createMarkContainer()
+    local tempMarkedContainer = VFXSceneLib._createMarkContainer()
 
 
     Promise.new(function()

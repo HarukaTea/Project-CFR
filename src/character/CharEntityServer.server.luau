@@ -7,10 +7,13 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+
+
+local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
+
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
@@ -186,61 +189,6 @@ table.insert(CharLib.Funcs, function()
             char:SetAttribute("AreaIn", regionIn.Name)
         end
     end))
-end)
-
-
-
-table.insert(CharLib.Funcs, function()
-	local event = Instance.new("BindableEvent")
-	event.Name = "EnemyGotHit"
-	event.Parent = script
-
-	local function _checkAndAward(badgeId: number)
-		if not plr:GetAttribute("BADGE_"..badgeId) then
-			plr:SetAttribute("BADGE_"..badgeId, true)
-
-			ServerLib:GiveBadge(badgeId, plr)
-		end
-	end
-
-	Add(HarukaLib:Hydrate(plr, {
-		["Attr-Gold"] = function(val: number)
-			val = val or 0
-
-			if val >= 1000 then
-				_checkAndAward(AssetBook.BadgeIds.GoldGatherer)
-			end
-			if val >= 1000 * 100 then
-				_checkAndAward(AssetBook.BadgeIds.GoldCollector)
-			end
-		end,
-		["Attr-CombatWonTimes"] = function(val: number)
-			val = val or 0
-
-			if val >= 100 then
-				_checkAndAward(AssetBook.BadgeIds.Fighter)
-			end
-		end
-	}))
-	Add(event.Event:Connect(function(_, attacker: Model, dmgProps: {
-		DMG: number,
-		DMGType: "DMG" | "Magic",
-		Attacker: string
-	})
-		if script == nil then return end
-		if script.Parent == nil then return end
-		if attacker ~= char then return end
-		if not dmgProps then return end
-		if not dmgProps.DMG then return end
-		if not dmgProps.DMGType then return end
-		if not dmgProps.Attacker then return end
-		if dmgProps.Attacker ~= "ClassAttacks" then return end
-
-
-		if dmgProps.DMG >= 1000 then
-			_checkAndAward(AssetBook.BadgeIds.StoneBreaker)
-		end
-	end))
 end)
 
 

@@ -590,7 +590,7 @@ function HarukaLib:BanPlayerByUserId(userId: number, properties: {
 	}
 
 	local success, err = pcall(function()
-		Players:BanAsync(config)
+		return Players:BanAsync(config)
 	end)
 	if not success then
 		warn(err)
@@ -610,7 +610,7 @@ function HarukaLib:UnbanPlayerByUserId(userId: number)
 
 
 	local success, err = pcall(function()
-		Players:UnbanAsync(config)
+		return Players:UnbanAsync(config)
 	end)
 	if not success then
 		warn(err)

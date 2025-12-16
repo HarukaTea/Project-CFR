@@ -18,7 +18,7 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
+return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
 
@@ -37,6 +37,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 	local starInfo = TweenInfo.new(1.75, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
 
     local echoRay = RepS.Packages.SkillProjectiles:FindFirstChild("EchoRay", true):Clone() :: BasePart
+    echoRay.Transparency = 1
     echoRay.Position = centerPos
     echoRay.Parent = workspace.Terrain
     Debris:AddItem(echoRay, 10)

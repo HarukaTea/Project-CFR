@@ -7,6 +7,7 @@ local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
+local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
@@ -24,6 +25,10 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
+
+
+local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
+
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -114,7 +119,7 @@ end
 
 
 function CriRPGLib:_InitAttrs()
-    for attr, val in table.clone(CharTemplate) do
+    for attr, val in HarukaLib.TableUtils.DeepCopy(CharTemplate) do
         if val == "_OBJECT" then
             local objVal = Instance.new("ObjectValue")
             objVal.Name = attr
@@ -170,7 +175,6 @@ function CriRPGLib:_AutoEquipItems()
         end
     end
 end
-
 
 
 
@@ -438,7 +442,7 @@ table.insert(CriRPGLib.Funcs, function()
     local function _updateClassBase(class: string)
         if not class then return end
 
-        for attr, val in table.clone(CharTemplate) do
+        for attr, val in HarukaLib.TableUtils.DeepCopy(CharTemplate) do
             if string.find(attr, "Base") then
                 char:SetAttribute(attr, val)
             end
@@ -688,7 +692,7 @@ table.insert(CriRPGLib.Funcs, function()
         "BaseMagic", "BaseMinDMG", "BaseMaxDMG", "BaseSpeed", "BaseSpeedCombat",
         "BaseJumpPower", "BaseMaxShield", "BaseCriChance"
     }
-    for stat, _ in table.clone(CharTemplate) do
+    for stat, _ in HarukaLib.TableUtils.DeepCopy(CharTemplate) do
         if table.find(blackList, stat) then continue end
         if not string.find(stat, "Base") then continue end
         if not char:GetAttribute(stat) then
@@ -902,6 +906,52 @@ table.insert(CriRPGLib.Funcs, function()
 
     updateArtifactSet()
 end)
+
+
+
+
+table.insert(CriRPGLib.Funcs, function()
+	local event = Instance.new("BindableEvent")
+	event.Name = "EnemyGotHit"
+	event.Parent = script
+
+	local function _checkAndAward(badgeId: number)
+		if not plr:GetAttribute("BADGE_"..badgeId) then
+			plr:SetAttribute("BADGE_"..badgeId, true)
+
+			ServerLib:GiveBadge(badgeId, plr)
+		end
+	end
+
+	Add(HarukaLib:Hydrate(plr, {
+		["Attr-Gold"] = function(val: number)
+			val = val or 0
+
+			if val >= 1000 then
+				_checkAndAward(AssetBook.BadgeIds.GoldGatherer)
+			end
+			if val >= 1000 * 100 then
+				_checkAndAward(AssetBook.BadgeIds.GoldCollector)
+			end
+		end,
+		["Attr-CombatWonTimes"] = function(val: number)
+			val = val or 0
+
+			if val >= 100 then
+				_checkAndAward(AssetBook.BadgeIds.Fighter)
+			end
+		end
+	}))
+	Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting: Model, attacker: Model, dmgProps: AccessoryUniversal.DMGPropsMetaData)
+		if dmgProps.Attacker ~= "ClassAttacks" then return end
+
+		if dmgProps.DMG >= 1000 then
+			_checkAndAward(AssetBook.BadgeIds.StoneBreaker)
+		end
+	end))
+	AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)
+end)
+
 
 
 CriRPGLib:Init()

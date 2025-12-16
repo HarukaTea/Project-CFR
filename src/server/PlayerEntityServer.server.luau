@@ -54,13 +54,7 @@ local PlayerLib = {} :: PlayerLibClass
 PlayerLib.__index = PlayerLib
 
 
-
 local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
-
-
-local EXTRA_TEMPLATE = {
-    Rank = 0
-}
 
 
 local DS_Version = require(ServerScriptService.DS_VERSION)
@@ -79,7 +73,7 @@ local wait = task.wait
 
 
 local attrWhiteList = {}
-for attr, val in table.clone(PlayerTemplate).Slot1.Attrs do
+for attr, val in HarukaLib.TableUtils.DeepCopy(PlayerTemplate).Slot1.Attrs do
     if typeof(val) == "table" then
         continue
     end
@@ -128,10 +122,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         --// update join time
         data.LastJoinedDateTime = DateTime.now():ToIsoDate()
-
-        for attr, val in table.clone(EXTRA_TEMPLATE) do
-            plr:SetAttribute(attr, val)
-        end
 
         --// validate
         local validatedMainData = self.ProfileObj:_ValidateMainData(profile.Data)
@@ -252,6 +242,8 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         --// apply player rank in another thread
         Promise.try(function()
             local playerUID = tostring(plr.UserId)
+
+            plr:SetAttribute("Rank", 0)
 
             local hasCustomRole = false
             if RankBook.CustomRoleInfo[playerUID] then
@@ -395,24 +387,22 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
     local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
     if not playerObj then
         warn("[Data Erase] Player object not found when trying to erase save file.")
-
-        Events.CreateNotify_S.Fire(plr, "[ERROR] Player object not found, when trying to erase save file.")
+        Events.CreateNotify_S.Fire(plr, "Error occurred, please try again later?")
         return
     end
     if not playerObj.ProfileObj.Profile then
         warn("[Data Erase] Profile not found when trying to erase save file.")
-
-        Events.CreateNotify_S.Fire(plr, "[ERROR] Profile not found, when trying to erase save file.")
+        Events.CreateNotify_S.Fire(plr, "Error occurred, please try again later.")
         return
     end
 
 
-    for attr, value in table.clone(PlayerTemplate).Slot1.Attrs do
+    for attr, value in HarukaLib.TableUtils.DeepCopy(PlayerTemplate).Slot1.Attrs do
         playerObj.ProfileObj.Profile.Data[data.SlotId].Attrs[attr] = value
     end
 
     local profileContainer = plr.ProfileContainer :: Folder
-    for attr, val in table.clone(PlayerTemplate).Slot1.Attrs do
+    for attr, val in HarukaLib.TableUtils.DeepCopy(PlayerTemplate).Slot1.Attrs do
         if not table.find(attrWhiteList, attr) then continue end
 
         profileContainer:SetAttribute(data.SlotId.."_"..attr, val)
@@ -423,6 +413,21 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
 
 
     Events.CreateFSNotify_S.Fire(plr, "Save file erased!", 2)
+end)
+Events.Titlescreen_SlotMiddler_C.SetCallback(function(plr: Player, data)
+    if not data.SlotId then return end
+    if data.Favorited == nil then return end
+    if data.MobileConfigured == nil then return end
+
+    local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
+    if not playerObj then return end
+
+    local profile = playerObj.ProfileObj.Profile
+    local slot = data.SlotId :: "Slot1"
+
+    if data.Favorited then
+        profile.Data[slot].Attrs.FavActionDone = data.Favorited
+    end
 end)
 
 

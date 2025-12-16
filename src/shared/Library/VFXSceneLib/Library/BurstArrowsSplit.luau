@@ -17,7 +17,7 @@ local wait = task.wait
 
 --// Main
 
-return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: string)
+return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
 
@@ -35,6 +35,7 @@ return function(self: Types.ClassSPSceneLib, char: Model, projectileUniqueId: st
 
         local impact = RepS.Packages.SkillProjectiles:FindFirstChild("BurstArrowUltImpact", true):Clone() :: BasePart
         impact.CFrame = targetingEnemy.PrimaryPart.CFrame
+        impact.Transparency = 1
         impact.Parent = workspace.Terrain
         Debris:AddItem(impact, 1)
 

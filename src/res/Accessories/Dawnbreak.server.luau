@@ -32,7 +32,7 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
         ClassAttackLib:DealDamageToEnemy(char, targeting, {
             DMG = 33550336,
             DMGType = "DMG",
-            Attacker = "DualSwords"
+            Attacker = "Dawnbreak"
         })
 
         ServerLib:ShowText(char, "DAWN!", Color3.fromRGB(255, 0, 0))
