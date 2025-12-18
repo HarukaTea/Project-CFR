@@ -293,8 +293,11 @@ function ClientLib:LoadLightingPreset(presetId: string)
 
 	local config = lightingPresets[presetId]:FindFirstChild("Configuration") :: Configuration
 
-
-	Lighting:ClearAllChildren()
+	for _, eff: Instance in Lighting:GetChildren() do
+		if not eff:HasTag("VFXEffect") then
+			eff:Destroy()
+		end
+	end
 
 	for _, preset: Instance in lightingPresets[presetId]:GetChildren() do
 		preset:Clone().Parent = Lighting

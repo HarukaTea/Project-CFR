@@ -1,7 +1,6 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -12,6 +11,13 @@ local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
+
+
+local Freecam = nil
+if workspace:GetAttribute("AllowFreecam") then
+    Freecam = require(ReplicatedStorage.HarukaShared.Shared.Freecam)
+end
+
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
@@ -34,6 +40,9 @@ type CharLibClass = {
     Init: (self: CharLibClass) -> nil,
     _InitUI: (self: CharLibClass) -> nil,
     __Init: (self: CharLibClass) -> nil,
+
+    __Init_Abyss: (self: CharLibClass) -> nil,
+    __Init_Lighting: (self: CharLibClass) -> nil,
 }
 
 
@@ -99,13 +108,20 @@ function CharLib:__Init()
 
     SoundService.Musics.Overworld:Play()
 
-
     CharLib:__Init_Abyss()
+    CharLib:__Init_Lighting()
+end
 
+
+function CharLib:__Init_Lighting()
     local camera = workspace.CurrentCamera
-    if camera:FindFirstChild("DeathBlur") then
-        camera.DeathBlur:Destroy()
-    end
+
+    if camera:FindFirstChild("DeathBlur") then camera.DeathBlur:Destroy() end
+    if camera:FindFirstChild("IF1") then camera.IF1:Destroy() end
+    if camera:FindFirstChild("IF2") then camera.IF2:Destroy() end
+
+    ReplicatedStorage.Packages.Unloads.IF1:Clone().Parent = camera
+    ReplicatedStorage.Packages.Unloads.IF2:Clone().Parent = camera
 end
 
 
@@ -161,8 +177,6 @@ function CharLib:__Destroy()
     deathBlur.Parent = workspace.CurrentCamera
 
     if workspace:GetAttribute("AllowFreecam") then
-        local Freecam = require(ReplicatedStorage.HarukaShared.Shared.Freecam)
-
         Freecam.Toggle(false)
     end
 end

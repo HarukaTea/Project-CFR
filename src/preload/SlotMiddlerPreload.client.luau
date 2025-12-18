@@ -74,13 +74,14 @@ end
 
 
 if shouldShow then
+    Bindables.CreateCircularFade:Fire(2)
+
+    wait(1)
     HarukaLib:UITween(loadViewUI, "Out", {
         TweenCallback = function()
             Fusion.doCleanup(scope)
         end
     })
-
-    Bindables.CreateCircularFade:Fire(2)
 end
 
 
@@ -88,12 +89,16 @@ end
 --// entering the game
 Events.Titlescreen_SlotActions_C.Fire({
     ActionId = "Play",
-    SlotId = "Slot"..slotId
-})
-Events.Titlescreen_SlotMiddler_C.Fire({
     SlotId = "Slot"..slotId,
-    Favorited = enableFav,
+
+    SlotMiddler = {
+        Favorited = enableFav,
+    }
 })
+
+if not shouldShow then
+    wait(1.15)
+end
 
 
 Debris:AddItem(script, 30)

@@ -6,8 +6,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
-local slideConfig = worldConfig:GetAttribute("CanSlide") :: boolean
+if not worldConfig then return end
 
+local slideConfig = worldConfig:GetAttribute("CanSlide") :: boolean
 if not slideConfig then return end
 
 

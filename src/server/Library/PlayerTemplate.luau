@@ -63,7 +63,7 @@ export type PlayerDataJSON = {
 
     --// new fields 2
     FavActionDone: boolean,
-    MobileSettingsActionDone: boolean,
+    IsInGroup: boolean,
 
     --// legacy fields
     Settings: {}?
@@ -136,7 +136,7 @@ local playerStats = {
             Title = "Adventurer",
             AbyssDropPity = 0,
             FavActionDone = false,
-            MobileSettingsActionDone = false,
+            IsInGroup = false
         }
     },
 

@@ -100,7 +100,7 @@ local template = {
 
 				Min = 0.8,
 				Max = 1.2,
-				DefaultValue = if HarukaLib:GetAccurateDevice() == "Phone" or HarukaLib:GetAccurateDevice() == "Tablet" then 1.1 else 1,
+				DefaultValue = if HarukaLib:GetAccurateDevice() == "Phone" or HarukaLib:GetAccurateDevice() == "Tablet" then 1.15 else 1,
 
 				ValChanged = Signal.new()
 			},

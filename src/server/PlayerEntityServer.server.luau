@@ -115,13 +115,12 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         --// start to load in
         local slot = slotChosen
-        local data = profile.Data[slot].Attrs :: PlayerTemplate.PlayerDataJSON
 
         self.Slot = slot
         plr:SetAttribute("SlotChosen", slot)
 
         --// update join time
-        data.LastJoinedDateTime = DateTime.now():ToIsoDate()
+        profile.Data[slot].Attrs.LastJoinedDateTime = DateTime.now():ToIsoDate()
 
         --// validate
         local validatedMainData = self.ProfileObj:_ValidateMainData(profile.Data)
@@ -237,6 +236,31 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
             talentVal.Parent = talentFolder
         end
+
+
+        --// slot middler
+        Promise.try(function()
+            local middlerData = netData.SlotMiddler or {}
+            local fav = middlerData.Favorited
+
+            if fav then
+                plr:SetAttribute("FavActionDone", true)
+            end
+
+        end):catch(function()  end)
+
+        --// get in group rewards
+        Promise.try(function()
+            local isInGroup = plr:IsInGroupAsync(16912246)
+            if isInGroup and plr:GetAttribute("IsInGroup") == false then
+                plr:SetAttribute("IsInGroup", true)
+
+                HarukaLib:AddAttr(plr, "Gold", 1000)
+                Events.CreateNotify_S.Fire(plr, "Thanks for joining our group!")
+                Events.CreateNotify_S.Fire(plr, "Rewards: 1K Gold")
+            end
+
+        end):catch(function()  end)
 
 
         --// apply player rank in another thread
@@ -413,21 +437,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
 
 
     Events.CreateFSNotify_S.Fire(plr, "Save file erased!", 2)
-end)
-Events.Titlescreen_SlotMiddler_C.SetCallback(function(plr: Player, data)
-    if not data.SlotId then return end
-    if data.Favorited == nil then return end
-    if data.MobileConfigured == nil then return end
-
-    local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
-    if not playerObj then return end
-
-    local profile = playerObj.ProfileObj.Profile
-    local slot = data.SlotId :: "Slot1"
-
-    if data.Favorited then
-        profile.Data[slot].Attrs.FavActionDone = data.Favorited
-    end
 end)
 
 

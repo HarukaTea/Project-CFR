@@ -1421,11 +1421,18 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not data.Modifiers then return end
         if not data.Players then return end
 
-        local code, privateServerId = TeleportService:ReserveServerAsync()
+        local abyssPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel
+        local code, privateServerId = TeleportService:ReserveServerAsync(abyssPlaceId)
 
         local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData_V2")
         pcall(function()
-            abyssHashMap:SetAsync("Session_"..privateServerId, data, 600)
+            privateServerId = string.sub(privateServerId, 1, 8)
+
+            local jsonData = {
+                AbyssId = data.AbyssId,
+                Modifiers = data.Modifiers,
+            }
+            abyssHashMap:SetAsync(privateServerId, jsonData, 600)
         end)
 
         local slotChosen = {}
@@ -1437,8 +1444,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             ToAbyss = true,
             SlotChosen = slotChosen
         })
-
-        local abyssPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel
         teleportOptions.ReservedServerAccessCode = code
 
         TeleportService:TeleportAsync(abyssPlaceId, data.Players, teleportOptions)
@@ -1446,9 +1451,25 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         Events.CreateFSNotify_S.FireList(data.Players, "Teleporting to Abyss...", 15)
     end
     Events.StartAbyss_C.SetCallback(function(plr: Player, data)
-        data.Players = { plr }
+        local party = PartyLib.PlayerPartyDataClass:IsInParty(plr)
+        if not party then
+            data.Players = { plr }
+            _challengeAbyss(plr, data)
+        else
+            local partyObj = PartyLib.PlayerPartyDataClass:GetParty(plr)
 
-        _challengeAbyss(plr, data)
+            local msg = plr.DisplayName.." requested to challenge the Abyss!"
+
+            Events.PlaySound_S.FireList(partyObj:GetAllMembers(), SoundService.SFXs.EXP)
+            Events.CreateNotify_S.FireList(partyObj:GetAllMembers(), msg)
+
+            wait(2)
+            Events.CreateNotify_S.FireList(partyObj:GetAllMembers(), "Teleporting in 3 seconds...")
+
+            wait(3)
+            data.Players = partyObj:GetAllMembers()
+            _challengeAbyss(plr, data)
+        end
     end)
     ServerBindables.RToChallengeAbyss:Connect(_challengeAbyss)
 end)

@@ -22,9 +22,14 @@ export type DoTLibClass = {
 
     UniqueId: string,
     Cancelled: boolean,
+    Activated: boolean,
 
     Activate: (self: DoTLibClass) -> nil,
     Cancel: (self: DoTLibClass) -> nil,
+    StackCancel: (self: DoTLibClass) -> nil,
+    Calulate: (self: DoTLibClass) -> nil,
+
+    StartTime: number,
 
     GetEffectsByTarget: (self: DoTLibClass, target: Model, effectId: string?) -> { DoTLibClass },
     GetAffectedTargetsByEffectId: (self: DoTLibClass, effectId: string) -> { DoTLibClass },
@@ -46,7 +51,7 @@ local allDoTObjs = {} :: { [string]: DoTLibClass }
 
 --// Constructor
 function DoTLib.new(info: DoTInfo)
-    local self = setmetatable({}, DoTLib)
+    local self = setmetatable({}, DoTLib) :: DoTLibClass
 
     self.Target = info.Target
     self.Type = info.Type
@@ -57,17 +62,45 @@ function DoTLib.new(info: DoTInfo)
     self.UniqueId = HttpService:GenerateGUID(false)
     self.Cancelled = false
 
+    self.StartTime = DateTime.now().UnixTimestamp
+    self:Calulate()
+
     allDoTObjs[self.UniqueId] = self
 
     return self
 end
 
 
+function DoTLib:Calulate()
+    local existing = self:GetEffectsByTarget(self.Target, self.Type)
+    if #existing > 0 then
+        local oldRemaining = 0
+
+        for _, thatObj in existing do
+            local startTime = thatObj.StartTime
+            local timePassed = DateTime.now().UnixTimestamp - startTime
+            local progress = math.clamp(timePassed / thatObj.Duration, 0, 1)
+
+            local remainingDMG = thatObj.Power * thatObj.Duration * (1 - progress)
+            oldRemaining += remainingDMG
+
+            thatObj:StackCancel()
+        end
+
+        local newTotalDMG = oldRemaining + (self.Power * self.Duration)
+        self.Power = newTotalDMG / self.Duration
+    end
+end
+
+
 function DoTLib:Activate()
+    if self.Activated then return end
+
+    self.Activated = true
     if not ServerLib:IsCharValid(self.Target) then return end
 
     local effectSymbol = Instance.new("StringValue")
-    effectSymbol.Name = "EffectSymbol"
+    effectSymbol.Name = self.Type.."Debuff"
     effectSymbol.Value = self.Type.."Debuff"
 
     effectSymbol:SetAttribute("Ex", 0)
@@ -119,6 +152,28 @@ function DoTLib:Activate()
             })
         end
     end
+end
+
+
+function DoTLib:StackCancel()
+    allDoTObjs[self.UniqueId] = nil
+
+    if self.EffectSymbol then
+        self.EffectSymbol:Destroy()
+        self.EffectSymbol = nil
+    end
+
+    for _, taskId: string in self.Tasks do
+        GlobalTimer:CancelTaskImmediately(taskId)
+    end
+    self.Tasks = nil
+
+    Events.DoT_PlayVFXEff_S.FireList(ServerLib:GetNearbyPlayers(self.Target.WorldPivot.Position), {
+        Duration = 0,
+        StatusId = "Clear",
+        Entity = self.Target,
+        UniqueId = self.UniqueId,
+    })
 end
 
 

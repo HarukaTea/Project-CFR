@@ -249,4 +249,68 @@ ClassMechanicLib._CLASS_Reverberation = function(self)
 end
 
 
+ClassMechanicLib._CLASS_Furioso = function(self)
+    local function _clearFuriosoUI()
+        if char.Head:FindFirstChild("FuriosoStyle_Stage") then
+            char.Head.FuriosoStyle_Stage:Destroy()
+        end
+        if char.Head:FindFirstChild("FuriosoStyle_Combo") then
+            char.Head.FuriosoStyle_Combo:Destroy()
+        end
+    end
+    local function _classAbilityClear()
+        _clearFuriosoUI()
+
+        char:SetAttribute("FuriosoCombo", 0)
+        char:SetAttribute("FuriosoStage", 0)
+    end
+    ClassAdd(HarukaLib:Hydrate(char, {
+        ["Attr-IsInCombat"] = _classAbilityClear
+    }))
+    ClassAdd(HarukaLib:Hydrate(char, {
+        ["Attr-FuriosoCombo"] = function(combo: number)
+            combo = combo or 0
+
+            local furiosoStyle1 = char.Head:FindFirstChild("FuriosoStyle_Combo") :: BillboardGui
+
+            if combo <= 0 then
+                if furiosoStyle1 then furiosoStyle1:Destroy() end
+                return
+            end
+            if furiosoStyle1 then
+                furiosoStyle1.Text.Text = "COMBO x"..combo
+            else
+                furiosoStyle1 = RepS.Packages.ClassAttacks.ClassUIs.FuriosoStyle.FuriosoStyle_Combo:Clone() :: BillboardGui
+                furiosoStyle1.Adornee = char.Head
+                furiosoStyle1.Text.Text = "COMBO x"..combo
+                furiosoStyle1.Parent = char.Head
+            end
+        end,
+        ["Attr-FuriosoStage"] = function(stage: number)
+            stage = stage or 0
+
+            local furiosoStyle2 = char.Head:FindFirstChild("FuriosoStyle_Stage") :: BillboardGui
+
+            if stage <= 0 then
+                if furiosoStyle2 then furiosoStyle2:Destroy() end
+                return
+            end
+
+            local stages = { "DURANDAL", "OLD BOYS", "ALLAS", "RANGA", "WORKSHOP" }
+            if furiosoStyle2 then
+                furiosoStyle2.Text.Text = `< {stages[stage]} >`
+            else
+                furiosoStyle2 = RepS.Packages.ClassAttacks.ClassUIs.FuriosoStyle.FuriosoStyle_Stage:Clone() :: BillboardGui
+                furiosoStyle2.Adornee = char.Head
+                furiosoStyle2.Text.Text = `< {stages[stage]} >`
+                furiosoStyle2.Parent = char.Head
+            end
+        end
+    }))
+
+
+    ClassAdd(_classAbilityClear)
+end
+
+
 ClassMechanicLib:Init()

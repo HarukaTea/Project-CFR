@@ -63,32 +63,4 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         table.insert(scope, pointUI)
     end))
-
-
-    --// furioso
-    table.insert(scope, Events.Class_FuriosoSupport.On(function(num: number)
-        if not bottom then return end
-        if not bottom:FindFirstChild("ClassAbilityDiv_Bottom") then return end
-        if not bottom.ClassAbilityDiv_Bottom:FindFirstChild("FuriosoStyle") then return end
-
-
-        local newScope = Fusion.scoped()
-
-        local pk = ReverberationPK(newScope, {
-            Num = num
-        })
-        pk.Parent = bottom.ClassAbilityDiv_Bottom.FuriosoStyle
-
-        Debris:AddItem(pk, 2.5)
-
-        Promise.delay(2.5):andThen(function()
-            Fusion.doCleanup(newScope)
-        end):catch(function() end)
-
-
-        HarukaLib:UITween(pk, "Out", { TweenTime = 0.5, DelayTime = 2 })
-
-
-        SoundService.SFXs.DiceRoll:Play()
-    end))
 end

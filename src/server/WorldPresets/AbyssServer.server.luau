@@ -22,6 +22,8 @@ export type AbyssWorldLibClass = {
     AbyssStartTime: number,
     Modifiers: { string },
 
+    IsChosenTeleportAction: boolean,
+
     Init: (self: AbyssWorldLibClass) -> nil,
 
 
@@ -161,11 +163,12 @@ table.insert(AbyssWorldLib.Funcs, function()
     local modifiers = {}
     local privateServerId = game.PrivateServerId
     if privateServerId == "" then
-        privateServerId = "Mock"
+        privateServerId = "Mock12345678"
     end
+    privateServerId = string.sub(privateServerId, 1, 8)
 
     local success, _ = pcall(function()
-        local data = abyssHashMap:GetAsync("Session_"..privateServerId)
+        local data = abyssHashMap:GetAsync(privateServerId)
 
         abyssId = data.AbyssId or 1
         modifiers = data.Modifiers or {}
@@ -226,15 +229,14 @@ end)
 
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
-    Events.Abyss_StartAbyss_C.SetCallback(function()
+    Events.Abyss_StartAbyss_C.SetCallback(function(plr: Player)
         if AbyssWorldLib.Started then return end
         AbyssWorldLib.Started = true
 
-        _notifyFireAll("CHALLENGE STARTED!")
+        _notifyFireAll(plr.DisplayName.." has started the Abyss!")
         workspace:SetAttribute("AbyssStarted", true)
 
-
-        AbyssWorldLib.AbyssStartTime = DateTime.now().UnixTimestampMillis
+        AbyssWorldLib.AbyssStartTime = os.time()
 
         abyssAirwall:Destroy()
     end)
@@ -262,13 +264,12 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
 
 
     --// count speedrun if it's f6
-    if AbyssWorldLib.AbyssId == 6 and AbyssWorldLib.AbyssStartTime then
-        local now = DateTime.now().UnixTimestampMillis
+    if AbyssWorldLib.AbyssId == 5 and #AbyssWorldLib.Modifiers >= 6 and AbyssWorldLib.AbyssStartTime then
+        local now = os.time()
         local runTime = now - AbyssWorldLib.AbyssStartTime
 
-
-        if runTime <= 2000 then
-            _notifyFireAll("Invalid record! (Less than 2 seconds)")
+        if runTime < 3 then
+            _notifyFireAll("Invalid record! (Less than 3 seconds)")
             return
         end
 
@@ -283,29 +284,34 @@ end)
 table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.Abyss_AfterEndAction_S.SetCallback(function(plr: Player, actionId: string)
         if not actionId then return end
+        if AbyssWorldLib.IsChosenTeleportAction then return end
 
+        AbyssWorldLib.IsChosenTeleportAction = true
 
         if actionId == "Leave" then
             Events.CreateFSNotify_S.Fire(plr, "Teleporting back to Mainworld...", 999)
 
             local teleportOptions = Instance.new("TeleportOptions")
-            local slotInfo = {
-                [plr.Name] = plr:GetAttribute("SlotChosen")
-            }
+            local slotChosen = {}
+            for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+                slotChosen[player.Name] = player:GetAttribute("SlotChosen") or "Slot1"
+            end
             teleportOptions:SetTeleportData({
                 FromAbyss = true,
-                SlotIds = slotInfo
+                SlotChosen = slotChosen
             })
+
             TeleportService:TeleportAsync(
                 AssetBook.PlaceIds[tostring(game.GameId)].Mainworld,
-                { plr },
+                CollectionService:GetTagged("PlayerEntity"),
                 teleportOptions
             )
 
         elseif actionId == "Restart" then
             ServerBindables.RToChallengeAbyss:Fire(plr, {
                 AbyssId = AbyssWorldLib.AbyssId,
-                Modifiers = AbyssWorldLib.Modifiers
+                Modifiers = AbyssWorldLib.Modifiers,
+                ["Players"] = CollectionService:GetTagged("PlayerEntity")
             })
         end
     end)

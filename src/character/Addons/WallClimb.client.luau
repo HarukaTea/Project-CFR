@@ -6,10 +6,10 @@ local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 
-
 local worldConfig = RepS:FindFirstChild("WorldConfig") :: Configuration
-local wallClimbConfig = worldConfig:GetAttribute("CanWallClimb") :: boolean
+if not worldConfig then return end
 
+local wallClimbConfig = worldConfig:GetAttribute("CanWallClimb") :: boolean
 if not wallClimbConfig then return end
 
 

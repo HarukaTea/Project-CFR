@@ -24,6 +24,13 @@ export type PartyLibClass = {
     Disband: (self: PartyLibClass) -> nil
 }
 
+export type PlayerPartyDataClassStruct = {
+	SetParty: (self: PlayerPartyDataClassStruct, plr: Player, party: PartyLibClass) -> nil,
+	GetParty: (self: PlayerPartyDataClassStruct, plr: Player) -> PartyLibClass,
+	ClearParty: (self: PlayerPartyDataClassStruct, plr: Player) -> nil,
+	IsInParty: (self: PlayerPartyDataClassStruct, plr: Player) -> boolean
+}
+
 
 --// helper functions
 
@@ -118,8 +125,8 @@ end
 
 
 
-local PlayerPartyDataClass = {}
-local playerToPartyPool = {}
+local PlayerPartyDataClass = {} :: PlayerPartyDataClassStruct
+local playerToPartyPool = {} :: { PartyLibClass }
 
 
 function PlayerPartyDataClass:SetParty(plr: Player, party: PartyLibClass)
@@ -236,6 +243,9 @@ function PartyLibPublic:Leave(plr: Player)
 		end
 	end
 end
+
+
+PartyLibPublic.PlayerPartyDataClass = PlayerPartyDataClass
 
 
 

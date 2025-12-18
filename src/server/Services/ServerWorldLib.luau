@@ -63,30 +63,18 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    local itemCDSymbolContainer = Instance.new("Folder")
-    itemCDSymbolContainer.Name = "ItemCDSymbolContainer"
-    itemCDSymbolContainer.Parent = workspace.MapComponents
-
-    local entityContainer = Instance.new("Folder")
-    entityContainer.Name = "EntitiesPlayerChar"
-    entityContainer.Parent = workspace
-
-    local entityContainer = Instance.new("Folder")
-    entityContainer.Name = "Entities"
-    entityContainer.Parent = workspace
-
-    local craftingProductContainer = Instance.new("Folder")
-    craftingProductContainer.Name = "CraftingProductContainer"
-    craftingProductContainer.Parent = workspace.MapComponents
-
-    local partyHolderContainer = Instance.new("Folder")
-    partyHolderContainer.Name = "PartyHolder"
-    partyHolderContainer.Parent = workspace.MapComponents
-
-    local globalServersContainer = Instance.new("Folder")
-    globalServersContainer.Name = "GlobalServers"
-    globalServersContainer.Parent = workspace.MapComponents
-
+    local function _createFolder(name: string, parent: Instance)
+        local folder = Instance.new("Folder")
+        folder.Name = name
+        folder.Parent = parent
+    end
+    _createFolder("ItemCDSymbolContainer", workspace.MapComponents)
+    _createFolder("EntitiesPlayerChar", workspace)
+    _createFolder("Entities", workspace)
+    _createFolder("CraftingProductContainer", workspace.MapComponents)
+    _createFolder("PartyHolder", workspace.MapComponents)
+    _createFolder("GlobalServers", workspace.MapComponents)
+    _createFolder("SkyGalleonsContainer", workspace.MapComponents)
 
     if workspace:FindFirstChild("Accessory Storage") then
         workspace["Accessory Storage"]:Destroy()

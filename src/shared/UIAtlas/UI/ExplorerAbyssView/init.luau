@@ -366,7 +366,7 @@ return function (plr: Player)
                     AnchorPoint = Vector2.new(0.5, 1),
                     Position = UDim2.fromScale(0.5, 0.7),
                     Size = UDim2.fromScale(0.95, 0.5),
-                    Text = "SPEEDRUN RECORDS (FLOOR 6) [WEEK 3]",
+                    Text = "SPEEDRUN RECORDS (FLOOR 5 ALL MODIFIERS) [WEEK 3]",
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
                 })

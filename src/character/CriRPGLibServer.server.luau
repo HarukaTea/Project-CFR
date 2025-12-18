@@ -320,13 +320,19 @@ table.insert(CriRPGLib.Funcs, function()
             orbSpawnEmpty()
 
             local orbSpawnTimesAtStart = char:GetAttribute("OrbSpawnTimesAtStart") or 1
-            local orbSpawnTime = char:GetAttribute("OrbSpawnTime") or 3
 
             orbSpawnAdd(task.delay(1, function()
                 for _ = 1, orbSpawnTimesAtStart do _spawnOrb() end
             end))
-            orbSpawnAdd(HarukaLib.Clock(orbSpawnTime, function()
-                if char:GetAttribute("IsInCombat") then _spawnOrb() end
+            orbSpawnAdd(task.spawn(function()
+                while char:GetAttribute("IsInCombat") do
+                    local orbSpawnTime = char:GetAttribute("OrbSpawnTime") or 3
+
+                    wait(orbSpawnTime)
+                    if not char:GetAttribute("IsInCombat") then break end
+
+                    _spawnOrb()
+                end
             end))
         else
             orbSpawnEmpty()

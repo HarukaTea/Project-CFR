@@ -70,6 +70,7 @@ return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
 
                     if power ~= 0 then
                         if power < 1 then power += 1 end
+                        power = string.format("%.1f", power)
 
                         return `{power}x`
                     end

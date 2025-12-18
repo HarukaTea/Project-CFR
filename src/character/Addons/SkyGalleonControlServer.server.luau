@@ -4,6 +4,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+if not worldConfig then return end
+
+local galleonConfig = worldConfig:GetAttribute("CanSkyGalleon") :: boolean
+if not galleonConfig then return end
+
+
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)

@@ -10,6 +10,14 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Types = require(script.Parent.Parent.Types)
 
+local CameraShaker = require(RepS.HarukaShared.Shared.HarmonyLib.CameraShaker)
+
+
+local camShake = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCFrame: CFrame)
+    workspace.CurrentCamera.CFrame *= shakeCFrame
+end)
+
+local wait = task.wait
 
 return function (self: Types.VFXSceneLib)
     local VFXSceneLib = self
@@ -63,6 +71,19 @@ return function (self: Types.VFXSceneLib)
         HarukaLib:EmitParticles(levelUpEffect)
     end
 
+    VFXSceneLib.ClassUltEffect = function(char: Model)
+        local eff = effectsFolder.PlayerCommon.ClassUltEffect:Clone() :: BasePart
+        eff.Transparency = 1
+        eff.Parent = char
+        Debris:AddItem(eff, 2)
+
+        initFollower(eff, char, function(part, char)
+            part.CFrame = char.PrimaryPart.CFrame
+        end)
+
+        HarukaLib:EmitParticles(eff)
+    end
+
 
     VFXSceneLib.SwordSlash = function(char: Model)
         local eff = effectsFolder.PlayerCommon.SwordSlashDissolve:Clone() :: BasePart
@@ -74,6 +95,22 @@ return function (self: Types.VFXSceneLib)
 
             part.CFrame = HarukaLib:CFLookAt(char.PrimaryPart.Position, targeting.PrimaryPart.Position)
             part.CFrame *= CFrame.Angles(0, math.rad(180), 0)
+        end)
+        HarukaLib:EmitParticles(eff)
+
+        Debris:AddItem(eff, 2)
+    end
+
+    VFXSceneLib.FuriosoSlash = function(char: Model)
+        local eff = RepS.Packages.SkillProjectiles:FindFirstChild("FuriosoImpact", true):Clone() :: BasePart
+        eff.Transparency = 1
+        eff.Parent = char.PrimaryPart
+
+        initFollower(eff, char, function(part, char)
+            local targeting = char.TargetingEnemy.Value :: Model
+
+            part.CFrame = HarukaLib:CFLookAt(char.PrimaryPart.Position, targeting.PrimaryPart.Position)
+            part.CFrame *= CFrame.new(0, 0, -5)
         end)
         HarukaLib:EmitParticles(eff)
 
@@ -105,5 +142,37 @@ return function (self: Types.VFXSceneLib)
         eff.Parent = char
 
         Debris:AddItem(eff, 3)
+    end
+
+
+    VFXSceneLib.ImpactFrame = function(char: Model)
+        local camera = workspace.CurrentCamera
+        local impactFrame1: ColorCorrectionEffect, impactFrame2: ColorCorrectionEffect = camera.IF1, camera.IF2
+
+        impactFrame1.Enabled = false
+        impactFrame2.Enabled = false
+
+        impactFrame1.Enabled = true
+        Promise.delay(0.2):andThen(function()
+            impactFrame1.Enabled = false
+            impactFrame2.Enabled = true
+        end):catch(function() end)
+
+        Promise.delay(0.4):andThen(function()
+            impactFrame1.Enabled = false
+            impactFrame2.Enabled = false
+        end):catch(function() end)
+    end
+
+
+    VFXSceneLib.ShakeCameraBump = function(char: Model)
+        camShake:Start()
+
+        wait(0.2)
+        camShake:Shake(CameraShaker.Presets.Explosion)
+
+        Promise.delay(1):andThen(function()
+            camShake:Stop()
+        end):catch(function() end)
     end
 end

@@ -48,6 +48,10 @@ local charStats = {
     ShockingChance = 0, --- percentage
     SlowChance = 0, --- percentage
 
+    Intensity = 100, --- percentage
+    Warding = 100, --- percentage
+    Luck = 100, --- percentage
+
 
     --- combat related
     OrbSpawnTimesAtStart = 1,
@@ -64,6 +68,13 @@ local charStats = {
     CanLight = false,
     CanClimb = false,
 
+
+    -- class related
+    ChainCombo = 0,
+    BurstArrows = 0,
+    BurstArrowPiercing = 0,
+    FlowMark = 0,
+    FuriosoCombo = 0,
 
 
     --- misc
@@ -83,6 +94,7 @@ local exAndExPowerList = {
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge", "ClassUltDMGBonus",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",
+    "Intensity", "Warding", "Luck",
     "OrbSpawnTimesAtStart", "OrbSpawnTime", "OrbFadeTime", "OrbBounce",
 }
 for _, attr: string in exAndExPowerList do

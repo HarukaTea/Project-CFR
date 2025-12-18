@@ -3,10 +3,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 
-if not game.Loaded then
-    game.Loaded:Wait()
-end
-
 local wait = task.wait
 
 repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")

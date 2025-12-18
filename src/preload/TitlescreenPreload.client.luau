@@ -73,11 +73,8 @@ end
 do
     local holderGui = _createTempHolderGui()
 
-    if not game.Loaded then
-        game.Loaded:Wait()
-    end
-
     repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
+    print("[Preload] Passed validation checks")
 
     --// replicated first service sometimes wont load
     repeat wait() until RepS:WaitForChild("HarukaShared", 999)
@@ -136,13 +133,11 @@ do
 
     if teleportData then
         if type(teleportData) == "table" then
-            if teleportData.FromAbyss then
+            if teleportData.FromAbyss or teleportData.ToAbyss then
+                local slotIds = teleportData.SlotChosen or {}
+
                 shouldSkipTitlescreen = true
-                forceSlotChosen = teleportData.SlotIds[Players.LocalPlayer.Name] or "Slot1"
-            end
-            if teleportData.ToAbyss then
-                shouldSkipTitlescreen = true
-                forceSlotChosen = teleportData.SlotId or "Slot1"
+                forceSlotChosen = slotIds[Players.LocalPlayer.Name] or "Slot1"
             end
         end
     end
