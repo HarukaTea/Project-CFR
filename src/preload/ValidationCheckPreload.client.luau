@@ -11,17 +11,6 @@ if RunService:IsServer() then
     plr:Kick("This server is invalid. Rejoin can fix it.")
     return
 end
-if #Players:GetPlayers() > Players.MaxPlayers then
-    plr:Kick("Server is full, please rejoin!")
-    return
-end
-if workspace:GetAttribute("Haruka_ServerLocked") then
-    plr:Kick("This server is shutting down, please do server hopping or wait for a while.")
-    return
-end
-
-
-workspace:SetAttribute("Haruka_ClientValidated", true)
 
 
 Debris:AddItem(script, 15)

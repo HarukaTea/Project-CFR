@@ -40,7 +40,7 @@ if (plr:GetAttribute("Rank") or 0) < 2 then return end
 
 
 
-local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMD)
+local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMDClient)
 
 local harukaCMDObj = HarukaCMD.new()
 harukaCMDObj:Init()

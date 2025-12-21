@@ -397,6 +397,17 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             galleon.Parent = workspace.MapComponents.SkyGalleonsContainer
 
 
+            Promise.new(function()
+                while galleon and galleon.Parent do
+                    wait(30)
+                    if galleon.Seat.Occupant == nil then
+                        galleon:Destroy()
+                        break
+                    end
+                end
+            end):catch(function() end)
+
+
             _sitGalleon(galleon, plr)
 
         elseif prompt.Name == "BoatEnter" then
@@ -1451,13 +1462,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         Events.CreateFSNotify_S.FireList(data.Players, "Teleporting to Abyss...", 15)
     end
     Events.StartAbyss_C.SetCallback(function(plr: Player, data)
-        local party = PartyLib.PlayerPartyDataClass:IsInParty(plr)
-        if not party then
+        local partyObj = PartyLib:GetParty(plr)
+        if partyObj == nil then
             data.Players = { plr }
             _challengeAbyss(plr, data)
         else
-            local partyObj = PartyLib.PlayerPartyDataClass:GetParty(plr)
-
             local msg = plr.DisplayName.." requested to challenge the Abyss!"
 
             Events.PlaySound_S.FireList(partyObj:GetAllMembers(), SoundService.SFXs.EXP)

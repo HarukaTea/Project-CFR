@@ -73,9 +73,6 @@ end
 do
     local holderGui = _createTempHolderGui()
 
-    repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
-    print("[Preload] Passed validation checks")
-
     --// replicated first service sometimes wont load
     repeat wait() until RepS:WaitForChild("HarukaShared", 999)
     repeat wait() until RepS.HarukaShared:WaitForChild("Shared", 999)

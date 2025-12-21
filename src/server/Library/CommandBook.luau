@@ -14,7 +14,7 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
 
-local Types = require(RepS.HarukaShared.Shared.HarukaCMD.Types)
+local Types = require(RepS.HarukaShared.Shared.HarukaCMDClient.Types)
 
 
 local UNIVERSE_IDS = {

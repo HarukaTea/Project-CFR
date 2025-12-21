@@ -22,6 +22,7 @@ local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
 local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
+local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
@@ -711,15 +712,26 @@ function PlayerLib:RemoveMapComponents()
         end,
 
         function()
-            local party = workspace.MapComponents.PartyHolder:FindFirstChild(self.Player.Name, true) :: ObjectValue?
-            if not party then return end
-
-            ServerBindables.PartyInvite:Fire(self.Player, "PartyLeave", self.Player.Name)
+            local isInParty = PartyLib:GetParty(self.Player) ~= nil
+            if isInParty then
+                ServerBindables.PartyInvite:Fire(self.Player, "PartyLeave", self.Player.Name)
+            end
         end,
+
+        function()
+            for _, galleon: Model in CollectionService:GetTagged("SkyDriveGalleon") do
+                if not galleon:FindFirstChild("Owner") then galleon:Destroy() continue end
+
+                if galleon.Owner.Value == self.Player then
+                    galleon:Destroy()
+                    continue
+                end
+            end
+        end
     }
-    for i = 1, #funcs do
-        pcall(funcs[i])
-    end
+    pcall(funcs[1])
+    pcall(funcs[2])
+    pcall(funcs[3])
 end
 
 

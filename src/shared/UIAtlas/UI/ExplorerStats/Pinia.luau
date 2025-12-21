@@ -428,22 +428,46 @@ return function (self: Self)
 
 
     local function _createCooldownAnim(cdTime: number, info: { [string]: any })
-        local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        if info.RunningTasks then
+            if info.RunningTasks.Tween1 then info.RunningTasks.Tween1:Cancel() end
+            if info.RunningTasks.Tween2 then info.RunningTasks.Tween2:Cancel() end
+            if info.RunningTasks.Task then task.cancel(info.RunningTasks.Task) end
+
+            info.RunningTasks = nil
+        end
 
         local cdSymbol = info.CDSymbol :: NumberValue
-        cdSymbol.Value = 1
         local realCDSymbol = cdSymbol.RealCD :: NumberValue
+
+        if cdTime <= 0 then
+            cdSymbol.Value = 0
+            realCDSymbol.Value = 0
+
+            info.CastCD = false
+            Bindables.CDEndTimeReached:Fire(info.Id)
+            return
+        end
+        local tween = TweenInfo.new(cdTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+
+        cdSymbol.Value = 1
         realCDSymbol.Value = cdTime
 
-        HarukaLib:CreateTween(cdSymbol, tween, { Value = 0 }):Play()
-        HarukaLib:CreateTween(realCDSymbol, tween, { Value = 0 }):Play()
+        local t1 = HarukaLib:CreateTween(cdSymbol, tween, { Value = 0 })
+        local t2 = HarukaLib:CreateTween(realCDSymbol, tween, { Value = 0 })
+        t1:Play()
+        t2:Play()
 
-        task.delay(cdTime, function()
-            info.CastCD = false
+        info.RunningTasks = {
+            Tween1 = t1,
+            Tween2 = t2,
 
-            Bindables.CDEndTimeReached:Fire(info.Id)
-            tween = nil
-        end)
+            Task = task.delay(cdTime, function()
+                info.CastCD = false
+
+                Bindables.CDEndTimeReached:Fire(info.Id)
+                info.RunningTasks = nil
+            end)
+        }
     end
     table.insert(scope, Events.CastItem_S_Response.On(function(data)
         local slotId = data.SlotId
@@ -457,8 +481,7 @@ return function (self: Self)
 
         local info = list[slotId]
         if not info then return end
-        if cdTime <= 0 then return end
-
+        if cdTime < 0 then return end
 
         _createCooldownAnim(cdTime, info)
     end))

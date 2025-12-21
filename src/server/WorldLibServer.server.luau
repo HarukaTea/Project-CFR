@@ -48,7 +48,7 @@ end
 
 --// Init game debug
 do
-    local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMD)
+    local HarukaCMD = require(SSS.HarukaServer.Services.HarukaCMDServer)
 
     local harukaCMDObj = HarukaCMD.new()
     harukaCMDObj:Init()

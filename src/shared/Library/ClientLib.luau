@@ -88,7 +88,7 @@ end
 
 
 function ClientLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
-	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 7, -Vector3.yAxis * (26 + 7), terrainPartRaycastParams)
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 5, -Vector3.yAxis * 30, terrainPartRaycastParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos

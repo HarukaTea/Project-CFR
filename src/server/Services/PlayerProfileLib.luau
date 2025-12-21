@@ -230,19 +230,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     end
 
 
-    --// mirgration: check if there is mana stat in each item
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        local itemStat = itemInfo.ItemStat
-
-        local cleaned = string.gsub(itemStat, "MaxManaEx%b()", "")
-
-        cleaned = string.gsub(cleaned, ",+", ",")
-        cleaned = string.gsub(cleaned, "^,|,$", "")
-        cleaned = string.gsub(cleaned, ",,", ",")
-
-        data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
-    end
-
     --// mirgration2: check if there is forVariant stat in each item
     for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         local itemStat = itemInfo.ItemStat
@@ -254,23 +241,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         cleaned = string.gsub(cleaned, ",,", ",")
 
         data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
-    end
-
-
-    --// mirgration3: check if there is unneeded stat
-    local removeList = { "WardingEx", "DrawbackEx", "IntensityEx", "LuckEx" }
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        local itemStat = itemInfo.ItemStat
-
-        for _, key in removeList do
-            itemStat = string.gsub(itemStat, key.."%([^)]*%)%,?", "")
-        end
-
-        itemStat = string.gsub(itemStat, "^,", "")
-        itemStat = string.gsub(itemStat, ",$", "")
-        itemStat = string.gsub(itemStat, ",+", ",")
-
-        data.ItemsSQL[itemInfo.UniqueId].ItemStat = itemStat
     end
 
 
@@ -324,6 +294,13 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
                 continue
             end
         end
+        if string.find(thatSlot, "Cosmetic") then
+            local whiteList = { "CosmeticArmor", "CosmeticWeapon" }
+            if not table.find(whiteList, trueItemInfo.Type) then
+                data.EquippingItemsSQL[thatSlot] = nil
+                continue
+            end
+        end
 
 
 
@@ -339,7 +316,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             continue
         end
 
-        local whiteList = { "Accessory", "Active", "Consumable", "Weapon" }
+        local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "CosmeticWeapon", "CosmeticArmor" }
         if not table.find(whiteList, ItemBook:GetItemInfo(itemObj.ItemId).Type) then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
@@ -354,31 +331,26 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
 
     --// check valid weapon equipping
     local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
-    local starterClassWeapons = {
-        Chain = "WoodenSword",
-        Burst = "WoodenBow",
-        Flow = "WoodenStaff"
-    }
     local woodenWeapon = nil
     for _, itemObj in data.ItemsSQL do
-        if itemObj.ItemId == starterClassWeapons["Chain"] then
+        if itemObj.ItemId == "WoodenSword" then
             woodenWeapon = itemObj
             break
         end
     end
     if not woodenWeapon then
         data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
-            ItemId = starterClassWeapons["Chain"],
+            ItemId = "WoodenSword",
             Amount = 1,
             UniqueId = itemUniqueIdForEmptyWeapon,
-            ItemStat = ServerLib:GiveRandomStatForItem(starterClassWeapons["Chain"]),
+            ItemStat = ServerLib:GiveRandomStatForItem("WoodenSword"),
             IsFav = false,
             IsLocked = false
         }
     end
     if not data.EquippingItemsSQL["Weapon1"] then
         data.EquippingItemsSQL["Weapon1"] = {
-            ItemId = starterClassWeapons["Chain"],
+            ItemId = "WoodenSword",
             UniqueId = itemUniqueIdForEmptyWeapon
         }
     end
@@ -435,22 +407,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         data.INTPoints = 0
         data.STRPoints = 0
         data.DEXPoints = 0
-    end
-
-
-    --// check invalid talent points
-    local totalTalentPoints = data.TalentPoints :: number
-    local shouldTalentPoint = FormulaBook.PLAYER_TALENT_POINT_PER_LEVEL * level
-
-    totalTalentPoints += #data.Talents * 15
-
-    if totalTalentPoints ~= shouldTalentPoint then
-        data.TalentPoints = shouldTalentPoint
-        data.Talents = {}
-    end
-    if data.TalentPoints < 0 then
-        data.TalentPoints = shouldTalentPoint
-        data.Talents = {}
     end
 
     return data

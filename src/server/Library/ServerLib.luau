@@ -108,11 +108,11 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 			-- we gonna try to find a valid position, if we can't, we'll try again
 			local isTheSame = pos:FuzzyEq(combatLocation.Position, 1)
 			local isInsidePart = HarukaLib:IsInRegion(pos + Vector3.yAxis, CollectionService:GetTagged("TerrainPartEntity"))
+			local isInsidePart2 = HarukaLib:IsInRegion(pos + Vector3.new(0, 8, 0), CollectionService:GetTagged("TerrainPartEntity"))
 
-			if not isTheSame and not isInsidePart then
+			if not isTheSame and not isInsidePart and not isInsidePart2 then
 				break
 			end
-
 
 			rng = Random.new()
 			rX, rZ = rng:NextInteger(-MAGNITUDE, MAGNITUDE), rng:NextInteger(-MAGNITUDE, MAGNITUDE)

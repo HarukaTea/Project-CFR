@@ -337,6 +337,7 @@ table.insert(ServerWorldLib.Funcs, function()
     for _, model: Model in workspace.Maps:QueryDescendants("Model") do
         if model:HasTag("TreeEntity") then continue end
         if model:HasTag("FlowerEntity") then continue end
+        if model:HasTag("IgnoreCulling") then continue end
 
 
         local isInModelContainer = false

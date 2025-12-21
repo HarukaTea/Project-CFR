@@ -32,12 +32,18 @@ export type CommandJSON = {
 export type HarukaCMDClass = {
     __index: HarukaCMDClass,
 
-    ExecuteCommandFunc: () -> nil,
-    AutoCompleteFunc: () -> nil,
-    ArgAutoCompleteFunc: () -> nil,
+    new: () -> HarukaCMDClass,
+    Init: (self: HarukaCMDClass) -> nil,
+    AddCommandBook: (self: HarukaCMDClass, commandBook: { CommandJSON }) -> nil,
 
 
-    -- i know there are more but im lazy to type them all out
+    _InitRequestListenTracker: (self: HarukaCMDClass) -> nil,
+    _InitCommandExecutionTracker: (self: HarukaCMDClass) -> nil,
+
+
+    Commands: { CommandJSON },
+    Add: <T>(item: T) -> T,
+    Empty: () -> nil,
 }
 
 

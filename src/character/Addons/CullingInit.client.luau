@@ -65,6 +65,26 @@ local nonNPCAFKContainer = _createFolder("NonNPCAFKContainer")
 local mapModelAFKContainer = _createFolder("MapModelAFKContainer")
 
 
+local groupCache = {}
+local function _initCache(tag: string)
+    groupCache[tag] = {}
+
+    CollectionService:GetInstanceAddedSignal(tag):Connect(function(item)
+        groupCache[tag][item] = true
+    end)
+    CollectionService:GetInstanceRemovedSignal(tag):Connect(function(item)
+        groupCache[tag][item] = nil
+    end)
+    for _, item in CollectionService:GetTagged(tag) do
+        groupCache[tag][item] = true
+    end
+end
+_initCache("FlowerEntity")
+_initCache("TreeEntity")
+_initCache("NPCEntity")
+_initCache("NonNPCEntity")
+_initCache("MapModelPartEntity")
+
 
 local function _cullAFK(data: {
     Tag: string,
@@ -72,13 +92,17 @@ local function _cullAFK(data: {
     AFKContainer: Folder,
     RenderDistance: number,
 })
-    for _, entity: Model in CollectionService:GetTagged(data.Tag) do
+    for entity: Model, _ in groupCache[data.Tag] do
         local distance = plr:DistanceFromCharacter(entity.WorldPivot.Position)
 
         if distance > data.RenderDistance or distance <= 0 then
-            entity.Parent = data.AFKContainer
+            if entity.Parent ~= data.AFKContainer then
+                entity.Parent = data.AFKContainer
+            end
         else
-            entity.Parent = data.Container
+            if entity.Parent ~= data.Container then
+                entity.Parent = data.Container
+            end
         end
     end
 end

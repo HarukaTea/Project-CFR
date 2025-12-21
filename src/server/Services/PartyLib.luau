@@ -1,165 +1,124 @@
 
-local RepS = game:GetService("ReplicatedStorage")
-local SSS = game:GetService("ServerScriptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
+local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 
 
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Events = require(SSS.HarukaServer.Library.ServerEvents)
+export type PartyClass = {
+	__index: PartyClass,
+	Leader: Player,
+	Members: { [Player]: boolean },
+	MaxSize: number,
+	Holder: Folder,
 
+	new: (leader: Player) -> PartyClass,
 
-export type PartyLibClass = {
-    __index: PartyLibClass,
-
-    Leader: Player,
-    Members: { [Player]: boolean },
-    MaxSize: number,
-    Holder: Folder,
-
-    new: (leader: Player) -> PartyLibClass,
-
-    AddMember: (self: PartyLibClass, plr: Player) -> boolean,
-    RemoveMember: (self: PartyLibClass, plr: Player) -> nil,
-    IsFull: (self: PartyLibClass) -> boolean,
-    GetAllMembers: (self: PartyLibClass) -> { Player },
-    Disband: (self: PartyLibClass) -> nil
-}
-
-export type PlayerPartyDataClassStruct = {
-	SetParty: (self: PlayerPartyDataClassStruct, plr: Player, party: PartyLibClass) -> nil,
-	GetParty: (self: PlayerPartyDataClassStruct, plr: Player) -> PartyLibClass,
-	ClearParty: (self: PlayerPartyDataClassStruct, plr: Player) -> nil,
-	IsInParty: (self: PlayerPartyDataClassStruct, plr: Player) -> boolean
+	AddMember: (self: PartyClass, plr: Player) -> boolean,
+	RemoveMember: (self: PartyClass, plr: Player) -> (),
+	IsFull: (self: PartyClass) -> boolean,
+	GetAllMembers: (self: PartyClass) -> { Player },
+	Disband: (self: PartyClass) -> (),
+	Destroy: (self: PartyClass) -> ()
 }
 
 
---// helper functions
+local Party = {} :: PartyClass
+Party.__index = Party
 
-local function _createMemberSymbol(name: string, value: Instance, parent: Instance) : ObjectValue
-    local obj = Instance.new("ObjectValue")
-    obj.Name = name
-    obj.Value = value
-    obj.Parent = parent
 
-    return obj
+local playerToParty: { [Player]: PartyClass } = {}
+local PartyLib = {}
+
+
+--// Helper functions
+local function _createMemberSymbol(name: string, value: Instance, parent: Instance): ObjectValue
+	local obj = Instance.new("ObjectValue")
+	obj.Name = name
+	obj.Value = value
+	obj.Parent = parent
+
+	return obj
+end
+local function _setPlayerPartyData(plr: Player, party: PartyClass?)
+	playerToParty[plr] = party
+
+	plr:SetAttribute("IsInParty", party ~= nil)
 end
 
 
---// to prevent memory leaks
+--// Cleanup Loop
 HarukaLib.Clock(150, function()
-    for _, partyHolder: Folder in workspace.MapComponents.PartyHolder:GetChildren() do
-        if #partyHolder:GetChildren() <= 0 then
-            partyHolder:Destroy()
-        end
-    end
+	local holderRoot = workspace.MapComponents:FindFirstChild("PartyHolder")
+	if not holderRoot then return end
+
+	for _, partyFolder: Folder in holderRoot:GetChildren() do
+		if #partyFolder:GetChildren() <= 0 then
+			partyFolder:Destroy()
+		end
+	end
 end)
 
 
 
-local PartyLib = {} :: PartyLibClass
-PartyLib.__index = PartyLib
 
-
-function PartyLib.new(leader: Player)
-	local self = setmetatable({}, PartyLib)
+function Party.new(leader: Player)
+	local self = setmetatable({}, Party)
 
 	self.Leader = leader
-	self.Members = {
-        [leader] = true
-    }
+	self.Members = { [leader] = true }
 	self.MaxSize = 6
 
-
-    local folder = Instance.new("Folder")
+	local folder = Instance.new("Folder")
 	folder.Name = leader.Name
 	folder.Parent = workspace.MapComponents.PartyHolder
-
-
 	self.Holder = folder
+
 	_createMemberSymbol(leader.Name, leader, folder)
 
 	return self
 end
 
-
-function PartyLib:AddMember(plr: Player) : boolean
-	if self:IsFull() then return false end
-    if self.Members[plr] then return false end
+function Party:AddMember(plr: Player): boolean
+	if self:IsFull() or self.Members[plr] then return false end
 
 	self.Members[plr] = true
 	_createMemberSymbol(plr.Name, plr, self.Holder)
-
-    return true
+	return true
 end
 
-
-
-function PartyLib:RemoveMember(plr: Player)
+function Party:RemoveMember(plr: Player)
 	self.Members[plr] = nil
-
-    local memberSymbol = self.Holder:FindFirstChild(plr.Name)
-	if memberSymbol then memberSymbol:Destroy() end
+	local symbol = self.Holder:FindFirstChild(plr.Name)
+	if symbol then symbol:Destroy() end
 end
 
-
-
-function PartyLib:IsFull() : boolean
-    return HarukaLib.TableUtils.CountDictLength(self.Members) >= self.MaxSize
+function Party:IsFull(): boolean
+	return HarukaLib.TableUtils.CountDictLength(self.Members) >= self.MaxSize
 end
 
-
-function PartyLib:GetAllMembers() : { Player }
+function Party:GetAllMembers(): { Player }
 	return HarukaLib.TableUtils.Keys(self.Members)
 end
 
-
-function PartyLib:Disband()
-	for member: Player in self.Members do
-		member:SetAttribute("IsInParty", false)
-	end
+function Party:Disband()
 	self.Members = {}
-
-    if self.Holder then
-		self.Holder:Destroy()
-	end
+	if self.Holder then self.Holder:Destroy() end
 end
 
 
+--// Public API
 
-local PlayerPartyDataClass = {} :: PlayerPartyDataClassStruct
-local playerToPartyPool = {} :: { PartyLibClass }
-
-
-function PlayerPartyDataClass:SetParty(plr: Player, party: PartyLibClass)
-	playerToPartyPool[plr] = party
-
-	plr:SetAttribute("IsInParty", party ~= nil)
+function PartyLib:GetParty(plr: Player): PartyClass
+	return playerToParty[plr]
 end
 
-function PlayerPartyDataClass:GetParty(plr: Player) : PartyLibClass
-	return playerToPartyPool[plr]
-end
-
-function PlayerPartyDataClass:ClearParty(plr: Player)
-	playerToPartyPool[plr] = nil
-
-	plr:SetAttribute("IsInParty", false)
-end
-
-function PlayerPartyDataClass:IsInParty(plr: Player) : boolean
-	return playerToPartyPool[plr] ~= nil
-end
-
-
-
-local PartyLibPublic = {}
-
-
-function PartyLibPublic:Invite(inviter: Player, target: Player)
-	if PlayerPartyDataClass:IsInParty(target) then
+function PartyLib:Invite(inviter: Player, target: Player)
+	if playerToParty[target] then
 		Events.CreateNotify_S.Fire(inviter, "Player is already in a party!")
 		return
 	end
-
 
 	Events.PartyInviteResult_S.Fire(target, {
 		Option = "Invite",
@@ -167,74 +126,63 @@ function PartyLibPublic:Invite(inviter: Player, target: Player)
 	})
 end
 
+function PartyLib:Accept(inviter: Player, invitee: Player)
+	local party: PartyClass = playerToParty[inviter]
 
-function PartyLibPublic:Accept(inviter: Player, invitee: Player)
-	local inviterParty = PlayerPartyDataClass:GetParty(inviter)
-
-	if not inviterParty then
-		inviterParty = PartyLib.new(inviter)
-
-		PlayerPartyDataClass:SetParty(inviter, inviterParty)
+	if not party then
+		party = Party.new(inviter)
+		_setPlayerPartyData(inviter, party)
 	end
 
-
-	local ok = inviterParty:AddMember(invitee)
-	if not ok then
+	if not party:AddMember(invitee) then
 		Events.CreateNotify_S.Fire(invitee, "Party is full!")
 		Events.CreateNotify_S.Fire(inviter, "Party is full!")
 		return
 	end
-	PlayerPartyDataClass:SetParty(invitee, inviterParty)
+	_setPlayerPartyData(invitee, party)
 
-
-	for _, member in inviterParty:GetAllMembers() do
+	for _, member in party:GetAllMembers() do
 		Events.CreateNotify_S.Fire(member, invitee.DisplayName .. " joined the party!")
 	end
 end
 
-
-function PartyLibPublic:Decline(inviter: Player, invitee: Player)
+function PartyLib:Decline(inviter: Player, invitee: Player)
 	Events.CreateNotify_S.Fire(inviter, invitee.DisplayName .. " declined your invitation")
 end
 
-
-function PartyLibPublic:Kick(leader: Player, target: Player)
-	local party = PlayerPartyDataClass:GetParty(leader)
+function PartyLib:Kick(leader: Player, target: Player)
+	local party = playerToParty[leader]
 
 	if not party or party.Leader ~= leader then
-		Events.CreateNotify_S.Fire(leader, "You are not a leader!")
-        return
-	end
-	if not party.Members[target] then
-		Events.CreateNotify_S.Fire(leader, "Player is not in your party!")
-        return
+		Events.CreateNotify_S.Fire(leader, "You are not the leader!")
+		return
 	end
 
+	if not party.Members[target] then return end
+
 	party:RemoveMember(target)
-	PlayerPartyDataClass:ClearParty(target)
+	_setPlayerPartyData(target, nil)
 
 	for _, member in party:GetAllMembers() do
 		Events.CreateNotify_S.Fire(member, target.DisplayName .. " was kicked from the party!")
 	end
 end
 
-
-
-function PartyLibPublic:Leave(plr: Player)
-	local party = PlayerPartyDataClass:GetParty(plr)
+function PartyLib:Leave(plr: Player)
+	local party = playerToParty[plr]
 	if not party then return end
 
 	local isLeader = (party.Leader == plr)
 
 	party:RemoveMember(plr)
-	PlayerPartyDataClass:ClearParty(plr)
+	_setPlayerPartyData(plr, nil)
 
 	if isLeader then
+		local members = party:GetAllMembers()
 		party:Disband()
 
-		for _, member in party:GetAllMembers() do
-			PlayerPartyDataClass:ClearParty(member)
-
+		for _, member in members do
+			_setPlayerPartyData(member, nil)
 			Events.CreateNotify_S.Fire(member, "Party has been disbanded!")
 		end
 	else
@@ -245,10 +193,4 @@ function PartyLibPublic:Leave(plr: Player)
 end
 
 
-PartyLibPublic.PlayerPartyDataClass = PlayerPartyDataClass
-
-
-
-return PartyLibPublic
-
-
+return PartyLib

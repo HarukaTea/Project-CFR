@@ -55,7 +55,7 @@ AbyssBook.TeamConfigs[5] = {
         Level = 125
     },
     {
-        MobId = "SpikeWolf",
+        MobId = "Bee",
         Level = 100
     }
 }

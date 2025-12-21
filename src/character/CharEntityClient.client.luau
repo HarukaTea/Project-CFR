@@ -340,11 +340,10 @@ table.insert(CharLib.Funcs, function()
             emote = "dance"..math.random(1, 3)
         end
         if not msg == "//e dance" then
-            if (string.sub(msg, 1, 3) == "//e ") then
-                emote = string.sub(msg, 4)
-
-            elseif (string.sub(msg, 1, 7) == "//emote ") then
-                emote = string.sub(msg, 8)
+            if (string.sub(msg, 1, 4) == "//e ") then
+                emote = string.sub(msg, 5)
+            elseif (string.sub(msg, 1, 8) == "//emote ") then
+                emote = string.sub(msg, 9)
             end
         end
 

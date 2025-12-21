@@ -4,8 +4,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local wait = task.wait
 
-repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
-
 
 repeat wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
 repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 999)
