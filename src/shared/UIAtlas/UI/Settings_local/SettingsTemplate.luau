@@ -31,6 +31,11 @@ export type SettingsJSON = {
 }
 
 
+
+local device = HarukaLib:GetAccurateDevice()
+
+
+
 local template = {
     Sounds = {
         PanelTitle = "Sounds",
@@ -100,7 +105,7 @@ local template = {
 
 				Min = 0.8,
 				Max = 1.2,
-				DefaultValue = if HarukaLib:GetAccurateDevice() == "Phone" or HarukaLib:GetAccurateDevice() == "Tablet" then 1.15 else 1,
+				DefaultValue = if device == "Phone" or device == "Tablet" then 1.15 else 1,
 
 				ValChanged = Signal.new()
 			},
@@ -123,7 +128,7 @@ local template = {
 				Type = "Switcher",
 				LayoutOrder = 1,
 
-				DefaultValue = false
+				DefaultValue = if device == "Phone" or device == "Tablet" then true else false,
 			},
 			GlobalShadows = {
 				OptionTitle = "Shadows",

@@ -363,6 +363,7 @@ local commands: CommandJSON = {
                 if not spawnPoint then break end
 
                 char:PivotTo(spawnPoint:GetChildren()[1].CFrame)
+                Events.RefreshCullingAsync_S.Fire(thatPlr)
             end
 
             props.ResolveObj()

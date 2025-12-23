@@ -49,6 +49,39 @@ function StatusLib:HealPercentage(char: Model, percentage: number) : number?
 end
 
 
+function StatusLib:RestoreMana(char: Model, restoreAmount: number) : number?
+    if not ServerLib:IsCharValid(char) then return end
+
+    local plr = Players:GetPlayerFromCharacter(char)
+    if plr == nil then return end
+
+    local restoreBonus = char:GetAttribute("RestoreBonus") or 100
+    restoreAmount = math.ceil(restoreAmount * restoreBonus / 100)
+
+    HarukaLib:AddAttr(char, "Mana", restoreAmount)
+
+    Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position, 100), {
+        StatusId = "Restoring",
+        Character = char,
+    })
+
+    return restoreAmount
+end
+function StatusLib:RestoreManaPercentage(char: Model, percentage: number) : number?
+    if not ServerLib:IsCharValid(char) then return end
+
+    local maxMana = char:GetAttribute("MaxMana") or 0
+    return StatusLib:RestoreMana(char, math.ceil(maxMana * percentage / 100))
+end
+
+
+function StatusLib:ChargeClassUlt(char: Model, amount: number)
+    amount = math.ceil(amount * char:GetAttribute("ClassUltCharge") / 100)
+
+    HarukaLib:AddAttr(char, "ClassUltProgress", amount)
+end
+
+
 
 
 function StatusLib:Boost(eff: string, char: Model, props: {

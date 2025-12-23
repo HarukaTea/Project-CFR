@@ -284,12 +284,15 @@ end)
 table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.Abyss_AfterEndAction_S.SetCallback(function(plr: Player, actionId: string)
         if not actionId then return end
-        if AbyssWorldLib.IsChosenTeleportAction then return end
+        if AbyssWorldLib.IsChosenTeleportAction then
+            Events.CreateNotify_S.Fire(plr, "Another player has chosen to leave/restart the Abyss")
+            return
+        end
 
         AbyssWorldLib.IsChosenTeleportAction = true
 
         if actionId == "Leave" then
-            Events.CreateFSNotify_S.Fire(plr, "Teleporting back to Mainworld...", 999)
+            Events.CreateFSNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), "Teleporting back to Mainworld...", 999)
 
             local teleportOptions = Instance.new("TeleportOptions")
             local slotChosen = {}

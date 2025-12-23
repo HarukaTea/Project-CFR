@@ -1,7 +1,6 @@
 
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -36,24 +35,6 @@ return function(plr: Player)
 
 	local scope = self.scope :: Fusion.Scope
 
-
-    local playerListHover = nil
-    if not UserInputService.TouchEnabled then
-        playerListHover = Components.Frame(scope, {
-            Name = "PlayerListHover",
-            AnchorPoint = Vector2.xAxis,
-
-            Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                return if use(self.IsUIFolded) then UDim2.fromScale(1.5, 1.5) else UDim2.fromScale(1, 1.5)
-            end), Components.TweenInfos.half),
-
-            Size = UDim2.fromScale(0.22, 4),
-
-            [Fusion.OnEvent("MouseLeave")] = function()
-                self.PlayerSelecting:set(nil)
-            end
-        })
-    end
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "PlayerList",
@@ -136,73 +117,86 @@ return function(plr: Player)
                 Components.Frame(scope, {
                     Name = "PlayerList",
                     AnchorPoint = Vector2.xAxis,
-                    Position = UDim2.fromScale(0.99, 0),
+                    Position = UDim2.fromScale(1, 0),
 
                     [Children] = {
                         Components.UIScale(scope, {
                             Scale = 1.05
                         }),
 
-                        Components.ScrollingFrame(scope, {
-                            Name = "PlayerList",
-                            ScrollingDirection = Enum.ScrollingDirection.Y,
-                            AnchorPoint = Vector2.new(1, 0),
-                            Size = UDim2.fromScale(0.3, 4),
-                            ScrollBarThickness = 0,
-
-                            Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                return if use(self.IsUIFolded) then UDim2.fromScale(1.5, 1.5) else UDim2.fromScale(1, 1.5)
-                            end), Components.TweenInfos.half),
+                        Components.Frame(scope, {
+                            Name = "PlayerListFrame",
+                            AnchorPoint = Vector2.xAxis,
+                            Position = UDim2.fromScale(1, 1.5),
 
                             [Children] = {
-                                Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope, index: number, player: Player)
-                                    return index, PlayerBar(scope, {
-                                        Player = player,
+                                Components.PaddingFrame(scope, "ZZZ"),
+                                Components.UIListLayout(scope, {
+                                    FillDirection = Enum.FillDirection.Horizontal,
+                                    HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                                    Padding = UDim.new(0.01, 0),
+                                    VerticalAlignment = Enum.VerticalAlignment.Top,
+                                }),
 
-                                        PlayerSelecting = self.PlayerSelecting,
-                                        PlayerSelected = self.PlayerSelected,
+                                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                    local state = use(self.IsUIFolded)
+                                    if state then return nil end
+
+                                    return Components.ScrollingFrame(scope, {
+                                        Name = "PlayerList",
+                                        ScrollingDirection = Enum.ScrollingDirection.Y,
+                                        Size = UDim2.fromScale(0.2, 4),
+                                        ScrollBarThickness = 0,
+                                        LayoutOrder = 2,
+
+                                        [Children] = {
+                                            Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope, index: number, player: Player)
+                                                return index, PlayerBar(scope, {
+                                                    Player = player,
+
+                                                    PlayerSelecting = self.PlayerSelecting,
+                                                    PlayerSelected = self.PlayerSelected,
+                                                })
+                                            end)
+                                        }
+                                    }, {
+                                        Padding = UDim.new(0, 6),
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Right,
                                     })
-                                end)
-                            }
-                        }, {
-                            Padding = UDim.new(0, 6),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                        }),
+                                end),
 
-                        PlayerInfoView(scope, {
-                            PlayerSelecting = self.PlayerSelected,
+                                PlayerInfoView(scope, {
+                                    PlayerSelecting = self.PlayerSelected,
+                                }),
+
+                                Components.TextButton(scope, {
+                                    Name = "CloseButton",
+                                    AnchorPoint = Vector2.xAxis,
+                                    BackgroundTransparency = 0,
+                                    BackgroundColor3 = Components.WHITE_COLOR,
+                                    TextColor3 = Components.BLACK_COLOR,
+                                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Heavy),
+                                    LayoutOrder = -1,
+
+                                    Size = UDim2.fromScale(0.03, 0.5),
+                                    Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                        return if use(self.IsUIFolded) then "<" else ">"
+                                    end),
+
+                                    [Fusion.OnEvent("MouseButton1Click")] = function()
+                                        self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
+                                        self.PlayerSelected:set(nil)
+                                        self.PlayerSelecting:set(nil)
+                                    end,
+
+                                    [Children] = {
+                                        Components.RoundUICorner(scope)
+                                    }
+                                })
+                            }
                         })
                     }
                 }),
-
-                playerListHover,
-
-                Components.TextButton(scope, {
-                    Name = "CloseButton",
-                    AnchorPoint = Vector2.xAxis,
-                    BackgroundTransparency = 0,
-                    BackgroundColor3 = Components.WHITE_COLOR,
-                    TextColor3 = Components.BLACK_COLOR,
-                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Heavy),
-
-                    Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return if use(self.IsUIFolded) then UDim2.new(0.99, 0, 1.5, 6) else UDim2.new(0.76, 0, 1.5, 6)
-                    end), Components.TweenInfos.half),
-
-                    Size = UDim2.fromScale(0.03, 0.5),
-
-                    Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return if use(self.IsUIFolded) then "<" else ">"
-                    end),
-
-                    [Fusion.OnEvent("MouseButton1Click")] = function()
-                        self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
-                    end,
-
-                    [Children] = {
-                        Components.RoundUICorner(scope)
-                    }
-                })
             }
         },
         BottomProps = {

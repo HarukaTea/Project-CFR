@@ -26,6 +26,8 @@ local charStats = {
     Mana = 100,
     MaxMana = 100,
 
+    RestoreBonus = 100, --- percentage
+
     BaseSpeed = 40,
     BaseSpeedCombat = 30,
     BaseJumpPower = 50,
@@ -90,7 +92,7 @@ local charStats = {
 
 local exAndExPowerList = {
     "MinDMG", "MaxDMG", "Magic",
-    "MaxHealth", "HealthRegenWaitTime", "MaxShield", "MaxMana", "ShieldRegenWaitTime", "HealBonus",
+    "MaxHealth", "HealthRegenWaitTime", "MaxShield", "MaxMana", "ShieldRegenWaitTime", "HealBonus", "RestoreBonus",
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge", "ClassUltDMGBonus",
     "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",

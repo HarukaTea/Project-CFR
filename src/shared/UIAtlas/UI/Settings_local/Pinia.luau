@@ -245,18 +245,26 @@ return function (self: Self)
     local LDMObserver = Fusion.Observer(scope, self.SwitcherVals.Game.LowDetailMode)
     LDMObserver:onBind(function()
         local state = Fusion.peek(self.SwitcherVals.Game.LowDetailMode)
+        workspace:SetAttribute("LDMEnabled", state)
 
         if state then
+            Bindables.CreateNotify:Fire("[System] Low Detail Mode enabled")
+
             for _, part in CollectionService:GetTagged("TerrainPartEntity") do
                 _changePartToPlastic(part)
             end
             for _, tree: Model in CollectionService:GetTagged("TreeEntity") do
-                for _, part in tree:GetDescendants() do
+                for _, part in tree:QueryDescendants(HarukaLib.BasePartSelector) do
                     _changePartToPlastic(part)
                 end
             end
             for _, flower: Model in CollectionService:GetTagged("FlowerEntity") do
-                for _, part in flower:GetDescendants() do
+                for _, part in flower:QueryDescendants(HarukaLib.BasePartSelector) do
+                    _changePartToPlastic(part)
+                end
+            end
+            for _, model: Model in CollectionService:GetTagged("MapModelPartEntity") do
+                for _, part in model:QueryDescendants(HarukaLib.BasePartSelector) do
                     _changePartToPlastic(part)
                 end
             end

@@ -40,6 +40,8 @@ export type HarukaCMDClass = {
     _InitRequestListenTracker: (self: HarukaCMDClass) -> nil,
     _InitCommandExecutionTracker: (self: HarukaCMDClass) -> nil,
 
+    _ValidateCmd: (realCMD: CommandJSON, cmdArgs: { string }) -> (boolean, CommandJSON | {}),
+
 
     Commands: { CommandJSON },
     Add: <T>(item: T) -> T,

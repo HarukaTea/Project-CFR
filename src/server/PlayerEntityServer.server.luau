@@ -354,7 +354,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
                 end):catch(function() end)
             end
 
-
             PlayerProfileLib.CalDonationAndSave(profile, plr)
         end)
 
@@ -697,8 +696,6 @@ function PlayerLib:_SaveData()
 
     self.ProfileObj.Profile.Data.Settings = criSettingsSQL
     self.ProfileObj.Profile:SaveProfileAsync()
-
-    PlayerProfileLib.CalDonationAndSave(self.ProfileObj.Profile, self.Player)
 end
 
 

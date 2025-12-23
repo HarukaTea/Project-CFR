@@ -37,6 +37,8 @@ return function(scope: Fusion.Scope, props: {
     ForcePosition: UDim2?,
     ForceSize: Fusion.Value<UDim2>?,
 
+    IsMobile: boolean,
+
 }, self: {
     plr: Player,
 
@@ -54,6 +56,49 @@ return function(scope: Fusion.Scope, props: {
     table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
+
+
+    local amountUI = nil
+    if props.IsMobile then
+        amountUI = Components.TextLabel(scope, {
+            Name = "Amount",
+            AnchorPoint = Vector2.new(0, 1),
+            Position = UDim2.fromScale(0, 1),
+            Size = UDim2.fromScale(1, 0.425),
+            FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
+            TextXAlignment = Enum.TextXAlignment.Left,
+
+            Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                return `x{use(amount)}`
+            end),
+            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                return use(amount) > 1
+            end),
+
+            [Children] = {
+                Components.ScaledTextUIStroke(scope, {})
+            }
+        })
+    else
+        amountUI = Components.TextLabel(scope, {
+            Name = "Amount",
+            AnchorPoint = Vector2.new(0.5, 0),
+            Position = UDim2.fromScale(0.5, -0.45),
+            Size = UDim2.fromScale(1, 0.425),
+            FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
+
+            Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                return `x{use(amount)}`
+            end),
+            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                return use(amount) > 1
+            end),
+
+            [Children] = {
+                Components.ScaledTextUIStroke(scope, {})
+            }
+        })
+    end
 
 
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
@@ -134,7 +179,7 @@ return function(scope: Fusion.Scope, props: {
         BackgroundTransparency = 0,
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = if props.Index == 3 then 159 else props.Index,
-        AnchorPoint = Vector2.zero,
+        AnchorPoint = Vector2.new(0.5, 0.5),
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
 
 
@@ -184,26 +229,7 @@ return function(scope: Fusion.Scope, props: {
             }),
 
             key,
-
-            Components.TextLabel(scope, {
-                Name = "Amount",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, -0.45),
-                Size = UDim2.fromScale(1, 0.425),
-                FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
-
-                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return `x{use(amount)}`
-                end),
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(amount) > 1
-                end),
-
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
-                }
-            }),
+            amountUI,
 
 
             Components.TextLabel(scope, {

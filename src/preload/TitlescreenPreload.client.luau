@@ -163,6 +163,8 @@ do
 
 
     if shouldSkipTitlescreen then
+        workspace:SetAttribute("Titlescreen_LoadSlot", true)
+
         local Events = require(RepS.HarukaShared.Library.Events)
 
         Events.Titlescreen_SlotActions_C.Fire({

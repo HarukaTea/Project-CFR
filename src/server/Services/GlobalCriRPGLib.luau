@@ -300,6 +300,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         elseif prompt.Name == "DungeonPortal" then
             char:PivotTo(prompt.Destination.Value.CFrame)
+            Events.RefreshCullingAsync_S.Fire(plr)
 
 
         elseif prompt.Name == "Class" then
@@ -1401,10 +1402,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             PartyLib:Invite(plr, target)
 
         elseif option == "InviteAccept" then
-            PartyLib:Accept(plr, target)
+            --- target is inviter here
+            PartyLib:Accept(target, plr)
 
         elseif option == "InviteDecline" then
-            PartyLib:Decline(plr, target)
+            --- target is inviter here
+            PartyLib:Decline(target, plr)
 
         elseif option == "PartyKick" then
             PartyLib:Kick(plr, target)
@@ -1467,14 +1470,15 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             data.Players = { plr }
             _challengeAbyss(plr, data)
         else
-            local msg = plr.DisplayName.." requested to challenge the Abyss!"
+            if partyObj.Leader ~= plr then
+                Events.CreateNotify_S.Fire(plr, "Only the leader can create the room")
+                return
+            end
 
             Events.PlaySound_S.FireList(partyObj:GetAllMembers(), SoundService.SFXs.EXP)
-            Events.CreateNotify_S.FireList(partyObj:GetAllMembers(), msg)
-
+            Events.CreateNotify_S.FireList(partyObj:GetAllMembers(), "Leader requested to challenge the Abyss!")
             wait(2)
             Events.CreateNotify_S.FireList(partyObj:GetAllMembers(), "Teleporting in 3 seconds...")
-
             wait(3)
             data.Players = partyObj:GetAllMembers()
             _challengeAbyss(plr, data)
@@ -1585,6 +1589,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         char:PivotTo(merchant.Destination.Value.CFrame)
+        Events.RefreshCullingAsync_S.Fire(plr)
     end)
 end)
 

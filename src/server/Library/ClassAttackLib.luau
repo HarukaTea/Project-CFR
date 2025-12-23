@@ -59,11 +59,7 @@ local function _charAndTargetingCheck(char: Model, targeting: Model) : boolean
     return true
 end
 local function _addClassUltCharge(plr: Player, amount: number)
-    local char = plr.Character
-
-    amount = math.ceil(amount * char:GetAttribute("ClassUltCharge") / 100)
-
-    HarukaLib:AddAttr(char, "ClassUltProgress", amount)
+    StatusLib:ChargeClassUlt(plr.Character, amount)
 end
 local function _fireClassUltCasted(char: Model, props: {
     ClassId: string,
@@ -96,16 +92,6 @@ local function _damageDealMiddler(char: Model, targeting: Model, dmgProps: {
     if char:GetAttribute("ForestDweller3Bonus") then
         dmg = math.ceil(dmg * 1.3)
     end
-
-
-    --// attack immune
-    if targeting:FindFirstChild("AttackImmune") then
-        dmgProps.DMG /= 2
-        dmgProps.DMG = math.ceil(dmgProps.DMG)
-
-        ServerLib:ShowText(targeting, "ATTACK RESIST!", Color3.fromHex('#ffffff'))
-    end
-
 
     return dmg
 end
@@ -161,6 +147,13 @@ local function _classUltCastedEff(props: {
     Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
     Events.FaceTargetingEnemy_S.Fire(plr)
 end
+local function _restoreMana(char: Model)
+    local mana = char:GetAttribute("Mana") or 0
+    local maxMana = char:GetAttribute("MaxMana") or 0
+
+    if mana >= maxMana then return end
+    StatusLib:RestoreManaPercentage(char, 20)
+end
 
 
 --// Universal
@@ -172,8 +165,8 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-
     _addClassUltCharge(plr, 15)
+    _restoreMana(char)
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
 
@@ -272,6 +265,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     _addClassUltCharge(plr, 15)
+    _restoreMana(char)
 
 
     Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
@@ -442,6 +436,7 @@ ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     _addClassUltCharge(plr, 15)
+    _restoreMana(char)
 
     Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
         Caster = char,
@@ -553,6 +548,9 @@ ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     _addClassUltCharge(plr, 15)
+    _restoreMana(char)
+
+
     Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
         Character = char,
         StatusId = "SwordSlash"
@@ -647,6 +645,8 @@ ClassAttackLib.Furioso = function(plr: Player, symbolAttrs: Dict)
     if not _charAndTargetingCheck(char, targeting) then return end
 
     _addClassUltCharge(plr, 10)
+    _restoreMana(char)
+
 
     Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
         Character = char,
@@ -809,7 +809,7 @@ ClassAttackLib.Execution = function(plr: Player, symbolAttrs: Dict)
         Attacker = "ClassAttacks"
     })
 end
-ClassAttackLib.Execution_Ult_None = function(plr: Player, symbolAttrs: Dict)
+ClassAttackLib.Execution_Ult = function(plr: Player, symbolAttrs: Dict)
 
 end
 
@@ -908,12 +908,7 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
     end
 
     local targetingHumanoid = targeting.Humanoid :: Humanoid
-
     targetingHumanoid:TakeDamage(dmgProps.DMG)
-    for _, event in char:QueryDescendants("BindableEvent#EnemyGotHit") do
-        RunService.Heartbeat:Wait()
-        event:Fire(targeting, char, dmgProps)
-    end
 
 
     Promise.try(function()
@@ -929,6 +924,10 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
         if RunService:IsStudio() then warn(tostring(err)) end
     end)
 
+    for _, event in char:QueryDescendants("BindableEvent#EnemyGotHit") do
+        RunService.Heartbeat:Wait()
+        event:Fire(targeting, char, dmgProps)
+    end
 
     --// apply debuffs
     if dmgProps.Attacker ~= "ClassAttacks" then return end

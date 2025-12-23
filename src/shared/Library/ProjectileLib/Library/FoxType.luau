@@ -17,9 +17,6 @@ return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
     ProjectileLib.FoxMove1 = function(projectile: Model, container: Folder)
-
-
-
         wait(0.5)
         for _, child: BasePart in projectile:GetChildren() do
             if child.Name == "Position" then
@@ -52,9 +49,6 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.WolfMove4 = function(projectile: Model, container: Folder)
-
-
-
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
 
         HarukaLib:CreateTween(projectile.Fang1.Part, AssetBook.TweenInfos.half, { Transparency = 0 }):Play()
@@ -79,12 +73,9 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.FoxSpike1 = function(projectile: Model, container: Folder)
-
-
-
         projectile.Base.CFrame *= CFrame.new(0, 0, -80)
 
-        HarukaLib:CreateTween(projectile.Part, AssetBook.TweenInfos.oneHalf, {
+        HarukaLib:CreateTween(projectile.Part, AssetBook.TweenInfos.three, {
             Position = projectile.Base.Position
         }):Play()
 
@@ -98,9 +89,6 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.FoxSpike2 = function(projectile: Model, container: Folder)
-
-
-
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
 
         projectile:FindFirstChildWhichIsA("Sound", true):Play()

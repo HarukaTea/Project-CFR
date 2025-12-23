@@ -1,6 +1,11 @@
 
 repeat task.wait() until workspace:GetAttribute("Titlescreen_LoadSlot")
 
+if workspace:GetAttribute("ShouldSkipTitlescreen") then
+    script:Destroy()
+    return
+end
+
 local RepS = game:GetService("ReplicatedStorage")
 local AvatarEditorService = game:GetService("AvatarEditorService")
 local Debris = game:GetService("Debris")

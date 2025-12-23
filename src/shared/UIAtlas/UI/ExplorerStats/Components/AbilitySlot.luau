@@ -104,7 +104,7 @@ return function(scope: Fusion.Scope, props: {
         BackgroundTransparency = 0,
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = 0,
-        AnchorPoint = Vector2.zero,
+        AnchorPoint = Vector2.new(0.5, 0.5),
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
 
 

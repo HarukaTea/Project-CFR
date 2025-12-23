@@ -108,6 +108,7 @@ function CriRPGLib:_SpawnToLastLocation()
                 local rSpawnPoint = spawnPointChildern[math.random(1, #spawnPointChildern)]
 
                 char:PivotTo(rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
+                Events.RefreshCullingAsync_S.Fire(plr)
                 return
             end
         end
@@ -115,6 +116,7 @@ function CriRPGLib:_SpawnToLastLocation()
     local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
 
     char:PivotTo(baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
+    Events.RefreshCullingAsync_S.Fire(plr)
 end
 
 
@@ -1012,3 +1014,10 @@ Add(char.PlayerCombatEnded.Event:Connect(function(charId: string)
     cooldown.Parent = char
     Debris:AddItem(cooldown, 1)
 end))
+Add(function()
+    for _, cdSymbol: StringValue in workspace.MapComponents.ItemCDSymbolContainer:GetChildren() do
+        if cdSymbol.Name == plr.Name then
+            cdSymbol:Destroy()
+        end
+    end
+end)

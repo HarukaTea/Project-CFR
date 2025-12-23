@@ -40,6 +40,13 @@ return function (self: Types.VFXSceneLib)
         Debris:AddItem(healEff, 1.5)
     end
 
+    VFXSceneLib.Restoring = function(char: Model)
+        local restoreEff = effectsFolder.PlayerCommon.Restoring:Clone() :: BasePart
+        restoreEff.Parent = char
+
+        Debris:AddItem(restoreEff, 1.5)
+    end
+
     VFXSceneLib.SpeedBoost = function(char: Model)
         local eff = effectsFolder.Status.Speeding:FindFirstChildOfClass("ParticleEmitter"):Clone() :: ParticleEmitter
         eff.Parent = char.PrimaryPart

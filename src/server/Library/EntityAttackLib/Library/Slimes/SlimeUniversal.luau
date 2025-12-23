@@ -21,8 +21,6 @@ local SlimeUniversal = {}
 local wait = task.wait
 
 SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
-
-
     Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SlimeBlast"
@@ -43,8 +41,6 @@ end
 
 
 SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
-
-
     local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("SlimeMove2", true):Clone() :: Model
     local post = ServerLib:FindGroundByRay(entity.PrimaryPart.Position)
 
@@ -177,8 +173,6 @@ end
 
 
 SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
-
-
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
@@ -194,13 +188,6 @@ SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
 
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 
-
-    local immuneTag = Instance.new("BoolValue")
-    immuneTag.Name = "AttackImmune"
-    immuneTag.Parent = entity
-    Debris:AddItem(immuneTag, 1.5)
-
-
     local diveDown = realProjectilePos * CFrame.new(0, -8, 0)
 
     wait(0.5)
@@ -214,8 +201,6 @@ end
 
 
 SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
-
-
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 

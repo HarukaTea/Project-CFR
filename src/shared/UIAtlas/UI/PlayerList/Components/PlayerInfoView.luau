@@ -121,11 +121,10 @@ return function (scope: Fusion.Scope, props: {
 
             return Components.Frame(scope, {
                 Name = "PlayerInfo",
-                AnchorPoint = v2New(1, 0),
-                Position = fromScale(0.72, 1.5),
                 Size = fromScale(0.15, 4.5),
                 ZIndex = 10,
                 BackgroundTransparency = 0.1,
+                LayoutOrder = 1,
 
                 [Children] = {
                     New(scope, "UICorner")({ CornerRadius = udNew(0.05, 0) }),

@@ -92,6 +92,11 @@ function Party:RemoveMember(plr: Player)
 	self.Members[plr] = nil
 	local symbol = self.Holder:FindFirstChild(plr.Name)
 	if symbol then symbol:Destroy() end
+
+
+	if HarukaLib.TableUtils.CountDictLength(self.Members) <= 0 then
+		self:Disband()
+	end
 end
 
 function Party:IsFull(): boolean
@@ -120,6 +125,12 @@ function PartyLib:Invite(inviter: Player, target: Player)
 		return
 	end
 
+	local pParty = playerToParty[inviter]
+	if pParty and pParty.Leader ~= inviter then
+		Events.CreateNotify_S.Fire(inviter, "Only the leader can invite!")
+		return
+	end
+
 	Events.PartyInviteResult_S.Fire(target, {
 		Option = "Invite",
 		PlayerName = inviter.Name
@@ -127,11 +138,18 @@ function PartyLib:Invite(inviter: Player, target: Player)
 end
 
 function PartyLib:Accept(inviter: Player, invitee: Player)
-	local party: PartyClass = playerToParty[inviter]
+	if playerToParty[invitee] then return end
 
+
+	local party: PartyClass = playerToParty[inviter]
 	if not party then
 		party = Party.new(inviter)
 		_setPlayerPartyData(inviter, party)
+	end
+
+	if party.Leader ~= inviter then
+		Events.CreateNotify_S.Fire(invitee, "Invite is no longer valid")
+		return
 	end
 
 	if not party:AddMember(invitee) then

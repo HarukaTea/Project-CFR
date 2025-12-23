@@ -171,10 +171,7 @@ table.insert(LBLib.Funcs, function()
         if type(value) ~= "number" then return end
         if value <= 0 then return end
 
-
-
         local store = STORE_LIST[storeName]
-
         store:UpdateAsync(key, value)
     end)
 

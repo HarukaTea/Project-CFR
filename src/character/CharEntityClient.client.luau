@@ -371,7 +371,6 @@ table.insert(CharLib.Funcs, function()
     Add(RunService.Heartbeat:Connect(function()
         if isWalking then
             local materialStanding = humanoid.FloorMaterial.Name
-
             if materialStanding ~= lastMaterialStanding and lastMaterialStanding ~= nil then
                 SoundService.FS_SFXs[lastMaterialStanding].Playing = false
             end
@@ -387,7 +386,6 @@ table.insert(CharLib.Funcs, function()
                 lastMaterialSFX.Playing = false
                 lastMaterialSFX = nil
             end
-
             for _, sound: Sound in SoundService.FS_SFXs:QueryDescendants("Sound") do
                 sound.Playing = false
             end

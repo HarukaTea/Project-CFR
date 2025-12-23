@@ -34,13 +34,13 @@ return function(scope: Fusion.Scope, props: {
     local isSelectingUlt = Value(false)
 
     local forceLocationsMobile = {
-        UDim2.fromScale(-0.81, 0.5),
-        UDim2.fromScale(-0.66, -0.2),
-        UDim2.fromScale(-0.06, -0.7),
+        UDim2.fromScale(-0.5, 0.5),
+        UDim2.fromScale(-0.2, -0.225),
+        UDim2.fromScale(0.5, -0.5),
 
-        UDim2.fromScale(0.61, -0.85),
+        UDim2.fromScale(0.5, -1.2),
 
-        UDim2.fromScale(-1.46, 0.5)
+        UDim2.fromScale(-1.3, 0.5)
     }
     local forceDivLocationMobile = Value(UDim2.fromOffset(0, 0))
     local forceSizeMobile = Value(UDim2.fromOffset(0, 0))
@@ -58,7 +58,7 @@ return function(scope: Fusion.Scope, props: {
         forceJumpButtonSize:set(jumpButtonSize)
 
 
-        forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 1.8, jumpButtonSize / 1.8))
+        forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 1.6, jumpButtonSize / 1.6))
         if isSmallScreen then
             forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize - 20))
         else
@@ -93,7 +93,7 @@ return function(scope: Fusion.Scope, props: {
                         [Children] = {
                             Components.Frame(scope, {
                                 Name = "ClassQUlt",
-                                AnchorPoint = Vector2.zero,
+                                AnchorPoint = Vector2.new(0.5, 0.5),
                                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                                 BackgroundTransparency = 0,
                                 BackgroundColor3 = Color3.new(),
@@ -232,6 +232,8 @@ return function(scope: Fusion.Scope, props: {
 
                                 ForcePosition = forceLocationsMobile[1],
                                 ForceSize = forceSizeMobile,
+
+                                IsMobile = true,
                             }, self),
 
                             ActiveSlot(scope, {
@@ -240,6 +242,8 @@ return function(scope: Fusion.Scope, props: {
 
                                 ForcePosition = forceLocationsMobile[2],
                                 ForceSize = forceSizeMobile,
+
+                                IsMobile = true,
                             }, self),
 
                             ActiveSlot(scope, {
@@ -248,6 +252,8 @@ return function(scope: Fusion.Scope, props: {
 
                                 ForcePosition = forceLocationsMobile[3],
                                 ForceSize = forceSizeMobile,
+
+                                IsMobile = true,
                             }, self),
 
 
@@ -256,6 +262,8 @@ return function(scope: Fusion.Scope, props: {
 
                                 ForcePosition = forceLocationsMobile[4],
                                 ForceSize = forceSizeMobile,
+
+                                IsMobile = true,
                             }, self)
                         }
                     })
