@@ -66,8 +66,8 @@ AssetBook.ItemEffectIcons = {
 	BurnChance = "rbxassetid://74588474308433",
 	BleedChance = "rbxassetid://101337562500575",
 	FreezeChance = "rbxassetid://79241468928508",
-	JumpPower = "rbxassetid://89411498131129",
-	JumpEx = "rbxassetid://89411498131129",
+	JumpPower = "rbxassetid://128019227796527",
+	JumpEx = "rbxassetid://128019227796527",
 
 	Intensity = "rbxassetid://128019227796527",
 	CriDMG = "rbxassetid://73146024586376",

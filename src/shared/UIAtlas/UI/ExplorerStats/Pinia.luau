@@ -191,17 +191,8 @@ return function (self: Self)
 
     self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
 
-    self.UIViewportSize = Value(workspace.CurrentCamera.ViewportSize)
+    self.UIViewportSize = FusionComponents.useUIViewportSize(scope)
     self.Device = HarukaLib:GetAccurateDevice()
-
-
-    --// track viewport size
-    table.insert(scope, HarukaLib:Hydrate(workspace, {
-        ["Attr-UIViewportSize"] = function(vpSize: Vector2)
-            self.UIViewportSize:set(vpSize)
-        end
-    }))
-
 
 
     --// track server

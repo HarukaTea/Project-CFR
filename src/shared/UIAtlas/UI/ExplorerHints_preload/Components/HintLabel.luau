@@ -12,8 +12,6 @@ return function (scope: Fusion.Scope, props: {
     LayoutOrder: number,
 })
 
-    local viewportSize = Components.FusionComponents.useViewportSize(scope)
-
     return Components.TextLabel(scope, {
         Name = "HintLabel",
         AutomaticSize = Enum.AutomaticSize.XY,
@@ -27,7 +25,7 @@ return function (scope: Fusion.Scope, props: {
         TextWrapped = false,
 
         TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            local size = use(viewportSize).Y / (Components.DESIGN_VP_SIZE.Y / 19)
+            local size = workspace.CurrentCamera.ViewportSize.Y / (Components.DESIGN_VP_SIZE.Y / 19)
 
             return math.clamp(size, 1, 20)
         end),

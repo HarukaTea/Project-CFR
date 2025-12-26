@@ -1436,7 +1436,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not data.Players then return end
 
         local abyssPlaceId = AssetBook.PlaceIds[tostring(game.GameId)].AbyssLevel
-        local code, privateServerId = TeleportService:ReserveServerAsync(abyssPlaceId)
+        local code: string, privateServerId: string = TeleportService:ReserveServerAsync(abyssPlaceId)
 
         local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData_V2")
         pcall(function()

@@ -12,7 +12,7 @@ local FusionComponents = {}
 local wait = task.wait
 
 
-export type ValObjects = ValueBase
+export type ValObjects = ValueBase & NumberValue
 
 
 FusionComponents.useTagged = function(scope: Fusion.Scope, tag: string) : Fusion.Value<{ Instance }>
@@ -46,11 +46,27 @@ end
 
 
 FusionComponents.useViewportSize = function(scope: Fusion.Scope) : Fusion.Value<Vector2>
-    local val = Fusion.Value(scope, workspace.CurrentCamera.ViewportSize)
+    local val = Fusion.Value(scope, Vector2.zero)
 
-    table.insert(scope, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-        val:set(workspace.CurrentCamera.ViewportSize)
-    end))
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-ViewportSize"] = function(size: Vector2)
+            size = size or Vector2.zero
+            val:set(size)
+        end
+    }))
+
+    return val
+end
+
+FusionComponents.useUIViewportSize = function(scope: Fusion.Scope) : Fusion.Value<Vector2>
+    local val = Fusion.Value(scope, Vector2.zero)
+
+    table.insert(scope, HarukaLib:Hydrate(workspace, {
+        ["Attr-UIViewportSize"] = function(size: Vector2)
+            size = size or Vector2.zero
+            val:set(size)
+        end
+    }))
 
     return val
 end

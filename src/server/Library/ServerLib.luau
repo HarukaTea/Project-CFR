@@ -194,6 +194,18 @@ function ServerLib:PlaceItemDropPart(plr: Player, itemId: string, amount: number
 end
 
 
+function ServerLib:RollStat(attr: string, val: any)
+	if typeof(val) == "number" then
+		local maxVal = FormulaBook.ItemUpgradeCurveCal(val)
+		if val > maxVal then
+			maxVal, val = val, maxVal
+		end
+		return Random.new():NextInteger(val, maxVal)
+	else
+		return val
+	end
+end
+
 
 function ServerLib:GiveRandomStatForItem(itemId: string) : string
 	if not ItemBook:GetItemInfo(itemId) then return "" end
@@ -206,20 +218,10 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
 	local finalDesync = {}
 
 	for attr: string, val: any in statInfoDesync do
-		if typeof(val) == "number" then
-			local maxVal = FormulaBook.ItemUpgradeCurveCal(val)
-			if val > maxVal then
-				maxVal, val = val, maxVal
-			end
-			local randomVal = Random.new():NextInteger(val, maxVal)
-
-			finalDesync[attr] = randomVal
-		else
-			finalDesync[attr] = val
-        end
+		finalDesync[attr] = ServerLib:RollStat(attr, val)
 	end
 
-	return ItemBook:PackTableToItemStat("Stat", finalDesync)
+	return ItemBook:BuildItemStat("Stat", finalDesync)
 end
 
 
@@ -330,7 +332,7 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 
 
 	local itemStat = itemSymbol:GetAttribute("ItemStat") :: string
-	local itemStatDesync = ItemBook:DesyncItemStat("Stat", string.split(itemStat, ","))
+	local itemStatDesync = ItemBook:ParseItemStat("Stat", string.split(itemStat, ","))
 
 	for attr: string, val: any in itemStatDesync do
 		local value = val

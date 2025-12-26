@@ -186,7 +186,6 @@ return function(plr: Player)
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
                                         self.PlayerSelected:set(nil)
-                                        self.PlayerSelecting:set(nil)
                                     end,
 
                                     [Children] = {

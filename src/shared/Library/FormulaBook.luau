@@ -5,12 +5,12 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
 local formulas = {
     ENEMY_MAX_LEVEL = 1599,
-    PLAYER_MAX_LEVEL = 190,
+    PLAYER_MAX_LEVEL = 200,
     PLAYER_POINT_PER_LEVEL = 2,
     PLAYER_TALENT_POINT_PER_LEVEL = 1,
     PLAYER_MAX_DEX_POINTS = 50,
 
-    EXPEvent = 1,
+    EXPEvent = 2,
 
 
     PlayerLevelCurveCal = function(props: {

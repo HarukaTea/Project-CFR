@@ -225,6 +225,7 @@ table.insert(CriRPGLib.Funcs, function()
 
         local y, amplitude = 0, 200
         y = if x <= 12 then 0 + amplitude * (x / 12) else amplitude - amplitude * ((x - 12) / 12)
+        y = math.clamp(y, 100, 225)
 
         return Color3.fromRGB(y, y, y)
     end

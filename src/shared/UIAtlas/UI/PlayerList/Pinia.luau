@@ -71,7 +71,6 @@ return function (self: Self)
 
         if input.KeyCode == Enum.KeyCode.Tab then
             self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
-            self.PlayerSelected:set(nil)
             self.PlayerSelecting:set(nil)
         end
     end))

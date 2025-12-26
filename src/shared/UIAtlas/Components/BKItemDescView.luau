@@ -165,7 +165,7 @@ return function (scope: Fusion.Scope, props: {
     if itemStat == nil then return nil end
 
     local itemStatExtra = string.split(itemStat, ",")
-    itemStatExtra = ItemBook:DesyncItemStat("Stat", itemStatExtra)
+    itemStatExtra = ItemBook:ParseItemStat("Stat", itemStatExtra)
 
 
 

@@ -238,7 +238,7 @@ return function (self: Self)
         part:SetAttribute("OriColor", part.Color)
 
         part.Material = Enum.Material.Plastic
-        part.Color = part.Color:Lerp(Color3.fromRGB(), 0.4)
+        part.Color = part.Color:Lerp(Color3.fromRGB(), 0.3)
 
         part:AddTag("LDMTerrainPart")
     end

@@ -151,6 +151,25 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             if itemInfo.ItemStat ~= trueItemInfo.StatInfo then
                 data.ItemsSQL[itemInfo.UniqueId].ItemStat = trueItemInfo.StatInfo
             end
+        else
+            --// migration4: itemstat adder
+            if (trueItemInfo.Type == "Accessory" or trueItemInfo.Type == "Weapon") then
+                local itemStat = itemInfo.ItemStat
+                local itemStatTable = ItemBook:ParseItemStat("Stat", string.split(itemStat, ","))
+                local itemStatInJSON = trueItemInfo.StatInfo
+                local itemStatTableInJSON = ItemBook:ParseItemStat("Stat", string.split(itemStatInJSON, ","))
+
+                local updatedStatTable = {}
+                for statId, templateVal in itemStatTableInJSON do
+                    if itemStatTable[statId] then
+                        updatedStatTable[statId] = itemStatTable[statId]
+                    else
+                        updatedStatTable[statId] = ServerLib:RollStat(statId, templateVal)
+                    end
+                end
+
+                data.ItemsSQL[itemInfo.UniqueId].ItemStat = ItemBook:BuildItemStat("Stat", updatedStatTable)
+            end
         end
     end
 
@@ -215,17 +234,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             for i = 2, #uniqueIds do
                 data.ItemsSQL[uniqueIds[i]] = nil
             end
-        end
-    end
-
-
-    --// check if the accessory has ItemStat
-    for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
-        local trueItemInfo = ItemBook:GetItemInfo(itemInfo.ItemId)
-        local itemStat = string.gsub(itemInfo.ItemStat, " ", "")
-
-        if (trueItemInfo.Type == "Accessory" or trueItemInfo.Type == "Weapon") and itemStat == "" then
-            data.ItemsSQL[itemInfo.UniqueId] = nil
         end
     end
 

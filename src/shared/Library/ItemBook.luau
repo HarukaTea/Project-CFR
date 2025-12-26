@@ -47,8 +47,7 @@ export type ItemBookJSON = {
     TagsDesync: { string },
 }
 
-
-ItemBook.PackItemAttrToTable = function(_, itemSymbol: IntValue) : { [string]: any }
+function ItemBook:PackItemAttrToTable(itemSymbol: IntValue) : { [string]: any }
     local attrs = {}
 
     for attr: string, val: any in itemSymbol:GetAttributes() do
@@ -61,7 +60,7 @@ ItemBook.PackItemAttrToTable = function(_, itemSymbol: IntValue) : { [string]: a
 end
 
 
-ItemBook.DesyncItemStat = function(_, infoType: "Stat" | "Extra", info: { string }) : { [string]: any }
+function ItemBook:ParseItemStat(infoType: "Stat" | "Extra", info: { string }) : { [string]: any }
     local attrs = {}
 
     if infoType == "Extra" then
@@ -104,7 +103,7 @@ ItemBook.DesyncItemStat = function(_, infoType: "Stat" | "Extra", info: { string
 end
 
 
-ItemBook.PackTableToItemStat = function(_, infoType: "Stat" | "Extra", info: { [string]: any }) : string
+function ItemBook:BuildItemStat(infoType: "Stat" | "Extra", info: { [string]: any }) : string
     local randomStat = ""
 
     if infoType == "Stat" then
@@ -128,8 +127,7 @@ end
 
 
 
-
-ItemBook.GetItemInfo = function(_, itemId: string) : ItemBookJSON
+function ItemBook:GetItemInfo(itemId: string) : ItemBookJSON
     local itemInfo = nil
 
     for _, thatItemInfo in ItemRawBook do
@@ -143,7 +141,7 @@ ItemBook.GetItemInfo = function(_, itemId: string) : ItemBookJSON
 end
 
 
-ItemBook.GetAllItems = function(_) : { string }
+function ItemBook:GetAllItems() : { string }
     local itemIds = {}
 
     for _, itemInfo in ItemRawBook do
@@ -154,7 +152,7 @@ ItemBook.GetAllItems = function(_) : { string }
 end
 
 
-ItemBook.GetAllMaterialsLoot = function(_) : { [string]: number }
+function ItemBook:GetAllMaterialsLoot() : { [string]: number }
     local materialsLoot = {}
 
     for _, itemInfo in ItemRawBook do
@@ -194,7 +192,7 @@ for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
         extraInfo = string.gsub(extraInfo, " ", "")
         local attrsExtra = string.split(extraInfo, ",")
 
-        itemInfo.ExtraStatInfoDesync = ItemBook:DesyncItemStat("Extra", attrsExtra)
+        itemInfo.ExtraStatInfoDesync = ItemBook:ParseItemStat("Extra", attrsExtra)
     end
 
     --// desync stat info
@@ -204,7 +202,7 @@ for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
         statInfo = string.gsub(statInfo, " ", "")
         local attrs = string.split(statInfo, ",")
 
-        itemInfo.StatInfoDesync = ItemBook:DesyncItemStat("Stat", attrs)
+        itemInfo.StatInfoDesync = ItemBook:ParseItemStat("Stat", attrs)
     end
 
     --// desync recipe
@@ -214,7 +212,7 @@ for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
         recipeInfo = string.gsub(recipeInfo, " ", "")
         local attrs = string.split(recipeInfo, ",")
 
-        itemInfo.RecipeDesync = ItemBook:DesyncItemStat("Extra", attrs)
+        itemInfo.RecipeDesync = ItemBook:ParseItemStat("Extra", attrs)
     end
 
     --// desync tags
