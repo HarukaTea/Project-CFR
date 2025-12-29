@@ -8,13 +8,14 @@
         "Desc": "A healthy apple, from a healthy tree",
         "Stat": "Recover <green>5%</font> of your max health",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(1)",
         "Icon": "82533036327440",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "CD(1)",
         "Tags": "Heal",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Purchase it in Initus Bay Market, or collect it by apple trees"
     },
     {
         "ItemId": "GoldenApple",
@@ -25,13 +26,14 @@
         "Desc": "A golden one, lucky you!",
         "Stat": "Recover <green>15%</font> of your max health, and give you <yellow>1.5x</font> attack buff for 6s",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(10)",
         "Icon": "107792957022135",
         "Price": "90",
         "SellPrice": "45",
-        "ExtraStatInfo": "CD(10)",
         "Tags": "Heal,Buff,Crafting",
         "ArtifactId": "Blessing",
-        "Recipe": "HealthyApple(3)"
+        "Recipe": "HealthyApple(4)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "FireballSpell",
@@ -42,13 +44,14 @@
         "Desc": "A simple spell, practically creating a fireball",
         "Stat": "Unleash a searing Fireball that deals 1x magic damage to your enemy. With a quick cast, you'll ignite them, inflicting a painful <red>Burn</font> over time, lasts 5s.",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(10),Mana(100)",
         "Icon": "12192842137",
         "Price": "300",
         "SellPrice": "150",
-        "ExtraStatInfo": "CD(10)",
         "Tags": "Magic",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "HealthPotion",
@@ -59,13 +62,14 @@
         "Desc": "Brewed by the great alchemists of the Magic Guild in cooperation with the Life Guild for medical advancements, now distributed globally",
         "Stat": "Recover <green>20%</font> of your max health",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(8)",
         "Icon": "95756938920138",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "CD(8)",
         "Tags": "Heal",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "HealthyApple(2)",
+        "ObtainMethod": "Purchase it in Initus Bay Market"
     },
     {
         "ItemId": "PowerPotion",
@@ -76,13 +80,14 @@
         "Desc": "Originally crafted by Magic Guild alchemists to provide strength to construction workers, now a staple amongst adventurers.",
         "Stat": "Gives you <red>1.75x Attack</font> buff for 8s",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(10)",
         "Icon": "95404770175403",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "CD(10)",
         "Tags": "Buff",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "MagicPotion",
@@ -93,13 +98,14 @@
         "Desc": "Brewed by the great alchemists of the Magic Guild to serve as a booster for sorcerer cubes",
         "Stat": "Gives you <purple>1.75x Magic</font> buff for 8s",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(10)",
         "Icon": "100978148834095",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "CD(10)",
         "Tags": "Buff",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ManaPotion",
@@ -110,13 +116,14 @@
         "Desc": "Invented with the cooperation of the Magic Guild and Life Guild's scientists and researchers to create an energy enhancing drink for people of all lifestyles",
         "Stat": "Restore <blue>100%</font> of your Mana",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(8)",
         "Icon": "85421931804228",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "CD(8)",
         "Tags": "Combat",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "EndurancePotion",
@@ -127,30 +134,32 @@
         "Desc": "Brewed by the great alchemists of the Magic Guild in cooperation with the Life Guild for medical advancements",
         "Stat": "Repair <yellow>100%</font> of your Shield",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(10)",
         "Icon": "96238227355398",
         "Price": "150",
         "SellPrice": "75",
-        "ExtraStatInfo": "CD(10)",
         "Tags": "Combat",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "TravellerBoots",
-        "Name": "Traveller's Boots",
+        "Name": "Traveler's Boots",
         "Type": "Accessory",
         "Tier": "1",
         "Level": "1",
         "Desc": "A pair of comfortable boots for adventurers to wear",
         "Stat": "",
-        "StatInfo": "SpeedEx(5)",
+        "StatInfo": "SpeedEx(5),IntensityEx(10)",
+        "ExtraStatInfo": "",
         "Icon": "2965728606",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
         "ArtifactId": "Exploration",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "BurningTorch",
@@ -161,13 +170,14 @@
         "Desc": "A magical torch which burns even in rain",
         "Stat": "",
         "StatInfo": "CanLight",
+        "ExtraStatInfo": "",
         "Icon": "78508642432672",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
         "ArtifactId": "Exploration",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "HuntingDagger",
@@ -178,13 +188,14 @@
         "Desc": "A sly, portable, and sharp dagger made for hunting foxes and wolves alike",
         "Stat": "Rawr",
         "StatInfo": "ATK(12)",
+        "ExtraStatInfo": "",
         "Icon": "73625576595509",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "Exploration",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "MiningPickaxe",
@@ -195,13 +206,14 @@
         "Desc": "An impossibly sturdy pickaxe capable of mining a seemingly endless amount of ores",
         "Stat": "Allows you to mine <blue>Ores</font>",
         "StatInfo": "CanMine",
+        "ExtraStatInfo": "",
         "Icon": "12118509077",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Exploration,Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "CopperSword",
@@ -212,13 +224,14 @@
         "Desc": "You can feel the blade is still warm despite it's evidently cold handle, an edge ridged and scratched, stained with the faint echo of a lingering history",
         "Stat": "",
         "StatInfo": "ATK(30)",
+        "ExtraStatInfo": "",
         "Icon": "12192841092",
         "Price": "150",
         "SellPrice": "75",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "Exploration",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "AncientHammer",
@@ -229,13 +242,14 @@
         "Desc": "Feeling the slight weight of the hammer, the tremors of past battles emanate throughout your body as you hold it",
         "Stat": "",
         "StatInfo": "ATK(50)",
+        "ExtraStatInfo": "",
         "Icon": "12119868315",
         "Price": "300",
         "SellPrice": "150",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "VolatileCrystal",
@@ -245,14 +259,15 @@
         "Level": "5",
         "Desc": "A crystal of raw mana, rough and unpolished, containing only residual traces of energy within",
         "Stat": "",
-        "StatInfo": "MagicEx(45)",
+        "StatInfo": "MagicEx(45),MaxManaEx(300)",
+        "ExtraStatInfo": "",
         "Icon": "12119869276",
         "Price": "150",
         "SellPrice": "75",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "SlimeGel",
@@ -263,13 +278,14 @@
         "Desc": "It's surprisingly sticky and has a faint, earthy smell",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "99670306374099",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Slime,Abyss",
+        "Tags": "Slime",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Slimes"
     },
     {
         "ItemId": "SlimeCore",
@@ -280,13 +296,14 @@
         "Desc": "A core pulses with a weak, residual energy",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "18857821468",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "",
-        "Tags": "Slime,Abyss",
+        "Tags": "Slime",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "SlimeGel(2)",
+        "ObtainMethod": "Dropped by Slimes, or exchange it"
     },
     {
         "ItemId": "SpikyFur",
@@ -297,13 +314,14 @@
         "Desc": "It's surprisingly durable and offers a unique kind of protection",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "12118511428",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Wolf,Fox,Abyss",
+        "Tags": "Wolf,Fox",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Foxes & Wolves"
     },
     {
         "ItemId": "SpikyQuills",
@@ -314,13 +332,14 @@
         "Desc": "They're surprisingly sturdy and can be used for various crafts",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "108173456889005",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "",
-        "Tags": "Wolf,Fox,Abyss",
+        "Tags": "Wolf,Fox",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "SpikyFur(2)",
+        "ObtainMethod": "Dropped by Foxes & Wolves, or exchange it"
     },
     {
         "ItemId": "BeeStinger",
@@ -331,13 +350,14 @@
         "Desc": "It serves as a sharp reminder of the hive's defense",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "132131061743075",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Bee,Abyss",
+        "Tags": "Bee",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Bees"
     },
     {
         "ItemId": "CrimsonSlimeCore",
@@ -348,13 +368,14 @@
         "Desc": "It throbs with raw, unstable energy",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "18857808522",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "",
         "Tags": "Slime,BossDrop",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Crimson Slime Boss"
     },
     {
         "ItemId": "CrimsonSlimeFang",
@@ -365,13 +386,14 @@
         "Desc": "It's unnervingly warm to the touch and hums with a viscous, destructive energy",
         "Stat": "",
         "StatInfo": "MagicEx(220),CriDMGEx(27)",
+        "ExtraStatInfo": "",
         "Icon": "132200106050322",
         "Price": "3300",
         "SellPrice": "1650",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "Crimson",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "BlackFur",
@@ -382,13 +404,14 @@
         "Desc": "A coarse, dark fur, torn from the hide of the formidable Hardmode Wolf",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "12285144842",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "",
         "Tags": "Wolf,BossDrop",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Hardmode Wolf Boss & Lava Wolf Boss"
     },
     {
         "ItemId": "BlackWolfNecklace",
@@ -399,13 +422,14 @@
         "Desc": "A totem carved from dark wood and adorned with sharp teeth",
         "Stat": "",
         "StatInfo": "ATK(225),CriChanceEx(15),CriDMGEx(22)",
+        "ExtraStatInfo": "",
         "Icon": "17481485403",
         "Price": "2700",
         "SellPrice": "1350",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "WolfKing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WinterHowl",
@@ -416,13 +440,14 @@
         "Desc": "Surprisingly you can tolerate its low temperature",
         "Stat": "",
         "StatInfo": "ATK(200),MaxHealthEx(500),FreezeChanceEx(2)",
+        "ExtraStatInfo": "",
         "Icon": "99504742365990",
         "Price": "3000",
         "SellPrice": "1500",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "WolfKing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WolfKingAxe",
@@ -433,13 +458,14 @@
         "Desc": "Surprisingly you can tolerate its high temperature",
         "Stat": "",
         "StatInfo": "ATK(280),BurnChanceEx(5)",
+        "ExtraStatInfo": "",
         "Icon": "86033463991444",
         "Price": "3000",
         "SellPrice": "1500",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "WolfKing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "DragonFang",
@@ -450,13 +476,14 @@
         "Desc": "Legend has it that the sharpest blades are forged from a dragon's fang",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "139926418574671",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "",
-        "Tags": "Dragon,BossDrop,Abyss",
+        "Tags": "Dragon,BossDrop",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Dragons"
     },
     {
         "ItemId": "DragonScale",
@@ -467,13 +494,14 @@
         "Desc": "It once shielded the dragon from harm",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "113506074761090",
         "Price": "600",
         "SellPrice": "300",
-        "ExtraStatInfo": "",
-        "Tags": "Dragon,BossDrop,Abyss",
+        "Tags": "Dragon,BossDrop",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "DragonFang(2)",
+        "ObtainMethod": "Dropped by Dragons, or craft it"
     },
     {
         "ItemId": "IronOre",
@@ -484,13 +512,14 @@
         "Desc": "A classic metal, used by civilisations across the ages",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "115000168606146",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Mine",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Mine ores in the caves"
     },
     {
         "ItemId": "DivineBlade",
@@ -501,13 +530,14 @@
         "Desc": "Its edge reflects emblem, and its weight, though seemingly unbearable to explorers, becomes feather-light",
         "Stat": "",
         "StatInfo": "ForClass(Chain),ATK(75)",
+        "ExtraStatInfo": "",
         "Icon": "125884784184041",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "",
         "Tags": "Crafting,EnemyDrop",
         "ArtifactId": "Exploration",
-        "Recipe": "IronOre(10),SlimeGel(10),SlimeCore(5)"
+        "Recipe": "IronOre(10),SlimeGel(10),SlimeCore(5)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "EarthBow",
@@ -518,13 +548,14 @@
         "Desc": "Arrows loosed from it fly true, guided by the unseen spirits of the world",
         "Stat": "",
         "StatInfo": "ForClass(Burst),ATK(75)",
+        "ExtraStatInfo": "",
         "Icon": "72428885228018",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "",
         "Tags": "Crafting,EnemyDrop",
         "ArtifactId": "Exploration",
-        "Recipe": "IronOre(10),BeeStinger(10)"
+        "Recipe": "IronOre(10),BeeStinger(10)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ForestStaff",
@@ -535,13 +566,14 @@
         "Desc": "Appearing as if grown directly from the earth",
         "Stat": "",
         "StatInfo": "ForClass(Flow),MagicEx(60)",
+        "ExtraStatInfo": "",
         "Icon": "83039749804938",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "",
         "Tags": "Crafting,EnemyDrop",
         "ArtifactId": "Exploration",
-        "Recipe": "IronOre(10),SpikyFur(10),SpikyQuills(5)"
+        "Recipe": "IronOre(10),SpikyFur(10),SpikyQuills(5)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Crescendo",
@@ -552,13 +584,14 @@
         "Desc": "Crescendo is a musical term meaning gradually getting louder",
         "Stat": "",
         "StatInfo": "ForClass(Reverberation),ATK(100)",
+        "ExtraStatInfo": "",
         "Icon": "139194024873300",
         "Price": "900",
         "SellPrice": "450",
-        "ExtraStatInfo": "",
         "Tags": "Statue",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "HoneyArmor2",
@@ -569,13 +602,14 @@
         "Desc": "The armor is surprisingly resilient and sticky to the touch",
         "Stat": "",
         "StatInfo": "MaxHealthEx(460),MaxShieldEx(40)",
+        "ExtraStatInfo": "",
         "Icon": "103402127892842",
         "Price": "3900",
         "SellPrice": "1950",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "QueenBee",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "HoneyGreaves",
@@ -586,13 +620,14 @@
         "Desc": "Surprisingly sticky to the touch",
         "Stat": "",
         "StatInfo": "BurnChanceEx(5)",
+        "ExtraStatInfo": "",
         "Icon": "73783849665335",
         "Price": "3900",
         "SellPrice": "1950",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "QueenBee",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "HoneyHeadgear",
@@ -603,13 +638,14 @@
         "Desc": "The headgear is surprisingly sticky to the touch",
         "Stat": "<yellow>(Dev: Work In Progress)</font>",
         "StatInfo": "MaxShieldEx(60),ATK(200)",
+        "ExtraStatInfo": "",
         "Icon": "127893693700571",
         "Price": "3900",
         "SellPrice": "1950",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "QueenBee",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WoodenSword",
@@ -620,13 +656,14 @@
         "Desc": "A simple practice sword, whittled from common wood. Every hero's journey begins with weapons like this",
         "Stat": "",
         "StatInfo": "ForClass(Chain),ATK(5)",
+        "ExtraStatInfo": "",
         "Icon": "103311548903587",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Statue,NoDuplicate",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WoodenBow",
@@ -637,13 +674,14 @@
         "Desc": "Its simplicity belies its potential in the right hands",
         "Stat": "",
         "StatInfo": "ForClass(Burst),ATK(5)",
+        "ExtraStatInfo": "",
         "Icon": "89552025357078",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Statue,NoDuplicate",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WoodenStaff",
@@ -654,13 +692,14 @@
         "Desc": "A basic staff, perhaps just a sturdy branch found in the woods",
         "Stat": "",
         "StatInfo": "ForClass(Flow),MagicEx(4)",
+        "ExtraStatInfo": "",
         "Icon": "121370119057585",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
         "Tags": "Statue,NoDuplicate",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WolfKingSword",
@@ -671,13 +710,14 @@
         "Desc": "This jagged greatsword, rumored to be a single, massive tooth from the legendary wolf",
         "Stat": "Each attack has a small chance to inflict <red>Bleed</font> on the enemy",
         "StatInfo": "ForClass(Chain),ATK(325)",
+        "ExtraStatInfo": "",
         "Icon": "91123652494859",
         "Price": "4875",
         "SellPrice": "2437",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "WolfKing",
-        "Recipe": "SpikyQuills(50),IronOre(5)"
+        "Recipe": "SpikyQuills(50),IronOre(5)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "QueenBeeBow",
@@ -688,13 +728,14 @@
         "Desc": "Arrows loosed from its string fly with speed and precision",
         "Stat": "Each attack has a small chance to inflict <red>Bleed</font> on the enemy",
         "StatInfo": "ForClass(Burst),ATK(325)",
+        "ExtraStatInfo": "",
         "Icon": "85379466166048",
         "Price": "4875",
         "SellPrice": "2437",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "QueenBee",
-        "Recipe": "GHoneyWings(50),IronOre(5)"
+        "Recipe": "GHoneyWings(50),IronOre(5)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "LeafDragonStaff",
@@ -705,13 +746,14 @@
         "Desc": "Its touch awakens dormant nature magic, allowing the wielder to command vines, thorns, and the very breath of the forest.",
         "Stat": "Each attack has a small chance to inflict <red>Burn</font> on the enemy",
         "StatInfo": "ForClass(Flow),MagicEx(500)",
+        "ExtraStatInfo": "",
         "Icon": "132943384940547",
         "Price": "4875",
         "SellPrice": "2437",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "LeafDragon",
-        "Recipe": "DragonScale(50),IronOre(5)"
+        "Recipe": "DragonScale(50),IronOre(5)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Dawnbreak",
@@ -722,30 +764,14 @@
         "Desc": "We crash against the sky, defy the judgements of all. End the darkness and seize the light, daybreaks meant to be free, and we are gonna shatter the tides!",
         "Stat": "Each attack has a <red>0.33550336%</font> chance to <red>one-shot</font> the enemy",
         "StatInfo": "ForClass(Chain),ATK(1599)",
+        "ExtraStatInfo": "",
         "Icon": "88314520765690",
         "Price": "17100",
         "SellPrice": "8550",
-        "ExtraStatInfo": "",
         "Tags": "AbyssRareDrop,NoRandom",
         "ArtifactId": "Blessing",
-        "Recipe": ""
-    },
-    {
-        "ItemId": "HeavenPotion",
-        "Name": "Heaven Potion",
-        "Type": "Material",
-        "Tier": "5",
-        "Level": "190",
-        "Desc": "A luminous, golden elixir that smells faintly of starlight and fresh rain",
-        "Stat": "",
-        "StatInfo": "",
-        "Icon": "18831198702",
-        "Price": "14250",
-        "SellPrice": "7125",
-        "ExtraStatInfo": "",
-        "Tags": "Heaven,Sell",
-        "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Agility",
@@ -756,13 +782,14 @@
         "Desc": "A simple skill that can be easily learnt by anyone, allowing them a burst of speed for a short period of time",
         "Stat": "Grants <blue>1.5x</font> speed for a decent amount of time",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(8)",
         "Icon": "118334009521877",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "CD(8)",
         "Tags": "Exploration",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ExtraJump",
@@ -773,13 +800,14 @@
         "Desc": "A minor enchantment that subtly lightens your steps",
         "Stat": "Boosts you up!",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(4)",
         "Icon": "131661133837379",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "CD(4)",
         "Tags": "Exploration",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ArcaneSpellbook2",
@@ -790,13 +818,14 @@
         "Desc": "This ancient tome hums with dormant power",
         "Stat": "",
         "StatInfo": "MagicEx(100)",
+        "ExtraStatInfo": "",
         "Icon": "17286830798",
         "Price": "1125",
         "SellPrice": "562",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "MagicianHat2",
@@ -807,13 +836,14 @@
         "Desc": "More than just a stylish accessory",
         "Stat": "",
         "StatInfo": "MagicEx(100)",
+        "ExtraStatInfo": "",
         "Icon": "14429547149",
         "Price": "1125",
         "SellPrice": "562",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "EnchantedBlade2",
@@ -824,13 +854,14 @@
         "Desc": "A finely crafted sword that shimmers with a faint glow",
         "Stat": "",
         "StatInfo": "ATK(125),MagicEx(100)",
+        "ExtraStatInfo": "",
         "Icon": "4820519895",
         "Price": "1125",
         "SellPrice": "562",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "SharpenerRock2",
@@ -841,13 +872,14 @@
         "Desc": "A rock used for sharpening your weapons",
         "Stat": "",
         "StatInfo": "CriChanceEx(5),CriDMGEx(10)",
+        "ExtraStatInfo": "",
         "Icon": "106109317422560",
         "Price": "150",
         "SellPrice": "75",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "CrimsoniteBlade",
@@ -858,13 +890,14 @@
         "Desc": "A blade forged with the essence of corruption",
         "Stat": "Each attack inflicts the <red>Blood Butchered</font> debuff upon hitting an enemy, dealing 0.05x damage per second for 9 seconds",
         "StatInfo": "ATK(250),CriChanceEx(16)",
+        "ExtraStatInfo": "",
         "Icon": "129041452735731",
         "Price": "3000",
         "SellPrice": "1500",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "Crimson",
-        "Recipe": "CrimsonSlimeCore(35),IronOre(50)"
+        "Recipe": "CrimsonSlimeCore(35),IronOre(50)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "CrimsoniteOre",
@@ -875,13 +908,14 @@
         "Desc": "An artificial ore formed due to the influence of the Crimson Slime",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "75395982369444",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "",
         "Tags": "Mine",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Mine ores in the caves in world 2"
     },
     {
         "ItemId": "CrimsoniteIngot",
@@ -892,13 +926,14 @@
         "Desc": "You can smell the sickening stench of corruption that mists the ingot",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "83771568268989",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
-        "Tags": "Mine,Abyss",
+        "Tags": "Crafting",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "CrimsoniteOre(5),Light(2)",
+        "ObtainMethod": "Melt Crimsonite Ores in crafting"
     },
     {
         "ItemId": "Glass",
@@ -909,13 +944,14 @@
         "Desc": "A transparent material made from heating sand until molten and then rapidly cooling it to prevent crystalization",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "115287713024723",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "",
-        "Tags": "Abyss",
+        "Tags": "Crafting",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "Sand(5),Light(2)",
+        "ObtainMethod": "Melt sands in crafting"
     },
     {
         "ItemId": "Sand",
@@ -926,13 +962,14 @@
         "Desc": "Despite coming from a slime, still can utilized",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "131304399900826",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Abyss",
+        "Tags": "Market",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Purchase it in Initus Bay Market"
     },
     {
         "ItemId": "CoalOre",
@@ -943,13 +980,14 @@
         "Desc": "A solid carbon-rich source of fuel",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "96858430823817",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "",
-        "Tags": "Mine,Abyss",
+        "Tags": "Mine",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped in Abyss"
     },
     {
         "ItemId": "GoldOre",
@@ -960,13 +998,14 @@
         "Desc": "A heavy, shimmering lump of raw earth, streaked with veins of gleaming gold",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "83980205906883",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
         "Tags": "Mine",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "IronOre(5),Light(2)",
+        "ObtainMethod": "Mine ores in the caves has a chance to obtain it"
     },
     {
         "ItemId": "Wood",
@@ -977,13 +1016,14 @@
         "Desc": "Why does it take so long to cut this down?",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "92205088339412",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Abyss",
+        "Tags": "Market",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Purchase it in Venator Village Market"
     },
     {
         "ItemId": "AlderiteAxe",
@@ -994,13 +1034,14 @@
         "Desc": "This axe possesses an unnatural weight and a cutting edge that seems to hum with a strange energy",
         "Stat": "",
         "StatInfo": "ATK(175),MagicEx(140),CriChanceEx(5)",
+        "ExtraStatInfo": "",
         "Icon": "18966425239",
         "Price": "1575",
         "SellPrice": "787",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "",
-        "Recipe": "Glass(25),IronOre(40),ColdFlame(5)"
+        "Recipe": "Glass(25),IronOre(40),ColdFlame(5)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "GHoneyWings",
@@ -1011,13 +1052,14 @@
         "Desc": "Wings shimmer with a faint sparkle",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "119442427727213",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
-        "Tags": "Bee,Abyss",
+        "Tags": "Bee",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "BeeStinger(2)",
+        "ObtainMethod": "Dropped by Bees"
     },
     {
         "ItemId": "QueenBeeCrown",
@@ -1027,14 +1069,15 @@
         "Level": "150",
         "Desc": "An ornate crown, shimmers with the collective essence of the hive",
         "Stat": "<yellow>(Dev: Work In Progress)</font>",
-        "StatInfo": "ATK(800),CriChanceEx(20),CriDMGEx(80),BleedChanceEx(25),SpeedEx(2)",
+        "StatInfo": "ATK(800),CriChanceEx(20),CriDMGEx(80),BleedChanceEx(25),LuckEx(15)",
+        "ExtraStatInfo": "",
         "Icon": "75949659278478",
         "Price": "11250",
         "SellPrice": "5625",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "QueenBee",
-        "Recipe": "BeeStinger(150),GHoneyWings(150),GoldOre(150),ColdFlame(150),HealthPotion(500)"
+        "Recipe": "BeeStinger(150),GHoneyWings(150),GoldOre(100),ColdFlame(150),HealthPotion(500)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "KitsuneFlame",
@@ -1045,13 +1088,14 @@
         "Desc": "Said to be a direct fragment from a legendary Kitsune",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "12363890050",
         "Price": "60",
         "SellPrice": "30",
-        "ExtraStatInfo": "",
-        "Tags": "",
+        "Tags": "Kitsune",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Kitsunes"
     },
     {
         "ItemId": "AncientWoodArmor",
@@ -1062,13 +1106,14 @@
         "Desc": "It bears the markings of forgotten civilizations and seems to pulse with the deep life force of the ancient trees",
         "Stat": "",
         "StatInfo": "MaxHealthEx(100),MaxShieldEx(10)",
+        "ExtraStatInfo": "",
         "Icon": "131169724812561",
         "Price": "300",
         "SellPrice": "150",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "AquaCrystal",
@@ -1079,13 +1124,14 @@
         "Desc": "It makes you wonder how they were able to make it so perfectly",
         "Stat": "",
         "StatInfo": "MagicEx(110)",
+        "ExtraStatInfo": "",
         "Icon": "17515925140",
         "Price": "1350",
         "SellPrice": "675",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ArcaneMark",
@@ -1096,13 +1142,14 @@
         "Desc": "Valuable, despite the difficulty of using raw magic",
         "Stat": "Deals 2x <purple>Magic</font> damage to enemy, and has a chance to inflict <blue>Burn</font>",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(15),Mana(300)",
         "Icon": "18857805491",
         "Price": "2250",
         "SellPrice": "1125",
-        "ExtraStatInfo": "CD(15)",
         "Tags": "Magic",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "StarBeamStrike",
@@ -1113,13 +1160,14 @@
         "Desc": "Resting upon the grace, offer up a heartfelt prayer to call forth a swivelling, streamlined burst of stars, crashing down onto enemies with the blinding light of a supernova",
         "Stat": "Deals 2x <purple>Magic</font> damage to enemy, inflict <red>Burn</font> on the enemy for a while",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(15),Mana(300)",
         "Icon": "129838506946434",
         "Price": "2250",
         "SellPrice": "1125",
-        "ExtraStatInfo": "CD(15)",
         "Tags": "Magic",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "AtlantisArmor",
@@ -1130,13 +1178,14 @@
         "Desc": "A subtle remnant of the ancient city Atlantis, lost to the inevitable passing of time",
         "Stat": "",
         "StatInfo": "MaxHealthEx(75),MaxShieldEx(10)",
+        "ExtraStatInfo": "",
         "Icon": "109354863614444",
         "Price": "3000",
         "SellPrice": "1500",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "",
-        "Recipe": "Sand(35),IronOre(30)"
+        "Recipe": "Sand(35),IronOre(30)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "AdventurerBackpack",
@@ -1147,13 +1196,14 @@
         "Desc": "A ready-made kit for all adventurers to use and make, recommended to most beginners who are starting out",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "12370527641",
         "Price": "750",
         "SellPrice": "375",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "BatFangs",
@@ -1164,13 +1214,14 @@
         "Desc": "Bats can have extremely sharp fangs for feeding, so be careful handling them!",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "18953639683",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting,Alchemy",
+        "Tags": "Bats",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Bats"
     },
     {
         "ItemId": "BloodSpellbook",
@@ -1181,13 +1232,14 @@
         "Desc": "This ancient tome thirsts for more than knowledge",
         "Stat": "Each attack will deal more damage <red>with the cost of</font> <green>5% Health</font> if you have enough health",
         "StatInfo": "MagicEx(400)",
+        "ExtraStatInfo": "",
         "Icon": "97143258197742",
         "Price": "6000",
         "SellPrice": "3000",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "Crimson",
-        "Recipe": "ColdFlame(30),Wood(50),CrimsonSlimeCore(40)"
+        "Recipe": "ColdFlame(30),Wood(50),CrimsonSlimeCore(40)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ColdFlame",
@@ -1198,13 +1250,14 @@
         "Desc": "A chilling, ethereal flame that flickers with an otherworldly glow",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "100013870253394",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting,Abyss",
+        "Tags": "Abyss",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped in Abyss"
     },
     {
         "ItemId": "HalloweenCandy",
@@ -1215,13 +1268,14 @@
         "Desc": "Trick or treat! You got a treat!",
         "Stat": "Recover <green>10%</font> of your max health",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(3)",
         "Icon": "101642799593354",
         "Price": "450",
         "SellPrice": "225",
-        "ExtraStatInfo": "CD(3)",
         "Tags": "EventItem",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "CookedSteak",
@@ -1232,13 +1286,14 @@
         "Desc": "Most adventurers dream about eating cooked steak everyday once they get enough money, sadly most of them have to stick with bread or other simple foods most of the time",
         "Stat": "Recover <green>15%</font> of your max health",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(5)",
         "Icon": "17481500518",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "CD(5)",
         "Tags": "Heal",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "CorruptedFang",
@@ -1249,13 +1304,14 @@
         "Desc": "A twisted dark fang, ripped from a creature tainted by dark magic",
         "Stat": "",
         "StatInfo": "MagicEx(130),ATK(35)",
+        "ExtraStatInfo": "",
         "Icon": "94628923484515",
         "Price": "1575",
         "SellPrice": "787",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "DualSwords",
@@ -1266,13 +1322,14 @@
         "Desc": "A matching pair of finely balanced blades, designed for fluid, rapid strikes",
         "Stat": "Each attack has a <yellow>10%</font> chance to perform an extra attack",
         "StatInfo": "ATK(135)",
+        "ExtraStatInfo": "",
         "Icon": "139724872871679",
         "Price": "6000",
         "SellPrice": "3000",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "",
-        "Recipe": "IronOre(45),ColdFlame(15)"
+        "Recipe": "IronOre(45),ColdFlame(15)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "EverlastingFlower",
@@ -1282,14 +1339,15 @@
         "Level": "100",
         "Desc": "A flower of impossible beauty that never wilts or fades",
         "Stat": "",
-        "StatInfo": "ATK(250),MagicEx(250)",
+        "StatInfo": "ATK(250),MagicEx(250),BurnChanceEx(25)",
+        "ExtraStatInfo": "",
         "Icon": "71574854293599",
         "Price": "6000",
         "SellPrice": "3000",
-        "ExtraStatInfo": "",
         "Tags": "Burn,Physical,Chest",
         "ArtifactId": "FireEmblem",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "FlameSword",
@@ -1300,13 +1358,14 @@
         "Desc": "This sword hums with the searing heat of a forge",
         "Stat": "",
         "StatInfo": "BurnChanceEx(50),ATK(100)",
+        "ExtraStatInfo": "",
         "Icon": "120301062302918",
         "Price": "3150",
         "SellPrice": "1575",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "FireEmblem",
-        "Recipe": "IronOre(100),ColdFlame(50)"
+        "Recipe": "IronOre(100),ColdFlame(50)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "ForestCrown",
@@ -1315,15 +1374,16 @@
         "Tier": "4",
         "Level": "65",
         "Desc": "A crown woven from ancient vines, hardened wood",
-        "Stat": "Whilst you still have Shield, become immune to getting inflicted by status effects by any external force. unless it is from a Piercing attack",
-        "StatInfo": "MaxHealthEx(775), MaxShieldEx(275)",
+        "Stat": "",
+        "StatInfo": "MaxHealthEx(775), MaxShieldEx(275),WardingEx(25)",
+        "ExtraStatInfo": "",
         "Icon": "93122935088756",
         "Price": "3900",
         "SellPrice": "1950",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "ForestDweller",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Gas",
@@ -1334,13 +1394,14 @@
         "Desc": "Compressed air that has been placed in an invisible magical vacuum, constantly expanding.",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "72926500395100",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Abyss",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped in Abyss"
     },
     {
         "ItemId": "GhostlyLantern",
@@ -1350,14 +1411,15 @@
         "Level": "65",
         "Desc": "Most creatures possess mana, which is released upon death",
         "Stat": "Whenever an enemy dies in battle, refresh all your cooldowns",
-        "StatInfo": "MagicEx(480)",
+        "StatInfo": "MagicEx(480),MaxManaEx(500)",
+        "ExtraStatInfo": "",
         "Icon": "124415234158517",
         "Price": "2925",
         "SellPrice": "1462",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "KitsuneFur",
@@ -1368,13 +1430,14 @@
         "Desc": "Luxuriously soft, this fur is said to have been shed by a mystical Kitsune",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "85247395338376",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Kitsune",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Kitsunes"
     },
     {
         "ItemId": "KitsuneGloves",
@@ -1385,13 +1448,14 @@
         "Desc": "These supple gloves are crafted from the magical fur of a Kitsune",
         "Stat": "",
         "StatInfo": "MagicEx(125),ATK(125),CriDMGEx(50)",
+        "ExtraStatInfo": "",
         "Icon": "112196279261865",
         "Price": "2025",
         "SellPrice": "1012",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "ForestDweller",
-        "Recipe": "SpikyFur(30),ColdFlame(8)"
+        "Recipe": "SpikyFur(30),ColdFlame(8)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Light",
@@ -1402,13 +1466,14 @@
         "Desc": "Light-light-light it up! -- by Camellia",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "117158543181766",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting,Abyss",
+        "Tags": "Abyss",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped in Abyss"
     },
     {
         "ItemId": "MetalPlate",
@@ -1419,13 +1484,14 @@
         "Desc": "A simple metal plate, it's not much, but it does the job",
         "Stat": "",
         "StatInfo": "MaxShieldEx(15)",
+        "ExtraStatInfo": "",
         "Icon": "124437417498647",
         "Price": "30",
         "SellPrice": "15",
-        "ExtraStatInfo": "",
         "Tags": "Chest",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Pumpkin",
@@ -1436,13 +1502,14 @@
         "Desc": "A round, orange gourd, often associated with autumn harvests and festive celebrations",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "88661715315954",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
         "Tags": "EventItem",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Event quests rewards"
     },
     {
         "ItemId": "RabbitFoot",
@@ -1453,13 +1520,14 @@
         "Desc": "It's unknown where this foot came from, or how it's still intact",
         "Stat": "",
         "StatInfo": "JumpEx(10)",
+        "ExtraStatInfo": "",
         "Icon": "95436986881993",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "",
         "Tags": "Chest,Exploration",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Shrimp",
@@ -1470,13 +1538,14 @@
         "Desc": " While often a simple food source, some rare varieties are said to possess unique magical properties when consumed",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "79636993093873",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting",
+        "Tags": "Market",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Purchase it in Venator Village Market"
     },
     {
         "ItemId": "SlimeKingCrown",
@@ -1486,14 +1555,15 @@
         "Level": "35",
         "Desc": "Legends once said that the crown of the Slime King has been passed through creature to creature for millenium, granting it's wearer the combined power of all previous wearers of the same species.",
         "Stat": "",
-        "StatInfo": "JumpEx(10),ATK(200),MaxHealthEx(1125),SpeedEx(2)",
+        "StatInfo": "ATK(200),MaxHealthEx(1125),LuckEx(30)",
+        "ExtraStatInfo": "",
         "Icon": "125756857548976",
         "Price": "2100",
         "SellPrice": "1250",
-        "ExtraStatInfo": "",
         "Tags": "BossDrop",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "StalkerLeaf",
@@ -1504,13 +1574,14 @@
         "Desc": "A single, unusually large leaf, remarkably resilient and unnaturally still, even in a breeze",
         "Stat": "",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "88578647712068",
         "Price": "45",
         "SellPrice": "22",
-        "ExtraStatInfo": "",
-        "Tags": "Crafting,Alchemy,Abyss",
+        "Tags": "Stalker",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": "Dropped by Stalkers"
     },
     {
         "ItemId": "LeafAxe",
@@ -1521,13 +1592,14 @@
         "Desc": "A sturdy axe with a blade shaped like a broad leaf, crafted from resilient forest wood, and sharp reinforced edges",
         "Stat": "",
         "StatInfo": "ATK(40),CriChanceEx(5),BleedChanceEx(2)",
+        "ExtraStatInfo": "",
         "Icon": "121025463935820",
         "Price": "300",
         "SellPrice": "150",
-        "ExtraStatInfo": "",
         "Tags": "Chest,Exploration",
         "ArtifactId": "ForestDweller",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "VolatileGem",
@@ -1537,14 +1609,15 @@
         "Level": "150",
         "Desc": "A raw, unpolished gem that pulsates with energy",
         "Stat": "Everytime you deal a status effect, deal an additional burst of <purple>15% Magic Damage</font>. and deal another burst of <purple>5% Magic Damage</font> once a status effect ends",
-        "StatInfo": "MagicEx(315), BurnChanceEx(10), PoisonChanceEx(10),BleedChanceEx(10)",
+        "StatInfo": "MagicEx(315), BurnChanceEx(10), PoisonChanceEx(10),BleedChanceEx(10),FreezeChanceEx(10),ShockingChanceEx(10)",
+        "ExtraStatInfo": "",
         "Icon": "73935413417734",
         "Price": "11250",
         "SellPrice": "5625",
-        "ExtraStatInfo": "",
         "Tags": "Crafting",
         "ArtifactId": "FireEmblem",
-        "Recipe": "Light(200),BeeStinger(100),SlimeGel(100),SpikyQuills(100),HealthyApple(100)"
+        "Recipe": "Light(200),BeeStinger(100),SlimeGel(100),SpikyQuills(100),HealthyApple(100)",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "FuriosoFist",
@@ -1555,13 +1628,14 @@
         "Desc": "Furioso is a musical term meaning gradually getting rage",
         "Stat": "",
         "StatInfo": "ForClass(Furioso),ATK(475)",
+        "ExtraStatInfo": "",
         "Icon": "128714575176870",
         "Price": "4800",
         "SellPrice": "2400",
-        "ExtraStatInfo": "",
         "Tags": "Statue",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "CastoriceReaper",
@@ -1572,13 +1646,14 @@
         "Desc": "Life and death are but a journey. When butterfly alights on the branch, what withers will bloom anew",
         "Stat": "The time for the promised departure is also nigh",
         "StatInfo": "ForClass(Execution),ATK(1000)",
+        "ExtraStatInfo": "",
         "Icon": "73725132010688",
         "Price": "75",
         "SellPrice": "37",
-        "ExtraStatInfo": "",
         "Tags": "Castorice",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "Bread",
@@ -1589,13 +1664,14 @@
         "Desc": "This is your breakfast",
         "Stat": "Recover <green>10%</font> of your max health",
         "StatInfo": "",
+        "ExtraStatInfo": "CD(3)",
         "Icon": "106010929981218",
         "Price": "15",
         "SellPrice": "7",
-        "ExtraStatInfo": "CD(3)",
         "Tags": "Heal",
         "ArtifactId": "Blessing",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     },
     {
         "ItemId": "WinterMageCosmetic",
@@ -1606,12 +1682,13 @@
         "Desc": "A stacking barrier that hardens on impact",
         "Stat": "Changes your looking",
         "StatInfo": "",
+        "ExtraStatInfo": "",
         "Icon": "85647986046139",
         "Price": "3000",
         "SellPrice": "1",
-        "ExtraStatInfo": "",
         "Tags": "EventLimited",
         "ArtifactId": "",
-        "Recipe": ""
+        "Recipe": "",
+        "ObtainMethod": ""
     }
 ]

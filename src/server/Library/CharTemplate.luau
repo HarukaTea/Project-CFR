@@ -34,7 +34,7 @@ local charStats = {
 
     CriChance = 1, --- percentage
     CriDMG = 100, --- percentage
-    DodgeChance = 1, --- percentage
+    DodgeChance = 0, --- percentage
 
 
     ClassUltProgress = 0,
@@ -48,11 +48,11 @@ local charStats = {
     BleedChance = 0, --- percentage
     FreezeChance = 0, --- percentage
     ShockingChance = 0, --- percentage
-    SlowChance = 0, --- percentage
 
-    Intensity = 100, --- percentage
-    Warding = 100, --- percentage
-    Luck = 100, --- percentage
+    RESBreak = 100, --- percentage
+    Intensity = 0, --- percentage
+    Warding = 0, --- percentage
+    Luck = 0, --- percentage
 
 
     --- combat related
@@ -95,8 +95,8 @@ local exAndExPowerList = {
     "MaxHealth", "HealthRegenWaitTime", "MaxShield", "MaxMana", "ShieldRegenWaitTime", "HealBonus", "RestoreBonus",
     "Speed", "Jump",
     "CriChance", "CriDMG", "DodgeChance", "MaxClassUltProgress", "ClassUltCharge", "ClassUltDMGBonus",
-    "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance", "SlowChance",
-    "Intensity", "Warding", "Luck",
+    "BurnChance", "PoisonChance", "BleedChance", "FreezeChance", "ShockingChance",
+    "Intensity", "Warding", "Luck", "RESBreak",
     "OrbSpawnTimesAtStart", "OrbSpawnTime", "OrbFadeTime", "OrbBounce",
 }
 for _, attr: string in exAndExPowerList do

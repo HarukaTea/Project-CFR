@@ -19,6 +19,17 @@ local Children = Fusion.Children
 local v2New = Vector2.new
 local fromScale = UDim2.fromScale
 
+
+
+local ICON_TYPES = {
+	Default = "Default",
+	Market = "CAIcon",
+	Chest = "Default",
+	Crafting = "CAIcon",
+}
+
+
+
 return function (scope: Fusion.Scope, props: {
     PromptObject: ProximityPrompt,
     LayoutOrder: number,
@@ -173,7 +184,7 @@ return function (scope: Fusion.Scope, props: {
             end)
         })
     else
-        local iconType = AssetBook.PromptIconsType[promptType]
+        local iconType = ICON_TYPES[promptType]
         iconType = iconType or "Default"
 
         if iconType == "CAIcon" then

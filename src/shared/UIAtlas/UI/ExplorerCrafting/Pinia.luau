@@ -33,7 +33,11 @@ export type Self = {
 
     CraftingMaterials: Fusion.Value<{ Instance }>,
     CraftingPrice: Fusion.Value<number>,
-    ItemListAbsSize: Fusion.Value<Vector2>
+    ItemListAbsSize: Fusion.Value<Vector2>,
+
+    IsCrafting: Fusion.Value<boolean>,
+    CurrentSelectedMaterial: Fusion.Value<string>,
+    AvailableItems: Fusion.Value<number>,
 }
 
 
@@ -73,15 +77,18 @@ return function (self: Self)
     end
     self.SortMethodList[1]:set(true)
 
+    self.AvailableItems = Value(0)
 
     self.CurrentSelectedItem = Value("")
     self.CurrentSelectedItemUniqueId = Value("")
-    self.CurrentCategory = Value("Crafting")
+    self.CurrentCategory = Value("Accessory")
 
     self.CraftingMaterials = Value({})
     self.CraftingPrice = Value(0)
     self.ItemListAbsSize = Value(Vector2.zero)
 
+    self.IsCrafting = Value(false)
+    self.CurrentSelectedMaterial = Value("")
 
 
     --// track item

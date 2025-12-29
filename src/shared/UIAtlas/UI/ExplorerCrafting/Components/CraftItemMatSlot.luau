@@ -13,6 +13,8 @@ return function (scope: Fusion.Scope, props: {
     ItemId: string,
     Items: Fusion.Value<{ IntConstrainedValue }>,
     Amount: number,
+
+    SelectedMaterialVal: Fusion.Value<string>,
 })
 
     local itemInfo = ItemBook:GetItemInfo(props.ItemId)
@@ -43,14 +45,25 @@ return function (scope: Fusion.Scope, props: {
         SelectionOrder = 0,
         LayoutOrder = if props.ItemId == "GOLD" then 233 else 1,
 
-        [Fusion.OnEvent("MouseEnter")] = function()
-            isSelecting:set(true)
-        end,
-        [Fusion.OnEvent("MouseLeave")] = function()
-            isSelecting:set(false)
-        end,
+
 
         [Children] = {
+            Components.HoverImageButton(scope, {
+                [Fusion.OnEvent("MouseEnter")] = function()
+                    isSelecting:set(true)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                    isSelecting:set(false)
+                end,
+                [Fusion.OnEvent("MouseButton1Click")] = function()
+                    props.SelectedMaterialVal:set(props.ItemId)
+                end,
+
+                [Children] = {
+                    Components.RoundUICorner(scope)
+                }
+            }),
+
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.05,
 
@@ -100,6 +113,41 @@ return function (scope: Fusion.Scope, props: {
                         BackgroundColor3 = Components.WHITE_COLOR,
 
                         Text = itemInfo.Name,
+                        TextColor3 = Components.BLACK_COLOR,
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+                            Components.UIPadding(scope, {
+                                PaddingLeft = UDim.new(0, 12),
+                                PaddingRight = UDim.new(0, 12),
+                                PaddingTop = UDim.new(0.05, 0),
+                                PaddingBottom = UDim.new(0.05, 0)
+                            })
+                        }
+                    })
+                }
+            }),
+
+
+            Components.Frame(scope, {
+                Name = "Tip",
+                AnchorPoint = Vector2.new(0.5, 1),
+                Position = UDim2.fromScale(0.5, 2.2),
+                Size = UDim2.fromScale(4, 0.45),
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(isSelecting)
+                end),
+
+                [Children] = {
+                    Components.TextLabel(scope, {
+                        Name = "ItemName",
+                        AnchorPoint = Vector2.new(0.5, 0),
+                        Position = UDim2.fromScale(0.5, 0),
+                        BackgroundTransparency = 0,
+                        BackgroundColor3 = Components.WHITE_COLOR,
+
+                        Text = "Click icon for more info",
                         TextColor3 = Components.BLACK_COLOR,
 
                         [Children] = {

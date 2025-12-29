@@ -77,13 +77,13 @@ return function (plr: Player)
                                         CellSize = UDim2.fromScale(0.25, 0.4)
                                     }),
 
-                                    Fusion.ForPairs(scope, AssetBook.GamepassIds.Donations, function(_, scope: Fusion.Scope, gamepass: string, gamepassId: number)
+                                    Fusion.ForPairs(scope, AssetBook.GamepassIds, function(_, scope: Fusion.Scope, gamepass: string, gamepassId: number)
                                         return gamepass, DevProductSlot(scope, {
                                             Type = "Gamepass",
                                             AssetId = gamepassId
                                         })
                                     end),
-                                    Fusion.ForPairs(scope, AssetBook.DevProductIds.Donations, function(_, scope: Fusion.Scope, devProduct: string, devProductId: number)
+                                    Fusion.ForPairs(scope, AssetBook.DevProductIds, function(_, scope: Fusion.Scope, devProduct: string, devProductId: number)
                                         return devProduct, DevProductSlot(scope, {
                                             Type = "Product",
                                             AssetId = devProductId

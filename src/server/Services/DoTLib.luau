@@ -162,9 +162,10 @@ function DoTLib:StackCancel()
         self.EffectSymbol:Destroy()
         self.EffectSymbol = nil
     end
-
-    for _, taskId: string in self.Tasks do
-        GlobalTimer:CancelTaskImmediately(taskId)
+    if self.Tasks then
+        for _, taskId: string in self.Tasks do
+            GlobalTimer:CancelTaskImmediately(taskId)
+        end
     end
     self.Tasks = nil
 

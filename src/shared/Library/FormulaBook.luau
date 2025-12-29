@@ -10,7 +10,9 @@ local formulas = {
     PLAYER_TALENT_POINT_PER_LEVEL = 1,
     PLAYER_MAX_DEX_POINTS = 50,
 
-    EXPEvent = 2,
+    MAX_ITEM_LIMIT = 9999,
+
+    EXPEvent = 1,
 
 
     PlayerLevelCurveCal = function(props: {
@@ -147,7 +149,7 @@ if game.GameId ~= AssetBook.CFUniverseId_Main then
     formulas.EXPEvent = 80
 end
 if formulas.EXPEvent > 1 then
-    warn("[WARNING] EXP Event Enabled")
+    print("EXP Event Enabled")
 end
 
 

@@ -35,6 +35,8 @@ export type ClassAttackLibClass = {
         DMGType: "DMG" | "Magic",
         Attacker: string
     }) -> nil,
+    CalCastingTime: (self: ClassAttackLibClass, char: Model, castingTime: number) -> number,
+    CalRESBreak: (self: ClassAttackLibClass, char: Model, amount: number) -> number,
 
 
     _AddClassUltCharge: (plr: Player, amount: number) -> nil,
@@ -92,6 +94,10 @@ local function _damageDealMiddler(char: Model, targeting: Model, dmgProps: {
     if char:GetAttribute("ForestDweller3Bonus") then
         dmg = math.ceil(dmg * 1.3)
     end
+
+    --// enemy dmg taken bonus
+    local dmgTakenBonus = targeting:GetAttribute("DMGTakenBonus") or 100
+    dmg = math.ceil(dmg * dmgTakenBonus / 100)
 
     return dmg
 end
@@ -817,6 +823,27 @@ end
 --// Private Methods
 
 
+function ClassAttackLib:CalCastingTime(char: Model, castingTime: number) : number
+    local intensity = char:GetAttribute("Intensity") or 0
+    local reduceTime = (castingTime * (intensity / 100))
+
+    castingTime -= reduceTime
+    castingTime = math.max(1, castingTime)
+
+    return castingTime
+end
+
+
+function ClassAttackLib:CalRESBreak(char: Model, amount: number) : number
+    local resBreak = char:GetAttribute("RESBreak") or 100
+
+    amount = amount * (resBreak / 100)
+    amount = math.ceil(amount)
+
+    return amount
+end
+
+
 function ClassAttackLib:CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
     ForceMaxDMG: boolean?,
     ForceDMG: number?,
@@ -911,6 +938,60 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
     targetingHumanoid:TakeDamage(dmgProps.DMG)
 
 
+    --- resistence bar
+    if targeting:HasTag("BossEnemyEntity")
+        and not targeting:GetAttribute("IsInRESBreakStage") then
+
+        local breakAmount = ClassAttackLib:CalRESBreak(char, 15)
+        HarukaLib:AddAttr(targeting, "BreakProgress", breakAmount)
+
+        local curProgress = targeting:GetAttribute("BreakProgress") or 0
+        local maxProgress = targeting:GetAttribute("TotalBreakProgress") or 100
+        if curProgress >= maxProgress then
+            targeting:SetAttribute("IsInRESBreakStage", true)
+
+            HarukaLib:AddAttr(targeting, "DMGTakenBonusExPower", 1)
+
+            local BREAK_DURATION = 6
+            Promise.new(function()
+                local numVal = Instance.new("NumberValue")
+                numVal.Value = targeting:GetAttribute("TotalBreakProgress") + 50
+                numVal.Parent = targeting
+
+                local tweenInfo = TweenInfo.new(BREAK_DURATION)
+
+                HarukaLib:CreateTween(numVal, tweenInfo, {
+                    Value = 0
+                }):Play()
+                HarukaLib:Hydrate(numVal, {
+                    ["Prop-Value"] = function(val: number)
+                        targeting:SetAttribute("BreakProgress", val)
+                    end
+                })
+
+            end):catch(function() end)
+
+            ServerLib:ShowText(targeting, "STUNNED!")
+
+            local symbol = Instance.new("BoolValue")
+            symbol.Name = "ShockingSymbol"
+            symbol.Value = true
+            symbol.Parent = targeting
+            Debris:AddItem(symbol, BREAK_DURATION)
+
+
+            Promise.delay(BREAK_DURATION):andThen(function()
+                targeting:SetAttribute("IsInRESBreakStage", false)
+                targeting:SetAttribute("BreakProgress", 0)
+                HarukaLib:AddAttr(targeting, "DMGTakenBonusExPower", -1)
+
+                if symbol then symbol:Destroy() end
+
+            end):catch(function() end)
+        end
+    end
+
+
     Promise.try(function()
         local player = Players:GetPlayerFromCharacter(char)
         if not player then return end
@@ -920,9 +1001,7 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
         ServerLib:ShowNumber(targeting, dmgProps.DMG, ClassBook[class].Color)
         ServerLib:ApplyHitStatus(targeting)
 
-	end):catch(function(err)
-        if RunService:IsStudio() then warn(tostring(err)) end
-    end)
+	end):catch(function() end)
 
     for _, event in char:QueryDescendants("BindableEvent#EnemyGotHit") do
         RunService.Heartbeat:Wait()

@@ -99,8 +99,10 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if levelId == "Abyss" then
                         Events.Abyss_AfterEndAction_S.Fire("Restart")
-
                         self.AbyssEndActionsClicked:set(true)
+                        task.delay(5, function()
+                            self.AbyssEndActionsClicked:set(false)
+                        end)
 
                     elseif levelId == "Dungeon" then
 
@@ -124,6 +126,9 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
                     if levelId == "Abyss" then
                         Events.Abyss_AfterEndAction_S.Fire("Leave")
                         self.AbyssEndActionsClicked:set(true)
+                        task.delay(5, function()
+                            self.AbyssEndActionsClicked:set(false)
+                        end)
 
                     elseif levelId == "Dungeon" then
 

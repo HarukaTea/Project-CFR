@@ -54,7 +54,7 @@ return function (scope: Fusion.Scope, props: {
                 ["Attr-Level"] = function(val: number)
                     level:set(val)
                 end,
-                ["Attr-DMGMultiplier"] = function(val: number)
+                ["Attr-DMGTakenBonus"] = function(val: number)
                     DMGMultiplier:set(val)
                 end,
                 ["Attr-BreakProgress"] = function(val: number)
@@ -241,6 +241,7 @@ return function (scope: Fusion.Scope, props: {
                                 Size = UDim2.fromScale(1, 1.5),
                                 ZIndex = 3,
                                 TextColor3 = Color3.fromRGB(255, 255, 127),
+                                TextXAlignment = Enum.TextXAlignment.Right,
 
                                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return `x{use(DMGMultiplier)}%`

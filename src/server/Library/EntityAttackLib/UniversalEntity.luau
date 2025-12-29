@@ -45,15 +45,14 @@ end
 
 
 
-UniversalEntity.InitTemplate = function(_, self: Types.EntityAttackObj, entity: Model)
-    self.EntityId = entity.Name
-    self.Entity = entity
-
-    self.Add, self.Empty = HarukaLib.Bin()
+function UniversalEntity:InitTemplate(t: Types.EntityAttackObj, entity: Model)
+    t.EntityId = entity.Name
+    t.Entity = entity
+    t.Add, t.Empty = HarukaLib.Bin()
 end
 
 
-UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ())
+function UniversalEntity:InitResolveObj(entity: Model, resolveObj: () -> ())
     local function _checkIsValid()
         if not ServerLib:IsModelValid(entity) then
             resolveObj()
@@ -64,7 +63,6 @@ UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ()
             pcall(function()
                 entity.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
             end)
-
             resolveObj()
         end
     end)
@@ -73,17 +71,17 @@ UniversalEntity.InitResolveObj = function(_, entity: Model, resolveObj: () -> ()
 end
 
 
-UniversalEntity.InitAttackTables = function(_, self: Types.EntityAttackObj)
-    self.Anims = {}
-    self.AttackFuncs = {}
-    self.ComboAttackFuncs = {}
+function UniversalEntity:InitAttackTables(t: Types.EntityAttackObj)
+    t.Anims = {}
+    t.AttackFuncs = {}
+    t.ComboAttackFuncs = {}
 end
 
 
-UniversalEntity.InitAttackTasks = function(_, self: Types.EntityAttackObj, resolveObj: () -> ())
-    table.insert(self.Promises, Promise.try(function()
+function UniversalEntity:InitAttackTasks(t: Types.EntityAttackObj, resolveObj: () -> ())
+    table.insert(t.Promises, Promise.try(function()
         while RunService.Stepped:Wait() do
-            if UniversalEntity:CheckCombatState(self.Entity) == false then break end
+            if UniversalEntity:CheckCombatState(t.Entity) == false then break end
         end
 
         resolveObj()
@@ -92,46 +90,50 @@ UniversalEntity.InitAttackTasks = function(_, self: Types.EntityAttackObj, resol
     end))
 
 
-    local lastFunc = 0
-    local lastFuncCount = 0
-
     local RNG = Random.new()
 
-    while RunService.Stepped:Wait() do
-        if UniversalEntity:CheckCombatState(self.Entity) == false then break end
+    local attackFuncPromise: Promise.TypedPromise<any> = nil
 
-        local rTarget = UniversalEntity:GetRandomTarget(self.Entity)
-        local rFunc = RNG:NextInteger(1, #self.AttackFuncs)
-
-        if rFunc ~= lastFunc then
-            lastFuncCount = 0
-        else
-            lastFuncCount += 1
-            if lastFuncCount >= 3 then
-                rFunc = RNG:NextInteger(1, #self.AttackFuncs)
-
-                local retry = 0
-                while rFunc ~= lastFunc and retry <= 3 do
-                    rFunc = RNG:NextInteger(1, #self.AttackFuncs)
-                    if rFunc == lastFunc then
-                        retry += 1
-                    end
-                    RunService.Stepped:Wait()
-                end
+    t.Add(t.Entity.ChildAdded:Connect(function(child: Instance)
+        if child:IsA("BoolValue") and child.Name == "ShockingSymbol" then
+            if attackFuncPromise then
+                attackFuncPromise:cancel()
+                attackFuncPromise = nil
             end
         end
-        lastFunc = rFunc
+    end))
+
+    while RunService.Stepped:Wait() do
+        if UniversalEntity:CheckCombatState(t.Entity) == false then break end
+        if UniversalEntity:CheckShockingState(t.Entity) then
+            if attackFuncPromise then
+                attackFuncPromise:cancel()
+                attackFuncPromise = nil
+            end
+            continue
+        end
+
+        local rTarget = UniversalEntity:GetRandomTarget(t.Entity)
+        local rFunc = RNG:NextInteger(1, #t.AttackFuncs)
 
         if not ServerLib:IsCharValid(rTarget) then continue end
 
-
-        self.AttackFuncs[rFunc](rTarget)
-        if #self.ComboAttackFuncs > 0 then
-            RunService.Heartbeat:Wait()
-
-            local rComboFunc = RNG:NextInteger(1, #self.ComboAttackFuncs)
-            self.ComboAttackFuncs[rComboFunc](rTarget, rFunc, RNG:NextInteger(1, 2))
+        if attackFuncPromise then
+            attackFuncPromise:cancel()
+            attackFuncPromise = nil
         end
+        attackFuncPromise = Promise.try(function()
+            t.AttackFuncs[rFunc](rTarget)
+
+            if #t.ComboAttackFuncs > 0 then
+                RunService.Heartbeat:Wait()
+
+                local rComboFunc = RNG:NextInteger(1, #t.ComboAttackFuncs)
+                t.ComboAttackFuncs[rComboFunc](rTarget, rFunc, RNG:NextInteger(1, 2))
+            end
+        end)
+        attackFuncPromise:await()
+        attackFuncPromise = nil
 
         wait()
     end
@@ -139,7 +141,7 @@ end
 
 
 --- combat related functions
-UniversalEntity.GetTargets = function(_, entity: Model) : { Player }
+function UniversalEntity:GetTargets(entity: Model) : { Player }
     local players = {}
     for _, targetingSymbol: ObjectValue in entity.TargetingList:GetChildren() do
         table.insert(players, Players:GetPlayerFromCharacter(targetingSymbol.Value))
@@ -149,7 +151,7 @@ UniversalEntity.GetTargets = function(_, entity: Model) : { Player }
 end
 
 
-UniversalEntity.GetNearbyPlayers = function(_, entity: Model) : { Player }
+function UniversalEntity:GetNearbyPlayers(entity: Model) : { Player }
     local nearbyChars = _getCharsByRadius(entity.PrimaryPart.Position, 486)
     local players = {}
 
@@ -161,7 +163,7 @@ UniversalEntity.GetNearbyPlayers = function(_, entity: Model) : { Player }
 end
 
 
-UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, projectilePos: Vector3 | CFrame, entity: Model)
+function UniversalEntity:EditProjectileList(projectileUniqueId: string, projectilePos: Vector3 | CFrame, entity: Model)
     if typeof(projectilePos) == "CFrame" then
         projectilePos = projectilePos.Position
     end
@@ -184,7 +186,7 @@ UniversalEntity.EditProjectileList = function(_, projectileUniqueId: string, pro
 end
 
 
-UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
+function UniversalEntity:CheckCombatState(entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
     end
@@ -196,7 +198,13 @@ UniversalEntity.CheckCombatState = function(_, entity: Model) : (boolean, "NoTar
 end
 
 
-UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
+function UniversalEntity:CheckShockingState(entity: Model) : boolean
+    return entity:FindFirstChild("ShockingSymbol") ~= nil
+end
+
+
+
+function UniversalEntity:GetRandomTarget(entity: Model) : Model
     local targetingList = entity.TargetingList:GetChildren()
     local rIndex = Random.new():NextInteger(1, #targetingList)
 
@@ -204,11 +212,21 @@ UniversalEntity.GetRandomTarget = function(_, entity: Model) : Model
 end
 
 
-UniversalEntity.DeadTask = function(_, self: Types.EntityAttackObj)
-    self.Died = true
-    self.Empty()
+function UniversalEntity:DeadTask(t: Types.EntityAttackObj)
+    t.Died = true
+    t.Empty()
 end
 
+
+function UniversalEntity:InitFlyingEssentials(entity: Model, offset: number)
+    entity.PrimaryPart.CFrame *= CFrame.new(0, offset, 0)
+
+    local linearVel = Instance.new("LinearVelocity")
+    linearVel.ForceLimitsEnabled = false
+    linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("CF_RootNode")
+    linearVel.VectorVelocity = Vector3.zero
+    linearVel.Parent = entity.PrimaryPart
+end
 
 
 return UniversalEntity

@@ -30,10 +30,11 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
         Char = char
     })
     if not check then return 0 end
+    if not extraInfo.CostManaFunc(char) then return 0 end
 
 
     local uniqueId = HttpService:GenerateGUID(false)
-    local castTime = 2
+    local castTime = ClassAttackLib:CalCastingTime(char, 2)
 
 
     Events.OpenCastTimeBar_S.Fire(player, castTime)

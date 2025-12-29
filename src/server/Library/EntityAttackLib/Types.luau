@@ -31,6 +31,7 @@ export type UniversalEntity = {
     InitResolveObj: (self: UniversalEntity, entity: Model, resolveObj: () -> ()) -> nil,
     InitAttackTables: (self: UniversalEntity, entityAtkObj: EntityAttackObj) -> nil,
     InitAttackTasks: (self: UniversalEntity, entityAtkObj: EntityAttackObj, resolveObj: () -> nil) -> nil,
+    InitFlyingEssentials: (self: UniversalEntity, entity: Model, offset: number) -> nil,
 
 
     GetTargets: (self: UniversalEntity, entity: Model) -> { Player },
@@ -40,6 +41,7 @@ export type UniversalEntity = {
     EditProjectileList: (self: UniversalEntity, projectileUniqueId: string, projectilePos: Vector3 | CFrame, entity: Model) -> nil,
 
     CheckCombatState: (self: UniversalEntity, entity: Model) -> (boolean, "NoTarget" | "Dead" | "Combating"),
+    CheckShockingState: (self: UniversalEntity, entity: Model) -> boolean,
 
     DeadTask: (self: UniversalEntity, entityAtkObj: EntityAttackObj) -> nil
 }

@@ -279,13 +279,19 @@ table.insert(CriRPGLib.Funcs, function()
                 orbPos *= CFrame.new(extraProps.Offset)
             end
 
+            local orbUniStyle = HarukaLib:RollLoot({
+                ["Heal"] = 10,
+                ["ATK"] = 5,
+                ["Normal"] = 100 - 10 - 5
+            })
+
 
             ServerTable.OrbSymbols[charUniqueId][orbUniqueId] = {
                 UniqueId = orbUniqueId,
                 OrbId = orb.Name,
                 OrbStyle = orb:GetAttribute("Style"),
                 OrbSubStyle = orb:GetAttribute("SubStyle"),
-                OrbUniStyle = orb:GetAttribute("UniStyle"),
+                OrbUniStyle = orbUniStyle,
                 OrbDuration = orbFadeTime,
                 OrbLocation = orbPos,
                 Owner = char.Name,
@@ -298,7 +304,8 @@ table.insert(CriRPGLib.Funcs, function()
                 OrbId = orb.Name,
                 OrbUniqueId = orbUniqueId,
                 OrbDuration = orbFadeTime,
-                OrbLocationPos = orbPos.Position
+                OrbLocationPos = orbPos.Position,
+                OrbUniStyle = orbUniStyle
             })
 
 
@@ -329,6 +336,11 @@ table.insert(CriRPGLib.Funcs, function()
             orbSpawnAdd(task.spawn(function()
                 while char:GetAttribute("IsInCombat") do
                     local orbSpawnTime = char:GetAttribute("OrbSpawnTime") or 3
+                    local intensity = char:GetAttribute("Intensity") or 0
+                    local reducedTime = orbSpawnTime * (intensity / 100)
+
+                    orbSpawnTime -= reducedTime
+                    orbSpawnTime = math.max(1, orbSpawnTime)
 
                     wait(orbSpawnTime)
                     if not char:GetAttribute("IsInCombat") then break end
@@ -482,6 +494,8 @@ table.insert(CriRPGLib.Funcs, function()
         char.Humanoid.WalkSpeed = final
     end
     Add(HarukaLib:Hydrate(char, {
+        ["Attr-BaseSpeed"] = _updateSpeed,
+        ["Attr-BaseSpeedCombat"] = _updateSpeed,
         ["Attr-SpeedEx"] = _updateSpeed,
         ["Attr-SpeedExPower"] = _updateSpeed,
         ["Attr-IsInCombat"] = _updateSpeed
@@ -499,6 +513,7 @@ table.insert(CriRPGLib.Funcs, function()
         char.Humanoid.JumpPower = final
     end
     Add(HarukaLib:Hydrate(char, {
+        ["Attr-BaseJumpPower"] = _updateJump,
         ["Attr-JumpEx"] = _updateJump,
         ["Attr-JumpExPower"] = _updateJump
     }))
@@ -606,6 +621,7 @@ table.insert(CriRPGLib.Funcs, function()
         end
     end
     Add(HarukaLib:Hydrate(char, {
+        ["Attr-BaseMaxHealth"] = _updateHealth,
         ["Attr-MaxHealthEx"] = _updateHealth,
         ["Attr-MaxHealthExPower"] = _updateHealth,
     }))
@@ -645,6 +661,32 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 
 
+    local function _updateMana()
+        local baseMana = char:GetAttribute("BaseMaxMana") :: number
+        local manaBuff = char:GetAttribute("MaxManaEx") :: number
+        local manaExBuff = char:GetAttribute("MaxManaExPower") :: number
+
+        local final = math.ceil((baseMana + manaBuff) * manaExBuff)
+
+        char:SetAttribute("MaxMana", final)
+
+
+        if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
+            char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
+        end
+        if char:GetAttribute("Mana") > char:GetAttribute("MaxMana") then
+            char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
+        end
+        if char:GetAttribute("Mana") < 0 then
+            char:SetAttribute("Mana", 0)
+        end
+    end
+    Add(HarukaLib:Hydrate(char, {
+        ["Attr-BaseMaxMana"] = _updateMana,
+        ["Attr-MaxManaEx"] = _updateMana,
+        ["Attr-MaxManaExPower"] = _updateMana,
+    }))
+
 
     local function _hpCheck()
         if char.Humanoid.Health > char.Humanoid.MaxHealth then
@@ -652,7 +694,8 @@ table.insert(CriRPGLib.Funcs, function()
         end
     end
     Add(HarukaLib:Hydrate(char.Humanoid, {
-        ["Prop-Health"] = _hpCheck
+        ["Prop-Health"] = _hpCheck,
+        ["Prop-MaxHealth"] = _hpCheck,
     }))
 
 
@@ -665,7 +708,22 @@ table.insert(CriRPGLib.Funcs, function()
         end
     end
     Add(HarukaLib:Hydrate(char, {
-        ["Attr-Shield"] = _shieldCheck
+        ["Attr-Shield"] = _shieldCheck,
+        ["Attr-MaxShield"] = _shieldCheck,
+    }))
+
+
+    local function _manaCheck()
+        if char:GetAttribute("Mana") > char:GetAttribute("MaxMana") then
+            char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
+        end
+        if char:GetAttribute("Mana") < 0 then
+            char:SetAttribute("Mana", 0)
+        end
+    end
+    Add(HarukaLib:Hydrate(char, {
+        ["Attr-Mana"] = _manaCheck,
+        ["Attr-MaxMana"] = _manaCheck,
     }))
 
 
@@ -694,11 +752,39 @@ table.insert(CriRPGLib.Funcs, function()
 
 
 
+    --// track chance stats (clamp)
+    local whiteList = { "Intensity", "Warding", "Luck" }
+    for stat, _ in HarukaLib.TableUtils.DeepCopy(CharTemplate) do
+        if not string.find(stat, "Chance") then continue end
+        if string.find(stat, "Ex") then continue end
+        if string.find(stat, "Base") then continue end
+
+        local function __track()
+            local chance = char:GetAttribute(stat)
+            if chance < 0 then char:SetAttribute(stat, 0) end
+            if chance > 100 then char:SetAttribute(stat, 100) end
+        end
+        Add(HarukaLib:Hydrate(char, {
+            ["Attr-"..stat] = __track
+        }))
+    end
+    for _, stat in whiteList do
+        local function __track()
+            local chance = char:GetAttribute(stat)
+            if chance < 0 then char:SetAttribute(stat, 0) end
+            if chance > 100 then char:SetAttribute(stat, 100) end
+        end
+        Add(HarukaLib:Hydrate(char, {
+            ["Attr-"..stat] = __track
+        }))
+    end
+
+
 
     --// track rest stats
     local blackList = {
         "BaseMagic", "BaseMinDMG", "BaseMaxDMG", "BaseSpeed", "BaseSpeedCombat",
-        "BaseJumpPower", "BaseMaxShield", "BaseCriChance"
+        "BaseJumpPower", "BaseMaxShield", "BaseCriChance", "BaseMaxMana"
     }
     for stat, _ in HarukaLib.TableUtils.DeepCopy(CharTemplate) do
         if table.find(blackList, stat) then continue end
@@ -789,9 +875,6 @@ table.insert(CriRPGLib.Funcs, function()
         if charId ~= char.Name then return end
         if part == "Shield" then _shieldRecover() end
     end))
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-Level"] = _shieldRecover
-    }))
 end)
 
 

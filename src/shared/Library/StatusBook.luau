@@ -117,4 +117,15 @@ return {
         Icon = "rbxassetid://2965862892",
         Color = Color3.fromRGB(255, 100, 100)
     },
+
+
+    --// orb uni styles
+    Heal = {
+        Icon = "rbxassetid://104142948728530",
+        IconColor = Color3.fromHex('#2ed573')
+    },
+    ATK = {
+        Icon = "rbxassetid://2965862892",
+        IconColor = Color3.fromRGB(255, 255, 255)
+    },
 }

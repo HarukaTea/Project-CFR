@@ -101,6 +101,24 @@ table.insert(CharLib.Funcs, function()
 end)
 
 
+table.insert(CharLib.Funcs, function()
+    Add(HarukaLib.Clock(0.5, function()
+		if not plr then return end
+		if not ServerLib:IsModelValid(char) then return end
+		if char:GetAttribute("IsInCombat") then return end
+
+
+        local regionIn = HarukaLib:IsInRegion(char.PrimaryPart.Position, CollectionService:GetTagged("ZoneEntity"))
+        if regionIn then
+            if char:GetAttribute("AreaIn") == regionIn.Name then return end
+
+            plr:SetAttribute("LastSeen", regionIn.Name)
+            char:SetAttribute("AreaIn", regionIn.Name)
+        end
+    end))
+end)
+
+
 
 function CharLib:_TriggerRagdoll()
 	local humanoid = char.Humanoid :: Humanoid
@@ -172,24 +190,6 @@ function CharLib:_TriggerRagdoll()
 
 	humanoid.AutoRotate = false
 end
-
-
-table.insert(CharLib.Funcs, function()
-    Add(HarukaLib.Clock(0.5, function()
-		if not plr then return end
-		if not ServerLib:IsModelValid(char) then return end
-		if char:GetAttribute("IsInCombat") then return end
-
-
-        local regionIn = HarukaLib:IsInRegion(char.PrimaryPart.Position, CollectionService:GetTagged("ZoneEntity"))
-        if regionIn then
-            if char:GetAttribute("AreaIn") == regionIn.Name then return end
-
-            plr:SetAttribute("LastSeen", regionIn.Name)
-            char:SetAttribute("AreaIn", regionIn.Name)
-        end
-    end))
-end)
 
 
 CharLib:Init()

@@ -52,9 +52,6 @@ end
 
 return function(scope: Fusion.Scope, props: {
     ItemSymbol: IntConstrainedValue,
-    EquippingItems: Fusion.Value<{ StringValue }>,
-
-    IsBackpack: boolean?,
 
     CurrentSelectedItemUniqueId: Fusion.Value<string>,
     CurrentSelectedItem: Fusion.Value<string>,
@@ -68,46 +65,9 @@ return function(scope: Fusion.Scope, props: {
     if not info then return nil end
 
     local isSelecting = Value(false)
-    local isEquipping = Value(false)
-
 
     local amount = Value(1)
-    local isNew = Value(false)
-    local isFav = Value(false)
-    local isLocked = Value(false)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
-
-
-    table.insert(scope, HarukaLib:Hydrate(props.ItemSymbol, {
-        ["Prop-Value"] = function(val: number)
-            amount:set(val)
-        end,
-        ["Attr-IsNew"] = function(val: boolean)
-            isNew:set(val)
-        end,
-        ["Attr-IsFav"] = function(val: boolean)
-            isFav:set(val)
-        end,
-        ["Attr-IsLocked"] = function(val: boolean)
-            isLocked:set(val)
-        end
-    }))
-
-
-    local equippingObserver = Fusion.Observer(scope, props.EquippingItems)
-    equippingObserver:onBind(function()
-        local found = false
-
-        for _, equipping: StringValue in Fusion.peek(props.EquippingItems) do
-            if (equipping:GetAttribute("HarukaUniqueId")) == props.ItemSymbol:GetAttribute("HarukaUniqueId") then
-                found = true
-                break
-            end
-        end
-
-        isEquipping:set(found)
-    end)
-
 
 
     return Components.Frame(scope, {
@@ -117,14 +77,6 @@ return function(scope: Fusion.Scope, props: {
 
         LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
             local priority = 3
-
-            if use(isFav) and props.IsBackpack then
-                priority = 0
-            elseif use(isEquipping) then
-                priority = 1
-            elseif use(isNew) then
-                priority = 2
-            end
 
             local T5Sort = use(props.CurrentSortOrderList[1])
             local T1Sort = use(props.CurrentSortOrderList[2])
@@ -174,8 +126,6 @@ return function(scope: Fusion.Scope, props: {
 
                     props.CurrentSelectedItemUniqueId:set(uniqueId)
                     props.CurrentSelectedItem:set(props.ItemSymbol.Name)
-
-                    props.ItemSymbol:SetAttribute("IsNew", false)
                 end
             }),
 
@@ -186,59 +136,6 @@ return function(scope: Fusion.Scope, props: {
                 SizeConstraint = Enum.SizeConstraint.RelativeXX,
 
                 Image = info.Icon,
-            }),
-
-            Components.Frame(scope, {
-                Name = "IsFav",
-                AnchorPoint = Vector2.zero,
-                Position = UDim2.fromScale(0.05, 0.05),
-                Size = UDim2.fromScale(0.2, 0.2),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                BackgroundColor3 = Color3.fromRGB(),
-                BackgroundTransparency = 0,
-
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(isFav)
-                end),
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.ImageLabel(scope, {
-                        Name = "Star",
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        Size = UDim2.fromScale(0.7, 0.7),
-                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                        Image = "rbxassetid://114302766654339",
-                        ImageColor3 = Color3.fromRGB(255, 204, 50)
-                    })
-                }
-            }),
-            Components.Frame(scope, {
-                Name = "IsLocked",
-                AnchorPoint = Vector2.one,
-                Position = UDim2.fromScale(0.95, 0.7),
-                Size = UDim2.fromScale(0.2, 0.2),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                BackgroundColor3 = Color3.fromRGB(),
-                BackgroundTransparency = 0,
-
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(isLocked)
-                end),
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.ImageLabel(scope, {
-                        Name = "Lock",
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
-                        Size = UDim2.fromScale(0.7, 0.7),
-                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                        Image = "rbxassetid://118831261287451",
-                        ImageColor3 = Color3.fromRGB(231, 76, 60)
-                    })
-                }
             }),
 
             Components.TextLabel(scope, {
@@ -265,47 +162,6 @@ return function(scope: Fusion.Scope, props: {
                     Components.UICorner(scope, { CornerRadius = UDim.new(0.25, 0) })
                 }
             }),
-
-            Components.TextLabel(scope, {
-                Name = "Equipping",
-                AnchorPoint = Vector2.xAxis,
-                Position = UDim2.fromScale(1.1, -0.1),
-                Size = UDim2.fromScale(0.3, 0.3),
-                SizeConstraint = Enum.SizeConstraint.RelativeXX,
-                BackgroundTransparency = 0,
-                BackgroundColor3 = Color3.fromHex('#40407a'),
-
-                Text = "E",
-
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(isEquipping)
-                end),
-
-                [Children] = {
-                    Components.RoundUICorner(scope)
-                }
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "IsNew",
-                AnchorPoint = Vector2.zero,
-                Position = UDim2.fromScale(-0.1, -0.1),
-                Size = UDim2.fromScale(0.25, 0.25),
-                SizeConstraint = Enum.SizeConstraint.RelativeXX,
-                BackgroundTransparency = 0,
-                BackgroundColor3 = Color3.fromRGB(195, 0, 0),
-
-                Text = "!",
-                FontFace = Font.fromName("Montserrat", Enum.FontWeight.ExtraBold),
-
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(isNew)
-                end),
-
-                [Children] = {
-                    Components.RoundUICorner(scope)
-                }
-            })
         }
     })
 end

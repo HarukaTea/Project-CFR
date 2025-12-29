@@ -92,8 +92,10 @@ return function (self: Self)
     }
 
     local statsList = {
-        "MAGIC", "HP", "SHIELD", "SPD", "JMP",
-        "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE",
+        "MAGIC", "HP", "SHIELD", "MANA", "SPD", "JMP",
+        "CRIT CHANCE", "CRIT DMG", "DODGE CHANCE", "BURN CHANCE", "BLEED CHANCE",
+        "POISON CHANCE", "FREEZE CHANCE", "STUN CHANCE",
+        "INTENSITY", "WARDING", "LUCK",
     }
     local baseStatsList = {}
     for _, stat: string in statsList do
@@ -185,6 +187,9 @@ return function (self: Self)
         ["Attr-MaxShield"] = function(val: number)
             _setVal("SHIELD", val)
         end,
+        ["Attr-MaxMana"] = function(val: number)
+            _setVal("MANA", val)
+        end,
         ["Attr-CriChance"] = function(val: number)
             _setVal("CRIT CHANCE", val)
         end,
@@ -196,7 +201,29 @@ return function (self: Self)
         end,
         ["Attr-BurnChance"] = function(val: number)
             _setVal("BURN CHANCE", val)
-        end
+        end,
+        ["Attr-BleedChance"] = function(val: number)
+            _setVal("BLEED CHANCE", val)
+        end,
+        ["Attr-PoisonChance"] = function(val: number)
+            _setVal("POISON CHANCE", val)
+        end,
+        ["Attr-FreezeChance"] = function(val: number)
+            _setVal("FREEZE CHANCE", val)
+        end,
+        ["Attr-ShockingChance"] = function(val: number)
+            _setVal("STUN CHANCE", val)
+        end,
+
+        ["Attr-Warding"] = function(val: number)
+            _setVal("WARDING", val)
+        end,
+        ["Attr-Luck"] = function(val: number)
+            _setVal("LUCK", val)
+        end,
+        ["Attr-Intensity"] = function(val: number)
+            _setVal("INTENSITY", val)
+        end,
     }))
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-BaseMinDMG"] = function(val: number)
@@ -216,6 +243,9 @@ return function (self: Self)
         ["Attr-BaseMaxShield"] = function(val: number)
             _setBaseVal("SHIELD", val)
         end,
+        ["Attr-BaseMaxMana"] = function(val: number)
+            _setBaseVal("MANA", val)
+        end,
         ["Attr-BaseCriChance"] = function(val: number)
             _setBaseVal("CRIT CHANCE", val)
         end,
@@ -227,7 +257,29 @@ return function (self: Self)
         end,
         ["Attr-BaseBurnChance"] = function(val: number)
             _setBaseVal("BURN CHANCE", val)
-        end
+        end,
+        ["Attr-BaseBleedChance"] = function(val: number)
+            _setBaseVal("BLEED CHANCE", val)
+        end,
+        ["Attr-BasePoisonChance"] = function(val: number)
+            _setBaseVal("POISON CHANCE", val)
+        end,
+        ["Attr-BaseFreezeChance"] = function(val: number)
+            _setBaseVal("FREEZE CHANCE", val)
+        end,
+        ["Attr-BaseShockingChance"] = function(val: number)
+            _setBaseVal("STUN CHANCE", val)
+        end,
+
+        ["Attr-BaseWarding"] = function(val: number)
+            _setBaseVal("WARDING", val)
+        end,
+        ["Attr-BaseLuck"] = function(val: number)
+            _setBaseVal("LUCK", val)
+        end,
+        ["Attr-BaseIntensity"] = function(val: number)
+            _setBaseVal("INTENSITY", val)
+        end,
     }))
 
 

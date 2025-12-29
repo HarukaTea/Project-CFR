@@ -21,9 +21,6 @@ return {
     ---@params: `player: Player, storeName: string`
     RToAwardLeaderboardRank = Signal.new(),
 
-    ---@params: `player: Player, data: {AbyssId: number}`
-    RToChallengeAbyss = Signal.new(),
-
     ---@params: `playerName: string`
     PlayerDied = Signal.new(),
 

@@ -2,7 +2,7 @@
 export type ClassJSON = {
     Icon: string,
     Color: Color3,
-    Type: string,
+    Type: "DMG" | "Magic",
 
     Skills: {
         UltSkill_WithoutRecolor: boolean?
@@ -39,7 +39,9 @@ return {
         },
 
 
-        BaseStats = {}
+        BaseStats = {
+            OrbBounce = 150
+        }
     },
 
 
@@ -52,7 +54,9 @@ return {
         },
 
 
-        BaseStats = {}
+        BaseStats = {
+            MaxMana = 500
+        }
     },
 
 
@@ -99,7 +103,7 @@ return {
         },
 
         BaseStats = {
-            ShockingChance = 10
+            OrbBounce = 150
         }
     },
 
@@ -112,7 +116,7 @@ return {
         },
 
         BaseStats = {
-            ShockingChance = 10
+            OrbBounce = 150
         },
 
         DevClass = true

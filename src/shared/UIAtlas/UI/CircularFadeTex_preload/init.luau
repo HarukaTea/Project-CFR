@@ -42,7 +42,7 @@ return function (plr: Player)
 		local newScope = Fusion.scoped()
 
 
-		self.cirularFadeQueue:SpawnMutex(nextCircularFade.Duration)
+		self.cirularFadeQueue:SpawnMutex(nextCircularFade.Duration + 1)
 
         local UI = CircularFadeTex(newScope)
 		UI.Parent = self.plr.PlayerGui

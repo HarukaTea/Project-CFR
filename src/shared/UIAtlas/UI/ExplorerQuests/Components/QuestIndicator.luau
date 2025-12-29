@@ -10,8 +10,9 @@ local Children = Fusion.Children
 return function (scope: Fusion.Scope, props: {
     QuestType: string,
     WorldPoint: Vector3,
+    CharPoint: Fusion.Value<Vector3>,
 
-    CharPoint: Fusion.Value<Vector3>
+    COLORS: { [string]: Color3 }
 })
 
     return Components.Frame(scope, {
@@ -20,7 +21,7 @@ return function (scope: Fusion.Scope, props: {
         [Children] = {
             Components.Frame(scope, {
                 Name = "Symbol",
-                BackgroundColor3 = AssetBook.QuestTypeColors[props.QuestType],
+                BackgroundColor3 = props.COLORS[props.QuestType],
                 BackgroundTransparency = 0,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.fromScale(0.5, 0),

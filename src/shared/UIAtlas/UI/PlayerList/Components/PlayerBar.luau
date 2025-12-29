@@ -62,14 +62,14 @@ return function (scope: Fusion.Scope, props: {
 
 
         [Children] = {
-            Components.UIAspectRatioConstraint(scope, 8.543),
+            Components.UIAspectRatioConstraint(scope, 7.688),
 
             Components.RoundUICorner(scope),
 
             Components.UIGradient(scope, {
                 Transparency = NumberSequence.new({
                     NumberSequenceKeypoint.new(0, 1),
-                    NumberSequenceKeypoint.new(0.15, 1),
+                    NumberSequenceKeypoint.new(0.1, 1),
                     NumberSequenceKeypoint.new(0.3, 0),
                     NumberSequenceKeypoint.new(1, 0),
                 })
@@ -160,7 +160,7 @@ return function (scope: Fusion.Scope, props: {
                         LayoutOrder = 231,
                         RichText = true,
                         AutoLocalize = false,
-                        Text = string.sub(props.Player.DisplayName, 1, 17),
+                        Text = string.sub(props.Player.DisplayName, 1, 12),
 
                         TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             if use(props.PlayerSelecting) == props.Player then

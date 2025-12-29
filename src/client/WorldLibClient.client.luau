@@ -50,12 +50,6 @@ end
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    require(ReplicatedStorage.HarukaShared.Shared.HarukaDebris)
-end)
-
-
-
-table.insert(ClientWorldLib.Funcs, function()
     local function playTween(data: {
         TweenInfo: string,
         Goal: { [string]: any },

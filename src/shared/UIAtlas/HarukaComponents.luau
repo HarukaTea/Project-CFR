@@ -2,6 +2,7 @@
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
@@ -44,22 +45,7 @@ HarukaComponents.GREY_COLOR = CriRPGColorLab.GREY_COLOR
 HarukaComponents.BLUE_COLOR = CriRPGColorLab.BLUE_COLOR
 
 
-HarukaComponents.TweenInfos = {
-	fourHalf = TweenInfo.new(0.05),
-	threeHalf = TweenInfo.new(0.15),
-	twiceHalf = TweenInfo.new(0.2),
-	onceHalf = TweenInfo.new(0.3),
-	half = TweenInfo.new(0.5),
-	halfBack = TweenInfo.new(0.5, Enum.EasingStyle.Back),
-	twiceHalfOne = TweenInfo.new(0.75),
-	threeHalfOne = TweenInfo.new(0.9),
-	one = TweenInfo.new(1),
-	oneHalf = TweenInfo.new(1.5),
-	two = TweenInfo.new(2),
-	four = TweenInfo.new(4),
-	six = TweenInfo.new(6),
-	fifteen = TweenInfo.new(15, Enum.EasingStyle.Linear)
-}
+HarukaComponents.TweenInfos = AssetBook.TweenInfos
 HarukaComponents.DefaultTween = HarukaComponents.TweenInfos.twiceHalf
 
 

@@ -51,17 +51,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     UniversalEntity:InitAttackTables(self)
 
 
-    --// init
-    do
-        entity.PrimaryPart.CFrame *= CFrame.new(0, 7, 0)
-
-
-        local linearVel = Instance.new("LinearVelocity")
-        linearVel.ForceLimitsEnabled = false
-        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("CF_RootNode")
-        linearVel.VectorVelocity = Vector3.zero
-        linearVel.Parent = entity.PrimaryPart
-    end
+    UniversalEntity:InitFlyingEssentials(entity, 7)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)
@@ -192,7 +182,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-
             _spike(target)
             wait(0.25)
         end
@@ -200,7 +189,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     table.insert(self.AttackFuncs, function(target)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
-
 
             _spikeShot(target)
             wait(0.1)

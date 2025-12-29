@@ -1,5 +1,4 @@
 
-local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
@@ -9,8 +8,9 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
+local BKItemQuickDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemQuickDescView)
 local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
-local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
+local BKItemQuickSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemQuickSlot)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
@@ -21,6 +21,8 @@ local BottombarOptionBtn = require(RepS.HarukaShared.UIAtlas.Components.Bottomba
 
 local CraftItemMatSlot = require(script.Components.CraftItemMatSlot)
 local CraftGoldMatSlot = require(script.Components.CraftGoldMatSlot)
+
+local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
 
 
 local Children = Fusion.Children
@@ -65,15 +67,15 @@ return function (plr: Player)
 
                 [Children] = {
                     Components.ScrollingFrame(scope, {
-                        Name = "Backpack",
+                        Name = "Items",
                         AnchorPoint = Vector2.new(0.5, 0.5),
                         Position = UDim2.fromScale(0.5, 0.5),
                         Size = UDim2.fromScale(0.97, 0.95),
                         ScrollingDirection = Enum.ScrollingDirection.Y,
                         ClipsDescendants = false,
 
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return use(self.CurrentCategory) == "Crafting"
+                        Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return not use(self.IsCrafting)
                         end),
 
                         [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
@@ -82,13 +84,23 @@ return function (plr: Player)
                             Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
                                 if not use(self.IsUIShown) then return nil end
 
-
                                 local info = ItemBook:GetItemInfo(itemSymbol.Name)
                                 if not info then return nil end
 
                                 local isVisible = false
                                 local isVisibleFactor2 = false
-                                isVisible = true
+                                local category = use(self.CurrentCategory) :: string
+
+                                if category == "Misc" then
+                                    category = { "Quest", "CosmeticArmor", "CosmeticWeapon" }
+                                elseif category == "Active" then
+                                    category = { "Consumable", "Active" }
+                                elseif category == "Accessory" then
+                                    category = { "Accessory", "Passive" }
+                                else
+                                    category = { category }
+                                end
+                                isVisible = table.find(category, info.Type) ~= nil
 
 
                                 local tierNum = info.Tier - ((info.Tier - 1) % 2)
@@ -116,9 +128,8 @@ return function (plr: Player)
 
 
                                 if isVisible and isVisibleFactor2 and isVisibleFactor3 then
-                                    return index, BKItemSlot(scope, {
+                                    return index, BKItemQuickSlot(scope, {
                                         ItemSymbol = itemSymbol,
-                                        EquippingItems = self.EquippingItems,
 
                                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
                                         CurrentSelectedItem = self.CurrentSelectedItem,
@@ -145,24 +156,26 @@ return function (plr: Player)
                             return UDim2.fromOffset(x, y)
                         end),
 
+                        [Fusion.Out("AbsoluteCellCount")] = self.AvailableItems,
+
                         FillDirection = Enum.FillDirection.Horizontal,
+                    }),
+
+
+                    Components.TextLabel(scope, {
+                        Name = "Empty",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(1, 0.1),
+                        Text = "EMPTY",
+                        TextTransparency = 0.8,
+
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.AvailableItems).X <= 0
+                        end)
                     })
                 }
             }),
-
-            Components.HarukaFrame(scope, {
-                Name = "Top2",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.02),
-                ZIndex = 10,
-
-                [Children] = {
-                    CloseTab(scope, {
-                        ViewShownValue = self.IsUIShown
-                    }),
-                }
-            }),
-
 
             Components.Frame(scope, {
                 Name = "Left",
@@ -213,7 +226,46 @@ return function (plr: Player)
                         }
                     })
                 }
-            })
+            }),
+
+            Components.Frame(scope, {
+                Name = "Center_ZIndex2",
+                Size = UDim2.fromScale(1, 0.1),
+                ZIndex = 10,
+
+                [Children] = {
+                    Components.UIAspectRatioConstraint(scope),
+
+                    Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        if not use(self.IsCrafting) then return nil end
+
+                        return MKPurchasePrompt(scope, {
+                            ProductId = use(self.CurrentSelectedItem),
+                            UniqueId = use(self.CurrentSelectedItemUniqueId),
+
+                            IsPurchasing = self.IsCrafting,
+                            Action = "Craft",
+
+                            CurrentSelectedItem = self.CurrentSelectedItem,
+                            CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+
+                            CurrencyId = "Gold",
+                        })
+                    end)
+                }
+            }),
+
+            Components.Frame(scope, {
+                Name = "ShadowOverlay2",
+                BackgroundTransparency = 0.3,
+                ZIndex = 3,
+                Interactable = false,
+                Active = false,
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(self.IsCrafting)
+                end),
+            }),
         }
 
     }, {
@@ -226,6 +278,33 @@ return function (plr: Player)
             Position = UDim2.fromScale(0.5, 0.02),
 
             [Children] = {
+                Components.Frame(scope, {
+                    Name = "Categories",
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        Fusion.ForPairs(scope, { "Accessory", "Artifact", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                            return index, TopbarCategoryBtn(scope, {
+                                Category = category,
+                                Index = index,
+
+                                CurrentSelectedItem = self.CurrentSelectedItem,
+                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                CurrentCategory = self.CurrentCategory,
+                            })
+                        end)
+                    }
+                }),
+
+                CloseTab(scope, {
+                    ViewShownValue = self.IsUIShown
+                }),
                 FakeTopBGTex(scope)
             }
         },
@@ -242,7 +321,16 @@ return function (plr: Player)
 
                         IsCrafting = true
                     })
-                end)
+                end),
+
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    return BKItemQuickDescView(scope, {
+                        Item = use(self.CurrentSelectedMaterial),
+
+                        ItemVal = self.CurrentSelectedMaterial,
+                        IsViewingVal = self.IsCrafting
+                    })
+                end),
             }
         },
 
@@ -287,32 +375,17 @@ return function (plr: Player)
 
                         Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local item = use(self.CurrentSelectedItem) :: string
-                            local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
-
                             local itemInfo = ItemBook:GetItemInfo(item)
                             if itemInfo == nil then
                                 return nil
                             end
-
 
                             return ExecuteButton(scope, {
                                 Size = UDim2.fromScale(0.15, 0.7),
                                 ButtonText = "Craft",
                                 ButtonType = "Confirm",
                                 ButtonClickFunc = function()
-                                    local result = Components:CreateConfirmPrompt(scope, {
-                                        Hint = "Are you sure to craft this item?",
-                                        ConfirmText = "Craft",
-                                        CancelText = "Back",
-                                        ConfirmUniqueId = "CraftingConfirm_"..HttpService:GenerateGUID(false)
-                                    }):Wait()
-                                    if result ~= "YES" then return end
-
-
-                                    Events.CraftItem_C.Fire({
-                                        ItemId = item,
-                                        ItemUniqueId = itemUniqueId,
-                                    })
+                                    self.IsCrafting:set(true)
                                 end
                             })
                         end),
@@ -368,19 +441,17 @@ return function (plr: Player)
                     Position = UDim2.fromScale(0.5, -1.5),
 
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        local isVisible = use(self.CurrentCategory) == "Crafting"
                         local currentItem = use(self.CurrentSelectedItem) :: string
-
                         currentItem = currentItem or ""
 
-                        return isVisible and currentItem ~= ""
+                        return currentItem ~= ""
                     end),
 
                     [Children] = {
                         Components.Frame(scope, {
                             Name = "Title",
                             AnchorPoint = Vector2.zero,
-                            Position = UDim2.fromScale(0.3, -1),
+                            Position = UDim2.fromScale(0.2, -1),
                             Size = UDim2.fromScale(0.48, 1),
                             ClipsDescendants = true,
 
@@ -399,6 +470,9 @@ return function (plr: Player)
 
                                     [Children] = {
                                         Components.UIPadding(scope, {
+                                            PaddingTop = UDim.new(0.05, 0),
+                                            PaddingBottom = UDim.new(0.05, 0),
+                                            PaddingLeft = UDim.new(0.05, 0),
                                             PaddingRight = UDim.new(0, 12)
                                         })
                                     }
@@ -415,7 +489,7 @@ return function (plr: Player)
                         Components.Frame(scope, {
                             Name = "Materials",
                             AnchorPoint = Vector2.zero,
-                            Position = UDim2.fromScale(0.3, 0),
+                            Position = UDim2.fromScale(0.2, 0),
                             ZIndex = 2,
 
                             [Children] = {
@@ -429,7 +503,9 @@ return function (plr: Player)
                                     return itemId, CraftItemMatSlot(scope, {
                                         ItemId = itemId,
                                         Items = self.PlayerItems,
-                                        Amount = amount
+                                        Amount = amount,
+
+                                        SelectedMaterialVal = self.CurrentSelectedMaterial,
                                     })
                                 end),
 

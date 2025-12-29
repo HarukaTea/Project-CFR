@@ -7,10 +7,25 @@ local DSS = game:GetService("DataStoreService")
 local Lighting = game:GetService("Lighting")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 local TeleportService = game:GetService("TeleportService")
+
+
+
+local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
+local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
+local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
+local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
+local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
+local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
+local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)
+
+local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
+local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
+
 
 
 export type AbyssWorldLibClass = {
@@ -21,32 +36,27 @@ export type AbyssWorldLibClass = {
     AbyssId: number,
     AbyssStartTime: number,
     Modifiers: { string },
+    AbyssCompleted: Signal.SignalClass,
+    MobLocatorPositions: { Vector3 },
+    Mode: "Normal" | "Hardcore",
 
     IsChosenTeleportAction: boolean,
 
     Init: (self: AbyssWorldLibClass) -> nil,
 
-
     GiveLoot: (self: AbyssWorldLibClass) -> nil,
     UpdateSpeedrunTime: (self: AbyssWorldLibClass, runTime: number) -> nil,
-    ApplyModifier: (self: AbyssWorldLibClass) -> nil
+    ShowPity: (self: AbyssWorldLibClass) -> nil,
+
+    PlaceMobs: (self: AbyssWorldLibClass) -> nil,
+    RepeatUntilComplete: (self: AbyssWorldLibClass) -> nil,
+    Restart: (self: AbyssWorldLibClass) -> nil,
 }
 
 
 local AbyssWorldLib = {} :: AbyssWorldLibClass
 AbyssWorldLib.Funcs = {}
 AbyssWorldLib.ListenFuncs = {}
-
-
-local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
-local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-
-local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
-local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
 
 if not workspace:GetAttribute("AbyssId") then return nil end
@@ -84,8 +94,8 @@ local wait = task.wait
 function AbyssWorldLib:Init()
     Promise.try(AbyssWorldLib.Funcs[1]):await()
 
-    for _, func: () -> nil in AbyssWorldLib.ListenFuncs do
-        func()
+    for _, listenFunc: () -> nil in AbyssWorldLib.ListenFuncs do
+        listenFunc()
     end
 end
 
@@ -96,12 +106,12 @@ end
 function AbyssWorldLib:GiveLoot()
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
         Promise.try(function()
+            local min, max = 5, 8
             for _ = 1, 3 do
                 Events.PlaySound_S.Fire(player, SoundService.SFXs.LootDropped)
+                local result = HarukaLib:RollLoot(AbyssBook.LootsChance[AbyssWorldLib.AbyssId])
 
-                local result = HarukaLib:RollLoot(ItemBook:GetAllMaterialsLoot())
-
-                ServerLib:GiveItemDrop(player, result, Random.new():NextInteger(9, 13) * AbyssWorldLib.AbyssId)
+                ServerLib:GiveItemDrop(player, result, Random.new():NextInteger(min, max) * AbyssWorldLib.AbyssId)
                 wait(0.15)
             end
 
@@ -152,7 +162,66 @@ function AbyssWorldLib:UpdateSpeedrunTime(runTime: number)
         ServerBindables.RToUpdateLeaderboardRank:Fire("Player_"..userIdStr, runTime, "Abyss")
     end
 end
+function AbyssWorldLib:RepeatUntilComplete()
+    task.spawn(function()
+        repeat wait(1) until #abyssMobsContainer:GetChildren() <= 3 and AbyssWorldLib.Started
 
+        AbyssWorldLib.AbyssCompleted:Fire()
+    end)
+end
+
+
+function AbyssWorldLib:ShowPity()
+    for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+        local abyssDropPity = player:GetAttribute("AbyssDropPity") or 0
+        Events.CreateNotify_S.Fire(player, "[Pity Counter] Your pity is "..abyssDropPity)
+    end
+end
+
+
+function AbyssWorldLib:PlaceMobs()
+    local index = 1
+    for _, mobInfo: AbyssBook.AbyssTeamJSON in AbyssBook.TeamConfigs[AbyssWorldLib.AbyssId] do
+        if not AbyssWorldLib.MobLocatorPositions[index] then break end
+
+        local locator = HarukaLib:CreateMockPart()
+        locator.Name = mobInfo.MobId
+
+        locator.Size = Vector3.new(5, 2, 5)
+        locator.CFrame = CFrame.new(AbyssWorldLib.MobLocatorPositions[index])
+
+        locator:AddTag("EnemyLocatorEntity")
+        locator:SetAttribute("NoRandomName", true)
+        locator:SetAttribute("Level", mobInfo.Level)
+        locator:SetAttribute("EnvironmentBonus", mobInfo.EnvironmentBonus)
+
+        locator.Parent = workspace.Enemies["_ABYSS_TEAM"]
+        index += 1
+    end
+end
+
+
+function AbyssWorldLib:Restart()
+    Events.CreateFSNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), "Restarting the Abyss...", 3)
+
+    abyssAirwall.Parent = workspace.MapComponents
+    AbyssWorldLib.Started = false
+
+    wait(1)
+    local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true) :: SpawnLocation
+
+    for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
+        local char = player.Character
+        if not ServerLib:IsCharValid(char) then continue end
+
+        char:PivotTo(baseSpawn.CFrame)
+    end
+
+
+    workspace:SetAttribute("AbyssTime", 0)
+    workspace:SetAttribute("AbyssStarted", false)
+    workspace:SetAttribute("AbyssFinished", false)
+end
 
 
 
@@ -161,6 +230,7 @@ table.insert(AbyssWorldLib.Funcs, function()
 
     local abyssId = 1
     local modifiers = {}
+    local mode = "Normal"
     local privateServerId = game.PrivateServerId
     if privateServerId == "" then
         privateServerId = "Mock12345678"
@@ -172,42 +242,34 @@ table.insert(AbyssWorldLib.Funcs, function()
 
         abyssId = data.AbyssId or 1
         modifiers = data.Modifiers or {}
+        mode = data.Mode or "Normal"
     end)
     if not success then
         abyssId = 1
         modifiers = {}
+        mode = "Normal"
     end
 
     AbyssWorldLib.AbyssId = abyssId
     AbyssWorldLib.Modifiers = modifiers
+    AbyssWorldLib.Mode = mode
+
+    AbyssWorldLib.AbyssCompleted = Signal.new()
 
     workspace:SetAttribute("AbyssLevelId", abyssId)
     workspace:SetAttribute("AbyssModifiers", table.concat(modifiers, ","))
     workspace:SetAttribute("AbyssTime", 0)
+    workspace:SetAttribute("AbyssMode", mode)
 
 
     local totalMobs = abyssMobsContainer:GetChildren() :: { BasePart }
-    local index = 1
-    for _, mobInfo: AbyssBook.AbyssTeamJSON in AbyssBook.TeamConfigs[abyssId] do
-        if not totalMobs[index] then break end
+    local totalMobPositions = {}
 
-        local locator = totalMobs[index] :: BasePart
-
-        locator.Name = mobInfo.MobId
-        locator:SetAttribute("Level", mobInfo.Level)
-        locator:SetAttribute("EnvironmentBonus", 8)
-
-        locator:SetAttribute("_RESPAWN_SYMBOL", true)
-
-        index += 1
+    for _, locator: CFrameValue in totalMobs do
+        table.insert(totalMobPositions, locator.Value.Position)
     end
+    AbyssWorldLib.MobLocatorPositions = totalMobPositions
 
-    RunService.Stepped:Wait()
-    for _, locator: BasePart in totalMobs do
-        if locator.Name == "GreenSlime" then
-            locator:Destroy()
-        end
-    end
 
     workspace:SetAttribute("AbyssStarted", false)
 
@@ -231,14 +293,19 @@ end)
 table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.Abyss_StartAbyss_C.SetCallback(function(plr: Player)
         if AbyssWorldLib.Started then return end
-        AbyssWorldLib.Started = true
 
         _notifyFireAll(plr.DisplayName.." has started the Abyss!")
         workspace:SetAttribute("AbyssStarted", true)
 
         AbyssWorldLib.AbyssStartTime = os.time()
+        abyssAirwall.Parent = ServerStorage
 
-        abyssAirwall:Destroy()
+        AbyssWorldLib:PlaceMobs()
+        AbyssWorldLib:ShowPity()
+
+        AbyssWorldLib.Started = true
+
+        AbyssWorldLib:RepeatUntilComplete()
     end)
 end)
 
@@ -256,26 +323,24 @@ end)
 
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
-    repeat wait(1) until #abyssMobsContainer:GetChildren() <= 0
+    AbyssWorldLib.AbyssCompleted:Connect(function()
+        workspace:SetAttribute("AbyssFinished", true)
+        task.delay(1, AbyssWorldLib.GiveLoot, AbyssWorldLib)
 
+        --// count speedrun if it's f5 and 6 modifiers are used
+        if AbyssWorldLib.AbyssId == 5 and #AbyssWorldLib.Modifiers >= 6 and AbyssWorldLib.AbyssStartTime then
+            local now = os.time()
+            local runTime = now - AbyssWorldLib.AbyssStartTime
 
-    workspace:SetAttribute("AbyssFinished", true)
-    task.delay(1, AbyssWorldLib.GiveLoot, AbyssWorldLib)
+            if runTime <= 5 then
+                _notifyFireAll("Invalid record!")
+                return
+            end
 
-
-    --// count speedrun if it's f6
-    if AbyssWorldLib.AbyssId == 5 and #AbyssWorldLib.Modifiers >= 6 and AbyssWorldLib.AbyssStartTime then
-        local now = os.time()
-        local runTime = now - AbyssWorldLib.AbyssStartTime
-
-        if runTime < 3 then
-            _notifyFireAll("Invalid record! (Less than 3 seconds)")
-            return
+            _notifyFireAll("Updating your record...please wait...")
+            AbyssWorldLib:UpdateSpeedrunTime(runTime)
         end
-
-        _notifyFireAll("Updating your record...please wait...")
-        AbyssWorldLib:UpdateSpeedrunTime(runTime)
-    end
+    end)
 end)
 
 
@@ -284,13 +349,21 @@ end)
 table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.Abyss_AfterEndAction_S.SetCallback(function(plr: Player, actionId: string)
         if not actionId then return end
-        if AbyssWorldLib.IsChosenTeleportAction then
-            Events.CreateNotify_S.Fire(plr, "Another player has chosen to leave/restart the Abyss")
-            return
+
+        local partyObj = PartyLib:GetParty(plr)
+        if partyObj ~= nil then
+            if partyObj.Leader ~= plr then
+                Events.CreateNotify_S.Fire(plr, "Only the leader can request")
+                return
+            end
+            if actionId == "Restart" then
+                _notifyFireAll("Leader requested to restart the Abyss!")
+                Events.PlaySound_S.FireList(CollectionService:GetTagged("PlayerEntity"), SoundService.SFXs.EXP)
+                wait(2)
+                _notifyFireAll("Restarting in 3 seconds...")
+                wait(3)
+            end
         end
-
-        AbyssWorldLib.IsChosenTeleportAction = true
-
         if actionId == "Leave" then
             Events.CreateFSNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), "Teleporting back to Mainworld...", 999)
 
@@ -311,13 +384,24 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
             )
 
         elseif actionId == "Restart" then
-            ServerBindables.RToChallengeAbyss:Fire(plr, {
-                AbyssId = AbyssWorldLib.AbyssId,
-                Modifiers = AbyssWorldLib.Modifiers,
-                ["Players"] = CollectionService:GetTagged("PlayerEntity")
-            })
+            AbyssWorldLib:Restart()
         end
     end)
 end)
+
+
+
+table.insert(AbyssWorldLib.ListenFuncs, function()
+    local leader = nil
+    CollectionService:GetInstanceAddedSignal("PlayerEntity"):Connect(function(player: Player)
+        if leader == nil then
+            leader = player
+        else
+            PartyLib:Accept(leader, player)
+        end
+    end)
+end)
+
+
 
 AbyssWorldLib:Init()

@@ -1,5 +1,7 @@
 
-export type Dict = { [string]: any }
+export type Dict = { [string]: any } & {
+    CostManaFunc: (char: Model) -> boolean
+}
 
 
 export type CastItemLib = {

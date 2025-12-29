@@ -47,19 +47,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
 
-
-
-    --// init
-    do
-        entity.PrimaryPart.CFrame *= CFrame.new(0, 7, 0)
-
-
-        local linearVel = Instance.new("LinearVelocity")
-        linearVel.ForceLimitsEnabled = false
-        linearVel.Attachment0 = entity.PrimaryPart:FindFirstChild("CF_RootNode")
-        linearVel.VectorVelocity = Vector3.zero
-        linearVel.Parent = entity.PrimaryPart
-    end
+    UniversalEntity:InitFlyingEssentials(entity, 7)
 
 
     local function _checkIsTargetOrEntityValid(target: Model)

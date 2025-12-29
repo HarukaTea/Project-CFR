@@ -78,8 +78,8 @@ return function(plr: Player)
                                 QuestIndicator(scope, {
                                     QuestType = questInfo.QuestType,
                                     WorldPoint = realLocator.Position,
-
-                                    CharPoint = self.CharPosition
+                                    CharPoint = self.CharPosition,
+                                    COLORS = self.COLORS
                                 })
                             }
                         })
@@ -120,7 +120,7 @@ return function(plr: Player)
                                 Components.TextLabel(scope, {
                                     Name = "Indicator",
                                     Text = "?",
-                                    TextColor3 = AssetBook.QuestTypeColors[questInfo.QuestType],
+                                    TextColor3 = self.COLORS[questInfo.QuestType],
                                     FontFace = Font.fromName("Arial", Enum.FontWeight.Bold),
                                     AutoLocalize = false,
 
@@ -162,8 +162,8 @@ return function(plr: Player)
                             return QuestBar(scope, {
                                 QuestType = questInfo.QuestType,
                                 QuestId = questInfo.Id,
-
-                                QuestVal = questSymbol
+                                QuestVal = questSymbol,
+                                COLORS = self.COLORS
                             })
                         end)
                     }

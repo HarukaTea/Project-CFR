@@ -34,7 +34,9 @@ export type ServerInfo = {
     JobId: string,
     ServerLocation: string,
     CityLocation: string,
-    ServerName: string
+    ServerName: string,
+
+    LastUpdated: number
 }
 
 
@@ -63,6 +65,29 @@ function CADimensions:Init()
             return oldValue
         end, MAX_TIME)
     end, 2)
+    HarukaLib.Clock(180, function()
+        HarukaLib.TryUntil(function()
+            liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
+                if _getTableSizeInKB(oldValue) >= 30 * 1024 then
+                    return {}
+                end
+                oldValue = oldValue or {}
+
+                for serverId: string, serverInfo: ServerInfo in oldValue do
+                    if not serverInfo.LastUpdated then
+                        oldValue[serverId] = nil
+                        continue
+                    end
+                    if DateTime.now().UnixTimestamp - serverInfo.LastUpdated > 600 then
+                        oldValue[serverId] = nil
+                        continue
+                    end
+                end
+
+                return oldValue
+            end, MAX_TIME)
+        end, 2)
+    end)
 
 
 	game:BindToClose(function()
@@ -102,7 +127,9 @@ function CADimensions:AddToDimension()
                 JobId = game.JobId,
                 ServerLocation = serverLocation,
                 CityLocation = cityLocation,
-                ServerName = serverName
+                ServerName = serverName,
+
+                LastUpdated = DateTime.now().UnixTimestamp
             } :: ServerInfo
 
             liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
@@ -110,7 +137,6 @@ function CADimensions:AddToDimension()
                     return {}
                 end
                 oldValue = oldValue or {}
-
                 oldValue[serverId] = dataToUpload
 
                 return oldValue

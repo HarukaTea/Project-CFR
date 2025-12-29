@@ -19,6 +19,7 @@ local AbyssRankSlot = require(RepS.HarukaShared.UIAtlas.Components.LBRankSlot)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
+local BKItemQuickSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemQuickSlot)
 
 local Children = Fusion.Children
 
@@ -50,7 +51,61 @@ return function (plr: Player)
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
-        end)
+        end),
+
+        [Children] = {
+            Components.Frame(scope, {
+                Name = "CenterLeft",
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.03, 0.55),
+                Size = UDim2.fromScale(0.4, 0.72),
+                ClipsDescendants = true,
+
+                [Children] = {
+                    Components.ScrollingFrame(scope, {
+                        Name = "Items",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(0.97, 0.95),
+                        ScrollingDirection = Enum.ScrollingDirection.Y,
+                        ClipsDescendants = false,
+
+                        [Fusion.Out("AbsoluteSize")] = self.ItemListAbsSize,
+
+                        [Children] = {
+                            Fusion.ForPairs(scope, self.Items, function(use: Fusion.Use, scope: Fusion.Scope<any>, index: number, itemSymbol: IntConstrainedValue)
+                                return index, BKItemQuickSlot(scope, {
+                                    ItemSymbol = itemSymbol,
+
+                                    CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                    CurrentSelectedItem = self.CurrentSelectedItem,
+                                    CurrentSortOrderList = self.SortMethodList,
+                                })
+                            end)
+                        }
+                    }, {
+                        CellSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local size = use(self.ItemListAbsSize) :: Vector2
+                            local x = size.X * 0.125 * 0.86 * 1.5
+                            local y = size.X * 0.135 * 0.86 * 1.5
+
+                            return UDim2.fromOffset(x, y)
+                        end),
+                        CellPadding = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            local size = use(self.ItemListAbsSize) :: Vector2
+                            local x = size.X * 0.015 * 1.05
+                            local y = size.X * 0.023 * 1.05
+
+                            return UDim2.fromOffset(x, y)
+                        end),
+
+                        [Fusion.Out("AbsoluteCellCount")] = self.AvailableItems,
+
+                        FillDirection = Enum.FillDirection.Horizontal,
+                    })
+                }
+            })
+        }
 
     }, {
         FullProps = {
@@ -78,6 +133,11 @@ return function (plr: Player)
                     Size = UDim2.fromScale(0.4, 7.3),
                     ScrollBarThickness = 5,
                     ScrollingDirection = Enum.ScrollingDirection.Y,
+
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        return use(self.AbyssIndexSelected) == nil
+                    end),
 
                     [Children] = {
                         Components.PaddingFrame(scope, "AAA"),
@@ -366,9 +426,15 @@ return function (plr: Player)
                     AnchorPoint = Vector2.new(0.5, 1),
                     Position = UDim2.fromScale(0.5, 0.7),
                     Size = UDim2.fromScale(0.95, 0.5),
-                    Text = "SPEEDRUN RECORDS (FLOOR 5 ALL MODIFIERS) [WEEK 3]",
                     TextTransparency = 0.5,
                     TextXAlignment = Enum.TextXAlignment.Left,
+
+                    Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        local state = use(self.AbyssIndexSelected) == nil
+
+                        return if state then "SPEEDRUN RECORDS (FLOOR 5 ALL MODIFIERS)"
+                            else "POSSIBLE LOOTS YOU CAN GET"
+                    end),
                 })
             }
         }

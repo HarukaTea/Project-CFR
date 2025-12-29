@@ -21,11 +21,11 @@ AbyssBook.TeamConfigs[1] = {
 }
 AbyssBook.TeamConfigs[2] = {
     {
-        MobId = "HardmodeWolf",
+        MobId = "QueenBee",
         Level = 125
     },
     {
-        MobId = "SpikeFox",
+        MobId = "Bee",
         Level = 100
     }
 }
@@ -41,13 +41,13 @@ AbyssBook.TeamConfigs[3] = {
 }
 AbyssBook.TeamConfigs[4] = {
     {
-        MobId = "QueenBee",
+        MobId = "HardmodeWolf",
         Level = 125
     },
     {
-        MobId = "Bee",
+        MobId = "SpikeFox",
         Level = 100
-    },
+    }
 }
 AbyssBook.TeamConfigs[5] = {
     {
@@ -83,6 +83,41 @@ AbyssBook.ModifierInfo = {
     HealthBoost3 = "Enemy Health +150%",
 }
 
+
+
+
+
+AbyssBook.Loots = {}
+AbyssBook.Loots[1] = {
+    "SlimeGel", "SlimeCore", "BatFangs", "StalkerLeaf",
+}
+AbyssBook.Loots[2] = {
+    "BeeStinger", "GHoneyWings"
+}
+AbyssBook.Loots[3] = {
+    "SlimeGel", "SlimeCore", "CrimsonSlimeCore", "CrimsoniteOre"
+}
+AbyssBook.Loots[4] = {
+    "SpikyFur", "SpikyQuills", "BlackFur"
+}
+AbyssBook.Loots[5] = {
+    "DragonFang", "DragonScale"
+}
+for index, _ in AbyssBook.Loots do
+    table.insert(AbyssBook.Loots[index], "ColdFlame")
+    table.insert(AbyssBook.Loots[index], "Gas")
+    table.insert(AbyssBook.Loots[index], "Light")
+end
+
+
+AbyssBook.LootsChance = {}
+for index, _ in AbyssBook.Loots do
+    AbyssBook.LootsChance[index] = {}
+
+    for _, loot: string in AbyssBook.Loots[index] do
+        AbyssBook.LootsChance[index][loot] = 10
+    end
+end
 
 
 

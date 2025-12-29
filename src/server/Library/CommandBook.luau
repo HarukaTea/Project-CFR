@@ -223,7 +223,7 @@ local commands: CommandJSON = {
 
                 ShouldBeInteger = true,
                 RangeMin = 1,
-                RangeMax = 999
+                RangeMax = FormulaBook.MAX_ITEM_LIMIT
             }
         },
 

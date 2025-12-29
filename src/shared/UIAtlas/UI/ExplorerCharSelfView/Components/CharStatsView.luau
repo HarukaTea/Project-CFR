@@ -8,6 +8,38 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Children = Fusion.Children
 
 
+
+local STAT_ICONS = {
+	ATK = "rbxassetid://2965862892",
+	["BURN CHANCE"] = "rbxassetid://74588474308433",
+	["POISON CHANCE"] = "rbxassetid://137874332790885",
+	["BLEED CHANCE"] = "rbxassetid://101337562500575",
+	["CRIT CHANCE"] = "rbxassetid://73146024586376",
+	["CRIT DMG"] = "rbxassetid://73146024586376",
+	["DODGE CHANCE"] = "rbxassetid://74429503512836",
+	HP = "rbxassetid://104142948728530",
+	MANA = "rbxassetid://12119869276",
+	JMP = "rbxassetid://89411498131129",
+	MAGIC = "rbxassetid://2965863231",
+	SHIELD = "rbxassetid://139807236835811",
+	SPD = "rbxassetid://128019227796527",
+	LUCK = "rbxassetid://109627611842021",
+    ["FREEZE CHANCE"] = "rbxassetid://79241468928508",
+    ["STUN CHANCE"] = "rbxassetid://106465902273177",
+    WARDING = "rbxassetid://133479347120603",
+    INTENSITY = "rbxassetid://128019227796527",
+}
+local STAT_ICON_COLORS = {
+	["CRIT CHANCE"] = Color3.fromHex('#ffeaa7'),
+	HP = Color3.fromHex('#2ed573'),
+	LUCK = Color3.fromHex('#2ed573'),
+	SHIELD = Color3.fromHex('#ffeaa7'),
+	["DODGE CHANCE"] = Color3.fromHex('#70a1ff'),
+    ["FREEZE CHANCE"] = Color3.fromHex('#81ecec'),
+    ["STUN CHANCE"] = Color3.fromRGB(255, 255, 127)
+}
+
+
 return function (scope: Fusion.Scope, props: {
     StatList: {
         {
@@ -86,8 +118,6 @@ return function (scope: Fusion.Scope, props: {
                                 local shouldUsePercent = false
                                 if string.find(val.Id, "CRIT DMG") then
                                     shouldUsePercent = true
-                                elseif string.find(val.Id, "LUCK") then
-                                    shouldUsePercent = true
                                 elseif string.find(val.Id, "CHANCE") then
                                     shouldUsePercent = true
                                 end
@@ -122,8 +152,8 @@ return function (scope: Fusion.Scope, props: {
                             AnchorPoint = Vector2.new(0, 0.5),
                             Size = UDim2.fromScale(0.8, 0.8),
 
-                            Image = AssetBook.CharStatIcons[val.Id] or AssetBook.ExtraIcons.Unknown,
-                            ImageColor3 = AssetBook.CharStatIconColors[val.Id] or Color3.fromRGB(255, 255, 255),
+                            Image = STAT_ICONS[val.Id] or AssetBook.ExtraIcons.Unknown,
+                            ImageColor3 = STAT_ICON_COLORS[val.Id] or Color3.fromRGB(255, 255, 255),
                         })
                     }
                 })

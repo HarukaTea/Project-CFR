@@ -29,10 +29,11 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
+        if not extraInfo.CostManaFunc(char) then return 0 end
 
 
         local uniqueId = HttpService:GenerateGUID(false)
-        local castTime = 1
+        local castTime = ClassAttackLib:CalCastingTime(char, 1)
 
 
         Events.OpenCastTimeBar_S.Fire(player, castTime)

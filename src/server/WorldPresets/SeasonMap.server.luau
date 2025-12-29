@@ -42,25 +42,8 @@ for _, model: Model in CollectionService:GetTagged("FlowerEntity") do
 end
 
 
-local initusBay = workspace.Maps:FindFirstChild("InitusBay", true) :: Folder
-if initusBay then
-    for _, model: Model in initusBay:QueryDescendants("#AppleT") do
-        for _, part: BasePart in model:QueryDescendants(HarukaLib.BasePartSelector) do
-            _recolorTreePart(part)
-        end
-    end
-end
-
-
-local LocationBook = require(ReplicatedStorage.HarukaShared.Library.LocationBook)
-local locationUtil = LocationBook.Utils
-
-for id: string, info: LocationBook.LocationInfo in LocationBook do
-    if id == "Utils" then continue end
-
-    local clockTime = LocationBook[id].LightingInfo.ClockTime
-    if clockTime >= 6 and clockTime <= 18 then
-        LocationBook[id].LightingInfo = locationUtil._reconcileDefault(locationUtil.nightDefaultLighting)
-        LocationBook[id].AtmosphereInfo = locationUtil._reconcileAtmosphere(locationUtil.nightDefaultAtmo)
+for _, model: Model in CollectionService:GetTagged("SpecialTreeEntity") do
+    for _, part: BasePart in model:QueryDescendants(HarukaLib.BasePartSelector) do
+        _recolorTreePart(part)
     end
 end

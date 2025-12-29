@@ -18,6 +18,81 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
+
+
+local ITEM_EFFECTS_ICONS = {
+	CanLight = "rbxassetid://2965771738",
+	CanMine = "rbxassetid://12118509077",
+	CanClimb = "rbxassetid://119170658838472",
+
+	CD = "rbxassetid://81749788783510",
+	CriChance = "rbxassetid://73146024586376",
+	ATK = "rbxassetid://2965862892",
+	Speed = "rbxassetid://128019227796527",
+	Magic = "rbxassetid://2965863231",
+	MaxHealth = "rbxassetid://104142948728530",
+	MaxShield = "rbxassetid://139807236835811",
+	Warding = "rbxassetid://133479347120603",
+	PoisonChance = "rbxassetid://137874332790885",
+	BurnChance = "rbxassetid://74588474308433",
+	BleedChance = "rbxassetid://101337562500575",
+	FreezeChance = "rbxassetid://79241468928508",
+    ShockingChance = "rbxassetid://106465902273177",
+	JumpPower = "rbxassetid://89411498131129",
+	Jump = "rbxassetid://89411498131129",
+	Mana = "rbxassetid://12119869276",
+    MaxMana = "rbxassetid://12119869276",
+
+	Intensity = "rbxassetid://128019227796527",
+	CriDMG = "rbxassetid://73146024586376",
+
+	Focus = "rbxassetid://132943384940547",
+	Combo = "rbxassetid://91123652494859",
+	Stack = "rbxassetid://85379466166048",
+
+	Luck = "rbxassetid://109627611842021"
+}
+local ITEM_EFFECTS_ICON_COLORS = {
+	CriChance = Color3.fromHex('#ffeaa7'),
+	MaxHealth = Color3.fromHex('#2ed573'),
+	MaxShield = Color3.fromHex('#ffeaa7'),
+	FreezeChance = Color3.fromHex('#81ecec'),
+    ShockingChance = Color3.fromRGB(255, 255, 127),
+    Luck = Color3.fromHex('#2ed573'),
+}
+local ITEM_EFFECTS_NAMES = {
+	CD = "CD Time",
+	CriChanceEx = "Critical Chance",
+	CriDMGEx = "Critical DMG",
+	ATK = "ATK",
+    MaxManaEx = "Mana",
+    Mana = "Mana Cost",
+	SpeedEx = "Speed",
+	MagicEx = "Magic",
+	MaxHealthEx = "Health",
+	MaxShieldEx = "Shield",
+	PoisonChanceEx = "Poison Chance",
+	BurnChanceEx = "Burn Chance",
+	BleedChanceEx = "Bleed Chance",
+	FreezeChanceEx = "Freeze Chance",
+    ShockingChanceEx = "Stun Chance",
+	JumpEx = "Jump",
+    WardingEx = "Warding",
+    LuckEx = "Luck",
+    IntensityEx = "Intensity",
+}
+local ITEM_EFFECTS_IS_PERCENTAGE = {
+	CriChanceEx = true,
+	CriDMGEx = true,
+	PoisonChanceEx = true,
+	BurnChanceEx = true,
+	BleedChanceEx = true,
+	FreezeChanceEx = true,
+    ShockingChanceEx = true,
+}
+
+
+
 return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemUniqueId: string,
@@ -219,11 +294,11 @@ return function (scope: Fusion.Scope, props: {
 
                     Image = Fusion.Computed(scope, function()
                         if string.find(attr, "Can") then
-                            return AssetBook.ItemEffectIcons[attr] or AssetBook.ExtraIcons.Unknown
+                            return ITEM_EFFECTS_ICONS[attr] or AssetBook.ExtraIcons.Unknown
 
                         elseif string.find(attr, "Ex") or string.find(attr, "ExPower") then
                             local exPos = string.find(attr, "Ex")
-                            return AssetBook.ItemEffectIcons[string.sub(attr, 1, exPos - 1)] or AssetBook.ExtraIcons.Unknown
+                            return ITEM_EFFECTS_ICONS[string.sub(attr, 1, exPos - 1)] or AssetBook.ExtraIcons.Unknown
 
                         elseif attr == "ForClass" then
                             local classInfo = ClassBook[val]
@@ -233,7 +308,7 @@ return function (scope: Fusion.Scope, props: {
 
                             return classInfo.Icon
                         else
-                            return AssetBook.ItemEffectIcons[attr] or AssetBook.ExtraIcons.Unknown
+                            return ITEM_EFFECTS_ICONS[attr] or AssetBook.ExtraIcons.Unknown
                         end
                     end),
                     ImageColor3 = Fusion.Computed(scope, function()
@@ -246,11 +321,11 @@ return function (scope: Fusion.Scope, props: {
                             return classInfo.Color
                         end
                         if string.find(attr, "Can") then
-                            return AssetBook.ItemEffectIconColors[attr] or Color3.new(1, 1, 1)
+                            return ITEM_EFFECTS_ICON_COLORS[attr] or Color3.new(1, 1, 1)
                         end
                         if string.find(attr, "Ex") or string.find(attr, "ExPower") then
                             local exPos = string.find(attr, "Ex")
-                            return AssetBook.ItemEffectIconColors[string.sub(attr, 1, exPos - 1)] or Color3.new(1, 1, 1)
+                            return ITEM_EFFECTS_ICON_COLORS[string.sub(attr, 1, exPos - 1)] or Color3.new(1, 1, 1)
                         end
 
                         return Color3.new(1, 1, 1)
@@ -269,7 +344,7 @@ return function (scope: Fusion.Scope, props: {
                         elseif attr == "ForClass" then
                             return `<font color="#e9cc9f">Class: </font> {val}`
                         elseif properties.IsPotType then
-                            local DEFAULT_TEXT = `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
+                            local DEFAULT_TEXT = `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}`
 
                             local basePot = itemInfo.StatInfoDesync[attr]
                             if basePot == nil then
@@ -295,12 +370,12 @@ return function (scope: Fusion.Scope, props: {
                             end
 
                             if potRatio > 0 then
-                                return `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}   <font color="#{color}">(+{potRatio}%)</font>`
+                                return `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}   <font color="#{color}">(+{potRatio}%)</font>`
                             else
                                 return DEFAULT_TEXT
                             end
                         else
-                            return `<font color="#e9cc9f">{AssetBook.ItemEffectNames[attr]}: </font> {val}{if AssetBook.ItemEffectIsPercentage[attr] then "%" else ""}`
+                            return `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}`
                         end
                     end),
 

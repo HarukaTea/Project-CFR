@@ -23,6 +23,7 @@ local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
 local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)
+local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
@@ -169,7 +170,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             itemVal.MinValue = 0
 
             local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
-            local maxVal = 999
+            local maxVal = FormulaBook.MAX_ITEM_LIMIT
             if itemType == "Active" or itemType == "Passive" then
                 maxVal = 1
             end

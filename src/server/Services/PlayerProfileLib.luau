@@ -203,14 +203,14 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             end
         end
 
-        if itemInfo.Amount > 999 then
+        if itemInfo.Amount > FormulaBook.MAX_ITEM_LIMIT then
             local itemType = ItemBook:GetItemInfo(itemInfo.ItemId).Type
 
             if itemType == "Consumable" or itemType == "Material" then
-                local returnAmount = itemInfo.Amount - 999
+                local returnAmount = itemInfo.Amount - FormulaBook.MAX_ITEM_LIMIT
 
                 data.Gold += math.floor(ItemBook:GetItemInfo(itemInfo.ItemId).Price * returnAmount)
-                data.ItemsSQL[itemInfo.UniqueId].Amount = 999
+                data.ItemsSQL[itemInfo.UniqueId].Amount = FormulaBook.MAX_ITEM_LIMIT
             end
         end
     end
@@ -416,6 +416,11 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         data.STRPoints = 0
         data.DEXPoints = 0
     end
+
+
+    --// check level
+    data.EXP = math.clamp(data.EXP, 0, 1599 * 40 * 15)
+    data.EXP = math.floor(data.EXP)
 
     return data
 end

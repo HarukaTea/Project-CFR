@@ -60,8 +60,8 @@ local function processReceipt(receiptInfo: {[string]: any})
                         Events.CreateNotify_S.Fire(player, "You have successfully purchased the product!")
                         return Enum.ProductPurchaseDecision.PurchaseGranted
                     else
-                        Events.CreateNotify_S.Fire(player, "Failed to process receipt!")
-                        Events.CreateNotify_S.Fire(player, "But you didnt lose your Robux!")
+                        Events.CreateNotify_S.Fire(player, "Failed to process your purchase receipt!")
+                        Events.CreateNotify_S.Fire(player, "!!! PLEASE CONTACT DEVELOPERS IN THE COMMUNITY FOR SUPPORT !!!")
                         warn(`Failed to process receipt: `, receiptInfo, result)
                     end
                 end

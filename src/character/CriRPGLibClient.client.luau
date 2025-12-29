@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
 local RepS = game:GetService("ReplicatedStorage")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
@@ -17,7 +18,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ProjectileLib = require(RepS.HarukaShared.Library.ProjectileLib)
-local HarukaDebris = require(RepS.HarukaShared.Shared.HarukaDebris)
+local StatusBook = require(RepS.HarukaShared.Library.StatusBook)
 
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -384,6 +385,7 @@ table.insert(CriRPGLib.Funcs, function()
         end
         if data.OrbUniqueId == nil then
             warn("Invalid orb UniqueId when spawning")
+            return
         end
         orb = orb:Clone()
 
@@ -400,7 +402,18 @@ table.insert(CriRPGLib.Funcs, function()
 
         orb.Parent = orbContainer
 
-        HarukaDebris:AddItem(orb, data.OrbDuration)
+        Debris:AddItem(orb, data.OrbDuration)
+
+        --// orb variants
+        if data.OrbUniStyle == "Normal" then return end
+
+        local symbolUI = ReplicatedStorage.Packages.ClassAttacks:FindFirstChild("UniStyleUI", true):Clone() :: BillboardGui
+        symbolUI.Adornee = orb.PrimaryPart
+
+        symbolUI.Icon.Image = StatusBook[data.OrbUniStyle].Icon
+        symbolUI.Icon.ImageColor3 = StatusBook[data.OrbUniStyle].IconColor
+
+        symbolUI.Parent = orb
     end))
 
 
@@ -602,7 +615,7 @@ table.insert(CriRPGLib.Funcs, function()
             return
         end
         projectile = projectile:Clone() :: Model
-        HarukaDebris:AddItem(projectile, 10)
+        Debris:AddItem(projectile, 10)
 
 
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)
@@ -642,7 +655,7 @@ table.insert(CriRPGLib.Funcs, function()
             return
         end
         projectile = projectile:Clone() :: Model
-        HarukaDebris:AddItem(projectile, 5)
+        Debris:AddItem(projectile, 5)
 
 
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)

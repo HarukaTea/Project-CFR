@@ -238,6 +238,16 @@ local function _calDoTDMG(char: Model, dmgType: "DMG" | "Magic")
         return char:GetAttribute("DMG")
     end
 end
+local function _doDoTDMG(target: Model, dmg: number, eff: string)
+    local targetHumanoid = target.Humanoid :: Humanoid
+
+    targetHumanoid:TakeDamage(dmg)
+    ServerLib:ShowNumber(target, dmg, StatusBook[eff].Color)
+
+    if target:HasTag("PlayerCharEntity") then
+        target.PlayerGotHit:Fire(target.Name, dmg, "Health")
+    end
+end
 
 --// DoT Effects
 
@@ -255,12 +265,7 @@ StatusLib.DoT.Burn = function(target: Model, info: {
     dmg /= 3
     dmg = math.floor(dmg)
 
-
-
-    local targetHumanoid = target.Humanoid :: Humanoid
-
-    targetHumanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.BurnDebuff.Color)
+    _doDoTDMG(target, dmg, "BurnDebuff")
 end
 
 
@@ -276,11 +281,7 @@ StatusLib.DoT.Bleed = function(target: Model, info: {
     dmg /= 2.5
     dmg = math.floor(dmg)
 
-
-    local targetHumanoid = target.Humanoid :: Humanoid
-
-    targetHumanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.BleedDebuff.Color)
+    _doDoTDMG(target, dmg, "BleedDebuff")
 end
 StatusLib.DoT.BloodButchered = function(target: Model, info: {
     Type: string,
@@ -294,11 +295,7 @@ StatusLib.DoT.BloodButchered = function(target: Model, info: {
     dmg *= 0.05
     dmg = math.floor(dmg)
 
-
-    local targetHumanoid = target.Humanoid :: Humanoid
-
-    targetHumanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.BloodButcheredDebuff.Color)
+    _doDoTDMG(target, dmg, "BloodButcheredDebuff")
 end
 
 
@@ -314,11 +311,7 @@ StatusLib.DoT.Poison = function(target: Model, info: {
     dmg /= 2.5
     dmg = math.floor(dmg)
 
-
-    local targetHumanoid = target.Humanoid :: Humanoid
-
-    targetHumanoid:TakeDamage(dmg)
-    ServerLib:ShowNumber(target, dmg, StatusBook.PoisonDebuff.Color)
+    _doDoTDMG(target, dmg, "PoisonDebuff")
 end
 
 

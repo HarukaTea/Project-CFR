@@ -34,7 +34,10 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
 
     if not char:GetAttribute("BloodSpellbookBonus") then return end
 
-    char.Humanoid:TakeDamage(math.ceil(char.Humanoid.MaxHealth * 0.05))
+    local dmg = math.ceil(char.Humanoid.MaxHealth * 0.05)
+
+    char.Humanoid:TakeDamage(dmg)
+    char.PlayerGotHit:Fire(char.Name, dmg, "Health")
 end))
 
 AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

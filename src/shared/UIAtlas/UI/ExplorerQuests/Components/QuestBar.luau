@@ -12,8 +12,9 @@ local Children = Fusion.Children
 return function (scope: Fusion.Scope, props: {
     QuestType: string,
     QuestId: string,
+    QuestVal: Folder,
 
-    QuestVal: Folder
+    COLORS: { [string]: Color3 }
 })
 
     local questId = props.QuestId
@@ -55,7 +56,7 @@ return function (scope: Fusion.Scope, props: {
                 [Children] = {
                     Components.Frame(scope, {
                         Name = "Symbol",
-                        BackgroundColor3 = AssetBook.QuestTypeColors[props.QuestType],
+                        BackgroundColor3 = props.COLORS[props.QuestType],
                         BackgroundTransparency = 0,
                         AnchorPoint = Vector2.one,
                         Size = UDim2.fromScale(0.35, 0.35),
@@ -83,7 +84,7 @@ return function (scope: Fusion.Scope, props: {
                         Position = UDim2.fromScale(0, 0),
                         Size = UDim2.fromScale(1, 0.5),
                         Text = QuestBook[questId].Name,
-                        TextColor3 = AssetBook.QuestTypeColors[props.QuestType],
+                        TextColor3 = props.COLORS[props.QuestType],
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [Children] = {

@@ -126,7 +126,7 @@ return function (self: Self)
 
         if npcChatting and typeof(npcChatting) == "Instance" and npcChatting:IsA("Model") then
             Events.FinishNPCChat_C.Fire({
-                NPCId = npcChatting.Name,
+                NPCModel = npcChatting,
                 SeriesId = seriesId
             })
 

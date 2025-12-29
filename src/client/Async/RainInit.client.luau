@@ -20,8 +20,8 @@ rainSound.Volume = 0
 --// Private functions
 
 local function adjustRain(rainLevel: number)
+	rainLevel = rainLevel or 0
 	rainLevel = math.clamp(rainLevel, 0, 5)
-
 
 	if rainLevel <= 0 or not workspace:GetAttribute("RainEffectEnabled") then
 		Particles:Disable()
@@ -46,11 +46,7 @@ end
 adjustRain(0)
 
 HarukaLib:Hydrate(Lighting, {
-	["Attr-RainLevel"] = function(newLevel: number)
-		if not newLevel then return end
-
-		adjustRain(newLevel)
-	end,
+	["Attr-RainLevel"] = adjustRain,
 })
 HarukaLib:Hydrate(workspace, {
 	["Attr-RainEffectEnabled"] = function(state: boolean)

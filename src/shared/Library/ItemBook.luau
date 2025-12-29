@@ -23,6 +23,7 @@ export type ItemBookRawJSON = {
     Recipe: string,
     ArtifactId: string,
     Tags: string,
+    ObtainMethod: string
 }
 export type ItemBookJSON = {
     ItemId: string,
@@ -40,24 +41,13 @@ export type ItemBookJSON = {
     Recipe: string,
     ArtifactId: string,
     Tags: string,
+    ObtainMethod: string,
 
     StatInfoDesync: { [string]: any },
     ExtraStatInfoDesync: { [string]: any },
     RecipeDesync: { [string]: any },
     TagsDesync: { string },
 }
-
-function ItemBook:PackItemAttrToTable(itemSymbol: IntValue) : { [string]: any }
-    local attrs = {}
-
-    for attr: string, val: any in itemSymbol:GetAttributes() do
-        if string.find(attr, "ATTR_") then
-            attrs[string.sub(attr, 6)] = val
-        end
-    end
-
-    return attrs
-end
 
 
 function ItemBook:ParseItemStat(infoType: "Stat" | "Extra", info: { string }) : { [string]: any }
@@ -150,21 +140,6 @@ function ItemBook:GetAllItems() : { string }
 
     return itemIds
 end
-
-
-function ItemBook:GetAllMaterialsLoot() : { [string]: number }
-    local materialsLoot = {}
-
-    for _, itemInfo in ItemRawBook do
-        if table.find(itemInfo.TagsDesync, "Abyss") then
-            materialsLoot[itemInfo.ItemId] = 10
-        end
-    end
-
-    return materialsLoot
-end
-
-
 
 
 --// handle item book

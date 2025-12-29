@@ -1,5 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
+local HttpService = game:GetService("HttpService")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
@@ -19,6 +21,14 @@ export type Self = {
 
     AbyssRanks: Fusion.Value<{ IntValue }>,
     ModifierChosen: { [string]: Fusion.Value<boolean> },
+
+    ItemListAbsSize: Fusion.Value<Vector2>,
+    SortMethodList: { Fusion.Value<boolean> },
+
+    CurrentSelectedItem: Fusion.Value<string>,
+    CurrentSelectedItemUniqueId: Fusion.Value<string>,
+
+    Items: Fusion.Value<{ IntConstrainedValue }>
 }
 
 
@@ -33,6 +43,8 @@ return function (self: Self)
 
     self.AbyssIndexSelected = Fusion.Value(scope, nil)
 
+    self.Items = Value({})
+
 
     local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("AbyssSpeedrunContainer", 999))
     self.AbyssRanks = ranks :: Fusion.Value<{ IntValue }>
@@ -40,8 +52,47 @@ return function (self: Self)
 
     self.ModifierChosen = {}
     for _, modifier: string in AbyssBook.Modifiers do
-        self.ModifierChosen[modifier] = Fusion.Value(scope, false)
+        self.ModifierChosen[modifier] = Value(scope, false)
     end
+
+    self.ItemListAbsSize = Value(Vector2.zero)
+
+    self.SortMethodList = {
+
+    }
+    for _ = 1, 2 do
+        table.insert(self.SortMethodList, Value(false))
+    end
+    self.SortMethodList[1]:set(true)
+
+    self.CurrentSelectedItem = Value("")
+    self.CurrentSelectedItemUniqueId = Value("")
+
+
+    local dawnbreakSymbol = Instance.new("IntConstrainedValue")
+    dawnbreakSymbol.Name = "Dawnbreak"
+    dawnbreakSymbol.Value = 1
+    for index: number, _ in AbyssBook.Loots do
+        dawnbreakSymbol:AddTag("AbyssLootsEntity"..index)
+    end
+    dawnbreakSymbol:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
+    dawnbreakSymbol.Parent = workspace.MapComponents.AbyssLootsContainer
+    table.insert(scope, dawnbreakSymbol)
+
+
+    Fusion.Observer(scope, self.AbyssIndexSelected):onBind(function()
+        for _, modifier: string in AbyssBook.Modifiers do
+            self.ModifierChosen[modifier]:set(false)
+        end
+
+        local index = Fusion.peek(self.AbyssIndexSelected)
+        if index == nil then
+            self.Items:set({})
+            return
+        end
+
+        self.Items:set(CollectionService:GetTagged("AbyssLootsEntity"..index))
+    end)
 
 
     --// track menu

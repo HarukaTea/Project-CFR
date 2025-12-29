@@ -16,6 +16,15 @@ export type EntityJSON = {
 
 
 return {
+    VARIANTS = {
+        SlimePart1 = { "GreenSlime", "WheatSlime", "BlueSlime", "LapisSlime" },
+        SlimePart2 = { "PurpleSlime", "EvolvedGreenSlime" },
+        WolfPart1 = { "SpikeWolf", "ThornWolf", "NeedleWolf" }
+    },
+
+
+
+
     --// Bee species
     Bee = {
         Name = "Bee",

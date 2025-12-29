@@ -21,6 +21,7 @@ local ServerWorldLib = {}
 ServerWorldLib.Funcs = {}
 
 
+local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local CollisionBook = require(ServerScriptService.HarukaServer.Library.CollisionBook)
@@ -72,6 +73,7 @@ table.insert(ServerWorldLib.Funcs, function()
     _createFolder("EntitiesPlayerChar", workspace)
     _createFolder("Entities", workspace)
     _createFolder("CraftingProductContainer", workspace.MapComponents)
+    _createFolder("AbyssLootsContainer", workspace.MapComponents)
     _createFolder("PartyHolder", workspace.MapComponents)
     _createFolder("GlobalServers", workspace.MapComponents)
     _createFolder("SkyGalleonsContainer", workspace.MapComponents)
@@ -84,6 +86,21 @@ table.insert(ServerWorldLib.Funcs, function()
     end
     if workspace.Terrain:FindFirstChild("DO_NOT_REMOVE_ForgeSharedPartCache") then
         workspace.Terrain["DO_NOT_REMOVE_ForgeSharedPartCache"]:Destroy()
+    end
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
+    for index: number, lootsInfo: { string } in AbyssBook.Loots do
+        for _, loot: string in lootsInfo do
+            local lootVal = Instance.new("IntConstrainedValue")
+            lootVal.Name = loot
+            lootVal.Value = 1
+            lootVal:AddTag("AbyssLootsEntity"..index)
+
+            lootVal:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
+            lootVal.Parent = workspace.MapComponents.AbyssLootsContainer
+        end
     end
 end)
 

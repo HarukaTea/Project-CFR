@@ -44,7 +44,11 @@ function PreloadSceneLib._LoadPreloadAssets()
     placeHolderGui.Parent = Players.LocalPlayer.PlayerGui
 
     local totalAssets = {}
-    local totalImages = AssetBook.PreloadAssets.Images
+    local totalImages = {
+        "rbxassetid://91832243782412",
+        "rbxassetid://82804434423267",
+        "rbxassetid://72813522573875",
+    }
 
     for _, particle: ParticleEmitter in ReplicatedStorage.Packages:QueryDescendants("ParticleEmitter") do
         table.insert(totalImages, particle.Texture)

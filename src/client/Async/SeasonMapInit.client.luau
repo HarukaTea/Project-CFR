@@ -30,5 +30,15 @@ for id: string, info: LocationBook.LocationInfo in LocationBook do
     if clockTime >= 6 and clockTime <= 18 then
         LocationBook[id].LightingInfo = locationUtil._reconcileDefault(locationUtil.nightDefaultLighting)
         LocationBook[id].AtmosphereInfo = locationUtil._reconcileAtmosphere(locationUtil.nightDefaultAtmo)
+
+        LocationBook[id].RainLevel = 0
+
+        local combatMusic = LocationBook[id].CombatMusic
+        if combatMusic == "UltraSuperBossBattleRMX" or combatMusic == "SophisticatedFight_Sky1st" then
+            LocationBook[id].CombatMusic = "RoadTakenRoar"
+        end
+        if LocationBook[id].Music == "Conquest" then
+            LocationBook[id].Music = "RoadTaken"
+        end
     end
 end

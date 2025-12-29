@@ -17,6 +17,7 @@ local Children = Fusion.Children
 
 
 local CURRENCY_ICONS = AssetBook.CurrencyIcons
+local MAX_PURCHASE_AMOUNT = 999
 
 
 return function(scope: Fusion.Scope, props: {
@@ -54,7 +55,7 @@ return function(scope: Fusion.Scope, props: {
 
         itemAmount:set(itemSymbol.Value)
 
-    elseif props.Action == "Purchase" then
+    elseif props.Action == "Purchase" or props.Action == "Craft" then
         local amount = 0
 
         for _, item: IntConstrainedValue in Players.LocalPlayer.Items:GetChildren() do
@@ -96,18 +97,25 @@ return function(scope: Fusion.Scope, props: {
             if curAmount ~= curAmount then _setColor(Color3.fromHex('#ff6b81')) return end
 
             if curAmount < 1 then _setColor(Color3.fromHex('#ff6b81')) return end
-            if curAmount > 99 then _setColor(Color3.fromHex('#ff6b81')) return end
-            if curAmount > Fusion.peek(itemAmount) then _setColor(Color3.fromHex('#ff6b81')) return end
+            if curAmount > MAX_PURCHASE_AMOUNT then _setColor(Color3.fromHex('#ff6b81')) return end
 
             _setColor(Color3.fromRGB(255, 255, 255))
         end
     })
 
 
+    local function _commonClick()
+        props.IsPurchasing:set(false)
+        props.CurrentSelectedItem:set("")
+        props.CurrentSelectedItemUniqueId:set("")
+    end
+
+
     return Components.Frame(scope, {
         Name = "PurchasePrompt",
         Size = UDim2.fromScale(0.5, 8),
         BackgroundTransparency = 0,
+        ZIndex = 2,
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.025, 0) }),
@@ -261,7 +269,7 @@ return function(scope: Fusion.Scope, props: {
                                             local curAmount = Fusion.peek(amount)
 
                                             local nextAmount = curAmount - 1
-                                            nextAmount = math.clamp(nextAmount, 1, 99)
+                                            nextAmount = math.clamp(nextAmount, 1, MAX_PURCHASE_AMOUNT)
 
                                             amount:set(nextAmount)
                                         end,
@@ -287,7 +295,7 @@ return function(scope: Fusion.Scope, props: {
                                             local curAmount = Fusion.peek(amount)
 
                                             local nextAmount = curAmount + 1
-                                            nextAmount = math.clamp(nextAmount, 1, 99)
+                                            nextAmount = math.clamp(nextAmount, 1, MAX_PURCHASE_AMOUNT)
 
                                             amount:set(nextAmount)
                                         end,
@@ -366,7 +374,7 @@ return function(scope: Fusion.Scope, props: {
                                         RichText = true,
 
                                         Text = Fusion.Computed(scope, function()
-                                            if props.Action == "Purchase" then
+                                            if props.Action == "Purchase" or props.Action == "Craft" then
                                                 return `<u>Price</u>`
                                             else
                                                 return `<u>You Will Get</u>`
@@ -387,9 +395,9 @@ return function(scope: Fusion.Scope, props: {
 
                                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local typedAmount = use(amount) :: number
-                                            typedAmount = math.clamp(typedAmount, 1, 99)
+                                            typedAmount = math.clamp(typedAmount, 1, MAX_PURCHASE_AMOUNT)
 
-                                            local priceType = if props.Action == "Purchase" then "Price" else "SellPrice"
+                                            local priceType = if props.Action == "Sell" then "SellPrice" else "Price"
 
                                             return `{HarukaLib:CommaifyNumber(use(info)[priceType] * typedAmount)}`
                                         end),
@@ -426,8 +434,7 @@ return function(scope: Fusion.Scope, props: {
                                 ButtonText = "Purchase",
                                 ButtonType = "Confirm",
                                 ButtonClickFunc = function()
-                                    props.IsPurchasing:set(false)
-
+                                    _commonClick()
                                     local curAmount = Fusion.peek(amount)
 
                                     Events.BuyItem_C.Fire({
@@ -438,15 +445,14 @@ return function(scope: Fusion.Scope, props: {
                                     })
                                 end
                             })
-                        else
+                        elseif props.Action == "Sell" then
                             return ExecuteButton(scope, {
                                 LayoutOrder = 2,
                                 Size = UDim2.fromScale(0.45, 0.75),
                                 ButtonText = "Sell",
                                 ButtonType = "Confirm",
                                 ButtonClickFunc = function()
-                                    props.IsPurchasing:set(false)
-
+                                    _commonClick()
                                     local curAmount = Fusion.peek(amount)
 
                                     Events.SellItem_C.Fire({
@@ -454,12 +460,28 @@ return function(scope: Fusion.Scope, props: {
                                         ItemUniqueId = Fusion.peek(props.UniqueId),
                                         SellAmount = curAmount
                                     })
+                                end
+                            })
+                        elseif props.Action == "Craft" then
+                            return ExecuteButton(scope, {
+                                LayoutOrder = 2,
+                                Size = UDim2.fromScale(0.45, 0.75),
+                                ButtonText = "Craft",
+                                ButtonType = "Confirm",
+                                ButtonClickFunc = function()
+                                    _commonClick()
+                                    local curAmount = Fusion.peek(amount)
 
-                                    props.CurrentSelectedItem:set("")
-                                    props.CurrentSelectedItemUniqueId:set("")
+                                    Events.CraftItem_C.Fire({
+                                        ItemId = Fusion.peek(props.ProductId),
+                                        ItemUniqueId = Fusion.peek(props.UniqueId),
+                                        CraftAmount = curAmount
+                                    })
                                 end
                             })
                         end
+
+                        return nil
                     end),
 
                     ExecuteButton(scope, {
@@ -467,9 +489,7 @@ return function(scope: Fusion.Scope, props: {
                         Size = UDim2.fromScale(0.45, 0.75),
                         ButtonText = "Cancel",
                         ButtonType = "Cancel",
-                        ButtonClickFunc = function()
-                            props.IsPurchasing:set(false)
-                        end
+                        ButtonClickFunc = _commonClick
                     })
                 }
             })

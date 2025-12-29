@@ -239,7 +239,7 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 		itemVal.MinValue = 0
 
 		local itemType = itemInfo.Type
-		local maxVal = 999
+		local maxVal = FormulaBook.MAX_ITEM_LIMIT
 		if itemType == "Active" or itemType == "Passive" then
 			maxVal = 1
 		end
@@ -302,8 +302,10 @@ function ServerLib:GiveEXPRewards(plr: Player, exp: number)
 	exp = exp or 0
 	if exp <= 0 then return end
 
-
 	exp *= FormulaBook.EXPEvent
+	exp = math.clamp(exp, 0, 1599 * 40 * 15)
+	exp = math.floor(exp)
+
 
 	Promise.delay(1.5):andThen(function()
 		HarukaLib:AddAttr(plr, "EXP", exp)
@@ -329,6 +331,12 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 
 	local char = plr.Character :: Model
 	if not ServerLib:IsCharValid(char) then return end
+
+	local itemInfo = ItemBook:GetItemInfo(itemSymbol.Name)
+	if not itemInfo then return end
+
+	local whiteList = { "Active", "Accessory", "Passive", "CosmeticArmor", "CosmeticWeapon", "Weapon" }
+	if not table.find(whiteList, itemInfo.Type) then return end
 
 
 	local itemStat = itemSymbol:GetAttribute("ItemStat") :: string

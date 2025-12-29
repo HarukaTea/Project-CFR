@@ -12,6 +12,7 @@ local SoundService = game:GetService("SoundService")
 local TeleportService = game:GetService("TeleportService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local ClassAttackLib = require(SSS.HarukaServer.Library.ClassAttackLib)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local CastItemLib = require(SSS.HarukaServer.Library.CastItemLib)
@@ -26,6 +27,7 @@ local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 local PartyLib = require(SSS.HarukaServer.Services.PartyLib)
 local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
+local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 
 
 type Dict = { [string]: any }
@@ -74,7 +76,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local worldId = workspace:GetAttribute("WorldId") :: string
 
         if worldId and worldId == "InitusWorld" then
-            TeleportService:Teleport(game.PlaceId, plr)
+            TeleportService:TeleportAsync(game.PlaceId, { plr })
         end
     end)
 
@@ -507,9 +509,21 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             if DoTStatus == nil then return end
             if DoTStatus == "Normal" then return end
 
-
             local dotList = DoTLib:GetEffectsByTarget(char, DoTStatus)
             if #dotList > 1 then return end
+
+            local warding = char:GetAttribute("Warding") or 0
+            if warding > 0 then
+                local isImmune = HarukaLib:RollLoot({
+                    ["Immune"] = warding,
+                    ["None"] = 100 - warding
+                })
+                if isImmune == "Immune" then
+                    ServerLib:ShowText(char, "IMMUNE!")
+                    return
+                end
+            end
+
 
             local DoTObj = DoTLib.new({
                 Target = char,
@@ -539,6 +553,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local thatOrbStyle = orbData.OrbStyle
         local thatOrbSubStyle = orbData.OrbSubStyle
+        local thatOrbUniStyle = orbData.OrbUniStyle
         local orbLocation = orbData.OrbLocation
 
         local check = true
@@ -550,11 +565,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 reject("Timestamp")
             end
 
-            local DISTANCE = 25
+            local DISTANCE = 28
             local distance1 = plr:DistanceFromCharacter(orbLocation.Position)
             local distance2 = plr:DistanceFromCharacter(orbLocation.Position + Vector3.yAxis * DISTANCE)
             local distance3 = plr:DistanceFromCharacter(orbLocation.Position - Vector3.yAxis * DISTANCE)
-            local networkPing = plr:GetNetworkPing() * 1.5
+            local networkPing = plr:GetNetworkPing() * 2
             local walkSpeed = char.Humanoid.WalkSpeed :: number
             local maxAllowedDist = DISTANCE + (walkSpeed * networkPing) + 5
             local minDistance = math.min(distance1, distance2, distance3)
@@ -595,6 +610,30 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             ClassAttackLib[thatOrbStyle](plr, orbData)
 
+        end):catch(function(err)
+            warn(tostring(err))
+        end)
+        Promise.new(function()
+            if thatOrbUniStyle == "Heal" then
+                StatusLib:HealPercentage(char, 10)
+
+            elseif thatOrbUniStyle == "ATK" then
+                local class = plr:GetAttribute("Class") or "Chain"
+                local dmgType = ClassBook[class].Type
+
+                if dmgType == "DMG" then
+                    StatusLib:ATKBoost(char, {
+                        DMGPower = 1.5,
+                        Duration = 4
+                    })
+
+                elseif dmgType == "Magic" then
+                    StatusLib:Boost("Magic", char, {
+                        Power = 1.5,
+                        Duration = 4
+                    })
+                end
+            end
         end):catch(function(err)
             warn(tostring(err))
         end)
@@ -661,7 +700,21 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local badStatus = false
         Promise.try(function()
-            local statusCode = CastItemLib[itemInfo.ItemId](plr, char, {}) :: number?
+            local statusCode = CastItemLib[itemInfo.ItemId](plr, char, {
+                CostManaFunc = function(char: Model)
+                    local manaCost = itemInfo.ExtraStatInfoDesync.Mana or 0
+                    if manaCost <= 0 then return true end
+
+                    local curMana = char:GetAttribute("Mana") or 0
+                    if curMana < manaCost then
+                        Events.CreateNotify_S.Fire(plr, "Not enough Mana")
+                        return false
+                    end
+
+                    HarukaLib:AddAttr(char, "Mana", -manaCost)
+                    return true
+                end
+            }) :: number?
 
             if statusCode and statusCode == 0 then
                 badStatus = true
@@ -744,17 +797,11 @@ end)
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.FinishNPCChat_C.SetCallback(function(plr: Player, data)
-        if data.NPCId == nil then return end
+        if data.NPCModel == nil then return end
         if data.SeriesId == nil then return end
 
 
-        local npcModel: Model? = nil
-        for _, npc: Model in CollectionService:GetTagged("NPCEntity") do
-            if npc.Name == data.NPCId then
-                npcModel = npc
-                break
-            end
-        end
+        local npcModel: Model? = data.NPCModel
         if not npcModel then return end
 
         local distance = plr:DistanceFromCharacter(npcModel.PrimaryPart.Position)
@@ -1291,6 +1338,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if item == nil then return end
         if itemUniqueId == nil then return end
 
+        local amount = data.CraftAmount
+        if not amount then return end
+        if amount <= 0 then return end
+
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end
 
@@ -1305,7 +1356,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
 
         local gold = plr:GetAttribute("Gold") :: number
-        if gold < itemInfo.Price then
+        if gold < itemInfo.Price * amount then
             Events.CreateNotify_S.Fire(plr, "Not enough Gold")
             return
         end
@@ -1326,7 +1377,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local materialCheck = true
 
-        for material: string, amount: number in itemInfo.RecipeDesync do
+        for material: string, materialAmount: number in itemInfo.RecipeDesync do
             local items = plr.Items :: Folder
             local itemSymbol = items:FindFirstChild(material) :: IntConstrainedValue
             local materialInfo = ItemBook:GetItemInfo(material)
@@ -1339,23 +1390,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 materialCheck = false
                 break
             end
-            if itemSymbol.Value < amount then
+            if itemSymbol.Value < materialAmount * amount then
                 materialCheck = false
-                break
-            end
-
-            local isEquipping = false
-            for _, symbol: StringValue in plr.EquippingItems:GetChildren() do
-                if symbol.Value == material then
-                    isEquipping = true
-                    materialCheck = false
-                    break
-                end
-            end
-            if isEquipping then
-                materialCheck = false
-
-                Events.CreateNotify_S.Fire(plr, "Cannot craft with equipped materials")
                 break
             end
 
@@ -1371,23 +1407,23 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        for material: string, amount: number in itemInfo.RecipeDesync do
+        for material: string, materialAmount: number in itemInfo.RecipeDesync do
             local symbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
-
-            symbol.Value -= amount
+            symbol.Value -= materialAmount * amount
 
             if symbol.Value <= 0 then
+                ServerLib:UnequipItem(plr, symbol:GetAttribute("HarukaUniqueId"))
                 symbol:Destroy()
             end
         end
-        HarukaLib:AddAttr(plr, "Gold", -itemInfo.Price)
+        HarukaLib:AddAttr(plr, "Gold", -itemInfo.Price * amount)
 
 
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.AnvilUse)
         Events.CreateNotify_S.Fire(plr, "Craft successful!")
 
 
-        ServerLib:GiveItemDrop(plr, item, 1)
+        ServerLib:GiveItemDrop(plr, item, amount)
     end)
 end)
 
@@ -1484,7 +1520,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             _challengeAbyss(plr, data)
         end
     end)
-    ServerBindables.RToChallengeAbyss:Connect(_challengeAbyss)
 end)
 
 

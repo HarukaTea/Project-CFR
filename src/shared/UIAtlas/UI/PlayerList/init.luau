@@ -145,7 +145,7 @@ return function(plr: Player)
                                     return Components.ScrollingFrame(scope, {
                                         Name = "PlayerList",
                                         ScrollingDirection = Enum.ScrollingDirection.Y,
-                                        Size = UDim2.fromScale(0.2, 4),
+                                        Size = UDim2.fromScale(0.18, 4),
                                         ScrollBarThickness = 0,
                                         LayoutOrder = 2,
 

@@ -20,6 +20,8 @@ export type Self = {
     NPCs: Fusion.Value<{ Model }>,
     StoryLocators: Fusion.Value<{ BasePart }>,
     CharPosition: Fusion.Value<Vector3>,
+
+    COLORS: { [string]: Color3 }
 }
 
 
@@ -46,6 +48,13 @@ return function (self: Self)
     self.StoryLocators = storyLocators
 
     self.CharPosition = Value(Vector3.zero)
+
+
+    self.COLORS = {
+        Main = Color3.fromHex('#2ed573'),
+        Side = Color3.fromHex('#fdcb6e'),
+        Town = Color3.fromHex('#a29bfe')
+    }
 
 
     --// track menu

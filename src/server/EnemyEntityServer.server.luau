@@ -264,7 +264,7 @@ end)
 local function _enemyVariant(locator: BasePart)
     if locator:GetAttribute("NoRandomName") then return end
 
-    for _, variantTable in AssetBook.EnemyVariants do
+    for _, variantTable in EntityBook.VARIANTS do
         if table.find(variantTable, locator.Name) then
             locator.Name = variantTable[math.random(1, #variantTable)]
             break
@@ -608,6 +608,22 @@ function EntityLib:_ListenStatsTracker()
     self.Add(HarukaLib:Hydrate(entity, {
         ["Attr-DMGEx"] = _updateDMG,
         ["Attr-DMGExPower"] = _updateDMG,
+        ["Attr-Level"] = _updateDMG,
+        ["Attr-EnvironmentBonus"] = _updateDMG,
+    }))
+
+
+    local function _updateDMGTakenBonus()
+        local ex = entity:GetAttribute("DMGTakenBonusEx") :: number
+        local exPower = entity:GetAttribute("DMGTakenBonusExPower") :: number
+
+        local finalBonus = math.ceil(100 * exPower + ex)
+
+        entity:SetAttribute("DMGTakenBonus", finalBonus)
+    end
+    self.Add(HarukaLib:Hydrate(entity, {
+        ["Attr-DMGTakenBonusEx"] = _updateDMGTakenBonus,
+        ["Attr-DMGTakenBonusExPower"] = _updateDMGTakenBonus,
     }))
 
 
@@ -1221,7 +1237,10 @@ function EntityLib:_CombatEnd()
         local plr = Players:GetPlayerFromCharacter(char)
         if not plr then return end
 
-        local result, _, _ = HarukaLib:RollLoot(drops)
+        local luck = char:GetAttribute("Luck") or 0
+        local finalLuck = 1 + luck / 50
+
+        local result, _, _ = HarukaLib:RollLoot(drops, finalLuck)
 
         if not ServerLib:IsModelValid(entity) then
             ServerLib:PlaceItemDropPart(plr, result, 1, self.Locator.Position, true)
