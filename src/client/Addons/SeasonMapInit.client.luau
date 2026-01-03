@@ -2,7 +2,15 @@
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
+local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+if not worldConfig then return end
+
+local mapConfig = worldConfig:GetAttribute("WinterMap") :: boolean
+if not mapConfig then return end
 
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -16,6 +24,11 @@ snowPart.Parent = workspace.Terrain
 
 camera:GetPropertyChangedSignal("CFrame"):Connect(function()
     snowPart.Position = camera.CFrame.Position + Vector3.yAxis * 100
+end)
+Lighting:GetAttributeChangedSignal("RainLevel"):Connect(function()
+    local rainLevel = Lighting:GetAttribute("RainLevel") or 0
+
+    snowPart.Parent = if rainLevel < 0.5 then workspace.Terrain else script
 end)
 
 
@@ -35,7 +48,7 @@ for id: string, info: LocationBook.LocationInfo in LocationBook do
 
         local combatMusic = LocationBook[id].CombatMusic
         if combatMusic == "UltraSuperBossBattleRMX" or combatMusic == "SophisticatedFight_Sky1st" then
-            LocationBook[id].CombatMusic = "RoadTakenRoar"
+            LocationBook[id].CombatMusic = "TemporalDreams"
         end
         if LocationBook[id].Music == "Conquest" then
             LocationBook[id].Music = "RoadTaken"

@@ -140,12 +140,27 @@ function AbyssWorldLib:GiveLoot()
                 ServerBindables.RToSendMsgToDiscord:Fire(player.DisplayName.. "(@".. player.Name.. ") has obtained Dawnbreak with "..finalChanceStr.."% chance!")
 
                 player:SetAttribute("AbyssDropPity", 0)
+
+                --// give title
+                local items = player.Items :: Folder
+                if not items:FindFirstChild("TitleAbyssT6") then
+                    ServerLib:GiveItemDrop(player, "TitleAbyssT6", 1)
+                end
             else
                 HarukaLib:AddAttr(player, "AbyssDropPity", 1)
             end
         end):catch(function(err)
             warn(tostring(err))
         end)
+
+
+        Promise.try(function()
+            local items = player.Items :: Folder
+
+            if not items:FindFirstChild("TitleAbyss") then
+                ServerLib:GiveItemDrop(player, "TitleAbyss", 1)
+            end
+        end):catch(function() end)
     end
 end
 function AbyssWorldLib:UpdateSpeedrunTime(runTime: number)
@@ -193,7 +208,7 @@ function AbyssWorldLib:PlaceMobs()
         locator:AddTag("EnemyLocatorEntity")
         locator:SetAttribute("NoRandomName", true)
         locator:SetAttribute("Level", mobInfo.Level)
-        locator:SetAttribute("EnvironmentBonus", mobInfo.EnvironmentBonus)
+        locator:SetAttribute("EnvironmentBonus", 4)
 
         locator.Parent = workspace.Enemies["_ABYSS_TEAM"]
         index += 1
@@ -297,7 +312,7 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         _notifyFireAll(plr.DisplayName.." has started the Abyss!")
         workspace:SetAttribute("AbyssStarted", true)
 
-        AbyssWorldLib.AbyssStartTime = os.time()
+        AbyssWorldLib.AbyssStartTime = DateTime.now().UnixTimestampMillis
         abyssAirwall.Parent = ServerStorage
 
         AbyssWorldLib:PlaceMobs()
@@ -329,7 +344,7 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
 
         --// count speedrun if it's f5 and 6 modifiers are used
         if AbyssWorldLib.AbyssId == 5 and #AbyssWorldLib.Modifiers >= 6 and AbyssWorldLib.AbyssStartTime then
-            local now = os.time()
+            local now = DateTime.now().UnixTimestampMillis
             local runTime = now - AbyssWorldLib.AbyssStartTime
 
             if runTime <= 5 then

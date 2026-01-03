@@ -121,7 +121,7 @@ table.insert(CriRPGLib.Funcs, function()
             isInCombat = true
 
             pcall(_destroyCombatBorder)
-            Bindables.CreateCenterNotify:Fire("ADVANTAGE!", true)
+            Bindables.CreateCenterNotify:Fire("ENCOUNTER!", true)
 
             local border = RepS.Packages.Unloads.CombatBorder:Clone() :: Model
             local entityPos = char:GetAttribute("CombatLocation") :: CFrame
@@ -166,19 +166,16 @@ table.insert(CriRPGLib.Funcs, function()
                 end
                 if isBoss then
                     local targetSoundId = SoundService.Musics.Areas.Combat:FindFirstChild(targetMusicId) :: Sound
-                    if targetSoundId then
-                        if targetSoundId.SoundId ~= SoundService.Musics.Overworld.SoundId then
-                            SoundService.Musics.Overworld:Pause()
+                    if targetSoundId and targetSoundId.SoundId ~= SoundService.Musics.Overworld.SoundId then
+                        SoundService.Musics.Overworld:Pause()
 
-                            local bossCombatMusic = SoundService.Musics.BossCombat :: Sound
+                        local bossCombatMusic = SoundService.Musics.BossCombat :: Sound
+                        bossCombatMusic.SoundId = targetSoundId.SoundId
 
-                            bossCombatMusic.SoundId = targetSoundId.SoundId
-
-                            bossCombatMusic:Play()
-                            bossCombatMusic.PlaybackSpeed = targetSoundId.PlaybackSpeed
-                            bossCombatMusic.TimePosition = targetSoundId.TimePosition
-                            bossCombatMusic.Volume = targetSoundId.Volume
-                        end
+                        bossCombatMusic:Play()
+                        bossCombatMusic.PlaybackSpeed = targetSoundId.PlaybackSpeed
+                        bossCombatMusic.TimePosition = targetSoundId.TimePosition
+                        bossCombatMusic.Volume = targetSoundId.Volume
                     else
                         _playNormalCombatMusic()
                     end
@@ -255,9 +252,7 @@ table.insert(CriRPGLib.Funcs, function()
                 local targetSoundOW = musicLib.Overworld:FindFirstChild(owMusic) :: Sound
                 local targetSoundCB = musicLib.Combat:FindFirstChild(cbMusic) :: Sound
 
-                if not targetSoundCB or not targetSoundOW then return end
-
-                if overworldMusic.SoundId ~= targetSoundOW.SoundId then
+                if targetSoundOW and overworldMusic.SoundId ~= targetSoundOW.SoundId then
                     HarukaLib:CreateTween(overworldMusic, AssetBook.TweenInfos.twiceHalf, {
                         Volume = 0
                     }):Play()
@@ -276,7 +271,7 @@ table.insert(CriRPGLib.Funcs, function()
                         Volume = targetSoundOW.Volume
                     }):Play()
                 end
-                if combatMusic.SoundId ~= targetSoundCB.SoundId then
+                if targetSoundCB and combatMusic.SoundId ~= targetSoundCB.SoundId then
                     combatMusic.SoundId = targetSoundCB.SoundId
 
                     if overworldMusic.Playing then return end
@@ -327,6 +322,11 @@ table.insert(CriRPGLib.Funcs, function()
 
             --- apply rain
             Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel or 0)
+
+
+            --- apply character base stat
+            char:SetAttribute("BaseSpeed", LocationBook[location].BaseSpeed or 40)
+            char:SetAttribute("BaseJumpPower", LocationBook[location].BaseJumpPower or 50)
 
 
             --- apply atmosphere
@@ -797,11 +797,6 @@ table.insert(CriRPGLib.Funcs, function()
 
         _playOverworldMusic(SoundService.Musics.Overworld.SoundId)
     end
-    local function _victoryed(state: boolean)
-        if not state then return end
-
-        _playOverworldMusic(SoundService.Musics.Victory.SoundId)
-    end
     local function _bossFighting(state: boolean)
         if not state then return end
 
@@ -812,9 +807,6 @@ table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(workspace, {
         ["Attr-AbyssStarted"] = _started,
         ["Attr-DungeonStarted"] = _started,
-
-        ["Attr-AbyssFinished"] = _victoryed,
-        ["Attr-DungeonFinished"] = _victoryed,
 
         ["Attr-AbyssBossFighting"] = _bossFighting,
         ["Attr-DungeonBossFighting"] = _bossFighting

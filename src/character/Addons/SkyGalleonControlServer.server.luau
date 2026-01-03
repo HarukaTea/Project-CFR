@@ -51,7 +51,8 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
 
 
 
-Add(Events.DriveSkyGalleon_C.On(function(plr: Player, moveVector: Vector3)
+Add(Events.DriveSkyGalleon_C.On(function(player: Player, moveVector: Vector3)
+    if player ~= plr then return end
     if not currentGalleon then return end
     if not moveVector then return end
 
@@ -63,7 +64,7 @@ Add(Events.DriveSkyGalleon_C.On(function(plr: Player, moveVector: Vector3)
 
     local currentCFrame = currentGalleon.PrimaryPart.CFrame
     local rotationInput = -moveVector.X
-    local targetVelocity = currentCFrame.LookVector * -moveVector.Z * 66
+    local targetVelocity = currentCFrame.LookVector * -moveVector.Z * 50
     local newPosition = currentCFrame.Position + targetVelocity
 
     if moveVector.Z > 0 then

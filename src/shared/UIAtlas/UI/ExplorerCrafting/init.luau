@@ -92,7 +92,7 @@ return function (plr: Player)
                                 local category = use(self.CurrentCategory) :: string
 
                                 if category == "Misc" then
-                                    category = { "Quest", "CosmeticArmor", "CosmeticWeapon" }
+                                    category = { "Quest", "Cosmetic", "Title" }
                                 elseif category == "Active" then
                                     category = { "Consumable", "Active" }
                                 elseif category == "Accessory" then
@@ -236,7 +236,7 @@ return function (plr: Player)
                 [Children] = {
                     Components.UIAspectRatioConstraint(scope),
 
-                    Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                         if not use(self.IsCrafting) then return nil end
 
                         return MKPurchasePrompt(scope, {
@@ -373,7 +373,7 @@ return function (plr: Player)
                         }),
 
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local item = use(self.CurrentSelectedItem) :: string
                             local itemInfo = ItemBook:GetItemInfo(item)
                             if itemInfo == nil then
@@ -509,7 +509,7 @@ return function (plr: Player)
                                     })
                                 end),
 
-                                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                                     local price = use(self.CraftingPrice) :: number
 
                                     if price > 0 then

@@ -99,6 +99,13 @@ local function _damageDealMiddler(char: Model, targeting: Model, dmgProps: {
     local dmgTakenBonus = targeting:GetAttribute("DMGTakenBonus") or 100
     dmg = math.ceil(dmg * dmgTakenBonus / 100)
 
+    --// class level
+    local plr = Players:GetPlayerFromCharacter(char)
+    local class = plr:GetAttribute("Class") or "Chain"
+    local classLevel = plr:GetAttribute("ClassLevel_"..class) or 1
+
+    dmg = math.ceil(dmg * ((100 + classLevel * 2) / 100))
+
     return dmg
 end
 ClassAttackLib._AddClassUltCharge = _addClassUltCharge

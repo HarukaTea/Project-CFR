@@ -15,14 +15,13 @@ export type QuestJSON = {
     NPC: string,
     WorldLocatorId: string,
 
-    Repeatable: boolean,
-    DeliverType: "Normal" | "Objective",
+    Repeatable: boolean?,
 
-    RequiredQuests: { string },
     Rewards: {
-        Gold: number?,
-        EXP: number?,
-        Astra: number?,
+        [string]: number?,
+    },
+    ItemRewards: {
+        [string]: number?,
     },
 
     Objectives: {
@@ -31,23 +30,7 @@ export type QuestJSON = {
 }
 
 
-local quests = {
-    --// Main
-
-    --// Side
-
-
-    --// Town
-}
-
-
-for i = 2, 50 do
-    if not quests["Main"..i] then break end
-
-    for j = 1, i - 1 do
-        table.insert(quests["Main"..i].RequiredQuests, "Main"..j)
-    end
-end
+local quests = {}
 
 
 return quests

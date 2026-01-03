@@ -10,18 +10,19 @@ local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 
 local Children = Fusion.Children
 
-
 local plr = Players.LocalPlayer
 
 return function(scope: Fusion.Scope, props: {
-    AddedEXP: number,
+    AddedClassEXP: number
 })
 
-    local level = plr:GetAttribute("Level") or 1
-    local exp = plr:GetAttribute("EXP") or 0
-    local maxEXP = FormulaBook.PlayerLevelCurveCal({
-        Level = level
+    local class = plr:GetAttribute("Class") or "Chain"
+    local classLevel = plr:GetAttribute("ClassLevel_"..class) or 1
+    local classEXP = plr:GetAttribute("ClassEXP_"..class) or 0
+    local maxClassEXP = FormulaBook.PlayerClassLevelCurveCal({
+        Level = classLevel,
     })
+
 
     return Components.Frame(scope, {
         Name = "LevelEXPBar",
@@ -37,8 +38,8 @@ return function(scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(1.2, 1.2),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
                 FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                TextColor3 = Color3.fromHex("#7bed9f"),
-                Text = level,
+                TextColor3 = Color3.fromHex("#ffeaa7"),
+                Text = classLevel,
 
                 [Children] = {
                     Components.RoundUICorner(scope),
@@ -46,7 +47,7 @@ return function(scope: Fusion.Scope, props: {
                         Name = "UIStrokeText"
                     }),
                     Components.ScaledUIStroke(scope, {
-                        Color = Color3.fromHex('#7bed9f'),
+                        Color = Color3.fromHex('#ffeaa7'),
                         Thickness = 0.07
                     }),
                     Components.UIPadding(scope, {
@@ -62,9 +63,9 @@ return function(scope: Fusion.Scope, props: {
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.fromScale(0.5, -0.8),
                 Size = UDim2.fromScale(1, 0.5),
-                TextColor3 = Color3.fromHex("#7bed9f"),
+                TextColor3 = Color3.fromHex("#ffeaa7"),
 
-                Text = "LEVEL",
+                Text = "CLASS",
 
                 [Children] = {
                     Components.ScaledTextUIStroke(scope, {})
@@ -76,7 +77,7 @@ return function(scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(0.5, 1.3),
                 Size = UDim2.fromScale(1, 0.4),
                 FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-                Text = `{exp} / {maxEXP}`,
+                Text = `{classEXP} / {maxClassEXP}`,
 
                 [Children] = {
                     Components.ScaledTextUIStroke(scope, {})
@@ -90,22 +91,21 @@ return function(scope: Fusion.Scope, props: {
                 FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
                 TextColor3 = Color3.fromHex("#ffeaa7"),
 
-                Text = `+{props.AddedEXP}`,
+                Text = `+{props.AddedClassEXP}`,
 
                 [Children] = {
                     Components.ScaledTextUIStroke(scope, {})
                 }
             }),
 
-
             Components.Frame(scope, {
                 Name = "Line",
-                AnchorPoint = Vector2.new(0, 0.5),
-                Position = UDim2.fromScale(0, 0.5),
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.fromScale(1, 0.5),
                 BackgroundTransparency = 0,
-                BackgroundColor3 = Color3.fromHex('#7bed9f'),
+                BackgroundColor3 = Color3.fromHex('#ffeaa7'),
                 Size = UDim2.fromScale(0.3, 0.1)
-            }),
+            })
         }
     })
 end

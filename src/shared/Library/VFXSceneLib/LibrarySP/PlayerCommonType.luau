@@ -176,7 +176,7 @@ return function (self: Types.VFXSceneLib)
         camShake:Start()
 
         wait(0.2)
-        camShake:Shake(CameraShaker.Presets.Explosion)
+        camShake:Shake(CameraShaker.Presets.Bump)
 
         Promise.delay(1):andThen(function()
             camShake:Stop()

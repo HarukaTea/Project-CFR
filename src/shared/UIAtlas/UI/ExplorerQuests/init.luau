@@ -5,6 +5,7 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local QuestBar = require(script.Components.QuestBar)
 local QuestIndicator = require(script.Components.QuestIndicator)
@@ -47,45 +48,50 @@ return function(plr: Player)
                 Name = "QuestMarkers",
 
                 [Children] = {
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: Folder)
-                        if questSymbol:GetAttribute("IsCompleted") then return nil end
+                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: BoolValue)
+                        if questSymbol.Value then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
 
                         local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
-
                         local questId = questSymbol.Name
                         local locator = QuestBook[questId].WorldLocatorId
 
                         if locator == "" then return nil end
 
-                        local realLocator = nil
-                        for _, thatLocator: BasePart in use(self.StoryLocators) do
-                            if thatLocator.Name == locator then
-                                realLocator = thatLocator
-                                break
-                            end
-                        end
+                        local realLocator = workspace.Maps:FindFirstChild(locator, true)
                         if realLocator == nil then return nil end
 
 
-                        return Components.BillboardGui(scope, {
-                            Name = "Marker",
-                            Size = UDim2.fromOffset(45, 45),
-                            MaxDistance = 1599 * 40,
-                            Adornee = realLocator,
+                        local isCompleted = Fusion.Value(scope, false)
+                        table.insert(scope, HarukaLib:Hydrate(questSymbol, {
+                            ["Prop-Value"] = function(state: boolean)
+                                state = state or false
+                                isCompleted:set(state)
+                            end
+                        }))
 
-                            [Children] = {
-                                QuestIndicator(scope, {
-                                    QuestType = questInfo.QuestType,
-                                    WorldPoint = realLocator.Position,
-                                    CharPoint = self.CharPosition,
-                                    COLORS = self.COLORS
-                                })
-                            }
-                        })
+                        return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            if use(isCompleted) then return nil end
+
+                            return Components.BillboardGui(scope, {
+                                Name = "Marker",
+                                Size = UDim2.fromOffset(45, 45),
+                                MaxDistance = 1599 * 40,
+                                Adornee = realLocator,
+
+                                [Children] = {
+                                    QuestIndicator(scope, {
+                                        QuestType = questInfo.QuestType,
+                                        WorldPoint = realLocator.Position,
+                                        CharPoint = self.CharPosition,
+                                        COLORS = self.COLORS
+                                    })
+                                }
+                            })
+                        end)
                     end),
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: Folder)
-                        if questSymbol:GetAttribute("IsCompleted") then return nil end
+                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: BoolValue)
+                        if questSymbol.Value then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
 
                         local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
@@ -94,54 +100,58 @@ return function(plr: Player)
                         local npc = QuestBook[questId].NPC
                         if npc == "" then return nil end
 
-                        local npcs = use(self.NPCs)
-                        local npcModel: Model = nil
-
-                        for _, npcObj: Model in npcs do
-                            if npcObj.Name == npc then
-                                npcModel = npcObj
-                                break
-                            end
-                        end
+                        local npcModel = workspace.MapComponents.NPCs:FindFirstChild(npc, true)
                         if not npcModel then return nil end
 
 
                         if npcModel:GetAttribute("_NoLocationMarker") then return nil end
 
 
-                        return questId, Components.BillboardGui(scope, {
-                            Name = "NPCMarker_"..questId,
-                            MaxDistance = 100,
-                            Adornee = npcModel.PrimaryPart,
-                            Size = UDim2.fromScale(3, 3),
-                            StudsOffset = Vector3.yAxis * 5,
+                        local isCompleted = Fusion.Value(scope, false)
+                        table.insert(scope, HarukaLib:Hydrate(questSymbol, {
+                            ["Prop-Value"] = function(state: boolean)
+                                state = state or false
+                                isCompleted:set(state)
+                            end
+                        }))
 
-                            [Children] = {
-                                Components.TextLabel(scope, {
-                                    Name = "Indicator",
-                                    Text = "?",
-                                    TextColor3 = self.COLORS[questInfo.QuestType],
-                                    FontFace = Font.fromName("Arial", Enum.FontWeight.Bold),
-                                    AutoLocalize = false,
+                        return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            if use(isCompleted) then return nil end
 
-                                    [Children] = {
-                                        Components.ScaledTextUIStroke(scope, {}, true)
-                                    }
-                                })
-                            }
-                        })
+                            return Components.BillboardGui(scope, {
+                                Name = "NPCMarker_"..questId,
+                                MaxDistance = 100,
+                                Adornee = npcModel.PrimaryPart,
+                                Size = UDim2.fromScale(3, 3),
+                                StudsOffset = Vector3.yAxis * 5,
+
+                                [Children] = {
+                                    Components.TextLabel(scope, {
+                                        Name = "Indicator",
+                                        Text = "?",
+                                        TextColor3 = self.COLORS[questInfo.QuestType],
+                                        FontFace = Font.fromName("Arial", Enum.FontWeight.Bold),
+                                        AutoLocalize = false,
+
+                                        [Children] = {
+                                            Components.ScaledTextUIStroke(scope, {}, true)
+                                        }
+                                    })
+                                }
+                            })
+                        end)
                     end)
                 }
             })
         }
 
 	}, {
-        CenterProps = {
+        BottomProps = {
             [Children] = {
                 Components.Frame(scope, {
                     Name = "Quests",
                     AnchorPoint = Vector2.zero,
-                    Position = UDim2.fromScale(0.015, 0),
+                    Position = UDim2.fromScale(0.125, -0.8),
 
                     [Children] = {
                         Components.UIScale(scope, {
@@ -149,22 +159,35 @@ return function(plr: Player)
                         }),
 
                         Components.UIListLayout(scope, {
-                            Padding = UDim.new(0.3, 0),
+                            Padding = UDim.new(0.1, 0),
                             VerticalAlignment = Enum.VerticalAlignment.Bottom,
                         }),
 
-                        Fusion.ForValues(scope, self.Quests, function(_, scope: Fusion.Scope, questSymbol: StringValue)
-                            if questSymbol:GetAttribute("IsCompleted") then return nil end
+                        Fusion.ForValues(scope, self.Quests, function(_, scope: Fusion.Scope, questSymbol: BoolValue)
+                            if questSymbol.Value then return nil end
                             if not QuestBook[questSymbol.Name] then return nil end
 
                             local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
 
-                            return QuestBar(scope, {
-                                QuestType = questInfo.QuestType,
-                                QuestId = questInfo.Id,
-                                QuestVal = questSymbol,
-                                COLORS = self.COLORS
-                            })
+                            local isCompleted = Fusion.Value(scope, false)
+                            table.insert(scope, HarukaLib:Hydrate(questSymbol, {
+                                ["Prop-Value"] = function(state: boolean)
+                                    state = state or false
+                                    isCompleted:set(state)
+                                end
+                            }))
+
+
+                            return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                if use(isCompleted) then return nil end
+
+                                return QuestBar(scope, {
+                                    QuestType = questInfo.QuestType,
+                                    QuestId = questInfo.Id,
+                                    QuestVal = questSymbol,
+                                    COLORS = self.COLORS
+                                })
+                            end)
                         end)
                     }
                 })

@@ -28,6 +28,7 @@ return function(scope: Fusion.Scope, props: {
     local HP = Value(100)
     local class = Value("Burst")
     local role = Value("")
+    local title = Value("Explorer")
 
 
     table.insert(scope, HarukaLib:Hydrate(props.Char.Humanoid, {
@@ -44,6 +45,9 @@ return function(scope: Fusion.Scope, props: {
         end,
         ["Attr-Role"] = function(val: string)
             role:set(val)
+        end,
+        ["Attr-Title"] = function(val: string)
+            title:set(val)
         end
     }))
 
@@ -144,10 +148,39 @@ return function(scope: Fusion.Scope, props: {
             }),
         }
     }), Components.BillboardGui(scope, {
-        Name = "PlayerRoleBar",
+        Name = "PlayerTitleBar",
         Size = UDim2.fromScale(12, 0.7),
         MaxDistance = 65,
         StudsOffset = Vector3.yAxis * 5.5,
+        Adornee = props.Char.PrimaryPart,
+
+        Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            return use(HP) > 0
+        end),
+
+        [Children] = {
+            Components.TextLabel(scope, {
+                Name = "PlayerTitle",
+
+                Text = Fusion.Computed(scope, function(use: Fusion.Use)
+                    local titleState = use(title) :: string
+                    if titleState == nil then return "" end
+                    if titleState == "" then return "" end
+
+                    return `- {titleState} -`
+                end),
+                TextColor3 = Color3.fromHex('#ffeaa7'),
+
+                [Children] = {
+                    Components.ScaledTextUIStroke(scope, {})
+                }
+            })
+        }
+    }), Components.BillboardGui(scope, {
+        Name = "PlayerRoleBar",
+        Size = UDim2.fromScale(12, 0.7),
+        MaxDistance = 65,
+        StudsOffset = Vector3.yAxis * 6.5,
         Adornee = props.Char.PrimaryPart,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)

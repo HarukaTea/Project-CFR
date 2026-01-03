@@ -1,6 +1,7 @@
 
 local BadgeService = game:GetService("BadgeService")
 local CollectionService = game:GetService("CollectionService")
+local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -46,8 +47,8 @@ function ServerLib:FindGroundByRayForOrb(givenPos: Vector3)
 	return ClientLib:FindGroundByRayForOrb(givenPos)
 end
 
-function ServerLib:WeldWeapon(weapon: Model, char: Model)
-	ClientLib:WeldWeapon(weapon, char)
+function ServerLib:WeldWeapon(weapon: Model, char: Model) : Model
+	return ClientLib:WeldWeapon(weapon, char)
 end
 
 function ServerLib:IsModelValid(model: Model)
@@ -290,27 +291,33 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 		ItemId = itemId,
 		Amount = amount
 	})
-	Events.PlaySound_S.Fire(plr, SoundService.SFXs.ItemAcquired)
-
-
-	-- add quest progress
-
 end
 
 
-function ServerLib:GiveEXPRewards(plr: Player, exp: number)
+function ServerLib:GiveEXPRewards(plr: Player, exp: number, classEXP: number)
 	exp = exp or 0
 	if exp <= 0 then return end
 
+	classEXP = classEXP or 0
+
 	exp *= FormulaBook.EXPEvent
-	exp = math.clamp(exp, 0, 1599 * 40 * 15)
+	exp = math.clamp(exp, 0, FormulaBook.FAIRLY_BIG_NUMBER)
 	exp = math.floor(exp)
 
+	classEXP = math.clamp(classEXP, 0, FormulaBook.FAIRLY_BIG_NUMBER)
+	classEXP = math.floor(classEXP)
 
-	Promise.delay(1.5):andThen(function()
+
+	Promise.delay(1):andThen(function()
+		local class = plr:GetAttribute("Class") or "Chain"
+
 		HarukaLib:AddAttr(plr, "EXP", exp)
+		HarukaLib:AddAttr(plr, "ClassEXP_"..class, classEXP)
 
-		Events.OpenEXPAwardBar_S.Fire(plr, exp)
+		Events.OpenEXPAwardBar_S.Fire(plr, {
+			EXPGained = exp,
+			ClassEXPGained = classEXP
+		})
 	end)
 end
 
@@ -335,7 +342,7 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	local itemInfo = ItemBook:GetItemInfo(itemSymbol.Name)
 	if not itemInfo then return end
 
-	local whiteList = { "Active", "Accessory", "Passive", "CosmeticArmor", "CosmeticWeapon", "Weapon" }
+	local whiteList = { "Active", "Accessory", "Passive", "Weapon" }
 	if not table.find(whiteList, itemInfo.Type) then return end
 
 
@@ -387,14 +394,63 @@ function ServerLib:UnequipItem(plr: Player, itemUniqueId: string)
 end
 
 
+local function _refresh(plr: Player)
+	local refreshSymbol = Instance.new("StringValue")
+	refreshSymbol.Name = "_NULL"
+	refreshSymbol.Value = "_NULL"
+	refreshSymbol:SetAttribute("HarukaUniqueId", "1599mkk40")
+	refreshSymbol.Parent = plr.EquippingItems
 
-function ServerLib:EquipCosmetic(plr: Player, itemUniqueId: string, method: string?)
-
+	Debris:AddItem(refreshSymbol, 1)
 end
-function ServerLib:UnequipCosmetic(plr: Player, itemUniqueId: string)
-	ServerLib.EquipCosmetic(plr, itemUniqueId, "Unequip")
+function ServerLib:ChangeWeapon(plr: Player, itemId: string, itemUniqueId: string)
+	local weapon1Symbol = plr.EquippingItems:FindFirstChild("Weapon1") :: StringValue
+	if not weapon1Symbol then
+		weapon1Symbol = Instance.new("StringValue")
+		weapon1Symbol.Name = "Weapon1"
+	end
+
+	ServerLib:UnequipItem(plr, weapon1Symbol:GetAttribute("HarukaUniqueId"))
+
+	weapon1Symbol:SetAttribute("HarukaUniqueId", itemUniqueId)
+	weapon1Symbol.Value = itemId
+	weapon1Symbol.Parent = plr.EquippingItems
+
+	_refresh(plr)
+	ServerLib:EquipItem(plr, itemUniqueId)
+
+	Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
 end
 
+
+function ServerLib:EquipArmor(char: Model, armorId: string)
+	if not ServerLib:IsCharValid(char) then return end
+	if not armorId then return end
+
+	if char:FindFirstChild(armorId) then char[armorId]:Destroy() end
+
+	local armor = RepS.Packages.Cosmetics[armorId]:Clone() :: Model
+	local equipList = { "Head", "Torso", "Right Arm", "Left Arm", "Right Leg", "Left Leg", "Extra" }
+
+	--- wait character fully loads
+	for _, part: string in equipList do
+		if part == "Extra" then continue end
+		char:WaitForChild(part, 999)
+	end
+	for _, part: string in equipList do
+		if not armor:FindFirstChild(part) then continue end
+
+		local weapon = ServerLib:WeldWeapon(armor[part], char)
+		weapon.Parent = armor
+	end
+	armor.Parent = char
+end
+function ServerLib:UnequipArmor(char: Model, armorId: string)
+	if not ServerLib:IsCharValid(char) then return end
+	if not armorId then return end
+
+	if char:FindFirstChild(armorId) then char[armorId]:Destroy() end
+end
 
 
 function ServerLib:CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -> ()?, failureHandler: () -> ()?)

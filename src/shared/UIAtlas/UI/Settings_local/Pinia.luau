@@ -211,7 +211,7 @@ return function (self: Self)
         SoundService.SFXs.Volume = val
     end)
     self.INFO.Sounds.Includes.FootstepVolume.ValChanged:Connect(function(val)
-        SoundService.FS_SFXs.Volume = val
+        SoundService.FootstepSFXs.Volume = val
     end)
     self.INFO.Sounds.Includes.AmbientVolume.ValChanged:Connect(function(val)
         SoundService.Environment.Volume = val

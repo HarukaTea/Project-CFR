@@ -1,29 +1,26 @@
 
-local newTweenInfo = TweenInfo.new
-local fromHex = Color3.fromHex
-
 local AssetBook = {}
 
 AssetBook.TweenInfos = {
-	fourHalf = newTweenInfo(0.05),
-	threeHalf = newTweenInfo(0.15),
-	twiceHalf = newTweenInfo(0.2),
-	onceHalf = newTweenInfo(0.3),
-	half = newTweenInfo(0.5),
-	halfBack = newTweenInfo(0.5, Enum.EasingStyle.Back),
-	twiceHalfOne = newTweenInfo(0.75),
-	threeHalfOne = newTweenInfo(0.9),
-	one = newTweenInfo(1),
-	oneHalf = newTweenInfo(1.5),
-	two = newTweenInfo(2),
-	three = newTweenInfo(3),
-	four = newTweenInfo(4),
-	six = newTweenInfo(6),
-	fifteen = newTweenInfo(15, Enum.EasingStyle.Linear)
+	fourHalf = TweenInfo.new(0.05),
+	threeHalf = TweenInfo.new(0.15),
+	twiceHalf = TweenInfo.new(0.2),
+	onceHalf = TweenInfo.new(0.3),
+	half = TweenInfo.new(0.5),
+	halfBack = TweenInfo.new(0.5, Enum.EasingStyle.Back),
+	twiceHalfOne = TweenInfo.new(0.75),
+	threeHalfOne = TweenInfo.new(0.9),
+	one = TweenInfo.new(1),
+	oneHalf = TweenInfo.new(1.5),
+	two = TweenInfo.new(2),
+	three = TweenInfo.new(3),
+	four = TweenInfo.new(4),
+	six = TweenInfo.new(6),
+	fifteen = TweenInfo.new(15, Enum.EasingStyle.Linear)
 }
 
 
-AssetBook.StackableItemTypes = { "Accessory", "Weapon", "CosmeticArmor", "CosmeticWeapon" }
+AssetBook.StackableItemTypes = { "Accessory", "Weapon", "Cosmetic" }
 
 
 AssetBook.ExtraIcons = {
@@ -34,12 +31,12 @@ AssetBook.ExtraIcons = {
 
 
 AssetBook.ItemTierColors = {
-	fromHex('#626771'),
-	fromHex('#52836f'),
-	fromHex('#57789c'),
-	fromHex('#6f639f'),
-	fromHex('#ac712c'),
-	fromHex('#a72424')
+	Color3.fromHex('#626771'),
+	Color3.fromHex('#52836f'),
+	Color3.fromHex('#57789c'),
+	Color3.fromHex('#6f639f'),
+	Color3.fromHex('#ac712c'),
+	Color3.fromHex('#a72424')
 }
 
 
@@ -87,8 +84,8 @@ AssetBook.BadgeIds = {
 AssetBook.CurrencyIcons = {
     Gold = "rbxassetid://18421784947",
     Astra = "rbxassetid://93309091471652",
-
-	HalloweenCandy = "rbxassetid://118291405899454",
+	HalloweenCandy = "rbxassetid://101642799593354",
+	IceCandy = "rbxassetid://4806921700",
 }
 
 

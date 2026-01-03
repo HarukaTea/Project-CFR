@@ -8,7 +8,7 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 
-local MKProductBar = require(RepS.HarukaShared.UIAtlas.Components.MKProductBar)
+local MKProductBar = require(script.Components.MKProductBar)
 local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
 local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
 local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarEcoSlot)
@@ -87,7 +87,7 @@ return function (plr: Player)
                                     CurrentSelectedItem = self.CurrentSelectedItem,
                                     CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
 
-                                    CurrencyId = "Gold"
+                                    CurrencyId = self.CurrencyUsing
                                 })
                             end)
                         }
@@ -178,7 +178,7 @@ return function (plr: Player)
                         }),
 
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local curItem = use(self.CurrentSelectedItem) :: string
 
                             if curItem ~= "" then
@@ -219,7 +219,9 @@ return function (plr: Player)
                             Padding = UDim.new(0.015, 0),
                         }),
 
-                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
+                        Fusion.ForPairs(scope, table.create(1, true), function(use: Fusion.Use, scope: Fusion.Scope, index: number, _)
+                            local currency = use(self.CurrencyUsing)
+
                             return index, BottombarEcoSlot(scope, {
                                 Currency = currency,
                                 Index = index,
@@ -238,8 +240,10 @@ return function (plr: Player)
             ZIndex = 10,
 
             [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                     if not use(self.IsPurchasing) then return nil end
+
+                    local currencyId = use(self.CurrencyUsing)
 
                     return MKPurchasePrompt(scope, {
                         ProductId = use(self.CurrentSelectedItem),
@@ -251,7 +255,7 @@ return function (plr: Player)
                         CurrentSelectedItem = self.CurrentSelectedItem,
                         CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
 
-                        CurrencyId = "Gold",
+                        CurrencyId = currencyId,
                     })
                 end)
             }

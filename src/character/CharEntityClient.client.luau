@@ -368,18 +368,18 @@ table.insert(CharLib.Funcs, function()
     end))
 
 
-    local allSounds = SoundService.FS_SFXs:QueryDescendants("Sound")
+    local allSounds = SoundService.FootstepSFXs:QueryDescendants("Sound")
     local lastMaterialSFX = nil
 
     Add(RunService.Heartbeat:Connect(function()
         if isWalking then
             local materialStanding = humanoid.FloorMaterial.Name
             if materialStanding ~= lastMaterialStanding and lastMaterialStanding ~= nil then
-                SoundService.FS_SFXs[lastMaterialStanding].Playing = false
+                SoundService.FootstepSFXs[lastMaterialStanding].Playing = false
             end
 
-            local materialSFX = SoundService.FS_SFXs[materialStanding] :: Sound
-            materialSFX.PlaybackSpeed = 16 / 12
+            local materialSFX = SoundService.FootstepSFXs[materialStanding] :: Sound
+            materialSFX.PlaybackSpeed = 17 / 12
             materialSFX.Playing = true
 
             lastMaterialSFX = materialSFX

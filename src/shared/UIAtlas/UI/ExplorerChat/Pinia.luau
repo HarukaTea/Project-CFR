@@ -11,6 +11,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
 local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
+local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 
 
 
@@ -107,7 +108,7 @@ return function (self: Self)
     local currentDialogueIndexChatting: number = 1
     local dialogueIndexChatting: number = 1
     local dialoguesChatting: { string } = {}
-    local seriesId: string = "Else"
+    local questId: string = "Else"
 
 
 
@@ -127,11 +128,11 @@ return function (self: Self)
         if npcChatting and typeof(npcChatting) == "Instance" and npcChatting:IsA("Model") then
             Events.FinishNPCChat_C.Fire({
                 NPCModel = npcChatting,
-                SeriesId = seriesId
+                QuestId = questId
             })
 
             local extra = npcDialogues.Extra
-            local bindableId = extra[seriesId]
+            local bindableId = extra[questId]
             if QuestBindables[bindableId] then
                 QuestBindables[bindableId]:Fire()
             end
@@ -139,14 +140,11 @@ return function (self: Self)
 
         npcChatting = nil
         npcDialogues = {}
-        seriesId = "Else"
+        questId = "Else"
 
         self.plr:SetAttribute("CurrentUIGroup", "None")
     end
     local function __setText(text: string)
-        text = string.gsub(text, "<br%s*/>", "\n")
-        text = string.gsub(text, "<[^<>]->", "")
-
         self.Dialogue:set(HarukaLib:RichTextify(text))
         self.MaxUTFShown:set(0)
 
@@ -223,10 +221,23 @@ return function (self: Self)
                 local choices = {}
 
                 if branch1 == branch2 then
-                    choices[branch1] = npcDialogues["CHOICE"..branch1]
+                    local isLowerCase = npcDialogues["Choice"..branch1]
+                    local thatChoice = isLowerCase
+                    if isLowerCase == nil then
+                        thatChoice = npcDialogues["CHOICE"..branch1]
+                    end
+                    choices[branch1] = thatChoice
                 else
                     for i = branch1, branch2 do
-                        choices[i] = npcDialogues["CHOICE"..i]
+                        local isLowerCase = npcDialogues["Choice"..i]
+                        local thatChoice = isLowerCase
+                        if isLowerCase == nil then
+                            thatChoice = npcDialogues["CHOICE"..i]
+                        end
+                        if thatChoice == nil or thatChoice == "" then
+                            thatChoice = npcDialogues["Choice1"] or npcDialogues["CHOICE1"]
+                        end
+                        choices[i] = thatChoice
                     end
                 end
                 self.Choices:set(choices)
@@ -342,18 +353,29 @@ return function (self: Self)
         local quests = Fusion.peek(self.Quests)
 
         --- main quest is at the highest priority
-        local function __priorityChoose(series: string)
+        local function __priorityChoose(series: string, searchCompleted: boolean)
             local found = false
 
-            for _, questSymbol: StringValue in quests do
-                if questSymbol:GetAttribute("IsCompleted") then continue end
+            local questsWithSeries = {}
+            for _, questSymbol: BoolValue in quests do
+                local thatQuestId = questSymbol.Name
+                local questInfo = QuestBook[thatQuestId]
+                if questInfo == nil then continue end
 
-                local questId = questSymbol.Name
+                if questInfo.QuestType == series then
+                    table.insert(questsWithSeries, questSymbol)
+                end
+            end
+            for _, questSymbol: BoolValue in questsWithSeries do
+                if questSymbol.Value and not searchCompleted then continue end
 
-                if string.find(questId, series) and npcDialogues[questId] then
-                    dialoguesChatting = npcDialogues[questId]
-                    currentDialoguesChatting = npcDialogues[questId]
-                    seriesId = questId
+                local suffix = if questSymbol.Value and searchCompleted then "Completed" else ""
+                local thatQuestId = questSymbol.Name
+
+                if npcDialogues[thatQuestId..suffix] then
+                    dialoguesChatting = npcDialogues[thatQuestId]
+                    currentDialoguesChatting = npcDialogues[thatQuestId]
+                    questId = thatQuestId
 
                     __setText(currentDialoguesChatting[currentDialogueIndexChatting])
                     found = true
@@ -363,12 +385,15 @@ return function (self: Self)
 
             return found
         end
-        if __priorityChoose("Main") then return end
-        if __priorityChoose("Side") then return end
-        if __priorityChoose("Town") then return end
+        if __priorityChoose("Main", false) then return end
+        if __priorityChoose("Side", false) then return end
+        if __priorityChoose("Town", false) then return end
+        if __priorityChoose("Main", true) then return end
+        if __priorityChoose("Side", true) then return end
+        if __priorityChoose("Town", true) then return end
 
         --- all of above don't match
-        seriesId = "Else"
+        questId = "Else"
 
         currentDialoguesChatting = npcDialogues.Else
         dialoguesChatting = npcDialogues.Else

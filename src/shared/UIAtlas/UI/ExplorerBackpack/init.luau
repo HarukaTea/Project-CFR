@@ -253,7 +253,7 @@ return function (plr: Player)
                         }),
 
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local item = use(self.CurrentSelectedItem) :: string
                             local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
 
@@ -280,10 +280,10 @@ return function (plr: Player)
                                 if self.EquipCD then return end
 
                                 self.EquipCD = true
-                                table.insert(scope, task.delay(0.3, function()
+                                task.delay(0.3, function()
                                     if self == nil then return end
                                     self.EquipCD = false
-                                end))
+                                end)
 
                                 local curItem = Fusion.peek(self.CurrentSelectedItem) :: string
                                 local curItemUniqueId = Fusion.peek(self.CurrentSelectedItemUniqueId) :: string
@@ -335,7 +335,7 @@ return function (plr: Player)
                         end),
 
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local item = use(self.CurrentSelectedItem) :: string
 
                             local itemInfo = ItemBook:GetItemInfo(item)
@@ -343,12 +343,12 @@ return function (plr: Player)
                                 return nil
                             end
 
-                            local blackList = { "Quest", "Passive", "CosmeticArmor", "CosmeticWeapon" }
+                            local blackList = { "Quest", "Passive", "Cosmetic", "Title" }
                             if table.find(blackList, itemInfo.Type) then
                                 return nil
                             end
 
-                             return {
+                            return {
                                 ExecuteButton(scope, {
                                     Size = UDim2.fromScale(0.115, 0.7),
                                     ButtonText = "Sell",
@@ -444,7 +444,7 @@ return function (plr: Player)
             ZIndex = 10,
 
             [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, _)
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                     if not use(self.IsPurchasing) then return nil end
 
                     return MKPurchasePrompt(scope, {

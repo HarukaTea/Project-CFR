@@ -68,8 +68,10 @@ return function(plr: Player)
                     MinDMG = self.MinDMG, MaxDMG = self.MaxDMG,
                     Magic = self.Magic,
 
-                    HalloweenCandy = self.HalloweenCandy,
                     Gold = self.Gold,
+
+                    HalloweenCandy = self.HalloweenCandy,
+                    IceCandy = self.IceCandy,
                 }),
 
 

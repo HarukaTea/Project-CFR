@@ -1,5 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
@@ -14,73 +15,60 @@ return function(scope: Fusion.Scope, props: {
 })
 
     local itemInfo = ItemBook:GetItemInfo(props.ItemId)
-    if itemInfo == nil then
-        warn(`Lacking of item info for drops: {props.ItemId}`)
-        return nil
-    end
+    if not itemInfo then return nil end
 
 
-    local bar = Components.Frame(scope, {
-        Name = "ItemDrop_"..props.ItemId,
-        Size = UDim2.fromScale(0.25, 0.65),
-        BackgroundTransparency = 0,
+	local position = Fusion.Value(scope, UDim2.fromScale(-0.5, 0))
 
-        BackgroundColor3 = AssetBook.ItemTierColors[itemInfo.Tier],
+    SoundService.SFXs.ItemAcquired:Play()
 
-        [Children] = {
-            Components.UIGradient(scope, {
-                Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 1),
-                    NumberSequenceKeypoint.new(0.2, 0.55),
-                    NumberSequenceKeypoint.new(0.8, 0.55),
-                    NumberSequenceKeypoint.new(1, 1)
-                })
-            }),
+	table.insert(scope, task.delay(0.1, function()
+		position:set(UDim2.fromScale(-0.02, 0))
+	end))
+	table.insert(scope, task.delay(3.2, function()
+		position:set(UDim2.fromScale(-0.5, 0))
+	end))
 
-            Components.UIListLayout(scope, {
-                FillDirection = Enum.FillDirection.Horizontal,
-                Padding = UDim.new(0.025, 0),
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-            }),
+	return Components.Frame(scope, {
+		Name = itemInfo.ItemId,
+		AnchorPoint = Vector2.zero,
+        ZIndex = 99,
 
-            Components.IconImageLabel(scope, {
-                Size = UDim2.fromScale(0.8, 0.8),
-                LayoutOrder = 1,
+		[Children] = {
+			Components.Frame(scope, {
+				Name = "Bar",
+				BackgroundTransparency = 0.2,
+				AnchorPoint = Vector2.zero,
+				Size = UDim2.fromScale(0.2, 1),
 
-                Image = itemInfo.Icon
-            }),
+				Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use)
+					return use(position)
+				end), Components.TweenInfos.twiceHalfOne),
 
-            Components.TextLabel(scope, {
-                Name = "ItemName",
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0, 0.7),
-                LayoutOrder = 2,
+				[Children] = {
+					Components.RoundUICorner(scope),
 
-                Text = itemInfo.Name
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "SmallAmountTitle",
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0, 0.7),
-                LayoutOrder = 3,
-
-                Text = "x",
-                TextColor3 = Color3.fromRGB(188, 188, 188)
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "Amount",
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0, 0.85),
-                LayoutOrder = 4,
-                FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
-
-                Text = props.Amount,
-            }),
-        }
-    })
-
-    return bar
+					Components.IconImageLabel(scope, {
+						Position = UDim2.fromScale(0.81, 0),
+						Image = itemInfo.Icon,
+					}),
+					Components.TextLabel(scope, {
+						Name = "Title",
+						Position = UDim2.fromScale(0.15, 0.03),
+						Size = UDim2.fromScale(0.62, 0.35),
+						Text = "ACQUIRED x"..props.Amount,
+						TextXAlignment = Enum.TextXAlignment.Right,
+					}),
+					Components.TextLabel(scope, {
+						Name = "Item",
+						Position = UDim2.fromScale(0.15, 0.44),
+						Size = UDim2.fromScale(0.62, 0.45),
+						Text = itemInfo.Name,
+						TextColor3 = AssetBook.ItemTierColors[itemInfo.Tier]:Lerp(Color3.new(1, 1, 1), 0.5),
+						TextXAlignment = Enum.TextXAlignment.Right
+					}),
+				},
+			}),
+		},
+	})
 end

@@ -8,6 +8,9 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local ClassSlot = require(script.Parent.ClassSlot)
 local DMGStat = require(script.Parent.DMGStat)
 
+
+local EventTokenStat = require(script.Parent.EventTokenStat)
+
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -26,9 +29,10 @@ return function(scope: Fusion.Scope, props: {
     MaxDMG: Fusion.Value<number>,
     Magic: Fusion.Value<number>,
 
+    Gold: Fusion.Value<number>,
 
     HalloweenCandy: Fusion.Value<number>,
-    Gold: Fusion.Value<number>,
+    IceCandy: Fusion.Value<number>,
 })
 
     return Components.Frame(scope, {
@@ -92,6 +96,17 @@ return function(scope: Fusion.Scope, props: {
                                         StatId = "Gold",
                                         StatValue = props.Gold,
                                         LayoutOrder = -1
+                                    }),
+
+                                    EventTokenStat(scope, {
+                                        StatId = "HalloweenCandy",
+                                        StatValue = props.HalloweenCandy,
+                                        LayoutOrder = -2,
+                                    }),
+                                    EventTokenStat(scope, {
+                                        StatId = "IceCandy",
+                                        StatValue = props.IceCandy,
+                                        LayoutOrder = -3,
                                     })
                                 }
                             }),

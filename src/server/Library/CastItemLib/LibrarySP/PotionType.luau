@@ -98,7 +98,7 @@ return function (self: Types.CastItemLib)
 
 
         CastItemLib._drinkSoundFunc(char, function()
-            --// TODO: Implement mana potion effect
+            StatusLib:RestoreManaPercentage(char, 100)
 
             Events.PlayStatPoweredScreenFX_S.Fire(player)
         end)

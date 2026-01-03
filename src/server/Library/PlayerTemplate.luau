@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
@@ -32,16 +33,11 @@ export type PlayerDataJSON = {
     Gold: number,
     Astra: number,
 
-    -- event fields
-    HalloweenCandy: number,
-
     PerkPoints: number,
     STRPoints: number,
     INTPoints: number,
     VITPoints: number,
     DEXPoints: number,
-    TalentPoints: number,
-    Talents: {},
     PlayTime: number,
     Class: string,
     LastSeen: string,
@@ -60,13 +56,24 @@ export type PlayerDataJSON = {
     --// new fields
     Title: string,
     AbyssDropPity: number,
-
-    --// new fields 2
     FavActionDone: boolean,
     IsInGroup: boolean,
+    ClassLevel: { [string]: number },
+    ClassEXPV2: { [string]: number },
+    ClassPerkPoints: { [string]: number },
 
     --// legacy fields
-    Settings: {}?
+    Settings: {}?,
+    Talents: {}?,
+    TalentPoints: number,
+
+    -- event fields
+    HalloweenCandy: number,
+    IceCandy: number,
+    ClaimedChristmasDonation: boolean,
+    ClaimedHalloweenDonation: boolean,
+    ChristmasGiftFound: number,
+    ChristmasGifts: { [string]: boolean }
 }
 
 
@@ -110,7 +117,9 @@ local playerStats = {
             Gold = 0,
             Astra = 0,
 
-            HalloweenCandy = 0,
+            ClassLevel = {},
+            ClassEXPV2 = {},
+            ClassPerkPoints = {},
 
             PerkPoints = 2,
             STRPoints = 0,
@@ -133,10 +142,18 @@ local playerStats = {
 
             CombatWonTimes = 0,
 
-            Title = "Adventurer",
+            Title = "Explorer",
             AbyssDropPity = 0,
             FavActionDone = false,
-            IsInGroup = false
+            IsInGroup = false,
+
+            --// event fields
+            HalloweenCandy = 0,
+            IceCandy = 0,
+            ClaimedChristmasDonation = false,
+            ClaimedHalloweenDonation = false,
+            ChristmasGiftFound = 0,
+            ChristmasGifts = {}
         }
     },
 
@@ -148,6 +165,15 @@ local playerStats = {
 
     Settings = {}
 }
+
+--// additional fields
+for class: string, _ in ClassBook do
+    playerStats.Slot1.Attrs.ClassLevel[class] = 1
+    playerStats.Slot1.Attrs.ClassEXPV2[class] = 0
+    playerStats.Slot1.Attrs.ClassPerkPoints[class] = 2
+end
+
+
 playerStats.Slot2 = HarukaLib.TableUtils.DeepCopy(playerStats.Slot1)
 playerStats.Slot3 = HarukaLib.TableUtils.DeepCopy(playerStats.Slot1)
 

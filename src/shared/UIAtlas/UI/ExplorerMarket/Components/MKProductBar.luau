@@ -22,7 +22,7 @@ return function(scope: Fusion.Scope, props: {
     CurrentSelectedItem: Fusion.Value<string>,
     CurrentSelectedItemUniqueId: Fusion.Value<string>,
 
-    CurrencyId: string
+    CurrencyId: Fusion.Value<string>,
 })
 
     local info = ItemBook:GetItemInfo(props.ProductId)
@@ -180,8 +180,11 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     Components.IconImageLabel(scope, {
-                                        Image = CURRENCY_ICONS[props.CurrencyId],
                                         LayoutOrder = 1,
+
+                                        Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                            return CURRENCY_ICONS[use(props.CurrencyId)]
+                                        end)
                                     }),
 
 

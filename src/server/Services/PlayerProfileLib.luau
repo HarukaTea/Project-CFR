@@ -31,9 +31,10 @@ export type PlayerProfileLibClass = {
     Profile: HarukaDatastore.Profile<PlayerTemplate.JSON>,
 
 
-    _ValidateSaveData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerDataJSON }) -> { PlayerTemplate.PlayerDataJSON },
-    _ValidateMainData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerMainDataJSON }) -> { PlayerTemplate.PlayerMainDataJSON },
+    _ValidateSaveData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerDataJSON }) -> PlayerTemplate.PlayerDataJSON,
+    _ValidateMainData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerMainDataJSON }) -> PlayerTemplate.PlayerMainDataJSON,
 
+    _GetCurrentDonation: (profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) -> number,
     CalDonationAndSave: (profile: HarukaDatastore.Profile<PlayerTemplate.JSON>, plr: Player) -> nil,
     UpdateDonationRank: (self: PlayerProfileLibClass) -> nil,
 
@@ -91,7 +92,7 @@ end
 
 
 function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON)
-    local data = HarukaLib.TableUtils.DeepCopy(dataT)
+    local data = HarukaLib.TableUtils.DeepCopy(dataT) :: PlayerTemplate.PlayerDataJSON
 
 
     --// check class
@@ -254,6 +255,9 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
 
     --// clean up old settings
     data.Settings = nil
+    data.Talents = nil
+    data.TalentPoints = nil
+    data.ClassEXP = nil
 
 
     --// check valid equipping items
@@ -303,8 +307,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             end
         end
         if string.find(thatSlot, "Cosmetic") then
-            local whiteList = { "CosmeticArmor", "CosmeticWeapon" }
-            if not table.find(whiteList, trueItemInfo.Type) then
+            if trueItemInfo.Type ~= "Cosmetic" then
                 data.EquippingItemsSQL[thatSlot] = nil
                 continue
             end
@@ -324,7 +327,7 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             continue
         end
 
-        local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "CosmeticWeapon", "CosmeticArmor" }
+        local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "Cosmetic" }
         if not table.find(whiteList, ItemBook:GetItemInfo(itemObj.ItemId).Type) then
             data.EquippingItemsSQL[thatSlot] = nil
             continue
@@ -364,24 +367,50 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     end
 
 
-
-    --// check valid quests
-    local isAbyss = workspace:GetAttribute("IsAbyss")
-    local isDungeon = workspace:GetAttribute("IsDungeon")
-    if not isAbyss and not isDungeon then
-        for questId: string, _ in data.QuestsV3 do
-            if not QuestBook[questId] then
-                data.QuestsV3[questId] = nil
-            end
-        end
-        if HarukaLib.TableUtils.IsEmpty(data.QuestsV3) then
-            data.QuestsV3.Main1 = {
-                Completed = false,
-                Objectives = {}
-            }
+    --// check valid title
+    local hasTitle = false
+    for _, itemObj in data.ItemsSQL do
+        local trueItemInfo = ItemBook:GetItemInfo(itemObj.ItemId)
+        if trueItemInfo and trueItemInfo.Type == "Title" then
+            hasTitle = true
+            break
         end
     end
+    if hasTitle == false then
+        local titleUniqueId = HttpService:GenerateGUID(false)
+        data.ItemsSQL[itemUniqueIdForEmptyWeapon] = {
+            ItemId = "TitleExplorer",
+            Amount = 1,
+            UniqueId = titleUniqueId,
+            ItemStat = "",
+            IsFav = false,
+            IsLocked = false
+        }
+    end
 
+
+
+    --// check valid quests
+    local function _giveQuest(questId: string)
+        data.QuestsV3[questId] = {
+            Completed = false,
+            Objectives = {}
+        }
+    end
+    if data.QuestsV3.Main1 == nil then
+        _giveQuest("Main1")
+    end
+    if data.QuestsV3.Christmas1 == nil then
+        _giveQuest("Christmas1")
+    end
+    if data.QuestsV3.AbyssStarting == nil and data.Level >= 100 then
+        _giveQuest("AbyssStarting")
+    end
+    for questId: string, _ in data.QuestsV3 do
+        if not QuestBook[questId] then
+            data.QuestsV3[questId] = nil
+        end
+    end
 
     --// check invalid points
 
@@ -419,8 +448,26 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
 
 
     --// check level
-    data.EXP = math.clamp(data.EXP, 0, 1599 * 40 * 15)
+    data.EXP = math.clamp(data.EXP, 0, FormulaBook.FAIRLY_BIG_NUMBER)
     data.EXP = math.floor(data.EXP)
+    data.Level = math.clamp(data.Level, 1, FormulaBook.PLAYER_MAX_LEVEL)
+    data.Level = math.floor(data.Level)
+
+    --// check integer
+    data.Gold = math.floor(data.Gold)
+    data.Astra = math.floor(data.Astra)
+    data.HalloweenCandy = math.floor(data.HalloweenCandy)
+    data.IceCandy = math.floor(data.IceCandy)
+
+    --// check class levels
+    for class: string, level: number in data.ClassLevel do
+        data.ClassLevel[class] = math.clamp(level, 1, FormulaBook.PLAYER_MAX_CLASS_LEVEL)
+        data.ClassLevel[class] = math.floor(data.ClassLevel[class])
+    end
+    for class: string, exp: number in data.ClassEXPV2 do
+        data.ClassEXPV2[class] = math.clamp(exp, 0, FormulaBook.FAIRLY_BIG_NUMBER)
+        data.ClassEXPV2[class] = math.floor(data.ClassEXPV2[class])
+    end
 
     return data
 end
@@ -428,7 +475,7 @@ end
 
 
 function PlayerProfileLib:_ValidateMainData(dataT: PlayerTemplate.PlayerMainDataJSON)
-    local data = HarukaLib.TableUtils.DeepCopy(dataT)
+    local data = HarukaLib.TableUtils.DeepCopy(dataT) :: PlayerTemplate.PlayerMainDataJSON
 
     --// check gamepass purchase logs
     for gamepassId: string, _ in data.GamepassPurchaseLogs do

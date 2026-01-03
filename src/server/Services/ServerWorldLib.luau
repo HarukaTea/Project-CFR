@@ -87,6 +87,12 @@ table.insert(ServerWorldLib.Funcs, function()
     if workspace.Terrain:FindFirstChild("DO_NOT_REMOVE_ForgeSharedPartCache") then
         workspace.Terrain["DO_NOT_REMOVE_ForgeSharedPartCache"]:Destroy()
     end
+    if ServerStorage:FindFirstChild("Trashcan") then
+        ServerStorage.Trashcan:Destroy()
+    end
+    if ServerStorage:FindFirstChild("Brushtool2_Plugin_Storage") then
+        ServerStorage["Brushtool2_Plugin_Storage"]:Destroy()
+    end
 end)
 
 
@@ -374,13 +380,15 @@ end)
 
 table.insert(ServerWorldLib.Funcs, function()
     local MAX_SIZE_THRESHOLD = 5
+    local MAX_SIZE_THRESHOLD_SQ = 1
     local count = 0
 
     for _, part: BasePart in workspace:QueryDescendants(HarukaLib.BasePartSelector) do
         local isSmall = math.max(part.Size.X, part.Size.Y, part.Size.Z) < MAX_SIZE_THRESHOLD
+        local isBigButSmall = math.min(part.Size.X, part.Size.Y, part.Size.Z) < MAX_SIZE_THRESHOLD_SQ
         local isTransparent = part.Transparency > 0.5
 
-        if (isSmall or isTransparent) then
+        if (isSmall or isTransparent or isBigButSmall) then
             part.CastShadow = false
             count += 1
         end
@@ -392,10 +400,10 @@ end)
 
 table.insert(ServerWorldLib.Funcs, function()
     for _, material in Enum.Material:GetEnumItems() do
-        if not ReplicatedStorage.Packages.Audio.FS_SFXs:FindFirstChild(material.Name) then
-            local airReplacement = ReplicatedStorage.Packages.Audio.FS_SFXs.Air:Clone()
+        if not ReplicatedStorage.Packages.Audio.FootstepSFXs:FindFirstChild(material.Name) then
+            local airReplacement = ReplicatedStorage.Packages.Audio.FootstepSFXs.Air:Clone()
             airReplacement.Name = material.Name
-            airReplacement.Parent = ReplicatedStorage.Packages.Audio.FS_SFXs
+            airReplacement.Parent = ReplicatedStorage.Packages.Audio.FootstepSFXs
         end
     end
     for _, sGroup: SoundGroup in ReplicatedStorage.Packages.Audio:GetChildren() do
@@ -432,40 +440,24 @@ table.insert(ServerWorldLib.Funcs, function()
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyModels, CollisionBook.Group.EnemyBodyPart)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.EnemyAttacks, CollisionBook.Group.EnemyProjectile)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.ClassWeapons, CollisionBook.Group.NoCollision)
+    HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Cosmetics, CollisionBook.Group.NoCollision)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.ClassAttacks, CollisionBook.Group.Hitbox)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.SkillProjectiles, CollisionBook.Group.NoCollision)
-
-
-    CollectionService:GetInstanceAddedSignal("NPCEntity"):Connect(function(npc: Model)
-        HarukaLib:SetCollisionGroup(npc, CollisionBook.Group.NPCBodyPart)
-    end)
 end)
 
 
 
 table.insert(ServerWorldLib.Funcs, function()
-    if not workspace.MapComponents:FindFirstChild("Markets") then return end
+    if not workspace.MapComponents:FindFirstChild("Markets") then
+        local folder = Instance.new("Folder")
+        folder.Name = "Markets"
+        folder.Parent = workspace.MapComponents
+    end
 
 
     for _, npc: Model in workspace.MapComponents.Markets:QueryDescendants("Model,ProximityPrompt") do
         if npc:FindFirstChildOfClass("Humanoid") then
-            HarukaLib:SetCollisionGroup(npc, "NoCollision")
-
-
-            local npcHumanoid = npc.Humanoid :: Humanoid
-
-            if not npcHumanoid:FindFirstChildOfClass("Animator") then
-                local animator = Instance.new("Animator")
-                animator.Parent = npcHumanoid
-            end
-
-            local npcAnim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
-            local animTrack = npcHumanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[npcAnim]) :: AnimationTrack
-
-            animTrack.Looped = true
-            animTrack.Priority = Enum.AnimationPriority.Idle
-
-            animTrack:Play()
+            HarukaLib:SetCollisionGroup(npc, CollisionBook.Group.NPCBodyPart)
         end
         if npc:IsA("ProximityPrompt") and npc.Parent and npc.Parent.Parent then
             local marketModel = npc.Parent.Parent :: Model
@@ -500,6 +492,8 @@ table.insert(ServerWorldLib.Funcs, function()
             npc:AddTag("NPCEntity")
             npc.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
 
+            HarukaLib:SetCollisionGroup(npc, CollisionBook.Group.NPCBodyPart)
+
             if npc:FindFirstChild("AnimSaves") then
                 npc.AnimSaves:Destroy()
             end
@@ -522,6 +516,8 @@ table.insert(ServerWorldLib.Funcs, function()
         if (npc:FindFirstChildOfClass("Humanoid") or npc:FindFirstChildOfClass("AnimationController")) then
             npc:AddTag("NonNPCEntity")
             npc.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+
+            HarukaLib:SetCollisionGroup(npc, CollisionBook.Group.NPCBodyPart)
         end
     end
 end)
@@ -575,10 +571,10 @@ table.insert(ServerWorldLib.Funcs, function()
 
         prompt:AddTag("PromptEntity")
 	end
-	for _, child: Instance in workspace.MapComponents:QueryDescendants("ProximityPrompt") do
+	for _, child: Instance in workspace:QueryDescendants("ProximityPrompt") do
 		_updatePrompt(child)
 	end
-	workspace.MapComponents.DescendantAdded:Connect(_updatePrompt)
+	workspace.DescendantAdded:Connect(_updatePrompt)
 end)
 
 
@@ -597,7 +593,7 @@ table.insert(ServerWorldLib.Funcs, function()
         if RunService:IsStudio() then return end
         if closeReason ~= Enum.CloseReason.DeveloperUpdate then return end
 
-        Events.CreateFSNotify_S.FireList(Players:GetPlayers(), string.upper("CF is updating, please wait..."), 15)
+        Events.CreateFSNotify_S.FireList(Players:GetPlayers(), string.upper("Game is updating, restarting server"), 30)
     end
     game:BindToClose(shutdownSetup)
 end)
@@ -613,20 +609,6 @@ table.insert(ServerWorldLib.Funcs, function()
         end
     end
 end)
-
-
-
-table.insert(ServerWorldLib.Funcs, function()
-    if not workspace.MapComponents:FindFirstChild("Gifts") then return end
-
-    for _, gift: Model in workspace.MapComponents.Gifts:GetChildren() do
-        if gift:IsA("Model") then
-            gift:AddTag("GiftEntity")
-            gift.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-        end
-    end
-end)
-
 
 
 table.insert(ServerWorldLib.Funcs, function()

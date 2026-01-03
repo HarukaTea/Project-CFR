@@ -4,8 +4,7 @@ local AbyssBook = {}
 
 export type AbyssTeamJSON = {
     MobId: string,
-    Level: number,
-    EnvironmentBonus: number
+    Level: number
 }
 
 AbyssBook.TeamConfigs = {}
@@ -62,9 +61,9 @@ AbyssBook.TeamConfigs[5] = {
 
 AbyssBook.TeamConfigIcons = {
     "rbxassetid://127989665826507",
-    "rbxassetid://90390582857611",
-    "rbxassetid://17543155439",
     "rbxassetid://138540677700873",
+    "rbxassetid://17543155439",
+    "rbxassetid://90390582857611",
     "rbxassetid://95284011272925",
 }
 

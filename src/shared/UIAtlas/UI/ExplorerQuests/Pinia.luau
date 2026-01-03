@@ -18,7 +18,6 @@ export type Self = {
 
     Quests: Fusion.Value<{ StringValue }>,
     NPCs: Fusion.Value<{ Model }>,
-    StoryLocators: Fusion.Value<{ BasePart }>,
     CharPosition: Fusion.Value<Vector3>,
 
     COLORS: { [string]: Color3 }
@@ -41,11 +40,9 @@ return function (self: Self)
 
     local quests = FusionComponents.useChildren(scope, plr:WaitForChild("Quests", 999))
     local npcs = FusionComponents.useTagged(scope, "NPCEntity")
-    local storyLocators = FusionComponents.useTagged(scope, "StoryLocatorEntity")
 
     self.Quests = quests
     self.NPCs = npcs
-    self.StoryLocators = storyLocators
 
     self.CharPosition = Value(Vector3.zero)
 

@@ -35,8 +35,14 @@ end
 
 
 wait(5)
+local UNIVERSE_IDS = {
+    ["6754928573"] = 2
+}
+local testerRank = UNIVERSE_IDS[tostring(game.GameId)] or 127
+
+
 repeat wait() until plr:GetAttribute("Rank")
-if (plr:GetAttribute("Rank") or 0) < 2 then return end
+if (plr:GetAttribute("Rank") or 0) < testerRank then return end
 
 
 

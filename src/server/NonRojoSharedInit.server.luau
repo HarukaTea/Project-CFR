@@ -1,5 +1,6 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 
 --// For teamwork purposes, init files that arent in the rojo Project
 
@@ -23,7 +24,7 @@ if localTeamworkPackages:FindFirstChild("LocationBook") then
 end
 
 if localTeamworkPackages:FindFirstChild("MapServer") then
-    localTeamworkPackages.MapServer:Clone().Parent = workspace.MapComponents
+    localTeamworkPackages.MapServer:Clone().Parent = ServerScriptService
 end
 
 if localTeamworkPackages:FindFirstChild("QuestBook") then

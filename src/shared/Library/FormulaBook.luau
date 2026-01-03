@@ -6,9 +6,11 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local formulas = {
     ENEMY_MAX_LEVEL = 1599,
     PLAYER_MAX_LEVEL = 200,
+    PLAYER_MAX_CLASS_LEVEL = 15,
     PLAYER_POINT_PER_LEVEL = 2,
-    PLAYER_TALENT_POINT_PER_LEVEL = 1,
     PLAYER_MAX_DEX_POINTS = 50,
+
+    FAIRLY_BIG_NUMBER = 1599 * 40 * 15,
 
     MAX_ITEM_LIMIT = 9999,
 
@@ -18,27 +20,12 @@ local formulas = {
     PlayerLevelCurveCal = function(props: {
         Level: number
     })
-        if props.Level <= 15 then
-            return math.floor(12 * props.Level)
-
-        elseif props.Level > 15 and props.Level <= 45 then
-            return math.floor(40 * props.Level)
-
-        elseif props.Level > 45 and props.Level <= 100 then
-            return math.floor(80 * props.Level)
-
-        elseif props.Level > 100 and props.Level <= 170 then
-            return math.floor(120 * props.Level)
-
-        elseif props.Level > 170 and props.Level <= 180 then
-            return math.floor(155 * props.Level)
-
-        elseif props.Level > 180 and props.Level <= 190 then
-            return math.floor(195 * props.Level)
-
-        elseif props.Level > 190 then
-            return math.floor(255 * props.Level)
-        end
+        return math.floor(11 * (props.Level ^ 1.85))
+    end,
+    PlayerClassLevelCurveCal = function(props: {
+        Level: number,
+    })
+        return math.floor(80 * (props.Level ^ 1.4))
     end,
 
 
@@ -47,7 +34,12 @@ local formulas = {
     EnemyEXPCurveCal = function(props: {
         Level: number
     })
-        return math.floor(61 * props.Level)
+        return math.floor(12 * (props.Level ^ 1.35))
+    end,
+    EnemyClassEXPCurveCal = function(props: {
+        Level: number
+    })
+        return math.floor(3 * (props.Level ^ 1.1))
     end,
 
 
@@ -57,16 +49,12 @@ local formulas = {
     })
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
-        local l = props.Level :: number
-        local base = 100 + 40 * l
-
-        if l >= 45 and l < 100 then
-            base = 325 + 100 * l
+        local base: number = 1
+        if props.Level < 50 then
+            base = 25 + 55 * props.Level
+        elseif props.Level >= 50 then
+            base = 500 + 255 * props.Level
         end
-        if l >= 100 then
-            base = 555 + 170 * l
-        end
-
         return math.ceil(base * props.EnvironmentBonus)
     end,
 
@@ -78,7 +66,6 @@ local formulas = {
         props.EnvironmentBonus = props.EnvironmentBonus or 1
 
         local f = 8 + 3 * props.Level
-
         return math.ceil(f * props.EnvironmentBonus)
     end,
 
@@ -95,7 +82,7 @@ local formulas = {
         BaseHealth: number,
         HealthPoints: number
     })
-        return math.floor(props.BaseHealth + 50 * props.HealthPoints)
+        return math.floor(props.BaseHealth + 75 * props.HealthPoints)
     end,
 
     PlayerDMGCurveCal = function(props: {

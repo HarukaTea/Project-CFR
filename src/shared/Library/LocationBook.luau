@@ -10,7 +10,10 @@ export type LocationInfo = {
     LightingInfo: Dict,
     AtmosphereInfo: {
         [string]: Dict
-    }
+    },
+
+    RainLevel: number?,
+    BaseSpeed: number?,
 }
 
 

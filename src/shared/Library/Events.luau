@@ -941,6 +941,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 				val_1["ProductUniqueId"] = buffer.readstring(incoming_buff, read(len_23), len_23)
 				value["Products"][i_1] = val_1
 			end
+			local len_24 = buffer.readu16(incoming_buff, read(2))
+			value["CurrencyId"] = buffer.readstring(incoming_buff, read(len_24), len_24)
 			if reliable_events[15][1] then
 				for _, cb in reliable_events[15] do
 					task.spawn(cb, value)
@@ -954,15 +956,15 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 26 then -- OpenEventMarketUI_S
 			local value
 			value = {  }
-			local len_24 = buffer.readu16(incoming_buff, read(2))
-			value["Products"] = table.create(len_24)
-			for i_2 = 1, len_24 do
+			local len_25 = buffer.readu16(incoming_buff, read(2))
+			value["Products"] = table.create(len_25)
+			for i_2 = 1, len_25 do
 				local val_2
 				val_2 = {  }
-				local len_25 = buffer.readu16(incoming_buff, read(2))
-				val_2["ProductId"] = buffer.readstring(incoming_buff, read(len_25), len_25)
 				local len_26 = buffer.readu16(incoming_buff, read(2))
-				val_2["ProductUniqueId"] = buffer.readstring(incoming_buff, read(len_26), len_26)
+				val_2["ProductId"] = buffer.readstring(incoming_buff, read(len_26), len_26)
+				local len_27 = buffer.readu16(incoming_buff, read(2))
+				val_2["ProductUniqueId"] = buffer.readstring(incoming_buff, read(len_27), len_27)
 				value["Products"][i_2] = val_2
 			end
 			if reliable_events[26][1] then
@@ -977,7 +979,9 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 7 then -- OpenEXPAwardBar_S
 			local value
-			value = buffer.readu16(incoming_buff, read(2))
+			value = {  }
+			value["EXPGained"] = buffer.readu16(incoming_buff, read(2))
+			value["ClassEXPGained"] = buffer.readu16(incoming_buff, read(2))
 			if reliable_events[7][1] then
 				for _, cb in reliable_events[7] do
 					task.spawn(cb, value)
@@ -1061,8 +1065,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			local value
 			local bool_13 = buffer.readu8(incoming_buff, read(1))
 			value = {  }
-			local len_27 = buffer.readu16(incoming_buff, read(2))
-			value["StatusId"] = buffer.readstring(incoming_buff, read(len_27), len_27)
+			local len_28 = buffer.readu16(incoming_buff, read(2))
+			value["StatusId"] = buffer.readstring(incoming_buff, read(len_28), len_28)
 			if bit32.btest(bool_13, 0b0000000000000001) then
 				incoming_ipos = incoming_ipos + 1
 				value["Entity"] = incoming_inst[incoming_ipos]
@@ -1070,8 +1074,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			else
 				value["Entity"] = nil
 			end
-			local len_28 = buffer.readu16(incoming_buff, read(2))
-			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_28), len_28)
+			local len_29 = buffer.readu16(incoming_buff, read(2))
+			value["UniqueId"] = buffer.readstring(incoming_buff, read(len_29), len_29)
 			value["Duration"] = buffer.readu8(incoming_buff, read(1))
 			if reliable_events[29][1] then
 				for _, cb in reliable_events[29] do
@@ -1085,8 +1089,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 37 then -- CreateNotify_S
 			local value
-			local len_29 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_29), len_29)
+			local len_30 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_30), len_30)
 			if reliable_events[37][1] then
 				for _, cb in reliable_events[37] do
 					task.spawn(cb, value)
@@ -1099,8 +1103,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 			end
 		elseif id == 39 then -- CreateFSNotify_S
 			local value, value2
-			local len_30 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_30), len_30)
+			local len_31 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_31), len_31)
 			value2 = buffer.readu8(incoming_buff, read(1))
 			if reliable_events[39][1] then
 				for _, cb in reliable_events[39] do
@@ -1128,8 +1132,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 38 then -- CreateCenterNotify_S
 			local value, value2
 			local bool_14 = buffer.readu8(incoming_buff, read(1))
-			local len_31 = buffer.readu16(incoming_buff, read(2))
-			value = buffer.readstring(incoming_buff, read(len_31), len_31)
+			local len_32 = buffer.readu16(incoming_buff, read(2))
+			value = buffer.readstring(incoming_buff, read(len_32), len_32)
 			value2 = bit32.btest(bool_14, 0b0000000000000001)
 			if reliable_events[38][1] then
 				for _, cb in reliable_events[38] do
@@ -1179,8 +1183,8 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 		elseif id == 11 then -- CastItem_S_Response
 			local value
 			value = {  }
-			local len_32 = buffer.readu16(incoming_buff, read(2))
-			value["SlotId"] = buffer.readstring(incoming_buff, read(len_32), len_32)
+			local len_33 = buffer.readu16(incoming_buff, read(2))
+			value["SlotId"] = buffer.readstring(incoming_buff, read(len_33), len_33)
 			value["CooldownTime"] = buffer.readu8(incoming_buff, read(1))
 			if reliable_events[11][1] then
 				for _, cb in reliable_events[11] do
@@ -1252,20 +1256,20 @@ local returns = {
 			local bool_16_pos_1 = alloc(1)
 			if Value["ActionId"] ~= nil then
 				bool_16 = bit32.bor(bool_16, 0b0000000000000001)
-				local len_33 = #Value["ActionId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_33)
-				alloc(len_33)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ActionId"], len_33)
-			end
-			if Value["SlotId"] ~= nil then
-				bool_16 = bit32.bor(bool_16, 0b0000000000000010)
-				local len_34 = #Value["SlotId"]
-				assert(utf8.len(Value["SlotId"]) ~= nil, "value is not valid utf-8")
+				local len_34 = #Value["ActionId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_34)
 				alloc(len_34)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_34)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ActionId"], len_34)
+			end
+			if Value["SlotId"] ~= nil then
+				bool_16 = bit32.bor(bool_16, 0b0000000000000010)
+				local len_35 = #Value["SlotId"]
+				assert(utf8.len(Value["SlotId"]) ~= nil, "value is not valid utf-8")
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
+				alloc(len_35)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SlotId"], len_35)
 			end
 			if Value["SlotMiddler"] ~= nil then
 				bool_16 = bit32.bor(bool_16, 0b0000000000000100)
@@ -1309,11 +1313,11 @@ local returns = {
 			end
 			if Value["CombatMode"] ~= nil then
 				bool_18 = bit32.bor(bool_18, 0b0000000000000010)
-				local len_35 = #Value["CombatMode"]
+				local len_36 = #Value["CombatMode"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_35)
-				alloc(len_35)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["CombatMode"], len_35)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
+				alloc(len_36)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["CombatMode"], len_36)
 			end
 			buffer.writeu8(outgoing_buff, bool_18_pos_1, bool_18)
 		end,
@@ -1334,16 +1338,16 @@ local returns = {
 			end
 			if Value["Modifiers"] ~= nil then
 				bool_19 = bit32.bor(bool_19, 0b0000000000000010)
-				local len_36 = #Value["Modifiers"]
+				local len_37 = #Value["Modifiers"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_36)
-				for i_3 = 1, len_36 do
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
+				for i_3 = 1, len_37 do
 					local val_3 = Value["Modifiers"][i_3]
-					local len_37 = #val_3
+					local len_38 = #val_3
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, len_37)
-					alloc(len_37)
-					buffer.writestring(outgoing_buff, outgoing_apos, val_3, len_37)
+					buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
+					alloc(len_38)
+					buffer.writestring(outgoing_buff, outgoing_apos, val_3, len_38)
 				end
 			end
 			buffer.writeu8(outgoing_buff, bool_19_pos_1, bool_19)
@@ -1455,11 +1459,11 @@ local returns = {
 			local bool_20_pos_1 = alloc(1)
 			if Value["AttrId"] ~= nil then
 				bool_20 = bit32.bor(bool_20, 0b0000000000000001)
-				local len_38 = #Value["AttrId"]
+				local len_39 = #Value["AttrId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_38)
-				alloc(len_38)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["AttrId"], len_38)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
+				alloc(len_39)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["AttrId"], len_39)
 			end
 			if Value["State"] ~= nil then
 				bool_20 = bit32.bor(bool_20, 0b0000000000000010)
@@ -1478,11 +1482,11 @@ local returns = {
 			local bool_21_pos_1 = alloc(1)
 			if jobId ~= nil then
 				bool_21 = bit32.bor(bool_21, 0b0000000000000001)
-				local len_39 = #jobId
+				local len_40 = #jobId
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_39)
-				alloc(len_39)
-				buffer.writestring(outgoing_buff, outgoing_apos, jobId, len_39)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
+				alloc(len_40)
+				buffer.writestring(outgoing_buff, outgoing_apos, jobId, len_40)
 			end
 			buffer.writeu8(outgoing_buff, bool_21_pos_1, bool_21)
 		end,
@@ -1499,19 +1503,19 @@ local returns = {
 			local bool_22_pos_1 = alloc(1)
 			if Value["ItemId"] ~= nil then
 				bool_22 = bit32.bor(bool_22, 0b0000000000000001)
-				local len_40 = #Value["ItemId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_40)
-				alloc(len_40)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_40)
-			end
-			if Value["ItemUniqueId"] ~= nil then
-				bool_22 = bit32.bor(bool_22, 0b0000000000000010)
-				local len_41 = #Value["ItemUniqueId"]
+				local len_41 = #Value["ItemId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_41)
 				alloc(len_41)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_41)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_41)
+			end
+			if Value["ItemUniqueId"] ~= nil then
+				bool_22 = bit32.bor(bool_22, 0b0000000000000010)
+				local len_42 = #Value["ItemUniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
+				alloc(len_42)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_42)
 			end
 			if Value["SellAmount"] ~= nil then
 				bool_22 = bit32.bor(bool_22, 0b0000000000000100)
@@ -1532,11 +1536,11 @@ local returns = {
 			local bool_23_pos_1 = alloc(1)
 			if Value["SettingId"] ~= nil then
 				bool_23 = bit32.bor(bool_23, 0b0000000000000001)
-				local len_42 = #Value["SettingId"]
+				local len_43 = #Value["SettingId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_42)
-				alloc(len_42)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SettingId"], len_42)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
+				alloc(len_43)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["SettingId"], len_43)
 			end
 			if Value["SettingValue"] ~= nil then
 				bool_23 = bit32.bor(bool_23, 0b0000000000000010)
@@ -1757,11 +1761,11 @@ local returns = {
 			local bool_25_pos_1 = alloc(1)
 			if itemUniqueId ~= nil then
 				bool_25 = bit32.bor(bool_25, 0b0000000000000001)
-				local len_43 = #itemUniqueId
+				local len_44 = #itemUniqueId
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_43)
-				alloc(len_43)
-				buffer.writestring(outgoing_buff, outgoing_apos, itemUniqueId, len_43)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
+				alloc(len_44)
+				buffer.writestring(outgoing_buff, outgoing_apos, itemUniqueId, len_44)
 			end
 			buffer.writeu8(outgoing_buff, bool_25_pos_1, bool_25)
 		end,
@@ -1773,16 +1777,16 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 15)
-			local len_44 = #Value["Option"]
-			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_44)
-			alloc(len_44)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["Option"], len_44)
-			local len_45 = #Value["PlayerName"]
+			local len_45 = #Value["Option"]
 			alloc(2)
 			buffer.writeu16(outgoing_buff, outgoing_apos, len_45)
 			alloc(len_45)
-			buffer.writestring(outgoing_buff, outgoing_apos, Value["PlayerName"], len_45)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["Option"], len_45)
+			local len_46 = #Value["PlayerName"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
+			alloc(len_46)
+			buffer.writestring(outgoing_buff, outgoing_apos, Value["PlayerName"], len_46)
 		end,
 	},
 	PartyInviteResult_S = {
@@ -1833,6 +1837,7 @@ local returns = {
 				["ProductId"]: (string),
 				["ProductUniqueId"]: (string),
 			}) }),
+			["CurrencyId"]: (string),
 		})) -> ())
 			table.insert(reliable_events[15], Callback)
 			for _, value in reliable_event_queue[15] do
@@ -1862,7 +1867,10 @@ local returns = {
 		end,
 	},
 	OpenEXPAwardBar_S = {
-		On = function(Callback: (EXPGained: (number)) -> ())
+		On = function(Callback: (Value: ({
+			["EXPGained"]: (number),
+			["ClassEXPGained"]: (number),
+		})) -> ())
 			table.insert(reliable_events[7], Callback)
 			for _, value in reliable_event_queue[7] do
 				task.spawn(Callback, value)
@@ -1918,7 +1926,7 @@ local returns = {
 	FinishNPCChat_C = {
 		Fire = function(Value: ({
 			["NPCModel"]: ((Model)?),
-			["SeriesId"]: ((string)?),
+			["QuestId"]: ((string)?),
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
@@ -1929,13 +1937,13 @@ local returns = {
 				assert(Value["NPCModel"]:IsA("Model"), "received instance is not of the Model class!")
 				table.insert(outgoing_inst, Value["NPCModel"])
 			end
-			if Value["SeriesId"] ~= nil then
+			if Value["QuestId"] ~= nil then
 				bool_26 = bit32.bor(bool_26, 0b0000000000000010)
-				local len_46 = #Value["SeriesId"]
+				local len_47 = #Value["QuestId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_46)
-				alloc(len_46)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["SeriesId"], len_46)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
+				alloc(len_47)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["QuestId"], len_47)
 			end
 			buffer.writeu8(outgoing_buff, bool_26_pos_1, bool_26)
 		end,
@@ -1951,11 +1959,11 @@ local returns = {
 			local bool_27_pos_1 = alloc(1)
 			if Value["ActionId"] ~= nil then
 				bool_27 = bit32.bor(bool_27, 0b0000000000000001)
-				local len_47 = #Value["ActionId"]
+				local len_48 = #Value["ActionId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_47)
-				alloc(len_47)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ActionId"], len_47)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
+				alloc(len_48)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ActionId"], len_48)
 			end
 			if Value["ItemSymbol"] ~= nil then
 				bool_27 = bit32.bor(bool_27, 0b0000000000000010)
@@ -1988,19 +1996,19 @@ local returns = {
 			local bool_28_pos_1 = alloc(1)
 			if Value["ItemId"] ~= nil then
 				bool_28 = bit32.bor(bool_28, 0b0000000000000001)
-				local len_48 = #Value["ItemId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_48)
-				alloc(len_48)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_48)
-			end
-			if Value["ItemUniqueId"] ~= nil then
-				bool_28 = bit32.bor(bool_28, 0b0000000000000010)
-				local len_49 = #Value["ItemUniqueId"]
+				local len_49 = #Value["ItemId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_49)
 				alloc(len_49)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_49)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_49)
+			end
+			if Value["ItemUniqueId"] ~= nil then
+				bool_28 = bit32.bor(bool_28, 0b0000000000000010)
+				local len_50 = #Value["ItemUniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
+				alloc(len_50)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_50)
 			end
 			buffer.writeu8(outgoing_buff, bool_28_pos_1, bool_28)
 		end,
@@ -2064,11 +2072,11 @@ local returns = {
 			local bool_30_pos_1 = alloc(1)
 			if Value["ProjectileUniqueId"] ~= nil then
 				bool_30 = bit32.bor(bool_30, 0b0000000000000001)
-				local len_50 = #Value["ProjectileUniqueId"]
+				local len_51 = #Value["ProjectileUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_50)
-				alloc(len_50)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_50)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
+				alloc(len_51)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_51)
 			end
 			if Value["IsPierce"] ~= nil then
 				bool_30 = bit32.bor(bool_30, 0b0000000000000010)
@@ -2078,11 +2086,11 @@ local returns = {
 			end
 			if Value["DoTStatus"] ~= nil then
 				bool_30 = bit32.bor(bool_30, 0b0000000000001000)
-				local len_51 = #Value["DoTStatus"]
+				local len_52 = #Value["DoTStatus"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_51)
-				alloc(len_51)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["DoTStatus"], len_51)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
+				alloc(len_52)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["DoTStatus"], len_52)
 			end
 			buffer.writeu8(outgoing_buff, bool_30_pos_1, bool_30)
 		end,
@@ -2095,11 +2103,11 @@ local returns = {
 			local bool_31_pos_1 = alloc(1)
 			if orbUniqueId ~= nil then
 				bool_31 = bit32.bor(bool_31, 0b0000000000000001)
-				local len_52 = #orbUniqueId
+				local len_53 = #orbUniqueId
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_52)
-				alloc(len_52)
-				buffer.writestring(outgoing_buff, outgoing_apos, orbUniqueId, len_52)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
+				alloc(len_53)
+				buffer.writestring(outgoing_buff, outgoing_apos, orbUniqueId, len_53)
 			end
 			buffer.writeu8(outgoing_buff, bool_31_pos_1, bool_31)
 		end,
@@ -2120,11 +2128,11 @@ local returns = {
 			end
 			if Value["ProjectileUniqueId"] ~= nil then
 				bool_32 = bit32.bor(bool_32, 0b0000000000000010)
-				local len_53 = #Value["ProjectileUniqueId"]
+				local len_54 = #Value["ProjectileUniqueId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_53)
-				alloc(len_53)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_53)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
+				alloc(len_54)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProjectileUniqueId"], len_54)
 			end
 			buffer.writeu8(outgoing_buff, bool_32_pos_1, bool_32)
 		end,
@@ -2189,19 +2197,19 @@ local returns = {
 			local bool_33_pos_1 = alloc(1)
 			if Value["ItemId"] ~= nil then
 				bool_33 = bit32.bor(bool_33, 0b0000000000000001)
-				local len_54 = #Value["ItemId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_54)
-				alloc(len_54)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_54)
-			end
-			if Value["ItemUniqueId"] ~= nil then
-				bool_33 = bit32.bor(bool_33, 0b0000000000000010)
-				local len_55 = #Value["ItemUniqueId"]
+				local len_55 = #Value["ItemId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_55)
 				alloc(len_55)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_55)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemId"], len_55)
+			end
+			if Value["ItemUniqueId"] ~= nil then
+				bool_33 = bit32.bor(bool_33, 0b0000000000000010)
+				local len_56 = #Value["ItemUniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_56)
+				alloc(len_56)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ItemUniqueId"], len_56)
 			end
 			if Value["CraftAmount"] ~= nil then
 				bool_33 = bit32.bor(bool_33, 0b0000000000000100)
@@ -2267,11 +2275,11 @@ local returns = {
 			local bool_34_pos_1 = alloc(1)
 			if slotId ~= nil then
 				bool_34 = bit32.bor(bool_34, 0b0000000000000001)
-				local len_56 = #slotId
+				local len_57 = #slotId
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_56)
-				alloc(len_56)
-				buffer.writestring(outgoing_buff, outgoing_apos, slotId, len_56)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
+				alloc(len_57)
+				buffer.writestring(outgoing_buff, outgoing_apos, slotId, len_57)
 			end
 			buffer.writeu8(outgoing_buff, bool_34_pos_1, bool_34)
 		end,
@@ -2290,11 +2298,11 @@ local returns = {
 			local bool_35_pos_1 = alloc(1)
 			if merchantId ~= nil then
 				bool_35 = bit32.bor(bool_35, 0b0000000000000001)
-				local len_57 = #merchantId
+				local len_58 = #merchantId
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_57)
-				alloc(len_57)
-				buffer.writestring(outgoing_buff, outgoing_apos, merchantId, len_57)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
+				alloc(len_58)
+				buffer.writestring(outgoing_buff, outgoing_apos, merchantId, len_58)
 			end
 			buffer.writeu8(outgoing_buff, bool_35_pos_1, bool_35)
 		end,
@@ -2312,19 +2320,19 @@ local returns = {
 			local bool_36_pos_1 = alloc(1)
 			if Value["ProductId"] ~= nil then
 				bool_36 = bit32.bor(bool_36, 0b0000000000000001)
-				local len_58 = #Value["ProductId"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_58)
-				alloc(len_58)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductId"], len_58)
-			end
-			if Value["ProductUniqueId"] ~= nil then
-				bool_36 = bit32.bor(bool_36, 0b0000000000000010)
-				local len_59 = #Value["ProductUniqueId"]
+				local len_59 = #Value["ProductId"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_59)
 				alloc(len_59)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductUniqueId"], len_59)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductId"], len_59)
+			end
+			if Value["ProductUniqueId"] ~= nil then
+				bool_36 = bit32.bor(bool_36, 0b0000000000000010)
+				local len_60 = #Value["ProductUniqueId"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_60)
+				alloc(len_60)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["ProductUniqueId"], len_60)
 			end
 			if Value["PurchaseAmount"] ~= nil then
 				bool_36 = bit32.bor(bool_36, 0b0000000000000100)
@@ -2333,11 +2341,11 @@ local returns = {
 			end
 			if Value["CurrencyId"] ~= nil then
 				bool_36 = bit32.bor(bool_36, 0b0000000000001000)
-				local len_60 = #Value["CurrencyId"]
+				local len_61 = #Value["CurrencyId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_60)
-				alloc(len_60)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["CurrencyId"], len_60)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_61)
+				alloc(len_61)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["CurrencyId"], len_61)
 			end
 			buffer.writeu8(outgoing_buff, bool_36_pos_1, bool_36)
 		end,
@@ -2353,11 +2361,11 @@ local returns = {
 			local bool_37_pos_1 = alloc(1)
 			if Value["PointId"] ~= nil then
 				bool_37 = bit32.bor(bool_37, 0b0000000000000001)
-				local len_61 = #Value["PointId"]
+				local len_62 = #Value["PointId"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_61)
-				alloc(len_61)
-				buffer.writestring(outgoing_buff, outgoing_apos, Value["PointId"], len_61)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_62)
+				alloc(len_62)
+				buffer.writestring(outgoing_buff, outgoing_apos, Value["PointId"], len_62)
 			end
 			if Value["PointAmount"] ~= nil then
 				bool_37 = bit32.bor(bool_37, 0b0000000000000010)
@@ -2393,11 +2401,11 @@ local returns = {
 			local bool_38_pos_1 = alloc(1)
 			if actionId ~= nil then
 				bool_38 = bit32.bor(bool_38, 0b0000000000000001)
-				local len_62 = #actionId
+				local len_63 = #actionId
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_62)
-				alloc(len_62)
-				buffer.writestring(outgoing_buff, outgoing_apos, actionId, len_62)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_63)
+				alloc(len_63)
+				buffer.writestring(outgoing_buff, outgoing_apos, actionId, len_63)
 			end
 			buffer.writeu8(outgoing_buff, bool_38_pos_1, bool_38)
 		end,

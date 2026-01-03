@@ -11,6 +11,12 @@ local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Children = Fusion.Children
 
 
+
+local BL = {
+    ["That Bird With A Couple Lines Of Dialogue"] = true
+}
+
+
 return function (scope: Fusion.Scope, props: {
     IsChatShown: Fusion.Value<boolean>,
 
@@ -131,7 +137,9 @@ return function (scope: Fusion.Scope, props: {
                 end),
 
                 [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
+                    Components.ScaledTextUIStroke(scope, {
+                        Thickness = 0.05
+                    })
                 }
             }),
             Components.TextLabel(scope, {
@@ -143,6 +151,8 @@ return function (scope: Fusion.Scope, props: {
                 TextYAlignment = Enum.TextYAlignment.Top,
                 TextWrapped = true,
                 TextScaled = false,
+
+                AutoLocalize = if BL[props.Speaker] then false else true,
 
                 [Fusion.Out("AbsoluteSize")] = absDialogueSize,
 
@@ -157,7 +167,9 @@ return function (scope: Fusion.Scope, props: {
                 end),
 
                 [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
+                    Components.ScaledTextUIStroke(scope, {
+                        Thickness = 0.05
+                    })
                 }
             }),
 
@@ -185,15 +197,14 @@ return function (scope: Fusion.Scope, props: {
                 Name = "SkipBtn",
                 BackgroundColor3 = Components.BLUE_COLOR,
                 TextColor3 = Components.BLACK_COLOR,
+                AnchorPoint = Vector2.one,
                 Size = UDim2.fromScale(0.1, 0.55),
-                Position = UDim2.fromScale(0.02, -2.5),
+                Position = UDim2.fromScale(0.98, 0.5),
                 Text = "SKIP",
-
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     props.GoSkipDialogueSignal:Fire()
                 end,
-
 
                 [Children] = {
                     Components.RoundUICorner(scope),

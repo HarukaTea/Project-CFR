@@ -1,7 +1,9 @@
 
+local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+local Events = require(RepS.HarukaShared.Library.Events)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -17,8 +19,12 @@ local fromScale = UDim2.fromScale
 local fromRGB = Color3.fromRGB
 
 
+local plr = Players.LocalPlayer
+
+
 return function (scope: Fusion.Scope, props: {
     PlayerSelecting: Fusion.Value<Player?>,
+    PartyMembers: Fusion.Value<{ ObjectValue }>
 })
 
     return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
@@ -55,6 +61,71 @@ return function (scope: Fusion.Scope, props: {
                     playTime:set(val)
                 end,
             }))
+
+
+            local function redButtonBase(text: string, func: () -> nil) : TextButton
+                return Components.TextButton(scope, {
+                    Name = "DeclineTypeButton",
+                    Size = UDim2.fromScale(0.9, 0.075),
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 0.78),
+                    BackgroundColor3 = Components.RED_COLOR,
+                    TextColor3 = Components.BLACK_COLOR,
+                    Text = text,
+
+                    [Fusion.OnEvent("MouseButton1Click")] = func,
+
+                    [Children] = {
+                        Components.RoundUICorner(scope)
+                    }
+                })
+            end
+
+
+            local button: TextButton = nil
+            button = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                local partyMembers = use(props.PartyMembers) :: { ObjectValue }
+
+                if player == plr then
+                    if table.find(partyMembers, plr) then
+                        return redButtonBase("LEAVE PARTY", function()
+                            Events.PartyInvite_C.Fire({
+                                Option = "PartyLeave", PlayerName = plr.Name
+                            })
+                        end)
+                    else
+                        return redButtonBase("MAGIC BUTTON", function()
+                            Bindables.CreateNotify:Fire("Yes it does nothing lol")
+                        end)
+                    end
+                else
+                    if table.find(partyMembers, player) then
+                        return redButtonBase("KICK FROM PARTY", function()
+                            Events.PartyInvite_C.Fire({
+                                Option = "PartyKick", PlayerName = player.Name
+                            })
+                        end)
+                    else
+                        return Components.TextButton(scope, {
+                            Name = "InviteParty",
+                            Size = UDim2.fromScale(0.9, 0.075),
+                            AnchorPoint = Vector2.new(0.5, 0),
+                            Position = UDim2.fromScale(0.5, 0.78),
+                            BackgroundColor3 = Components.GREEN_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
+                            Text = "INVITE TO PARTY",
+
+                            [Fusion.OnEvent("MouseButton1Click")] = function()
+                                Bindables.RToCreatePartyInvite:Fire(player)
+                            end,
+
+                            [Children] = {
+                                Components.RoundUICorner(scope)
+                            }
+                        })
+                    end
+                end
+            end)
 
 
             local function PlayerItemSlot(index: number): ImageLabel
@@ -228,23 +299,7 @@ return function (scope: Fusion.Scope, props: {
                     PlayerItemSlot(7),
 
 
-                    Components.TextButton(scope, {
-                        Name = "InviteParty",
-                        Size = UDim2.fromScale(0.9, 0.075),
-                        AnchorPoint = Vector2.new(0.5, 0),
-                        Position = UDim2.fromScale(0.5, 0.78),
-                        BackgroundColor3 = Components.GREEN_COLOR,
-                        TextColor3 = Components.BLACK_COLOR,
-                        Text = "INVITE TO PARTY",
-
-                        [Fusion.OnEvent("MouseButton1Click")] = function()
-                            Bindables.RToCreatePartyInvite:Fire(player)
-                        end,
-
-                        [Children] = {
-                            Components.RoundUICorner(scope)
-                        }
-                    }),
+                    button,
 
 
                     Components.TextLabel(scope, {
@@ -253,7 +308,10 @@ return function (scope: Fusion.Scope, props: {
                         Size = fromScale(0.866, 0.077),
 
                         TextColor3 = Computed(scope, function(use: Fusion.Use)
-                            return Color3.fromHex(RankBook.PlayerTitleInfo[use(playerRoleTitle)].Color)
+                            local info = RankBook.PlayerTitleInfo[use(playerRoleTitle)] or {
+                                Color = "#ffffff"
+                            }
+                            return Color3.fromHex(info.Color)
                         end),
                         Text = Computed(scope, function(use: Fusion.Use)
                             return `- {use(playerRoleTitle)} -`

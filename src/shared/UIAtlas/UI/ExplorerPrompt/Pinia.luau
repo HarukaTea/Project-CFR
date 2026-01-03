@@ -158,7 +158,7 @@ return function (self: Self)
 			if not chest then return end
 
 			if chest:GetAttribute("Receiver_"..self.plr.Name) then return end
-		elseif thatPrompt.Name == "Climb" then
+		elseif thatPrompt.Name == "Gift" or thatPrompt.Name == "Climb" then
 			--// do nothing
 			return
 		else

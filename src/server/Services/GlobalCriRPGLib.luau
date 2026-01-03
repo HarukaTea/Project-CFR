@@ -28,6 +28,7 @@ local PartyLib = require(SSS.HarukaServer.Services.PartyLib)
 local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
+local RankBook = require(RepS.HarukaShared.Library.RankBook)
 
 
 type Dict = { [string]: any }
@@ -152,7 +153,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             part.EnableFluidForces = false
             part.CanCollide = false
-            part.Material = Enum.Material.SmoothPlastic
         end
 
 
@@ -209,7 +209,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end
 
 
-    Events.PromptTriggered_C.SetCallback(function(plr: Player, prompt: ProximityPrompt)
+    Events.PromptTriggered_C.On(function(plr: Player, prompt: ProximityPrompt)
         if prompt == nil then return end
         if prompt.Parent == nil then return end
         if prompt.Enabled == false then return end
@@ -287,8 +287,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 end
             end
 
+            local currencyId = "Gold"
+            if adornee:GetAttribute("CurrencyId") then
+                currencyId = adornee:GetAttribute("CurrencyId")
+            end
+
             Events.OpenMarketUI_S.Fire(plr, {
-                Products = products
+                Products = products,
+                CurrencyId = currencyId
             })
 
         elseif prompt.Name == "Crafting" then
@@ -300,7 +306,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         elseif prompt.Name == "AbyssView" then
             Events.OpenAbyssUI_S.Fire(plr)
 
-        elseif prompt.Name == "DungeonPortal" then
+        elseif prompt.Name == "Portal" then
             char:PivotTo(prompt.Destination.Value.CFrame)
             Events.RefreshCullingAsync_S.Fire(plr)
 
@@ -798,7 +804,7 @@ end)
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.FinishNPCChat_C.SetCallback(function(plr: Player, data)
         if data.NPCModel == nil then return end
-        if data.SeriesId == nil then return end
+        if data.QuestId == nil then return end
 
 
         local npcModel: Model? = data.NPCModel
@@ -819,7 +825,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         --// do signal
         local extra = require(dialogues.Main).Extra
-        local bindableId = extra[data.SeriesId] :: string?
+        local bindableId = extra[data.QuestId] :: string?
 
         if bindableId then
             if QuestBindables[bindableId] then
@@ -830,8 +836,31 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local quests = npcModel:FindFirstChild("Quests")
         if quests then
+            for _, questVal: StringValue in quests:GetChildren() do
+                if questVal.Value == "Complete" then
+                    QuestLib:CompleteQuest(plr, questVal.Name)
+                end
+            end
             for _, questVal: BoolValue in quests:GetChildren() do
-                QuestLib:GiveQuest(plr, questVal.Name)
+                if questVal.Value == "Give" then
+                    local required = questVal:GetAttributes()
+                    local isAllCompleted = true
+
+                    for attr: string, questId: string in required do
+                        if not string.find(attr, "Required") then continue end
+                        if not plr.Quests:FindFirstChild(questId) then
+                            isAllCompleted = false
+                            break
+                        end
+                        if not plr.Quests[questId].Value then
+                            isAllCompleted = false
+                            break
+                        end
+                    end
+                    if isAllCompleted then
+                        QuestLib:GiveQuest(plr, questVal.Name)
+                    end
+                end
             end
         end
     end)
@@ -870,9 +899,19 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
 
 
-        local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "CosmeticArmor", "CosmeticWeapon" }
+        local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "Cosmetic", "Title" }
         if not table.find(whiteList, itemInfo.Type) then
             Events.CreateNotify_S.Fire(plr, "Invalid item type")
+            return
+        end
+
+        if itemInfo.Type == "Title" then
+            local title = RankBook.PlayerTitles[itemInfo.ItemId]
+            if not title then return end
+
+            plr:SetAttribute("Title", title)
+
+            Events.CreateNotify_S.Fire(plr, "Title equipped")
             return
         end
 
@@ -889,48 +928,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         --// equip weapon
         if itemInfo.Type == "Weapon" then
-            local weapon1Symbol = plr.EquippingItems:FindFirstChild("Weapon1") :: StringValue
-            if not weapon1Symbol then
-                weapon1Symbol = Instance.new("StringValue")
-                weapon1Symbol.Name = "Weapon1"
-            end
-
-            ServerLib:UnequipItem(plr, weapon1Symbol:GetAttribute("HarukaUniqueId"))
-
-            weapon1Symbol:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
-            weapon1Symbol.Value = data.ItemId
-            weapon1Symbol.Parent = plr.EquippingItems
-
-            _refresh()
-            ServerLib:EquipItem(plr, data.ItemUniqueId)
-
-            Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
-            return
-
-        --// equip cosmetic armor
-        elseif itemInfo.Type == "CosmeticArmor" then
-            local armor1Symbol = plr.EquippingItems:FindFirstChild("Cosmetic1") :: StringValue
-            if not armor1Symbol then
-                armor1Symbol = Instance.new("StringValue")
-                armor1Symbol.Name = "Cosmetic1"
-            end
-
-            ServerLib:UnequipItem(plr, armor1Symbol:GetAttribute("HarukaUniqueId"))
-
-            armor1Symbol:SetAttribute("HarukaUniqueId", data.ItemUniqueId)
-            armor1Symbol.Value = data.ItemId
-            armor1Symbol.Parent = plr.EquippingItems
-
-            _refresh()
-            ServerLib:EquipItem(plr, data.ItemUniqueId)
-
-            Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
+            ServerLib:ChangeWeapon(plr, data.ItemId, data.ItemUniqueId)
             return
         end
-
-
-
-
 
 
         local equipping = plr.EquippingItems :: Folder
@@ -1057,7 +1057,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local curGold = plr:GetAttribute(currency) :: number
 
         if curGold < totalPrice then
-            Events.CreateNotify_S.Fire(plr, "Not enough Gold")
+            Events.CreateNotify_S.Fire(plr, `Not enough {currency}`)
             return
         end
 
@@ -1096,16 +1096,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not itemInfo then return end
 
 
-        if itemInfo.Type == "Passive" then
-            Events.CreateNotify_S.Fire(plr, "Cannot sell Passive items")
-            return
-        end
-        if itemInfo.Type == "Quest" then
-            Events.CreateNotify_S.Fire(plr, "Cannot sell Quest items")
-            return
-        end
-        if itemInfo.Type == "CosmeticArmor" or itemInfo.Type == "CosmeticWeapon" then
-            Events.CreateNotify_S.Fire(plr, "Cannot sell Cosmetic items")
+        local blacklist = { "Passive", "Quest", "Cosmetic", "Title" }
+        if table.find(blacklist, itemInfo.Type) then
+            Events.CreateNotify_S.Fire(plr, "Cannot sell this item")
             return
         end
 
@@ -1122,6 +1115,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 foundInChest = true
                 break
             end
+        end
+        if table.find(itemInfo.TagsDesync, "Chest") then
+            foundInChest = true
         end
         if foundInChest then
             Events.CreateNotify_S.Fire(plr, "Cannot sell items obtained from Chests")
@@ -1519,6 +1515,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             data.Players = partyObj:GetAllMembers()
             _challengeAbyss(plr, data)
         end
+
+        QuestLib:CompleteQuest(plr, "AbyssStarting2")
     end)
 end)
 

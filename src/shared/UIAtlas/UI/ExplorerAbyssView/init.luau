@@ -253,7 +253,7 @@ return function (plr: Player)
                             }
                         }),
 
-                        Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             return AbyssLevelSlot(scope, {
                                 Index = use(self.AbyssIndexSelected) or 1,
                                 AbyssIndexSelected = self.AbyssIndexSelected,
@@ -432,7 +432,7 @@ return function (plr: Player)
                     Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         local state = use(self.AbyssIndexSelected) == nil
 
-                        return if state then "SPEEDRUN RECORDS (FLOOR 5 ALL MODIFIERS)"
+                        return if state then "SPEEDRUN RECORDS (FLOOR 5 ALL MODIFIERS) [VERSION 4]"
                             else "POSSIBLE LOOTS YOU CAN GET"
                     end),
                 })

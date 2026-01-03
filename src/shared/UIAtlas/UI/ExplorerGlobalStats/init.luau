@@ -3,6 +3,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local Children = Fusion.Children
 
@@ -30,6 +31,7 @@ return function(plr: Player)
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerStatsGlobal",
 		Parent = plr.PlayerGui,
+        DisplayOrder = UIPriorityBook.Normal + 1,
 
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown) and use(self.IsUIShown2)
@@ -68,15 +70,11 @@ return function(plr: Player)
                             Padding = UDim.new(0.5, 0)
                         })
                     }
-                })
-            }
-        },
-        CenterProps = {
-            [Children] = {
+                }),
+
                 Components.Frame(scope, {
                     Name = "ItemDropsDiv",
-                    AnchorPoint = Vector2.new(1, 0),
-                    Position = UDim2.fromScale(1, 0),
+                    ZIndex = 99,
 
                     [Children] = {
                         Components.UIScale(scope, {
@@ -84,16 +82,13 @@ return function(plr: Player)
                         }),
 
                         Components.Frame(scope, {
-                            Name = "ItemDrops",
-                            AnchorPoint = Vector2.new(1, 0),
-                            Position = UDim2.fromScale(0.99, 0),
+                            Name = "ItemAcquiredFrame",
+                            Position = UDim2.fromScale(0.5, -3.5),
 
                             [Children] = {
                                 Components.UIListLayout(scope, {
                                     Padding = UDim.new(0.15, 0),
-                                    HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                    VerticalAlignment = Enum.VerticalAlignment.Top,
-                                    SortOrder = Enum.SortOrder.Name,
+                                    VerticalAlignment = Enum.VerticalAlignment.Bottom,
                                 }),
                             }
                         }),
@@ -117,6 +112,12 @@ return function(plr: Player)
                         Components.UIScale(scope, {
                             Scale = 0.75
                         }),
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(-0.1, 0)
+                        })
                     }
                 }),
             }

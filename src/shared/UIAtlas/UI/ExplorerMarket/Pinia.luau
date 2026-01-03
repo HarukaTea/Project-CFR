@@ -21,6 +21,7 @@ export type Self = {
     AvailableItems: Fusion.Value<Vector2>,
 
     IsPurchasing: Fusion.Value<boolean>,
+    CurrencyUsing: Fusion.Value<string>,
 
     Currency: {
         Gold: Fusion.Value<number>,
@@ -57,10 +58,14 @@ return function (self: Self)
     self.AvailableItems = Value(Vector2.zero)
 
     self.IsPurchasing = Value(false)
+    self.CurrencyUsing = Value("Gold")
 
     self.Currency = {
         Gold = Value(0),
-        Astra = Value(0)
+        Astra = Value(0),
+
+        HalloweenCandy = Value(0),
+        IceCandy = Value(0),
     }
 
 
@@ -83,7 +88,14 @@ return function (self: Self)
         end,
         ["Attr-Astra"] = function(val: number)
             self.Currency.Astra:set(val)
-        end
+        end,
+
+        ["Attr-HalloweenCandy"] = function(val: number)
+            self.Currency.HalloweenCandy:set(val)
+        end,
+        ["Attr-IceCandy"] = function(val: number)
+            self.Currency.IceCandy:set(val)
+        end,
     }))
 
 
@@ -98,6 +110,8 @@ return function (self: Self)
     }))
     table.insert(scope, Events.OpenMarketUI_S.On(function(data)
         self.Products:set(data.Products)
+        self.CurrencyUsing:set(data.CurrencyId)
+
         self.plr:SetAttribute("CurrentUIGroup", "Market")
     end))
 

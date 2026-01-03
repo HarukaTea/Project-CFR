@@ -80,7 +80,7 @@ table.insert(ClientWorldLib.Funcs, function()
         if sound.Name == "ResetSound" then
             for _, music: Sound in SoundService:QueryDescendants("Sound") do
                 if music:IsDescendantOf(SoundService.Environment) then continue end
-                if music:IsDescendantOf(SoundService.FS_SFXs) then continue end
+                if music:IsDescendantOf(SoundService.FootstepSFXs) then continue end
 
                 music:Stop()
             end
@@ -986,6 +986,50 @@ table.insert(ClientWorldLib.Funcs, function()
         _handleNPC(npc)
     end
     CollectionService:GetInstanceAddedSignal("NPCEntity"):Connect(_handleNPC)
+end)
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    for _, npc: Model in workspace.MapComponents.Markets:QueryDescendants("Model") do
+        if not npc:FindFirstChildOfClass("Humanoid") then continue end
+        if not npc.PrimaryPart then continue end
+        if npc.PrimaryPart.Anchored then continue end
+
+        local npcHumanoid = npc.Humanoid :: Humanoid
+        if not npcHumanoid:FindFirstChildOfClass("Animator") then
+            local animator = Instance.new("Animator")
+            animator.Parent = npcHumanoid
+        end
+
+        local npcAnim = npc:GetAttribute("IdleAnim") or "DefaultIdle"
+        local animTrack = npcHumanoid.Animator:LoadAnimation(ReplicatedStorage.Packages.Anims.NPCAnims[npcAnim]) :: AnimationTrack
+
+        animTrack.Looped = true
+        animTrack.Priority = Enum.AnimationPriority.Idle
+
+        animTrack:Play()
+    end
+end)
+
+
+table.insert(ClientWorldLib.Funcs, function()
+    for _, obj: Model in CollectionService:GetTagged("ClientAnimatorEntity") do
+        if obj.PrimaryPart.Anchored then continue end
+
+        local npcHumanoid = obj:FindFirstChildOfClass("AnimationController") :: AnimationController
+        if not npcHumanoid:FindFirstChildOfClass("Animator") then
+            local animator = Instance.new("Animator")
+            animator.Parent = npcHumanoid
+        end
+
+        local npcAnim = obj:FindFirstChildOfClass("Animation") :: Animation
+        local animTrack = npcHumanoid.Animator:LoadAnimation(npcAnim) :: AnimationTrack
+
+        animTrack.Looped = true
+        animTrack.Priority = Enum.AnimationPriority.Idle
+
+        animTrack:Play()
+    end
 end)
 
 

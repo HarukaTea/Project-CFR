@@ -118,6 +118,10 @@ export type Self = {
     RequestToDash: Signal.SignalClass,
 
     ClassActiveCastCD: boolean,
+
+
+    HalloweenCandy: Fusion.Value<number>,
+    IceCandy: Fusion.Value<number>,
 }
 
 
@@ -186,13 +190,15 @@ return function (self: Self)
 
 
     self.Gold = Value(0)
-    self.HalloweenCandy = Value(0)
-
 
     self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
 
     self.UIViewportSize = FusionComponents.useUIViewportSize(scope)
     self.Device = HarukaLib:GetAccurateDevice()
+
+
+    self.HalloweenCandy = Value(0)
+    self.IceCandy = Value(0)
 
 
     --// track server
@@ -731,6 +737,10 @@ return function (self: Self)
         ["Attr-HalloweenCandy"] = function(val: number)
             val = val or 0
             self.HalloweenCandy:set(val)
+        end,
+        ["Attr-IceCandy"] = function(val: number)
+            val = val or 0
+            self.IceCandy:set(val)
         end
     }))
 end

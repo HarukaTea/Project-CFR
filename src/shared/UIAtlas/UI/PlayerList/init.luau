@@ -8,7 +8,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local PlayerBar = require(script.Components.PlayerBar)
 local PlayerInfoView = require(script.Components.PlayerInfoView)
 local PlayerInfoBar = require(script.Components.PlayerInfoBar)
-local PartyMemberBar = require(script.Components.PartyMemberBar)
 
 local Children = Fusion.Children
 
@@ -156,6 +155,8 @@ return function(plr: Player)
 
                                                     PlayerSelecting = self.PlayerSelecting,
                                                     PlayerSelected = self.PlayerSelected,
+
+                                                    PartyMembers = self.PartyMembers,
                                                 })
                                             end)
                                         }
@@ -167,6 +168,7 @@ return function(plr: Player)
 
                                 PlayerInfoView(scope, {
                                     PlayerSelecting = self.PlayerSelected,
+                                    PartyMembers = self.PartyMembers
                                 }),
 
                                 Components.TextButton(scope, {
@@ -197,32 +199,6 @@ return function(plr: Player)
                     }
                 }),
             }
-        },
-        BottomProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "PartyFrame",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, -6),
-                    Size = UDim2.fromScale(0.97, 1),
-
-                    [Children] = {
-                        Components.UIListLayout(scope,{
-                            Padding = UDim.new(0.1, 0),
-                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                        }),
-
-                        Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope, member: ObjectValue)
-                            local player = Players:FindFirstChild(member.Name) :: Player?
-                            if not player then return nil end
-
-                            return PartyMemberBar(scope, {
-                                Member = member,
-                            })
-                        end)
-                    }
-				})
-            }
         }
     })
     self.UI = UI
@@ -230,7 +206,5 @@ return function(plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
-
     end
 end

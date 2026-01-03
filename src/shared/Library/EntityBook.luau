@@ -4,7 +4,6 @@ export type EntityJSON = {
     Icon: string,
     Tier: number,
     BaseSpeed: number,
-    BaseJumpPower: number,
     EnvironmentBonus: number,
     Species: string,
     Drops: {[string]: number},
@@ -31,7 +30,6 @@ return {
         Icon = "rbxassetid://86944111865792",
 
         BaseSpeed = 15,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Bee",
@@ -47,7 +45,6 @@ return {
         Icon = "rbxassetid://138540677700873",
 
         BaseSpeed = 0,
-        BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
         BadgeId = 2491246281240652,
@@ -71,7 +68,6 @@ return {
         Icon = "rbxassetid://127989665826507",
 
         BaseSpeed = 10,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Slime",
@@ -87,7 +83,6 @@ return {
         Icon = "rbxassetid://95488531429137",
 
         BaseSpeed = 10,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Slime",
@@ -103,7 +98,6 @@ return {
         Icon = "rbxassetid://16483649460",
 
         BaseSpeed = 10,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Slime",
@@ -119,7 +113,6 @@ return {
         Icon = "rbxassetid://16483649287",
 
         BaseSpeed = 10,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Slime",
@@ -135,7 +128,6 @@ return {
         Icon = "rbxassetid://18859513334",
 
         BaseSpeed = 10,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Slime",
@@ -151,7 +143,6 @@ return {
         Icon = "rbxassetid://127989665826507",
 
         BaseSpeed = 10,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Slime",
@@ -167,7 +158,6 @@ return {
         Icon = "rbxassetid://127989665826507",
 
         BaseSpeed = 0,
-        BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
         IsBoss = true,
@@ -185,7 +175,6 @@ return {
         Icon = "rbxassetid://17543155439",
 
         BaseSpeed = 0,
-        BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
         BadgeId = 4040961258983736,
@@ -206,7 +195,6 @@ return {
         Icon = "rbxassetid://83984279260426",
 
         BaseSpeed = 20,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Fox",
@@ -222,7 +210,6 @@ return {
         Icon = "rbxassetid://84531227101465",
 
         BaseSpeed = 25,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Fox",
@@ -238,7 +225,6 @@ return {
         Icon = "rbxassetid://84531227101465",
 
         BaseSpeed = 25,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Fox",
@@ -254,7 +240,6 @@ return {
         Icon = "rbxassetid://84531227101465",
 
         BaseSpeed = 25,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Fox",
@@ -270,7 +255,6 @@ return {
         Icon = "rbxassetid://18857836675",
 
         BaseSpeed = 25,
-        BaseJumpPower = 0,
         EnvironmentBonus = 1,
 
         Species = "Fox",
@@ -286,7 +270,6 @@ return {
         Icon = "rbxassetid://90390582857611",
 
         BaseSpeed = 0,
-        BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
         BadgeId = 467703311828658,
@@ -311,7 +294,6 @@ return {
         Icon = "rbxassetid://105149911325359",
 
         BaseSpeed = 0,
-        BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
         IsBoss = true,
@@ -331,7 +313,6 @@ return {
         Icon = "rbxassetid://95284011272925",
 
         BaseSpeed = 0,
-        BaseJumpPower = 0,
         EnvironmentBonus = 2,
 
         IsBoss = true,

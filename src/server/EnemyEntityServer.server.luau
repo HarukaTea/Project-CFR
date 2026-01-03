@@ -53,6 +53,11 @@ type EntityLibClass = {
     _CombatEnd: (self: EntityLibClass) -> nil,
 
     _ApplyAbyssModifier: (self: EntityLibClass) -> nil,
+    _CalculateRewards: (self: EntityLibClass) -> {
+        EXP: number,
+        Gold: number,
+        ClassEXP: number
+    },
 
 
     Locator: BasePart,
@@ -627,10 +632,8 @@ function EntityLib:_ListenStatsTracker()
     }))
 
 
-
     entity.Humanoid.WalkSpeed = entityInfo.BaseSpeed
-    entity.Humanoid.JumpPower = entityInfo.BaseJumpPower
-
+    entity.Humanoid.JumpPower = 0
 
     entity:SetAttribute("_EntityDataInited", true)
 end
@@ -1326,40 +1329,28 @@ function EntityLib:_CombatEnd()
                         _giveBadge(diedEntityInfo, thatChar)
                     end
 
-                    --// give exp
-                    local totalEXP = 0
-                    totalEXP += FormulaBook.EnemyEXPCurveCal({
-                        Level = entity:GetAttribute("Level"),
-                    })
-
-                    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
-                        totalEXP += FormulaBook.EnemyEXPCurveCal({
-                            Level = diedEntitySymbol:GetAttribute("Level"),
-                        })
-                    end
-
-
-                    --// give gold
-                    local totalGold = 0
-                    totalGold += FormulaBook.EnemyGoldCurveCal({
-                        Level = entity:GetAttribute("Level"),
-                    })
-
-                    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
-                        totalGold += FormulaBook.EnemyGoldCurveCal({
-                            Level = diedEntitySymbol:GetAttribute("Level"),
-                        })
-                    end
-
+                    local rewardsData = self:_CalculateRewards()
+                    local totalEXP, totalGold, totalClassEXP = rewardsData.EXP, rewardsData.Gold, rewardsData.ClassEXP
 
                     local plr = Players:GetPlayerFromCharacter(thatChar)
                     if plr then
-                        ServerLib:GiveEXPRewards(plr, math.floor(totalEXP))
+                        ServerLib:GiveEXPRewards(plr, totalEXP, totalClassEXP)
 
-                        HarukaLib:AddAttr(plr, "Gold", math.floor(totalGold))
+                        HarukaLib:AddAttr(plr, "Gold", totalGold)
                         ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
 
                         HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
+
+                        --// event tokens
+                        Promise.try(function()
+                            local totalToken = math.floor(totalGold / 7)
+
+                            HarukaLib:AddAttr(plr, "IceCandy", totalToken)
+                            ServerLib:ShowText(thatChar, `+{totalToken} ICE TOKEN`, Color3.fromHex('#ffeaa7'))
+
+                            HarukaLib:AddAttr(plr, "HalloweenCandy", totalToken)
+                            ServerLib:ShowText(thatChar, `+{totalToken} HALLOWEEN TOKEN`, Color3.fromHex('#ffeaa7'))
+                        end):catch(function() end)
                     end
                 end
             end)
@@ -1404,7 +1395,51 @@ function EntityLib:_ApplyAbyssModifier()
 end
 
 
+function EntityLib:_CalculateRewards() : {
+    EXP: number,
+    Gold: number,
+    ClassEXP: number
+}
+    local entity = self.Entity :: Model
+    local level = entity:GetAttribute("Level") or 1
 
+    local totalEXP = 0
+    local totalClassEXP = 0
+    local totalGold = 0
+
+    totalEXP += FormulaBook.EnemyEXPCurveCal({
+        Level = level,
+    })
+    totalGold += FormulaBook.EnemyGoldCurveCal({
+        Level = level,
+    })
+    totalClassEXP += FormulaBook.EnemyClassEXPCurveCal({
+        Level = level
+    })
+    for _, diedEntitySymbol: ObjectValue in entity.TeamUpEnemies:GetChildren() do
+        local thatLevel = diedEntitySymbol:GetAttribute("Level") or 1
+
+        totalEXP += FormulaBook.EnemyEXPCurveCal({
+            Level = thatLevel,
+        })
+        totalGold += FormulaBook.EnemyGoldCurveCal({
+            Level = thatLevel,
+        })
+        totalClassEXP += FormulaBook.EnemyClassEXPCurveCal({
+            Level = thatLevel
+        })
+    end
+
+    totalEXP = math.floor(totalEXP)
+    totalGold = math.floor(totalGold)
+    totalClassEXP = math.floor(totalClassEXP)
+
+    return {
+        EXP = totalEXP,
+        Gold = totalGold,
+        ClassEXP = totalClassEXP
+    }
+end
 
 
 

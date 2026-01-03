@@ -102,10 +102,16 @@ RankBook.CustomRoleInfo = {
 
 
 RankBook.PlayerTitleInfo = {
-    Adventurer = {
-        Role = "Adventurer",
-        Color = "#ffffff"
-    }
+}
+
+
+RankBook.PlayerTitles = {
+    TitleExplorer = "Explorer",
+    TitleAdventurer = "Adventurer",
+    TitleAbyss = "Abyss Conqueror",
+    TitleAbyssT6 = "The Abyss",
+    TitleSantaHelper = "Santa's Helper",
+    TitleCapybara = "Capybara",
 }
 
 

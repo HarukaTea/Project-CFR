@@ -13,6 +13,7 @@ local GotHealFX = require(script.Parent.Components.GotHealShade)
 local GotPoweredFX = require(script.Parent.Components.GotPoweredShade)
 local ItemDropBar = require(script.Parent.Components.ItemDropBar)
 local EXPBar = require(script.Parent.Components.LevelEXPBar)
+local ClassEXPBar = require(script.Parent.Components.ClassLevelEXPBar)
 local RegionBar = require(script.Parent.Components.AreaPopupBar)
 local CastingTimeBar = require(script.Parent.Components.CastTimeBar)
 local BadgeAwarding = require(script.Parent.Components.BadgeAwarding)
@@ -95,7 +96,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
     --// track new items
     table.insert(scope, Events.PlayItemDropFX_S.On(function(data)
         if not UI then return end
-        if not UI:FindFirstChild("Center") then return end
+        if not UI:FindFirstChild("Bottom") then return end
 
 
         local newScope = Fusion.scoped()
@@ -104,17 +105,13 @@ return function (UI: ScreenGui, self: Pinia.Self)
             ItemId = data.ItemId,
             Amount = data.Amount
         })
-        itemDropBar.Parent = UI.Center.ItemDropsDiv.ItemDrops
-        Debris:AddItem(itemDropBar, 3)
+        itemDropBar.Parent = UI.Bottom.ItemDropsDiv.ItemAcquiredFrame
+        Debris:AddItem(itemDropBar, 3.6)
 
 
-        Promise.delay(3):andThen(function()
+        Promise.delay(3.6):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
-
-
-        HarukaLib:UITween(itemDropBar, "In", {})
-        HarukaLib:UITween(itemDropBar, "Out", { TweenTime = 0.5, DelayTime = 3 - 0.5 })
     end))
 
 
@@ -130,29 +127,41 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
 
-        expDropQueue:SpawnMutex(2)
+        expDropQueue:SpawnMutex(4)
 
 
-        local exp = expDropQueue:Pop()
+        local data = expDropQueue:Pop()
         local newScope = Fusion.scoped()
 
         local expBar = EXPBar(newScope, {
-            AddedEXP = exp
+            AddedEXP = data.EXPGained,
         })
         expBar.Parent = UI.Top.LevelEXP
-        Debris:AddItem(expBar, 2)
+        Debris:AddItem(expBar, 4)
+
+        local classExpBar = ClassEXPBar(scope, {
+            AddedClassEXP = data.ClassEXPGained
+        })
+        classExpBar.Parent = UI.Top.LevelEXP
+        Debris:AddItem(classExpBar, 4)
 
 
-        Promise.delay(2):andThen(function()
+        Promise.delay(4):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
 
         HarukaLib:UITween(expBar, "In", {})
-        HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 1.5 })
+        HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
+
+        HarukaLib:UITween(classExpBar, "In", {})
+        HarukaLib:UITween(classExpBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
     end
-    table.insert(scope, Events.OpenEXPAwardBar_S.On(function(expGained)
-        expDropQueue:Push(expGained)
+    table.insert(scope, Events.OpenEXPAwardBar_S.On(function(data)
+        expDropQueue:Push({
+            EXPGained = data.EXPGained,
+            ClassEXPGained = data.ClassEXPGained
+        })
     end))
 
     expDropQueue.ElementAdded:Connect(_onNewEXPAdded)

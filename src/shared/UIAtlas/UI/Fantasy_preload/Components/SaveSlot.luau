@@ -137,7 +137,7 @@ return function (scope: Fusion.Scope, props: {
                 end)
             }),
 
-            Fusion.Computed(scope, function(use: Fusion.Scope, _)
+            Fusion.Computed(scope, function(use: Fusion.Scope, scope: Fusion.Scope)
                 if use(posX) == 0.2 then
                     return {
                         ExecuteButton(scope, {
@@ -299,18 +299,15 @@ return function (scope: Fusion.Scope, props: {
                         local charClone = charModel:Clone() :: Model
                         charClone.Parent = vpFrame:FindFirstChildOfClass("WorldModel")
 
-                        local class = use(playerClass) :: string
                         local weaponId = use(playerWeapon) :: string
-
 
                         for _, weapon: Model in charClone:GetChildren() do
                             if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
                         end
-                        if not RepS.Packages.ClassWeapons:FindFirstChild(class) then return end
-                        if not RepS.Packages.ClassWeapons[class]:FindFirstChild(weaponId) then return end
+                        local classWeapon = RepS.Packages.ClassWeapons:FindFirstChild(weaponId, true) :: Folder?
+                        if not classWeapon then return end
 
-
-                        local targetFolder = RepS.Packages.ClassWeapons[class][weaponId].Overworld :: Folder
+                        local targetFolder = classWeapon.Overworld :: Folder
 
                         for _, weapon: Model in targetFolder:GetChildren() do
                             weapon = weapon:Clone()

@@ -12,6 +12,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
+local ClassBook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
@@ -145,25 +146,33 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         end
 
 
-        local itemFolder, equippingFolder, questFolder, settingsFolder, talentFolder =
+        --// load class levels
+        for class: string, level: number in validatedData.ClassLevel do
+            plr:SetAttribute("ClassLevel_"..class, level)
+        end
+        for class: string, exp: number in validatedData.ClassEXPV2 do
+            plr:SetAttribute("ClassEXP_"..class, exp)
+        end
+        for class: string, point: number in validatedData.ClassPerkPoints do
+            plr:SetAttribute("ClassPerkPoint_"..class, point)
+        end
+
+
+        local itemFolder, equippingFolder, questFolder, settingsFolder =
             Instance.new("Folder"),
             Instance.new("Folder"),
             Instance.new("Folder"),
-            Instance.new("Configuration"),
-            Instance.new("Folder")
+            Instance.new("Configuration")
 
         itemFolder.Name = "Items"
         equippingFolder.Name = "EquippingItems"
         questFolder.Name = "Quests"
         settingsFolder.Name = "CriRPGSettings"
-        talentFolder.Name = "Talents"
 
         itemFolder.Parent = plr
         equippingFolder.Parent = plr
         questFolder.Parent = plr
         settingsFolder.Parent = plr
-        talentFolder.Parent = plr
-
 
         for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in validatedData.ItemsSQL do
             local itemVal = Instance.new("IntConstrainedValue")
@@ -202,17 +211,10 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
 
         QuestLib:InitPlayer(plr)
-
-
-        local isAbyss = workspace:GetAttribute("AbyssId")
-        local isDungeon = workspace:GetAttribute("DungeonId")
-
-        if not isAbyss and not isDungeon then
-            QuestLib:LoadSavedTable(plr, validatedData.QuestsV3)
-            self.Add(function()
-                QuestLib:StopTrackingPlayer(plr)
-            end)
-        end
+        QuestLib:LoadSavedTable(plr, validatedData.QuestsV3)
+        self.Add(function()
+            QuestLib:StopTrackingPlayer(plr)
+        end)
 
 
         for settingsId: string, settingsVal: any in validatedMainData.Settings do
@@ -231,14 +233,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
                 val.Parent = settingsFolder
             end
         end
-        for _, talentId: string in validatedData.Talents do
-            local talentVal = Instance.new("BoolValue")
-            talentVal.Name = talentId
-            talentVal.Value = true
-
-            talentVal.Parent = talentFolder
-        end
-
 
         --// slot middler
         Promise.try(function()
@@ -263,6 +257,47 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             end
 
         end):catch(function()  end)
+
+
+        --// get christmas/halloween rewards if donated before
+        Promise.try(function()
+            local donation = PlayerProfileLib._GetCurrentDonation(profile) or 0
+            local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig")
+            if not worldConfig then return end
+
+            local eventConfig = worldConfig:FindFirstChild("EventConfig")
+            local isChristmas = eventConfig and eventConfig:GetAttribute("ChristmasEvent")
+            local isHalloween = eventConfig and eventConfig:GetAttribute("HalloweenEvent")
+
+
+            if isChristmas and plr:GetAttribute("ClaimedChristmasDonation") == false then
+                plr:SetAttribute("ClaimedChristmasDonation", true)
+
+                if donation > 0 then
+                    Events.CreateNotify_S.Fire(plr, "Thanks for donating to Christmas event! You will receive 100 free Christmas token!")
+                    HarukaLib:AddAttr(plr, "IceCandy", 100)
+                end
+            end
+            if isHalloween and plr:GetAttribute("ClaimedHalloweenDonation") == false then
+                plr:SetAttribute("ClaimedHalloweenDonation", true)
+                if donation > 0 then
+                    Events.CreateNotify_S.Fire(plr, "Thanks for donating to Halloween event! You will receive 100 free Halloween candy!")
+                    HarukaLib:AddAttr(plr, "HalloweenCandy", 100)
+                end
+            end
+
+            if isChristmas and workspace.MapComponents:FindFirstChild("Gifts") then
+                local giftsFound = validatedData.ChristmasGifts
+                for giftId: string, _ in giftsFound do
+                    local gift = workspace.MapComponents.Gifts:FindFirstChild(giftId)
+                    if gift then
+                        gift:SetAttribute("Player_"..plr.UserId, true)
+                    end
+                end
+
+                plr:SetAttribute("ChristmasGiftFound", HarukaLib.TableUtils.CountDictLength(giftsFound))
+            end
+        end):catch(function() end)
 
 
         --// apply player rank in another thread
@@ -610,7 +645,7 @@ function PlayerLib:_SaveData()
     if not self.Slot then return end
     if self.Player:GetAttribute("Haruka_DataLocked") then return end
 
-    local profileAttrs = self.ProfileObj.Profile.Data[self.Slot].Attrs :: { any }
+    local profileAttrs = self.ProfileObj.Profile.Data[self.Slot].Attrs :: PlayerTemplate.PlayerDataJSON
     local nowAttrs = self.Player:GetAttributes()
 
 
@@ -620,17 +655,41 @@ function PlayerLib:_SaveData()
 
         profileAttrs[k] = nowAttrs[k]
     end
+    for class: string, _ in ClassBook do
+        profileAttrs.ClassLevel[class] = self.Player:GetAttribute("ClassLevel_"..class) or 1
+        profileAttrs.ClassEXPV2[class] = self.Player:GetAttribute("ClassEXP_"..class) or 0
+        profileAttrs.ClassPerkPoints[class] = self.Player:GetAttribute("ClassPerkPoint_"..class) or 2
+    end
+
+
+    --// event only
+    Promise.try(function()
+        local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig")
+        if not worldConfig then return end
+
+        local eventConfig = worldConfig:FindFirstChild("EventConfig")
+        local isChristmas = eventConfig and eventConfig:GetAttribute("ChristmasEvent")
+
+        if isChristmas and workspace.MapComponents:FindFirstChild("Gifts") then
+            local giftsFound = {}
+            for _, gift: Model in CollectionService:GetTagged("GiftEntity") do
+                if gift:GetAttribute("Player_"..self.Player.UserId) then
+                    giftsFound[gift.Name] = true
+                end
+            end
+
+            profileAttrs.ChristmasGifts = giftsFound
+        end
+    end):catch(function() end)
 
 
     local items = self.Player.Items :: Folder
     local equippingItems = self.Player.EquippingItems :: Folder
     local criSettings = self.Player.CriRPGSettings :: Configuration
-    local talents = self.Player.Talents :: Folder
 
     local itemSQL = {}
     local equippingItemsSQL = {}
     local criSettingsSQL = {}
-    local talentsSQL = {}
 
     for _, item: IntConstrainedValue in items:GetChildren() do
         if item:IsA("IntConstrainedValue") then
@@ -670,30 +729,14 @@ function PlayerLib:_SaveData()
     for _, symbol: any in criSettings:GetChildren() do
         criSettingsSQL[symbol.Name] = symbol.Value
     end
-    for _, symbol: BoolValue in talents:GetChildren() do
-        table.insert(talentsSQL, symbol.Name)
+
+    local questData = QuestLib:ExportDataTable(self.Player)
+    if questData then
+        profileAttrs.QuestsV3 = questData
     end
-
-    local success, result = pcall(function()
-        local isAbyss = workspace:GetAttribute("AbyssId")
-        local isDungeon = workspace:GetAttribute("DungeonId")
-
-        if not isAbyss and not isDungeon then
-            --- im not 100% sure if this will work correctly, better pcall it
-            local questData = QuestLib:ExportDataTable(self.Player)
-            if questData then
-                profileAttrs.QuestsV3 = questData
-            end
-        end
-    end)
-    if not success then
-        warn(result)
-    end
-
 
     profileAttrs.ItemsSQL = itemSQL
     profileAttrs.EquippingItemsSQL = equippingItemsSQL
-    profileAttrs.Talents = talentsSQL
 
     self.ProfileObj.Profile.Data.Settings = criSettingsSQL
     self.ProfileObj.Profile:SaveProfileAsync()

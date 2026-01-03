@@ -426,7 +426,7 @@ return function(scope: Fusion.Scope, props: {
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
                     }),
 
-                    Fusion.Computed(scope, function()
+                    Fusion.Computed(scope, function(_, scope: Fusion.Scope)
                         if props.Action == "Purchase" then
                             return ExecuteButton(scope, {
                                 LayoutOrder = 2,

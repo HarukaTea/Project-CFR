@@ -25,6 +25,7 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
+local LocationBook = require(ReplicatedStorage.HarukaShared.Library.LocationBook)
 
 
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
@@ -203,6 +204,9 @@ table.insert(CriRPGLib.Funcs, function()
 			if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
 		end
 
+        local hasCosmetic = plr.EquippingItems:FindFirstChild("Cosmetic1") or plr.EquippingItems:FindFirstChild("Cosmetic2")
+        if hasCosmetic and hasCosmetic.Value ~= "" then return end
+
         local combatState = char:GetAttribute("IsInCombat") or false
         local targetFolder = if combatState then "Combat" else "Overworld"
         local weaponId = plr.EquippingItems.Weapon1.Value :: string
@@ -231,6 +235,24 @@ table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
         ["Prop-Value"] = _equipWeapon
     }))
+
+    local function _equipArmor(item: StringValue)
+        if string.find(item.Name, "Cosmetic") then
+            ServerLib:EquipArmor(char, item.Value)
+            _equipWeapon()
+        end
+    end
+    Add(plr.EquippingItems.ChildAdded:Connect(_equipArmor))
+    Add(plr.EquippingItems.ChildRemoved:Connect(function(item: StringValue)
+        if string.find(item.Name, "Cosmetic") then
+            ServerLib:UnequipArmor(char, item.Value)
+            _equipWeapon()
+        end
+    end))
+
+    for _, item: StringValue in plr.EquippingItems:GetChildren() do
+        _equipArmor(item)
+    end
 end)
 
 
@@ -388,68 +410,109 @@ table.insert(CriRPGLib.Funcs, function()
 end)
 
 
+
 table.insert(CriRPGLib.Funcs, function()
-    Add(HarukaLib:Hydrate(plr, {
-        ["Attr-EXP"] = function(exp: number)
-            local level = plr:GetAttribute("Level") :: number
-            if not level then return end
+    local function _handleEXP(exp: number, props: {
+        LevelAttr: string,
+        EXPAttr: string,
+        Formula: string,
+        MaxLevel: number,
+        PerkPointAttr: string,
+    })
+        local level = plr:GetAttribute(props.LevelAttr) :: number
+        if not level then return end
 
-            local totalLevelShouldGive = 0
-            local maxEXPGained = 0
+        local totalLevelShouldGive = 0
+        local maxEXPGained = 0
 
-            while exp >= maxEXPGained do
-                maxEXPGained += FormulaBook.PlayerLevelCurveCal({
+        while exp >= maxEXPGained do
+            maxEXPGained += FormulaBook[props.Formula]({
+                Level = level + totalLevelShouldGive
+            })
+
+            if exp >= maxEXPGained then
+                totalLevelShouldGive += 1
+            else
+                maxEXPGained -= FormulaBook[props.Formula]({
                     Level = level + totalLevelShouldGive
                 })
-
-                if exp >= maxEXPGained then
-                    totalLevelShouldGive += 1
-                else
-                    maxEXPGained -= FormulaBook.PlayerLevelCurveCal({
-                        Level = level + totalLevelShouldGive
-                    })
-                    break
-                end
-                RunService.Stepped:Wait()
+                break
             end
-            if totalLevelShouldGive > 0 then
-                if plr:GetAttribute("Level") + totalLevelShouldGive > FormulaBook.PLAYER_MAX_LEVEL then
-                    totalLevelShouldGive = FormulaBook.PLAYER_MAX_LEVEL - plr:GetAttribute("Level")
-
-                    Events.CreateNotify_S.Fire(plr, "You've hit the level cap!")
-                end
-                if totalLevelShouldGive <= 0 then
-                    plr:SetAttribute("EXP", 0)
-                    return
-                end
-
-                HarukaLib:AddAttr(plr, "Level", totalLevelShouldGive)
-                HarukaLib:AddAttr(plr, "EXP", -math.ceil(maxEXPGained))
-                HarukaLib:AddAttr(plr, "PerkPoints", FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
-
-                Events.PlaySound_S.Fire(plr, SoundService.SFXs.LevelUp)
-
-                ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
-
-
-                Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
-                    StatusId = "LevelUp",
-                    Character = char,
-                })
-
-                char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
-                char.Humanoid.Health = char.Humanoid.MaxHealth
+            RunService.Stepped:Wait()
+        end
+        if totalLevelShouldGive > 0 then
+            if plr:GetAttribute(props.LevelAttr) + totalLevelShouldGive > props.MaxLevel then
+                totalLevelShouldGive = props.MaxLevel - plr:GetAttribute(props.LevelAttr)
             end
+            if totalLevelShouldGive <= 0 then
+                plr:SetAttribute(props.EXPAttr, 0)
+                return
+            end
+
+            HarukaLib:AddAttr(plr, props.LevelAttr, totalLevelShouldGive)
+            HarukaLib:AddAttr(plr, props.EXPAttr, -math.ceil(maxEXPGained))
+            HarukaLib:AddAttr(plr, props.PerkPointAttr, FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
+
+            Events.PlaySound_S.Fire(plr, SoundService.SFXs.LevelUp)
+            ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
+
+            Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+                StatusId = "LevelUp",
+                Character = char,
+            })
+
+            char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
+            char.Humanoid.Health = char.Humanoid.MaxHealth
+        end
+    end
+    Add(HarukaLib:Hydrate(plr, {
+        ["Attr-EXP"] = function(exp: number)
+            _handleEXP(exp, {
+                EXPAttr = "EXP",
+                LevelAttr = "Level",
+                Formula = "PlayerLevelCurveCal",
+                MaxLevel = FormulaBook.PLAYER_MAX_LEVEL,
+                PerkPointAttr = "PerkPoints"
+            })
         end,
         ["Attr-Level"] = function(level: number)
             if level == nil then return end
-
-
             if level > FormulaBook.PLAYER_MAX_LEVEL then
                 plr:SetAttribute("Level", FormulaBook.PLAYER_MAX_LEVEL)
-
                 Events.CreateNotify_S.Fire(plr, "You've hit the level cap!")
             end
+        end
+    }))
+
+
+    local classAdd, classEmpty = HarukaLib.Bin()
+    Add(classEmpty)
+
+
+    Add(HarukaLib:Hydrate(plr, {
+        ["Attr-Class"] = function(class: string)
+            classEmpty()
+            class = class or "Chain"
+
+            classAdd(HarukaLib:Hydrate(plr, {
+                ["Attr-ClassEXP_"..class] = function(exp: number)
+                    _handleEXP(exp, {
+                        EXPAttr = "ClassEXP_"..class,
+                        LevelAttr = "ClassLevel_"..class,
+                        Formula = "PlayerClassLevelCurveCal",
+                        MaxLevel = FormulaBook.PLAYER_MAX_CLASS_LEVEL,
+                        PerkPointAttr = "ClassPerkPoint_"..class,
+                    })
+                end,
+                ["Attr-ClassLevel_"..class] = function(level: number)
+                    if level == nil then return end
+                    if level > FormulaBook.PLAYER_MAX_CLASS_LEVEL then
+                        plr:SetAttribute("ClassLevel_"..class, FormulaBook.PLAYER_MAX_CLASS_LEVEL)
+
+                        Events.CreateNotify_S.Fire(plr, "You've hit the class level cap!")
+                    end
+                end
+            }))
         end
     }))
 end)
@@ -885,9 +948,20 @@ table.insert(CriRPGLib.Funcs, function()
 
             if not ItemBook:GetItemInfo(weapon) then return end
 
-            local info = ItemBook:GetItemInfo(weapon)
+            local itemUniqueId = plr.EquippingItems.Weapon1:GetAttribute("HarukaUniqueId") :: string
+            local itemSymbol: IntConstrainedValue = nil
+            for _, symbol: IntConstrainedValue in plr.Items:GetChildren() do
+                if symbol:GetAttribute("HarukaUniqueId") == itemUniqueId then
+                    itemSymbol = symbol
+                    break
+                end
+            end
+            if itemSymbol == nil then return end
 
-            local class = info.StatInfoDesync.ForClass :: string
+            local itemStat = itemSymbol:GetAttribute("ItemStat") or ""
+            local itemStats = ItemBook:ParseItemStat("Stat", string.split(itemStat, ","))
+
+            local class = itemStats.ForClass :: string
             plr:SetAttribute("Class", class)
         end
     }))
@@ -1041,6 +1115,36 @@ table.insert(CriRPGLib.Funcs, function()
 		end
 	end))
 	AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)
+end)
+
+
+
+table.insert(CriRPGLib.Funcs, function()
+    local areaQueue = HarukaLib.Queue()
+    Add(areaQueue)
+
+    local function _changeLocation()
+        if areaQueue:IsLocked() then return end
+        if areaQueue:IsEmpty() then return end
+
+        areaQueue:SpawnMutex(1.5)
+
+        local location = areaQueue:Pop() :: string
+
+        if location and location ~= "" and location ~= "None" and LocationBook[location] then
+            --- apply character base stat
+            char:SetAttribute("BaseSpeed", LocationBook[location].BaseSpeed or 40)
+            char:SetAttribute("BaseJumpPower", LocationBook[location].BaseJumpPower or 50)
+        end
+    end
+    areaQueue.ElementAdded:Connect(_changeLocation)
+    areaQueue.MutexUnlocked:Connect(_changeLocation)
+
+    Add(HarukaLib:Hydrate(char, {
+        ["Attr-AreaIn"] = function(region: string)
+            areaQueue:Push(region)
+        end
+    }))
 end)
 
 

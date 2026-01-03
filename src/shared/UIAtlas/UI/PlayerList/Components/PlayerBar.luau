@@ -19,8 +19,7 @@ return function (scope: Fusion.Scope, props: {
 
     PlayerSelecting: Fusion.Value<Player?>,
     PlayerSelected: Fusion.Value<Player?>,
-
-    Index: number?,
+    PartyMembers: Fusion.Value<{ ObjectValue }>,
 })
 
     local joinOrder = props.Player:GetAttribute("JoinOrder") :: number
@@ -166,6 +165,12 @@ return function (scope: Fusion.Scope, props: {
                             if use(props.PlayerSelecting) == props.Player then
                                 return Components.BLACK_COLOR
                             else
+                                if #use(thatRoles) > 0 then
+                                    return Color3.fromHex('#ffeaa7')
+                                end
+                                if table.find(use(props.PartyMembers), props.Player) then
+                                    return Color3.fromHex('#81ecec')
+                                end
                                 return Components.WHITE_COLOR
                             end
                         end),
@@ -174,7 +179,7 @@ return function (scope: Fusion.Scope, props: {
 
 
                     Components.Frame(scope, {
-                        Name = "Badges",
+                        Name = "Roles",
                         LayoutOrder = 1,
                         Size = UDim2.fromScale(0.7, 0.7),
                         SizeConstraint = Enum.SizeConstraint.RelativeYY,
@@ -204,6 +209,22 @@ return function (scope: Fusion.Scope, props: {
 
                                     Image = ICONS[role.Name or "None"] or AssetBook.ExtraIcons.Unknown,
                                 })
+                            end),
+
+                            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                if table.find(use(props.PartyMembers), props.Player) then
+                                    return Components.Frame(scope, {
+                                        Name = "AAA_IsPartyMember",
+                                        BackgroundTransparency = 0,
+                                        BackgroundColor3 = Color3.fromHex('#81ecec'),
+                                        Size = UDim2.fromScale(0.4, 0.4),
+                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
+                                        [Children] = {
+                                            Components.RoundUICorner(scope)
+                                        }
+                                    })
+                                end
                             end)
                         }
                     })

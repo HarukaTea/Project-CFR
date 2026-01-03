@@ -24,30 +24,32 @@ export type SavedQuestData = {
 
 export type QuestLibData = {
     Data: QuestBook.QuestJSON,
-    Container: Folder
+    Symbol: BoolValue
 }
 
 
 export type QuestLibClass = {
-    InitPlayer: (plr: Player) -> QuestLibClass,
-    StopTrackingPlayer: (plr: Player) -> nil,
+    InitPlayer: (self: QuestLibClass, plr: Player) -> QuestLibClass,
+    StopTrackingPlayer: (self: QuestLibClass, plr: Player) -> nil,
 
 
     _checkIsReqCompleted: (plr: Player, questData: QuestBook.QuestJSON) -> boolean,
 
 
-    GiveQuest: (plr: Player, questId: string) -> nil,
-    AddProgress: (plr: Player, questId: string, objectiveId: string, amount: number) -> nil,
-    RemoveQuest: (plr: Player, questId: string) -> nil,
-    CheckQuestCompletion: (plr: Player, questId: string) -> nil,
-    CompleteQuest: (plr: Player, questId: string) -> nil,
-    ExportDataTable: (plr: Player) -> SavedQuestData,
-    LoadSavedTable: (plr: Player, savedData: SavedQuestData) -> nil,
+    GiveQuest: (self: QuestLibClass, plr: Player, questId: string) -> nil,
+    AddProgress: (self: QuestLibClass, plr: Player, questId: string, objectiveId: string, amount: number) -> nil,
+    SetProgress: (self: QuestLibClass, plr: Player, questId: string, objectiveId: string, amount: number) -> nil,
+    RemoveQuest: (self: QuestLibClass, plr: Player, questId: string) -> nil,
+    CheckQuestCompletion: (self: QuestLibClass, plr: Player, questId: string) -> nil,
+    CompleteQuest: (self: QuestLibClass, plr: Player, questId: string) -> nil,
+    ExportDataTable: (self: QuestLibClass, plr: Player) -> SavedQuestData,
+    LoadSavedTable: (self: QuestLibClass, plr: Player, savedData: SavedQuestData) -> nil,
 
-    GetAllQuests: (plr: Player) -> { [string]: QuestLibData },
-    GetDoingQuests: (plr: Player) -> { [string]: QuestLibData },
-    GetCompletedQuests: (plr: Player) -> { [string]: QuestLibData },
-    GetQuestData: (plr: Player, questId: string) -> QuestBook.QuestJSON?,
+    GetAllQuests: (self: QuestLibClass, plr: Player) -> { [string]: QuestLibData },
+    GetDoingQuests: (self: QuestLibClass, plr: Player) -> { [string]: QuestLibData },
+    GetCompletedQuests: (self: QuestLibClass, plr: Player) -> { [string]: QuestLibData },
+    GetQuestData: (self: QuestLibClass, plr: Player, questId: string) -> QuestBook.QuestJSON?,
+    GetQuest: (self: QuestLibClass, plr: Player, questId: string) -> QuestLibData?,
 
 
     ActiveQuests: {
@@ -68,20 +70,6 @@ QuestLib.ActiveQuests = {}
 
 --// helper functions
 
-local function _checkIsReqCompleted(plr: Player, questData: QuestBook.QuestJSON) : boolean
-    for _, reqId in questData.RequiredQuests do
-        local quest = plr.Quests:FindFirstChild(reqId)
-        if not quest or not quest:GetAttribute("IsCompleted") then
-            return false
-        end
-    end
-
-    return true
-end
-QuestLib._checkIsReqCompleted = _checkIsReqCompleted
-
-
-
 function QuestLib:InitPlayer(plr: Player)
     QuestLib.ActiveQuests[plr] = {}
 end
@@ -97,26 +85,20 @@ function QuestLib:GiveQuest(plr: Player, questId: string)
     local questData = QuestBook[questId] :: QuestBook.QuestJSON
     if not questData then return  warn("Quest not found:", questId) end
 
-    if not _checkIsReqCompleted(plr, questData) then return end
     if plr.Quests:FindFirstChild(questId) then return end
 
-
-
-    local folder = Instance.new("Folder")
-    folder.Name = questId
-    folder:SetAttribute("IsCompleted", false)
-
-    folder.Parent = plr.Quests
-
+    local boolVal = Instance.new("BoolValue")
+    boolVal.Name = questId
+    boolVal.Value = false
+    boolVal.Parent = plr.Quests
 
     for _, obj: QuestBook.QuestObjectiveJSON in questData.Objectives do
-        folder:SetAttribute(obj.ObjectiveId, obj.Default)
+        boolVal:SetAttribute(obj.ObjectiveId, obj.Default)
     end
-
 
     QuestLib.ActiveQuests[plr][questId] = {
         Data = questData,
-        Container = folder,
+        Symbol = boolVal,
     }
 end
 
@@ -126,15 +108,24 @@ end
 function QuestLib:AddProgress(plr: Player, questId: string, objectiveId: string, amount: number)
     if not QuestLib.ActiveQuests[plr][questId] then return end
 
-    local container = QuestLib.ActiveQuests[plr][questId].Container
-    local objectiveVal = container:GetAttribute(objectiveId)
+    local symbol = QuestLib.ActiveQuests[plr][questId].Symbol
+    local objectiveVal = symbol:GetAttribute(objectiveId)
     if not objectiveVal then return end
 
 
-    HarukaLib:AddAttr(container, objectiveId, amount)
+    HarukaLib:AddAttr(symbol, objectiveId, amount)
     QuestLib:CheckQuestCompletion(plr, questId)
 end
+function QuestLib:SetProgress(plr: Player, questId: string, objectiveId: string, amount: number)
+    if not QuestLib.ActiveQuests[plr][questId] then return end
 
+    local symbol = QuestLib.ActiveQuests[plr][questId].Symbol
+    local objectiveVal = symbol:GetAttribute(objectiveId)
+    if not objectiveVal then return end
+
+    symbol:SetAttribute(objectiveId, amount)
+    QuestLib:CheckQuestCompletion(plr, questId)
+end
 
 
 
@@ -143,10 +134,10 @@ function QuestLib:CheckQuestCompletion(plr: Player, questId: string)
     if not QuestLib.ActiveQuests[plr][questId] then return end
 
     local questData = QuestLib.ActiveQuests[plr][questId].Data
-    local container = QuestLib.ActiveQuests[plr][questId].Container
+    local symbol = QuestLib.ActiveQuests[plr][questId].Symbol
 
     for _, objective: QuestBook.QuestObjectiveJSON in questData.Objectives do
-        if container:GetAttribute(objective.ObjectiveId) < objective.Target then
+        if symbol:GetAttribute(objective.ObjectiveId) < objective.Target then
             return
         end
     end
@@ -159,9 +150,9 @@ end
 
 function QuestLib:CompleteQuest(plr: Player, questId: string)
     if not QuestLib.ActiveQuests[plr][questId] then return end
+    if QuestLib.ActiveQuests[plr][questId].Symbol.Value then return end
 
-    QuestLib.ActiveQuests[plr][questId].Container:SetAttribute("IsCompleted", true)
-
+    QuestLib.ActiveQuests[plr][questId].Symbol.Value = true
 
     ServerBindables.QuestCompleted:Fire(plr, questId)
 end
@@ -172,16 +163,16 @@ end
 function QuestLib:ExportDataTable(plr: Player) : SavedQuestData
     local result = {}
 
-    for _, questFolder: Folder in plr.Quests:GetChildren() do
-        local questId = questFolder.Name
+    for _, questSymbol: BoolValue in plr.Quests:GetChildren() do
+        local questId = questSymbol.Name
         local questData = {
-            Completed = questFolder:GetAttribute("IsCompleted") or false,
+            Completed = questSymbol.Value or false,
             Objectives = {}
         }
         local questBookData = QuestBook[questId] :: QuestBook.QuestJSON
 
         for _, objective: QuestBook.QuestObjectiveJSON in questBookData.Objectives do
-            questData.Objectives[objective.ObjectiveId] = questFolder:GetAttribute(objective.ObjectiveId) or 0
+            questData.Objectives[objective.ObjectiveId] = questSymbol:GetAttribute(objective.ObjectiveId) or 0
         end
 
 
@@ -197,13 +188,13 @@ function QuestLib:LoadSavedTable(plr: Player, savedData: SavedQuestData)
         if not QuestBook[questId] then continue end
 
         QuestLib:GiveQuest(plr, questId)
-        local container = plr.Quests:FindFirstChild(questId)
+        local symbol = plr.Quests:FindFirstChild(questId) :: BoolValue
 
         for objId, value in state.Objectives do
-            container:SetAttribute(objId, value)
+            symbol:SetAttribute(objId, value)
         end
         if state.Completed then
-            container:SetAttribute("IsCompleted", true)
+            symbol.Value = true
         end
     end
 end
@@ -213,12 +204,16 @@ function QuestLib:GetAllQuests(plr: Player) : { [string]: QuestLibData }
     return QuestLib.ActiveQuests[plr]
 end
 
+function QuestLib:GetQuest(plr: Player, questId: string) : QuestLibData?
+    return QuestLib.ActiveQuests[plr][questId]
+end
+
 
 function QuestLib:GetDoingQuests(plr: Player) : { [string]: QuestLibData }
     local result = {}
 
     for questId: string, questData: QuestLibData in QuestLib.ActiveQuests[plr] do
-        if questData.Container:GetAttribute("IsCompleted") then continue end
+        if questData.Symbol.Value then continue end
 
         result[questId] = questData
     end
@@ -231,7 +226,7 @@ function QuestLib:GetCompletedQuests(plr: Player) : { [string]: QuestLibData }
     local result = {}
 
     for questId: string, questData: QuestLibData in QuestLib.ActiveQuests[plr] do
-        if not questData.Container:GetAttribute("IsCompleted") then continue end
+        if not questData.Symbol.Value then continue end
 
         result[questId] = questData
     end

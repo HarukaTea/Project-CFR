@@ -4,6 +4,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --// For teamwork purposes, init files that arent in the rojo Project
 
+local plr = Players.LocalPlayer
+
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
@@ -23,10 +25,6 @@ if localTeamworkPackages:FindFirstChild("LocationBook") then
     end
 end
 
-if localTeamworkPackages:FindFirstChild("MapLocal") then
-    localTeamworkPackages.MapLocal:Clone().Parent = Players.LocalPlayer.PlayerScripts
-end
-
 if localTeamworkPackages:FindFirstChild("QuestBook") then
     local QuestBook = require(localTeamworkPackages.QuestBook)
     local RojoQuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
@@ -35,4 +33,13 @@ if localTeamworkPackages:FindFirstChild("QuestBook") then
     for questId: string, quest: RojoQuestBook.QuestJSON in QuestBook do
         RojoQuestBook[questId] = quest
     end
+end
+
+
+repeat task.wait() until plr.Character
+repeat task.wait() until plr.Character.PrimaryPart
+repeat task.wait() until plr.Character:GetAttribute("Haruka_CriRPGClientInited")
+
+if localTeamworkPackages:FindFirstChild("MapLocal") then
+    localTeamworkPackages.MapLocal:Clone().Parent = Players.LocalPlayer.PlayerScripts
 end

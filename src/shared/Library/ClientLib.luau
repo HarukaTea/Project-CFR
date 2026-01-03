@@ -71,7 +71,7 @@ function ClientLib:FindGroundByRay(givenPos: Vector3) : Vector3
 end
 
 
-function ClientLib:WeldWeapon(weapon: Model, char: Model)
+function ClientLib:WeldWeapon(weapon: Model, char: Model) : Model
 	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
 	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
 
@@ -84,6 +84,8 @@ function ClientLib:WeldWeapon(weapon: Model, char: Model)
 
 	motor6D.Part0 = weldTarget
 	weapon.Parent = char
+
+	return weapon
 end
 
 
@@ -266,7 +268,7 @@ function ClientLib:TrackInputTextbox(props: {
 		if input ~= input then input = 1 end
 
 		input = math.floor(input)
-		input = math.clamp(input, 1, 99)
+		input = math.clamp(input, 1, 999)
 
 		amount:set(input)
 

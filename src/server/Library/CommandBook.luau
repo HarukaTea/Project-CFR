@@ -1,9 +1,12 @@
 
 local CollectionService = game:GetService("CollectionService")
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local SSS = game:GetService("ServerScriptService")
 local RepS = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
 
+local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
@@ -31,12 +34,30 @@ export type CommandJSON = Types.CommandJSON
 
 
 
+--// pick all spawnpoints
+for _, map: Folder in workspace.Maps:GetDescendants() do
+    if map:IsA("Configuration") and map.Name == "SpawnPoints" and map.Parent then
+        if map.Parent:IsA("Folder") and map.Parent:FindFirstChild("Terrain") then
+            map:AddTag("SpawnPointsEntity")
+        end
+    end
+end
+
+
+
 local LOCATION_SPAWNPOINTS = CollectionService:GetTagged("SpawnPointsEntity")
 local LOCATIONS = {}
 
-for _, spawnPoints in LOCATION_SPAWNPOINTS do
+for _, spawnPoints: Configuration in LOCATION_SPAWNPOINTS do
     table.insert(LOCATIONS, spawnPoints.Parent.Name)
 end
+
+
+table.insert(LOCATIONS, "Ihnmaica")
+
+
+local ALLMOBS = HarukaLib.TableUtils.Keys(EntityBook)
+table.remove(ALLMOBS, table.find(ALLMOBS, "VARIANTS"))
 
 
 local commands: CommandJSON = {
@@ -134,8 +155,8 @@ local commands: CommandJSON = {
 
 
     {
-        Name = "ChargeUlt",
-        Alias = "/charge_full_ult",
+        Name = "ChargeClassUlt",
+        Alias = "/charge_class_ult",
 
         RankReq = testerRank,
         Args = {
@@ -152,7 +173,10 @@ local commands: CommandJSON = {
                 if not thatPlr then continue end
                 if not ServerLib:IsCharValid(thatPlr.Character) then continue end
 
-                thatPlr.Character:SetAttribute("ClassUltProgress", thatPlr.Character:GetAttribute("MaxClassUltProgress"))
+                local maxProgress = thatPlr.Character:GetAttribute("MaxClassUltProgress")
+                if not maxProgress then continue end
+
+                thatPlr.Character:SetAttribute("ClassUltProgress", maxProgress)
             end
 
             props.ResolveObj()
@@ -246,8 +270,8 @@ local commands: CommandJSON = {
     },
 
     {
-        Name = "SetLevel",
-        Alias = "/set_level",
+        Name = "SetPlayerLevel",
+        Alias = "/set_player_level",
 
         RankReq = testerRank,
         Args = {
@@ -291,7 +315,7 @@ local commands: CommandJSON = {
             {
                 Name = "entity_id",
                 Type = "enum",
-                EnumItems = HarukaLib.TableUtils.Keys(EntityBook)
+                EnumItems = ALLMOBS
             },
             {
                 Name = "level",
@@ -334,7 +358,7 @@ local commands: CommandJSON = {
 
     {
         Name = "TPLocation",
-        Alias = "/tp_location",
+        Alias = "/tp_map",
 
         RankReq = testerRank,
         Args = {
@@ -342,28 +366,140 @@ local commands: CommandJSON = {
                 Name = "location_id",
                 Type = "enum",
                 EnumItems = LOCATIONS
+            }
+        },
+
+        Callback = function(props: CallbackProps)
+            local char = props.Executor.Character
+            if not ServerLib:IsCharValid(char) then return end
+
+            local map = workspace.Maps:FindFirstChild(props.Args[1], true)
+            if not map then return end
+
+            local spawnPoint = map:FindFirstChild("SpawnPoints")
+            if not spawnPoint then return end
+
+            char:PivotTo(spawnPoint:GetChildren()[1].CFrame)
+            Events.RefreshCullingAsync_S.Fire(props.Executor)
+
+            props.ResolveObj()
+        end
+    },
+
+
+    {
+        Name = "LoadSecretMap",
+        Alias = "/load_secret_map_dev",
+
+        RankReq = 127,
+        Args = {
+            {
+                Name = "map_id",
+                Type = "enum",
+                EnumItems = { "Ihnmaica" }
             },
+            {
+                Name = "action_id",
+                Type = "enum",
+                EnumItems = { "Load", "Unload" }
+            }
+        },
+
+        Callback = function(props: CallbackProps)
+            local action = props.Args[2] :: "Load" | "Unload"
+            local map = workspace.Maps:FindFirstChild(props.Args[1]) :: Folder
+
+            if action == "Load" and map then
+                Events.CreateNotify_S.Fire(props.Executor, "Map already loaded")
+                return
+            elseif action == "Unload" and not map then
+                Events.CreateNotify_S.Fire(props.Executor, "Map already unloaded")
+                return
+            end
+
+            if action == "Load" then
+                ServerStorage["__DevSecretMaps"][props.Args[1]].Parent = workspace.Maps
+
+                Events.CreateNotify_S.Fire(props.Executor, "Map loaded")
+            elseif action == "Unload" then
+                map.Parent = ServerStorage["__DevSecretMaps"]
+
+                Events.CreateNotify_S.Fire(props.Executor, "Map unloaded")
+            end
+
+            props.ResolveObj()
+        end
+    },
+
+    {
+        Name = "SetPlayerClassLevel",
+        Alias = "/set_class_level",
+
+        RankReq = testerRank,
+        Args = {
             {
                 Name = "player_id",
                 Type = "players"
             },
+            {
+                Name = "class_id",
+                Type = "enum",
+                EnumItems = HarukaLib.TableUtils.Keys(ClassBook)
+            },
+            {
+                Name = "level",
+                Type = "number",
+
+                ShouldBeInteger = true,
+                RangeMin = 1,
+                RangeMax = FormulaBook.PLAYER_MAX_CLASS_LEVEL
+            }
         },
 
         Callback = function(props: CallbackProps)
-            for _, thatPlr: Player in props.Args[2] do
+            for _, thatPlr: Player in props.Args[1] do
                 if not thatPlr then continue end
 
-                local char = props.Executor.Character
-                if not ServerLib:IsCharValid(char) then continue end
+                thatPlr:SetAttribute("ClassLevel_"..props.Args[2], props.Args[3])
+            end
 
-                local map = workspace.Maps:FindFirstChild(props.Args[1], true)
-                if not map then break end
+            props.ResolveObj()
+        end
+    },
 
-                local spawnPoint = map:FindFirstChild("SpawnPoints")
-                if not spawnPoint then break end
+    {
+        Name = "SetPlayerClass",
+        Alias = "/set_fake_class",
 
-                char:PivotTo(spawnPoint:GetChildren()[1].CFrame)
-                Events.RefreshCullingAsync_S.Fire(thatPlr)
+        RankReq = testerRank,
+        Args = {
+            {
+                Name = "player_id",
+                Type = "players"
+            },
+            {
+                Name = "class_id",
+                Type = "enum",
+                EnumItems = HarukaLib.TableUtils.Keys(ClassBook)
+            }
+        },
+
+        Callback = function(props: CallbackProps)
+            for _, thatPlr: Player in props.Args[1] do
+                if not thatPlr then continue end
+
+                local weaponItem = Instance.new("IntConstrainedValue")
+                weaponItem.Name = "WoodenSword"
+                weaponItem.MinValue = 0
+                weaponItem.Value = 1
+                weaponItem.MaxValue = 1
+
+                weaponItem:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
+                weaponItem:SetAttribute("ItemStat", `ATK(15),ForClass({props.Args[2]})`)
+
+                weaponItem.Parent = thatPlr.Items
+
+                ServerLib:ChangeWeapon(thatPlr, weaponItem.Name, weaponItem:GetAttribute("HarukaUniqueId"))
             end
 
             props.ResolveObj()
