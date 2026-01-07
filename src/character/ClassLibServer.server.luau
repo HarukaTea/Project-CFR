@@ -5,8 +5,7 @@ local SSS = game:GetService("ServerScriptService")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-
+local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
@@ -42,7 +41,7 @@ function ClassMechanicLib:Init()
     ClassMechanicLib:_ListenClassTracker()
 
 
-    ClientLib:InitCharDeadTrackers({
+    ServerLib:InitCharDeadTrackers({
         Add = Add,
         Empty = function()
             self:Destroy()

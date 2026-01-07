@@ -10,7 +10,6 @@ local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
@@ -36,35 +35,161 @@ end)
 --// Helper functions
 
 function ServerLib:WeldModel(part: BasePart, welded: Model)
-	ClientLib:WeldModel(part, welded)
+	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
+	local C = welded:GetChildren()
+	if welded:FindFirstChild("Meshes") then
+		C = welded.Meshes:GetChildren()
+	end
+
+	if target == nil then
+		warn("Lacking of target part in welded model!")
+		return
+	end
+
+	for i = 1, #C do
+		if HarukaLib:IsBasePartType(C[i]) then
+			local W = Instance.new("Weld")
+			W.Part0 = target
+			W.Part1 = C[i]
+
+			local CJ = CFrame.new(target.Position)
+			W.C0 = target.CFrame:Inverse() * CJ
+			W.C1 = C[i].CFrame:Inverse() * CJ
+			W.Parent = target
+		end
+
+		local Y = Instance.new("Weld")
+		Y.Part0 = part
+		Y.Part1 = target
+		Y.C0 = CFrame.identity
+		Y.Parent = Y.Part0
+	end
+
+	local h = welded:QueryDescendants(HarukaLib.BasePartSelector)
+	for _, child: BasePart in h do
+		child.Anchored = false
+	end
 end
 
-function ServerLib:FindGroundByRay(givenPos: Vector3)
-	return ClientLib:FindGroundByRay(givenPos)
+
+function ServerLib:FindGroundByRay(givenPos: Vector3) : Vector3
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 35, -Vector3.yAxis * 159, terrainParams)
+	if rayResult then return rayResult.Position end
+
+	return givenPos
 end
 
-function ServerLib:FindGroundByRayForOrb(givenPos: Vector3)
-	return ClientLib:FindGroundByRayForOrb(givenPos)
-end
 
 function ServerLib:WeldWeapon(weapon: Model, char: Model) : Model
-	return ClientLib:WeldWeapon(weapon, char)
+	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
+	local weldTarget = weapon.Handle:GetAttribute("Weld") :: string
+
+	if not motor6D then warn("No Motor6D found on weapon") return end
+	if not weldTarget then warn("Cannot weld weapon, no target specified") return end
+
+	weldTarget = char:FindFirstChild(weldTarget)
+	if not weldTarget then warn("Cannot weld weapon, target not found") return end
+
+
+	motor6D.Part0 = weldTarget
+	weapon.Parent = char
+
+	return weapon
 end
 
-function ServerLib:IsModelValid(model: Model)
-	return ClientLib:IsModelValid(model)
+
+function ServerLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
+	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 5, -Vector3.yAxis * 30, terrainParams)
+	if rayResult then return rayResult.Position end
+
+	return givenPos
 end
 
-function ServerLib:IsCharValid(char: Model)
-	return ClientLib:IsCharValid(char)
+
+function ServerLib:IsModelValid(model: Instance?) : boolean
+	if not model then return false end
+    if not model.Parent then return false end
+    if not model.PrimaryPart then return false end
+
+    return true
 end
 
-function ServerLib:GetPlayerByUniqueId(uniqueId: string)
-	return ClientLib:GetPlayerByUniqueId(uniqueId)
+
+function ServerLib:IsCharValid(char: Instance?) : boolean
+	if not ServerLib:IsModelValid(char) then return false end
+
+	local humanoid = char:FindFirstChild("Humanoid")
+	if not humanoid then return false end
+
+	if humanoid.Health <= 0 then return false end
+
+	return true
 end
+
+
+function ServerLib:GetPlayerByUniqueId(uniqueId: string) : Player?
+	local player: Player = nil
+
+	for _, thatPlayer: Player in CollectionService:GetTagged("PlayerEntity") do
+		if thatPlayer:GetAttribute("HarukaUniqueId") then
+			if thatPlayer:GetAttribute("HarukaUniqueId") == uniqueId then
+				player = thatPlayer
+				break
+			end
+		end
+	end
+
+	return player
+end
+
 
 function ServerLib:PlayWorldSound(sound: Sound, pos: Vector3)
-	ClientLib:PlayWorldSound(sound, pos)
+	local part = HarukaLib:CreateMockPart()
+	part.Name = "WorldSound_"..sound.Name
+	part.CFrame = CFrame.new(pos)
+
+	sound = sound:Clone()
+	sound.Volume *= 3
+	sound.Parent = part
+
+	part.Parent = workspace.Terrain
+
+	task.wait()
+	sound:Play()
+
+	Debris:AddItem(part, sound.TimeLength + 0.5)
+end
+
+function ServerLib:InitCharDeadTrackers(props: {
+	Add: (item: any) -> any,
+	Empty: () -> nil,
+
+	Char: Model,
+	Player: Player,
+})
+	local Add, Empty = props.Add, props.Empty
+	local char = props.Char
+	local plr = props.Player
+
+
+	Add(plr.CharacterRemoving:Connect(function()
+		Empty()
+	end))
+	Add(char.Humanoid.HealthChanged:Connect(function(health: number)
+		if health <= 0 then
+			Empty()
+		end
+	end))
+	Add(char.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function(newParent)
+		if newParent and newParent:IsA("Model") then
+			if newParent.PrimaryPart == nil and not newParent:FindFirstChildOfClass("Humanoid") then
+				Empty()
+				return
+			end
+		else
+			Empty()
+		end
+	end))
 end
 
 function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3

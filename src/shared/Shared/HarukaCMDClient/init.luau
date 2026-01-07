@@ -8,10 +8,8 @@ local UserInputService = game:GetService("UserInputService")
 local TextChatService = game:GetService("TextChatService")
 
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local Events = require(script.Events)
 local Types = require(script.Types)

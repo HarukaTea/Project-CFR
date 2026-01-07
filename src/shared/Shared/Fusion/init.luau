@@ -33,6 +33,16 @@ do
 	External.setExternalProvider(RobloxExternal)
 end
 
+
+-- Check if fusion inits in server
+do
+	local RunService = game:GetService("RunService")
+	if RunService:IsServer() then
+		warn("[Haruka] Fusion should not be initialized in server")
+	end
+end
+
+
 local Fusion: Fusion = table.freeze({
 	-- General
 	version = { major = 0, minor = 4, isRelease = false },

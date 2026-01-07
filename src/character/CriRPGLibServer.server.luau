@@ -8,11 +8,11 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
-local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
 local ClassOrbCallbackLib = require(ServerScriptService.HarukaServer.Library.ClassOrbCallbackLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
 local ServerTable = require(ServerScriptService.HarukaServer.Library.ServerTable)
 
@@ -74,7 +74,7 @@ function CriRPGLib:Init()
     char:AddTag("PlayerCharEntity")
 
 
-    ClientLib:InitCharDeadTrackers({
+    ServerLib:InitCharDeadTrackers({
         Char = char,
         Player = plr,
         Add = Add,
