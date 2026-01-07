@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	An xpcall() error handler to collect and parse useful information about
 	errors, such as clean messages and stack traces.

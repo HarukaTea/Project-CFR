@@ -76,11 +76,11 @@ return function (plr: Player)
                         ClipsDescendants = false,
 
                         [Children] = {
-                            Fusion.ForValues(scope, self.Products, function(_, scope: Fusion.Scope, itemInfo: {
+                            Fusion.ForPairs(scope, self.Products, function(_, scope: Fusion.Scope, index: number, itemInfo: {
                                 ProductId: string,
                                 ProductUniqueId: string,
                             })
-                                return MKProductBar(scope, {
+                                return index, MKProductBar(scope, {
                                     ProductId = itemInfo.ProductId,
                                     UniqueId = itemInfo.ProductUniqueId,
 

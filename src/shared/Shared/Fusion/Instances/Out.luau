@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	A special key for property tables, which allows users to extract values from
 	an instance into an automatically-updated Value object.

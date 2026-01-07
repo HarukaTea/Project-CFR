@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	A state object which allows regular Luau code to control its value.
 

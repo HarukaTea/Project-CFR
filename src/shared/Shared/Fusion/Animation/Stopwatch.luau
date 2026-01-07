@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	State object for measuring time since an event using a reference timer.
 

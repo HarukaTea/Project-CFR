@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Creates an empty scope with the same metatables as the original scope. Used
 	for preserving access to constructors when creating inner scopes.

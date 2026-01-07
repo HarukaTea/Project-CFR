@@ -122,8 +122,8 @@ return function(scope: Fusion.Scope, props: {
                                         }
                                     }),
 
-                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
-                                        return StarTierSymbol(scope, {
+                                    Fusion.ForPairs(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, index: number, _)
+                                        return index, StarTierSymbol(scope, {
                                             Size = UDim2.fromScale(0.8, 0.8)
                                         })
                                     end)

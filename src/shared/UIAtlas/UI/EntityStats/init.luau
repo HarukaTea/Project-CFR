@@ -111,8 +111,8 @@ return function (plr: Player)
                                     VerticalAlignment = Enum.VerticalAlignment.Center
                                 }),
 
-                                Fusion.ForValues(scope, self.TargetingList, function(_, scope: Fusion.Scope, targeting: ObjectValue)
-                                    return PlayerTargetingBar(scope, {
+                                Fusion.ForPairs(scope, self.TargetingList, function(_, scope: Fusion.Scope, index: number, targeting: ObjectValue)
+                                    return index, PlayerTargetingBar(scope, {
                                         Targeting = targeting,
                                         TargetingEnemy = self.TargetingEnemy,
                                         TargetArrowPos = self.TargetArrowPos

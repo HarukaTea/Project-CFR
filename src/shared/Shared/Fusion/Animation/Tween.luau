@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	A specialised state object for following a goal state smoothly over time,
 	using a TweenInfo to shape the motion.

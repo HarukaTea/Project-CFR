@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Extended typeof, designed for identifying custom objects.
 	If given a table with a `type` string, returns that.

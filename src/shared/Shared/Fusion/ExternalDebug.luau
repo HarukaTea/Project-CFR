@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Abstraction layer between Fusion internals and external debuggers, allowing
 	for deep introspection using function hooks.
@@ -15,7 +11,6 @@ local Package = script.Parent
 local Types = require(Package.Types)
 
 local currentProvider: Types.ExternalDebugger? = nil
-local lastUpdateStep = 0
 
 local Debugger = {}
 

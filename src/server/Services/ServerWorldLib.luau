@@ -69,6 +69,13 @@ table.insert(ServerWorldLib.Funcs, function()
         folder.Name = name
         folder.Parent = parent
     end
+    local function _clearFolder(name: string, container: Instance)
+        for _, folder: Folder in container:GetChildren() do
+            if folder.Name == name then
+                folder:Destroy()
+            end
+        end
+    end
     _createFolder("ItemCDSymbolContainer", workspace.MapComponents)
     _createFolder("EntitiesPlayerChar", workspace)
     _createFolder("Entities", workspace)
@@ -78,21 +85,12 @@ table.insert(ServerWorldLib.Funcs, function()
     _createFolder("GlobalServers", workspace.MapComponents)
     _createFolder("SkyGalleonsContainer", workspace.MapComponents)
 
-    if workspace:FindFirstChild("Accessory Storage") then
-        workspace["Accessory Storage"]:Destroy()
-    end
-    if workspace.Terrain:FindFirstChild("DO_NOT_REMOVE_ForgeTextureCache") then
-        workspace.Terrain["DO_NOT_REMOVE_ForgeTextureCache"]:Destroy()
-    end
-    if workspace.Terrain:FindFirstChild("DO_NOT_REMOVE_ForgeSharedPartCache") then
-        workspace.Terrain["DO_NOT_REMOVE_ForgeSharedPartCache"]:Destroy()
-    end
-    if ServerStorage:FindFirstChild("Trashcan") then
-        ServerStorage.Trashcan:Destroy()
-    end
-    if ServerStorage:FindFirstChild("Brushtool2_Plugin_Storage") then
-        ServerStorage["Brushtool2_Plugin_Storage"]:Destroy()
-    end
+
+    _clearFolder("Accessory Storage", workspace)
+    _clearFolder("DO_NOT_REMOVE_ForgeTextureCache", workspace.Terrain)
+    _clearFolder("DO_NOT_REMOVE_ForgeSharedPartCache", workspace.Terrain)
+    _clearFolder("Trashcan", ServerStorage)
+    _clearFolder("Brushtool2_Plugin_Storage", ServerStorage)
 end)
 
 

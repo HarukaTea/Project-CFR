@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Implements the 'similarity test' used to determine whether two values have
 	a meaningful difference.

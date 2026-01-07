@@ -14,9 +14,10 @@ local wait = task.wait
 
 
 --// rejoin command debug for all players
-local worldId = workspace:GetAttribute("WorldId")
+local worldId = workspace:GetAttribute("WorldId") :: string
+local whiteList = { "InitusWorld", "TheInitiaRevamp" }
 
-if worldId and worldId == "InitusWorld" then
+if worldId and table.find(whiteList, worldId) then
     local rejoinCommand = Instance.new("TextChatCommand")
     rejoinCommand.Name = "HarukaRejoinCommand"
     rejoinCommand.Parent = TextChatService:WaitForChild("TextChatCommands")

@@ -148,11 +148,10 @@ return function(scope: Fusion.Scope, props: {
                             Components.PaddingFrame(scope, "AAA"),
                             Components.PaddingFrame(scope, "ZZZ"),
 
-                            Fusion.ForValues(scope, props.OptionDropdownOptions, function(_, scope: Fusion.Scope, option: string)
-
+                            Fusion.ForPairs(scope, props.OptionDropdownOptions, function(_, scope: Fusion.Scope, index: number, option: string)
                                 local isHovering = Fusion.Value(scope, false)
 
-                                return Components.TextButton(scope, {
+                                return index, Components.TextButton(scope, {
                                     Name = option,
                                     AutoButtonColor = true,
                                     Text = option,

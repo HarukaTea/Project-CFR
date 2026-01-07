@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Prompts a graph object to re-evaluate its own value. If it meaningfully
 	changes, then dependents will have to re-evaluate their own values in the

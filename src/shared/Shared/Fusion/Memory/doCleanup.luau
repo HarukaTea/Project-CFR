@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --[[
@@ -27,30 +23,30 @@ local FusionAdd, FusionEmpty = HarukaLib.Bin()
 local alreadyDestroying: {[Types.Task]: true} = {}
 
 local function doCleanup(
-	task: Types.Task
+	thing: Types.Task
 ): ()
-	if alreadyDestroying[task] then
+	if alreadyDestroying[thing] then
 		return External.logError("destroyedTwice")
 	end
-	alreadyDestroying[task] = true
+	alreadyDestroying[thing] = true
 
-	if typeof(task) == "table" then
-		if task[1] ~= nil then
+	if typeof(thing) == "table" then
+		if thing[1] ~= nil then
 			-- It is important to iterate backwards through the table, since
 			-- objects are added in order of construction.
-			for index = #task, 1, -1 do
-				doCleanup(task[index])
-				task[index] = nil
+			for index = #thing, 1, -1 do
+				doCleanup(thing[index])
+				thing[index] = nil
 			end
 
-			ExternalDebug.untrackScope(task)
+			ExternalDebug.untrackScope(thing)
 		end
 	end
 
-	FusionAdd(task)
+	FusionAdd(thing)
 	FusionEmpty()
 
-	alreadyDestroying[task] = nil
+	alreadyDestroying[thing] = nil
 end
 
 return doCleanup

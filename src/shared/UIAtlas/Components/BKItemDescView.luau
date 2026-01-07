@@ -576,8 +576,8 @@ return function (scope: Fusion.Scope, props: {
                                         VerticalAlignment = Enum.VerticalAlignment.Center,
                                     }),
 
-                                    Fusion.ForValues(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, _)
-                                        return StarTierSymbol(scope, {})
+                                    Fusion.ForPairs(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, index: number, _)
+                                        return index, StarTierSymbol(scope, {})
                                     end)
                                 }
                             }),

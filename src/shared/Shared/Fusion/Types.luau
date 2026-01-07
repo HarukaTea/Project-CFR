@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Stores common public-facing type information for Fusion APIs.
 ]]
@@ -126,16 +122,6 @@ export type ForPairsConstructor =  <KI, KO, VI, VO, S>(
 	inputTable: UsedAs<{[KI]: VI}>,
 	processor: (Use, S, key: KI, value: VI) -> (KO, VO)
 ) -> For<KO, VO>
-export type ForKeysConstructor =  <KI, KO, V, S>(
-	scope: S & Scope<unknown>,
-	inputTable: UsedAs<{[KI]: V}>,
-	processor: (Use, S, key: KI) -> KO
-) -> For<KO, V>
-export type ForValuesConstructor =  <K, VI, VO, S>(
-	scope: S & Scope<unknown>,
-	inputTable: UsedAs<{[K]: VI}>,
-	processor: (Use, S, value: VI) -> VO
-) -> For<K, VO>
 
 -- An object which can listen for updates on another state object.
 export type Observer = GraphObject & {
@@ -232,18 +218,18 @@ export type Fusion = {
 	Value: ValueConstructor,
 	Computed: ComputedConstructor,
 	ForPairs: ForPairsConstructor,
-	ForValues: ForValuesConstructor,
 	Observer: ObserverConstructor,
 
 	Tween: TweenConstructor,
 
 	New: NewConstructor,
+	Hydrate: HydrateConstructor,
 
 	Children: SpecialKey,
 	Out: (propertyName: string) -> SpecialKey,
 	OnEvent: (eventName: string) -> SpecialKey,
-	OnChange: (propertyName: string) -> SpecialKey,
-	Attribute: (attributeName: string) -> SpecialKey
+	Attribute: (attributeName: string) -> SpecialKey,
+	Tag: (tagName: string) -> SpecialKey
 }
 
 export type ExternalProvider = {

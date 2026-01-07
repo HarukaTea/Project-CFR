@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Derives a new scope that's destroyed exactly once, whether by the user or by
 	the scope that it's inside of.

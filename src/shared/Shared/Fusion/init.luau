@@ -1,7 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
 --[[
 	The entry point for the Fusion library.
 ]]
@@ -36,9 +33,9 @@ do
 	External.setExternalProvider(RobloxExternal)
 end
 
-local Fusion: Fusion = table.freeze {
+local Fusion: Fusion = table.freeze({
 	-- General
-	version = {major = 0, minor = 4, isRelease = false},
+	version = { major = 0, minor = 4, isRelease = false },
 	Contextual = require(script.Utility.Contextual),
 
 	-- Memory
@@ -53,7 +50,6 @@ local Fusion: Fusion = table.freeze {
 	-- State
 	Computed = require(script.State.Computed),
 	ForPairs = require(script.State.ForPairs) :: Types.ForPairsConstructor,
-	ForValues = require(script.State.ForValues) :: Types.ForValuesConstructor,
 	peek = require(script.State.peek),
 	Value = require(script.State.Value),
 
@@ -61,12 +57,12 @@ local Fusion: Fusion = table.freeze {
 	Attribute = require(script.Instances.Attribute),
 	Children = require(script.Instances.Children),
 	New = require(script.Instances.New),
-	OnChange = require(script.Instances.OnChange),
 	OnEvent = require(script.Instances.OnEvent),
 	Out = require(script.Instances.Out),
+	Tag = require(script.Instances.Tag),
 
 	-- Animation
 	Tween = require(script.Animation.Tween),
-}
+})
 
 return Fusion

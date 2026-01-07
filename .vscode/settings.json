@@ -13,5 +13,10 @@
         "src/shared/Library/QuestBook.luau": true,
         "src/DS_VERSION.luau": true,
         "src/ABYSS_DS_VERSION.luau": true,
-    }
+    },
+
+    "luau-lsp.ignoreGlobs": [
+        "**/_Index/**",
+        "**/spec/**"
+    ]
 }

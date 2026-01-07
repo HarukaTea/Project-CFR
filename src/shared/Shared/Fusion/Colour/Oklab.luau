@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Provides functions for converting Color3s into Oklab space, for more
 	perceptually uniform colour blending.

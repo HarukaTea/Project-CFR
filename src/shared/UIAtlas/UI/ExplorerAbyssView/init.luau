@@ -277,8 +277,8 @@ return function (plr: Player)
                                 Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                                     local index = use(self.AbyssIndexSelected) or 1
 
-                                    return Fusion.ForValues(scope, AbyssBook.TeamConfigs[index], function(_, scope: Fusion.Scope, mobInfo: AbyssBook.AbyssTeamJSON)
-                                        return AbyssEnemySlot(scope, {
+                                    return Fusion.ForPairs(scope, AbyssBook.TeamConfigs[index], function(_, scope: Fusion.Scope, index: number, mobInfo: AbyssBook.AbyssTeamJSON)
+                                        return index, AbyssEnemySlot(scope, {
                                             MobId = mobInfo.MobId,
                                             Level = mobInfo.Level
                                         })
@@ -298,10 +298,10 @@ return function (plr: Player)
                             [Children] = {
                                 Components.PaddingFrame(scope, "AAA"),
 
-                                Fusion.ForValues(scope, AbyssBook.Modifiers, function(_, scope: Fusion.Scope, modifier: string)
+                                Fusion.ForPairs(scope, AbyssBook.Modifiers, function(_, scope: Fusion.Scope, index: number, modifier: string)
                                     local isSelecting = Fusion.Value(scope, false)
 
-                                    return Components.Frame(scope, {
+                                    return index, Components.Frame(scope, {
                                         Name = "Modifier_"..modifier,
                                         BackgroundTransparency = 0,
                                         Size = UDim2.fromScale(0.95, 0.12),

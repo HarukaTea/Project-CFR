@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	The generic implementation for all `For` objects.
 ]]
@@ -77,7 +73,6 @@ function class._evaluate<S, KI, KO, VI, VO>(
 	if self.scope == nil then
 		return false
 	end
-	local outerScope = self.scope :: S & Types.Scope<unknown>
 
 	depend(self, self._disassembly)
 	table.clear(self._EXTREMELY_DANGEROUS_usedAsValue)

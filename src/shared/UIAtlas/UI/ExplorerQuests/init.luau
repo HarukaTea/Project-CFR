@@ -48,7 +48,7 @@ return function(plr: Player)
                 Name = "QuestMarkers",
 
                 [Children] = {
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: BoolValue)
+                    Fusion.ForPairs(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
                         if questSymbol.Value then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
 
@@ -70,7 +70,7 @@ return function(plr: Player)
                             end
                         }))
 
-                        return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             if use(isCompleted) then return nil end
 
                             return Components.BillboardGui(scope, {
@@ -90,7 +90,7 @@ return function(plr: Player)
                             })
                         end)
                     end),
-                    Fusion.ForValues(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, questSymbol: BoolValue)
+                    Fusion.ForPairs(scope, self.Quests, function(use: Fusion.Use, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
                         if questSymbol.Value then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end
 
@@ -115,7 +115,7 @@ return function(plr: Player)
                             end
                         }))
 
-                        return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             if use(isCompleted) then return nil end
 
                             return Components.BillboardGui(scope, {
@@ -163,7 +163,7 @@ return function(plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Bottom,
                         }),
 
-                        Fusion.ForValues(scope, self.Quests, function(_, scope: Fusion.Scope, questSymbol: BoolValue)
+                        Fusion.ForPairs(scope, self.Quests, function(_, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
                             if questSymbol.Value then return nil end
                             if not QuestBook[questSymbol.Name] then return nil end
 
@@ -178,7 +178,7 @@ return function(plr: Player)
                             }))
 
 
-                            return Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                                 if use(isCompleted) then return nil end
 
                                 return QuestBar(scope, {

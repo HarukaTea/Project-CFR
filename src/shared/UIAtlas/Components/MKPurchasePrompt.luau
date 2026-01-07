@@ -87,7 +87,7 @@ return function(scope: Fusion.Scope, props: {
         Scope = scope,
         TextBox = inputTextbox,
 
-        Callback = function(amount: Fusion.Value<number>)
+        Callback = function(amount: Fusion.UsedAs<number>)
             local function _setColor(color: Color3)
                 inputTextbox.TextColor3 = color
             end

@@ -1,8 +1,4 @@
 
---!nolint LocalUnused
-
-local task = nil -- Disable usage of Roblox's task scheduler
-
 --[[
 	Procedures for checking lifetimes and printing helpful warnings about them.
 ]]
@@ -63,6 +59,16 @@ function checkLifetime.formatters.attributeOutputsTo(
 	local selfName = instance.Name
 	local boundName = nameOf(bound, "object")
 	return `The {boundName} (which the {attribute} attribute outputs to)`, `the {selfName} instance`
+end
+
+function checkLifetime.formatters.boundTag(
+	instance: Instance,
+	bound: unknown,
+	tag: string
+): (string, string)
+	local selfName = instance.Name
+	local boundName = nameOf(bound, "value")
+	return `The {boundName} (bound to the {tag} CollectionService tag)`, `the {selfName} instance`
 end
 
 function checkLifetime.formatters.refOutputsTo(

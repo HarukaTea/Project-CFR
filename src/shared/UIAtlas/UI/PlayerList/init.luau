@@ -49,8 +49,8 @@ return function(plr: Player)
                 Name = "PlayerInfoBar",
 
                 [Children] = {
-                    Fusion.ForValues(scope, self.Characters, function(_, scope: Fusion.Scope, char: Model)
-                        return PlayerInfoBar(scope, {
+                    Fusion.ForPairs(scope, self.Characters, function(_, scope: Fusion.Scope, index: number, char: Model)
+                        return index, PlayerInfoBar(scope, {
                             Char = char,
                             Player = Players:GetPlayerFromCharacter(char)
                         })
@@ -61,7 +61,7 @@ return function(plr: Player)
 				Name = "PartyMemberMarkers",
 
 				[Children] = {
-					Fusion.ForValues(scope, self.PartyMembers, function(_, scope: Fusion.Scope, member: ObjectValue)
+					Fusion.ForPairs(scope, self.PartyMembers, function(_, scope: Fusion.Scope, index: number, member: ObjectValue)
 						local player = Players:FindFirstChild(member.Name) :: Player?
 
 						if not player then return nil end
@@ -78,7 +78,7 @@ return function(plr: Player)
 							adornee:set(newChar.PrimaryPart)
 						end))
 
-						return Components.BillboardGui(scope, {
+						return index, Components.BillboardGui(scope, {
 							Name = "PartyMarker_"..member.Name,
 							Size = UDim2.fromOffset(45, 45),
 
