@@ -204,8 +204,25 @@ table.insert(CriRPGLib.Funcs, function()
 			if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
 		end
 
-        local hasCosmetic = plr.EquippingItems:FindFirstChild("Cosmetic1") or plr.EquippingItems:FindFirstChild("Cosmetic2")
-        if hasCosmetic and hasCosmetic.Value ~= "" then return end
+        -- check cosmetics
+        local hasCosmetic = false
+        for i = 1, 3 do
+            local cosmetic = plr.EquippingItems:FindFirstChild("Cosmetic"..i) :: StringValue
+            if not cosmetic then continue end
+            if cosmetic.Value == "" then continue end
+
+            local cosmeticModel = ReplicatedStorage.Packages.Cosmetics:FindFirstChild(cosmetic.Value) :: Model
+            if not cosmeticModel then continue end
+
+            local cosmeticType = cosmeticModel:GetAttribute("Type") :: string
+            if not cosmeticType then continue end
+
+            if cosmeticType == "Weapon" then
+                hasCosmetic = true
+                break
+            end
+        end
+        if hasCosmetic then return end
 
         local combatState = char:GetAttribute("IsInCombat") or false
         local targetFolder = if combatState then "Combat" else "Overworld"

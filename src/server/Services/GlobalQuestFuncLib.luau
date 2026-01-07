@@ -116,4 +116,9 @@ GlobalQuestFuncLib.IdCallbacks.ChristmasCompletedSnuwaz = function(plr: Player)
 end
 
 
+GlobalQuestFuncLib.IdCallbacks.Tutorial1Completed = function(plr: Player)
+    ServerLib:GiveItemDrop(plr, "TitleAdventurer", 1)
+end
+
+
 return GlobalQuestFuncLib

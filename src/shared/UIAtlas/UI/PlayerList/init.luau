@@ -61,7 +61,7 @@ return function(plr: Player)
 				Name = "PartyMemberMarkers",
 
 				[Children] = {
-					Fusion.ForPairs(scope, self.PartyMembers, function(_, scope: Fusion.Scope, index: number, member: ObjectValue)
+					Fusion.ForPairs(scope, self.PartyMembers, function(_, scope: Fusion.Scope, index: number, member: Player)
 						local player = Players:FindFirstChild(member.Name) :: Player?
 
 						if not player then return nil end
@@ -78,7 +78,7 @@ return function(plr: Player)
 							adornee:set(newChar.PrimaryPart)
 						end))
 
-						return index, Components.BillboardGui(scope, {
+						return index, { Components.BillboardGui(scope, {
 							Name = "PartyMarker_"..member.Name,
 							Size = UDim2.fromOffset(45, 45),
 
@@ -100,12 +100,24 @@ return function(plr: Player)
                                             CornerRadius = UDim.new(0.2, 0)
                                         }),
 										Components.ScaledUIStroke(scope, {
-											Thickness = 0.15
+											Thickness = 0.2,
+                                            Color = Components.BLACK_COLOR
 										})
 									}
 								})
 							}
-						})
+						}), Fusion.New(scope, "Highlight")({
+                            Name = "PartyHighlight_"..member.Name,
+                            DepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
+                            FillColor = Color3.fromRGB(0, 255, 255),
+                            FillTranspreancy = 0.9,
+                            OutlineColor = Components.WHITE_COLOR,
+                            OutlineTransparency = 0,
+
+                            Adornee = Fusion.Computed(scope, function(use: Fusion.Use)
+								return use(adornee)
+							end)
+                        }) }
 					end)
 				}
 			})
@@ -188,6 +200,7 @@ return function(plr: Player)
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
                                         self.PlayerSelected:set(nil)
+                                        self.PlayerSelecting:set(nil)
                                     end,
 
                                     [Children] = {

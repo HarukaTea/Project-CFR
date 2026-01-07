@@ -72,6 +72,7 @@ return function (self: Self)
         if input.KeyCode == Enum.KeyCode.Tab then
             self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
             self.PlayerSelecting:set(nil)
+            self.PlayerSelected:set(nil)
         end
     end))
 
@@ -93,7 +94,11 @@ return function (self: Self)
 
 				local function _updateParty()
                     wait()
-					self.PartyMembers:set(party:GetChildren())
+                    local allMembers = {}
+                    for _, obj: ObjectValue in party:GetChildren() do
+                        table.insert(allMembers, obj.Value)
+                    end
+					self.PartyMembers:set(allMembers)
 				end
 				_updateParty()
 				partyAdd(party.ChildAdded:Connect(_updateParty))

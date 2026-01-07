@@ -36,7 +36,12 @@
             "HarukaServer": {
                 "$className": "Folder",
                 "$path": "src/server"
-            },
+            }
+        },
+        "ServerStorage": {
+            "$className": "ServerStorage",
+            "$ignoreUnknownInstances": true,
+
             "DS_VERSION": {
                 "$path": "src/DS_VERSION.luau"
             },

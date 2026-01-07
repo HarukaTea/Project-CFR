@@ -163,7 +163,10 @@ function CharLib:_InitUI()
 	end
 
     local rojoLocalShared = ReplicatedStorage:FindFirstChild("_LocalRojoShared") :: Folder
+    if not rojoLocalShared then return end
+
     local guiFolder = rojoLocalShared:FindFirstChild("GuiLocal") :: Folder
+    if not guiFolder then return end
 
     for _, ui: ScreenGui in guiFolder:QueryDescendants('ScreenGui') do
         ui = ui:Clone()

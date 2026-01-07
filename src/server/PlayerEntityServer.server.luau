@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
@@ -60,7 +61,7 @@ PlayerLib.__index = PlayerLib
 local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
 
-local DS_Version = require(ServerScriptService.DS_VERSION)
+local DS_Version = require(ServerStorage.DS_VERSION)
 
 
 local profileStoreMain = HarukaDatastore.GetStore(
@@ -121,9 +122,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         self.Slot = slot
         plr:SetAttribute("SlotChosen", slot)
-
-        --// update join time
-        profile.Data[slot].Attrs.LastJoinedDateTime = DateTime.now():ToIsoDate()
 
         --// validate
         local validatedMainData = self.ProfileObj:_ValidateMainData(profile.Data)
@@ -393,6 +391,10 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             PlayerProfileLib.CalDonationAndSave(profile, plr)
         end)
 
+        Promise.try(function()
+            self.ProfileObj:_CompensateData(self.Slot)
+        end):await()
+
 
         --// Alpha Player badge
         ServerLib:GiveBadge(3358503633424175, plr)
@@ -415,13 +417,16 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         ServerBindables.RToSpawnChar:Fire(plr)
 
-        self.Add(HarukaLib.Clock(77, function()
+        self.Add(HarukaLib.Clock(120, function()
             self.ProfileObj:UpdateDonationRank()
         end, true))
 
         if plr:FindFirstChild("ProfileContainer") then
             plr.ProfileContainer:Destroy()
         end
+
+        --// update join time
+        profile.Data[slot].Attrs.LastJoinedDateTime = DateTime.now():ToIsoDate()
 
         resolve()
 

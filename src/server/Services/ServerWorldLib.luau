@@ -107,6 +107,23 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
+    for _, pathLink: PackageLink in ReplicatedStorage:QueryDescendants("PackageLink") do
+        pathLink:Destroy()
+    end
+    local function _optimize(container: Instance)
+        for _, part in container:QueryDescendants(HarukaLib.BasePartSelector) do
+            part.EnableFluidForces = false
+            part.Massless = true
+            part.Locked = true
+            part.CanTouch = false
+        end
+    end
+    _optimize(workspace.Maps)
+    _optimize(ReplicatedStorage)
+end)
+
+
+table.insert(ServerWorldLib.Funcs, function()
     for index: number, lootsInfo: { string } in AbyssBook.Loots do
         for _, loot: string in lootsInfo do
             local lootVal = Instance.new("IntConstrainedValue")
@@ -222,28 +239,6 @@ table.insert(ServerWorldLib.Funcs, function()
             meshPart.CollisionGroup = CollisionBook.Group.NoCollision
         end
     end
-end)
-
-
-table.insert(ServerWorldLib.Funcs, function()
-    for _, pathLink: PackageLink in ReplicatedStorage:QueryDescendants("PackageLink") do
-        pathLink:Destroy()
-    end
-    for _, part: BasePart in workspace.Maps:QueryDescendants(HarukaLib.BasePartSelector) do
-        part.EnableFluidForces = false
-        part.CanTouch = false
-        part.Massless = true
-        part.Locked = true
-    end
-
-
-    local function _optimize(container: Instance)
-        for _, part in container:QueryDescendants(HarukaLib.BasePartSelector) do
-            part.EnableFluidForces = false
-        end
-    end
-    _optimize(workspace)
-    _optimize(ReplicatedStorage)
 end)
 
 

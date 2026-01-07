@@ -5,6 +5,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 
 
 local ODSModule = require(ServerScriptService.HarukaServer.Shared.OrderedDatastoreWrapper)
@@ -43,7 +44,7 @@ local userNameCache = {}
 local userThumbnailCache = {}
 
 
-local abyssSpeedrunStore = ODSModule.new(require(ServerScriptService.ABYSS_DS_VERSION), true)
+local abyssSpeedrunStore = ODSModule.new(require(ServerStorage.ABYSS_DS_VERSION), true)
 local donationStore = ODSModule.new("_Donation", true)
 
 

@@ -39,6 +39,7 @@ export type AbyssWorldLibClass = {
     AbyssCompleted: Signal.SignalClass,
     MobLocatorPositions: { Vector3 },
     Mode: "Normal" | "Hardcore",
+    Restarting: boolean,
 
     IsChosenTeleportAction: boolean,
 
@@ -77,7 +78,7 @@ end
 
 
 
-local abyssSpeedrunDatastore = DSS:GetOrderedDataStore(require(ServerScriptService.ABYSS_DS_VERSION))
+local abyssSpeedrunDatastore = DSS:GetOrderedDataStore(require(ServerStorage.ABYSS_DS_VERSION))
 
 
 --// helper functions
@@ -123,7 +124,7 @@ function AbyssWorldLib:GiveLoot()
 
             local abyssDropPity = player:GetAttribute("AbyssDropPity") or 0
             local luck = 1
-            if abyssDropPity >= 75 then
+            if abyssDropPity >= 70 then
                 luck = 1599400
             end
 
@@ -132,7 +133,7 @@ function AbyssWorldLib:GiveLoot()
                 Dawn = finalChance,
                 None = 100 - finalChance
             }, luck)
-            if rareDrop == "Dawn" then
+            if rareDrop == "Dawn" or luck == 1599400 then
                 Events.PlaySound_S.Fire(player, SoundService.SFXs.LootDropped)
                 Events.Abyss_RareDropObtained_S.Fire(player)
 
@@ -217,6 +218,12 @@ end
 
 
 function AbyssWorldLib:Restart()
+    if AbyssWorldLib.Started == false then return end
+    if abyssAirwall.Parent == workspace.MapComponents then return end
+    if AbyssWorldLib.Restarting then return end
+
+    AbyssWorldLib.Restarting = true
+
     Events.CreateFSNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), "Restarting the Abyss...", 3)
 
     abyssAirwall.Parent = workspace.MapComponents
@@ -319,6 +326,7 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         AbyssWorldLib:ShowPity()
 
         AbyssWorldLib.Started = true
+        AbyssWorldLib.Restarting = false
 
         AbyssWorldLib:RepeatUntilComplete()
     end)

@@ -218,6 +218,8 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        char, targeting = _getCharAndTargeting(plr)
+
         _classUltCastedEff({
             Char = char,
             Player = plr,
@@ -228,6 +230,8 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlayClassAnim_S.Fire(plr, "ChainUltSlashAttack1")
 
         local function _slash()
+            char, targeting = _getCharAndTargeting(plr)
+
             Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
                 Character = char,
                 StatusId = "SwordSlash"
@@ -356,6 +360,8 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        char, targeting = _getCharAndTargeting(plr)
+
         _classUltCastedEff({
             Char = char,
             Player = plr,
@@ -398,6 +404,8 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         })
 
         Promise.delay(0.9):andThen(function()
+            char, targeting = _getCharAndTargeting(plr)
+
             for _ = 1, 3 do
                 ClassAttackLib:DealDamageToEnemy(char, targeting, {
                     DMG = ClassAttackLib:CalDMG("DMG", char),
@@ -503,6 +511,8 @@ ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        char, targeting = _getCharAndTargeting(plr)
+
         _classUltCastedEff({
             Char = char,
             Player = plr,
@@ -607,6 +617,8 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        char, targeting = _getCharAndTargeting(plr)
+
         _classUltCastedEff({
             Char = char,
             Player = plr,
@@ -635,6 +647,8 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
         })
 
         Promise.delay(0.7):andThen(function()
+            char, targeting = _getCharAndTargeting(plr)
+
             for _ = 1, 5 do
                 char, targeting = _getCharAndTargeting(plr)
                 if not _charAndTargetingCheck(char, targeting) then break end
@@ -747,6 +761,8 @@ ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
 
     end, function()
+        char, targeting = _getCharAndTargeting(plr)
+
         _classUltCastedEff({
             Char = char,
             Player = plr,
@@ -776,6 +792,8 @@ ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
             char:SetAttribute("FuriosoCombo", 0)
             if gained < 3 then return end
 
+            char, targeting = _getCharAndTargeting(plr)
+
             Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
 
             Events.PlayClassAnim_S.Fire(plr, "FuriosoAttack2")
@@ -794,7 +812,6 @@ ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
 
             ServerLib:ShowText(char, "FURIOUS!")
 
-            wait(0.3)
             ClassAttackLib:DealDamageToEnemy(char, targeting, {
                 DMG = math.ceil(ClassAttackLib:CalDMG("DMG", char) * 3),
                 DMGType = "DMG",

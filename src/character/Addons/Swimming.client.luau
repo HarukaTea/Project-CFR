@@ -120,12 +120,20 @@ local function swimIn()
 
     local rootVel = char.PrimaryPart.AssemblyLinearVelocity
 
+    char.PrimaryPart.AssemblyLinearVelocity = Vector3.new(rootVel.X, 0, rootVel.Z)
+
+    local totalMass = 0
+    for _, part: BasePart in char:QueryDescendants(HarukaLib.BasePartSelector) do
+        totalMass += part:GetMass()
+    end
+    local buoyancyForce = totalMass * workspace.Gravity * 1.5
+
     if not swimVel then
         swimVel = Instance.new("BodyVelocity")
         swimVel.Name = "SwimVelocity"
         swimVel.P = 8000
-        swimVel.Velocity = Vector3.new()
-        swimVel.MaxForce = Vector3.new(rootVel.X, 8000, rootVel.Z)
+        swimVel.Velocity = Vector3.zero
+        swimVel.MaxForce = Vector3.one * buoyancyForce
         swimVel.Parent = char.PrimaryPart
     end
 
