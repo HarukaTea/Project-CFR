@@ -161,6 +161,15 @@ function CharLib:_InitUI()
             warn(tostring(err))
         end)
 	end
+
+    local rojoLocalShared = ReplicatedStorage:FindFirstChild("_LocalRojoShared") :: Folder
+    local guiFolder = rojoLocalShared:FindFirstChild("GuiLocal") :: Folder
+
+    for _, ui: ScreenGui in guiFolder:QueryDescendants('ScreenGui') do
+        ui = ui:Clone()
+        ui.Parent = plr.PlayerGui
+        Add(ui)
+    end
 end
 
 function CharLib:__Destroy()
