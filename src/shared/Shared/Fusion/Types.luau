@@ -170,7 +170,7 @@ export type NewConstructor = (
 export type HydrateConstructor = (
 	scope: Scope<unknown>,
 	target: Instance
-) -> (propertyTable: PropertyTable) -> Instance
+) -> (propertyTable: PropertyTable, keepAllChildren: boolean?) -> Instance
 
 -- Is there a sane way to write out this type?
 -- ... I sure hope so.

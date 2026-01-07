@@ -13,8 +13,13 @@ local function Hydrate(
 	target: Instance
 )
 	return function(
-		props: Types.PropertyTable
+		props: Types.PropertyTable,
+		keepAllChildren: boolean?
 	): Instance
+		target = target:Clone()
+		if not keepAllChildren then
+			target:ClearAllChildren()
+		end
 
 		table.insert(scope, target)
 		applyInstanceProps(scope, props, target)
