@@ -22,7 +22,6 @@ local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
-local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 local PartyLib = require(SSS.HarukaServer.Services.PartyLib)
 local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
@@ -828,9 +827,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local bindableId = extra[data.QuestId] :: string?
 
         if bindableId then
-            if QuestBindables[bindableId] then
-                QuestBindables[bindableId]:Fire(plr)
-            end
+            ServerBindables.NPCChatFinished:Fire(bindableId, plr)
         end
 
 

@@ -35,4 +35,7 @@ return {
 
     ---@params: `player: Player`
     RToCheckPlayerBadges = Signal.new(),
+
+    ---@params: `id: string`,
+    NPCChatFinished = Signal.new(),
 }

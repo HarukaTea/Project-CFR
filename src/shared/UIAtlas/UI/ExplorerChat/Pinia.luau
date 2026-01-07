@@ -9,7 +9,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Signal = require(RepS.HarukaShared.Shared.Signal)
-local QuestBindables = require(RepS.HarukaShared.Library.QuestBindables)
 local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 
@@ -133,8 +132,9 @@ return function (self: Self)
 
             local extra = npcDialogues.Extra
             local bindableId = extra[questId]
-            if QuestBindables[bindableId] then
-                QuestBindables[bindableId]:Fire()
+
+            if bindableId then
+                Bindables.NPCChatFinished:Fire(bindableId)
             end
         end
 

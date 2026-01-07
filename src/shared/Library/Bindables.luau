@@ -68,4 +68,7 @@ return {
 
     ---@params: `None`
     RToCreatePartyInvite = Signal.new(),
+
+    ---@params: `id: string`,
+    NPCChatFinished = Signal.new(),
 }
