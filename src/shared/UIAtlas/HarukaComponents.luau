@@ -5,7 +5,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
@@ -49,6 +48,9 @@ HarukaComponents.TweenInfos = AssetBook.TweenInfos
 HarukaComponents.DefaultTween = HarukaComponents.TweenInfos.twiceHalf
 
 
+HarukaComponents.UIAtlas = RepS.Packages.UIAtlas :: Folder
+
+
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
 
 
@@ -77,6 +79,11 @@ local function _createNewCompoent(scope: Fusion.Scope, props: FusionPropsEntry, 
 end
 HarukaComponents._reconcileProps = _reconcileProps
 HarukaComponents._createNewCompoent = _createNewCompoent
+
+
+function HarukaComponents:RefUI(uiId: string) : Instance?
+	return HarukaComponents.UIAtlas:FindFirstChild(uiId, true)
+end
 
 
 function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionPropsEntry, childProps: {
@@ -305,7 +312,8 @@ function HarukaComponents.ImageLabel(scope: Fusion.Scope, props: FusionPropsEntr
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
 		Selectable = false,
-		SelectionOrder = -1
+		SelectionOrder = -1,
+		AutoLocalize = false
 	})
 end
 
@@ -403,10 +411,8 @@ end
 
 
 --@deprecated, use ScaledUIStroke instead
-function HarukaComponents.UIStroke(scope: Fusion.Scope, props: FusionPropsEntry, forceUse: boolean?) : UIStroke
-	if not forceUse then
-		warn("You are using deprecated UIStroke, use ScaledUIStroke instead")
-	end
+function HarukaComponents.UIStroke(scope: Fusion.Scope, props: FusionPropsEntry) : UIStroke
+	warn("You are using deprecated UIStroke, use ScaledUIStroke instead")
 
 	return _createNewCompoent(scope, props, "UIStroke", {
 		Thickness = 1,
@@ -599,10 +605,13 @@ function HarukaComponents:CreateConfirmPrompt(scope: Fusion.Scope, data: {
 	ConfirmUniqueId: string
 })
 	local innerScope = Fusion.innerScope(scope)
-	local waitSignal = Signal.new()
+	local waitSignal = Instance.new("BindableEvent")
 	table.insert(innerScope, waitSignal)
 
-	table.insert(innerScope, Bindables.ConfirmPromptChosen:Connect(function(uniqueId: string, result: "YES" | "NO")
+	table.insert(innerScope, Bindables.ConfirmPromptChosen.Event:Connect(function(
+		uniqueId: string,
+		result: "YES" | "NO"
+	)
 		if uniqueId ~= data.ConfirmUniqueId then return end
 
 		waitSignal:Fire(result)
@@ -629,7 +638,7 @@ function HarukaComponents:TrackButtonEvents(scope: Fusion.Scope, button: GuiObje
 
 	local mouseLeave = nil
 	if leaveFunc then
-		mouseLeave = Signal.new()
+		mouseLeave = Instance.new("BindableEvent")
 	end
 	table.insert(scope, task.spawn(function()
 		repeat wait() until button:FindFirstAncestorOfClass("ScreenGui")
@@ -656,7 +665,7 @@ function HarukaComponents:TrackButtonEvents(scope: Fusion.Scope, button: GuiObje
 
 
 	if leaveFunc then
-		mouseLeave:Connect(function()
+		mouseLeave.Event:Connect(function()
 			if not _isButtonValid(screenGui) then return end
 			if leaveFunc then leaveFunc() end
 		end)

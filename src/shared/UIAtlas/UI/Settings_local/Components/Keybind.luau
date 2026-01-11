@@ -15,7 +15,7 @@ return function(scope: Fusion.Scope, props: {
     KeybindVal: Enum.KeyCode,
 
     KeybindModeVal: Fusion.Value<boolean>,
-    KeybindBegan: RBXScriptSignal
+    KeybindBegan: BindableEvent
 })
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingKey = Fusion.Value(scope, false)
@@ -98,7 +98,7 @@ return function(scope: Fusion.Scope, props: {
 
                             props.KeybindModeVal:set(true)
 
-                            local validKeyName = props.KeybindBegan:Wait()
+                            local validKeyName = props.KeybindBegan.Event:Wait()
 
                             if validKeyName then
                                 props.KeybindModeVal:set(false)

@@ -1,6 +1,6 @@
 
-export type Table = { any }
-export type Dict = { [any]: any }
+type Table = { any }
+type Dict = { [any]: any }
 
 
 local tableUtils = {}

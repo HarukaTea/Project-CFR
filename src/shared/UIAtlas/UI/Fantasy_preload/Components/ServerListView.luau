@@ -14,11 +14,11 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    SaveSlotClickedSignal: RBXScriptSignal,
-    SaveSlotBackSignal: RBXScriptSignal,
-    ReadyToTeleportSignal: RBXScriptSignal,
+    SaveSlotClickedSignal: BindableEvent,
+    SaveSlotBackSignal: BindableEvent,
+    ReadyToTeleportSignal: BindableEvent,
 
-    ServerListClickedSignal: RBXScriptSignal,
+    ServerListClickedSignal: BindableEvent,
 
     SlotChosen: Fusion.Value<string>
 })
@@ -30,13 +30,13 @@ return function (scope: Fusion.Scope, props: {
     local serversAvailable = Components.FusionComponents.useChildren(scope, workspace.MapComponents.GlobalServers)
 
 
-    props.ServerListClickedSignal:Connect(function()
+    props.ServerListClickedSignal.Event:Connect(function()
         isVisible:set(true)
     end)
-    props.SaveSlotClickedSignal:Connect(function()
+    props.SaveSlotClickedSignal.Event:Connect(function()
         isVisible:set(true)
     end)
-    props.SaveSlotBackSignal:Connect(function()
+    props.SaveSlotBackSignal.Event:Connect(function()
         isVisible:set(false)
     end)
 

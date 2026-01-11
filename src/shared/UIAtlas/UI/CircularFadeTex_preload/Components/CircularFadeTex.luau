@@ -24,10 +24,12 @@ return function (scope: Fusion.Scope)
                 Image = "rbxassetid://72813522573875",
 
                 [Children] = {
-                    Components.UIStroke(scope, {
+                    Fusion.New(scope, "UIStroke")({
                         Thickness = 9999,
                         Color = Color3.fromRGB(),
-                    }, true)
+                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                        Transparency = 0
+                    })
                 }
             })
         }

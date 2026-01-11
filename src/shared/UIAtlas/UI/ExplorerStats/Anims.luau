@@ -22,7 +22,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
     --// cd anim
-    table.insert(scope, Bindables.CDEndTimeReached:Connect(function(slotId: number)
+    table.insert(scope, Bindables.CDEndTimeReached.Event:Connect(function(slotId: number)
         local slot = bottom:FindFirstChild(slotId, true) :: Frame?
         if not slot then return end
 

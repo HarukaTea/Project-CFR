@@ -1,9 +1,4 @@
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-
-local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
-
 local keybinds = {
     PC = {},
     Console = {}
@@ -140,7 +135,7 @@ for _, keycode: Enum.KeyCode in Enum.KeyCode:GetEnumItems() do
 end
 
 
-keybinds.OnKeybindChanged = Signal.new()
+keybinds.OnKeybindChanged = Instance.new("BindableEvent")
 
 
 return keybinds

@@ -12,8 +12,8 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
-    SlotUISignal: RBXScriptSignal,
-    CutsceneUISignal: RBXScriptSignal
+    SlotUISignal: BindableEvent,
+    CutsceneUISignal: BindableEvent
 }) : ScreenGui
 
 
@@ -22,10 +22,10 @@ return function (scope: Fusion.Scope, props: {
     end
     local isShown = Value(true)
 
-    table.insert(scope, props.CutsceneUISignal:Connect(function()
+    table.insert(scope, props.CutsceneUISignal.Event:Connect(function()
         isShown:set(true)
     end))
-    table.insert(scope, props.SlotUISignal:Connect(function()
+    table.insert(scope, props.SlotUISignal.Event:Connect(function()
         isShown:set(false)
     end))
 

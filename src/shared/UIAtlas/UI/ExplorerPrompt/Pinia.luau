@@ -22,9 +22,10 @@ local wait = task.wait
 
 
 export type Self = {
-	plr: Player,
-	char: Model,
-	scope: Fusion.Scope,
+    plr: Player,
+    char: Model,
+    scope: Fusion.Scope,
+    UI: ScreenGui,
 
 	CurrentPromptIndex: Fusion.Value<number>,
 	IsUIShown: Fusion.Value<boolean>,

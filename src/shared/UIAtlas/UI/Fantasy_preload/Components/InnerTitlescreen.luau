@@ -3,7 +3,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
@@ -15,21 +14,21 @@ local Children = Fusion.Children
 
 
 return function (scope: Fusion.Scope, props: {
-    SlotUISignal: RBXScriptSignal,
-    CutsceneUISignal: RBXScriptSignal,
+    SlotUISignal: BindableEvent,
+    CutsceneUISignal: BindableEvent,
 
     CharVals: { Fusion.Value<Model?> },
 
 }) : ScreenGui
 
-    local saveSlotClickedSignal = Signal.new()
-    local saveSlotBackSignal = Signal.new()
-    local readyToTeleportSignal = Signal.new()
+    local saveSlotClickedSignal = Instance.new("BindableEvent")
+    local saveSlotBackSignal = Instance.new("BindableEvent")
+    local readyToTeleportSignal = Instance.new("BindableEvent")
     table.insert(scope, saveSlotClickedSignal)
     table.insert(scope, saveSlotBackSignal)
     table.insert(scope, readyToTeleportSignal)
 
-    local serverListClickedSignal = Signal.new()
+    local serverListClickedSignal = Instance.new("BindableEvent")
     table.insert(scope, serverListClickedSignal)
 
 
@@ -38,20 +37,20 @@ return function (scope: Fusion.Scope, props: {
 
     local whichSlotIsChosen = Fusion.Value(scope, "Slot1")
 
-    table.insert(scope, props.CutsceneUISignal:Connect(function()
+    table.insert(scope, props.CutsceneUISignal.Event:Connect(function()
         isShown:set(false)
     end))
-    table.insert(scope, props.SlotUISignal:Connect(function()
+    table.insert(scope, props.SlotUISignal.Event:Connect(function()
         isShown:set(true)
     end))
 
 
-    saveSlotClickedSignal:Connect(function(id: number)
+    saveSlotClickedSignal.Event:Connect(function(id: number)
         isBackButtonShown:set(false)
 
         whichSlotIsChosen:set("Slot".. tostring(id))
     end)
-    saveSlotBackSignal:Connect(function()
+    saveSlotBackSignal.Event:Connect(function()
         isBackButtonShown:set(true)
     end)
 

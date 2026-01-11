@@ -10,6 +10,7 @@ export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
+    UI: ScreenGui,
 
 
     IsUIShown: Fusion.Value<boolean>,

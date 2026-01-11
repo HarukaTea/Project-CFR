@@ -1,74 +1,63 @@
 
-local RepS = game:GetService("ReplicatedStorage")
-
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 return {
     ---@params: `(slotId: number)`
-    CDEndTimeReached = Signal.new(),
+    CDEndTimeReached = Instance.new("BindableEvent"),
 
     ---@params: `None`
-    ActionSlide = Signal.new(),
+    ActionSlide = Instance.new("BindableEvent"),
 
     ---@params: `None`
-    CloseExplorerUIs = Signal.new(),
+    CloseExplorerUIs = Instance.new("BindableEvent"),
 
 
 
     ---@params: `(message: string, sender: Player)`
-    PlayerChatted = Signal.new(),
+    PlayerChatted = Instance.new("BindableEvent"),
 
     ---@params: `(anim: string)`
-    PlayClassAnim = Signal.new(),
+    PlayClassAnim = Instance.new("BindableEvent"),
 
     ---@params: `(data: {TweenInfo: string, Goal: { [string]: any }, Objs: { Instance }, UseHarukaTween: boolean?} )`
-    ClientTween = Signal.new(),
+    ClientTween = Instance.new("BindableEvent"),
 
     --@parmas: `(sound: Sound)`
-    PlaySound = Signal.new(),
+    PlaySound = Instance.new("BindableEvent"),
 
     ---@params: `(part: BasePart)`
-    UpdateCameraPart = Signal.new(),
+    UpdateCameraPart = Instance.new("BindableEvent"),
 
     ---@params: `(cframe: CFrame)`
-    UpdateCameraCF = Signal.new(),
+    UpdateCameraCF = Instance.new("BindableEvent"),
 
     ---@params: `(msg: string)`
-    CreateNotify = Signal.new(),
+    CreateNotify = Instance.new("BindableEvent"),
 
     ---@params: `(msg: string)`
-    CreateSystemNotify = Signal.new(),
+    CreateSystemNotify = Instance.new("BindableEvent"),
 
     ---@params: `(msg: string, duration: number)`
-    CreateFSNotify = Signal.new(),
+    CreateFSNotify = Instance.new("BindableEvent"),
 
     ---@params: `(data: {Hint: string, ConfirmText: string, CancelText: string, ConfirmUniqueId: string} )`
-    CreateConfirmPrompt = Signal.new(),
+    CreateConfirmPrompt = Instance.new("BindableEvent"),
 
     ---@params: `(text: string, showBar: boolean)`
-    CreateCenterNotify = Signal.new(),
+    CreateCenterNotify = Instance.new("BindableEvent"),
 
     ---@params: `(duration: number)`
-    CreateCircularFade = Signal.new(),
+    CreateCircularFade = Instance.new("BindableEvent"),
 
     ---@params: `(uniqueId: string, result: "YES" | "NO")`
-    ConfirmPromptChosen = Signal.new(),
+    ConfirmPromptChosen = Instance.new("BindableEvent"),
 
     ---@params: `(prompt: ProximityPrompt)`
-    PromptTriggered = Signal.new(),
+    PromptTriggered = Instance.new("BindableEvent"),
 
 
 
     ---@params: `None`
-    DevProductPurchasing = Signal.new(),
-
-    ---@params: `(state: boolean)`
-    SetChatEnabled = Signal.new(),
-
+    DevProductPurchasing = Instance.new("BindableEvent"),
 
     ---@params: `None`
-    RToCreatePartyInvite = Signal.new(),
-
-    ---@params: `id: string`,
-    NPCChatFinished = Signal.new(),
+    RToCreatePartyInvite = Instance.new("BindableEvent"),
 }

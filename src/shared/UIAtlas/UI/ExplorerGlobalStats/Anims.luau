@@ -164,8 +164,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         })
     end))
 
-    expDropQueue.ElementAdded:Connect(_onNewEXPAdded)
-    expDropQueue.MutexUnlocked:Connect(_onNewEXPAdded)
+    expDropQueue.RefreshSignal.Event:Connect(_onNewEXPAdded)
 
 
     --// track region in
@@ -211,8 +210,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
     }))
     _onNewRegionAdded()
 
-    regionQueue.ElementAdded:Connect(_onNewRegionAdded)
-    regionQueue.MutexUnlocked:Connect(_onNewRegionAdded)
+    regionQueue.RefreshSignal.Event:Connect(_onNewRegionAdded)
 
 
     --// track cast cd
@@ -277,6 +275,5 @@ return function (UI: ScreenGui, self: Pinia.Self)
         achivementQueue:Push(badgeId)
     end))
 
-    achivementQueue.ElementAdded:Connect(_onNewAchievementAdded)
-    achivementQueue.MutexUnlocked:Connect(_onNewAchievementAdded)
+    achivementQueue.RefreshSignal.Event:Connect(_onNewAchievementAdded)
 end

@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local ConfirmPrompt = require(script.Components.ConfirmPrompt)
 
@@ -27,7 +26,7 @@ return function (plr: Player)
 		ConfirmUniqueId: string
 	})
 		local confirmScope = Fusion.scoped()
-		local resultSignal = Signal.new()
+		local resultSignal = Instance.new("BindableEvent")
 		table.insert(confirmScope, resultSignal)
 
 		local UI = ConfirmPrompt(confirmScope, {
@@ -48,7 +47,7 @@ return function (plr: Player)
 		})
 
 
-		local finalResult = resultSignal:Wait()
+		local finalResult = resultSignal.Event:Wait()
 
 		Bindables.ConfirmPromptChosen:Fire(data.ConfirmUniqueId, finalResult)
 
@@ -65,5 +64,5 @@ return function (plr: Player)
 			end
 		})
 	end
-	table.insert(scope, Bindables.CreateConfirmPrompt:Connect(_createConfirmPrompt))
+	table.insert(scope, Bindables.CreateConfirmPrompt.Event:Connect(_createConfirmPrompt))
 end

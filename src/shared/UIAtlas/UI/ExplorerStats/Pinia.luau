@@ -8,7 +8,6 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
@@ -113,9 +112,9 @@ export type Self = {
     }?,
 
 
-    CastClassUlt_C: Signal.SignalClass,
-    RequestToCastItem: Signal.SignalClass,
-    RequestToDash: Signal.SignalClass,
+    CastClassUlt_C: BindableEvent,
+    RequestToCastItem: BindableEvent,
+    RequestToDash: BindableEvent,
 
     ClassActiveCastCD: boolean,
 
@@ -353,9 +352,9 @@ return function (self: Self)
 
 
     --// track input
-    self.CastClassUlt_C = Signal.new()
-    self.RequestToCastItem = Signal.new()
-    self.RequestToDash = Signal.new()
+    self.CastClassUlt_C = Instance.new("BindableEvent")
+    self.RequestToCastItem = Instance.new("BindableEvent")
+    self.RequestToDash = Instance.new("BindableEvent")
 
     table.insert(scope, self.CastClassUlt_C)
     table.insert(scope, self.RequestToCastItem)
@@ -367,7 +366,7 @@ return function (self: Self)
             info.CastCD = false
         end)
     end
-    self.RequestToCastItem:Connect(function(slotId: number)
+    self.RequestToCastItem.Event:Connect(function(slotId: number)
         local info = list[slotId]
 
         if info == nil then return end
@@ -412,7 +411,7 @@ return function (self: Self)
 
         Events.CastItem_C_Request.Fire(slotIdStr)
     end)
-    self.CastClassUlt_C:Connect(function()
+    self.CastClassUlt_C.Event:Connect(function()
         if self.ClassActiveCastCD then return end
         self.ClassActiveCastCD = true
 
@@ -482,7 +481,7 @@ return function (self: Self)
 
         _createCooldownAnim(cdTime, info)
     end))
-    self.RequestToDash:Connect(function()
+    self.RequestToDash.Event:Connect(function()
         local info = list3[1]
 
         local char = self.char :: Model

@@ -14,6 +14,7 @@ export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
+    UI: ScreenGui,
 
     Players: Fusion.Value<{ Player }>,
     Characters: Fusion.Value<{ Model }>,

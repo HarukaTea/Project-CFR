@@ -71,7 +71,7 @@ return function (scope: Fusion.Scope, props: {
 
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
-    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+    table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
 

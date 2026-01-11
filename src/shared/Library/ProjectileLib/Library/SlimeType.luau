@@ -45,7 +45,7 @@ return function (self: Types.ProjectileLib)
             projectile.Shot:PivotTo(projectile.Shot.Base.CFrame * CFrame.Angles(angle, 0, 0))
 
             local rotatingangle = angle * 2
-            HarukaLib:Tween(projectile.Shot, AssetBook.TweenInfos.half, { Pivot = projectile.Shot.Base.CFrame * CFrame.Angles(-rotatingangle, 0, 0) }, true):Wait()
+            HarukaLib:Tween(projectile.Shot, AssetBook.TweenInfos.half, { Pivot = projectile.Shot.Base.CFrame * CFrame.Angles(-rotatingangle, 0, 0) }, true).Event:Wait()
 
             projectile.Shot:Destroy()
         end):catch(function()  end)

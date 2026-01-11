@@ -355,8 +355,7 @@ table.insert(CriRPGLib.Funcs, function()
             end
         end
     end
-    areaQueue.ElementAdded:Connect(_changeLocation)
-    areaQueue.MutexUnlocked:Connect(_changeLocation)
+    areaQueue.RefreshSignal.Event:Connect(_changeLocation)
 
     Add(HarukaLib:Hydrate(char, {
         ["Attr-AreaIn"] = function(region: string)

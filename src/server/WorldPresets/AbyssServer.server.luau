@@ -20,7 +20,6 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)
 
 local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
@@ -36,7 +35,7 @@ export type AbyssWorldLibClass = {
     AbyssId: number,
     AbyssStartTime: number,
     Modifiers: { string },
-    AbyssCompleted: Signal.SignalClass,
+    AbyssCompleted: BindableEvent,
     MobLocatorPositions: { Vector3 },
     Mode: "Normal" | "Hardcore",
     Restarting: boolean,
@@ -276,7 +275,7 @@ table.insert(AbyssWorldLib.Funcs, function()
     AbyssWorldLib.Modifiers = modifiers
     AbyssWorldLib.Mode = mode
 
-    AbyssWorldLib.AbyssCompleted = Signal.new()
+    AbyssWorldLib.AbyssCompleted = Instance.new("BindableEvent")
 
     workspace:SetAttribute("AbyssLevelId", abyssId)
     workspace:SetAttribute("AbyssModifiers", table.concat(modifiers, ","))
@@ -346,7 +345,7 @@ end)
 
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
-    AbyssWorldLib.AbyssCompleted:Connect(function()
+    AbyssWorldLib.AbyssCompleted.Event:Connect(function()
         workspace:SetAttribute("AbyssFinished", true)
         task.delay(1, AbyssWorldLib.GiveLoot, AbyssWorldLib)
 

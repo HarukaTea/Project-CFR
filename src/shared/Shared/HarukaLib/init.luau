@@ -4,13 +4,9 @@ local Debris = game:GetService("Debris")
 local GuiService = game:GetService("GuiService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
-
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 
 local Tween = require(script.HarukaTween)
 local TableUtils = require(script.HarukaTableUtils)
@@ -384,7 +380,7 @@ end
 
 	Return a signal class, it will fire when the tween is completed.
 ]]
-function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : Signal.SignalClass
+function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : BindableEvent
 	return Tween(obj, style, goal, needSignal)
 end
 
@@ -470,62 +466,6 @@ function HarukaLib:RollLoot(loots: { [string]: number }, luck: number?) : (strin
 
 	local last = items[#items]
 	return last.Name, last.Weight, #items
-end
-
-
---[[
-	Inspired by `CutsceneService`, it will fire the signal class when the cutscene is completed.
-]]
-function HarukaLib:PlayCutscene(pointsTable: { BasePart }, duration: number)
-	local camera = workspace.CurrentCamera
-	local cutsceneSignal = Signal.new()
-
-	--// Helper funcs
-	local function _getCF(points: { any }, t: number) : CFrame
-		local copy = { unpack(points) }
-
-		local n = #copy
-		for j = 1, n - 1 do
-			for k = 1, n - j do
-				copy[k] = copy[k]:Lerp(copy[k + 1], t)
-			end
-		end
-		return copy[1]
-	end
-
-	--- sort points
-	local points = {}
-
-	table.sort(pointsTable, function(a, b)
-		return tonumber(a.Name) < tonumber(b.Name)
-	end)
-	for _, point: BasePart in pointsTable do
-		table.insert(points, point.CFrame)
-	end
-
-
-	camera.CameraType = Enum.CameraType.Scriptable
-
-	local priority = Enum.RenderPriority.Camera.Value + 1
-	local start = os.clock()
-	local passedTime = 0
-
-	pcall(function()
-		RunService:BindToRenderStep("HarukaCutscene", priority, function()
-			passedTime = os.clock() - start
-
-			if passedTime <= duration then
-				camera.CFrame = _getCF(points, passedTime / duration)
-			else
-				RunService:UnbindFromRenderStep("HarukaCutscene")
-
-				cutsceneSignal:Fire("Completed")
-				cutsceneSignal:Destroy()
-			end
-		end)
-	end)
-
-	return cutsceneSignal
 end
 
 
@@ -906,8 +846,7 @@ export type HarukaQueue = {
 
 	SpawnMutex: (self: HarukaQueue, delay: number) -> nil,
 
-	ElementAdded: Signal.SignalClass,
-	MutexUnlocked: Signal.SignalClass,
+	RefreshSignal: BindableEvent,
 }
 function HarukaLib.Queue() : HarukaQueue
 	local Queue = {} :: HarukaQueue
@@ -921,8 +860,7 @@ function HarukaLib.Queue() : HarukaQueue
 		self.Queue = {}
 		self.Locked = false
 
-		self.ElementAdded = Signal.new()
-		self.MutexUnlocked = Signal.new()
+		self.RefreshSignal = Instance.new("BindableEvent")
 
 		return self
 	end
@@ -940,7 +878,7 @@ function HarukaLib.Queue() : HarukaQueue
 
 		task.delay(delay, function()
 			self.Locked = false
-			self.MutexUnlocked:Fire()
+			self.RefreshSignal:Fire()
 		end)
 	end
 	function Queue:IsLocked() : boolean
@@ -954,7 +892,7 @@ function HarukaLib.Queue() : HarukaQueue
 		self.Queue[last] = value
 
 		if not self.Locked then
-			self.ElementAdded:Fire()
+			self.RefreshSignal:Fire()
 		end
 	end
 	function Queue:Pop() : any?
@@ -971,8 +909,7 @@ function HarukaLib.Queue() : HarukaQueue
 	end
 
 	function Queue:Destroy()
-		self.ElementAdded:Destroy()
-		self.MutexUnlocked:Destroy()
+		self.RefreshSignal:Destroy()
 	end
 
 	return Queue.new()

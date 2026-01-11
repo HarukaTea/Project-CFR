@@ -6,8 +6,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 local Children = Fusion.Children
 
 
@@ -28,9 +26,9 @@ return function (scope: Fusion.Scope, props: {
     NPCId: Fusion.Value<string>,
     IsTypewriting: Fusion.Value<boolean>,
 
-    GoToNextDialogueSignal: Signal.SignalClass,
-    GoToNextDialogueByChoiceSignal: Signal.SignalClass,
-    GoSkipDialogueSignal: Signal.SignalClass,
+    GoToNextDialogueSignal: BindableEvent,
+    GoToNextDialogueByChoiceSignal: BindableEvent,
+    GoSkipDialogueSignal: BindableEvent,
 })
 
     local absDialogueSize = Fusion.Value(scope, Vector2.zero)

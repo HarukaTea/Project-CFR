@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
 local PlayerBar = require(script.Components.PlayerBar)
 local PlayerInfoView = require(script.Components.PlayerInfoView)
@@ -19,18 +20,9 @@ local Pinia = require(script.Pinia)
 return function(plr: Player)
 	local self = {} :: Pinia.Self
 
-	self.plr = plr
-    self.char = plr.Character
-    self.scope = Fusion.scoped()
-
+    ClientLib:InitUIFramework(self, plr, "PlayerList")
 
 	Pinia(self)
-
-
-    if plr.PlayerGui:FindFirstChild("PlayerList") then
-        plr.PlayerGui.PlayerList:Destroy()
-    end
-
 
 	local scope = self.scope :: Fusion.Scope
 

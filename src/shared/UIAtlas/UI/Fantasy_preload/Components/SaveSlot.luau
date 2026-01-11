@@ -16,8 +16,6 @@ local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 local Children = Fusion.Children
 
 local wait = task.wait
@@ -42,11 +40,11 @@ return function (scope: Fusion.Scope, props: {
     SlotId: number,
     CharacterModel: Fusion.Value<Model?>,
 
-    SaveSlotClickedSignal: Signal.SignalClass,
-    SaveSlotBackSignal: Signal.SignalClass,
-    ReadyToTeleportSignal: Signal.SignalClass,
+    SaveSlotClickedSignal: BindableEvent,
+    SaveSlotBackSignal: BindableEvent,
+    ReadyToTeleportSignal: BindableEvent,
 
-    ServerListClickedSignal: Signal.SignalClass,
+    ServerListClickedSignal: BindableEvent,
 
     IsUIShown: Fusion.Value<boolean>,
 })
@@ -415,7 +413,7 @@ return function (scope: Fusion.Scope, props: {
                                                 CancelText = "NO",
 
                                                 ConfirmUniqueId = "ConfirmSaveErase1"
-                                            }):Wait()
+                                            }).Event:Wait()
 
                                             if result == "NO" then return end
 
@@ -425,7 +423,7 @@ return function (scope: Fusion.Scope, props: {
                                                 CancelText = "NO",
 
                                                 ConfirmUniqueId = "ConfirmSaveErase2"
-                                            }):Wait()
+                                            }).Event:Wait()
 
                                             if result == "NO" then return end
 

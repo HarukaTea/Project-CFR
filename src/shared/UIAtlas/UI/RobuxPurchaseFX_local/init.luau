@@ -33,7 +33,7 @@ return function (plr: Player)
             Fusion.doCleanup(newScope)
         end):catch(function() end)
 	end
-    Bindables.DevProductPurchasing:Connect(_onPurchaseRequest)
+    Bindables.DevProductPurchasing.Event:Connect(_onPurchaseRequest)
 
 
 

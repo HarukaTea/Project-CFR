@@ -36,9 +36,6 @@ return function (self: Types.ProjectileLib)
 
 
     ProjectileLib.BeeSpike1 = function(projectile: Model, container: Folder)
-
-
-
         if not projectile:GetAttribute("NoSound") then
             projectile:FindFirstChildWhichIsA("Sound", true):Play()
         end
@@ -47,7 +44,7 @@ return function (self: Types.ProjectileLib)
 
         HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, {
             Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, 11, 0)
-        }, true):Wait()
+        }, true).Event:Wait()
 
         projectile:AddTag("DMGEntity")
     end

@@ -7,9 +7,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
-
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
@@ -42,7 +39,7 @@ return function(scope: Fusion.Scope, props: {
 }, self: {
     plr: Player,
 
-    RequestToCastItem: Signal.SignalClass
+    RequestToCastItem: BindableEvent
 })
 
     local isSelecting = Fusion.Value(scope, false)
@@ -53,7 +50,7 @@ return function(scope: Fusion.Scope, props: {
 
 
     local refreshBoolean = Fusion.Value(scope, false)
-    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+    table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
 

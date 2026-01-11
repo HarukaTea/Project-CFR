@@ -65,7 +65,7 @@ if enableFav then
         ConfirmText = "Yes",
         Hint = "You've played for over 30 mins! Would you like to favorite the game?",
         ConfirmUniqueId = "FavTitlescreen"
-    }):Wait()
+    }).Event:Wait()
 
     if result == "YES" then
         pcall(function()

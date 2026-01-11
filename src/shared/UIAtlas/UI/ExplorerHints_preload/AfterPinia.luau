@@ -68,7 +68,7 @@ return function (self: Self)
 		HarukaLib:UITween(normalHint, "Out", { TweenTime = 0.5, DelayTime = 3 })
 	end
 	table.insert(scope, Events.CreateNotify_S.On(_createHint))
-	table.insert(scope, Bindables.CreateNotify:Connect(_createHint))
+	table.insert(scope, Bindables.CreateNotify.Event:Connect(_createHint))
 
 
 
@@ -106,10 +106,9 @@ return function (self: Self)
 		HarukaLib:UITween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
 	end
 	table.insert(scope, Events.CreateFSNotify_S.On(_createFSHint))
-	table.insert(scope, Bindables.CreateFSNotify:Connect(_createFSHint))
+	table.insert(scope, Bindables.CreateFSNotify.Event:Connect(_createFSHint))
 
-	self.fsHintsQueue.ElementAdded:Connect(_onFSHintAdded)
-	self.fsHintsQueue.MutexUnlocked:Connect(_onFSHintAdded)
+	self.fsHintsQueue.RefreshSignal.Event:Connect(_onFSHintAdded)
 
 
 	--// receive center hint requests
@@ -148,8 +147,7 @@ return function (self: Self)
 		HarukaLib:UITween(notifyBar, "Out", { TweenTime = 0.5, DelayTime = 0.9 })
 	end
 	table.insert(scope, Events.CreateCenterNotify_S.On(_createCenterNotify))
-	table.insert(scope, Bindables.CreateCenterNotify:Connect(_createCenterNotify))
+	table.insert(scope, Bindables.CreateCenterNotify.Event:Connect(_createCenterNotify))
 
-	self.centerHintsQueue.ElementAdded:Connect(_onCenterHintAdded)
-	self.centerHintsQueue.MutexUnlocked:Connect(_onCenterHintAdded)
+	self.centerHintsQueue.RefreshSignal.Event:Connect(_onCenterHintAdded)
 end

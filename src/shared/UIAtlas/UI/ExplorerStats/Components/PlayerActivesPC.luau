@@ -7,8 +7,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
 
@@ -24,7 +22,7 @@ return function(scope: Fusion.Scope, props: {
     Class: Fusion.Value<string>,
 
 }, self: {
-    CastClassUlt_C: Signal.SignalClass,
+    CastClassUlt_C: BindableEvent,
     ActiveList: {},
     CharAbilityList: {}
 }) : { Frame }
@@ -34,7 +32,7 @@ return function(scope: Fusion.Scope, props: {
 
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
-    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+    table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
 

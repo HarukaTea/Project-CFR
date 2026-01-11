@@ -97,7 +97,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    ServerBindables.RToSpawnChar:Connect(function(plr: Player)
+    ServerBindables.RToSpawnChar.Event:Connect(function(plr: Player)
         if not plr then return end
         if not plr:IsDescendantOf(Players) then return end
         if plr:GetAttribute("IsLeaving") then return end
@@ -1450,7 +1450,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         partyInvite(plr, option, newMember)
     end)
-    ServerBindables.PartyInvite:Connect(partyInvite)
+    ServerBindables.PartyInvite.Event:Connect(partyInvite)
 end)
 
 
@@ -1662,7 +1662,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    ServerBindables.RToSendMsgToDiscord:Connect(function(msg: string)
+    ServerBindables.RToSendMsgToDiscord.Event:Connect(function(msg: string)
         if RunService:IsStudio() then return end
 
         Promise.try(function()
@@ -1686,7 +1686,7 @@ end)
 
 
 table.insert(GlobalCriRPGLib.Funcs, function()
-    ServerBindables.RToCheckPlayerBadges:Connect(function(player: Player)
+    ServerBindables.RToCheckPlayerBadges.Event:Connect(function(player: Player)
         if not player then return end
 
         pcall(function()

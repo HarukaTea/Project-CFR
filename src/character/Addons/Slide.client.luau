@@ -99,7 +99,7 @@ local function _slide()
 end
 
 
-Add(Bindables.ActionSlide:Connect(function()
+Add(Bindables.ActionSlide.Event:Connect(function()
     if char:GetAttribute("IsSwimming") then return end
 
     canSlide = false

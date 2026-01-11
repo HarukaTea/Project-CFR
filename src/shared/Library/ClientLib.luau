@@ -13,6 +13,7 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local ClientLib = {}
 
+type Dict = { [string]: any }
 
 
 local terrainPartRaycastParams = RaycastParams.new()
@@ -355,6 +356,17 @@ function ClientLib:InitCharDeadTrackers(props: {
 			Empty()
 		end
 	end))
+end
+
+
+function ClientLib:InitUIFramework(t: Dict, plr: Player, uiId: string)
+	t.plr = plr
+	t.char = plr.Character
+	t.scope = Fusion.scoped()
+
+	if plr.PlayerGui:FindFirstChild(uiId) then
+		plr.PlayerGui[uiId]:Destroy()
+    end
 end
 
 

@@ -3,17 +3,15 @@ local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 
 local GlobalTimer = {}
 
 local promises = {}
 
-local addTaskSignal = Signal.new()
+local addTaskSignal = Instance.new("BindableEvent")
 
 
-addTaskSignal:Connect(function(durationLater: number, callback: () -> nil, uniqueId: string)
+addTaskSignal.Event:Connect(function(durationLater: number, callback: () -> nil, uniqueId: string)
     promises[uniqueId] = {
         Promise = Promise.delay(durationLater):andThenCall(callback):catch(function() end),
         Callback = callback,

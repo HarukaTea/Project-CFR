@@ -71,7 +71,7 @@ table.insert(ClientWorldLib.Funcs, function()
             end)
         end
     end
-    Bindables.ClientTween:Connect(playTween)
+    Bindables.ClientTween.Event:Connect(playTween)
 
 
 
@@ -92,7 +92,7 @@ table.insert(ClientWorldLib.Funcs, function()
         if timePos then sound.TimePosition = timePos end
     end
     Events.PlaySound_S.On(playSound)
-    Bindables.PlaySound:Connect(playSound)
+    Bindables.PlaySound.Event:Connect(playSound)
 
 
 
@@ -114,14 +114,14 @@ table.insert(ClientWorldLib.Funcs, function()
         camera.CFrame = part.CFrame
     end
     Events.UpdateCameraPart_S.On(playCameraScene)
-    Bindables.UpdateCameraPart:Connect(playCameraScene)
+    Bindables.UpdateCameraPart.Event:Connect(playCameraScene)
 
 
     local function updateCameraCFrame(cframe: CFrame)
         workspace.CurrentCamera.CFrame = cframe
     end
     Events.UpdateCameraCF_S.On(updateCameraCFrame)
-    Bindables.UpdateCameraCF:Connect(updateCameraCFrame)
+    Bindables.UpdateCameraCF.Event:Connect(updateCameraCFrame)
 end)
 
 
@@ -692,7 +692,7 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    Bindables.PromptTriggered:Connect(function(prompt: ProximityPrompt)
+    Bindables.PromptTriggered.Event:Connect(function(prompt: ProximityPrompt)
         local adornee = prompt.Parent :: BasePart
         local char = plr.Character
 
@@ -724,7 +724,7 @@ end)
 
 
 table.insert(ClientWorldLib.Funcs, function()
-    Bindables.CloseExplorerUIs:Connect(function()
+    Bindables.CloseExplorerUIs.Event:Connect(function()
         Players.LocalPlayer:SetAttribute("CurrentUIGroup", "None")
 
         HarukaLib:FreezePlayerControls("Unfreeze")
@@ -825,7 +825,7 @@ table.insert(ClientWorldLib.Funcs, function()
                 ConfirmText = "YES",
                 CancelText = "NO",
                 ConfirmUniqueId = "ConfirmInviteAccept"..HarukaLib:GenerateUUID(),
-            }):Wait()
+            }).Event:Wait()
             if choice == "YES" then
                 Events.PartyInvite_C.Fire({ Option = "InviteAccept", PlayerName = inviter })
             elseif choice == "NO" then
@@ -835,7 +835,7 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 
 
-    Bindables.RToCreatePartyInvite:Connect(function(player: Player)
+    Bindables.RToCreatePartyInvite.Event:Connect(function(player: Player)
         if player == Players.LocalPlayer then
             Bindables.CreateNotify:Fire("Can't invite yourself...")
             return
@@ -872,7 +872,7 @@ table.insert(ClientWorldLib.Funcs, function()
             ConfirmText = "YES",
             CancelText = "NO",
             ConfirmUniqueId = "ConfirmInvite"..HarukaLib:GenerateUUID(),
-        }):Wait()
+        }).Event:Wait()
 
         isInvitingTo = false
         if choice ~= "YES" then return end

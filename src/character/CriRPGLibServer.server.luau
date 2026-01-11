@@ -397,7 +397,7 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 
 
-    Add(ServerBindables.RToSpawnOrb:Connect(function(charId: string, orbName: string, extraProps: {
+    Add(ServerBindables.RToSpawnOrb.Event:Connect(function(charId: string, orbName: string, extraProps: {
         Offset: Vector3?,
         ForceLocation: CFrame?
     }?)
@@ -416,7 +416,10 @@ table.insert(CriRPGLib.Funcs, function()
 
     ServerTable.SkillProjectileSymbols[charUniqueId] = {}
 
-    Add(ServerBindables.RToCreateProjectileSymbol:Connect(function(charId: string, props: ServerTable.SkillProjectileData)
+    Add(ServerBindables.RToCreateProjectileSymbol.Event:Connect(function(
+        charId: string,
+        props: ServerTable.SkillProjectileData
+    )
         if charId ~= char.Name then return end
 
         props.Owner = char.Name
@@ -1154,8 +1157,7 @@ table.insert(CriRPGLib.Funcs, function()
             char:SetAttribute("BaseJumpPower", LocationBook[location].BaseJumpPower or 50)
         end
     end
-    areaQueue.ElementAdded:Connect(_changeLocation)
-    areaQueue.MutexUnlocked:Connect(_changeLocation)
+    areaQueue.RefreshSignal.Event:Connect(_changeLocation)
 
     Add(HarukaLib:Hydrate(char, {
         ["Attr-AreaIn"] = function(region: string)

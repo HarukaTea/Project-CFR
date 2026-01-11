@@ -164,7 +164,7 @@ end)
 
 
 table.insert(LBLib.Funcs, function()
-    ServerBindables.RToUpdateLeaderboardRank:Connect(function(key: string, value: number, storeName: string)
+    ServerBindables.RToUpdateLeaderboardRank.Event:Connect(function(key: string, value: number, storeName: string)
         if not storeName then return end
         if not STORE_LIST[storeName] then return end
         if not key then return end
@@ -176,7 +176,7 @@ table.insert(LBLib.Funcs, function()
         store:UpdateAsync(key, value)
     end)
 
-    ServerBindables.RToAwardLeaderboardRank:Connect(function(plr: Player, storeName: string)
+    ServerBindables.RToAwardLeaderboardRank.Event:Connect(function(plr: Player, storeName: string)
         if storeName == "Donation" then
             donationStore:GetOrderedPositionAsync("Player_"..plr.UserId, true):andThen(function(data)
                 --// data[1]: rank, data[2]: {key: string, value: number}

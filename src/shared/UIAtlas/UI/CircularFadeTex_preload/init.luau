@@ -64,8 +64,7 @@ return function (plr: Player)
 		}):Play()
 	end
     table.insert(scope, Events.CreateCircularFade_S.On(_createCircularFade))
-	table.insert(scope, Bindables.CreateCircularFade:Connect(_createCircularFade))
+	table.insert(scope, Bindables.CreateCircularFade.Event:Connect(_createCircularFade))
 
-	self.cirularFadeQueue.ElementAdded:Connect(_onCircularFadeAdded)
-	self.cirularFadeQueue.MutexUnlocked:Connect(_onCircularFadeAdded)
+	self.cirularFadeQueue.RefreshSignal.Event:Connect(_onCircularFadeAdded)
 end

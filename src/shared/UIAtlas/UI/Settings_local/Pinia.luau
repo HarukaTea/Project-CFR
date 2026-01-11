@@ -9,7 +9,6 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
@@ -20,12 +19,13 @@ export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
+    UI: ScreenGui,
 
     SettingsFolder: Folder,
     PanelSelected: Fusion.Value<string>,
     IsSettingsShown: Fusion.Value<boolean>,
 
-    ValidInputBegan: Signal.SignalClass,
+    ValidInputBegan: BindableEvent,
 
     SliderProgressVals: { [string]: { [string]: Fusion.Value<number> } },
     SliderVals: { [string]: { [string]: Fusion.Value<number> } },
@@ -60,7 +60,7 @@ return function (self: Self)
     self.PanelSelected = Value("Game")
     self.IsSettingsShown = Value(false)
 
-    self.ValidInputBegan = Signal.new()
+    self.ValidInputBegan = Instance.new("BindableEvent")
 
     self.SliderProgressVals = {}
     self.SliderVals = {}
@@ -204,21 +204,21 @@ return function (self: Self)
     end
 
 
-    self.INFO.Sounds.Includes.MusicVolume.ValChanged:Connect(function(val: number)
+    self.INFO.Sounds.Includes.MusicVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.Musics.Volume = val
     end)
-    self.INFO.Sounds.Includes.SFXVolume.ValChanged:Connect(function(val: number)
+    self.INFO.Sounds.Includes.SFXVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.SFXs.Volume = val
     end)
-    self.INFO.Sounds.Includes.FootstepVolume.ValChanged:Connect(function(val)
+    self.INFO.Sounds.Includes.FootstepVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.FootstepSFXs.Volume = val
     end)
-    self.INFO.Sounds.Includes.AmbientVolume.ValChanged:Connect(function(val)
+    self.INFO.Sounds.Includes.AmbientVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.Environment.Volume = val
     end)
 
 
-    self.INFO.Interface.Includes.UIScale.ValChanged:Connect(function(val: number)
+    self.INFO.Interface.Includes.UIScale.ValChanged.Event:Connect(function(val: number)
         workspace:SetAttribute("UIScaleFactor", val)
 
         for _, ui in self.plr.PlayerGui:QueryDescendants("UIScale") do

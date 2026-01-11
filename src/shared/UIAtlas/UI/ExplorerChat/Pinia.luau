@@ -8,7 +8,6 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 
@@ -18,6 +17,7 @@ export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
+    UI: ScreenGui,
 
 
     IsChatShown: Fusion.Value<boolean>,
@@ -32,9 +32,9 @@ export type Self = {
 
     MaxUTFShown: Fusion.Value<number>,
 
-    GoToNextDialogueSignal: Signal.SignalClass,
-    GoToNextDialogueByChoiceSignal: Signal.SignalClass,
-    GoSkipDialogueSignal: Signal.SignalClass,
+    GoToNextDialogueSignal: BindableEvent,
+    GoToNextDialogueByChoiceSignal: BindableEvent,
+    GoSkipDialogueSignal: BindableEvent,
 }
 
 
@@ -60,9 +60,9 @@ return function (self: Self)
 
     self.MaxUTFShown = Value(-1)
 
-    self.GoToNextDialogueSignal = Signal.new()
-    self.GoToNextDialogueByChoiceSignal = Signal.new()
-    self.GoSkipDialogueSignal = Signal.new()
+    self.GoToNextDialogueSignal = Instance.new("BindableEvent")
+    self.GoToNextDialogueByChoiceSignal = Instance.new("BindableEvent")
+    self.GoSkipDialogueSignal = Instance.new("BindableEvent")
     table.insert(scope, self.GoToNextDialogueSignal)
     table.insert(scope, self.GoToNextDialogueByChoiceSignal)
     table.insert(scope, self.GoSkipDialogueSignal)
@@ -84,11 +84,11 @@ return function (self: Self)
 
     table.insert(scope, typewriterObj)
 
-    typewriterObj.OnUTFUpdated:Connect(function(index: number)
+    typewriterObj.OnUTFUpdated.Event:Connect(function(index: number)
         self.MaxUTFShown:set(index)
         self.IsTypewriting:set(index > -1)
     end)
-    typewriterObj.OnTyperFinished:Connect(function()
+    typewriterObj.OnTyperFinished.Event:Connect(function()
         self.MaxUTFShown:set(-1)
         self.IsTypewriting:set(false)
     end)
@@ -129,13 +129,6 @@ return function (self: Self)
                 NPCModel = npcChatting,
                 QuestId = questId
             })
-
-            local extra = npcDialogues.Extra
-            local bindableId = extra[questId]
-
-            if bindableId then
-                Bindables.NPCChatFinished:Fire(bindableId)
-            end
         end
 
         npcChatting = nil
@@ -293,15 +286,15 @@ return function (self: Self)
 
         __setText(dialogue)
     end
-    self.GoToNextDialogueSignal:Connect(function()
+    self.GoToNextDialogueSignal.Event:Connect(function()
         __nextText(if typewriterObj:IsTyping() then "Skip" else "Continue")
     end)
-    self.GoToNextDialogueByChoiceSignal:Connect(function(choiceIndex: number)
+    self.GoToNextDialogueByChoiceSignal.Event:Connect(function(choiceIndex: number)
         self.Choices:set({})
 
         __nextText("Continue", "ENTERCHOICE "..choiceIndex)
     end)
-    self.GoSkipDialogueSignal:Connect(__endChatting)
+    self.GoSkipDialogueSignal.Event:Connect(__endChatting)
 
 
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)

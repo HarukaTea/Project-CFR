@@ -40,7 +40,7 @@ end
 
 
 table.insert(GlobalQuestFuncLib.Funcs, function()
-    ServerBindables.QuestCompleted:Connect(function(plr: Player, questId: string)
+    ServerBindables.QuestCompleted.Event:Connect(function(plr: Player, questId: string)
         local questData = QuestBook[questId] :: QuestBook.QuestJSON
         if not questData then return end
 
@@ -60,7 +60,7 @@ table.insert(GlobalQuestFuncLib.Funcs, function()
     end)
 
 
-    ServerBindables.NPCChatFinished:Connect(function(id: string, plr: Player)
+    ServerBindables.NPCChatFinished.Event:Connect(function(id: string, plr: Player)
         if GlobalQuestFuncLib.IdCallbacks[id] then
             GlobalQuestFuncLib.IdCallbacks[id](plr)
         end

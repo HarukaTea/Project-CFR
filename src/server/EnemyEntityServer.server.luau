@@ -19,7 +19,6 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
-local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityAttackLib)
@@ -150,12 +149,12 @@ end
 
 
 --// Init once
-local enemyDiedSignal = Signal.new()
-local enterCombatSignal = Signal.new()
-local joinCombatSignal = Signal.new()
-local destroyEntityObjSignal = Signal.new()
+local enemyDiedSignal = Instance.new("BindableEvent")
+local enterCombatSignal = Instance.new("BindableEvent")
+local joinCombatSignal = Instance.new("BindableEvent")
+local destroyEntityObjSignal = Instance.new("BindableEvent")
 
-enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: string)
+enterCombatSignal.Event:Connect(function(entity: Model, target: Model, combatMode: string)
     if not ServerLib:IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
@@ -175,7 +174,7 @@ enterCombatSignal:Connect(function(entity: Model, target: Model, combatMode: str
         end
     end
 end)
-joinCombatSignal:Connect(function(entity: Model, target: Model)
+joinCombatSignal.Event:Connect(function(entity: Model, target: Model)
     if not ServerLib:IsCharValid(entity) then return end
     if entity:GetAttribute("IsInCombat") then return end
     if entity:GetAttribute("EnteringCombat") then return end
@@ -192,7 +191,7 @@ joinCombatSignal:Connect(function(entity: Model, target: Model)
         end
     end
 end)
-destroyEntityObjSignal:Connect(function(uniqueId: string)
+destroyEntityObjSignal.Event:Connect(function(uniqueId: string)
     if uniqueId == nil then return end
 
 
@@ -214,7 +213,7 @@ Players.PlayerRemoving:Connect(function(player)
         end)
     end
 end)
-enemyDiedSignal:Connect(function(uniqueId: string)
+enemyDiedSignal.Event:Connect(function(uniqueId: string)
     local entityObj = allEntityPool[uniqueId]
     if not entityObj then
         warn("Error finding entity object when respawning enemy")
@@ -251,7 +250,7 @@ Events.StartCombat_C.SetCallback(function(plr: Player, data)
 
     enterCombatSignal:Fire(entity, char, combatMode)
 end)
-ServerBindables.PlayerDied:Connect(function(charId: string)
+ServerBindables.PlayerDied.Event:Connect(function(charId: string)
     for _, entityObj in allEntityPool do
         pcall(function()
             local targetingList = entityObj.Entity.TargetingList
@@ -656,7 +655,7 @@ function EntityLib:_RoamTask()
         })
         path.Visualize = RunService:IsStudio()
 
-        path.Events.Errored:Connect(function(errorType: string)
+        path.Events.Errored.Event:Connect(function(errorType: string)
             if errorType == "AgentStuck" or errorType == "AgentUnreachable" then
                 entity:PivotTo(locator.CFrame * CFrame.new(0, self.BoundingSize.Y / 2, 0) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0))
             end

@@ -56,7 +56,7 @@ return function (self: Types.ProjectileLib)
 
         Promise.delay(0.5):andThen(function()
             HarukaLib:Tween(projectile.Fang1, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang1.Base.CFrame * CFrame.new(0, 0, -6) })
-            HarukaLib:Tween(projectile.Fang2, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang2.Base.CFrame * CFrame.new(0, 0, -6) }, true):Wait()
+            HarukaLib:Tween(projectile.Fang2, AssetBook.TweenInfos.twiceHalf, { Pivot = projectile.Fang2.Base.CFrame * CFrame.new(0, 0, -6) }, true).Event:Wait()
 
             projectile.Fang1:AddTag("DMGEntity")
             projectile.Fang2:AddTag("DMGEntity")
@@ -94,7 +94,7 @@ return function (self: Types.ProjectileLib)
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 30, 0))
 
-        HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, { Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, -30, 0) }, true):Wait()
+        HarukaLib:Tween(projectile, AssetBook.TweenInfos.half, { Pivot = projectile.PrimaryPart.CFrame * CFrame.new(0, -30, 0) }, true).Event:Wait()
 
         projectile:AddTag("DMGEntity")
 

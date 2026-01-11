@@ -10,7 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 
-export type Dict = {[string]: any}
+type Dict = {[string]: any}
 export type Profile<T> = {
     __index: Profile<T>,
 

@@ -1,41 +1,37 @@
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
-
 return {
     ---@params: `player: Player`
-    RToSpawnChar = Signal.new(),
+    RToSpawnChar = Instance.new("BindableEvent"),
 
     ---@params: `charId: string, orbName: string, extraProps: {Offset: Vector3?, ForceLocation: CFrame?}?`
-    RToSpawnOrb = Signal.new(),
+    RToSpawnOrb = Instance.new("BindableEvent"),
 
     ---@params: `charId: string, props: {ProjectId: string, ProjectileType: "OneTime" | "OverTime"`
     --`,Duration: number, ProjectileUniqueId: string, DMGType: "DMG" | "Magic", DoTType: string, DMGBonus: number`
     --`,IsClassUlt: boolean }`
-    RToCreateProjectileSymbol = Signal.new(),
+    RToCreateProjectileSymbol = Instance.new("BindableEvent"),
 
     ---@params: `key: string, value: any, storeName: string`
-    RToUpdateLeaderboardRank = Signal.new(),
+    RToUpdateLeaderboardRank = Instance.new("BindableEvent"),
 
     ---@params: `player: Player, storeName: string`
-    RToAwardLeaderboardRank = Signal.new(),
+    RToAwardLeaderboardRank = Instance.new("BindableEvent"),
 
     ---@params: `playerName: string`
-    PlayerDied = Signal.new(),
+    PlayerDied = Instance.new("BindableEvent"),
 
     ---@params: `player: Player, option: string, newMember: string`
-    PartyInvite = Signal.new(),
+    PartyInvite = Instance.new("BindableEvent"),
 
     ---@params: `player: Player, questId: string`
-    QuestCompleted = Signal.new(),
+    QuestCompleted = Instance.new("BindableEvent"),
 
     ---@params: `msg: string`
-    RToSendMsgToDiscord = Signal.new(),
+    RToSendMsgToDiscord = Instance.new("BindableEvent"),
 
     ---@params: `player: Player`
-    RToCheckPlayerBadges = Signal.new(),
+    RToCheckPlayerBadges = Instance.new("BindableEvent"),
 
     ---@params: `id: string`,
-    NPCChatFinished = Signal.new(),
+    NPCChatFinished = Instance.new("BindableEvent"),
 }

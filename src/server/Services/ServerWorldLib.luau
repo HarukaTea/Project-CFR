@@ -107,6 +107,7 @@ end)
 
 
 table.insert(ServerWorldLib.Funcs, function()
+    --//TODO: add `CanTouch` in
     for _, pathLink: PackageLink in ReplicatedStorage:QueryDescendants("PackageLink") do
         pathLink:Destroy()
     end
@@ -115,7 +116,6 @@ table.insert(ServerWorldLib.Funcs, function()
             part.EnableFluidForces = false
             part.Massless = true
             part.Locked = true
-            part.CanTouch = false
         end
     end
     _optimize(workspace.Maps)

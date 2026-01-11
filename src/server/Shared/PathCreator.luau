@@ -5,7 +5,6 @@
 local PFS = game:GetService("PathfindingService")
 local RepS = game:GetService("ReplicatedStorage")
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 
@@ -26,7 +25,7 @@ export type PathCreatorClass = {
         ComparisonCheckTimes: number
     },
     Events: {
-        Errored: Signal.SignalClass
+        Errored: BindableEvent
     },
     NPC: Model,
     Humanoid: Humanoid,
@@ -150,7 +149,7 @@ function PathCreator.new(npc: Model, pfsArgs: { any })
             ComparisonCheckTimes = 1
         },
         Events = {
-            Errored = Signal.new(),
+            Errored = Instance.new("BindableEvent"),
         },
 
         NPC = npc,

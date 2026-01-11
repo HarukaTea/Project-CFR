@@ -288,7 +288,7 @@ table.insert(CharLib.Funcs, function()
 
         self.ClassAttackAnims[anim]:Play()
     end
-    Add(Bindables.PlayClassAnim:Connect(_playAnim))
+    Add(Bindables.PlayClassAnim.Event:Connect(_playAnim))
     Add(Events.PlayClassAnim_S.On(_playAnim))
 
 
@@ -340,7 +340,7 @@ table.insert(CharLib.Funcs, function()
 
 
 
-    Add(Bindables.PlayerChatted:Connect(function(msg: string, sender: Player)
+    Add(Bindables.PlayerChatted.Event:Connect(function(msg: string, sender: Player)
         if sender ~= plr then return end
 
         msg = tostring(msg)

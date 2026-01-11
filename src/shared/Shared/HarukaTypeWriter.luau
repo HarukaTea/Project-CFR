@@ -1,17 +1,12 @@
 
-local RepS = game:GetService("ReplicatedStorage")
-
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
-
 export type HarukaWriter = {
 	__index: HarukaWriter,
 
 	Stopped: boolean,
 	Running: boolean,
 
-	OnTyperFinished: Signal.SignalClass,
-	OnUTFUpdated: Signal.SignalClass,
+	OnTyperFinished: BindableEvent,
+	OnUTFUpdated: BindableEvent,
 
 	new: () -> HarukaWriter,
 	TypeText: (self: HarukaWriter, text: string) -> nil,
@@ -32,8 +27,8 @@ function HarukaTypeWriter.new() : HarukaWriter
 	self.Stopped = false
 	self.Running = false
 
-	self.OnTyperFinished = Signal.new()
-	self.OnUTFUpdated = Signal.new()
+	self.OnTyperFinished = Instance.new("BindableEvent")
+	self.OnUTFUpdated = Instance.new("BindableEvent")
 
 	return self
 end

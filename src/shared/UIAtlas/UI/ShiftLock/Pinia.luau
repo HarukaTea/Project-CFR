@@ -6,7 +6,6 @@ local UserInputService = game:GetService("UserInputService")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
@@ -18,6 +17,7 @@ export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
+    UI: ScreenGui,
 
     LockConn: RBXScriptConnection?,
     LockEnabled: Fusion.Value<boolean>,
@@ -25,7 +25,7 @@ export type Self = {
     Icon: Fusion.Value<string>,
     OFFSET: CFrame,
 
-    ChangeShiftLockState: Signal.SignalClass,
+    ChangeShiftLockState: BindableEvent,
 
     CameraOffsetTweenVal: CFrameValue,
 
@@ -44,7 +44,7 @@ return function (self: Self)
     self.Icon = Fusion.Value(scope, OFF_ICON)
     self.OFFSET = CFrame.new(1.8, 0, 0)
 
-    self.ChangeShiftLockState = Signal.new()
+    self.ChangeShiftLockState = Instance.new("BindableEvent")
     table.insert(scope, self.ChangeShiftLockState)
 
 
@@ -54,11 +54,23 @@ return function (self: Self)
 
     self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
 
+    local cameraAdd, cameraEmpty = HarukaLib.Bin()
+    table.insert(scope, cameraEmpty)
 
-    table.insert(scope, RS.RenderStepped:Connect(function()
-        workspace.CurrentCamera.CFrame *= self.CameraOffsetTweenVal.Value
-    end))
+    Fusion.Observer(scope, self.LockEnabled):onBind(function()
+        cameraEmpty()
+        cameraAdd(RS.RenderStepped:Connect(function()
+            workspace.CurrentCamera.CFrame *= self.CameraOffsetTweenVal.Value
+        end))
 
+        if Fusion.peek(self.LockEnabled) then return end
+
+        table.insert(scope, task.delay(1, function()
+            if Fusion.peek(self.LockEnabled) then return end
+
+            cameraEmpty()
+        end))
+    end)
 
     local function _enableShiftLock()
         local char = self.char
@@ -103,10 +115,8 @@ return function (self: Self)
             self.LockEnabled:set(false)
             self.Icon:set(OFF_ICON)
 
-            if self.char then
-                if self.char:FindFirstChildOfClass("Humanoid") then
-                    self.char.Humanoid.AutoRotate = true
-                end
+            if self.char and self.char:FindFirstChildOfClass("Humanoid") then
+                self.char.Humanoid.AutoRotate = true
             end
 
             UserInputService.MouseBehavior = Enum.MouseBehavior.Default
@@ -117,7 +127,7 @@ return function (self: Self)
             }):Play()
         end
     end
-    self.ChangeShiftLockState:Connect(_setLockState)
+    self.ChangeShiftLockState.Event:Connect(_setLockState)
 
 
     --// track shift key

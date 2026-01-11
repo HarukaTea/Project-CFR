@@ -5,9 +5,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
-
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
 local Children = Fusion.Children
 
 
@@ -24,7 +21,7 @@ return function(scope: Fusion.Scope, props: {
 		Max: number,
 		DefaultValue: number,
 
-		ValChanged: Signal.SignalClass
+		ValChanged: BindableEvent
 	},
 
     OptionId: string,

@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
@@ -16,7 +15,7 @@ export type IncludesJSON = {
 	DefaultValue: any,
 	AllowDecimals: boolean,
 
-	ValChanged: Signal.SignalClass,
+	ValChanged: BindableEvent,
 }
 
 export type SettingsJSON = {
@@ -52,7 +51,7 @@ local template = {
 				DefaultValue = 1,
 				AllowDecimals = true,
 
-				ValChanged = Signal.new()
+				ValChanged = Instance.new("BindableEvent")
 			},
             SFXVolume = {
 				OptionTitle = "SFX Volume",
@@ -64,7 +63,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 1.2,
 
-				ValChanged = Signal.new()
+				ValChanged = Instance.new("BindableEvent")
 			},
 			FootstepVolume = {
 				OptionTitle = "Footstep Volume",
@@ -76,7 +75,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 0.9,
 
-				ValChanged = Signal.new()
+				ValChanged = Instance.new("BindableEvent")
 			},
 			AmbientVolume = {
 				OptionTitle = "Ambient Volume",
@@ -88,7 +87,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 0.8,
 
-				ValChanged = Signal.new()
+				ValChanged = Instance.new("BindableEvent")
 			}
 		}
     },
@@ -107,7 +106,7 @@ local template = {
 				Max = 1.2,
 				DefaultValue = if device == "Phone" or device == "Tablet" then 1.15 else 1,
 
-				ValChanged = Signal.new()
+				ValChanged = Instance.new("BindableEvent")
 			},
 			HideUI = {
 				OptionTitle = "Hide UI",

@@ -2,7 +2,6 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local Signal = require(RepS.HarukaShared.Shared.Signal)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 
@@ -10,9 +9,10 @@ export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
+    UI: ScreenGui,
 
-    SlotUISignal: Signal.SignalClass,
-    CutsceneUISignal: Signal.SignalClass,
+    SlotUISignal: BindableEvent,
+    CutsceneUISignal: BindableEvent,
 
     CharVals: { Fusion.Value<Model?> },
 }
@@ -22,8 +22,8 @@ return function (self: Self)
 	local scope = self.scope :: Fusion.Scope
 
 
-	self.SlotUISignal = Signal.new()
-    self.CutsceneUISignal = Signal.new()
+	self.SlotUISignal = Instance.new("BindableEvent")
+    self.CutsceneUISignal = Instance.new("BindableEvent")
     table.insert(scope, self.SlotUISignal)
     table.insert(scope, self.CutsceneUISignal)
 

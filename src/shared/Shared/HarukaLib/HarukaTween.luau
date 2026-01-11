@@ -1,9 +1,5 @@
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-
-
-local Signal = require(ReplicatedStorage.HarukaShared.Shared.Signal)
 
 local wait = task.wait
 
@@ -72,12 +68,12 @@ DATA_TYPES.NumberRange = function(a, b, t)
 end
 
 
-return function (object: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?)
+return function (object: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : BindableEvent
 	local properties = {}
 	local tweenSignal = nil
 
     if needSignal then
-        tweenSignal = Signal.new()
+        tweenSignal = Instance.new("BindableEvent")
     end
 
 

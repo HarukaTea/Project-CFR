@@ -8,9 +8,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 
-local Signal = require(RepS.HarukaShared.Shared.Signal)
-
-
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
 local Children = Fusion.Children
@@ -37,7 +34,7 @@ return function(scope: Fusion.Scope, props: {
 }, self: {
     plr: Player,
 
-    RequestToDash: Signal.SignalClass
+    RequestToDash: BindableEvent
 })
 
     local isSelecting = Fusion.Value(scope, false)
@@ -45,7 +42,7 @@ return function(scope: Fusion.Scope, props: {
 
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
-    table.insert(scope, KeybindsBook.OnKeybindChanged:Connect(function()
+    table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
 
