@@ -9,8 +9,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-
-
 local function _getNamePriority(rawName: string?)
     local name = tostring(rawName or "")
 
@@ -68,13 +66,11 @@ return function(scope: Fusion.Scope, props: {
     local isSelecting = Value(false)
     local isEquipping = Value(false)
 
-
     local amount = Value(1)
     local isNew = Value(false)
     local isFav = Value(false)
     local isLocked = Value(false)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
-
 
     table.insert(scope, HarukaLib:Hydrate(props.ItemSymbol, {
         ["Prop-Value"] = function(val: number)
@@ -91,7 +87,6 @@ return function(scope: Fusion.Scope, props: {
         end
     }))
 
-
     local equippingObserver = Fusion.Observer(scope, props.EquippingItems)
     equippingObserver:onBind(function()
         local found = false
@@ -105,8 +100,6 @@ return function(scope: Fusion.Scope, props: {
 
         isEquipping:set(found)
     end)
-
-
 
     return Components.Frame(scope, {
         Name = props.ItemSymbol.Name,
@@ -142,7 +135,6 @@ return function(scope: Fusion.Scope, props: {
 
             return layoutOrder
         end),
-
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),

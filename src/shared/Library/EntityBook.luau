@@ -12,17 +12,12 @@ export type EntityJSON = {
     Tag: string?,
 }
 
-
-
 return {
     VARIANTS = {
         SlimePart1 = { "GreenSlime", "WheatSlime", "BlueSlime", "LapisSlime" },
         SlimePart2 = { "PurpleSlime", "EvolvedGreenSlime" },
         WolfPart1 = { "SpikeWolf", "ThornWolf", "NeedleWolf" }
     },
-
-
-
 
     --// Bee species
     Bee = {
@@ -286,8 +281,6 @@ return {
         }
     },
 
-
-
     --// Dragon species
     LeafDragon = {
         Name = "Leaf Dragon",
@@ -305,7 +298,6 @@ return {
             DragonFang = 10
         }
     },
-
 
     --// Risk of Rain 2 species
     Sylvarion = {

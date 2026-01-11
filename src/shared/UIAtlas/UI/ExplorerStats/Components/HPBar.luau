@@ -7,7 +7,6 @@ local HaurkaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     HP: Fusion.Value<number>,
     MaxHP: Fusion.Value<number>,
@@ -24,7 +23,6 @@ return function (scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(0.18, 0.875),
         BackgroundTransparency = 0,
         BackgroundColor3 = Color3.fromRGB(),
-
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -68,8 +66,6 @@ return function (scope: Fusion.Scope, props: {
                     })
                 }
             }),
-
-
 
             Components.TextLabel(scope, {
 				Name = "Stat",
@@ -124,7 +120,6 @@ return function (scope: Fusion.Scope, props: {
 
         x = math.clamp(x, 0, 0.999)
 
-
         HaurkaLib:Tween(bar1.Shield.UIGradient, Components.TweenInfos.half, {
             Transparency = NumberSequence.new({
                 NumberSequenceKeypoint.new(0, 0),
@@ -136,8 +131,6 @@ return function (scope: Fusion.Scope, props: {
     end
     Fusion.Observer(scope, props.Shield):onBind(_updateShield)
     Fusion.Observer(scope, props.MaxShield):onBind(_updateShield)
-
-
 
     return bar1
 end

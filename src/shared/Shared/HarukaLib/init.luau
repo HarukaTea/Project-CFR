@@ -11,7 +11,6 @@ local UIS = game:GetService("UserInputService")
 local Tween = require(script.HarukaTween)
 local TableUtils = require(script.HarukaTableUtils)
 
-
 local HarukaLib = {}
 
 --[[
@@ -38,7 +37,6 @@ function HarukaLib:ShortifyNumber(number: number, decimalPlaces: number) : strin
 	return tostring(number)
 end
 
-
 --[[
     Get the device type
 ]]
@@ -51,7 +49,6 @@ function HarukaLib:GetDevice() : "PC" | "Mobile" | "Console" | "VR"
 
 	return device
 end
-
 
 --[[
     Get the accurate device type
@@ -80,7 +77,6 @@ function HarukaLib:GetAccurateDevice() : "PC" | "Xbox" | "PlayStation" | "Phone"
 	return device
 end
 
-
 --[[
 	Increase attribute value for an instance.
 	It will not work if attribute is not a number.
@@ -105,7 +101,6 @@ function HarukaLib:AddAttr(obj: Instance, attribute: string, val: number)
 	obj:SetAttribute(attribute, attrVal + val)
 end
 
-
 --[[
 	The same as `obj:ClearAllChildren()`, but it applies for attributes
 ]]
@@ -114,7 +109,6 @@ function HarukaLib:ClearAllAttributes(obj: Instance)
 		obj:SetAttribute(attribute, nil)
 	end
 end
-
 
 --[[
 	Detect if the given position is inside any of the given regions.
@@ -139,8 +133,6 @@ function HarukaLib:IsInRegion(position: Vector3, regions: { BasePart }) : BasePa
 
 	return nil
 end
-
-
 
 local COLOR_LIST = {
 	["<blue>"] = [[<font color="#80c0ff">]],
@@ -170,7 +162,6 @@ local COLOR_LIST = {
 	["</grey>"] = [[</font>]],
 } :: { [string]: string }
 
-
 --[[
 	Transform a plain text to rich text, it will only work when `RichText = true`
 
@@ -188,7 +179,6 @@ function HarukaLib:RichTextify(text: string) : string
 
 	return text
 end
-
 
 --[[
 	Serialize and deserialize roblox types to a table.
@@ -229,7 +219,6 @@ function HarukaLib:PackData(method: "Pack" | "Unpack", val: any) : any
 
 	return val
 end
-
 
 --[[
 	Inspired by `Fusion.Hydrate`, it will add a tracker to the given props/attrs,
@@ -275,7 +264,6 @@ function HarukaLib:Hydrate(obj: Instance, props: { [string]: (val: any) -> nil }
 
 	return Empty
 end
-
 
 --[[
 	Inspired by `Janitor`, and `Fusion.doCleanup`, you can add anything to the bin.
@@ -337,7 +325,6 @@ function HarukaLib.Bin()
 	end
 end
 
-
 --[[
 	Inspired by `Timer`, just like `window.setInterval` in javascript
 ]]
@@ -374,7 +361,6 @@ function HarukaLib.Clock(tickTime: number, func: () -> (), runInstantly: boolean
 	end
 end
 
-
 --[[
 	Inspired by `AdvancedTweenV2`, it can tween any property of any instance.
 
@@ -383,7 +369,6 @@ end
 function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : BindableEvent
 	return Tween(obj, style, goal, needSignal)
 end
-
 
 --[[
 	Inspired by `t`, it can typecheck any value in runtime
@@ -419,7 +404,6 @@ function HarukaLib:TypeCheck(checkTask: string, val: any, props: {
 
 	return success
 end
-
 
 --[[
 	Inspired by `Sol's RNG`, basically it will roll a thing depends on the weight you give
@@ -468,7 +452,6 @@ function HarukaLib:RollLoot(loots: { [string]: number }, luck: number?) : (strin
 	return last.Name, last.Weight, #items
 end
 
-
 --[[
 	It will freeze/unfreeze player controls
 ]]
@@ -486,7 +469,6 @@ function HarukaLib:FreezePlayerControls(action: "Freeze" | "Unfreeze")
     end
 end
 
-
 --[[
 	Helper function to set the collision group of an object and its children
 ]]
@@ -498,7 +480,6 @@ function HarukaLib:SetCollisionGroup(obj: any, group: string)
 	end
 end
 
-
 --[[
 	Helper function to combine id with the prefix `"rbxassetid://"`
 ]]
@@ -509,7 +490,6 @@ function HarukaLib:CombineRbxId(id: string | number)
 
     return "rbxassetid://".. id
 end
-
 
 --[[
 	Helper function to ban a player, Server-Side ONLY
@@ -537,8 +517,6 @@ function HarukaLib:BanPlayerByUserId(userId: number, properties: {
 	end
 end
 
-
-
 --[[
 	Helper function to unban a player, Server-Side ONLY
 ]]
@@ -548,7 +526,6 @@ function HarukaLib:UnbanPlayerByUserId(userId: number)
 		ApplyToUniverse = true
 	}
 
-
 	local success, err = pcall(function()
 		return Players:UnbanAsync(config)
 	end)
@@ -556,7 +533,6 @@ function HarukaLib:UnbanPlayerByUserId(userId: number)
 		warn(err)
 	end
 end
-
 
 --[[
 	Helper function to tween the transparency of a UI element
@@ -583,7 +559,6 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 		PosTweenBaseElement = nil,
 		PosTweenOffset = nil
 	}
-
 
 	if props.TweenCallback and style == "Out" then
 		local clonedTweenOutUI = ui:Clone()
@@ -651,7 +626,6 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 			obj.Interactable = true
 		end)
 	end
-
 
 	for _, obj in tweenObjs do
 		local tweenProps = {}
@@ -749,7 +723,6 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 	end
 end
 
-
 --[[
 	Helper function to fix the correct result of `CFrame.lookAt` in RPG series
 ]]
@@ -766,7 +739,6 @@ function HarukaLib:CFLookAt(pos1: Vector3, pos2: Vector3) : CFrame
 
 	return finalCFrame
 end
-
 
 --[[
 	Helper function to format a number with comma separator
@@ -789,7 +761,6 @@ function HarukaLib:CommaifyNumber(num: number) : string
 
 	return formatted
 end
-
 
 --[[
 	Helper function to format a number of seconds into a string of time format
@@ -821,7 +792,6 @@ function HarukaLib:TimeifyNumber(seconds: number, shouldScaleToMs: boolean?) : s
 	end
 end
 
-
 --[[
 	A quick shortcut to `string.sub(UUID, 1, 8)`
 
@@ -830,7 +800,6 @@ end
 function HarukaLib:GenerateUUID() : string
 	return string.sub(HttpService:GenerateGUID(false), 1, 8)
 end
-
 
 --[[
 	A simple function of Queue
@@ -865,7 +834,6 @@ function HarukaLib.Queue() : HarukaQueue
 		return self
 	end
 
-
 	function Queue:IsEmpty() : boolean
 		return self.First > self.Last
 	end
@@ -884,7 +852,6 @@ function HarukaLib.Queue() : HarukaQueue
 	function Queue:IsLocked() : boolean
 		return self.Locked
 	end
-
 
 	function Queue:Push(value: any)
 		local last = self.Last + 1
@@ -915,12 +882,10 @@ function HarukaLib.Queue() : HarukaQueue
 	return Queue.new()
 end
 
-
 --[[
 	A list of helper functions to manipulate table
 ]]
 HarukaLib.TableUtils = TableUtils
-
 
 --[[
 	A quick helper function to emit particles
@@ -939,7 +904,6 @@ function HarukaLib:EmitParticles(obj: Instance, childrenOnly: boolean?)
 	end
 end
 
-
 --[[
 	Quickly judge if it's a part
 ]]
@@ -947,7 +911,6 @@ function HarukaLib:IsBasePartType(obj: Instance) : boolean
 	return obj:IsA("BasePart") or obj:IsA("UnionOperation") or obj:IsA("CornerWedgePart")
 end
 HarukaLib.BasePartSelector = "BasePart,UnionOperation,CornerWedgePart"
-
 
 --[[
 	Quickly return an empty part for mocking
@@ -969,7 +932,6 @@ function HarukaLib:CreateMockPart() : BasePart
 	return part
 end
 
-
 --[[
 	Quickly return an empty part for mocking
 ]]
@@ -984,7 +946,6 @@ function HarukaLib:CreateMockModel() : BasePart
 
 	return model
 end
-
 
 --[[
 	Quickly set all particles of an object to a state
@@ -1003,7 +964,6 @@ function HarukaLib:SetParticleState(obj: Instance, state: boolean, childrenOnly:
 	end
 end
 
-
 --[[
 	template for creating a new `Tween`, and destroying it after it's done
 ]]
@@ -1016,7 +976,6 @@ function HarukaLib:CreateTween(instance: Instance, tweenInfo: TweenInfo, tweenPr
 
 	return tweenObj
 end
-
 
 --[[
 	Toggles the Enabled property ParticleEmitters (and Beams if IncludeBeams is true)
@@ -1060,7 +1019,6 @@ function HarukaLib:ZonitoToggleParticles(instance: Instance, val: boolean, rever
 	end
 end
 
-
 -- Note: Yields
 function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, successCallback: nil | () -> nil) : any
 	local result = nil
@@ -1081,6 +1039,5 @@ function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, s
 
 	return result
 end
-
 
 return HarukaLib

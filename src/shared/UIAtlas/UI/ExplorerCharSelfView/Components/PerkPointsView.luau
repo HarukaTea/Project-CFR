@@ -63,7 +63,6 @@ return function(scope: Fusion.Scope, props: {
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
             }),
 
-
             Components.PaddingFrame(scope, "AAA"),
 
             Components.Frame(scope, {
@@ -105,7 +104,6 @@ return function(scope: Fusion.Scope, props: {
                         Size = UDim2.fromScale(2, 2),
                         ImageTransparency = 0.85,
 
-
                         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local classId = use(props.Class) :: string
 
@@ -120,7 +118,6 @@ return function(scope: Fusion.Scope, props: {
                         end)
                     }),
 
-
                     Components.TextLabel(scope, {
                         Name = "PlayerName",
                         Position = UDim2.fromScale(0.25, 0.195),
@@ -129,7 +126,6 @@ return function(scope: Fusion.Scope, props: {
                         TextXAlignment = Enum.TextXAlignment.Left,
                         RichText = true,
                         AutoLocalize = false,
-
 
                         Text = HarukaLib:RichTextify(`{Players.LocalPlayer.DisplayName}  <gray>(#{Players.LocalPlayer.UserId})</font>`)
                     }),
@@ -140,7 +136,6 @@ return function(scope: Fusion.Scope, props: {
                         FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         TextColor3 = Color3.fromHex('#7bed9f'),
-
 
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(props.Level)}`
@@ -154,7 +149,6 @@ return function(scope: Fusion.Scope, props: {
                         TextXAlignment = Enum.TextXAlignment.Right,
                         TextColor3 = Color3.fromHex('#ffeaa7'),
 
-
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local maxEXP = FormulaBook.PlayerLevelCurveCal({
                                 Level = use(props.Level)
@@ -165,7 +159,6 @@ return function(scope: Fusion.Scope, props: {
                     }),
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "PerkPointInfo",
@@ -204,7 +197,6 @@ return function(scope: Fusion.Scope, props: {
                                 HorizontalAlignment = Enum.HorizontalAlignment.Right,
                                 VerticalAlignment = Enum.VerticalAlignment.Center,
                             }),
-
 
                             Components.TextButton(scope, {
                                 Name = "Reset",
@@ -388,11 +380,9 @@ return function(scope: Fusion.Scope, props: {
                                     TextColor3 = Color3.fromRGB(),
                                     FontFace = Font.fromName("Ubuntu", Enum.FontWeight.Bold),
 
-
                                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         return use(props.PerkPoints) > 0
                                     end),
-
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         SoundService.SFXs.Ding:Play()
@@ -402,7 +392,6 @@ return function(scope: Fusion.Scope, props: {
                                             PointAmount = Fusion.peek(amount)
                                         })
                                     end,
-
 
                                     [Children] = {
                                         Components.RoundUICorner(scope),
@@ -420,11 +409,9 @@ return function(scope: Fusion.Scope, props: {
                                     TextColor3 = Color3.fromRGB(),
                                     FontFace = Font.fromName("Ubuntu", Enum.FontWeight.Bold),
 
-
                                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         return use(props.PointList[point]) > 0
                                     end),
-
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         SoundService.SFXs.Ding:Play()
@@ -434,7 +421,6 @@ return function(scope: Fusion.Scope, props: {
                                             PointAmount = -Fusion.peek(amount)
                                         })
                                     end,
-
 
                                     [Children] = {
                                         Components.RoundUICorner(scope),

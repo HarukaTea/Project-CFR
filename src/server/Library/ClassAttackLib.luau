@@ -7,7 +7,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local HttpService = game:GetService("HttpService")
 
-
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
@@ -19,9 +18,7 @@ local Events = require(SSS.HarukaServer.Library.ServerEvents)
 
 type Dict = { [string]: any }
 
-
 local wait = task.wait
-
 
 export type ClassAttackLibClass = {
     [string]: (plr: Player, symbolAttrs: Dict) -> nil,
@@ -38,13 +35,8 @@ export type ClassAttackLibClass = {
     CalCastingTime: (self: ClassAttackLibClass, char: Model, castingTime: number) -> number,
     CalRESBreak: (self: ClassAttackLibClass, char: Model, amount: number) -> number,
 
-
     _AddClassUltCharge: (plr: Player, amount: number) -> nil,
 }
-
-
-
-
 
 local ClassAttackLib = {} :: ClassAttackLibClass
 
@@ -110,7 +102,6 @@ local function _damageDealMiddler(char: Model, targeting: Model, dmgProps: {
 end
 ClassAttackLib._AddClassUltCharge = _addClassUltCharge
 
-
 local function _castUltPromiseUtil(func1: () -> nil, func2: () -> nil)
     func1()
     Promise.delay(1):andThen(func2):catch(function() end)
@@ -146,7 +137,6 @@ local function _classUltCastedEff(props: {
     })
     _addIFrame(char)
 
-
     Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
         Character = char,
         StatusId = "ClassUltEffect"
@@ -168,9 +158,7 @@ local function _restoreMana(char: Model)
     StatusLib:RestoreManaPercentage(char, 20)
 end
 
-
 --// Universal
-
 
 --// Class-specific
 
@@ -183,12 +171,10 @@ ClassAttackLib.Chain = function(plr: Player, symbolAttrs: Dict)
 
     HarukaLib:AddAttr(char, "ChainCombo", 1)
 
-
     Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
         Character = char,
         StatusId = "SwordSlash"
     })
-
 
     local combo = char:GetAttribute("ChainCombo") :: number
 
@@ -211,7 +197,6 @@ end
 ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
 
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
@@ -265,7 +250,6 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
             })
             Events.PlaySound_S.Fire(plr, SoundService.SFXs.FireExplosionCharge)
 
-
             ClassAttackLib:DealDamageToEnemy(char, targeting, {
                 Attacker = "ClassUlt",
                 DMG = math.ceil(ClassAttackLib:CalDMG("DMG", char) * 2),
@@ -275,8 +259,6 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
     end)
 end
 
-
-
 ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -284,19 +266,16 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
     _addClassUltCharge(plr, 15)
     _restoreMana(char)
 
-
     Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
         Caster = char,
         ProjectileUniqueId = "1599mkk40",
         SceneId = "BurstArrowShot"
     })
 
-
     local now = DateTime.now().UnixTimestamp
 	local arrowCount = char:GetAttribute("BurstArrow") or 0
     local lastBurst = char:GetAttribute("LastBurstTime") or 0
 	local piercingCount = char:GetAttribute("BurstArrowPiercing") or 0
-
 
     local consumeNormal = 0
 	local consumePiercing = 0
@@ -324,7 +303,6 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
             consumeNormal = math.min(3, arrowCount)
         end
     end
-
 
     local totalConsumed = consumeNormal + consumePiercing
 
@@ -354,7 +332,6 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellReadyToCast)
@@ -369,13 +346,11 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
             Class = "Burst"
         })
 
-
         local ultPeriodSymbol = Instance.new("BoolValue")
         ultPeriodSymbol.Name = "IsInBurstUltPeriod"
         ultPeriodSymbol.Value = true
         ultPeriodSymbol.Parent = char
         Debris:AddItem(ultPeriodSymbol, 8)
-
 
         StatusLib:CreateCustomStatus("BurstUlt", char, {
             Duration = 8
@@ -388,7 +363,6 @@ ClassAttackLib.Burst_Ult = function(plr: Player, symbolAttrs: Dict)
         linearVelocity.VectorVelocity = char.PrimaryPart.CFrame.LookVector + Vector3.yAxis * 50 * 1.8
         linearVelocity.Parent = char.PrimaryPart
         Debris:AddItem(linearVelocity, 0.05)
-
 
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
         Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
@@ -421,7 +395,6 @@ ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
 
-
     local isUlt = char:FindFirstChild("IsInBurstUltPeriod") ~= nil
     local gain = if isUlt then 2 else 1
 
@@ -451,7 +424,6 @@ ClassAttackLib.Burst_BurstArrow = function(plr: Player, symbolAttrs: Dict)
     char:SetAttribute("BurstArrowCombo", comboCount)
 end
 
-
 ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -465,12 +437,10 @@ ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
         SceneId = "FlowballShot"
     })
 
-
     local marked = char:GetAttribute("FlowMark") or 0
     marked += 1
     marked = math.clamp(marked, 0, 3)
     char:SetAttribute("FlowMark", marked)
-
 
     if marked < 3 then
         ClassAttackLib:DealDamageToEnemy(char, targeting, {
@@ -489,7 +459,6 @@ ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
             DMGType = "Magic"
         })
 
-
         local burnDebuff = DoTLib.new({
             Target = targeting,
             Type = "Burn",
@@ -503,8 +472,6 @@ end
 ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
-
 
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
@@ -536,7 +503,6 @@ ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
         Events.PlayClassAnim_S.Fire(plr, "MagicCasted1")
         Events.FaceTargetingEnemy_S.Fire(plr)
 
-
         Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
             SceneId = "FireballSpell",
             Caster = char,
@@ -563,9 +529,6 @@ ClassAttackLib.Flow_Ult = function(plr: Player, symbolAttrs: Dict)
     end)
 end
 
-
-
-
 ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -573,12 +536,10 @@ ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     _addClassUltCharge(plr, 15)
     _restoreMana(char)
 
-
     Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
         Character = char,
         StatusId = "SwordSlash"
     })
-
 
     local dmg = ClassAttackLib:CalDMG("DMG", char)
     local RNG = Random.new()
@@ -592,7 +553,6 @@ ClassAttackLib.Reverberation = function(plr: Player, symbolAttrs: Dict)
     end
 
     Events.Class_ReverberationSupport.Fire(plr, orbPitch)
-
 
     local targetingPitch = targeting:GetAttribute("ReverberationPitch_"..plr.Name) or 0
     if targetingPitch == orbPitch or targetingPitch == orbPitch2 then
@@ -610,7 +570,6 @@ end
 ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
 
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
@@ -632,11 +591,9 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
         ultPeriodSymbol.Parent = char
         Debris:AddItem(ultPeriodSymbol, 8)
 
-
         StatusLib:CreateCustomStatus("ReverberationUlt", char, {
             Duration = 8
         })
-
 
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.SpellCasted)
         Events.PlayClassAnim_S.Fire(plr, "BurstSpinAttack")
@@ -666,7 +623,6 @@ ClassAttackLib.Reverberation_Ult = function(plr: Player, symbolAttrs: Dict)
     end)
 end
 
-
 ClassAttackLib.Furioso = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -674,12 +630,10 @@ ClassAttackLib.Furioso = function(plr: Player, symbolAttrs: Dict)
     _addClassUltCharge(plr, 10)
     _restoreMana(char)
 
-
     Events.PlayVFXStatusToPlayer_S.FireList(_getNearbyPlayers(char), {
         Character = char,
         StatusId = "SwordSlash"
     })
-
 
     local function _performAttack_Durandal()
         for _, entitySymbol: ObjectValue in char.TargetingList:GetChildren() do
@@ -724,7 +678,6 @@ ClassAttackLib.Furioso = function(plr: Player, symbolAttrs: Dict)
         bleedDoTObj:Activate()
     end
 
-
     local isUltMode = char:FindFirstChild("IsInFuriosoUltPeriod") ~= nil
     if isUltMode then
         _performAttack_Durandal()
@@ -754,7 +707,6 @@ end
 ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
-
 
     _castUltPromiseUtil(function()
         Events.OpenCastTimeBar_S.Fire(plr, 1)
@@ -821,7 +773,6 @@ ClassAttackLib.Furioso_Ult = function(plr: Player, symbolAttrs: Dict)
     end)
 end
 
-
 ClassAttackLib.Execution = function(plr: Player, symbolAttrs: Dict)
     local char, targeting = _getCharAndTargeting(plr)
     if not _charAndTargetingCheck(char, targeting) then return end
@@ -830,8 +781,6 @@ ClassAttackLib.Execution = function(plr: Player, symbolAttrs: Dict)
         local dmg = ClassAttackLib:CalDMG("DMG", char)
         StatusLib:Heal(char, math.ceil(dmg / 3))
     end
-
-
 
     ClassAttackLib:DealDamageToEnemy(char, targeting, {
         DMG = math.ceil(ClassAttackLib:CalDMG("DMG", char) * 3),
@@ -843,9 +792,7 @@ ClassAttackLib.Execution_Ult = function(plr: Player, symbolAttrs: Dict)
 
 end
 
-
 --// Private Methods
-
 
 function ClassAttackLib:CalCastingTime(char: Model, castingTime: number) : number
     local intensity = char:GetAttribute("Intensity") or 0
@@ -857,7 +804,6 @@ function ClassAttackLib:CalCastingTime(char: Model, castingTime: number) : numbe
     return castingTime
 end
 
-
 function ClassAttackLib:CalRESBreak(char: Model, amount: number) : number
     local resBreak = char:GetAttribute("RESBreak") or 100
 
@@ -866,7 +812,6 @@ function ClassAttackLib:CalRESBreak(char: Model, amount: number) : number
 
     return amount
 end
-
 
 function ClassAttackLib:CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
     ForceMaxDMG: boolean?,
@@ -892,7 +837,6 @@ function ClassAttackLib:CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
     if isCrit then
         ServerLib:ShowText(char, "CRITICAL!", Color3.fromHex('#ffeaa7'))
     end
-
 
     if props.ForceDMG then
         local finalDMG = props.ForceDMG
@@ -937,7 +881,6 @@ function ClassAttackLib:CalDMG(dmgType: "DMG" | "Magic", char: Model, props: {
     return 0
 end
 
-
 function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProps: {
     DMG: number,
     DMGType: string,
@@ -960,7 +903,6 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
 
     local targetingHumanoid = targeting.Humanoid :: Humanoid
     targetingHumanoid:TakeDamage(dmgProps.DMG)
-
 
     --- resistence bar
     if targeting:HasTag("BossEnemyEntity")
@@ -1003,7 +945,6 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
             symbol.Parent = targeting
             Debris:AddItem(symbol, BREAK_DURATION)
 
-
             Promise.delay(BREAK_DURATION):andThen(function()
                 targeting:SetAttribute("IsInRESBreakStage", false)
                 targeting:SetAttribute("BreakProgress", 0)
@@ -1014,7 +955,6 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
             end):catch(function() end)
         end
     end
-
 
     Promise.try(function()
         local player = Players:GetPlayerFromCharacter(char)
@@ -1034,7 +974,6 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
 
     --// apply debuffs
     if dmgProps.Attacker ~= "ClassAttacks" then return end
-
 
     local debuffList = { "BurnChance", "PoisonChance", "BleedChance" }
     for _, debuff in debuffList do
@@ -1062,6 +1001,5 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
         end
     end
 end
-
 
 return ClassAttackLib

@@ -11,12 +11,9 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local DoTLib = require(SSS.HarukaServer.Services.DoTLib)
 
-
 local Types = require(script.Parent.Parent.Types)
 
-
 local wait = task.wait
-
 
 return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo: Types.Dict) : number?
     local CastItemLib = self
@@ -32,20 +29,16 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
     if not check then return 0 end
     if not extraInfo.CostManaFunc(char) then return 0 end
 
-
     local uniqueId = HttpService:GenerateGUID(false)
     local castTime = ClassAttackLib:CalCastingTime(char, 2)
 
-
     Events.OpenCastTimeBar_S.Fire(player, castTime)
     Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellReadyToCast)
-
 
     Promise.delay(castTime):andThen(function()
         Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
         Events.PlayClassAnim_S.Fire(player, "MagicCasted1")
         Events.FaceTargetingEnemy_S.Fire(player)
-
 
         Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
             SceneId = "ArcaneMarkRune",
@@ -56,7 +49,6 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
         wait(0.5)
         local targeting = char.TargetingEnemy.Value :: Model
 
-
         ClassAttackLib:DealDamageToEnemy(char, targeting, {
             DMG = math.ceil(ClassAttackLib:CalDMG("Magic", char, {
                 ForceMaxDMG = true
@@ -64,7 +56,6 @@ return function(self: Types.CastItemLib, player: Player, char: Model, extraInfo:
             DMGType = "Magic",
             Attacker = "SkillProjectile"
         })
-
 
         local result = HarukaLib:RollLoot({
             ["Debuff"] = 5,

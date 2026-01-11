@@ -15,10 +15,8 @@ local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
 
-
 local CURRENCY_ICONS = AssetBook.CurrencyIcons
 local MAX_PURCHASE_AMOUNT = 999
-
 
 return function(scope: Fusion.Scope, props: {
     ProductId: string,
@@ -36,12 +34,10 @@ return function(scope: Fusion.Scope, props: {
     local info = ItemBook:GetItemInfo(props.ProductId)
     if info == nil then return nil end
 
-
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local itemAmount = Value(0)
-
 
     if props.Action == "Sell" then
         local itemSymbol: IntConstrainedValue = nil
@@ -103,13 +99,11 @@ return function(scope: Fusion.Scope, props: {
         end
     })
 
-
     local function _commonClick()
         props.IsPurchasing:set(false)
         props.CurrentSelectedItem:set("")
         props.CurrentSelectedItemUniqueId:set("")
     end
-
 
     return Components.Frame(scope, {
         Name = "PurchasePrompt",
@@ -137,7 +131,6 @@ return function(scope: Fusion.Scope, props: {
                     }),
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "Div",
@@ -310,7 +303,6 @@ return function(scope: Fusion.Scope, props: {
                         }
                     }),
 
-
                     Components.Frame(scope, {
                         Name = "ItemPurchasePrice",
                         Size = UDim2.fromScale(1, 0.178),
@@ -409,15 +401,11 @@ return function(scope: Fusion.Scope, props: {
                 }
             }),
 
-
-
-
             Components.Frame(scope, {
                 Name = "BtnsFrame",
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.fromScale(0.5, 0.825),
                 Size = UDim2.fromScale(0.9, 0.11),
-
 
                 [Children] = {
                     Components.UIListLayout(scope, {

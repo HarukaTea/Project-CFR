@@ -6,7 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     Size: UDim2?,

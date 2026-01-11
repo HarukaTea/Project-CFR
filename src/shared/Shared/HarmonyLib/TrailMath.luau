@@ -2,10 +2,7 @@
 local RunService = game:GetService("RunService")
 local RepS = game:GetService("ReplicatedStorage")
 
-
 local BezierMath = require(RepS.HarukaShared.Shared.HarmonyLib.BezierMath)
-
-
 
 export type TrailMathLibClass = {
 	__index: TrailMathLibClass,
@@ -27,16 +24,11 @@ export type TrailMathLibClass = {
 	Disconnect: (self: TrailMathLibClass) -> nil,
 	Destroy: (self: TrailMathLibClass) -> nil,
 
-
 	Active: boolean
 }
 
-
-
 local TrailMath = {} :: TrailMathLibClass
 TrailMath.__index = TrailMath
-
-
 
 --// Constructor
 function TrailMath.new()
@@ -46,8 +38,6 @@ function TrailMath.new()
 
     return self
 end
-
-
 
 function TrailMath:Init(part: BasePart, props: {
     Origin: Vector3?,
@@ -71,7 +61,6 @@ function TrailMath:Init(part: BasePart, props: {
 	local index = props.Index or math.huge
 	local curve = props.CurveOffset or 14
 	local projectile = props.Projectile or error('No projectile passed!')
-
 
 	for _ = 1, index do
 		if not self.Active then break end
@@ -139,11 +128,9 @@ function TrailMath:Disconnect()
 	self.Active = false
 end
 
-
 function TrailMath:Destroy()
     self:Disconnect()
     self = nil
 end
-
 
 return TrailMath

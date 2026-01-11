@@ -10,7 +10,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     ClassVal: Fusion.Value<number>,
 
@@ -34,7 +33,6 @@ return function (scope: Fusion.Scope, props: {
             jumpHeight:set(newHeight)
         end
     }))
-
 
     return Fusion.Hydrate(scope, Components:RefUI("ChainStyle_CA1_1"))({
         Visible = Fusion.Computed(scope, function(use: Fusion.Use)

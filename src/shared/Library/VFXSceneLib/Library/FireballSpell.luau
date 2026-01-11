@@ -9,19 +9,15 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Types)
-
 
 --// Main
 
 return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib:IsCharValid(targetingEnemy) then return end
-
 
     local fireball = RepS.Packages.SkillProjectiles:FindFirstChild("Fireball", true):Clone() :: BasePart
     fireball.CFrame = char["Right Arm"].CFrame
@@ -30,11 +26,9 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
     fireball.Parent = workspace.Terrain
     Debris:AddItem(fireball, 1.5)
 
-
     HarukaLib:CreateTween(fireball, AssetBook.TweenInfos.one, {
         Position = targetingEnemy.PrimaryPart.Position
     }):Play()
-
 
     Promise.new(function(resolve, reject)
         local found = false
@@ -60,7 +54,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
                         ProjectileUniqueId = projectileUniqueId,
                         Entity = entity,
                     })
-
 
                     local hitVFX = RepS.Packages.SkillProjectiles:FindFirstChild("FireballHitVFX", true):Clone() :: BasePart
                     hitVFX.CFrame = entity.PrimaryPart.CFrame

@@ -9,9 +9,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
-
 local MKK_NUMBER = 1599 * 40 ^ 2
-
 
 export type Self = {
     plr: Player,
@@ -32,7 +30,6 @@ export type Self = {
     LastInputType: Fusion.Value<string>,
 }
 
-
 return function (self: Self)
     local scope = self.scope :: Fusion.Scope
 
@@ -46,7 +43,6 @@ return function (self: Self)
 
     self.ChangeShiftLockState = Instance.new("BindableEvent")
     table.insert(scope, self.ChangeShiftLockState)
-
 
     self.CameraOffsetTweenVal = Instance.new("CFrameValue")
     self.CameraOffsetTweenVal.Value = CFrame.identity
@@ -128,7 +124,6 @@ return function (self: Self)
         end
     end
     self.ChangeShiftLockState.Event:Connect(_setLockState)
-
 
     --// track shift key
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)

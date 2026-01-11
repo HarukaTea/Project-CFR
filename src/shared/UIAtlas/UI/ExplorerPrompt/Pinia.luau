@@ -16,10 +16,7 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
-
 local wait = task.wait
-
-
 
 export type Self = {
     plr: Player,
@@ -32,8 +29,6 @@ export type Self = {
 	PromptList: Fusion.Value<{ ObjectValue }>,
 }
 
-
-
 return function (self: Self)
 	local function Value(val: any)
 		return Fusion.Value(self.scope, val)
@@ -42,13 +37,10 @@ return function (self: Self)
 
 	local char = self.char :: Model
 
-
 	self.CurrentPromptIndex = Value(1)
 	self.IsUIShown = Value(true)
 
-
 	local promptNodes = {}
-
 
 	--// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -59,21 +51,17 @@ return function (self: Self)
         end
     }))
 
-
 	local promptSymbolContainer = Instance.new("Folder")
 	promptSymbolContainer.Name = "UI_PromptSymbols"
 	promptSymbolContainer.Parent = game:GetService("ServerStorage")
 	table.insert(scope, promptSymbolContainer)
 
-
 	local promptSymbols = FusionComponents.useChildren(scope, promptSymbolContainer)
 	self.PromptList = promptSymbols
-
 
 	--// track prompts
 	local function _updatePrompt(prompt: ProximityPrompt)
 		if not prompt:IsA("ProximityPrompt") then return end
-
 
 		local part = prompt.Parent :: BasePart
 		if not part then return end
@@ -92,15 +80,12 @@ return function (self: Self)
 		prompt.HoldDuration = 0
 		prompt.MaxActivationDistance = 15.99
 
-
 		promptNodes[prompt] = part
 	end
 	for _, child: ProximityPrompt in CollectionService:GetTagged("PromptEntity") do
 		_updatePrompt(child)
 	end
 	CollectionService:GetInstanceAddedSignal("PromptEntity"):Connect(_updatePrompt)
-
-
 
 	table.insert(scope, task.spawn(function()
 		while wait(0.1599) do
@@ -147,8 +132,6 @@ return function (self: Self)
 		end
 	end))
 
-
-
 	table.insert(scope, Bindables.PromptTriggered.Event:Connect(function(thatPrompt: ProximityPrompt)
 		SoundService.SFXs.ChatNext:Play()
 
@@ -176,7 +159,6 @@ return function (self: Self)
 			promptSymbolContainer[uniqueId]:Destroy()
 		end
 	end))
-
 
 	--// track prompts list
 	local promptListObserver = Fusion.Observer(scope, self.PromptList)
@@ -219,7 +201,6 @@ return function (self: Self)
 		end
 	end))
 
-
 	--// activate
 	table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)
 		if gpe then return end
@@ -237,13 +218,11 @@ return function (self: Self)
 
 			if self.plr:FindFirstChild("PromptTriggerCD") then return end
 
-
 			local cdSymbol = Instance.new("BoolValue")
 			cdSymbol.Name = "PromptTriggerCD"
 			cdSymbol.Value = true
 			cdSymbol.Parent = self.plr
 			Debris:AddItem(cdSymbol, 0.2)
-
 
 			Bindables.PromptTriggered:Fire(currentPrompt)
 			Events.PromptTriggered_C.Fire(currentPrompt)

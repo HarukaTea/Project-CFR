@@ -9,9 +9,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
-
 
 return function(plr: Player)
 	if HarukaLib:GetDevice() == "VR" then
@@ -26,7 +24,6 @@ return function(plr: Player)
 	Pinia(self)
 
 	local scope = self.scope :: Fusion.Scope
-
 
 	local lock: ImageLabel
 	if isPC then
@@ -64,7 +61,6 @@ return function(plr: Player)
 		}
 	})
 	self.UI = UI
-
 
 	return function ()
 		self.ChangeShiftLockState:Fire("Off")

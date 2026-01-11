@@ -2,11 +2,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local Types = require(script.Parent.Parent.Types)
-
 
 return function (self: Types.VFXSceneLib)
     local VFXSceneLib = self
@@ -17,7 +15,6 @@ return function (self: Types.VFXSceneLib)
         local adornee = part.Parent :: Model
 
         if not adornee:IsA("Model") then return end
-
 
         local promise; promise = Promise.new(function(resolve, reject)
             while RunService.RenderStepped:Wait() and part do

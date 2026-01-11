@@ -9,7 +9,6 @@ local Pinia = require(script.Parent.Parent.Pinia)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
     return { Components.Frame(scope, {
         Name = "LevelStarter_"..levelId,
@@ -76,7 +75,6 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
 
             return false
         end),
-
 
         [Children] = {
             Components.UIScale(scope, {

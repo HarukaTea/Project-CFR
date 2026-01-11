@@ -6,7 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     TileSize: UDim2?,
@@ -22,7 +21,6 @@ return function (scope: Fusion.Scope, props: {
     props.Color = props.Color or Color3.fromRGB(255, 255, 255)
 
     props[Fusion.Children] = props[Fusion.Children] or {}
-
 
     return Components.ImageLabel(scope, {
         Name = "CAPatternTex",

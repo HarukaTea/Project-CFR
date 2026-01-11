@@ -6,7 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     GoldVal: Fusion.Value<number>,
     Amount: number,
@@ -17,7 +16,6 @@ return function (scope: Fusion.Scope, props: {
         Name = "Gold",
     }
     local isSelecting = Fusion.Value(scope, false)
-
 
     return Components.IconImageLabel(scope, {
         Image = itemInfo.Icon,

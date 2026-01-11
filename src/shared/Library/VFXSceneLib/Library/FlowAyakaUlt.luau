@@ -9,12 +9,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Types)
 
-
 local wait = task.wait
-
 
 --// Main
 
@@ -22,10 +19,8 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
     local VFXSceneLib = self
     if not ClientLib:IsCharValid(char) then return end
 
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib:IsCharValid(targetingEnemy) then return end
-
 
     local flowCharge = RepS.Packages.SkillProjectiles:FindFirstChild("FlowCharge", true):Clone() :: BasePart
     flowCharge.Transparency = 1
@@ -35,9 +30,7 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
 
     HarukaLib:EmitParticles(flowCharge)
 
-
     local tempMarkedContainer = VFXSceneLib._createMarkContainer()
-
 
     for _, angle: number in { -8, 8 } do
         task.spawn(function()
@@ -45,7 +38,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
             part.CFrame = char.PrimaryPart.CFrame * CFrame.new(angle / 3, 0, 0)
             part.Parent = workspace.Terrain
             Debris:AddItem(part, 10)
-
 
             Promise.new(function(resolve)
                 local isFound = false
@@ -62,11 +54,9 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
                     for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
                         if not ClientLib:IsCharValid(symbol.Value) then continue end
 
-
                         local obj = symbol.Value :: Instance
                         local uniqueId = obj:GetAttribute("HarukaUniqueId") :: string
                         if tempMarkedContainer:FindFirstChild(uniqueId) then continue end
-
 
                         local entity = obj :: Model
                         local enemyPos = entity.PrimaryPart.Position
@@ -77,7 +67,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
                             bool.Name = entity:GetAttribute("HarukaUniqueId")
                             bool.Value = true
                             bool.Parent = tempMarkedContainer
-
 
                             Events.DMGEnemyBySkills_C.Fire({
                                 ProjectileUniqueId = projectileUniqueId,
@@ -92,7 +81,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
                 resolve()
 
             end):timeout(5):catch(function() end)
-
 
             local startPos = part.CFrame
             local endPos = part.CFrame * CFrame.new(angle, 3.5, -32.5)
@@ -111,7 +99,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
 
                 part:Destroy()
             end):catch(function() end)
-
 
             --- visual
             local flowIce = RepS.Packages.SkillProjectiles:FindFirstChild("FlowIce", true):Clone() :: BasePart

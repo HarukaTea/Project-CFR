@@ -8,7 +8,6 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     ItemId: string,
     Items: Fusion.Value<{ IntConstrainedValue }>,
@@ -19,7 +18,6 @@ return function (scope: Fusion.Scope, props: {
 
     local itemInfo = ItemBook:GetItemInfo(props.ItemId)
     if not itemInfo then return nil end
-
 
     local isSelecting = Fusion.Value(scope, false)
     local totalAmount = Fusion.Value(scope, 0)
@@ -38,14 +36,11 @@ return function (scope: Fusion.Scope, props: {
         totalAmount:set(amount)
     end)
 
-
     return Components.IconImageLabel(scope, {
         Image = itemInfo.Icon,
         Selectable = true,
         SelectionOrder = 0,
         LayoutOrder = if props.ItemId == "GOLD" then 233 else 1,
-
-
 
         [Children] = {
             Components.HoverImageButton(scope, {
@@ -85,7 +80,6 @@ return function (scope: Fusion.Scope, props: {
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if use(totalAmount) >= props.Amount then Color3.fromRGB(85, 255, 127) else Color3.fromRGB(255, 118, 117)
                 end),
-
 
                 [Children] = {
                     Components.ScaledTextUIStroke(scope, {})
@@ -127,7 +121,6 @@ return function (scope: Fusion.Scope, props: {
                     })
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "Tip",

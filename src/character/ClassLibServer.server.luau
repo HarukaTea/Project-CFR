@@ -12,34 +12,24 @@ local plr = Players:GetPlayerFromCharacter(char)
 
 local wait = task.wait
 
-
 repeat wait() until char:HasTag("PlayerCharEntity")
 
 local ClassAdd, ClassEmpty = HarukaLib.Bin()
 local Add, Empty = HarukaLib.Bin()
 
-
-
 type ClassMechanicLibClass = {
     Destroy: (self: ClassMechanicLibClass) -> nil,
     Init: (self: ClassMechanicLibClass) -> nil,
 
-
     _ListenClassTracker: (self: ClassMechanicLibClass) -> nil,
-
 
     [string]: (self: ClassMechanicLibClass) -> nil
 }
 
-
-
 local ClassMechanicLib = {} :: ClassMechanicLibClass
-
-
 
 function ClassMechanicLib:Init()
     ClassMechanicLib:_ListenClassTracker()
-
 
     ServerLib:InitCharDeadTrackers({
         Add = Add,
@@ -56,7 +46,6 @@ function ClassMechanicLib:Destroy()
     ClassEmpty()
     Empty()
 end
-
 
 --// Private Methods
 
@@ -75,7 +64,6 @@ function ClassMechanicLib:_ListenClassTracker()
     }))
 end
 
-
 ClassMechanicLib._CLASS_Chain = function(self)
     local function _clearComboUI()
         if char.Head:FindFirstChild("ComboStyle") then
@@ -87,7 +75,6 @@ ClassMechanicLib._CLASS_Chain = function(self)
 
         char:SetAttribute("ChainCombo", 0)
     end
-
 
     local function _airCheck(state: Enum.HumanoidStateType)
         if state == Enum.HumanoidStateType.Landed
@@ -120,7 +107,6 @@ ClassMechanicLib._CLASS_Chain = function(self)
     }))
     ClassAdd(_classAbilityClear)
 end
-
 
 ClassMechanicLib._CLASS_Burst = function(self)
     local function _clearStackUI()
@@ -180,11 +166,8 @@ ClassMechanicLib._CLASS_Burst = function(self)
         end
     }))
 
-
     ClassAdd(_classAbilityClear)
 end
-
-
 
 ClassMechanicLib._CLASS_Flow = function(self)
     local function _clearFlowUI()
@@ -197,7 +180,6 @@ ClassMechanicLib._CLASS_Flow = function(self)
 
         char:SetAttribute("FlowMark", 0)
     end
-
 
     ClassAdd(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _classAbilityClear,
@@ -225,9 +207,6 @@ ClassMechanicLib._CLASS_Flow = function(self)
     ClassAdd(_classAbilityClear)
 end
 
-
-
-
 ClassMechanicLib._CLASS_Reverberation = function(self)
     local RNG = Random.new()
 
@@ -235,10 +214,8 @@ ClassMechanicLib._CLASS_Reverberation = function(self)
         if char.Name ~= charId then return end
         if entity:GetAttribute("ReverberationPitch_"..plr.Name) then return end
 
-
         local num = RNG:NextInteger(1, 5)
         entity:SetAttribute("ReverberationPitch_"..plr.Name, num)
-
 
         Events.Class_ReverberationEnemySupport.Fire(plr, {
             Enemy = entity,
@@ -246,7 +223,6 @@ ClassMechanicLib._CLASS_Reverberation = function(self)
         })
     end))
 end
-
 
 ClassMechanicLib._CLASS_Furioso = function(self)
     local function _clearFuriosoUI()
@@ -307,9 +283,7 @@ ClassMechanicLib._CLASS_Furioso = function(self)
         end
     }))
 
-
     ClassAdd(_classAbilityClear)
 end
-
 
 ClassMechanicLib:Init()

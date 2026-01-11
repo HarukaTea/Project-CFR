@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
-
 return function (scope: Fusion.Scope, props: {
     Visible: Fusion.Computed<boolean>? | boolean?,
     Color: Fusion.Computed<Color3>? | Color3?,
@@ -16,7 +15,6 @@ return function (scope: Fusion.Scope, props: {
     props.Visible = props.Visible or true
     props.Color = props.Color or Components.WHITE_COLOR
     props.Transparency = props.Transparency or 0.3
-
 
     return Components.ImageLabel(scope, {
         Name = "IconShadeTex",

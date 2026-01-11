@@ -8,11 +8,9 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
-
 
 return function (scope: Fusion.Scope, props: {
     Player: Player,
@@ -29,14 +27,12 @@ return function (scope: Fusion.Scope, props: {
         props.Index = 0
     end
 
-
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local thatClass = Value("Burst")
     local thatRoles = Components.FusionComponents.useChildren(scope, props.Player:WaitForChild("Roles"))
     local thatLevel = Value(1)
-
 
     table.insert(scope, HarukaLib:Hydrate(props.Player, {
         ["Attr-Class"] = function(class: string)
@@ -47,18 +43,15 @@ return function (scope: Fusion.Scope, props: {
         end
     }))
 
-
     return Components.Frame(scope, {
         Name = props.Player.Name,
         BackgroundTransparency = 0,
         LayoutOrder = props.Index,
         Size = UDim2.fromScale(0.95, 0.15),
 
-
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return if use(props.PlayerSelecting) == props.Player then Components.WHITE_COLOR else Components.BLACK_COLOR
         end),
-
 
         [Children] = {
             Components.UIAspectRatioConstraint(scope, 7.688),
@@ -74,7 +67,6 @@ return function (scope: Fusion.Scope, props: {
                 })
             }),
 
-
             CFEmblemTex(scope, {
                 Transparency = 0.94,
                 Size = UDim2.fromScale(4, 4),
@@ -89,7 +81,6 @@ return function (scope: Fusion.Scope, props: {
                 end),
             }),
 
-
             Components.Frame(scope, {
                 Name = "Main",
 
@@ -102,7 +93,6 @@ return function (scope: Fusion.Scope, props: {
                     }),
 
                     Components.PaddingFrame(scope, "ZZZ"),
-
 
                     Components.TextLabel(scope, {
                         Name = "PlayerLevel",
@@ -131,7 +121,6 @@ return function (scope: Fusion.Scope, props: {
                             })
                         }
                     }),
-
 
                     Components.IconImageLabel(scope, {
                         Name = "ClassIcon",
@@ -176,8 +165,6 @@ return function (scope: Fusion.Scope, props: {
                         end),
                     }),
 
-
-
                     Components.Frame(scope, {
                         Name = "Roles",
                         LayoutOrder = 1,
@@ -192,7 +179,6 @@ return function (scope: Fusion.Scope, props: {
                                 HorizontalAlignment = Enum.HorizontalAlignment.Right,
                                 SortOrder = Enum.SortOrder.Name
                             }),
-
 
                             Fusion.ForPairs(scope, thatRoles, function(_, scope: Fusion.Scope, index: number, role: BoolValue)
                                 local ICONS = {
@@ -236,7 +222,6 @@ return function (scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(1, 0),
                 Size = UDim2.fromScale(0.7, 1),
                 ZIndex = 10,
-
 
                 [Fusion.OnEvent("MouseEnter")] = function()
                     props.PlayerSelecting:set(props.Player)

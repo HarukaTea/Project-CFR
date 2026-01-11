@@ -10,14 +10,9 @@ local wait = task.wait
 repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
 repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-
-local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
-
 
 local Add, Empty = HarukaLib.Bin()
-
 
 local PreloadSceneLib = {}
 
@@ -60,11 +55,9 @@ function PreloadSceneLib._LoadPreloadAssets()
     print(`[PreloadLib] All assets preloaded, spent {string.format("%.2f", os.clock() - now)} seconds`)
 end
 
-
 function PreloadSceneLib._LoadScreenMouseFollower()
     local thread = task.spawn(function()
         if workspace:GetAttribute("NoRequiresTitlescreen") then return end
-
 
         repeat wait() until workspace:WaitForChild("MapComponents", 999)
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
@@ -78,7 +71,6 @@ function PreloadSceneLib._LoadScreenMouseFollower()
 
         repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
-
         if workspace:GetAttribute("Haruka_GameEntered") then return end
 
         local mouse = Players.LocalPlayer:GetMouse()
@@ -88,7 +80,6 @@ function PreloadSceneLib._LoadScreenMouseFollower()
         end))
         Add(RunService.RenderStepped:Connect(function()
             if workspace:GetAttribute("Haruka_GameEntered") then return end
-
 
             local locator = workspace.MapComponents.Titlescreen.MainCamera :: BasePart
 
@@ -107,7 +98,6 @@ function PreloadSceneLib._LoadScreenMouseFollower()
         end))
     end)
 
-
     local function onGameEntered(state: boolean)
         if state then
             if thread then task.cancel(thread) end
@@ -119,8 +109,6 @@ function PreloadSceneLib._LoadScreenMouseFollower()
     })
 end
 
-
-
 function PreloadSceneLib.Cleanup()
     Empty()
 
@@ -129,15 +117,11 @@ function PreloadSceneLib.Cleanup()
     camera.CameraSubject = Players.LocalPlayer.Character.Humanoid
 end
 
-
-
-
 PreloadSceneLib._LoadPreloadAssets()
 PreloadSceneLib._LoadScreenMouseFollower()
 
 repeat wait() until workspace:GetAttribute("Haruka_TitlescreenDestroying")
 
 PreloadSceneLib.Cleanup()
-
 
 Debris:AddItem(script, 15)

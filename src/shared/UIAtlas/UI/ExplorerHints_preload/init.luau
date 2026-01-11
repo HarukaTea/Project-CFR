@@ -12,12 +12,10 @@ local Children = Fusion.Children
 
 local AfterPinia = require(script.AfterPinia)
 
-
 return function (plr: Player)
     local self = {} :: AfterPinia.Self
 
     ClientLib:InitUIFramework(self, plr, "ExplorerHints", true)
-
 
     local scope = self.scope :: Fusion.Scope
     local UI; UI = Components.HarukaScreenGui(scope, {
@@ -37,9 +35,7 @@ return function (plr: Player)
     })
     self.UI = UI
 
-
     AfterPinia(self)
-
 
     local harukaListObj = HarukaListLayout.new(UI.Top.Hints.UIListLayout)
     harukaListObj:Enable()

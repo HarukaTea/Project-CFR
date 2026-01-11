@@ -7,11 +7,7 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Types)
-
-
-
 
 local wait = task.wait
 
@@ -20,14 +16,12 @@ return function (self: Types.ProjectileLib)
 
     ProjectileLib.SlimeMove1_1 = function(projectile: Model, container: Folder)
 
-
         local entity = projectile.Owner.Value :: Model
 
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
             Size = "Small"
         })
-
 
         Promise.delay(0.4):andThen(function()
             local length = (entity.PrimaryPart.Position - projectile.Base.Position).Magnitude
@@ -50,7 +44,6 @@ return function (self: Types.ProjectileLib)
             projectile.Shot:Destroy()
         end):catch(function()  end)
 
-
         Promise.delay(0.9):andThen(function()
             ProjectileLib._spawnProjectile(projectile, container, 5, function(sProjectile: Model)
                 sProjectile:PivotTo(CFrame.new(projectile.PrimaryPart.Position) * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))
@@ -62,10 +55,7 @@ return function (self: Types.ProjectileLib)
     ProjectileLib.BlueSlimeMove1_1 = ProjectileLib.SlimeMove1_1
     ProjectileLib.LapisSlimeMove1_1 = ProjectileLib.SlimeMove1_1
 
-
-
     ProjectileLib.SlimeMove2_2 = function(projectile: Model, container: Folder)
-
 
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
@@ -89,9 +79,7 @@ return function (self: Types.ProjectileLib)
     ProjectileLib.BlueSlimeMove2_2 = ProjectileLib.SlimeMove2_2
     ProjectileLib.LapisSlimeMove2_2 = ProjectileLib.SlimeMove2_2
 
-
     ProjectileLib.CrimsonSlimeMove4 = function(projectile: Model, container: Folder)
-
 
         ProjectileLib.SlimeMove1_1(projectile, container)
 
@@ -110,10 +98,7 @@ return function (self: Types.ProjectileLib)
     ProjectileLib.EvolvedGreenSlimeMove4 = ProjectileLib.CrimsonSlimeMove4
     ProjectileLib.KingSlimeMove4 = ProjectileLib.CrimsonSlimeMove4
 
-
-
     ProjectileLib.PurpleSlimeMove3 = function(projectile: Model, container: Folder)
-
 
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = true,
@@ -138,10 +123,7 @@ return function (self: Types.ProjectileLib)
     ProjectileLib.KingSlimeMove3 = ProjectileLib.PurpleSlimeMove3
     ProjectileLib.CrimsonSlimeMove3 = ProjectileLib.PurpleSlimeMove3
 
-
-
     ProjectileLib.SlimeSpin = function(projectile: Model, container: Folder)
-
 
         HarukaLib:CreateTween(projectile.Blast1, AssetBook.TweenInfos.twiceHalf, {
             Size = Vector3.new(16, 16, 16),
@@ -153,17 +135,13 @@ return function (self: Types.ProjectileLib)
         }):Play()
     end
 
-
-
     ProjectileLib.SlimeBlast = function(projectile: Model, container: Folder)
-
 
         local noSound = false
         if projectile:GetAttribute("NoSound") then
             noSound = true
         end
         if not noSound then projectile:FindFirstChildWhichIsA("Sound", true):Play() end
-
 
         Promise.delay(4.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 
@@ -223,10 +201,7 @@ return function (self: Types.ProjectileLib)
     ProjectileLib.EvolvedGreenSlimeBlast = ProjectileLib.SlimeBlast
     ProjectileLib.KingSlimeBlast = ProjectileLib.SlimeBlast
 
-
-
     ProjectileLib.CrimsonSlimeBomb = function(projectile: Model, container: Folder)
-
 
         pcall(function()
             wait(1)

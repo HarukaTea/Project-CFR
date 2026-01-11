@@ -29,9 +29,7 @@ local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local RankBook = require(RepS.HarukaShared.Library.RankBook)
 
-
 type Dict = { [string]: any }
-
 
 export type GlobalCriRPGLibClass = {
     Funcs: { () -> nil },
@@ -39,14 +37,10 @@ export type GlobalCriRPGLibClass = {
     Init: (self: GlobalCriRPGLibClass) -> nil
 }
 
-
-
-
 local GlobalCriRPGLib = {} :: GlobalCriRPGLibClass
 GlobalCriRPGLib.Funcs = {}
 
 local wait = task.wait
-
 
 --// Constructor
 
@@ -56,9 +50,7 @@ function GlobalCriRPGLib:Init()
     end
 end
 
-
 --// Private Methods
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.ForceResetPlayer_C.SetCallback(function(plr: Player)
@@ -71,7 +63,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
     end)
 
-
     Events.RejoinGame_C.SetCallback(function(plr: Player)
         local worldId = workspace:GetAttribute("WorldId") :: string
 
@@ -79,7 +70,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             TeleportService:TeleportAsync(game.PlaceId, { plr })
         end
     end)
-
 
     -- handle server hop
     Events.ServerHop_C.SetCallback(function(plr: Player, jobId: string?)
@@ -94,7 +84,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         TeleportService:TeleportAsync(game.PlaceId, { plr }, teleportOptions)
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     ServerBindables.RToSpawnChar.Event:Connect(function(plr: Player)
@@ -144,7 +133,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         HarukaLib:SetCollisionGroup(r6Char, "PlayerBodyPart")
 
-
         --// clear collision box
         for _, part: BasePart in r6Char:GetChildren() do
             if not HarukaLib:IsBasePartType(part) then continue end
@@ -154,23 +142,18 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             part.CanCollide = false
         end
 
-
         r6Char:SetAttribute("SpawnClock", DateTime.now().UnixTimestamp)
         r6Char.Parent = workspace.EntitiesPlayerChar
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     local function _sitGalleon(galleon: Model, plr: Player)
         local seat = galleon:FindFirstChildOfClass("Seat")
         if not seat then return end
 
-
-
         galleon.PrimaryPart.Anchored = false
         galleon.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-
 
         seat:Sit(plr.Character.Humanoid)
         seat:GetPropertyChangedSignal("Occupant"):Connect(function()
@@ -186,7 +169,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end)
 
-
         if galleon.PrimaryPart:FindFirstChild("AlignPosition") then
             galleon.PrimaryPart:FindFirstChild("AlignPosition"):Destroy()
         end
@@ -201,12 +183,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         alignPos.Position = galleon.PrimaryPart.Position
         alignPos.Parent = galleon.PrimaryPart
 
-
         pcall(function()
             galleon.PrimaryPart:SetNetworkOwner(nil)
         end)
     end
-
 
     Events.PromptTriggered_C.On(function(plr: Player, prompt: ProximityPrompt)
         if prompt == nil then return end
@@ -227,7 +207,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local distance = plr:DistanceFromCharacter(adornee.Position)
         if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
 
-
         if plr:FindFirstChild("PromptTriggerCD") then return end
 
         local promptCDSymbol = Instance.new("BoolValue")
@@ -235,7 +214,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         promptCDSymbol.Name = "PromptTriggerCD"
         promptCDSymbol.Parent = plr
         Debris:AddItem(promptCDSymbol, 0.3)
-
 
         if prompt.Name == "Chat" then
             local npc = prompt:FindFirstAncestorOfClass("Model")
@@ -276,7 +254,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             local market = prompt:FindFirstAncestorOfClass("Model")
             local productsFolder = market.Products :: Folder
 
-
             for _, product: Instance in productsFolder:GetChildren() do
                 if ItemBook:GetItemInfo(product.Name) then
                     table.insert(products, {
@@ -301,7 +278,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             Events.OpenCraftingUI_S.Fire(plr)
 
-
         elseif prompt.Name == "AbyssView" then
             Events.OpenAbyssUI_S.Fire(plr)
 
@@ -309,10 +285,8 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             char:PivotTo(prompt.Destination.Value.CFrame)
             Events.RefreshCullingAsync_S.Fire(plr)
 
-
         elseif prompt.Name == "Class" then
             local statue = prompt:FindFirstAncestorOfClass("Model")
-
 
             local items = plr.Items :: Folder
             if not items:FindFirstChild(statue.Weapon.Value) then
@@ -320,7 +294,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             else
                 Events.CreateNotify_S.Fire(plr, "Already blessed")
             end
-
 
         elseif prompt.Name == "PurchaseTicket" then
             local merchantId = adornee.Name
@@ -335,11 +308,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             local material = prompt:FindFirstAncestorOfClass("Model")
             local itemInfo = ItemBook:GetItemInfo(material.Name)
 
-
             if itemInfo == nil then return end
             if not prompt:IsDescendantOf(workspace) then return end
             if not ServerLib:IsCharValid(char) then return end
-
 
             if material:GetAttribute("Profession") then
                 if not char:GetAttribute(material:GetAttribute("Profession")) then
@@ -348,7 +319,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 end
             end
             prompt.Enabled = false
-
 
             local finalMaterial = material.Name
             if material:GetAttribute("Rare") then
@@ -359,12 +329,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
             material.Parent = game:GetService("ServerStorage")
 
-
             local amount = #material.Collectables:GetChildren()
             amount += math.random(-1, 1)
             amount /= 2
             amount = math.floor(amount)
-
 
             ServerLib:GiveItemDrop(plr, finalMaterial, amount)
 
@@ -387,23 +355,19 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             local galleon = RepS.Packages.Unloads.SkyDriveGalleon:Clone() :: Model
             galleon:PivotTo(adornee._DOCK.CFrame * CFrame.new(0, 10, 0))
 
-
             HarukaLib:SetCollisionGroup(galleon, "EnemyProjectile")
             galleon.PrimaryPart.CustomPhysicalProperties = PhysicalProperties.new(Enum.Material.Wood)
             galleon.Humanoid.WalkSpeed = 80
-
 
             local owner = Instance.new("ObjectValue")
             owner.Name = "Owner"
             owner.Value = plr
             owner.Parent = galleon
 
-
             galleon:AddTag("SkyDriveGalleon")
             galleon.PrimaryPart.Anchored = false
             galleon.PrimaryPart.Massless = false
             galleon.Parent = workspace.MapComponents.SkyGalleonsContainer
-
 
             Promise.new(function()
                 while galleon and galleon.Parent do
@@ -414,7 +378,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                     end
                 end
             end):catch(function() end)
-
 
             _sitGalleon(galleon, plr)
 
@@ -427,14 +390,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.DMGPlayer_C.SetCallback(function(plr: Player, data)
         if data.ProjectileUniqueId == nil then return end
         if data.IsPierce == nil then return end
         if data.DoTStatus == nil then return end
-
 
         local projectileUniqueId = data.ProjectileUniqueId
         local projectileData = ServerTable.EnemyProjectileSymbols[projectileUniqueId]
@@ -444,13 +404,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not projectileData then return end
         if not char:GetAttribute("IsInCombat") then return end
 
-
         local projectileDMG = projectileData.ProjectileDMG
         local owner = projectileData.Owner
         if not ServerLib:IsCharValid(owner) then return end
 
         if char:FindFirstChild("IFrameSymbol") then return end
-
 
         Promise.new(function(resolve)
             local dodgeChance = char:GetAttribute("DodgeChance") or 0 :: number
@@ -467,13 +425,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         end):catch(function() end):await()
 
-
         if projectileDMG <= 0 then return end
-
 
         ServerLib:ShowNumber(char, projectileDMG, Color3.fromRGB(255, 0, 0))
         ServerLib:ApplyHitStatus(char)
-
 
         if char:GetAttribute("Shield") > 0 and not data.IsPierce then
             local afterShield = math.ceil(char:GetAttribute("Shield") - projectileDMG)
@@ -529,7 +484,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 end
             end
 
-
             local DoTObj = DoTLib.new({
                 Target = char,
                 Type = DoTStatus,
@@ -541,7 +495,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.DMGEnemy_C.SetCallback(function(plr: Player, orbUniqueId)
@@ -603,7 +556,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end):await()
         if not check then return end
 
-
         Promise.new(function()
             if thatOrbSubStyle then
                 thatOrbStyle ..= "_"..thatOrbSubStyle
@@ -647,7 +599,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.CastItem_C_Request.SetCallback(function(plr: Player, slotId)
         if slotId == nil then return end
@@ -670,7 +621,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local amount = items[equippingInfo.Value].Value or 0 :: number
         if amount <= 0 then return end
-
 
         local inCDCheck = false
         for _, cdSymbol: StringValue in workspace.MapComponents.ItemCDSymbolContainer:GetChildren() do
@@ -700,8 +650,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             warn(`Invalid CastItemLib function for: {itemInfo.ItemId}`)
             return
         end
-
-
 
         local badStatus = false
         Promise.try(function()
@@ -734,7 +682,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         local itemCDSymbol = Instance.new("StringValue")
         itemCDSymbol.Value = itemInfo.ItemId
         itemCDSymbol.Name = plr.Name
@@ -747,7 +694,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         })
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.PickupItemDrops_C.SetCallback(function(plr: Player, itemUniqueId)
@@ -771,14 +717,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.CastClassUlt_C.SetCallback(function(plr: Player)
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end
         if not char:GetAttribute("IsInCombat") then return end
-
 
         --// cast Ult if req meets
         local class = plr:GetAttribute("Class") :: string
@@ -799,12 +742,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.FinishNPCChat_C.SetCallback(function(plr: Player, data)
         if data.NPCModel == nil then return end
         if data.QuestId == nil then return end
-
 
         local npcModel: Model? = data.NPCModel
         if not npcModel then return end
@@ -812,13 +753,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local distance = plr:DistanceFromCharacter(npcModel.PrimaryPart.Position)
         if distance <= 0 or distance > 40 then return end
 
-
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end
 
         char:SetAttribute("IsChatting", nil)
-
-
 
         local dialogues = npcModel.Dialogues :: Configuration
 
@@ -829,7 +767,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if bindableId then
             ServerBindables.NPCChatFinished:Fire(bindableId, plr)
         end
-
 
         local quests = npcModel:FindFirstChild("Quests")
         if quests then
@@ -863,7 +800,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.EquipItem_C.SetCallback(function(plr: Player, data)
         if data.ItemId == nil then return end
@@ -880,7 +816,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local itemInfo = ItemBook:GetItemInfo(data.ItemId)
         if not itemInfo then return end
 
-
         local items = plr.Items :: Folder
         local itemSymbol = items:FindFirstChild(data.ItemId) :: IntConstrainedValue
 
@@ -894,7 +829,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             Events.CreateNotify_S.Fire(plr, "Level requirement not met")
             return
         end
-
 
         local whiteList = { "Accessory", "Active", "Consumable", "Weapon", "Cosmetic", "Title" }
         if not table.find(whiteList, itemInfo.Type) then
@@ -912,7 +846,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         local function _refresh()
             local refreshSymbol = Instance.new("StringValue")
             refreshSymbol.Name = "_NULL"
@@ -922,13 +855,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             Debris:AddItem(refreshSymbol, 1)
         end
 
-
         --// equip weapon
         if itemInfo.Type == "Weapon" then
             ServerLib:ChangeWeapon(plr, data.ItemId, data.ItemUniqueId)
             return
         end
-
 
         local equipping = plr.EquippingItems :: Folder
 
@@ -947,8 +878,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
         if not equipCheck then return end
 
-
-
         --// already equipped same item id? (Crimson1 != Crimson2)
         local sameItemCheck = false
         for _, symbol: StringValue in equipping:GetChildren() do
@@ -965,7 +894,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             Events.CreateNotify_S.Fire(plr, "Already equipped")
             return
         end
-
 
         --// check available slot
         local check = false
@@ -992,7 +920,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
                 _refresh()
                 ServerLib:EquipItem(plr, data.ItemUniqueId)
 
-
                 Events.PlaySound_S.Fire(plr, SoundService.SFXs.EquipItem)
                 break
             end
@@ -1003,7 +930,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.BuyItem_C.SetCallback(function(plr: Player, data)
@@ -1040,7 +966,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         local itemInfo = ItemBook:GetItemInfo(product)
         if not itemInfo then return end
 
@@ -1048,7 +973,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             Events.CreateNotify_S.Fire(plr, "Cannot be purchased with Gold")
             return
         end
-
 
         local totalPrice = itemInfo.Price * purchaseAmount
         local curGold = plr:GetAttribute(currency) :: number
@@ -1077,7 +1001,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         --// cant sell items in combat
         local char = plr.Character
         if not ServerLib:IsCharValid(char) then return end
@@ -1087,11 +1010,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         --// cant sell items obtained from chests / nil
         local itemInfo = ItemBook:GetItemInfo(item)
         if not itemInfo then return end
-
 
         local blacklist = { "Passive", "Quest", "Cosmetic", "Title" }
         if table.find(blacklist, itemInfo.Type) then
@@ -1121,7 +1042,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         --// cant sell items that is not existed
 
         local items = plr.Items :: Folder
@@ -1136,7 +1056,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             end
         end
         if not itemSymbol then return end
-
 
         --// cant sell equipped item
         local equipping: StringValue = nil
@@ -1157,7 +1076,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         local totalItemHas = itemSymbol.Value or 0 :: number
         if totalItemHas < sellAmount then
             sellAmount = totalItemHas
@@ -1168,17 +1086,14 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             itemSymbol:Destroy()
         end
 
-
         local totalPrice = itemInfo.SellPrice * sellAmount
 
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
         Events.CreateNotify_S.Fire(plr, "Sell successful!")
 
-
         HarukaLib:AddAttr(plr, "Gold", totalPrice)
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.AddStatPoint_C.SetCallback(function(plr: Player, data)
@@ -1216,7 +1131,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
             HarukaLib:AddAttr(plr, "PerkPoints", -pointAdd)
             HarukaLib:AddAttr(plr, data.PointId.."Points", pointAdd)
-
 
             if data.PointId == "DEX" then
                 local dexPoints = plr:GetAttribute("DEXPoints") :: number
@@ -1265,7 +1179,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     --// TODO: Revamp the anti-cheat of this part
 
@@ -1274,14 +1187,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if projectileId == nil then return end
         if data.Entity == nil then return end
 
-
         local entity = data.Entity
 
         local char = plr.Character
         local charUniqueId = char:GetAttribute("HarukaUniqueId") :: string
         if not ServerLib:IsCharValid(char) then return end
         if not ServerLib:IsCharValid(entity) then return end
-
 
         local projectileData = ServerTable.SkillProjectileSymbols[charUniqueId][projectileId]
         if not projectileData then return end
@@ -1303,7 +1214,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             attacker = "ClassUltProjectile"
         end
 
-
         ClassAttackLib:DealDamageToEnemy(char, entity, {
             DMG = math.ceil(ClassAttackLib:CalDMG(style, char, {
                 ForceMaxDMG = true
@@ -1323,7 +1233,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.CraftItem_C.SetCallback(function(plr: Player, data)
@@ -1347,13 +1256,11 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if not itemInfo then return end
         if HarukaLib.TableUtils.IsEmpty(itemInfo.RecipeDesync) then return end
 
-
         local gold = plr:GetAttribute("Gold") :: number
         if gold < itemInfo.Price * amount then
             Events.CreateNotify_S.Fire(plr, "Not enough Gold")
             return
         end
-
 
         local distanceCheck = false
         for _, adornee: BasePart in CollectionService:GetTagged("CraftingPromptEntity") do
@@ -1366,7 +1273,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             Events.CreateNotify_S.Fire(plr, "Too far from the crafting station")
             return
         end
-
 
         local materialCheck = true
 
@@ -1399,7 +1305,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             return
         end
 
-
         for material: string, materialAmount: number in itemInfo.RecipeDesync do
             local symbol = plr.Items:FindFirstChild(material) :: IntConstrainedValue
             symbol.Value -= materialAmount * amount
@@ -1411,16 +1316,12 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
         HarukaLib:AddAttr(plr, "Gold", -itemInfo.Price * amount)
 
-
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.AnvilUse)
         Events.CreateNotify_S.Fire(plr, "Craft successful!")
-
 
         ServerLib:GiveItemDrop(plr, item, amount)
     end)
 end)
-
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     local function partyInvite(plr: Player, option: string, newMember: string)
@@ -1452,7 +1353,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
     ServerBindables.PartyInvite.Event:Connect(partyInvite)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     local function _challengeAbyss(plr: Player, data: {
@@ -1517,7 +1417,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.SaveSettings_C.SetCallback(function(plr: Player, data)
         if data.SettingId == nil then return end
@@ -1525,7 +1424,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local id, val = data.SettingId, data.SettingValue
         if id == "HideUI" then return end
-
 
         local criSettings = plr.CriRPGSettings :: Configuration
 
@@ -1548,8 +1446,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.FavOrLockItem_C.SetCallback(function(plr: Player, data)
         if not data.ActionId then return end
@@ -1557,7 +1453,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
 
         local symbol = data.ItemSymbol :: IntConstrainedValue
         if not symbol:IsDescendantOf(plr) then return end
-
 
         local state: boolean
         if data.ActionId == "Fav" then
@@ -1577,8 +1472,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.SetServerCharAttr_C.SetCallback(function(plr: Player, data)
         if not data.AttrId then return end
@@ -1590,8 +1483,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         char:SetAttribute(data.AttrId, data.State)
     end)
 end)
-
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.BuyTicket_C.SetCallback(function(plr: Player, merchantId)
@@ -1617,12 +1508,10 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         local char = plr.Character :: Model
         if not ServerLib:IsCharValid(char) then return end
 
-
         char:PivotTo(merchant.Destination.Value.CFrame)
         Events.RefreshCullingAsync_S.Fire(plr)
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.SwitchTargetEnemy_C.SetCallback(function(plr: Player, target: Model)
@@ -1634,8 +1523,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         char.TargetingEnemy.Value = target
     end)
 end)
-
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     Events.ClaimBadgeReward_C.SetCallback(function(plr: Player)
@@ -1655,11 +1542,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.ChestDrop)
 
-
         ServerLib:GiveItemDrop(plr, "FuriosoFist", 1)
     end)
 end)
-
 
 table.insert(GlobalCriRPGLib.Funcs, function()
     ServerBindables.RToSendMsgToDiscord.Event:Connect(function(msg: string)
@@ -1683,8 +1568,6 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(GlobalCriRPGLib.Funcs, function()
     ServerBindables.RToCheckPlayerBadges.Event:Connect(function(player: Player)
         if not player then return end
@@ -1705,6 +1588,5 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         end
     end)
 end)
-
 
 return GlobalCriRPGLib

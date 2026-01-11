@@ -10,7 +10,6 @@ local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, props: {
     Index: number,
     AbyssIndexSelected: Fusion.Value<number>,
@@ -18,7 +17,6 @@ return function(scope: Fusion.Scope, props: {
 })
 
     local isSelecting = Fusion.Value(scope, false)
-
 
     local aspectRatioConstraint = nil
     local size = UDim2.fromScale(0.15, 0.8)
@@ -50,7 +48,6 @@ return function(scope: Fusion.Scope, props: {
             }),
             aspectRatioConstraint,
 
-
             CAPatternTex(scope, {
                 Transparency = 0.975,
                 TileSize = UDim2.fromOffset(35, 35)
@@ -65,7 +62,6 @@ return function(scope: Fusion.Scope, props: {
                 Image = "rbxassetid://107834707321540",
                 ImageColor3 = Color3.fromRGB(255, 0, 0),
             }),
-
 
             Components.IconImageLabel(scope, {
                 AnchorPoint = Vector2.new(0.5, 0),
@@ -84,7 +80,6 @@ return function(scope: Fusion.Scope, props: {
                 Text = tostring(props.Index),
                 AutoLocalize = false
             }),
-
 
             Components.HoverImageButton(scope, {
                 [Fusion.OnEvent("MouseEnter")] = function()

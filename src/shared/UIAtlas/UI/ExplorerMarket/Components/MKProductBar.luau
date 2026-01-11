@@ -11,9 +11,7 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
-
 local CURRENCY_ICONS = AssetBook.CurrencyIcons
-
 
 return function(scope: Fusion.Scope, props: {
     ProductId: string,
@@ -28,10 +26,7 @@ return function(scope: Fusion.Scope, props: {
     local info = ItemBook:GetItemInfo(props.ProductId)
     if not info then return nil end
 
-
     local isSelecting = Fusion.Value(scope, false)
-
-
 
     return Components.Frame(scope, {
         Name = "Product_"..props.ProductId,
@@ -186,7 +181,6 @@ return function(scope: Fusion.Scope, props: {
                                             return CURRENCY_ICONS[use(props.CurrencyId)]
                                         end)
                                     }),
-
 
                                     Components.TextLabel(scope, {
                                         Name = "Price",

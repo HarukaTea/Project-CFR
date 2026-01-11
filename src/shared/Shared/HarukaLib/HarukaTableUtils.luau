@@ -2,7 +2,6 @@
 type Table = { any }
 type Dict = { [any]: any }
 
-
 local tableUtils = {}
 
 tableUtils.Keys = function(tbl: Dict) : { string }
@@ -136,8 +135,6 @@ tableUtils.Clone = function(tbl: Dict) : Dict
     return tableUtils.CopyTableExcept(tbl, {}, false)
 end
 
-
-
 tableUtils.DeepCopy = function (t: Dict) : Dict
 	local copy = {}
 	for key, value in t do
@@ -166,7 +163,5 @@ tableUtils.Reconcile = function (target: Dict, template: Dict)
 		end
 	end
 end
-
-
 
 return tableUtils

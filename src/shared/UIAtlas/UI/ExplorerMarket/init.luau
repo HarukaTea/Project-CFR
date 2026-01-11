@@ -17,7 +17,6 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
@@ -29,14 +28,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerMarket") then
         plr.PlayerGui.ExplorerMarket:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerMarket",
@@ -89,7 +85,6 @@ return function (plr: Player)
                     }),
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "Center_ZIndex2",
@@ -149,7 +144,6 @@ return function (plr: Player)
             ZIndex = 0
         },
 
-
         BottomProps = {
             [Children] = {
                 Components.Frame(scope, {
@@ -169,7 +163,6 @@ return function (plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Center,
                             Padding = UDim.new(0.01, 0),
                         }),
-
 
                         Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local curItem = use(self.CurrentSelectedItem) :: string
@@ -255,7 +248,6 @@ return function (plr: Player)
         }
     })
     self.UI = UI
-
 
     return function ()
         Fusion.doCleanup(scope)

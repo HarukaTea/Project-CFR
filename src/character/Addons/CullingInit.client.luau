@@ -4,21 +4,17 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SS = game:GetService("ServerStorage")
 
-
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
 if not cullingConfig then return end
 
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 
-
 local Add, Empty = HarukaLib.Bin()
-
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
@@ -31,7 +27,6 @@ ClientLib:InitCharDeadTrackers({
     Char = char,
     Player = plr
 })
-
 
 local flowerContainer = workspace:WaitForChild("MapComponents", 999):WaitForChild("FlowerContainer", 999)
 local treeContainer = workspace.MapComponents:WaitForChild("TreeContainer", 999)
@@ -64,7 +59,6 @@ local npcAFKContainer = _createFolder("NPCAFKContainer")
 local nonNPCAFKContainer = _createFolder("NonNPCAFKContainer")
 local mapModelAFKContainer = _createFolder("MapModelAFKContainer")
 
-
 local function _cullAFK(data: {
     Tag: string,
     Container: Folder,
@@ -85,7 +79,6 @@ local function _cullAFK(data: {
         end
     end
 end
-
 
 Add(HarukaLib.Clock(1.5, function()
     _cullAFK({
@@ -123,7 +116,6 @@ Add(HarukaLib.Clock(4.5, function()
         RenderDistance = mapModelRenderDistance,
     })
 end, true))
-
 
 Add(Events.RefreshCullingAsync_S.On(function()
     _cullAFK({

@@ -60,7 +60,6 @@ type SignalConnection = {
 	[any]: any,
 }
 
-
 export type Error = {
 	__index: Error,
 
@@ -134,7 +133,6 @@ export type PromiseLib = {
 	some: <T>(promise: { TypedPromise<T> }, count: number) -> TypedPromise<{ T }>,
 	try: <TArgs..., TReturn...>(callback: (TArgs...) -> TReturn..., TArgs...) -> TypedPromise<TReturn...>,
 }
-
 
 local ERROR_NON_PROMISE_IN_LIST = "Non-promise value passed into %s at index %s"
 local ERROR_NON_LIST = "Please pass a list of promises to %s"

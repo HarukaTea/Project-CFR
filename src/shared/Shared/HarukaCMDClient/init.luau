@@ -7,7 +7,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local TextChatService = game:GetService("TextChatService")
 
-
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -16,7 +15,6 @@ local Types = require(script.Types)
 
 type CommandJSON = Types.CommandJSON
 
-
 --// Init once
 local CommandBook = {}
 
@@ -24,20 +22,14 @@ Events.RequestCommands_Response.On(function(data)
     CommandBook = data.Commands
 end)
 
-
 Events.RequestCommands_Request.Fire()
-
-
-
 
 local UIComponent = require(script.UIComponent)
 
 local wait = task.wait
 
-
 local HarukaCMD = {} :: Types.HarukaCMDClass
 HarukaCMD.__index = HarukaCMD
-
 
 --// Constructor
 function HarukaCMD.new()
@@ -74,8 +66,6 @@ function HarukaCMD.new()
     return self
 end
 
-
-
 function HarukaCMD:Init()
     self.Rank = self.Player:GetAttribute("Rank")
     self.Commands = {}
@@ -92,7 +82,6 @@ function HarukaCMD:Init()
         self.Commands = afterCommands
     end
     self.RefreshCommandBookFunc()
-
 
     self.AutoCompleteFunc = function()
         local suggestedCommands = Fusion.peek(self.CMDIntellisense)
@@ -150,20 +139,16 @@ function HarukaCMD:Init()
         })
     end
 
-
     self:_InitUI()
     self:_ListenUITracker()
     self:_ListenInputTracker()
 end
-
-
 
 function HarukaCMD:Destroy()
     Fusion.doCleanup(self.scope)
 
     self.Empty()
 end
-
 
 --// Private Methods
 
@@ -182,7 +167,6 @@ function HarukaCMD:_InitUI()
         AutoCompleteFunc = self.AutoCompleteFunc,
     }, self)
 end
-
 
 function HarukaCMD:_ListenInputTracker()
     local function _handleOpen()
@@ -224,7 +208,6 @@ function HarukaCMD:_ListenInputTracker()
     self.Add(GuiService.MenuOpened:Connect(_handleOpen))
 end
 
-
 function HarukaCMD:_ListenUITracker()
     local cmdOpenObserver = Fusion.Observer(self.scope, self.IsShown)
     cmdOpenObserver:onBind(function()
@@ -248,7 +231,6 @@ function HarukaCMD:_ListenUITracker()
             end
         end
     end)
-
 
     local cmdInputObserver = Fusion.Observer(self.scope, self.CMDSearchInput)
     cmdInputObserver:onBind(function()
@@ -282,7 +264,6 @@ function HarukaCMD:_ListenUITracker()
         self.AutoCompletePointer:set(nextPointer)
     end)
 
-
     local pointerObserver = Fusion.Observer(self.scope, self.AutoCompletePointer)
     pointerObserver:onBind(function()
         local pointer = Fusion.peek(self.AutoCompletePointer) :: number
@@ -304,7 +285,6 @@ function HarukaCMD:_ListenUITracker()
             argVal:set("")
         end
     end)
-
 
     local cmdIntellisenseObserver = Fusion.Observer(self.scope, self.CMDIntellisense)
     cmdIntellisenseObserver:onBind(function()
@@ -330,12 +310,10 @@ function HarukaCMD:_ListenUITracker()
         end
     end)
 
-
     local itemIntellisenseObserver = Fusion.Observer(self.scope, self.ItemIntellisense)
     itemIntellisenseObserver:onBind(function()
         self.ItemAutoCompletePointer:set(1)
     end)
 end
-
 
 return HarukaCMD

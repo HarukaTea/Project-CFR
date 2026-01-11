@@ -20,11 +20,8 @@ return function(scope: Fusion.Scope, props: {
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingKey = Fusion.Value(scope, false)
 
-
     local textColor = Fusion.Value(scope, Color3.new(1, 1, 1))
     local text = Fusion.Value(scope, props.KeybindVal.Name)
-
-
 
     local buttonText = Components.TextLabel(scope, {
         Name = "ButtonText",
@@ -40,7 +37,6 @@ return function(scope: Fusion.Scope, props: {
             Components.UIPadding(scope, {})
         }
     })
-
 
 	return Components.Frame(scope, {
 		Name = props.KeybindId,
@@ -69,7 +65,6 @@ return function(scope: Fusion.Scope, props: {
 					Components.UIPadding(scope, {})
 				}
 			}),
-
 
             Components.Frame(scope, {
                 Name = "KeybindButton",

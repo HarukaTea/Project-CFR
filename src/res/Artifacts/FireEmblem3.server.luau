@@ -2,7 +2,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-
 local ArtifactUniversal = require(ReplicatedStorage.HarukaRes.Artifacts.ArtifactUniversal)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
@@ -12,11 +11,9 @@ local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
 
-
 local event = Instance.new("BindableEvent")
 event.Name = "PlayerClassUltCasted"
 event.Parent = script
-
 
 Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(target, caster, ultMetaData)
     local stack = 0
@@ -36,6 +33,5 @@ Add(ArtifactUniversal.RegisterClassUltCasted(script, event, char, function(targe
         TrueEffectId = "BurnChance"
     })
 end))
-
 
 ArtifactUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

@@ -5,7 +5,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 
 local Children = Fusion.Children
@@ -60,7 +59,6 @@ return function(scope: Fusion.Scope, props: {
                 end
             }),
 
-
             Components.IconImageLabel(scope, {
                 Image = ICONS[props.Category],
                 ImageColor3 = COLORS[props.Category],
@@ -72,7 +70,6 @@ return function(scope: Fusion.Scope, props: {
                     return if use(isSelecting) then UDim2.fromScale(1, 1) else UDim2.fromScale(0.9, 0.9)
                 end), Components.TweenInfos.threeHalf)
             }),
-
 
             Components.Frame(scope, {
                 Name = "BottomLine",

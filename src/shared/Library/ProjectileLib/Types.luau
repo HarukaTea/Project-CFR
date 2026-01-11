@@ -16,5 +16,4 @@ export type ProjectileLib = {
     [string]: (projectile: Model, container: Folder) -> nil
 }
 
-
 return nil

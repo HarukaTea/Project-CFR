@@ -1,12 +1,9 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
-
 local ArtifactRawBook = require(ReplicatedStorage.HarukaShared.Library.ArtifactRawBook)
 
 local ArtifactBook = {}
-
 
 export type ArtifactJSON = {
     ArtifactId: string,
@@ -14,8 +11,6 @@ export type ArtifactJSON = {
     TwoPieceEff: string,
     ThreePieceEff: string,
 }
-
-
 
 function ArtifactBook:GetArtifactInfo(artifactId: string) : ArtifactJSON?
     artifactId = artifactId or "none"
@@ -31,7 +26,6 @@ function ArtifactBook:GetArtifactInfo(artifactId: string) : ArtifactJSON?
     return info
 end
 
-
 function ArtifactBook:GetAllArtifactIds() : { string }
     local ids = {}
 
@@ -43,7 +37,5 @@ function ArtifactBook:GetAllArtifactIds() : { string }
 
     return ids
 end
-
-
 
 return ArtifactBook

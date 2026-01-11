@@ -18,9 +18,7 @@ local v2New, udNew = Vector2.new, UDim.new
 local fromScale = UDim2.fromScale
 local fromRGB = Color3.fromRGB
 
-
 local plr = Players.LocalPlayer
-
 
 return function (scope: Fusion.Scope, props: {
     PlayerSelecting: Fusion.Value<Player?>,
@@ -34,7 +32,6 @@ return function (scope: Fusion.Scope, props: {
         elseif use(props.PlayerSelecting) ~= nil then
             local player = use(props.PlayerSelecting) :: Player
 
-
             local function Value<T>(val: T) : Fusion.Value<T>
                 return Fusion.Value(scope, val)
             end
@@ -43,7 +40,6 @@ return function (scope: Fusion.Scope, props: {
             local class = Value("Burst")
             local equippingItems = Components.FusionComponents.useChildren(scope, player.EquippingItems)
             local playTime = Value(0)
-
 
             table.insert(scope, HarukaLib:Hydrate(player, {
                 ["Attr-Title"] = function(thatTitle: string)
@@ -62,7 +58,6 @@ return function (scope: Fusion.Scope, props: {
                 end,
             }))
 
-
             local function redButtonBase(text: string, func: () -> nil) : TextButton
                 return Components.TextButton(scope, {
                     Name = "DeclineTypeButton",
@@ -80,7 +75,6 @@ return function (scope: Fusion.Scope, props: {
                     }
                 })
             end
-
 
             local button: TextButton = nil
             button = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -126,7 +120,6 @@ return function (scope: Fusion.Scope, props: {
                     end
                 end
             end)
-
 
             local function PlayerItemSlot(index: number): ImageLabel
                 local POSITIONS = {
@@ -258,7 +251,6 @@ return function (scope: Fusion.Scope, props: {
                                 playTime = `{string.format("%.0f", convertedTime)} Minutes`
                             end
 
-
                             return `Lv.{use(level)} - {playTime}`
                         end)
                     }),
@@ -273,7 +265,6 @@ return function (scope: Fusion.Scope, props: {
                             Components.RoundUICorner(scope)
                         }
                     }),
-
 
                     Components.ImageLabel(scope, {
                         Name = "Emblem",
@@ -298,9 +289,7 @@ return function (scope: Fusion.Scope, props: {
                     PlayerItemSlot(6),
                     PlayerItemSlot(7),
 
-
                     button,
-
 
                     Components.TextLabel(scope, {
                         Name = "PlayerTitle",

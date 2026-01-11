@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -12,25 +13,16 @@ local PlayerTargetingBar = require(script.Components.PlayerTargetingBar)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    self.plr = plr
-    self.char = plr.Character
-    self.scope = Fusion.scoped()
+    ClientLib:InitUIFramework(self, plr, "EntityStats")
 
-
-    local scope = self.scope
     Pinia(self)
 
-
-    if plr.PlayerGui:FindFirstChild("EntityStats") then
-        plr.PlayerGui.EntityStats:Destroy()
-    end
-
+    local scope = self.scope
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "EntityStats",
@@ -126,7 +118,6 @@ return function (plr: Player)
         }
     })
     self.UI = UI
-
 
     return function ()
         Fusion.doCleanup(scope)

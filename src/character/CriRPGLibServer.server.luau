@@ -26,29 +26,22 @@ local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
 local LocationBook = require(ReplicatedStorage.HarukaShared.Library.LocationBook)
 
-
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
-
-
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 
 local wait = task.wait
 
-
 repeat wait() until char:GetAttribute("Haruka_CharServerInited")
 
 local Add, Empty = HarukaLib.Bin()
-
-
 
 type CriRPGLibClass = {
     Funcs: { () -> nil },
 
     Init: (self: CriRPGLibClass) -> nil,
     Destroy: (self: CriRPGLibClass) -> nil,
-
 
     _SpawnToLastLocation: () -> nil,
     _InitAttrs: () -> nil,
@@ -57,7 +50,6 @@ type CriRPGLibClass = {
 
 local CriRPGLib = {} :: CriRPGLibClass
 CriRPGLib.Funcs = {}
-
 
 function CriRPGLib:Init()
     self:_SpawnToLastLocation()
@@ -72,7 +64,6 @@ function CriRPGLib:Init()
     char:SetAttribute("Haruka_CriRPGServerInited", true)
     char:AddTag("PlayerCharEntity")
 
-
     ServerLib:InitCharDeadTrackers({
         Char = char,
         Player = plr,
@@ -83,16 +74,11 @@ function CriRPGLib:Init()
     })
 end
 
-
-
 function CriRPGLib:Destroy()
     Empty()
 end
 
-
-
 --// Private methods
-
 
 function CriRPGLib:_SpawnToLastLocation()
     local lastLocation = plr:GetAttribute("LastSeen") :: string
@@ -119,7 +105,6 @@ function CriRPGLib:_SpawnToLastLocation()
     Events.RefreshCullingAsync_S.Fire(plr)
 end
 
-
 function CriRPGLib:_InitAttrs()
     for attr, val in HarukaLib.TableUtils.DeepCopy(CharTemplate) do
         if val == "_OBJECT" then
@@ -145,7 +130,6 @@ function CriRPGLib:_InitAttrs()
         char:SetAttribute(attr, val)
     end
 end
-
 
 function CriRPGLib:_AutoEquipItems()
     for _, item: StringValue in plr.EquippingItems:GetChildren() do
@@ -178,9 +162,6 @@ function CriRPGLib:_AutoEquipItems()
     end
 end
 
-
-
-
 table.insert(CriRPGLib.Funcs, function()
     local light = Instance.new("PointLight")
     light.Range = 28
@@ -195,7 +176,6 @@ table.insert(CriRPGLib.Funcs, function()
         end
     }))
 end)
-
 
 table.insert(CriRPGLib.Funcs, function()
 	local function _equipWeapon()
@@ -227,11 +207,9 @@ table.insert(CriRPGLib.Funcs, function()
         local targetFolder = if combatState then "Combat" else "Overworld"
         local weaponId = plr.EquippingItems.Weapon1.Value :: string
 
-
         local weaponFolder = ReplicatedStorage.Packages.ClassWeapons:FindFirstChild(weaponId, true) :: Folder
         if not weaponFolder then return end
         if not weaponFolder:FindFirstChild(targetFolder) then return end
-
 
         for _, weapon: Model in char:GetChildren() do
 			if weapon:HasTag("ClassWeapon") then weapon:Destroy() end
@@ -271,14 +249,11 @@ table.insert(CriRPGLib.Funcs, function()
     end
 end)
 
-
-
 table.insert(CriRPGLib.Funcs, function()
     local orbResContainer = ReplicatedStorage.Packages.ClassAttacks :: Folder
     local charUniqueId = char:GetAttribute("HarukaUniqueId")
 
     ServerTable.OrbSymbols[charUniqueId] = {}
-
 
     local orbSpawnAdd, orbSpawnEmpty = HarukaLib.Bin()
     local function _spawnOrb_Callback(orbData: ClassOrbCallbackLib.ClassOrbData)
@@ -323,7 +298,6 @@ table.insert(CriRPGLib.Funcs, function()
                 ["Normal"] = 100 - 10 - 5
             })
 
-
             ServerTable.OrbSymbols[charUniqueId][orbUniqueId] = {
                 UniqueId = orbUniqueId,
                 OrbId = orb.Name,
@@ -337,7 +311,6 @@ table.insert(CriRPGLib.Funcs, function()
             }
             ServerTable:AddItem(ServerTable.OrbSymbols[charUniqueId], orbUniqueId, orbFadeTime)
 
-
             Events.PlaceOrb_S.Fire(plr, {
                 OrbId = orb.Name,
                 OrbUniqueId = orbUniqueId,
@@ -345,7 +318,6 @@ table.insert(CriRPGLib.Funcs, function()
                 OrbLocationPos = orbPos.Position,
                 OrbUniStyle = orbUniStyle
             })
-
 
             if extraProps.NeedCallback then
                 _spawnOrb_Callback(ServerTable.OrbSymbols[charUniqueId][orbUniqueId])
@@ -395,7 +367,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-IsInCombat"] = orbSpawnHandler,
     }))
 
-
     Add(ServerBindables.RToSpawnOrb.Event:Connect(function(charId: string, orbName: string, extraProps: {
         Offset: Vector3?,
         ForceLocation: CFrame?
@@ -407,8 +378,6 @@ table.insert(CriRPGLib.Funcs, function()
 
     orbSpawnEmpty()
 end)
-
-
 
 table.insert(CriRPGLib.Funcs, function()
     local charUniqueId = char:GetAttribute("HarukaUniqueId") :: string
@@ -427,8 +396,6 @@ table.insert(CriRPGLib.Funcs, function()
         ServerTable:AddItem(ServerTable.SkillProjectileSymbols[charUniqueId], props.ProjectileUniqueId, props.LifeTime)
     end))
 end)
-
-
 
 table.insert(CriRPGLib.Funcs, function()
     local function _handleEXP(exp: number, props: {
@@ -503,10 +470,8 @@ table.insert(CriRPGLib.Funcs, function()
         end
     }))
 
-
     local classAdd, classEmpty = HarukaLib.Bin()
     Add(classEmpty)
-
 
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-Class"] = function(class: string)
@@ -536,9 +501,6 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 end)
 
-
-
-
 table.insert(CriRPGLib.Funcs, function()
     --- class base
     local function _updateClassBase(class: string)
@@ -564,8 +526,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-Class"] = _updateClassBase
     }))
 
-
-
     local function _updateSpeed()
         local speedBuff = char:GetAttribute("SpeedEx") :: number
         local speedExBuff = char:GetAttribute("SpeedExPower") :: number
@@ -583,8 +543,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-IsInCombat"] = _updateSpeed
     }))
 
-
-
     local function _updateJump()
         local jumpBuff = char:GetAttribute("JumpEx") :: number
         local jumpExBuff = char:GetAttribute("JumpExPower") :: number
@@ -599,8 +557,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-JumpEx"] = _updateJump,
         ["Attr-JumpExPower"] = _updateJump
     }))
-
-
 
     local function _updateMinDMG()
         local baseMinDMG = char:GetAttribute("BaseMinDMG") :: number
@@ -628,7 +584,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-STRPoints"] = _updateMinDMG,
     }))
 
-
     local function _updateMaxDMG()
         local baseMaxDMG = char:GetAttribute("BaseMaxDMG") :: number
         local maxDMGBuff = char:GetAttribute("MaxDMGEx") :: number
@@ -654,7 +609,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-STRPoints"] = _updateMaxDMG,
     }))
 
-
     local function _updateMagic()
         local baseMagic = char:GetAttribute("BaseMagic") :: number
         local magicBuff = char:GetAttribute("MagicEx") :: number
@@ -678,12 +632,10 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-INTPoints"] = _updateMagic,
     }))
 
-
     local function _updateHealth()
         local baseHealth = char:GetAttribute("BaseMaxHealth") :: number
         local healthBuff = char:GetAttribute("MaxHealthEx") :: number
         local healthExBuff = char:GetAttribute("MaxHealthExPower") :: number
-
 
         local base = FormulaBook.PlayerHealthCurveCal({
             BaseHealth = baseHealth,
@@ -691,9 +643,7 @@ table.insert(CriRPGLib.Funcs, function()
         })
         local final = math.ceil((base + healthBuff) * healthExBuff)
 
-
         char.Humanoid.MaxHealth = final
-
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
             char.Humanoid.Health = char.Humanoid.MaxHealth
@@ -711,20 +661,16 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-VITPoints"] = _updateHealth,
     }))
 
-
-
     local function _updateShield()
         local baseShield = char:GetAttribute("BaseMaxShield") :: number
         local shieldBuff = char:GetAttribute("MaxShieldEx") :: number
         local shieldExBuff = char:GetAttribute("MaxShieldExPower") :: number
-
 
         local shield = baseShield
 
         local final = math.ceil((shield + shieldBuff) * shieldExBuff)
 
         char:SetAttribute("MaxShield", final)
-
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
             char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
@@ -742,7 +688,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-MaxShieldExPower"] = _updateShield,
     }))
 
-
     local function _updateMana()
         local baseMana = char:GetAttribute("BaseMaxMana") :: number
         local manaBuff = char:GetAttribute("MaxManaEx") :: number
@@ -751,7 +696,6 @@ table.insert(CriRPGLib.Funcs, function()
         local final = math.ceil((baseMana + manaBuff) * manaExBuff)
 
         char:SetAttribute("MaxMana", final)
-
 
         if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") < 5 then
             char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
@@ -769,7 +713,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-MaxManaExPower"] = _updateMana,
     }))
 
-
     local function _hpCheck()
         if char.Humanoid.Health > char.Humanoid.MaxHealth then
             char.Humanoid.Health = char.Humanoid.MaxHealth
@@ -779,7 +722,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Prop-Health"] = _hpCheck,
         ["Prop-MaxHealth"] = _hpCheck,
     }))
-
 
     local function _shieldCheck()
         if char:GetAttribute("Shield") > char:GetAttribute("MaxShield") then
@@ -794,7 +736,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-MaxShield"] = _shieldCheck,
     }))
 
-
     local function _manaCheck()
         if char:GetAttribute("Mana") > char:GetAttribute("MaxMana") then
             char:SetAttribute("Mana", char:GetAttribute("MaxMana"))
@@ -807,7 +748,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-Mana"] = _manaCheck,
         ["Attr-MaxMana"] = _manaCheck,
     }))
-
 
     local function _updateCriChance()
         local baseCritChance = char:GetAttribute("BaseCriChance") :: number
@@ -831,8 +771,6 @@ table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-DEXPoints"] = _updateCriChance,
     }))
-
-
 
     --// track chance stats (clamp)
     local whiteList = { "Intensity", "Warding", "Luck" }
@@ -860,8 +798,6 @@ table.insert(CriRPGLib.Funcs, function()
             ["Attr-"..stat] = __track
         }))
     end
-
-
 
     --// track rest stats
     local blackList = {
@@ -894,11 +830,9 @@ table.insert(CriRPGLib.Funcs, function()
     end
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local healAdd, healEmpty = HarukaLib.Bin()
     Add(healEmpty)
-
 
     local function _healthRecover()
         healEmpty()
@@ -929,11 +863,9 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local repairAdd, repairEmpty = HarukaLib.Bin()
     Add(repairEmpty)
-
 
     local function _shieldRecover()
         repairEmpty()
@@ -958,7 +890,6 @@ table.insert(CriRPGLib.Funcs, function()
         if part == "Shield" then _shieldRecover() end
     end))
 end)
-
 
 table.insert(CriRPGLib.Funcs, function()
     Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
@@ -986,7 +917,6 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local function _handleItem(item: IntConstrainedValue, method: string)
         local itemInfo = ItemBook:GetItemInfo(item.Name)
@@ -1008,13 +938,11 @@ table.insert(CriRPGLib.Funcs, function()
     end))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local artifactContainer = Instance.new("Folder")
     artifactContainer.Name = "Artifacts"
     artifactContainer.Parent = char
     Add(artifactContainer)
-
 
     local setThreshold = { 2, 3 }
 
@@ -1091,9 +1019,6 @@ table.insert(CriRPGLib.Funcs, function()
     updateArtifactSet()
 end)
 
-
-
-
 table.insert(CriRPGLib.Funcs, function()
 	local event = Instance.new("BindableEvent")
 	event.Name = "EnemyGotHit"
@@ -1136,8 +1061,6 @@ table.insert(CriRPGLib.Funcs, function()
 	AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)
 end)
 
-
-
 table.insert(CriRPGLib.Funcs, function()
     local areaQueue = HarukaLib.Queue()
     Add(areaQueue)
@@ -1165,17 +1088,13 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 end)
 
-
-
 CriRPGLib:Init()
-
 
 Add(char.TargetingList.ChildAdded:Connect(function(child: ObjectValue)
 	char.PlayerTargetAdded:Fire(char.Name, child.Value)
 end))
 Add(HarukaLib.Clock(5, function()
     if not char:GetAttribute("IsInCombat") then return end
-
 
 	for _, obj in char.TargetingList:GetChildren() do
 		if not ServerLib:IsCharValid(obj.Value) then

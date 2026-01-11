@@ -8,12 +8,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local FusionComponents = {}
 
-
 local wait = task.wait
 
-
 export type ValObjects = ValueBase & NumberValue
-
 
 FusionComponents.useTagged = function(scope: Fusion.Scope, tag: string) : Fusion.Value<{ Instance }>
     local val = Fusion.Value(scope, CollectionService:GetTagged(tag))
@@ -27,7 +24,6 @@ FusionComponents.useTagged = function(scope: Fusion.Scope, tag: string) : Fusion
 
     return val
 end
-
 
 FusionComponents.useMouse = function(scope: Fusion.Scope) : Fusion.Value<Vector2>
     local val = Fusion.Value(scope, UserInputService:GetMouseLocation())
@@ -43,7 +39,6 @@ FusionComponents.useMouse = function(scope: Fusion.Scope) : Fusion.Value<Vector2
 
     return val
 end
-
 
 FusionComponents.useViewportSize = function(scope: Fusion.Scope) : Fusion.Value<Vector2>
     local val = Fusion.Value(scope, Vector2.zero)
@@ -71,7 +66,6 @@ FusionComponents.useUIViewportSize = function(scope: Fusion.Scope) : Fusion.Valu
     return val
 end
 
-
 FusionComponents.useChildren = function(scope: Fusion.Scope, ins: Instance) : Fusion.Value<{ Instance }>
     local val = Fusion.Value(scope, ins:GetChildren())
 
@@ -85,7 +79,6 @@ FusionComponents.useChildren = function(scope: Fusion.Scope, ins: Instance) : Fu
     return val
 end
 
-
 FusionComponents.useValue = function(scope: Fusion.Scope, valueInstance: ValObjects) : Fusion.Value<any>
     local val = Fusion.Value(scope, valueInstance.Value)
 
@@ -95,7 +88,6 @@ FusionComponents.useValue = function(scope: Fusion.Scope, valueInstance: ValObje
 
     return val
 end
-
 
 FusionComponents.useXboxControllerHotInput = function(scope: Fusion.Scope) : Fusion.Value<string>
     local lastInput = Fusion.Value(scope, "MobileDevice")
@@ -114,7 +106,6 @@ FusionComponents.useXboxControllerHotInput = function(scope: Fusion.Scope) : Fus
     end
     _setLastInput(UserInputService:GetLastInputType())
 
-
     if Fusion.peek(lastInput) == "MobileDevice" then
         if device == "Console" then
             lastInput:set("Controller")
@@ -126,8 +117,5 @@ FusionComponents.useXboxControllerHotInput = function(scope: Fusion.Scope) : Fus
 
     return lastInput
 end
-
-
-
 
 return FusionComponents

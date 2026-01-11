@@ -4,19 +4,15 @@ local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local slideConfig = worldConfig:GetAttribute("CanSlide") :: boolean
 if not slideConfig then return end
 
-
-
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -24,10 +20,7 @@ local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
 local humanoid = char.Humanoid :: Humanoid
 
-
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
-
-
 
 ClientLib:InitCharDeadTrackers({
     Add = Add,
@@ -36,14 +29,12 @@ ClientLib:InitCharDeadTrackers({
     Player = plr
 })
 
-
 local animator = char.Humanoid.Animator :: Animator
 local slideAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.Slide)
 slideAnim.Priority = Enum.AnimationPriority.Action3
 slideAnim.Looped = false
 
 Add(slideAnim)
-
 
 local canSlide = true
 
@@ -65,7 +56,6 @@ local function _slide()
 
     humanoid.HipHeight = -1.5
     slideAnim:Play()
-
 
     local currentVel = char.PrimaryPart.AssemblyLinearVelocity
     char.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
@@ -97,7 +87,6 @@ local function _slide()
     canSlide = true
     _cancelSlide()
 end
-
 
 Add(Bindables.ActionSlide.Event:Connect(function()
     if char:GetAttribute("IsSwimming") then return end

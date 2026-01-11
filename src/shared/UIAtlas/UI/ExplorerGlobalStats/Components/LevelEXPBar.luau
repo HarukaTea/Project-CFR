@@ -6,9 +6,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 
-
 local Children = Fusion.Children
-
 
 local plr = Players.LocalPlayer
 
@@ -95,7 +93,6 @@ return function(scope: Fusion.Scope, props: {
                     Components.ScaledTextUIStroke(scope, {})
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "Line",

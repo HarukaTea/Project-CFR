@@ -27,14 +27,12 @@ return function(scope: Fusion.Scope, props: {
         BackgroundTransparency = 0,
         LayoutOrder = props.Index,
 
-
         [Fusion.OnEvent("MouseEnter")] = function()
             isSelecting:set(true)
         end,
         [Fusion.OnEvent("MouseLeave")] = function()
             isSelecting:set(false)
         end,
-
 
         [Children] = {
             Components.RoundUICorner(scope),

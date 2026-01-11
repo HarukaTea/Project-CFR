@@ -1,12 +1,10 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
-
 
 local ODSModule = require(ServerScriptService.HarukaServer.Shared.OrderedDatastoreWrapper)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
@@ -14,19 +12,14 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 
-
-
 type LBLibClass = {
     Funcs: { [string]: () -> nil },
 
     Init: (self: LBLibClass) -> nil
 }
 
-
-
 local LBLib = {} :: LBLibClass
 LBLib.Funcs = {}
-
 
 local TOP3_BADGE_ID = 2495465107761594
 
@@ -34,25 +27,20 @@ local abyssSpeedrunContainer = Instance.new("Folder")
 abyssSpeedrunContainer.Name = "AbyssSpeedrunContainer"
 abyssSpeedrunContainer.Parent = workspace.MapComponents
 
-
 local donationRanksContainer = Instance.new("Folder")
 donationRanksContainer.Name = "DonationRankContainer"
 donationRanksContainer.Parent = workspace.MapComponents
 
-
 local userNameCache = {}
 local userThumbnailCache = {}
 
-
 local abyssSpeedrunStore = ODSModule.new(require(ServerStorage.ABYSS_DS_VERSION), true)
 local donationStore = ODSModule.new("_Donation", true)
-
 
 local STORE_LIST = {
     Abyss = abyssSpeedrunStore,
     Donation = donationStore
 }
-
 
 local function _getTop50Players(store: OrderedDataStore, isAscending: boolean?) : {
     {
@@ -83,7 +71,6 @@ local function _getTop50Players(store: OrderedDataStore, isAscending: boolean?) 
 end
 local function refreshLeaderboard(store: OrderedDataStore, folder: Folder, isAscending: boolean?)
     folder:ClearAllChildren()
-
 
     local top50 = _getTop50Players(store, isAscending)
     for rank: number, data in ipairs(top50) do
@@ -142,16 +129,11 @@ local function _checkIsDataValid(data) : boolean?
     return true
 end
 
-
 function LBLib:Init()
     for _, func in self.Funcs do
         func()
     end
 end
-
-
-
-
 
 table.insert(LBLib.Funcs, function()
     HarukaLib.Clock(180, function()
@@ -161,7 +143,6 @@ table.insert(LBLib.Funcs, function()
         refreshLeaderboard(donationStore.orderedDataStore, donationRanksContainer)
     end, true)
 end)
-
 
 table.insert(LBLib.Funcs, function()
     ServerBindables.RToUpdateLeaderboardRank.Event:Connect(function(key: string, value: number, storeName: string)
@@ -188,6 +169,5 @@ table.insert(LBLib.Funcs, function()
         end
     end)
 end)
-
 
 LBLib:Init()

@@ -11,13 +11,10 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Types)
-
 
 return function (self: Types.CastItemLib)
     local CastItemLib = self
-
 
     CastItemLib.FireballSpell = function(player: Player, char: Model, extraInfo: Types.Dict) : number?
         local check = CastItemLib._preCheck({
@@ -31,14 +28,11 @@ return function (self: Types.CastItemLib)
         if not check then return 0 end
         if not extraInfo.CostManaFunc(char) then return 0 end
 
-
         local uniqueId = HttpService:GenerateGUID(false)
         local castTime = ClassAttackLib:CalCastingTime(char, 1)
 
-
         Events.OpenCastTimeBar_S.Fire(player, castTime)
         Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellReadyToCast)
-
 
         Promise.delay(castTime):andThen(function()
             ServerBindables.RToCreateProjectileSymbol:Fire(char.Name, {
@@ -55,7 +49,6 @@ return function (self: Types.CastItemLib)
             Events.PlayClassAnim_S.Fire(player, "MagicCasted1")
             Events.FaceTargetingEnemy_S.Fire(player)
 
-
             Events.PlayVFXScene_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
                 SceneId = "FireballSpell",
                 Caster = char,
@@ -65,7 +58,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.Agility = function(player: Player, char: Model, extraInfo: Types.Dict) : number?
         local check = CastItemLib._preCheck({
@@ -77,7 +69,6 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
-
 
         Events.PlaySound_S.Fire(player, SoundService.SFXs.SpellCasted)
 
@@ -93,7 +84,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.ExtraJump = function(player: Player, char: Model, extraInfo: Types.Dict) : number?
         local check = CastItemLib._preCheck({

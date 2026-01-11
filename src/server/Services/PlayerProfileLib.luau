@@ -3,8 +3,6 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-
-
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Classbook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -15,10 +13,8 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 
-
 local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
-
 
 export type PlayerProfileLibClass = {
     __index: PlayerProfileLibClass,
@@ -27,10 +23,8 @@ export type PlayerProfileLibClass = {
     Init: (self: PlayerProfileLibClass) -> nil,
     Destroy: (self: PlayerProfileLibClass) -> nil,
 
-
     Player: Player,
     Profile: HarukaDatastore.Profile<PlayerTemplate.JSON>,
-
 
     _ValidateSaveData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerDataJSON }) -> PlayerTemplate.PlayerDataJSON,
     _ValidateMainData: (self: PlayerProfileLibClass, data: { PlayerTemplate.PlayerMainDataJSON }) -> PlayerTemplate.PlayerMainDataJSON,
@@ -44,13 +38,10 @@ export type PlayerProfileLibClass = {
     _CompensateData: (self: PlayerProfileLibClass, slot: string) -> nil
 }
 
-
 local allProfiles = {} :: { [string]: PlayerProfileLibClass }
-
 
 local PlayerProfileLib = {} :: PlayerProfileLibClass
 PlayerProfileLib.__index = PlayerProfileLib
-
 
 function PlayerProfileLib.new(player: Player, profile: HarukaDatastore.Profile<PlayerTemplate.JSON>)
     local self = setmetatable({}, PlayerProfileLib)
@@ -60,13 +51,10 @@ function PlayerProfileLib.new(player: Player, profile: HarukaDatastore.Profile<P
 
     self.UniqueId = player:GetAttribute("HarukaUniqueId")
 
-
     allProfiles[self.UniqueId] = self
 
     return self
 end
-
-
 
 function PlayerProfileLib:Init()
     local profile = self.Profile
@@ -75,28 +63,18 @@ function PlayerProfileLib:Init()
     profile:AddUserId(plr.UserId)
 end
 
-
-
 function PlayerProfileLib:Destroy()
     allProfiles[self.UniqueId] = nil
 end
-
-
-
 
 function PlayerProfileLib:GetObjByUniqueId(uniqueId: string)
     return allProfiles[uniqueId]
 end
 
-
-
 --// profile functions for CA RPG
-
-
 
 function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON)
     local data = HarukaLib.TableUtils.DeepCopy(dataT) :: PlayerTemplate.PlayerDataJSON
-
 
     --// check class
     local class = data.Class
@@ -106,7 +84,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     if not Classbook[data.Class] then
         data.Class = "Chain"
     end
-
 
     --// check valid items
     for uniqueId, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
@@ -129,7 +106,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             continue
         end
 
-
         --- clear up old data to save data storage space
         if itemInfo.IsV2ItemStat then
             data.ItemsSQL[itemInfo.UniqueId].IsV2ItemStat = nil
@@ -138,7 +114,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             data.ItemsSQL[itemInfo.UniqueId].Level = nil
         end
 
-
         --- migration from old code
         if not itemInfo.IsFav then
             data.ItemsSQL[itemInfo.UniqueId].IsFav = false
@@ -146,7 +121,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         if not itemInfo.IsLocked then
             data.ItemsSQL[itemInfo.UniqueId].IsLocked = false
         end
-
 
         if not itemInfo.ItemStat then
             data.ItemsSQL[itemInfo.UniqueId].ItemStat = ServerLib:GiveRandomStatForItem(itemInfo.ItemId)
@@ -176,7 +150,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             end
         end
     end
-
 
     --// check valid item stacks
     for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
@@ -219,7 +192,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         end
     end
 
-
     --// check "NoDuplicate" or "Chest" or "Statue" tag item
     local noDuplicateUniqueIds = {}
     for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
@@ -241,7 +213,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         end
     end
 
-
     --// mirgration2: check if there is forVariant stat in each item
     for _, itemInfo: PlayerTemplate.PlayerItemDataJSON in data.ItemsSQL do
         local itemStat = itemInfo.ItemStat
@@ -255,13 +226,11 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         data.ItemsSQL[itemInfo.UniqueId].ItemStat = cleaned
     end
 
-
     --// clean up old settings
     data.Settings = nil
     data.Talents = nil
     data.TalentPoints = nil
     data.ClassEXP = nil
-
 
     --// check valid equipping items
     for thatSlot: string, itemInfo: PlayerTemplate.PlayerEquippingItemDataJSON in data.EquippingItemsSQL do
@@ -287,7 +256,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             data.EquippingItemsSQL[thatSlot] = nil
             continue
         end
-
 
         --// check type
         if string.find(thatSlot, "Weapon") then
@@ -316,8 +284,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             end
         end
 
-
-
         --// check if item exists and level is enough
         local itemObj = data.ItemsSQL[itemInfo.UniqueId]
         if itemObj == nil then
@@ -340,8 +306,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             continue
         end
     end
-
-
 
     --// check valid weapon equipping
     local itemUniqueIdForEmptyWeapon = HttpService:GenerateGUID(false)
@@ -369,7 +333,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         }
     end
 
-
     --// check valid title
     local hasTitle = false
     for _, itemObj in data.ItemsSQL do
@@ -390,8 +353,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
             IsLocked = false
         }
     end
-
-
 
     --// check valid quests
     local function _giveQuest(questId: string)
@@ -449,7 +410,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
         data.DEXPoints = 0
     end
 
-
     --// check level
     data.EXP = math.clamp(data.EXP, 0, FormulaBook.FAIRLY_BIG_NUMBER)
     data.EXP = math.floor(data.EXP)
@@ -475,8 +435,6 @@ function PlayerProfileLib:_ValidateSaveData(dataT: PlayerTemplate.PlayerDataJSON
     return data
 end
 
-
-
 function PlayerProfileLib:_ValidateMainData(dataT: PlayerTemplate.PlayerMainDataJSON)
     local data = HarukaLib.TableUtils.DeepCopy(dataT) :: PlayerTemplate.PlayerMainDataJSON
 
@@ -500,7 +458,6 @@ function PlayerProfileLib:_ValidateMainData(dataT: PlayerTemplate.PlayerMainData
 
     return data
 end
-
 
 function PlayerProfileLib:_CompensateData(slot: string)
     local data = self.Profile.Data[slot].Attrs :: PlayerTemplate.PlayerDataJSON
@@ -539,7 +496,6 @@ function PlayerProfileLib:_CompensateData(slot: string)
     end
 end
 
-
 function PlayerProfileLib._GetCurrentDonation(profile: HarukaDatastore.Profile<PlayerTemplate.JSON>) : number
     local totalRobuxGained = 0
     for _, purchaseInfo in profile.Data.GamepassPurchaseLogs do
@@ -564,20 +520,14 @@ function PlayerProfileLib.CalDonationAndSave(profile: HarukaDatastore.Profile<Pl
     return 1599
 end
 
-
-
 function PlayerProfileLib:UpdateDonationRank()
     local profile = self.Profile
     if profile == nil then return end
-
 
     local totalRobuxGained = PlayerProfileLib._GetCurrentDonation(profile)
     if totalRobuxGained <= 0 then return end
 
     ServerBindables.RToAwardLeaderboardRank:Fire(self.Player, "Donation")
 end
-
-
-
 
 return PlayerProfileLib

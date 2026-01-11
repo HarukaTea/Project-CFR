@@ -318,7 +318,6 @@ local remotes = ReplicatedStorage:WaitForChild("Ark")
 local reliable = remotes:WaitForChild("Muelsyse_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected Muelsyse_RELIABLE to be a RemoteEvent")
 
-
 local function SendEvents()
 	if outgoing_used ~= 0 then
 		local buff = buffer.create(outgoing_used)

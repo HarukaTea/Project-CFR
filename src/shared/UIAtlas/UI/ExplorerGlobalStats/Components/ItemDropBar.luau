@@ -17,7 +17,6 @@ return function(scope: Fusion.Scope, props: {
     local itemInfo = ItemBook:GetItemInfo(props.ItemId)
     if not itemInfo then return nil end
 
-
 	local position = Fusion.Value(scope, UDim2.fromScale(-0.5, 0))
 
     SoundService.SFXs.ItemAcquired:Play()

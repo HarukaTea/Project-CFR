@@ -11,7 +11,6 @@ local plr = Players.LocalPlayer
 
 local wait = task.wait
 
-
 --// Core ui init
 do
     ReplicatedFirst:RemoveDefaultLoadingScreen()
@@ -19,7 +18,6 @@ do
     SG:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
     SG:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 end
-
 
 local function _createTempHolderGui()
     local holderGui = Instance.new("ScreenGui")
@@ -51,7 +49,6 @@ local function _createTempHolderGui()
     uiAspectRatio.AspectRatio = 24
     uiAspectRatio.Parent = bottom
 
-
     local text = Instance.new("TextLabel")
     text.Name = "LoadingText"
     text.Position = UDim2.fromScale(0, -0.3)
@@ -68,7 +65,6 @@ local function _createTempHolderGui()
     return holderGui
 end
 
-
 --// Load screen
 do
     local holderGui = _createTempHolderGui()
@@ -76,7 +72,6 @@ do
     --// replicated first service sometimes wont load
     repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
     repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
-
 
     --// Load view
     local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -94,7 +89,6 @@ do
         LoadingText = LoadingTextVal
     })
 
-
     HarukaLib:UITween(UI, "In", {
         TweenCallback = function()
             Debris:AddItem(holderGui, 1)
@@ -110,7 +104,6 @@ do
             wait(0.5)
         end
     end)
-
 
     local teleportData = TeleportService:GetLocalPlayerTeleportData()
     local shouldSkipTitlescreen = workspace:GetAttribute("NoRequiresTitlescreen")
@@ -139,7 +132,6 @@ do
     wait(3)
     isAlreadyLoaded = true
 
-
     if not shouldSkipTitlescreen then
         HarukaLib:UITween(UI, "Out", {
             TweenCallback = function()
@@ -148,7 +140,6 @@ do
         })
     end
     workspace:SetAttribute("Haruka_CompletedPreload", true)
-
 
     if shouldSkipTitlescreen then
         workspace:SetAttribute("Titlescreen_LoadSlot", true)
@@ -166,7 +157,6 @@ do
         local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
         ClientLib:LoadLightingPreset("Titlescreen")
     end
-
 
     repeat wait() until plr.Character
     repeat wait() until plr.Character.PrimaryPart
@@ -189,7 +179,6 @@ do
             ClientLib:LoadLightingPreset(worldId)
         end
 
-
         local insWhiteList = { "CharPreviewLocator", "MainCamera" }
         for _, ins: Instance in workspace.MapComponents.Titlescreen:GetChildren() do
             if not table.find(insWhiteList, ins.Name) then
@@ -206,7 +195,6 @@ do
         Debris:AddItem(SoundService.Musics.Titlescreen, 5)
     end
     workspace:SetAttribute("Haruka_GameEntered", true)
-
 
     Debris:AddItem(script, 15)
 end

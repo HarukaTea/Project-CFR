@@ -7,7 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
-
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
 local Children = Fusion.Children
@@ -27,7 +26,6 @@ return function(scope: Fusion.Scope, props: {
         KeyDisplay: string
     },
 
-
     ForcePosition: UDim2?,
     ForceSize: Fusion.Value<UDim2>?,
 
@@ -39,13 +37,11 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
-
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
-
 
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
@@ -55,7 +51,6 @@ return function(scope: Fusion.Scope, props: {
 
         if input == "Controller" then
             local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.Dash.Name] or KeybindsBook.Console.Dash.Name
-
 
             return Components.TextLabel(scope, {
                 Name = "Key",
@@ -95,7 +90,6 @@ return function(scope: Fusion.Scope, props: {
         end
     end)
 
-
     return Components.Frame(scope, {
         Name = "Ability1",
         BackgroundTransparency = 0,
@@ -104,11 +98,9 @@ return function(scope: Fusion.Scope, props: {
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
 
-
         Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(props.ForceSize) or UDim2.fromScale(1.2, 1.2)
         end),
-
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -168,7 +160,6 @@ return function(scope: Fusion.Scope, props: {
                     Components.ScaledTextUIStroke(scope, {})
                 },
             }),
-
 
             ProgressCircle(scope, {
                 Direction = "Left",

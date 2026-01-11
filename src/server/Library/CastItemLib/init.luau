@@ -7,15 +7,11 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
-
 local Types = require(script.Types)
-
 
 export type CastItemLib = Types.CastItemLib
 
-
 local CastItemLib = {} :: CastItemLib
-
 
 local function _preCheck(props: {
     ReqCombat: boolean,
@@ -27,7 +23,6 @@ local function _preCheck(props: {
 }) : boolean
 
     local player, char = data.Player, data.Char
-
 
     if not player or not char then
         return false
@@ -62,24 +57,18 @@ local function _eatSoundFunc(char: Model, func: () -> nil)
     local eatSound = SoundService.SFXs.EatSound :: Sound
     ServerLib:PlayWorldSound(eatSound, char.PrimaryPart.Position)
 
-
     task.delay(eatSound.TimeLength / 2, func)
 end
 local function _drinkSoundFunc(char: Model, func: () -> nil)
     local drinkSound = SoundService.SFXs.DrinkSound :: Sound
     ServerLib:PlayWorldSound(drinkSound, char.PrimaryPart.Position)
 
-
     task.delay(drinkSound.TimeLength / 2, func)
 end
-
-
 
 CastItemLib._preCheck = _preCheck
 CastItemLib._eatSoundFunc = _eatSoundFunc
 CastItemLib._drinkSoundFunc = _drinkSoundFunc
-
-
 
 for _, module: ModuleScript in script.Library:GetChildren() do
     CastItemLib[module.Name] = function(...)
@@ -89,6 +78,5 @@ end
 for _, module: ModuleScript in script.LibrarySP:GetChildren() do
     require(module)(CastItemLib)
 end
-
 
 return CastItemLib

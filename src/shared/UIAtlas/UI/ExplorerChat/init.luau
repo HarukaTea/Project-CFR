@@ -9,7 +9,6 @@ local ChatView = require(script.Components.ChatView)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
@@ -21,9 +20,7 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerChat") then
         plr.PlayerGui.ExplorerChat:Destroy()
@@ -61,10 +58,8 @@ return function (plr: Player)
     })
     self.UI = UI
 
-
     return function ()
         Fusion.doCleanup(scope)
-
 
     end
 end

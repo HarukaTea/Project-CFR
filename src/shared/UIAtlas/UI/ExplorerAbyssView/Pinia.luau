@@ -10,7 +10,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local AbyssBook = require(RepS.HarukaShared.Library.AbyssBook)
 
-
 export type Self = {
     plr: Player,
     char: Model,
@@ -32,8 +31,6 @@ export type Self = {
     Items: Fusion.Value<{ IntConstrainedValue }>
 }
 
-
-
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
@@ -46,10 +43,8 @@ return function (self: Self)
 
     self.Items = Value({})
 
-
     local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("AbyssSpeedrunContainer", 999))
     self.AbyssRanks = ranks :: Fusion.Value<{ IntValue }>
-
 
     self.ModifierChosen = {}
     for _, modifier: string in AbyssBook.Modifiers do
@@ -69,7 +64,6 @@ return function (self: Self)
     self.CurrentSelectedItem = Value("")
     self.CurrentSelectedItemUniqueId = Value("")
 
-
     local dawnbreakSymbol = Instance.new("IntConstrainedValue")
     dawnbreakSymbol.Name = "Dawnbreak"
     dawnbreakSymbol.Value = 1
@@ -79,7 +73,6 @@ return function (self: Self)
     dawnbreakSymbol:SetAttribute("HarukaUniqueId", HttpService:GenerateGUID(false))
     dawnbreakSymbol.Parent = workspace.MapComponents.AbyssLootsContainer
     table.insert(scope, dawnbreakSymbol)
-
 
     Fusion.Observer(scope, self.AbyssIndexSelected):onBind(function()
         for _, modifier: string in AbyssBook.Modifiers do
@@ -95,7 +88,6 @@ return function (self: Self)
         self.Items:set(CollectionService:GetTagged("AbyssLootsEntity"..index))
     end)
 
-
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
@@ -105,11 +97,9 @@ return function (self: Self)
         end
     }))
 
-
     table.insert(scope, Events.OpenAbyssUI_S.On(function()
         self.plr:SetAttribute("CurrentUIGroup", "AbyssView")
     end))
-
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

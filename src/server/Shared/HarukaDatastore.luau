@@ -2,13 +2,10 @@
 --// Inspired by ProfileStore, but we dont need to worry about multi-server safety, etc
 --// @Author: HarukaTea
 
-
 local DSS = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-
 
 type Dict = {[string]: any}
 export type Profile<T> = {
@@ -30,22 +27,17 @@ export type HarukaDatastore = {
     GetStore: (storeName: string, template: Dict) -> HarukaDatastore,
     CreateProfileAsync: <T>(self: HarukaDatastore, key: string, forceUseTemplateData: boolean?) -> Profile<T>,
 
-
     StoreName: string,
     Store: DataStore,
     Template: Dict,
     Key: string,
 }
 
-
-
 local HarukaDatastore = {} :: HarukaDatastore
 HarukaDatastore.__index = HarukaDatastore
 
-
 local Profile = {} :: Profile<Dict>
 Profile.__index = Profile
-
 
 local KEYINFO_MOCK = {
     GetMetadata = function(_: any)
@@ -56,16 +48,12 @@ local KEYINFO_MOCK = {
     end
 }
 
-
-
 function Profile:AddUserId(userId: number)
     self.UserId = userId
 end
 
-
 function Profile:SaveProfileAsync()
     if workspace:GetAttribute("DisableDatastore") then return end
-
 
     local success, result = pcall(function()
         return self.Store:UpdateAsync(self.Key, function(oldValue: Dict, keyInfo: DataStoreKeyInfo)
@@ -87,7 +75,6 @@ function Profile:SaveProfileAsync()
     end)
     if not success then warn(result) end
 end
-
 
 -- Transfer profile service data to new module
 function Profile:TransferDataAsync(storeName: string, key: string) : boolean
@@ -111,32 +98,21 @@ function Profile:TransferDataAsync(storeName: string, key: string) : boolean
     end
     HarukaLib.TableUtils.Reconcile(oriProfile, self.Template)
 
-
     self._IsTransferred = true
     self.Data = oriProfile
-
 
     return true
 end
 
-
-
-
-
-
-
 function HarukaDatastore.GetStore(storeName: string, template: Dict) : HarukaDatastore
     local self = setmetatable({}, HarukaDatastore)
-
 
     self.StoreName = storeName
     self.Store = DSS:GetDataStore(storeName)
     self.Template = template or {}
 
-
     return self
 end
-
 
 function HarukaDatastore:CreateProfileAsync(key: string, forceUseTemplateData: boolean?)
     self.Key = key
@@ -158,14 +134,9 @@ function HarukaDatastore:CreateProfileAsync(key: string, forceUseTemplateData: b
     selfProfile.DatastoreKeyInfo = keyInfo
     selfProfile._IsTransferred = keyInfo:GetMetadata()._IsTransferred or false
 
-
     HarukaLib.TableUtils.Reconcile(selfProfile.Data, self.Template)
-
 
     return selfProfile
 end
-
-
-
 
 return HarukaDatastore

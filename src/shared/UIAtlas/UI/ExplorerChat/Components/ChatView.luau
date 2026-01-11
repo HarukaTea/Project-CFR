@@ -7,12 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
-
 local BL = {
     ["That Bird With A Couple Lines Of Dialogue"] = true
 }
-
 
 return function (scope: Fusion.Scope, props: {
     IsChatShown: Fusion.Value<boolean>,
@@ -62,7 +59,6 @@ return function (scope: Fusion.Scope, props: {
             return nil
         end
     end)
-
 
     return Components.Frame(scope, {
         Name = "ExploringChatView",
@@ -189,7 +185,6 @@ return function (scope: Fusion.Scope, props: {
 
             key,
 
-
             Components.TextButton(scope, {
                 Name = "SkipBtn",
                 BackgroundColor3 = Components.BLUE_COLOR,
@@ -226,12 +221,10 @@ return function (scope: Fusion.Scope, props: {
                         VerticalAlignment = Enum.VerticalAlignment.Bottom
                     }),
 
-
                     Fusion.ForPairs(scope, props.ChoiceList, function(_, scope: Fusion.Scope, index: number, choice: string)
 
                         local choiceType = "Default"
                         local isSelecting = Fusion.Value(scope, false)
-
 
                         if string.find(choice, "ENTERMARKET") then
                             choiceType = "Market"
@@ -240,7 +233,6 @@ return function (scope: Fusion.Scope, props: {
                             choiceType = "Crafting"
                             choice = "[Enter Crafting]"
                         end
-
 
                         return index, Components.Frame(scope, {
                             Name = "Choice"..index,

@@ -3,7 +3,6 @@ export type Dict = { [string]: any } & {
     CostManaFunc: (char: Model) -> boolean
 }
 
-
 export type CastItemLib = {
     _preCheck: (props: {
         ReqCombat: boolean,
@@ -19,6 +18,5 @@ export type CastItemLib = {
 
     [string]: (player: Player, char: Model, extraInfo: Dict) -> number?
 }
-
 
 return nil

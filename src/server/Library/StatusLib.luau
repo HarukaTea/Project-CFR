@@ -14,7 +14,6 @@ local StatusBook = require(RepS.HarukaShared.Library.StatusBook)
 
 local StatusLib = {}
 
-
 --// Helper functions
 
 function StatusLib:Heal(char: Model, healAmount: number) : number?
@@ -24,8 +23,6 @@ function StatusLib:Heal(char: Model, healAmount: number) : number?
     if plr == nil then return end
 
     if char:FindFirstChild("AntiHeal") then return end
-
-
 
     local healBonus = char:GetAttribute("HealBonus") or 100
     healAmount = math.ceil(healAmount * healBonus / 100)
@@ -47,7 +44,6 @@ function StatusLib:HealPercentage(char: Model, percentage: number) : number?
 
     return StatusLib:Heal(char, math.ceil(char.Humanoid.MaxHealth * percentage / 100))
 end
-
 
 function StatusLib:RestoreMana(char: Model, restoreAmount: number) : number?
     if not ServerLib:IsCharValid(char) then return end
@@ -74,15 +70,11 @@ function StatusLib:RestoreManaPercentage(char: Model, percentage: number) : numb
     return StatusLib:RestoreMana(char, math.ceil(maxMana * percentage / 100))
 end
 
-
 function StatusLib:ChargeClassUlt(char: Model, amount: number)
     amount = math.ceil(amount * char:GetAttribute("ClassUltCharge") / 100)
 
     HarukaLib:AddAttr(char, "ClassUltProgress", amount)
 end
-
-
-
 
 function StatusLib:Boost(eff: string, char: Model, props: {
     Power: number?,
@@ -117,14 +109,12 @@ function StatusLib:Boost(eff: string, char: Model, props: {
     HarukaLib:AddAttr(char, exAttr, ex)
     HarukaLib:AddAttr(char, powerAttr, power)
 
-
     local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
         if not ServerLib:IsCharValid(char) then return end
 
         HarukaLib:AddAttr(char, exAttr, -ex)
         HarukaLib:AddAttr(char, powerAttr, -power)
     end)
-
 
     local effectSymbol = Instance.new("StringValue")
     effectSymbol.Name = eff
@@ -140,7 +130,6 @@ function StatusLib:Boost(eff: string, char: Model, props: {
     Debris:AddItem(effectSymbol, props.Duration)
 end
 
-
 function StatusLib:ATKBoost(char: Model, props: {
     DMGPower: number?,
     DMG: number?,
@@ -152,18 +141,15 @@ function StatusLib:ATKBoost(char: Model, props: {
     local plr = Players:GetPlayerFromCharacter(char)
     if plr == nil then return end
 
-
     local power = props.DMGPower or 0
     local ex = props.DMG or 0
 
     Events.PlayStatPoweredScreenFX_S.Fire(plr)
 
-
     HarukaLib:AddAttr(char, "MaxDMGEx", ex)
     HarukaLib:AddAttr(char, "MinDMGEx", ex)
     HarukaLib:AddAttr(char, "MaxDMGExPower", power)
     HarukaLib:AddAttr(char, "MinDMGExPower", power)
-
 
     local taskUniqueId = GlobalTimer:AddTask(props.Duration, function()
         if not ServerLib:IsCharValid(char) then return end
@@ -173,7 +159,6 @@ function StatusLib:ATKBoost(char: Model, props: {
         HarukaLib:AddAttr(char, "MaxDMGExPower", -power)
         HarukaLib:AddAttr(char, "MinDMGExPower", -power)
     end)
-
 
     local effectSymbol = Instance.new("StringValue")
     effectSymbol.Name = "ATK"
@@ -188,7 +173,6 @@ function StatusLib:ATKBoost(char: Model, props: {
     effectSymbol.Parent = char.EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
-
 
 function StatusLib:CreateCustomStatus(eff: string, char: Model, props: {
     Duration: number,
@@ -212,13 +196,11 @@ function StatusLib:CreateCustomStatus(eff: string, char: Model, props: {
 
     effectSymbol:SetAttribute("TaskUniqueId", HttpService:GenerateGUID(false))
 
-
     effectSymbol:SetAttribute("_PlayerOnly", props.PlayerOnly)
 
     effectSymbol.Parent = char.EffectList
     Debris:AddItem(effectSymbol, props.Duration)
 end
-
 
 local function _calDoTDMG(char: Model, dmgType: "DMG" | "Magic")
     if char:HasTag("PlayerCharEntity") then
@@ -268,7 +250,6 @@ StatusLib.DoT.Burn = function(target: Model, info: {
     _doDoTDMG(target, dmg, "BurnDebuff")
 end
 
-
 StatusLib.DoT.Bleed = function(target: Model, info: {
     Type: string,
     Creator: Model,
@@ -298,7 +279,6 @@ StatusLib.DoT.BloodButchered = function(target: Model, info: {
     _doDoTDMG(target, dmg, "BloodButcheredDebuff")
 end
 
-
 StatusLib.DoT.Poison = function(target: Model, info: {
     Type: string,
     Creator: Model,
@@ -313,6 +293,5 @@ StatusLib.DoT.Poison = function(target: Model, info: {
 
     _doDoTDMG(target, dmg, "PoisonDebuff")
 end
-
 
 return StatusLib

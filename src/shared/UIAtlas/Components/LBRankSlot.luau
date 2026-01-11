@@ -7,7 +7,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     Index: number,
     PlayerName: string,
@@ -21,7 +20,6 @@ return function (scope: Fusion.Scope, props: {
     if props.IsAbyss then
         text = HarukaLib:TimeifyNumber(props.Value / 1000, true)
     end
-
 
     return Components.Frame(scope, {
         Name = props.PlayerName,
@@ -60,7 +58,6 @@ return function (scope: Fusion.Scope, props: {
                 TextXAlignment = Enum.TextXAlignment.Right,
                 Text = text,
                 AutoLocalize = false,
-
 
                 [Children] = {
                     Components.UIPadding(scope, {

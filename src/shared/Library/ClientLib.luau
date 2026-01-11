@@ -5,7 +5,6 @@ local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
-
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
@@ -15,7 +14,6 @@ local ClientLib = {}
 
 type Dict = { [string]: any }
 
-
 local terrainPartRaycastParams = RaycastParams.new()
 terrainPartRaycastParams.FilterType = Enum.RaycastFilterType.Include
 terrainPartRaycastParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPartEntity")
@@ -24,7 +22,6 @@ terrainPartRaycastParams.IgnoreWater = true
 CollectionService:GetInstanceAddedSignal("TerrainPartEntity"):Connect(function(part)
 	terrainPartRaycastParams:AddToFilter(part)
 end)
-
 
 function ClientLib:WeldModel(part: BasePart, welded: Model)
 	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
@@ -63,14 +60,12 @@ function ClientLib:WeldModel(part: BasePart, welded: Model)
 	end
 end
 
-
 function ClientLib:FindGroundByRay(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 35, -Vector3.yAxis * 159, terrainPartRaycastParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos
 end
-
 
 function ClientLib:WeldWeapon(weapon: Model, char: Model) : Model
 	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
@@ -82,13 +77,11 @@ function ClientLib:WeldWeapon(weapon: Model, char: Model) : Model
 	weldTarget = char:FindFirstChild(weldTarget)
 	if not weldTarget then warn("Cannot weld weapon, target not found") return end
 
-
 	motor6D.Part0 = weldTarget
 	weapon.Parent = char
 
 	return weapon
 end
-
 
 function ClientLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 5, -Vector3.yAxis * 30, terrainPartRaycastParams)
@@ -97,7 +90,6 @@ function ClientLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 	return givenPos
 end
 
-
 function ClientLib:IsModelValid(model: Instance?) : boolean
 	if not model then return false end
     if not model.Parent then return false end
@@ -105,7 +97,6 @@ function ClientLib:IsModelValid(model: Instance?) : boolean
 
     return true
 end
-
 
 function ClientLib:IsCharValid(char: Instance?) : boolean
 	if not ClientLib:IsModelValid(char) then return false end
@@ -117,7 +108,6 @@ function ClientLib:IsCharValid(char: Instance?) : boolean
 
 	return true
 end
-
 
 function ClientLib:GetPlayerByUniqueId(uniqueId: string) : Player?
 	local player: Player = nil
@@ -133,7 +123,6 @@ function ClientLib:GetPlayerByUniqueId(uniqueId: string) : Player?
 
 	return player
 end
-
 
 function ClientLib:PlayWorldSound(sound: Sound, pos: Vector3)
 	local part = HarukaLib:CreateMockPart()
@@ -152,7 +141,6 @@ function ClientLib:PlayWorldSound(sound: Sound, pos: Vector3)
 	Debris:AddItem(part, sound.TimeLength + 0.5)
 end
 
-
 function ClientLib:TrackEffectListToUI(props: {
 	Target: Model,
 	Scope: Fusion.Scope,
@@ -164,7 +152,6 @@ function ClientLib:TrackEffectListToUI(props: {
 
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 
-
 	local effectListContainer = Instance.new("Folder")
 	effectListContainer.Name = "EffectListSymbols"
 	effectListContainer.Parent = props.Target
@@ -172,7 +159,6 @@ function ClientLib:TrackEffectListToUI(props: {
 
 	local effectListEnemy = FusionComponents.useChildren(props.Scope, props.Target.EffectList)
 	local containerVal = FusionComponents.useChildren(props.Scope, effectListContainer)
-
 
 	Fusion.Observer(props.Scope, containerVal):onBind(function()
 		local children = #effectListContainer:GetChildren()
@@ -189,7 +175,6 @@ function ClientLib:TrackEffectListToUI(props: {
 
 			local playerOnly = effectObj:GetAttribute("PlayerOnly") :: string
 			if playerOnly and playerOnly ~= Players.LocalPlayer.Name then continue end
-
 
 			local symbol = Instance.new("StringValue")
 			symbol.Name = uniqueId
@@ -214,7 +199,6 @@ function ClientLib:TrackEffectListToUI(props: {
 			Promise.delay(endClock - nowClock):andThen(function()
 				Fusion.doCleanup(newScope)
 			end):catch(function() end)
-
 
 			local effectUISymbol = Instance.new("ObjectValue")
 			effectUISymbol.Name = "EffectUI"
@@ -249,7 +233,6 @@ function ClientLib:TrackEffectListToUI(props: {
 	end)
 end
 
-
 function ClientLib:TrackInputTextbox(props: {
 	Scope: Fusion.Scope,
 	TextBox: TextBox,
@@ -283,8 +266,6 @@ function ClientLib:TrackInputTextbox(props: {
 
 	return amount
 end
-
-
 
 function ClientLib:LoadLightingPreset(presetId: string)
 	local lightingPresets = RepS.Packages.LightingPresets :: Folder
@@ -324,8 +305,6 @@ function ClientLib:LoadLightingPreset(presetId: string)
 	end
 end
 
-
-
 function ClientLib:InitCharDeadTrackers(props: {
 	Add: (item: any) -> any,
 	Empty: () -> nil,
@@ -336,7 +315,6 @@ function ClientLib:InitCharDeadTrackers(props: {
 	local Add, Empty = props.Add, props.Empty
 	local char = props.Char
 	local plr = props.Player
-
 
 	Add(plr.CharacterRemoving:Connect(function()
 		Empty()
@@ -358,7 +336,6 @@ function ClientLib:InitCharDeadTrackers(props: {
 	end))
 end
 
-
 function ClientLib:InitUIFramework(t: Dict, plr: Player, uiId: string, withoutChar: boolean?)
 	t.plr = plr
 	if not withoutChar then
@@ -370,6 +347,5 @@ function ClientLib:InitUIFramework(t: Dict, plr: Player, uiId: string, withoutCh
 		plr.PlayerGui[uiId]:Destroy()
     end
 end
-
 
 return ClientLib

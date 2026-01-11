@@ -2,7 +2,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local ArtifactUniversal = require(ReplicatedStorage.HarukaRes.Artifacts.ArtifactUniversal)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
@@ -12,11 +11,9 @@ local Add, Empty = HarukaLib.Bin()
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 
-
 script:SetAttribute("ReqDestroyingEvent", true)
 
 local added = false
-
 
 Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
     ["Prop-Value"] = function(weapon: string)
@@ -27,7 +24,6 @@ Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
             added = false
             char:SetAttribute("_PRIVATE_Crimson3", false)
 
-
             HarukaLib:AddAttr(char, "MagicExPower", -0.35)
             return
         end
@@ -37,19 +33,15 @@ Add(HarukaLib:Hydrate(plr.EquippingItems.Weapon1, {
             added = true
             char:SetAttribute("_PRIVATE_Crimson3", true)
 
-
             HarukaLib:AddAttr(char, "MagicExPower", 0.35)
 
         elseif not hasStaff and added then
             added = false
             char:SetAttribute("_PRIVATE_Crimson3", false)
 
-
             HarukaLib:AddAttr(char, "MagicExPower", -0.35)
         end
     end
 }))
-
-
 
 ArtifactUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

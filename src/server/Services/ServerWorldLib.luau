@@ -10,17 +10,14 @@ local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 local StarterGui = game:GetService("StarterGui")
 
-
 export type ServerWorldLibClass = {
     Funcs: { () -> nil },
 
     Init: (self: ServerWorldLibClass) -> nil
 }
 
-
 local ServerWorldLib = {}
 ServerWorldLib.Funcs = {}
-
 
 local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
@@ -30,7 +27,6 @@ local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
-
 function ServerWorldLib:Init()
     if not workspace:FindFirstChild("Maps") then
         error("Maps folder not found in workspace")
@@ -39,7 +35,6 @@ function ServerWorldLib:Init()
         error("MapComponents folder not found in workspace")
     end
 
-
     for _, func: () -> nil in ServerWorldLib.Funcs do
         Promise.try(func):catch(function(err)
             warn(tostring(err))
@@ -47,9 +42,7 @@ function ServerWorldLib:Init()
     end
 end
 
-
 --// Private functions
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local spawnPoint = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true) :: SpawnLocation
@@ -61,8 +54,6 @@ table.insert(ServerWorldLib.Funcs, function()
     spawnPoint.Enabled = true
     spawnPoint.Duration = 0
 end)
-
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local function _createFolder(name: string, parent: Instance)
@@ -86,14 +77,12 @@ table.insert(ServerWorldLib.Funcs, function()
     _createFolder("GlobalServers", workspace.MapComponents)
     _createFolder("SkyGalleonsContainer", workspace.MapComponents)
 
-
     _clearFolder("Accessory Storage", workspace)
     _clearFolder("DO_NOT_REMOVE_ForgeTextureCache", workspace.Terrain)
     _clearFolder("DO_NOT_REMOVE_ForgeSharedPartCache", workspace.Terrain)
     _clearFolder("Trashcan", ServerStorage)
     _clearFolder("Brushtool2_Plugin_Storage", ServerStorage)
     _clearFolder("RBX_ANIMSAVES", ServerStorage)
-
 
     -- nah
     StarterGui:ClearAllChildren()
@@ -104,7 +93,6 @@ table.insert(ServerWorldLib.Funcs, function()
         susScript:Destroy()
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     --//TODO: add `CanTouch` in
@@ -122,7 +110,6 @@ table.insert(ServerWorldLib.Funcs, function()
     _optimize(ReplicatedStorage)
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     for index: number, lootsInfo: { string } in AbyssBook.Loots do
         for _, loot: string in lootsInfo do
@@ -136,7 +123,6 @@ table.insert(ServerWorldLib.Funcs, function()
         end
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     for _, product in ItemBook:GetAllItems() do
@@ -157,17 +143,14 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     local pathModifier = Instance.new("PathfindingModifier")
     pathModifier.Label = "DangerZone"
     pathModifier.PassThrough = false
 
-
     local treeContainer = Instance.new("Folder")
     treeContainer.Name = "TreeContainer"
     treeContainer.Parent = workspace.MapComponents
-
 
     for _, tree: Model in workspace.Maps:QueryDescendants("Model") do
         if string.find(string.lower(tree.Name), "tree") then
@@ -198,12 +181,10 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     local flowerContainer = Instance.new("Folder")
     flowerContainer.Name = "FlowerContainer"
     flowerContainer.Parent = workspace.MapComponents
-
 
     local whiteList = { "Flower", "Grass", "Bush" }
     for _, child: Instance in workspace.Maps:QueryDescendants("Model") do
@@ -214,7 +195,6 @@ table.insert(ServerWorldLib.Funcs, function()
                 break
             end
         end
-
 
         if child.Parent:IsA("Model") then
             for _, name in whiteList do
@@ -241,13 +221,11 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     for _, model: Model in ReplicatedStorage:QueryDescendants("Model") do
         model.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     for _, model: Model in CollectionService:GetTagged("WindmillWings") do
@@ -257,7 +235,6 @@ table.insert(ServerWorldLib.Funcs, function()
         model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local function _updateBorder(border: Model)
@@ -278,7 +255,6 @@ table.insert(ServerWorldLib.Funcs, function()
         _updateBorder(border)
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     for _, orb: Model in ReplicatedStorage.Packages.ClassAttacks:QueryDescendants(".OrbEntity") do
@@ -308,7 +284,6 @@ table.insert(ServerWorldLib.Funcs, function()
         angularVelocity.MaxTorque = math.huge
         angularVelocity.Parent = orb.PrimaryPart
 
-
         local orbPrimaryPart = orb.PrimaryPart :: BasePart
 
         if not orb:GetAttribute("WithoutRecolor") then
@@ -323,7 +298,6 @@ table.insert(ServerWorldLib.Funcs, function()
         orb.Hitbox.CanTouch = true
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local terrainFolders = {}
@@ -351,7 +325,6 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     local modelContainer = Instance.new("Folder")
     modelContainer.Name = "MapModelContainer"
@@ -367,7 +340,6 @@ table.insert(ServerWorldLib.Funcs, function()
         if model:HasTag("FlowerEntity") then continue end
         if model:HasTag("IgnoreCulling") then continue end
 
-
         local isInModelContainer = false
         for _, container: Folder in modelContainers do
             if model:IsDescendantOf(container) then
@@ -381,7 +353,6 @@ table.insert(ServerWorldLib.Funcs, function()
         end
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local MAX_SIZE_THRESHOLD = 5
@@ -401,7 +372,6 @@ table.insert(ServerWorldLib.Funcs, function()
 
     print("[HarukaServer] Disabled shadow casting for "..count.." parts")
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     for _, material in Enum.Material:GetEnumItems() do
@@ -438,7 +408,6 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.CombatBorder, CollisionBook.Group.Hitbox)
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.Unloads.EncounterBorder, CollisionBook.Group.NoCollision)
@@ -450,15 +419,12 @@ table.insert(ServerWorldLib.Funcs, function()
     HarukaLib:SetCollisionGroup(ReplicatedStorage.Packages.SkillProjectiles, CollisionBook.Group.NoCollision)
 end)
 
-
-
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Markets") then
         local folder = Instance.new("Folder")
         folder.Name = "Markets"
         folder.Parent = workspace.MapComponents
     end
-
 
     for _, npc: Model in workspace.MapComponents.Markets:QueryDescendants("Model,ProximityPrompt") do
         if npc:FindFirstChildOfClass("Humanoid") then
@@ -484,7 +450,6 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("NPCs") then
         local folder = Instance.new("Folder")
@@ -509,7 +474,6 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Non-NPCs") then
         local folder = Instance.new("Folder")
@@ -526,9 +490,6 @@ table.insert(ServerWorldLib.Funcs, function()
         end
     end
 end)
-
-
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local areaZones = Instance.new("Folder")
@@ -552,12 +513,9 @@ table.insert(ServerWorldLib.Funcs, function()
     areaZones.Parent = workspace.MapComponents
 end)
 
-
-
 table.insert(ServerWorldLib.Funcs, function()
 	local function _updatePrompt(prompt: Instance)
 		if not prompt:IsA("ProximityPrompt") then return end
-
 
 		local part = prompt.Parent :: BasePart
 		if not part:IsA("BasePart") then
@@ -582,7 +540,6 @@ table.insert(ServerWorldLib.Funcs, function()
 	workspace.DescendantAdded:Connect(_updatePrompt)
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if ServerStorage:FindFirstChild("Trashcan") then
         ServerStorage.Trashcan:Destroy()
@@ -591,7 +548,6 @@ table.insert(ServerWorldLib.Funcs, function()
         ServerStorage.Brushtool2_Plugin_Storage:Destroy()
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     local function shutdownSetup(closeReason: Enum.CloseReason)
@@ -603,7 +559,6 @@ table.insert(ServerWorldLib.Funcs, function()
     game:BindToClose(shutdownSetup)
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Chests") then return end
 
@@ -614,7 +569,6 @@ table.insert(ServerWorldLib.Funcs, function()
         end
     end
 end)
-
 
 table.insert(ServerWorldLib.Funcs, function()
     for _, mob: Model in ReplicatedStorage.Packages.EnemyModels:QueryDescendants("Model") do
@@ -634,7 +588,6 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Statues") then return end
 
@@ -645,10 +598,8 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if not workspace.MapComponents:FindFirstChild("Materials") then return end
-
 
     local givers = {}
 
@@ -670,7 +621,6 @@ table.insert(ServerWorldLib.Funcs, function()
     end):catch(function() end)
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if Lighting:FindFirstChild("_Archived") then
         for _, sky: Sky in Lighting._Archived:GetChildren() do
@@ -679,12 +629,10 @@ table.insert(ServerWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ServerWorldLib.Funcs, function()
     if ReplicatedStorage.Packages:FindFirstChild("Titlescreen") then
         ReplicatedStorage.Packages.Titlescreen.Parent = workspace.MapComponents
     end
 end)
-
 
 return ServerWorldLib

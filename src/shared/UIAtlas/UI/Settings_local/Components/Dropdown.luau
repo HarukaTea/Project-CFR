@@ -7,7 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
@@ -21,8 +20,6 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelectingDropdownList = Fusion.Value(scope, false)
     local totalListSize = Fusion.Value(scope, Vector2.zero)
-
-
 
 	return Components.Frame(scope, {
 		Name = props.OptionId,
@@ -55,7 +52,6 @@ return function(scope: Fusion.Scope, props: {
 					})
 				}
 			}),
-
 
             Components.Frame(scope, {
                 Name = "DropdownButton",
@@ -119,7 +115,6 @@ return function(scope: Fusion.Scope, props: {
                     })
                 }
             }),
-
 
 			Components.Frame(scope, {
                 Name = "DropdownList",
@@ -237,7 +232,6 @@ return function(scope: Fusion.Scope, props: {
                     })
                 }
 			}),
-
 
 			Components.Frame(scope, {
                 Name = "Hover",

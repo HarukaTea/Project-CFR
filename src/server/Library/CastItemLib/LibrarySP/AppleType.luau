@@ -4,9 +4,7 @@ local SSS = game:GetService("ServerScriptService")
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
-
 local Types = require(script.Parent.Parent.Types)
-
 
 return function (self: Types.CastItemLib)
     local CastItemLib = self
@@ -21,7 +19,6 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
-
 
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 5)
@@ -41,7 +38,6 @@ return function (self: Types.CastItemLib)
         })
         if not check then return 0 end
 
-
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 10)
 
@@ -50,7 +46,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.GoldenApple = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
@@ -62,7 +57,6 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
-
 
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 15)

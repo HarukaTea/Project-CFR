@@ -8,10 +8,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
-
 local Types = require(script.Parent.Parent.Types)
-
 
 --// Main
 
@@ -19,16 +16,13 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
     local VFXSceneLib = self
     if not ClientLib:IsCharValid(char) then return end
 
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib:IsCharValid(targetingEnemy) then return end
-
 
     local beamStrike = RepS.Packages.SkillProjectiles:FindFirstChild("BeamStrike", true):Clone() :: Model
     beamStrike:PivotTo(char.PrimaryPart.CFrame)
     beamStrike.Parent = char
     Debris:AddItem(beamStrike, 6)
-
 
     Promise.new(function(resolve, reject)
         while beamStrike and beamStrike.Parent do
@@ -39,9 +33,7 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
         resolve()
     end):timeout(7):catch(function() end)
 
-
     local tempMarkedContainer = VFXSceneLib._createMarkContainer()
-
 
     Promise.new(function()
         local isFound = false
@@ -62,11 +54,9 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
             for _, symbol: ObjectValue in char.TargetingList:GetChildren() do
                 if not ClientLib:IsCharValid(symbol.Value) then continue end
 
-
                 local obj = symbol.Value :: Instance
                 local uniqueId = obj:GetAttribute("HarukaUniqueId") :: string
                 if tempMarkedContainer:FindFirstChild(uniqueId) then continue end
-
 
                 local entity = obj :: Model
                 local enemyPos = entity.PrimaryPart.Position
@@ -78,7 +68,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
                     bool.Value = true
                     bool.Parent = tempMarkedContainer
                     Debris:AddItem(bool, 2)
-
 
                     Events.DMGEnemyBySkills_C.Fire({
                         ProjectileUniqueId = projectileUniqueId,

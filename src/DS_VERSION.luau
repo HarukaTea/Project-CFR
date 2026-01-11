@@ -3,7 +3,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 
-
 local isMainPlace = game.GameId == AssetBook.CFUniverseId_Main
 if not isMainPlace then
     return {

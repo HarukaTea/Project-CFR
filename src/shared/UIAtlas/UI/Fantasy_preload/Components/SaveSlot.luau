@@ -20,7 +20,6 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-
 local function Label(scope: Fusion.Scope, props: { [string]: any }, emptyVal: Fusion.Value<boolean>)
     local default = {
         AnchorPoint = Vector2.new(0.5, 0),
@@ -34,7 +33,6 @@ local function Label(scope: Fusion.Scope, props: { [string]: any }, emptyVal: Fu
 
     return Components.TextLabel(scope, default)
 end
-
 
 return function (scope: Fusion.Scope, props: {
     SlotId: number,
@@ -74,7 +72,6 @@ return function (scope: Fusion.Scope, props: {
         posX:set(POS[props.SlotId])
     end))
 
-
     local playerClass = Value("Burst")
     local playerLevel = Value(1)
     local playerLastJoined = Value(DateTime.now():ToIsoDate())
@@ -83,7 +80,6 @@ return function (scope: Fusion.Scope, props: {
     local playerWeapon = Value("WoodenSword")
 
     local profileContainer = Players.LocalPlayer.ProfileContainer :: Folder
-
 
     table.insert(scope, HarukaLib:Hydrate(profileContainer, {
         ["Attr_Slot"..props.SlotId.."_PlayTime"] = function(val: number)
@@ -108,7 +104,6 @@ return function (scope: Fusion.Scope, props: {
             end
         }))
     end
-
 
     return Components.Frame(scope, {
         Name = "Slot"..props.SlotId,
@@ -168,7 +163,6 @@ return function (scope: Fusion.Scope, props: {
                 end
             end),
 
-
             Components.HoverImageButton(scope, {
                 [Fusion.OnEvent("MouseEnter")] = function()
                     isSelecting:set(true)
@@ -177,7 +171,6 @@ return function (scope: Fusion.Scope, props: {
                     isSelecting:set(false)
                 end,
 
-
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     props.SaveSlotClickedSignal:Fire(props.SlotId)
                 end,
@@ -185,14 +178,12 @@ return function (scope: Fusion.Scope, props: {
 
             CAPatternTex(scope, {}),
 
-
             Label(scope, {
                 Name = "FileId",
                 Position = UDim2.fromScale(0.5, 0.02),
                 Size = UDim2.fromScale(0.86, 0.1),
                 Text = "File #"..props.SlotId,
             }, false),
-
 
             Components.IconImageLabel(scope, {
                 Name = "Class",
@@ -216,8 +207,6 @@ return function (scope: Fusion.Scope, props: {
                     return not use(isEmpty)
                 end)
             }),
-
-
 
             Label(scope, {
                 Name = "Level",
@@ -257,20 +246,17 @@ return function (scope: Fusion.Scope, props: {
                 TextColor3 = Color3.fromHex('#ffeaa7'),
             }, isEmpty),
 
-
             Fusion.Computed(scope, function(use: Fusion.Scope, scope: Fusion.Scope)
                 if use(props.CharacterModel) == nil then
                     return nil
                 elseif use(props.CharacterModel) and use(props.CharacterModel).ClassName == "Model" and not use(isEmpty) then
                     local charModel = use(props.CharacterModel) :: Model
 
-
                     local camera = Instance.new("Camera")
                     camera.Name = "CharacterPreviewCamera_"..props.SlotId
                     camera.CameraType = Enum.CameraType.Scriptable
 
                     table.insert(scope, camera)
-
 
                     local vpFrame = Components.ViewportFrame(scope, {
                         Name = "CharacterPreview",
@@ -290,7 +276,6 @@ return function (scope: Fusion.Scope, props: {
                         }
                     })
                     camera.Parent = vpFrame
-
 
                     table.insert(scope, task.spawn(function()
                         --- weld weapons to character
@@ -335,7 +320,6 @@ return function (scope: Fusion.Scope, props: {
                 end
             end),
 
-
             Label(scope, {
                 Name = "LastJoined",
                 Position = UDim2.fromScale(0.5, 0.87),
@@ -349,7 +333,6 @@ return function (scope: Fusion.Scope, props: {
                 TextXAlignment = Enum.TextXAlignment.Center,
             }, isEmpty),
 
-
             Components.TextLabel(scope, {
                 Name = "Empty",
                 AnchorPoint = Vector2.new(0.5, 0.5),
@@ -362,7 +345,6 @@ return function (scope: Fusion.Scope, props: {
                     return use(isEmpty)
                 end)
             }),
-
 
             Components.Frame(scope, {
                 Name = "FileSelections",
@@ -380,7 +362,6 @@ return function (scope: Fusion.Scope, props: {
                         HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         VerticalAlignment = Enum.VerticalAlignment.Bottom,
                     }),
-
 
                     Fusion.ForPairs(scope, { "Erase" }, function(_, scope: Fusion.Scope, index: number, id: string)
                         local thatIsSelecting = Fusion.Value(scope, false)
@@ -403,7 +384,6 @@ return function (scope: Fusion.Scope, props: {
                                     [Fusion.OnEvent("MouseLeave")] = function()
                                         thatIsSelecting:set(false)
                                     end,
-
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         if id == "Erase" then

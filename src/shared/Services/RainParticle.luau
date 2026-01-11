@@ -4,7 +4,6 @@ local RS = game:GetService("RunService")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 export type RainParticleClass = {
 	__index: RainParticleClass,
 
@@ -25,17 +24,14 @@ export type RainParticleClass = {
 	Enabled: boolean,
 }
 
-
 --// Variables
 
 local rainCastContainer = Instance.new("Folder")
 rainCastContainer.Name = "RainCastProjectile"
 rainCastContainer.Parent = workspace.Terrain
 
-
 local rainCastPart = RepS.Packages.Unloads.RainCast :: BasePart
 rainCastPart.Size = Vector3.new(45, 1, 45)
-
 
 local rainParts = {
 	[1] = rainCastPart:Clone(),
@@ -59,13 +55,10 @@ local function _replicatePos(cameraCFrame: CFrame)
 	rainParts[4].CFrame = CF + (CF.LookVector * 45)
 end
 
-
-
 --// Constructor
 
 local Particles = {} :: RainParticleClass
 Particles.__index = Particles
-
 
 function Particles.new()
 	local self = setmetatable({}, Particles)
@@ -80,7 +73,6 @@ function Particles.new()
 	return self
 end
 
-
 function Particles:Enable()
 	if self.Enabled then return end
 
@@ -94,7 +86,6 @@ function Particles:Enable()
 	end))
 end
 
-
 function Particles:Disable()
 	self.Enabled = false
 	self.Empty()
@@ -103,7 +94,6 @@ function Particles:Disable()
 end
 Particles.Destroy = Particles.Disable
 
-
 function Particles:SetRainCastParticleRate(rate: number)
 	for _, part: BasePart in self.RainCastParts do
 		for _, particle in part:QueryDescendants("ParticleEmitter") do
@@ -111,6 +101,5 @@ function Particles:SetRainCastParticleRate(rate: number)
 		end
 	end
 end
-
 
 return Particles

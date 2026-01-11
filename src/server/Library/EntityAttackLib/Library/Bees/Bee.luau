@@ -3,22 +3,17 @@ local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
-
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -27,8 +22,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -43,12 +36,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
 
     UniversalEntity:InitFlyingEssentials(entity, 7)
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -56,8 +47,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         return true
     end
-
-
 
     local function _lookAt(target: Model)
 
@@ -77,7 +66,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             Entity = entity,
             AnimId = "SpikeAttack"
         })
-
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
@@ -128,7 +116,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-
             _spikeShot(target)
             wait(0.5)
         end
@@ -146,16 +133,13 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         end
     end)
 
-
     --// attack loop
     wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

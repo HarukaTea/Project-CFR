@@ -8,22 +8,17 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local BezierMath = require(RepS.HarukaShared.Shared.HarmonyLib.BezierMath)
 
-
 local Types = require(script.Parent.Parent.Types)
 
-
 local wait = task.wait
-
 
 --// Main
 
 return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib:IsCharValid(targetingEnemy) then return end
-
 
     local angles = {
         CFrame.new(math.random(10, 20), 0, 0),
@@ -39,13 +34,11 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
         impact.Parent = workspace.Terrain
         Debris:AddItem(impact, 1)
 
-
         HarukaLib:CreateTween(impact:FindFirstChildWhichIsA("PointLight", true), AssetBook.TweenInfos.one, {
             Brightness = 0
         }):Play()
         HarukaLib:EmitParticles(impact)
     end
-
 
     for _ = 1, 3 do
         local endCF = targetingEnemy.PrimaryPart.CFrame

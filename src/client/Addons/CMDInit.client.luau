@@ -5,13 +5,11 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local TextChatService = game:GetService("TextChatService")
 
-
 local Events = require(RepS.HarukaShared.Library.Events)
 
 local plr = Players.LocalPlayer
 
 local wait = task.wait
-
 
 --// rejoin command debug for all players
 local worldId = workspace:GetAttribute("WorldId") :: string
@@ -33,19 +31,14 @@ if worldId and table.find(whiteList, worldId) then
     end)
 end
 
-
-
 wait(5)
 local UNIVERSE_IDS = {
     ["6754928573"] = 2
 }
 local testerRank = UNIVERSE_IDS[tostring(game.GameId)] or 127
 
-
 repeat wait() until plr:GetAttribute("Rank")
 if (plr:GetAttribute("Rank") or 0) < testerRank then return end
-
-
 
 local HarukaCMD = require(RepS.HarukaShared.Shared.HarukaCMDClient)
 

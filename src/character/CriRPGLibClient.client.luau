@@ -20,14 +20,12 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ProjectileLib = require(RepS.HarukaShared.Library.ProjectileLib)
 local StatusBook = require(RepS.HarukaShared.Library.StatusBook)
 
-
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
 
 repeat task.wait() until char:GetAttribute("Haruka_CharClientInited")
 
 local Add, Empty = HarukaLib.Bin()
-
 
 type CriRPGLibClass = {
     Funcs: { () -> nil },
@@ -36,13 +34,10 @@ type CriRPGLibClass = {
     Destroy: (self: CriRPGLibClass) -> nil,
 }
 
-
 local CriRPGLib = {} :: CriRPGLibClass
 CriRPGLib.Funcs = {}
 
-
 local wait = task.wait
-
 
 --// Helper functions
 
@@ -62,7 +57,6 @@ local function _fadeOrb(orb: Model)
         UseHarukaTween = true
     })
 
-
     HarukaLib:CreateTween(orb.ForceField, AssetBook.TweenInfos.onceHalf, {
         Transparency = 1,
         Position = orb.ForceField.Position + Vector3.new(0, -6, 0)
@@ -79,12 +73,10 @@ local function _fadeOrb(orb: Model)
     Debris:AddItem(orb, 0.35)
 end
 
-
 function CriRPGLib:Init()
     for _, func: () -> nil in self.Funcs do
         func()
     end
-
 
     ClientLib:InitCharDeadTrackers({
         Char = char,
@@ -97,11 +89,9 @@ function CriRPGLib:Init()
     })
 end
 
-
 function CriRPGLib:Destroy()
     Empty()
 end
-
 
 --// Private Methods
 
@@ -136,7 +126,6 @@ table.insert(CriRPGLib.Funcs, function()
                 char:PivotTo(entityPos * CFrame.new(math.random(-8, 8), 5.99, math.random(-8, 8)))
             end
 
-
             local isBoss = false
             local targetMusicId = "None"
             Promise.new(function(resolve)
@@ -153,7 +142,6 @@ table.insert(CriRPGLib.Funcs, function()
                 resolve()
 
             end):catch(function() end):await()
-
 
             pcall(function()
                 local function _playNormalCombatMusic()
@@ -209,14 +197,12 @@ table.insert(CriRPGLib.Funcs, function()
     _destroyCombatBorder()
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local areaAdd, areaEmpty = HarukaLib.Bin()
 
     local areaQueue = HarukaLib.Queue()
     Add(areaEmpty)
     Add(areaQueue)
-
 
     local function _calculateColor(x: number) : Color3
         x %= 24
@@ -259,7 +245,6 @@ table.insert(CriRPGLib.Funcs, function()
 
                     wait(0.3)
                     overworldMusic.SoundId = targetSoundOW.SoundId
-
 
                     overworldMusic:Play()
                     overworldMusic.PlaybackSpeed = targetSoundOW.PlaybackSpeed
@@ -319,15 +304,12 @@ table.insert(CriRPGLib.Funcs, function()
                 end
             end
 
-
             --- apply rain
             Lighting:SetAttribute("RainLevel", LocationBook[location].RainLevel or 0)
-
 
             --- apply character base stat
             char:SetAttribute("BaseSpeed", LocationBook[location].BaseSpeed or 40)
             char:SetAttribute("BaseJumpPower", LocationBook[location].BaseJumpPower or 50)
-
 
             --- apply atmosphere
 
@@ -364,7 +346,6 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local orbContainer = Instance.new("Folder")
     orbContainer.Name = "OrbContainer_Client"
@@ -373,7 +354,6 @@ table.insert(CriRPGLib.Funcs, function()
 
     Add(Events.PlaceOrb_S.On(function(data)
         if not char:GetAttribute("IsInCombat") then return end
-
 
         local orbId, orbPos = data.OrbId, data.OrbLocationPos
         local orb = RepS.Packages.ClassAttacks:FindFirstChild(orbId, true) :: Model
@@ -415,7 +395,6 @@ table.insert(CriRPGLib.Funcs, function()
         symbolUI.Parent = orb
     end))
 
-
     local function _checkCombatState(state: boolean)
         if not state then
             orbContainer:ClearAllChildren()
@@ -434,7 +413,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-IsInCombat"] = _checkCombatState
     }))
 end)
-
 
 table.insert(CriRPGLib.Funcs, function()
     --[[
@@ -456,7 +434,6 @@ table.insert(CriRPGLib.Funcs, function()
             local orb = hit.Parent
             if orb:FindFirstChild("SpawnCooldown") then return end
 
-
             local whiteList = { "HEAL_ATTACK", "BUFF_ATTACK" }
             local style = orb:GetAttribute("Style") :: string
 
@@ -472,7 +449,6 @@ table.insert(CriRPGLib.Funcs, function()
             local orbUniqueId = orb:GetAttribute("HarukaUniqueId") :: string
 
             if not orbUniqueId then return end
-
 
             task.delay(0.25, function()
                 humanoid.AutoRotate = true
@@ -501,7 +477,6 @@ table.insert(CriRPGLib.Funcs, function()
                 local bounceBuff = char:GetAttribute("OrbBounce") / 100
 
                 bounceWeight *= bounceBuff
-
 
                 local vectorVelocity = char.Humanoid.MoveDirection * 10 + Vector3.yAxis * bounceWeight
                 if orb:GetAttribute("HorizontalVelocity") then
@@ -578,25 +553,21 @@ table.insert(CriRPGLib.Funcs, function()
     end))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local projectileContainer = Instance.new("Folder")
     projectileContainer.Name = "ProjectileContainer_Client"
     projectileContainer.Parent = ServerStorage
     Add(projectileContainer)
 
-
     local uniProjectileContainer = Instance.new("Folder")
     uniProjectileContainer.Name = "UniProjectileContainer_Client"
     uniProjectileContainer.Parent = workspace.MapComponents
     Add(uniProjectileContainer)
 
-
     Add(Events.SpawnEnemyATKs_S.On(function(data)
         if not char:GetAttribute("IsInCombat") then return end
 
         projectileContainer = projectileContainer or workspace.Terrain
-
 
         local projectileId, projectileCF = data.ProjectileId, data.ProjectileCF
         local projectileOwner = data.ProjectileOwner
@@ -616,11 +587,9 @@ table.insert(CriRPGLib.Funcs, function()
         projectile = projectile:Clone() :: Model
         Debris:AddItem(projectile, 10)
 
-
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)
         projectile:SetAttribute("CombatLocation", projectileOwner:GetAttribute("CombatLocation"))
         projectile:PivotTo(projectileCF)
-
 
         local ownerSymbol = Instance.new("ObjectValue")
         ownerSymbol.Name = "Owner"
@@ -635,17 +604,14 @@ table.insert(CriRPGLib.Funcs, function()
 
         uniProjectileContainer = uniProjectileContainer or workspace.Terrain
 
-
         local projectileId, projectileCF = data.ProjectileId, data.ProjectileCF
         local projectileOwner = data.ProjectileOwner
-
 
         if projectileOwner == nil then return end
         if not ClientLib:IsCharValid(projectileOwner) then return end
 
         --// 1130 bug: rare times, this will be nil
         if not RepS.Packages:FindFirstChild("EnemyAttacks") then return end
-
 
         local projectile = RepS.Packages.EnemyAttacks:FindFirstChild(projectileId, true) :: Model
 
@@ -656,11 +622,9 @@ table.insert(CriRPGLib.Funcs, function()
         projectile = projectile:Clone() :: Model
         Debris:AddItem(projectile, 5)
 
-
         projectile:SetAttribute("HarukaUniqueId", data.ProjectileUniqueId)
         projectile:SetAttribute("CombatLocation", projectileOwner:GetAttribute("CombatLocation"))
         projectile:PivotTo(projectileCF)
-
 
         local ownerSymbol = Instance.new("ObjectValue")
         ownerSymbol.Name = "Owner"
@@ -681,7 +645,6 @@ table.insert(CriRPGLib.Funcs, function()
         end
     end))
 
-
     local function _checkCombatState(state: boolean)
         if not state then
             projectileContainer:ClearAllChildren()
@@ -698,8 +661,6 @@ table.insert(CriRPGLib.Funcs, function()
         ["Attr-IsInCombat"] = _checkCombatState
     }))
 end)
-
-
 
 table.insert(CriRPGLib.Funcs, function()
     Add(Events.PlayVFXScene_S.On(function(data)
@@ -718,14 +679,12 @@ table.insert(CriRPGLib.Funcs, function()
     end))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     Add(Events.FaceTargetingEnemy_S.On(function()
         if not ClientLib:IsCharValid(char) then return end
         if not char:GetAttribute("IsInCombat") then return end
 
         if not char:FindFirstChild("TargetingEnemy") then return end
-
 
         local targeting = char.TargetingEnemy :: ObjectValue?
 
@@ -742,7 +701,6 @@ table.insert(CriRPGLib.Funcs, function()
         end
     end))
 end)
-
 
 table.insert(CriRPGLib.Funcs, function()
     Add(Events.Spell_ExtraJumpSupport.On(function()
@@ -761,7 +719,6 @@ table.insert(CriRPGLib.Funcs, function()
 
         char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
 
-
         local linearVelocity = Instance.new("LinearVelocity")
         linearVelocity.Name = "DoubleJumpVel"
         linearVelocity.Attachment0 = char.PrimaryPart.CF_RootNode
@@ -772,13 +729,11 @@ table.insert(CriRPGLib.Funcs, function()
     end))
 end)
 
-
 table.insert(CriRPGLib.Funcs, function()
     local abyssId = workspace:GetAttribute("AbyssId")
     local dungeonId = workspace:GetAttribute("DungeonId")
 
     if not abyssId and not dungeonId then return end
-
 
     local function _playOverworldMusic(soundId: string)
         local overworldMusic = SoundService.Musics.Overworld :: Sound
@@ -812,8 +767,6 @@ table.insert(CriRPGLib.Funcs, function()
     }))
 end)
 
-
 CriRPGLib:Init()
-
 
 char:SetAttribute("Haruka_CriRPGClientInited", true)

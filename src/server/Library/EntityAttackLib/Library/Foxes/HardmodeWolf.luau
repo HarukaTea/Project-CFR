@@ -4,23 +4,18 @@ local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 
-
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -29,8 +24,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -45,10 +38,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -99,7 +90,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             AnimId = "SpikeRain"
         })
 
-
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
@@ -112,7 +102,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 
-
         Promise.delay(0.5):andThen(function()
             for i = 1, math.random(5, 6) do
                 RunService.Heartbeat:Wait()
@@ -123,7 +112,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
                     random = Vector3.zero
                 end
                 local post = ServerLib:FindGroundByRay(projectilePos + random)
-
 
                 Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
                     ProjectileUniqueId = projectileUniqueId,
@@ -145,7 +133,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
         projectilePos = HarukaLib:CFLookAt(projectilePos, entity.PrimaryPart.Position)
-
 
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
@@ -177,13 +164,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
 
-
-
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
         for _ = 1, math.random(2, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
-
 
             _spikeRain(target)
             wait(0.4)
@@ -197,7 +181,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             wait(0.35)
         end
     end)
-
 
     --// combo attack functions
     table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
@@ -231,16 +214,13 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         end
     end)
 
-
     --// attack loop
     wait(0.1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

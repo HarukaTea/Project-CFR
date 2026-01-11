@@ -11,7 +11,6 @@ export type EntityAttackObj = {
 
     DoAttackTasks: (self: EntityAttackObj, resolveObj: () -> nil) -> nil,
 
-
     Promises: { Promise.Promise },
 
     Entity: Model,
@@ -25,14 +24,12 @@ export type EntityAttackObj = {
     ComboAttackFuncs: { (target: Model, rFuncId: number, rComboId: number) -> nil }
 }
 
-
 export type UniversalEntity = {
     InitTemplate: (self: UniversalEntity, entityAtkObj: EntityAttackObj, entity: Model) -> nil,
     InitResolveObj: (self: UniversalEntity, entity: Model, resolveObj: () -> ()) -> nil,
     InitAttackTables: (self: UniversalEntity, entityAtkObj: EntityAttackObj) -> nil,
     InitAttackTasks: (self: UniversalEntity, entityAtkObj: EntityAttackObj, resolveObj: () -> nil) -> nil,
     InitFlyingEssentials: (self: UniversalEntity, entity: Model, offset: number) -> nil,
-
 
     GetTargets: (self: UniversalEntity, entity: Model) -> { Player },
     GetNearbyPlayers: (self: UniversalEntity, entity: Model) -> { Player },
@@ -45,6 +42,5 @@ export type UniversalEntity = {
 
     DeadTask: (self: UniversalEntity, entityAtkObj: EntityAttackObj) -> nil
 }
-
 
 return nil

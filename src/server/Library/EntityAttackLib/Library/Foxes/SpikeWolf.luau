@@ -3,24 +3,19 @@ local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
-
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
 
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 local FoxUniversal = require(script.Parent.FoxUniversal)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -29,8 +24,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -45,10 +38,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -56,8 +47,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         return true
     end
-
-
 
     local function _lookAt(target: Model)
 
@@ -89,7 +78,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         projectilePos = HarukaLib:CFLookAt(projectilePos, entity.PrimaryPart.Position)
 
-
         Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
             ProjectileUniqueId = projectileUniqueId,
             ProjectileId = "WolfMove4",
@@ -100,13 +88,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
 
-
-
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
         for _ = 1, math.random(2, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
-
 
             _spikeRain(target)
             wait(0.8)
@@ -116,12 +101,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         for _ = 1, math.random(2, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
 
-
             _wolfBite(target)
             wait(0.8)
         end
     end)
-
 
     --// combo attack functions
     table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
@@ -139,23 +122,19 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _ = 1, math.random(1, 2) do
                 if not _checkIsTargetOrEntityValid(target) then break end
 
-
                 _spikeShot(target)
                 wait(0.8)
             end
         end
     end)
 
-
     --// attack loop
     wait(0.5)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

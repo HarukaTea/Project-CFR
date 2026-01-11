@@ -15,10 +15,8 @@ export type Self = {
     CharVals: { Fusion.Value<Model?> },
 }
 
-
 return function (self: Self)
 	local scope = self.scope :: Fusion.Scope
-
 
 	self.SlotUISignal = Instance.new("BindableEvent")
     self.CutsceneUISignal = Instance.new("BindableEvent")
@@ -30,7 +28,6 @@ return function (self: Self)
     for _ = 1, 3 do
         table.insert(self.CharVals, Fusion.Value(scope, nil))
     end
-
 
     --// Rigging
     do

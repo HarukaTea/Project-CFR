@@ -5,19 +5,15 @@ local RunService = game:GetService("RunService")
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local BezierMath = require(RepS.HarukaShared.Shared.HarmonyLib.BezierMath)
 
-
 local Types = require(script.Parent.Parent.Types)
-
 
 --// Main
 
 return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib:IsCharValid(targetingEnemy) then return end
-
 
     local angles = {
         CFrame.new(math.random(10, 20), 0, 0),

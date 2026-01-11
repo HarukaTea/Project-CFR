@@ -8,13 +8,10 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -23,8 +20,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -39,10 +34,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -50,7 +43,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         return true
     end
-
 
     local function _spike(target: Model)
 
@@ -94,13 +86,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
     end
 
-
-
     --// attack functions
     table.insert(self.AttackFuncs, function(target)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
-
 
             _spike(target)
             wait(0.25)
@@ -118,22 +107,18 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if comboR == 2 and math.random(1, 2) == 1 then
             if not _checkIsTargetOrEntityValid(target) then return end
 
-
             _allAreaBurnCombo2(target)
             wait(0.6)
         end
     end)
 
-
     --// attack loop
     wait(0.5)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

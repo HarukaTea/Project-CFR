@@ -9,25 +9,19 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local TrailMath = require(RepS.HarukaShared.Shared.HarmonyLib.TrailMath)
 
-
 local Types = require(script.Parent.Parent.Types)
 
-
 local wait = task.wait
-
 
 --// Main
 
 return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string)
     if not ClientLib:IsCharValid(char) then return end
 
-
     local targetingEnemy = char.TargetingEnemy.Value
     if not ClientLib:IsCharValid(targetingEnemy) then return end
 
-
     local trailMathObj = TrailMath.new()
-
 
     local combatLocation = char:GetAttribute("CombatLocation") :: CFrame
     local centerPos = combatLocation.Position :: Vector3
@@ -42,7 +36,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
     echoRay.Parent = workspace.Terrain
     Debris:AddItem(echoRay, 10)
 
-
     trailMathObj:Init(echoRay, {
         Origin = echoRay.CFrame * CFrame.new(0, -40, 0),
         Projectile = RepS.Packages.SkillProjectiles:FindFirstChild("EchoTrail", true):Clone() :: BasePart,
@@ -51,7 +44,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
         Duration = 0.6,
         CurveOffset = 22.5
     })
-
 
     wait(0.6)
     HarukaLib:EmitParticles(echoRay.Init)
@@ -70,7 +62,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
         Rotation = echoRay.Start.Star.Image.Rotation + 360
     }):Play()
 
-
     Promise.new(function()
         while true do
             RunService.Heartbeat:Wait()
@@ -87,7 +78,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
         end
 
     end):timeout(5):catch(function() end)
-
 
     wait(5)
     echoRay.EndTrail0.Trail.Enabled = false
@@ -110,7 +100,6 @@ return function(self: Types.VFXSceneLib, char: Model, projectileUniqueId: string
     }):Play()
 
     Debris:AddItem(echoRay, 1.5)
-
 
     trailMathObj:Destroy()
 end

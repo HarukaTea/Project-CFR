@@ -9,7 +9,6 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     Enemy: Model,
 })
@@ -17,20 +16,16 @@ return function (scope: Fusion.Scope, props: {
     if not ClientLib:IsCharValid(props.Enemy) then return nil end
     if not EntityBook[props.Enemy.Name] then return nil end
 
-
     local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local HP = Value(100)
-
 
     table.insert(scope, HarukaLib:Hydrate(props.Enemy.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
             HP:set(newHP)
         end,
     }))
-
-
 
     local billboardGui = Components.BillboardGui(scope, {
         Name = "EnemyHPBar_"..props.Enemy.Name,
@@ -42,7 +37,6 @@ return function (scope: Fusion.Scope, props: {
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0
         end),
-
 
         [Children] = {
             Components.TextLabel(scope, {
@@ -78,15 +72,12 @@ return function (scope: Fusion.Scope, props: {
         }
     })
 
-
     --// track effect list
     ClientLib:TrackEffectListToUI({
         Target = props.Enemy,
         Scope = scope,
         GuiContainer = billboardGui.EffectList
     })
-
-
 
     return billboardGui
 end

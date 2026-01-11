@@ -4,7 +4,6 @@ local keybinds = {
     Console = {}
 }
 
-
 keybinds.KEYBIND_NAMES = {
     PromptTrigger = "Trigger Prompt",
     Backpack = "Backpack",
@@ -18,11 +17,8 @@ keybinds.KEYBIND_NAMES = {
     TargetSwitch = "Switch Target"
 }
 
-
-
 keybinds.PC.PromptTrigger = Enum.KeyCode.F
 keybinds.Console.PromptTrigger = Enum.KeyCode.ButtonY
-
 
 keybinds.PC.Backpack = Enum.KeyCode.B
 keybinds.PC.CharSelfView = Enum.KeyCode.C
@@ -41,9 +37,6 @@ keybinds.Console.Active2 = Enum.KeyCode.ButtonR1
 keybinds.Console.Active3 = Enum.KeyCode.ButtonR2
 keybinds.Console.Dash = Enum.KeyCode.ButtonX
 keybinds.Console.TargetSwitch = Enum.KeyCode.DPadRight
-
-
-
 
 keybinds.KEYBIND_ID_NAMES = {
     LeftCurly = "{",
@@ -134,8 +127,6 @@ for _, keycode: Enum.KeyCode in Enum.KeyCode:GetEnumItems() do
     end
 end
 
-
 keybinds.OnKeybindChanged = Instance.new("BindableEvent")
-
 
 return keybinds

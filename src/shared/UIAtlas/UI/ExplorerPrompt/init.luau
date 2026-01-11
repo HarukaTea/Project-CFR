@@ -11,7 +11,6 @@ local Children = Fusion.Children
 local udNew = UDim.new
 local fromScale = UDim2.fromScale
 
-
 local Pinia = require(script.Pinia)
 
 return function(plr: Player)
@@ -21,14 +20,11 @@ return function(plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-
 	Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerPrompt") then
         plr.PlayerGui.ExplorerPrompt:Destroy()
     end
-
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -74,7 +70,6 @@ return function(plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
 
     end
 end

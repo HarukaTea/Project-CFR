@@ -27,7 +27,6 @@ return function(scope: Fusion.Scope, props: {
 
     props.Id = props.Id or props.ButtonText
 
-
     local ICONS = {
         Confirm = "rbxassetid://89237327031557",
         Cancel = "rbxassetid://103065634382876",

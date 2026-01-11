@@ -1,15 +1,11 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local ArtifactLib = {}
-
 
 export type ArtifactCallback = (char: Model, factor: number) -> nil
 
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-
 
 ArtifactLib.Blessing2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "HealBonusEx", 10 * factor)
@@ -18,7 +14,6 @@ ArtifactLib.Blessing3 = function()
 
 end
 
-
 ArtifactLib.Exploration2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "MaxHealthEx", 200 * factor)
 end
@@ -26,14 +21,12 @@ ArtifactLib.Exploration3 = function()
 
 end
 
-
 ArtifactLib.FireEmblem2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "BurnChanceEx", 10 * factor)
 end
 ArtifactLib.FireEmblem3 = function()
 
 end
-
 
 ArtifactLib.Crimson2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "MagicExPower", 0.18 * factor)
@@ -52,14 +45,12 @@ ArtifactLib.Crimson3Destroying = function(char: Model)
     end
 end
 
-
 ArtifactLib.WolfKing2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "CriChanceEx", 12 * factor)
 end
 ArtifactLib.WolfKing3 = function()
 
 end
-
 
 ArtifactLib.QueenBee2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "ClassUltDMGBonusExPower", 0.2 * factor)
@@ -68,14 +59,12 @@ ArtifactLib.QueenBee3 = function()
 
 end
 
-
 ArtifactLib.Library2 = function()
 
 end
 ArtifactLib.Library3 = function()
 
 end
-
 
 ArtifactLib.ForestDweller2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "MinDMGExPower", 0.18 * factor)
@@ -85,14 +74,12 @@ ArtifactLib.ForestDweller3 = function(char: Model, factor: number)
     char:SetAttribute("ForestDweller3Bonus", factor > 0)
 end
 
-
 ArtifactLib.Northerner2 = function(char: Model, factor: number)
     HarukaLib:AddAttr(char, "ClassUltChargeExPower", 0.2 * factor)
 end
 ArtifactLib.Northerner3 = function()
 
 end
-
 
 return ArtifactLib :: {
     [string]: ArtifactCallback

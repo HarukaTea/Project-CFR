@@ -6,7 +6,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ItemBook = {}
 
-
 export type ItemBookRawJSON = {
     ItemId: string,
     Name: string,
@@ -49,7 +48,6 @@ export type ItemBookJSON = {
     TagsDesync: { string },
 }
 
-
 function ItemBook:ParseItemStat(infoType: "Stat" | "Extra", info: { string }) : { [string]: any }
     local attrs = {}
 
@@ -88,10 +86,8 @@ function ItemBook:ParseItemStat(infoType: "Stat" | "Extra", info: { string }) : 
         end
     end
 
-
     return attrs
 end
-
 
 function ItemBook:BuildItemStat(infoType: "Stat" | "Extra", info: { [string]: any }) : string
     local randomStat = ""
@@ -115,8 +111,6 @@ function ItemBook:BuildItemStat(infoType: "Stat" | "Extra", info: { [string]: an
     return randomStat
 end
 
-
-
 function ItemBook:GetItemInfo(itemId: string) : ItemBookJSON
     local itemInfo = nil
 
@@ -130,7 +124,6 @@ function ItemBook:GetItemInfo(itemId: string) : ItemBookJSON
     return itemInfo
 end
 
-
 function ItemBook:GetAllItems() : { string }
     local itemIds = {}
 
@@ -140,7 +133,6 @@ function ItemBook:GetAllItems() : { string }
 
     return itemIds
 end
-
 
 --// handle item book
 
@@ -152,13 +144,11 @@ for index: number, itemInfo: ItemBookRawJSON in ItemRawBook do
     itemInfo.RecipeDesync = {}
     itemInfo.TagsDesync = {}
 
-
     itemInfo.Tier = tonumber(itemInfo.Tier) or 1
     itemInfo.Level = tonumber(itemInfo.Level) or 1
     itemInfo.Icon = "rbxassetid://"..itemInfo.Icon
     itemInfo.Price = tonumber(itemInfo.Price) or 1599
     itemInfo.SellPrice = tonumber(itemInfo.SellPrice) or 1599
-
 
     --// desync extra info
     if itemInfo.ExtraStatInfo ~= "" then

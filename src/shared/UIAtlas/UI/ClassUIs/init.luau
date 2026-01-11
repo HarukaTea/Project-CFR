@@ -11,7 +11,6 @@ local Children = Fusion.Children
 
 local Pinia = require(script.Pinia)
 
-
 return function(plr: Player)
 	local self = {} :: Pinia.Self
 
@@ -51,10 +50,7 @@ return function(plr: Player)
     })
     self.UI = UI
 
-
     require(script.Anims)(UI, self)
-
-
 
 	return function ()
         Fusion.doCleanup(scope)

@@ -2,14 +2,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
 
-
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
-
 type Dict = {[string]: any}
-
 
 export type OrbData = {
     UniqueId: string,
@@ -51,19 +47,14 @@ export type ItemDropSymbolData = {
     Receiver: Player
 }
 
-
-
 export type ServerTable = {
     OrbSymbols: {[string]: { [string]: OrbData }},
     SkillProjectileSymbols: {[string]: { [string]: SkillProjectileData }},
     EnemyProjectileSymbols: {[string]: EnemyProjectileData },
     ItemDropSymbols: {[string]: ItemDropSymbolData},
 
-
     AddItem: (self: ServerTable, linkTable: string, uniqueId: string, lifeTime: number) -> nil
 }
-
-
 
 local ServerTable = {
     ----@params [charUniqueId]: {}
@@ -72,13 +63,9 @@ local ServerTable = {
     ----@params [charUniqueId]: {},
     SkillProjectileSymbols = {},
 
-
     EnemyProjectileSymbols = {},
     ItemDropSymbols = {},
 } :: ServerTable
-
-
-
 
 --// garbadge collector
 HarukaLib.Clock(15, function()
@@ -91,8 +78,6 @@ HarukaLib.Clock(15, function()
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
         table.insert(playerUniqueIds, player:GetAttribute("HarukaUniqueId"))
     end
-
-
 
     for uniqueId: string, v in ServerTable.OrbSymbols do
         if not table.find(charUniqueIds, uniqueId) then
@@ -107,15 +92,11 @@ HarukaLib.Clock(15, function()
     end
 end)
 
-
-
 function ServerTable:AddItem(linkTable: string, uniqueId: string, lifeTime: number)
     Promise.try(lifeTime, function()
         linkTable[uniqueId] = nil
 
     end):catch(function() end)
 end
-
-
 
 return ServerTable

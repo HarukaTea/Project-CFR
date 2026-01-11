@@ -1,10 +1,4 @@
 
-local RepS = game:GetService("ReplicatedStorage")
-
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
-
-
 export type ClassOrbData = {
     UniqueId: string,
     OrbId: string,
@@ -17,13 +11,8 @@ export type ClassOrbData = {
 
 export type ClassOrbSpawnCallback = (orbData: ClassOrbData, char: Model) -> nil
 
-
-
-
-
 local ClassOrbCallbackLib = {} :: {
     [string]: ClassOrbSpawnCallback
 }
-
 
 return ClassOrbCallbackLib

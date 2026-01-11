@@ -2,14 +2,10 @@
 -- Made by: @corehimself
 -- Created: 9/18/2023
 
-
 local DSS = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
-
-
 
 export type OrderedDatastoreWrapper = {
 	__index : OrderedDatastoreWrapper,
@@ -24,11 +20,8 @@ export type OrderedDatastoreWrapper = {
 	orderedDataStore: OrderedDataStore
 }
 
-
 local OrderedDatastore = {} :: OrderedDatastoreWrapper
 OrderedDatastore.__index = OrderedDatastore
-
-
 
 -- Constants
 local dataCache = {}
@@ -127,7 +120,6 @@ function OrderedDatastore:GetOrderedPositionAsync(Key: string | number, Descendi
 
 		local function processPage()
 			local orderedPages = retryOperation(3, 5, getOperation)
-
 
 			if not orderedPages then
 				retrieveFromCache(tonumber(Key), self.dataName)

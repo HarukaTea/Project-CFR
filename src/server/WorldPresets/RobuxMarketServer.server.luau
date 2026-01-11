@@ -1,12 +1,10 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerPlayerLibInited")
 
-
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
@@ -15,9 +13,7 @@ local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.Playe
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
 
-
 local wait = task.wait
-
 
 --// Dev products purchase callback
 local productFunctions = {}
@@ -73,9 +69,6 @@ local function processReceipt(receiptInfo: {[string]: any})
 end
 MarketplaceService.ProcessReceipt = processReceipt
 
-
-
-
 MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Player, gamePassId: number, wasPurchased: boolean)
     if not wasPurchased then return end
     if not player then return end
@@ -86,7 +79,6 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
 
     local profile = profileObj.Profile
     if not profile then return end
-
 
     pcall(function()
         local gamepassInfo = MarketplaceService:GetProductInfoAsync(gamePassId, Enum.InfoType.GamePass)
@@ -109,9 +101,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Playe
         }
     end)
 
-
     Events.CreateNotify_S.Fire(player, "You have successfully purchased the gamepass!")
-
 
     profile:SaveProfileAsync()
     PlayerProfileLib.CalDonationAndSave(profile, player)

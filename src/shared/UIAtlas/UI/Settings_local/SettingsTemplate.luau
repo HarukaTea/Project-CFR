@@ -5,7 +5,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
-
 export type IncludesJSON = {
 	OptionTitle: string,
 	Type: string,
@@ -29,11 +28,7 @@ export type SettingsJSON = {
 	}
 }
 
-
-
 local device = HarukaLib:GetAccurateDevice()
-
-
 
 local template = {
     Sounds = {
@@ -173,6 +168,5 @@ local template = {
 		Includes = KeybindsBook.Console
 	}
 }
-
 
 return template

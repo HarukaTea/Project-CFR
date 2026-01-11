@@ -10,7 +10,6 @@ local Children = Fusion.Children
 
 local fromScale = UDim2.fromScale
 
-
 local SELECTION_ICONS = {
     TalentTree = "rbxassetid://77981089608399",
     Backpack = "rbxassetid://87334829671948",
@@ -28,7 +27,6 @@ local SELECTION_ICONS = {
 
     Empty = AssetBook.ExtraIcons.Unknown
 }
-
 
 local function SelectionSlot(scope: Fusion.Scope, props: {
     LayoutOrder: number,

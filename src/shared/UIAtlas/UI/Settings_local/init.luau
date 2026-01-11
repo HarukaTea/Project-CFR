@@ -10,7 +10,6 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local SideCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.SideCategoryBtn)
 
-
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Slider = require(script.Components.Slider)
@@ -19,7 +18,6 @@ local Dropdown = require(script.Components.Dropdown)
 local Keybind = require(script.Components.Keybind)
 
 local Children = Fusion.Children
-
 
 local Pinia = require(script.Pinia)
 local SettingsTemplate = require(script.SettingsTemplate)
@@ -32,7 +30,6 @@ return function (plr: Player)
     self.INFO = require(script.SettingsTemplate) :: SettingsTemplate.SettingsJSON
 
     Pinia(self)
-
 
     local scope = self.scope :: Fusion.Scope
 
@@ -109,7 +106,6 @@ return function (plr: Player)
                                     return panelId, nil
                                 end
 
-
                                 return panelId, Components.ScrollingFrame(scope, {
                                     Name = panelId,
                                     AnchorPoint = Vector2.zero,
@@ -135,8 +131,6 @@ return function (plr: Player)
                                                     KeybindBegan = self.ValidInputBegan,
                                                 })
                                             end
-
-
 
                                             if optionInfo.Type == "Slider" then
                                                 return optionId, Slider(scope, {

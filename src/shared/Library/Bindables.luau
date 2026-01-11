@@ -9,8 +9,6 @@ return {
     ---@params: `None`
     CloseExplorerUIs = Instance.new("BindableEvent"),
 
-
-
     ---@params: `(message: string, sender: Player)`
     PlayerChatted = Instance.new("BindableEvent"),
 
@@ -52,8 +50,6 @@ return {
 
     ---@params: `(prompt: ProximityPrompt)`
     PromptTriggered = Instance.new("BindableEvent"),
-
-
 
     ---@params: `None`
     DevProductPurchasing = Instance.new("BindableEvent"),

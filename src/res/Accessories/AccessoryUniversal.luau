@@ -3,7 +3,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
-
 export type DMGPropsMetaData = {
     DMG: number,
     DMGType: "DMG" | "Magic",
@@ -19,8 +18,6 @@ export type StatusPropsMetaData = {
 }
 
 local AccessoryUniversal = {}
-
-
 
 AccessoryUniversal.RegisterEnemyOnHit = function(
     source: Script,
@@ -41,8 +38,6 @@ AccessoryUniversal.RegisterEnemyOnHit = function(
         handler(targeting, attacker, dmgProps)
     end)
 end
-
-
 
 AccessoryUniversal.RegisterStatusApplied = function(
     source: Script,
@@ -83,13 +78,9 @@ AccessoryUniversal.RegisterEnemyStatusRemoved = function(
     end)
 end
 
-
 AccessoryUniversal.RegisterPlayerDiedEmpty = function(source: Script, event: BindableEvent, empty: () -> nil)
     source.Destroying:Connect(empty)
     event.Event:Connect(empty)
 end
-
-
-
 
 return AccessoryUniversal

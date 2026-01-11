@@ -11,7 +11,6 @@ local fromScale = UDim2.fromScale
 local nsNew, nsKPNew = NumberSequence.new, NumberSequenceKeypoint.new
 local clamp = math.clamp
 
-
 return function (scope: Fusion.Scope, props: {
     Direction: "Left" | "Right",
     RotationVal: Fusion.Value<number>,

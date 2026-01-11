@@ -6,8 +6,6 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
 local Types = require(script.Parent.Parent.Types)
 
-
-
 return function (self: Types.CastItemLib)
     local CastItemLib = self
 
@@ -22,7 +20,6 @@ return function (self: Types.CastItemLib)
         })
         if not check then return 0 end
 
-
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 10)
 
@@ -31,7 +28,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.CookedSteak = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
@@ -44,7 +40,6 @@ return function (self: Types.CastItemLib)
         })
         if not check then return 0 end
 
-
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 15)
 
@@ -53,7 +48,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.ShrimpDish = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
@@ -65,7 +59,6 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
-
 
         CastItemLib._eatSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 20)

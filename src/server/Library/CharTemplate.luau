@@ -3,7 +3,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local charStats = {
     --- misc
     IsInCombat = false,
@@ -36,12 +35,10 @@ local charStats = {
     CriDMG = 100, --- percentage
     DodgeChance = 0, --- percentage
 
-
     ClassUltProgress = 0,
     MaxClassUltProgress = 100,
     ClassUltCharge = 100, --- percentage
     ClassUltDMGBonus = 100, --- percentage
-
 
     BurnChance = 0, --- percentage
     PoisonChance = 0, --- percentage
@@ -53,7 +50,6 @@ local charStats = {
     Intensity = 0, --- percentage
     Warding = 0, --- percentage
     Luck = 0, --- percentage
-
 
     --- combat related
     OrbSpawnTimesAtStart = 1,
@@ -70,14 +66,12 @@ local charStats = {
     CanLight = false,
     CanClimb = false,
 
-
     -- class related
     ChainCombo = 0,
     BurstArrows = 0,
     BurstArrowPiercing = 0,
     FlowMark = 0,
     FuriosoCombo = 0,
-
 
     --- misc
     IsClimbing = false,
@@ -103,8 +97,6 @@ for _, attr: string in exAndExPowerList do
     charStats[attr.."Ex"] = 0
     charStats[attr.."ExPower"] = 1
 end
-
-
 
 local cloned = HarukaLib.TableUtils.DeepCopy(charStats)
 

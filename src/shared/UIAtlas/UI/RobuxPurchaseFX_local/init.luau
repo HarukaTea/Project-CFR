@@ -11,7 +11,6 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local RobuxPurchaseFX = require(script.Components.RobuxPurchaseFX)
 
-
 return function (plr: Player)
 	local self = {}
 
@@ -28,14 +27,11 @@ return function (plr: Player)
 
         Debris:AddItem(ui, 60)
 
-
         Promise.delay(62):andThen(function()
             Fusion.doCleanup(newScope)
         end):catch(function() end)
 	end
     Bindables.DevProductPurchasing.Event:Connect(_onPurchaseRequest)
-
-
 
     local function _onPurchaseFinished()
         for _, fx: ScreenGui in CollectionService:GetTagged("_RobuxPurchaseFXUI") do

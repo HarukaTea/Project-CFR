@@ -23,7 +23,6 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
@@ -35,14 +34,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerBackpack") then
         plr.PlayerGui.ExplorerBackpack:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerBackpack",
@@ -79,7 +75,6 @@ return function (plr: Player)
                 }
             }),
 
-
             Components.Frame(scope, {
                 Name = "ShadowOverlay2",
                 BackgroundTransparency = 0.3,
@@ -91,7 +86,6 @@ return function (plr: Player)
                     return use(self.IsPurchasing)
                 end),
             }),
-
 
             Components.HarukaFrame(scope, {
                 Name = "Top2",
@@ -105,7 +99,6 @@ return function (plr: Player)
                     }),
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "Center_ZIndex2",
@@ -128,7 +121,6 @@ return function (plr: Player)
                     end),
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "Left",
@@ -188,7 +180,6 @@ return function (plr: Player)
             ZIndex = 0
         },
 
-
         BottomProps = {
             [Children] = {
                 Components.Frame(scope, {
@@ -215,7 +206,6 @@ return function (plr: Player)
                         end)
                     }
                 }),
-
 
                 Components.Frame(scope, {
                     Name = "LSideBtns",
@@ -251,7 +241,6 @@ return function (plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Center,
                             Padding = UDim.new(0.01, 0),
                         }),
-
 
                         Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local item = use(self.CurrentSelectedItem) :: string
@@ -334,7 +323,6 @@ return function (plr: Player)
                             end
                         end),
 
-
                         Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local item = use(self.CurrentSelectedItem) :: string
 
@@ -380,7 +368,6 @@ return function (plr: Player)
                             TextColor3 = Components.BLACK_COLOR,
                             Size = UDim2.fromScale(0, 0.56),
 
-
                             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local check = false
                                 for _, tierStatus in self.FilterTierList do
@@ -393,7 +380,6 @@ return function (plr: Player)
 
                                 return check
                             end),
-
 
                             [Children] = {
                                 Components.RoundUICorner(scope),
@@ -465,10 +451,8 @@ return function (plr: Player)
     })
     self.UI = UI
 
-
     return function ()
         Fusion.doCleanup(scope)
-
 
     end
 end

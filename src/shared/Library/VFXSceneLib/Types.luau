@@ -10,5 +10,4 @@ export type VFXSceneLib = {
     [string]: (char: Model, projectileUniqueId: string) -> nil
 }
 
-
 return nil

@@ -12,13 +12,10 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 
-
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymbol)
 
 local Children = Fusion.Children
-
-
 
 local ITEM_EFFECTS_ICONS = {
 	CanLight = "rbxassetid://2965771738",
@@ -91,8 +88,6 @@ local ITEM_EFFECTS_IS_PERCENTAGE = {
     ShockingChanceEx = true,
 }
 
-
-
 return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemUniqueId: string,
@@ -105,14 +100,12 @@ return function (scope: Fusion.Scope, props: {
 
     local absDescFrameSize = Fusion.Value(scope, Vector2.zero)
 
-
     local info = ItemBook:GetItemInfo(props.Item)
     if not info then return nil end
 
     local itemInfo = info
 
     local artifactInfo = ArtifactBook:GetArtifactInfo(info.ArtifactId)
-
 
     local itemSymbol: IntConstrainedValue = nil
     if props.IsMarket then
@@ -140,7 +133,6 @@ return function (scope: Fusion.Scope, props: {
         end
     end
     if itemSymbol == nil then return nil end
-
 
     local isFavItem = Fusion.Value(scope, false)
     local isFav: ImageButton = nil
@@ -188,7 +180,6 @@ return function (scope: Fusion.Scope, props: {
         })
     end
 
-
     local isLockedItem = Fusion.Value(scope, false)
     local isLocked: ImageButton = nil
     if props.IsMarket or props.IsCrafting then
@@ -235,14 +226,11 @@ return function (scope: Fusion.Scope, props: {
         })
     end
 
-
     local itemStat = itemSymbol:GetAttribute("ItemStat")
     if itemStat == nil then return nil end
 
     local itemStatExtra = string.split(itemStat, ",")
     itemStatExtra = ItemBook:ParseItemStat("Stat", itemStatExtra)
-
-
 
     local artifactEquipped = Fusion.Value(scope, 0)
     local equippingObserver = Fusion.Observer(scope, props.EquippingItems)
@@ -261,8 +249,6 @@ return function (scope: Fusion.Scope, props: {
 
         artifactEquipped:set(amount)
     end)
-
-
 
     local function ItemEffectShowcase(scope: Fusion.Scope, properties: {
         Attr: string,
@@ -361,7 +347,6 @@ return function (scope: Fusion.Scope, props: {
 
                             potRatio = math.floor( ((val - basePot) / upgradeRange) * 100 )
 
-
                             local color = Components.RED_COLOR:ToHex()
                             if potRatio >= 30 and potRatio <= 70 then
                                 color = Components.BLUE_COLOR:ToHex()
@@ -422,8 +407,6 @@ return function (scope: Fusion.Scope, props: {
         })
     end
 
-
-
     return Components.Frame(scope, {
         Name = "ItemDesc",
         BackgroundTransparency = 0,
@@ -449,7 +432,6 @@ return function (scope: Fusion.Scope, props: {
             }),
 
             Components.PaddingFrame(scope, "AAA"),
-
 
             Components.Frame(scope, {
                 Name = "ItemName",
@@ -591,7 +573,6 @@ return function (scope: Fusion.Scope, props: {
                         }
                     }),
 
-
                     ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichTextify(info.Stat)),
 
                     Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
@@ -610,7 +591,6 @@ return function (scope: Fusion.Scope, props: {
                     end),
 
                     ItemStatAutomaticY("DDD_ItemDesc", 233, HarukaLib:RichTextify(info.Desc), Color3.fromRGB(159, 159, 159)),
-
 
                     Components.TextLabel(scope, {
                         Name = "EEE_ArtifactTitle",
@@ -639,8 +619,6 @@ return function (scope: Fusion.Scope, props: {
                     ItemStatAutomaticY("GGG_Artifact3PieceDesc", 236, artifactInfo.ThreePieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return if use(artifactEquipped) >= 3 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)
                     end)),
-
-
 
                     Components.Frame(scope, {
                         Name = "HHH_HorizontalLine",

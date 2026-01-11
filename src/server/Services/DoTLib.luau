@@ -5,8 +5,6 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-
-
 export type DoTInfo = {
     Target: Model,
     Type: string,
@@ -35,7 +33,6 @@ export type DoTLibClass = {
     GetAffectedTargetsByEffectId: (self: DoTLibClass, effectId: string) -> { DoTLibClass },
 } & DoTInfo
 
-
 local DoTLib = {} :: DoTLibClass
 DoTLib.__index = DoTLib
 
@@ -45,9 +42,7 @@ local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 
-
 local allDoTObjs = {} :: { [string]: DoTLibClass }
-
 
 --// Constructor
 function DoTLib.new(info: DoTInfo)
@@ -70,7 +65,6 @@ function DoTLib.new(info: DoTInfo)
     return self
 end
 
-
 function DoTLib:Calulate()
     local existing = self:GetEffectsByTarget(self.Target, self.Type)
     if #existing > 0 then
@@ -91,7 +85,6 @@ function DoTLib:Calulate()
         self.Power = newTotalDMG / self.Duration
     end
 end
-
 
 function DoTLib:Activate()
     if self.Activated then return end
@@ -115,7 +108,6 @@ function DoTLib:Activate()
 
     self.EffectSymbol = effectSymbol
 
-
     Events.DoT_PlayVFXEff_S.FireList(ServerLib:GetNearbyPlayers(self.Target.WorldPivot.Position), {
         StatusId = self.Type,
         Entity = self.Target,
@@ -137,7 +129,6 @@ function DoTLib:Activate()
     end
     Promise.delay(self.Duration + 0.1):andThenCall(self.Cancel, self):catch(function() end)
 
-
     --// fire char bindable
     if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then
         local char = self.Creator :: Model
@@ -153,7 +144,6 @@ function DoTLib:Activate()
         end
     end
 end
-
 
 function DoTLib:StackCancel()
     allDoTObjs[self.UniqueId] = nil
@@ -177,12 +167,10 @@ function DoTLib:StackCancel()
     })
 end
 
-
 function DoTLib:Cancel()
     if self.Cancelled then return end
 
     self.Cancelled = true
-
 
     for _, taskId: string in self.Tasks do
         GlobalTimer:CancelTaskImmediately(taskId)
@@ -200,9 +188,7 @@ function DoTLib:Cancel()
         UniqueId = self.UniqueId,
     })
 
-
     allDoTObjs[self.UniqueId] = nil
-
 
     --// fire char bindable
     if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then
@@ -219,9 +205,6 @@ function DoTLib:Cancel()
         end
     end
 end
-
-
-
 
 function DoTLib:GetEffectsByTarget(target: Model, effectId: string?)
     local objs = {} :: { DoTLibClass }
@@ -243,10 +226,8 @@ function DoTLib:GetEffectsByTarget(target: Model, effectId: string?)
         realObjs = objs
     end
 
-
     return realObjs
 end
-
 
 function DoTLib:GetAffectedTargetsByEffectId(effectId: string)
     local objs = {} :: { DoTLibClass }
@@ -259,6 +240,5 @@ function DoTLib:GetAffectedTargetsByEffectId(effectId: string)
 
     return objs
 end
-
 
 return DoTLib

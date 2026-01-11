@@ -10,13 +10,9 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
-
 local wait = task.wait
 
-
 local FoxUniversal = {}
-
-
 
 FoxUniversal.SpikeShot = function(entity: Model, target: Model)
     Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
@@ -41,15 +37,12 @@ FoxUniversal.SpikeShot = function(entity: Model, target: Model)
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 end
 
-
 FoxUniversal.SpikeRain = function(entity: Model, target: Model)
-
 
     Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
         AnimId = "SpikeRain"
     })
-
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
@@ -62,7 +55,6 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
     })
 
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
-
 
     Promise.delay(0.5):andThen(function()
         for i = 1, math.random(5, 6) do
@@ -84,6 +76,5 @@ FoxUniversal.SpikeRain = function(entity: Model, target: Model)
         end
     end):catch(function() end)
 end
-
 
 return FoxUniversal

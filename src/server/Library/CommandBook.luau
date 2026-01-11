@@ -16,7 +16,6 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
-
 export type CallbackProps = {
     Executor: Player,
     Args: { any },
@@ -42,14 +41,12 @@ export type CommandJSON = {
     Callback: (props: CallbackProps) -> nil
 }
 
-
 local UNIVERSE_IDS = {
     ["6754928573"] = 2
 }
 local testerRank = UNIVERSE_IDS[tostring(game.GameId)] or 127
 
 local wait = task.wait
-
 
 --// pick all spawnpoints
 for _, map: Folder in workspace.Maps:GetDescendants() do
@@ -60,8 +57,6 @@ for _, map: Folder in workspace.Maps:GetDescendants() do
     end
 end
 
-
-
 local LOCATION_SPAWNPOINTS = CollectionService:GetTagged("SpawnPointsEntity")
 local LOCATIONS = {}
 
@@ -69,13 +64,10 @@ for _, spawnPoints: Configuration in LOCATION_SPAWNPOINTS do
     table.insert(LOCATIONS, spawnPoints.Parent.Name)
 end
 
-
 table.insert(LOCATIONS, "Ihnmaica")
-
 
 local ALLMOBS = HarukaLib.TableUtils.Keys(EntityBook)
 table.remove(ALLMOBS, table.find(ALLMOBS, "VARIANTS"))
-
 
 local commands: CommandJSON = {
     {
@@ -100,7 +92,6 @@ local commands: CommandJSON = {
                 local noclip = RepS.Packages.Unloads.Noclip:Clone() :: Tool
                 noclip.Parent = thatPlr.Backpack
             end
-
 
             props.ResolveObj()
         end
@@ -157,11 +148,9 @@ local commands: CommandJSON = {
             for _, thatPlr: Player in props.Args[1] do
                 if thatPlr == destinationPlayer then continue end
 
-
                 local thatChar = thatPlr.Character
                 if not ServerLib:IsCharValid(thatChar) then continue end
                 if not ServerLib:IsCharValid(destinationPlayer.Character) then break end
-
 
                 thatChar:PivotTo(destinationPlayer.Character.PrimaryPart.CFrame)
             end
@@ -169,7 +158,6 @@ local commands: CommandJSON = {
             props.ResolveObj()
         end
     },
-
 
     {
         Name = "ChargeClassUlt",
@@ -403,7 +391,6 @@ local commands: CommandJSON = {
         end
     },
 
-
     {
         Name = "LoadSecretMap",
         Alias = "/load_secret_map_dev",
@@ -523,6 +510,5 @@ local commands: CommandJSON = {
         end
     },
 }
-
 
 return commands

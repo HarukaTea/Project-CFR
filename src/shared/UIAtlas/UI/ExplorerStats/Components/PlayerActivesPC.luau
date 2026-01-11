@@ -10,7 +10,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
 
-
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
@@ -29,13 +28,11 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelectingUlt = Fusion.Value(scope, false)
 
-
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
-
 
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
@@ -83,7 +80,6 @@ return function(scope: Fusion.Scope, props: {
             return nil
         end
     end)
-
 
     local frame = Components.Frame(scope, {
         Name = "PlayerActives",
@@ -216,7 +212,6 @@ return function(scope: Fusion.Scope, props: {
                                         Size = UDim2.fromScale(1, 0.25),
                                         Text = "READY",
 
-
                                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
                                             local x = charge / maxCharge
@@ -307,7 +302,6 @@ return function(scope: Fusion.Scope, props: {
         }
     })
 
-
     local classUltSlot = frame.Div.PlayerControls.ClassQUlt
     local function _updateClassUlt()
         local charge, maxCharge = Fusion.peek(props.ClassUltProgress) :: number, Fusion.peek(props.MaxClassUltProgress) :: number
@@ -315,7 +309,6 @@ return function(scope: Fusion.Scope, props: {
 
         if x ~= x then x = 0 end
         x = math.clamp(x, 0, 0.999)
-
 
         HarukaLib:Tween(classUltSlot.UIGradient, Components.TweenInfos.half, {
             Transparency = NumberSequence.new({
@@ -336,7 +329,6 @@ return function(scope: Fusion.Scope, props: {
     end
     Fusion.Observer(scope, props.ClassUltProgress):onBind(_updateClassUlt)
     Fusion.Observer(scope, props.MaxClassUltProgress):onBind(_updateClassUlt)
-
 
     return { frame, frame2 }
 end

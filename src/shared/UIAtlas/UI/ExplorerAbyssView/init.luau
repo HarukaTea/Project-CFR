@@ -11,7 +11,6 @@ local AbyssBook = require(RepS.HarukaShared.Library.AbyssBook)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 
-
 local AbyssLevelSlot = require(script.Components.AbyssLevelSlot)
 local AbyssEnemySlot = require(script.Components.AbyssEnemySlot)
 local AbyssRankSlot = require(RepS.HarukaShared.UIAtlas.Components.LBRankSlot)
@@ -22,7 +21,6 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 local BKItemQuickSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemQuickSlot)
 
 local Children = Fusion.Children
-
 
 local Pinia = require(script.Pinia)
 
@@ -35,14 +33,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerAbyssView") then
         plr.PlayerGui.ExplorerAbyssView:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerAbyssView",
@@ -134,7 +129,6 @@ return function (plr: Player)
                     ScrollBarThickness = 5,
                     ScrollingDirection = Enum.ScrollingDirection.Y,
 
-
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(self.AbyssIndexSelected) == nil
                     end),
@@ -159,13 +153,11 @@ return function (plr: Player)
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 }),
 
-
                 Components.Frame(scope, {
                     Name = "AbyssList",
                     AnchorPoint = Vector2.new(0, 0.5),
                     Size = UDim2.fromScale(0.55, 7),
                     Position = UDim2.fromScale(0.42, 1),
-
 
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(self.AbyssIndexSelected) == nil
@@ -182,7 +174,6 @@ return function (plr: Player)
                             [Children] = {
                                 Components.PaddingFrame(scope, "AAA"),
                                 Components.PaddingFrame(scope, "ZZZ"),
-
 
                                 Fusion.ForPairs(scope, table.create(5, true), function(_, scope: Fusion.Scope, index: number, _)
                                     return index, AbyssLevelSlot(scope, {
@@ -222,7 +213,6 @@ return function (plr: Player)
                     Size = UDim2.fromScale(0.55, 7),
                     Position = UDim2.fromScale(0.42, 1),
 
-
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(self.AbyssIndexSelected) ~= nil
                     end),
@@ -233,7 +223,6 @@ return function (plr: Player)
                             Position = UDim2.fromScale(0, -0.075),
                             Size = UDim2.fromScale(1, 0.08),
                             TextColor3 = Color3.fromRGB(255, 255, 127),
-
 
                             Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local amount = 0
@@ -286,7 +275,6 @@ return function (plr: Player)
                                 end)
                             }
                         }),
-
 
                         Components.ScrollingFrame(scope, {
                             Name = "ModifierList",
@@ -361,11 +349,9 @@ return function (plr: Player)
                     Position = UDim2.fromScale(0.5, -0.1),
                     Size = UDim2.fromScale(0.96, 1),
 
-
                     Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(self.AbyssIndexSelected) ~= nil
                     end),
-
 
                     [Children] = {
                         Components.UIListLayout(scope, {
@@ -420,7 +406,6 @@ return function (plr: Player)
                     }
                 }),
 
-
                 Components.TextLabel(scope, {
                     Name = "Tip",
                     AnchorPoint = Vector2.new(0.5, 1),
@@ -440,7 +425,6 @@ return function (plr: Player)
         }
     })
     self.UI = UI
-
 
     return function ()
         Fusion.doCleanup(scope)

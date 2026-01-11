@@ -1,20 +1,14 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local mapConfig = worldConfig:GetAttribute("WinterMap") :: boolean
 if not mapConfig then return end
-
-
-local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-
 
 local camera = workspace.CurrentCamera
 local snowPart = ReplicatedStorage.Packages.Unloads.SnowParticles :: Part
@@ -30,7 +24,6 @@ Lighting:GetAttributeChangedSignal("RainLevel"):Connect(function()
 
     snowPart.Parent = if rainLevel < 0.5 then workspace.Terrain else script
 end)
-
 
 --// time changes
 local LocationBook = require(ReplicatedStorage.HarukaShared.Library.LocationBook)

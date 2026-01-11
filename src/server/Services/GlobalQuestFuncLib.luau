@@ -3,15 +3,12 @@ local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 local SoundService = game:GetService("SoundService")
 
-
 local ServerBindables = require(SSS.HarukaServer.Library.ServerBindables)
 local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
-
-
 
 export type GlobalQuestFuncLibClass = {
     Funcs: { () -> nil },
@@ -20,14 +17,10 @@ export type GlobalQuestFuncLibClass = {
     Init: (self: GlobalQuestFuncLibClass) -> nil
 }
 
-
-
 local GlobalQuestFuncLib = {} :: GlobalQuestFuncLibClass
 GlobalQuestFuncLib.Funcs = {}
 
-
 GlobalQuestFuncLib.IdCallbacks = {}
-
 
 function GlobalQuestFuncLib:Init()
     for _, func: () -> nil in GlobalQuestFuncLib.Funcs do
@@ -35,9 +28,7 @@ function GlobalQuestFuncLib:Init()
     end
 end
 
-
 --// Private Methods
-
 
 table.insert(GlobalQuestFuncLib.Funcs, function()
     ServerBindables.QuestCompleted.Event:Connect(function(plr: Player, questId: string)
@@ -54,11 +45,9 @@ table.insert(GlobalQuestFuncLib.Funcs, function()
             ServerLib:GiveItemDrop(plr, itemId, count)
         end
 
-
         Events.CreateNotify_S.Fire(plr, "Quest completed, well done!")
         Events.PlaySound_S.Fire(plr, SoundService.SFXs.QuestCompleted)
     end)
-
 
     ServerBindables.NPCChatFinished.Event:Connect(function(id: string, plr: Player)
         if GlobalQuestFuncLib.IdCallbacks[id] then
@@ -66,8 +55,6 @@ table.insert(GlobalQuestFuncLib.Funcs, function()
         end
     end)
 end)
-
-
 
 GlobalQuestFuncLib.IdCallbacks.ChristmasTheSickMan = function(plr: Player)
     local quest = QuestLib:GetQuest(plr, "Christmas2")
@@ -93,7 +80,6 @@ GlobalQuestFuncLib.IdCallbacks.ChristmasTheSickMan = function(plr: Player)
     QuestLib:GiveQuest(plr, "Christmas3")
 end
 
-
 GlobalQuestFuncLib.IdCallbacks.ChristmasInterShovel = function(plr: Player)
     local quest = QuestLib:GetQuest(plr, "Christmas3")
     if quest.Symbol.Value then return end
@@ -110,15 +96,12 @@ GlobalQuestFuncLib.IdCallbacks.ChristmasInterShovel = function(plr: Player)
     QuestLib:GiveQuest(plr, "Christmas4")
 end
 
-
 GlobalQuestFuncLib.IdCallbacks.ChristmasCompletedSnuwaz = function(plr: Player)
     ServerLib:GiveBadge(2684692957005255, plr)
 end
 
-
 GlobalQuestFuncLib.IdCallbacks.Tutorial1Completed = function(plr: Player)
     ServerLib:GiveItemDrop(plr, "TitleAdventurer", 1)
 end
-
 
 return GlobalQuestFuncLib

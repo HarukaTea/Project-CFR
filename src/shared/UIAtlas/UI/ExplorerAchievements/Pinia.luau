@@ -6,7 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
-
 export type Self = {
     plr: Player,
     char: Model,
@@ -19,8 +18,6 @@ export type Self = {
     HasGottenReward: Fusion.Value<boolean>,
 }
 
-
-
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
@@ -29,10 +26,8 @@ return function (self: Self)
 
     self.IsUIShown = Value(false)
 
-
     self.BadgeCompletedCount = Value(0)
     self.HasGottenReward = Value(false)
-
 
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -42,7 +37,6 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "Achievements")
         end
     }))
-
 
     --// track badge count
     local function _checkBadgeCount()
@@ -59,8 +53,6 @@ return function (self: Self)
     end
     table.insert(scope, Events.PlayBadgeNotify_S.On(_checkBadgeCount))
     table.insert(scope, HarukaLib.Clock(5, _checkBadgeCount, true))
-
-
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

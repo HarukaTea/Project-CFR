@@ -5,20 +5,15 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-
 local worldConfig = RepS:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local wallClimbConfig = worldConfig:GetAttribute("CanWallClimb") :: boolean
 if not wallClimbConfig then return end
 
-
-
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
-
-
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -27,15 +22,11 @@ local humanoid = char.Humanoid :: Humanoid
 local animator = humanoid.Animator :: Animator
 local plr = Players.LocalPlayer
 
-
 local WallClimb = {}
 WallClimb.IsClimbing = false
 WallClimb.IsNearWall = false
 
-
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
-
-
 
 ClientLib:InitCharDeadTrackers({
     Add = Add,
@@ -43,7 +34,6 @@ ClientLib:InitCharDeadTrackers({
     Char = char,
     Player = plr
 })
-
 
 local wallClimbRaycastParams = RaycastParams.new()
 wallClimbRaycastParams.FilterType = Enum.RaycastFilterType.Include
@@ -60,11 +50,9 @@ Add(CollectionService:GetInstanceAddedSignal("TerrainPartEntity"):Connect(functi
     terrainRaycastParams:AddToFilter(part)
 end))
 
-
 local climbingAnim = animator:LoadAnimation(RepS.Packages.Anims.CFMechanics.Climbing)
 climbingAnim.Priority = Enum.AnimationPriority.Action3
 Add(climbingAnim)
-
 
 local function getKeyMovement(key: Enum.KeyCode | string): Vector3?
     if key == Enum.KeyCode.W or key == "W" then
@@ -109,7 +97,6 @@ local function climbFunction(key)
     end
 end
 
-
 function WallClimb:Init()
     if WallClimb.IsClimbing then return end
 
@@ -122,7 +109,6 @@ function WallClimb:Init()
     local frontNormal: Vector3 = hit.CFrame.LookVector * 1
     if frontNormal:Dot(pos - hit.Position) <= 0 then return end
 
-
     WallClimb.IsClimbing = true
 
     char.PrimaryPart.Anchored = true
@@ -132,7 +118,6 @@ function WallClimb:Init()
 
     climbingAnim:Play()
     climbingAnim:AdjustSpeed(0.4)
-
 
     Events.SetServerCharAttr_C.Fire({
         AttrId = "IsClimbing",
@@ -177,7 +162,6 @@ function WallClimb:Cast(key: Enum.KeyCode | string)
     char.PrimaryPart.CFrame = CFrame.lookAt(char.PrimaryPart.Position, rayResult.Position - rayResult.Normal) + movement * 40 * dt
 end
 
-
 function WallClimb:Stop()
     if not self.IsClimbing then return end
 
@@ -190,14 +174,11 @@ function WallClimb:Stop()
 
     climbingAnim:Stop()
 
-
     Events.SetServerCharAttr_C.Fire({
         AttrId = "IsClimbing",
         State = false
     })
 end
-
-
 
 Add(HarukaLib.Clock(1, function()
     WallClimb.IsNearWall = false

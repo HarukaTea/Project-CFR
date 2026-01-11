@@ -3,7 +3,6 @@ local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-
 local effectsFolder = RepS.Packages.Effects :: Folder
 
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
@@ -13,7 +12,6 @@ local Types = require(script.Parent.Parent.Types)
 
 local CameraShaker = require(RepS.HarukaShared.Shared.HarmonyLib.CameraShaker)
 
-
 local camShake = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCFrame: CFrame)
     workspace.CurrentCamera.CFrame *= shakeCFrame
 end)
@@ -22,7 +20,6 @@ local wait = task.wait
 
 return function (self: Types.VFXSceneLib)
     local VFXSceneLib = self
-
 
     local function initFollower(part: BasePart, char: Model, func: (part: BasePart, char: Model) -> nil)
         local promise; promise = Promise.new(function(resolve, reject)
@@ -92,7 +89,6 @@ return function (self: Types.VFXSceneLib)
         HarukaLib:EmitParticles(eff)
     end
 
-
     VFXSceneLib.SwordSlash = function(char: Model)
         local eff = effectsFolder.PlayerCommon.SwordSlashDissolve:Clone() :: BasePart
         eff.Transparency = 1
@@ -125,7 +121,6 @@ return function (self: Types.VFXSceneLib)
         Debris:AddItem(eff, 2)
     end
 
-
     VFXSceneLib.SwordPierce = function(char: Model)
         local slash = effectsFolder.PlayerCommon.SwordPierce:Clone() :: BasePart
         slash.Transparency = 1
@@ -143,7 +138,6 @@ return function (self: Types.VFXSceneLib)
         Debris:AddItem(slash, 1.5)
     end
 
-
     VFXSceneLib.UltHighlight = function(char: Model)
         local eff = effectsFolder.PlayerCommon.UltHighlight:Clone() :: Highlight
         eff.Adornee = char
@@ -151,7 +145,6 @@ return function (self: Types.VFXSceneLib)
 
         Debris:AddItem(eff, 3)
     end
-
 
     VFXSceneLib.ImpactFrame = function(char: Model)
         local camera = workspace.CurrentCamera
@@ -171,7 +164,6 @@ return function (self: Types.VFXSceneLib)
             impactFrame2.Enabled = false
         end):catch(function() end)
     end
-
 
     VFXSceneLib.ShakeCameraBump = function(char: Model)
         camShake:Start()

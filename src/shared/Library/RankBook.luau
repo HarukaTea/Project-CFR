@@ -15,7 +15,6 @@ export type PlayerTitleJSON = {
     ChatRole: string?
 }
 
-
 local RankBook = {}
 
 RankBook.RankRoleInfo = {
@@ -98,12 +97,8 @@ RankBook.CustomRoleInfo = {
     }
 }
 
-
-
-
 RankBook.PlayerTitleInfo = {
 }
-
 
 RankBook.PlayerTitles = {
     TitleExplorer = "Explorer",
@@ -113,7 +108,5 @@ RankBook.PlayerTitles = {
     TitleSantaHelper = "Santa's Helper",
     TitleCapybara = "Capybara",
 }
-
-
 
 return RankBook

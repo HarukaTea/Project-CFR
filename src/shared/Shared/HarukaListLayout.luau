@@ -4,7 +4,6 @@ local ServerStorage = game:GetService("ServerStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 export type HarukaLayout = {
     __index: HarukaLayout,
 
@@ -16,11 +15,8 @@ export type HarukaLayout = {
     _Refresh: (self: HarukaLayout) -> nil,
 }
 
-
 local HarukaListLayout = {}
 HarukaListLayout.__index = HarukaListLayout
-
-
 
 --// Constructor
 function HarukaListLayout.new(listLayout: UIListLayout) : HarukaLayout
@@ -36,13 +32,11 @@ function HarukaListLayout.new(listLayout: UIListLayout) : HarukaLayout
     return self
 end
 
-
 function HarukaListLayout:Enable()
     if self.Enabled then return end
 
     self.Enabled = true
     self.UIListLayout.Parent = ServerStorage
-
 
     self.Add(self.Container.ChildAdded:Connect(function(child: GuiObject)
         if not child:IsA("GuiObject") then return end
@@ -62,7 +56,6 @@ function HarukaListLayout:Enable()
     self:_Refresh()
 end
 
-
 function HarukaListLayout:Disable()
     self.UIListLayout.Parent = self.Container
     self.Empty()
@@ -70,21 +63,16 @@ function HarukaListLayout:Disable()
     self.Enabled = false
 end
 
-
 function HarukaListLayout:Destroy()
     self:Disable()
 
 end
 
-
-
 --// Private Methods
-
 
 function HarukaListLayout:_Refresh()
     local listLayout = self.UIListLayout :: UIListLayout
     local container = self.Container :: GuiObject
-
 
     local elements = {}
     for _, element: GuiObject in container:GetChildren() do
@@ -100,7 +88,6 @@ function HarukaListLayout:_Refresh()
     local horizontalAlignment = listLayout.HorizontalAlignment
     local verticalAlignment = listLayout.VerticalAlignment
 
-
     --- sort order
     if sortOrderMode == Enum.SortOrder.LayoutOrder then
         table.sort(elements, function(a, b)
@@ -111,7 +98,6 @@ function HarukaListLayout:_Refresh()
             return a.Name < b.Name
         end)
     end
-
 
     --- apply anchor point
     local anchor = Vector2.zero
@@ -137,7 +123,6 @@ function HarukaListLayout:_Refresh()
     for _, element: GuiObject in elements do
         element.AnchorPoint = anchor
     end
-
 
     --- apply position
     local X, Y = anchor.X, anchor.Y
@@ -195,6 +180,5 @@ function HarukaListLayout:_Refresh()
         end
     end
 end
-
 
 return HarukaListLayout :: HarukaLayout

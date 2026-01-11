@@ -3,14 +3,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Fusion = require(ReplicatedStorage.HarukaShared.Shared.Fusion)
 
-
 export type CallbackProps = {
     Executor: Player,
     Args: { any },
 
     ResolveObj: () -> nil
 }
-
 
 export type CommandArgJSON = {
     Name: string,
@@ -23,7 +21,6 @@ export type CommandArgJSON = {
     EnumItems: { string }?,
 }
 
-
 export type CommandJSON = {
     Name: string,
     Alias: string,
@@ -32,7 +29,6 @@ export type CommandJSON = {
 
     Callback: (props: CallbackProps) -> nil
 }
-
 
 export type HarukaCMDClass = {
     __index: HarukaCMDClass,
@@ -49,8 +45,6 @@ export type HarukaCMDClass = {
     _InitUI: (self: HarukaCMDClass) -> nil,
     _ListenUITracker: (self: HarukaCMDClass) -> nil,
     _ListenInputTracker: (self: HarukaCMDClass) -> nil,
-
-
 
     scope: Fusion.Scope,
 
@@ -72,7 +66,5 @@ export type HarukaCMDClass = {
     Add: <T>(item: T) -> T,
     Empty: () -> nil,
 }
-
-
 
 return nil

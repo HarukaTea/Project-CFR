@@ -7,13 +7,9 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
-
-
 local Children = Fusion.Children
 
-
 type Dict = { [string]: any }
-
 
 return function(scope: Fusion.Scope, props: {
     BadgeId: string,
@@ -44,7 +40,6 @@ return function(scope: Fusion.Scope, props: {
                 return layoutOrder
             end
         end),
-
 
         [Children] = {
             Components.UICorner(scope, {
@@ -103,7 +98,6 @@ return function(scope: Fusion.Scope, props: {
                     }),
                 }
             }),
-
 
             CFEmblemTex(scope, {
                 Position = UDim2.fromScale(0.75, 0.5),

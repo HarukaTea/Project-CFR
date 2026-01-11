@@ -7,8 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
-
 local STAT_ICONS = {
 	ATK = "rbxassetid://2965862892",
 	["BURN CHANCE"] = "rbxassetid://74588474308433",
@@ -38,7 +36,6 @@ local STAT_ICON_COLORS = {
     ["FREEZE CHANCE"] = Color3.fromHex('#81ecec'),
     ["STUN CHANCE"] = Color3.fromRGB(255, 255, 127)
 }
-
 
 return function (scope: Fusion.Scope, props: {
     StatList: {
@@ -79,7 +76,6 @@ return function (scope: Fusion.Scope, props: {
                     return index, nil
                 end
 
-
                 return index, Components.Frame(scope, {
                     Name = "BBB_"..val.Id,
                     BackgroundColor3 = Color3.fromRGB(),
@@ -113,7 +109,6 @@ return function (scope: Fusion.Scope, props: {
                             Size = UDim2.fromScale(0.3, 1),
                             TextXAlignment = Enum.TextXAlignment.Right,
 
-
                             Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local shouldUsePercent = false
                                 if string.find(val.Id, "CRIT DMG") then
@@ -135,7 +130,6 @@ return function (scope: Fusion.Scope, props: {
                                     return Color3.fromHex('#ffffff')
                                 end
                             end),
-
 
                             [Children] = {
                                 Components.UIPadding(scope, {

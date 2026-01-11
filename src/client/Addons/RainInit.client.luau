@@ -16,7 +16,6 @@ local rainSound = SoundService.Environment.RainSound :: Sound
 rainSound.Playing = true
 rainSound.Volume = 0
 
-
 --// Private functions
 
 local function adjustRain(rainLevel: number)
@@ -40,7 +39,6 @@ local function adjustRain(rainLevel: number)
     }):Play()
 end
 
-
 --// Listeners
 
 adjustRain(0)
@@ -55,6 +53,5 @@ HarukaLib:Hydrate(workspace, {
 		adjustRain(Lighting:GetAttribute("RainLevel") or 0)
 	end,
 })
-
 
 workspace:SetAttribute("RainEffectEnabled", true)

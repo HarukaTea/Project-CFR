@@ -9,9 +9,7 @@ repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
-
 local player = Players.LocalPlayer
-
 
 type PreloadPlayerLibClass = {
     Funcs: { [string]: () -> nil },
@@ -19,17 +17,14 @@ type PreloadPlayerLibClass = {
     Init: (self: PreloadPlayerLibClass) -> nil
 }
 
-
 local PreloadPlayerLib = {} :: PreloadPlayerLibClass
 PreloadPlayerLib.Funcs = {}
-
 
 function PreloadPlayerLib:Init()
     for _, func in self.Funcs do
         func()
     end
 end
-
 
 table.insert(PreloadPlayerLib.Funcs, function()
     for _, module in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do

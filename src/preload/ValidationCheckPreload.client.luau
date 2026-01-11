@@ -8,13 +8,11 @@ local plr = Players.LocalPlayer
 
 local wait = task.wait
 
-
 --// Runtime check, it's crazy that it happens
 if RunService:IsServer() then
     plr:Kick("This server is invalid. Rejoin can fix it.")
     return
 end
-
 
 --- do i have a more sanitized way to do this?
 --- replicatedFirst service sometimes will load faster than client
@@ -55,6 +53,5 @@ repeat wait() until RepS.Packages.Unloads:WaitForChild("TeleportUI", 999)
 repeat wait() until workspace:WaitForChild("MapComponents", 999)
 
 workspace:SetAttribute("Haruka_ClientValidated", true)
-
 
 Debris:AddItem(script, 15)

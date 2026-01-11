@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 export type Self = {
     plr: Player,
     char: Model,
@@ -14,9 +13,6 @@ export type Self = {
     IsUIShown: Fusion.Value<boolean>,
     IsUIShown2: Fusion.Value<boolean>,
 }
-
-
-
 
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>

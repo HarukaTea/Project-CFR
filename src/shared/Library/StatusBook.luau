@@ -6,7 +6,6 @@ export type BoostDataJSON = {
     IconColor: Color3?
 }
 
-
 return {
     --// Boosts
     JumpPowerBoost = {
@@ -39,7 +38,6 @@ return {
         IconColor = Color3.fromHex('#2ed573')
     },
 
-
     --// custom effects
     ReverberationUltBoost = {
         Icon = "rbxassetid://120613067089872",
@@ -65,7 +63,6 @@ return {
         IconColor = Color3.fromHex('#a29bfe')
     },
 
-
     --// special
     FireEmblemBoost = {
         Icon = "rbxassetid://74588474308433",
@@ -76,8 +73,6 @@ return {
         Color = Color3.fromHex('#ffeaa7'),
         IconColor = Color3.fromHex('#ffeaa7')
     },
-
-
 
     --// Debuffs
     BurnDebuff = {
@@ -107,17 +102,13 @@ return {
         IconColor = Color3.fromHex('#81ecec')
     },
 
-
     --// special custom
-
-
 
     --// enemy effects
     DMGBoost = {
         Icon = "rbxassetid://2965862892",
         Color = Color3.fromRGB(255, 100, 100)
     },
-
 
     --// orb uni styles
     Heal = {

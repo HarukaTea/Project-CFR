@@ -13,7 +13,6 @@ if RunService:IsClient() then
     return
 end
 
-
 if Players.CharacterAutoLoads then
     error("[ERROR] You forgot to disable CharacterAutoLoads!")
     return
@@ -30,6 +29,5 @@ if not workspace:FindFirstChild("Enemies") then
     error("[ERROR] You forgot to create a 'Enemies' folder!")
     return
 end
-
 
 workspace:SetAttribute("Haruka_ServerValidated", true)

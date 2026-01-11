@@ -11,7 +11,6 @@ local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 
-
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local ClassBook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -26,9 +25,7 @@ local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 
-
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
-
 
 type PlayerLibClass = {
     __index: PlayerLibClass,
@@ -51,17 +48,12 @@ type PlayerLibClass = {
     Empty: () -> nil,
 }
 
-
-
 local PlayerLib = {} :: PlayerLibClass
 PlayerLib.__index = PlayerLib
 
-
 local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
-
 local DS_Version = require(ServerStorage.DS_VERSION)
-
 
 local profileStoreMain = HarukaDatastore.GetStore(
     DS_Version.Id,
@@ -71,9 +63,7 @@ local profileStoreMain = HarukaDatastore.GetStore(
 local totalPlayersJoined = 0
 local allPlayerObjPool = {}
 
-
 local wait = task.wait
-
 
 local attrWhiteList = {}
 for attr, val in HarukaLib.TableUtils.DeepCopy(PlayerTemplate).Slot1.Attrs do
@@ -82,7 +72,6 @@ for attr, val in HarukaLib.TableUtils.DeepCopy(PlayerTemplate).Slot1.Attrs do
     end
     table.insert(attrWhiteList, attr)
 end
-
 
 --// Init once
 Players.PlayerRemoving:Connect(function(player)
@@ -97,7 +86,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
     if not netData.ActionId then return end
     if not netData.SlotId then return end
 
-
     if netData.ActionId ~= "Play" then return end
 
     local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
@@ -109,12 +97,10 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
     local self = playerObj
     if self.Slot then return end
 
-
     --// Load in datastore
     Promise.new(function(resolve, reject)
         local slotChosen = netData.SlotId or "Slot1"
         local profile = self.ProfileObj.Profile
-
 
         --// start to load in
         local slot = slotChosen
@@ -128,12 +114,10 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         profile.Data = validatedMainData
 
-
         local validatedData = self.ProfileObj:_ValidateSaveData(validatedMainData[slot].Attrs)
         if validatedData == nil then reject() return end
 
         profile.Data[slot].Attrs = validatedData
-
 
         --// load validated data
         for attr: string, val: any in validatedData do
@@ -141,7 +125,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
             plr:SetAttribute(attr, val)
         end
-
 
         --// load class levels
         for class: string, level: number in validatedData.ClassLevel do
@@ -153,7 +136,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
         for class: string, point: number in validatedData.ClassPerkPoints do
             plr:SetAttribute("ClassPerkPoint_"..class, point)
         end
-
 
         local itemFolder, equippingFolder, questFolder, settingsFolder =
             Instance.new("Folder"),
@@ -206,13 +188,11 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             itemVal.Parent = equippingFolder
         end
 
-
         QuestLib:InitPlayer(plr)
         QuestLib:LoadSavedTable(plr, validatedData.QuestsV3)
         self.Add(function()
             QuestLib:StopTrackingPlayer(plr)
         end)
-
 
         for settingsId: string, settingsVal: any in validatedMainData.Settings do
             local val = nil
@@ -255,7 +235,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         end):catch(function()  end)
 
-
         --// get christmas/halloween rewards if donated before
         Promise.try(function()
             local donation = PlayerProfileLib._GetCurrentDonation(profile) or 0
@@ -265,7 +244,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             local eventConfig = worldConfig:FindFirstChild("EventConfig")
             local isChristmas = eventConfig and eventConfig:GetAttribute("ChristmasEvent")
             local isHalloween = eventConfig and eventConfig:GetAttribute("HalloweenEvent")
-
 
             if isChristmas and plr:GetAttribute("ClaimedChristmasDonation") == false then
                 plr:SetAttribute("ClaimedChristmasDonation", true)
@@ -296,7 +274,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             end
         end):catch(function() end)
 
-
         --// apply player rank in another thread
         Promise.try(function()
             local playerUID = tostring(plr.UserId)
@@ -313,14 +290,12 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             local rank = plr:GetRankInGroupAsync(16912246)
             plr:SetAttribute("Rank", rank)
 
-
             if not hasCustomRole then
                 if RankBook.RankRoleInfo[rank] then
                     plr:SetAttribute("Role", RankBook.RankRoleInfo[rank].Role)
                 end
             end
         end):catch(function()  end)
-
 
         --// Load in player roles
         local roleContainer = Instance.new("Folder")
@@ -360,10 +335,8 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         end):catch(function() end)
 
-
         --// load in player badges
         ServerBindables.RToCheckPlayerBadges:Fire(plr)
-
 
         --// load in player gamepass and dev products
         Promise.try(function()
@@ -394,11 +367,8 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             self.ProfileObj:_CompensateData(self.Slot)
         end):await()
 
-
         --// Alpha Player badge
         ServerLib:GiveBadge(3358503633424175, plr)
-
-
 
         --// done
         totalPlayersJoined += 1
@@ -444,9 +414,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
 
     if data.ActionId ~= "Erase" then return end
 
-
     Events.CreateFSNotify_S.Fire(plr, "Erasing your save file...", 3)
-
 
     local playerObj = allPlayerObjPool[plr:GetAttribute("HarukaUniqueId")]
     if not playerObj then
@@ -459,7 +427,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
         Events.CreateNotify_S.Fire(plr, "Error occurred, please try again later.")
         return
     end
-
 
     for attr, value in HarukaLib.TableUtils.DeepCopy(PlayerTemplate).Slot1.Attrs do
         playerObj.ProfileObj.Profile.Data[data.SlotId].Attrs[attr] = value
@@ -475,11 +442,8 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, data)
         profileContainer[data.SlotId.."_Weapon1"].Value = "WoodenSword"
     end
 
-
     Events.CreateFSNotify_S.Fire(plr, "Save file erased!", 2)
 end)
-
-
 
 function PlayerLib.new(player: Player)
     if player:GetAttribute("HarukaUniqueId") then return end
@@ -493,13 +457,10 @@ function PlayerLib.new(player: Player)
 
     self.Add, self.Empty = HarukaLib.Bin()
 
-
     allPlayerObjPool[self.UniqueId] = self
 
     return self
 end
-
-
 
 function PlayerLib:Init()
     local plr = self.Player :: Player
@@ -507,13 +468,11 @@ function PlayerLib:Init()
     local profile = nil
     local profileFailedTimes = 0
 
-
     while profile == nil do
         wait(0.5)
         if not plr then break end
         if not plr.Parent then break end
         if profile ~= nil then break end
-
 
         Promise.new(function(resolve, reject)
             profile = profileStoreMain:CreateProfileAsync("Player_"..plr.UserId, false)
@@ -522,7 +481,6 @@ function PlayerLib:Init()
                 reject("Failed to fetch profile")
                 return
             end
-
 
             --// transfer data!! (V0.5.5)
             if not profile._IsTransferred then
@@ -543,7 +501,6 @@ function PlayerLib:Init()
                     return
                 end
             end
-
 
             resolve(true)
         end):timeout(6):catch(function(err)
@@ -576,23 +533,18 @@ function PlayerLib:Init()
         end
     end)
 
-
     if plr.Parent ~= Players then return end
-
 
     local profileObj = PlayerProfileLib.new(plr, profile)
     self.ProfileObj = profileObj
-
 
     --// Load in datastore
     profileObj:Init()
     self.Add(profileObj)
 
-
     local profileContainer = Instance.new("Folder")
     profileContainer.Name = "ProfileContainer"
     profileContainer.Parent = plr
-
 
     Promise.new(function(resolve)
         for i = 1, 3 do
@@ -620,11 +572,8 @@ function PlayerLib:Init()
         plr:Kick("An error occurred while initializing your profile, please contact us in community!")
     end):await()
 
-
     plr:SetAttribute("_PlayerProfileInited", true)
 end
-
-
 
 function PlayerLib:Destroy()
     allPlayerObjPool[self.UniqueId] = nil
@@ -632,16 +581,13 @@ function PlayerLib:Destroy()
     self:RemoveMapComponents()
     self.Empty()
 
-
     local success, err = pcall(self._SaveData, self)
     if not success then
         warn(err)
     end
 end
 
-
 --// Private functions
-
 
 function PlayerLib:_SaveData()
     if not self.ProfileObj then return end
@@ -651,7 +597,6 @@ function PlayerLib:_SaveData()
 
     local profileAttrs = self.ProfileObj.Profile.Data[self.Slot].Attrs :: PlayerTemplate.PlayerDataJSON
     local nowAttrs = self.Player:GetAttributes()
-
 
     for k: string, val: any in profileAttrs do
         if typeof(val) == "table" then continue end
@@ -664,7 +609,6 @@ function PlayerLib:_SaveData()
         profileAttrs.ClassEXPV2[class] = self.Player:GetAttribute("ClassEXP_"..class) or 0
         profileAttrs.ClassPerkPoints[class] = self.Player:GetAttribute("ClassPerkPoint_"..class) or 2
     end
-
 
     --// event only
     Promise.try(function()
@@ -685,7 +629,6 @@ function PlayerLib:_SaveData()
             profileAttrs.ChristmasGifts = giftsFound
         end
     end):catch(function() end)
-
 
     local items = self.Player.Items :: Folder
     local equippingItems = self.Player.EquippingItems :: Folder
@@ -746,8 +689,6 @@ function PlayerLib:_SaveData()
     self.ProfileObj.Profile:SaveProfileAsync()
 end
 
-
-
 function PlayerLib:RemoveMapComponents()
     local funcs = {
         function()
@@ -779,8 +720,6 @@ function PlayerLib:RemoveMapComponents()
     pcall(funcs[3])
 end
 
-
-
 local function initPlayer(player: Player)
     if #Players:GetPlayers() > Players.MaxPlayers then
         player:Kick("Server is full")
@@ -804,7 +743,5 @@ for _, player: Player in Players:GetPlayers() do
     Promise.try(initPlayer, player)
 end
 Players.PlayerAdded:Connect(initPlayer)
-
-
 
 workspace:SetAttribute("Haruka_ServerPlayerLibInited", true)

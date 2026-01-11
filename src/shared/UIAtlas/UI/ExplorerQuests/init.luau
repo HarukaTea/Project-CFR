@@ -11,9 +11,7 @@ local QuestIndicator = require(script.Components.QuestIndicator)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
-
 
 return function(plr: Player)
 	local self = {} :: Pinia.Self
@@ -22,14 +20,11 @@ return function(plr: Player)
     self.char = plr.Character
     self.scope = Fusion.scoped()
 
-
 	Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerQuests") then
         plr.PlayerGui.ExplorerQuests:Destroy()
     end
-
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -40,7 +35,6 @@ return function(plr: Player)
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown) and use(self.IsUIShown2)
         end),
-
 
         [Children] = {
             Fusion.New(scope, "Folder")({
@@ -59,7 +53,6 @@ return function(plr: Player)
 
                         local realLocator = workspace.Maps:FindFirstChild(locator, true)
                         if realLocator == nil then return nil end
-
 
                         local isCompleted = Fusion.Value(scope, false)
                         table.insert(scope, HarukaLib:Hydrate(questSymbol, {
@@ -102,9 +95,7 @@ return function(plr: Player)
                         local npcModel = workspace.MapComponents.NPCs:FindFirstChild(npc, true)
                         if not npcModel then return nil end
 
-
                         if npcModel:GetAttribute("_NoLocationMarker") then return nil end
-
 
                         local isCompleted = Fusion.Value(scope, false)
                         table.insert(scope, HarukaLib:Hydrate(questSymbol, {
@@ -175,7 +166,6 @@ return function(plr: Player)
                                     isCompleted:set(state)
                                 end
                             }))
-
 
                             return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                                 if use(isCompleted) then return nil end

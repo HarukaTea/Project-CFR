@@ -2,20 +2,16 @@
 --// https://devforum.roblox.com/t/liveserversservice-fetch-running-servers-with-simple-code/3915958
 --// @Modifier: HarukaTea
 
-
 local MSS = game:GetService("MemoryStoreService")
 local HTTP = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-
 
 local liveWorldsHashMap = MSS:GetHashMap("CF_Dimension")
 local key = "_AllWorlds"
-
 
 local privateServerId = game.PrivateServerId
 local serverId = game.JobId
@@ -24,9 +20,7 @@ local isUploaded = false
 local isRemoving = false
 local isInited = false
 
-
 local MAX_TIME = 60 * 60 * 24
-
 
 export type ServerInfo = {
     PlayerUserIds: { string },
@@ -39,9 +33,7 @@ export type ServerInfo = {
     LastUpdated: number
 }
 
-
 type Dict = { [string]: {any} }
-
 
 local function _getTableSizeInKB(t: {any?}): number
 	local encoded = HTTP:JSONEncode(t)
@@ -89,15 +81,12 @@ function CADimensions:Init()
         end, 2)
     end)
 
-
 	game:BindToClose(function()
 		CADimensions:RemoveFromDimension()
 	end)
 
-
     print("[CADimension] Connected to CF Dimension")
 end
-
 
 function CADimensions:AddToDimension()
 	local refreshRate = 30
@@ -107,7 +96,6 @@ function CADimensions:AddToDimension()
     if RunService:IsStudio() then return end
 
 	isUploaded = true
-
 
     self.thread = HarukaLib.Clock(refreshRate, function()
         HarukaLib.TryUntil(function()
@@ -144,7 +132,6 @@ function CADimensions:AddToDimension()
         end, 2)
     end, true)
 
-
     print("[CADimension] Uploaded to CF Dimension")
 end
 
@@ -154,7 +141,6 @@ function CADimensions:RemoveFromDimension()
 
 	isRemoving = true
     if self.thread then self.thread() end
-
 
     HarukaLib.TryUntil(function()
         liveWorldsHashMap:UpdateAsync(key, function(oldValue: Dict)
@@ -170,13 +156,11 @@ function CADimensions:RemoveFromDimension()
     end)
 end
 
-
 function CADimensions:GetWorlds(): {
     [string]: ServerInfo
 }
 	return liveWorldsHashMap:GetAsync(key) or {}
 end
-
 
 return CADimensions
 

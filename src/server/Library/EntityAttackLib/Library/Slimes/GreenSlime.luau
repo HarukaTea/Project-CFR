@@ -2,24 +2,18 @@
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
-
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
 
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
-
 local SlimeUniversal = require(script.Parent.SlimeUniversal)
-
 
 local wait = task.wait
 
-
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -28,8 +22,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -44,11 +36,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
-
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -57,9 +46,7 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         return true
     end
 
-
     local function _lookAt(target: Model)
-
 
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
@@ -73,7 +60,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         SlimeUniversal.SlimeWave(entity, target)
     end
-
 
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
@@ -101,23 +87,18 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if comboR == 1 then
             if not _checkIsTargetOrEntityValid(target) then return end
 
-
-
             _slimeWave(target)
             wait(1.2)
         end
     end)
 
-
     --// attack loop
     wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

@@ -7,7 +7,6 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     MerchantId: string,
     Price: number
@@ -18,9 +17,7 @@ return function (scope: Fusion.Scope, props: {
     blur.Name = "UIBlur_TicketPurchase"
     blur.Parent = workspace.CurrentCamera
 
-
     local absDescSize = Fusion.Value(scope, Vector2.zero)
-
 
     local frame; frame = Components.Frame(scope, {
         Name = "TicketPurchase",
@@ -64,7 +61,6 @@ return function (scope: Fusion.Scope, props: {
                         Size = UDim2.fromScale(0.9, 0.4),
                         BackgroundTransparency = 0.5,
                         BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-
 
                         [Fusion.Out("AbsoluteSize")] = absDescSize,
 
@@ -200,7 +196,6 @@ return function (scope: Fusion.Scope, props: {
             })
         }
     })
-
 
     return frame, blur
 end

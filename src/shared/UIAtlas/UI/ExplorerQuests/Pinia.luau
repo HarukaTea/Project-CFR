@@ -7,7 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 export type Self = {
     plr: Player,
     char: Model,
@@ -23,8 +22,6 @@ export type Self = {
 
     COLORS: { [string]: Color3 }
 }
-
-
 
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
@@ -47,13 +44,11 @@ return function (self: Self)
 
     self.CharPosition = Value(Vector3.zero)
 
-
     self.COLORS = {
         Main = Color3.fromHex('#2ed573'),
         Side = Color3.fromHex('#fdcb6e'),
         Town = Color3.fromHex('#a29bfe')
     }
-
 
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -70,7 +65,6 @@ return function (self: Self)
             self.IsUIShown2:set(not state)
         end
     }))
-
 
     --// track char position
     table.insert(scope, RunService.Heartbeat:Connect(function()

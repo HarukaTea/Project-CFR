@@ -6,11 +6,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
-
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
-
 
 return function(scope: Fusion.Scope, props: {
     MobId: string,
@@ -46,12 +44,10 @@ return function(scope: Fusion.Scope, props: {
                 end)
             }),
 
-
             CFEmblemTex(scope, {
                 Position = UDim2.fromScale(0.42, 0.5),
                 Transparency = 0.9
             }),
-
 
             Components.IconImageLabel(scope, {
                 AnchorPoint = Vector2.new(0, 0.5),

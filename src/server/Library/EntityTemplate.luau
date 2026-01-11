@@ -3,7 +3,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local entityStats = {
     Level = 1,
 
@@ -23,7 +22,6 @@ local entityStats = {
 
     IsBoss = false,
     TotalTargeting = 1,
-
 
     --- stats
     DMG = 10,
@@ -57,6 +55,5 @@ for attr, val in entityStats do
         cloned["Base"..attr] = val
     end
 end
-
 
 return cloned

@@ -15,11 +15,8 @@ export type HarukaWriter = {
 	Destroy: (self: HarukaWriter) -> nil
 }
 
-
-
 local HarukaTypeWriter = {}
 HarukaTypeWriter.__index = HarukaTypeWriter
-
 
 function HarukaTypeWriter.new() : HarukaWriter
 	local self = setmetatable({}, HarukaTypeWriter)
@@ -32,7 +29,6 @@ function HarukaTypeWriter.new() : HarukaWriter
 
 	return self
 end
-
 
 --[[
 	Queue a task to type text
@@ -56,23 +52,18 @@ function HarukaTypeWriter:TypeText(text: string)
 		task.wait(0.01)
 	end
 
-
 	self.Running = false
 	self.OnTyperFinished:Fire()
 end
-
 
 function HarukaTypeWriter:Stop()
 	self.Paused = false
 	self.Stopped = true
 end
 
-
-
 function HarukaTypeWriter:IsTyping()
 	return self.Running
 end
-
 
 function HarukaTypeWriter:Destroy()
 	self.Paused = false

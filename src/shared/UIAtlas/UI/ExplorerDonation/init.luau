@@ -12,9 +12,7 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 local DevProductSlot = require(script.Components.DevProductSlot)
 local DonationRankSlot = require(RepS.HarukaShared.UIAtlas.Components.LBRankSlot)
 
-
 local Children = Fusion.Children
-
 
 local Pinia = require(script.Pinia)
 
@@ -27,14 +25,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerDonation") then
         plr.PlayerGui.ExplorerDonation:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerDonation",
@@ -44,7 +39,6 @@ return function (plr: Player)
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
         end),
-
 
         [Children] = {
             Components.Frame(scope, {
@@ -155,7 +149,6 @@ return function (plr: Player)
         }
     })
     self.UI = UI
-
 
     return function ()
         Fusion.doCleanup(scope)

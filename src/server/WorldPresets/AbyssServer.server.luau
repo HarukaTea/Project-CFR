@@ -1,7 +1,6 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-
 local CollectionService = game:GetService("CollectionService")
 local DSS = game:GetService("DataStoreService")
 local Lighting = game:GetService("Lighting")
@@ -11,8 +10,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 local TeleportService = game:GetService("TeleportService")
-
-
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
@@ -50,14 +47,11 @@ export type AbyssWorldLibClass = {
     Restart: (self: AbyssWorldLibClass) -> nil,
 }
 
-
 local AbyssWorldLib = {} :: AbyssWorldLibClass
 AbyssWorldLib.Funcs = {}
 AbyssWorldLib.ListenFuncs = {}
 
-
 if not workspace:GetAttribute("AbyssId") then return nil end
-
 
 local abyssMobsContainer = workspace.Enemies:FindFirstChild("_ABYSS_TEAM") :: Folder
 if not abyssMobsContainer then
@@ -65,17 +59,13 @@ if not abyssMobsContainer then
     return nil
 end
 
-
 local abyssAirwall = workspace.MapComponents:FindFirstChild("_AbyssAirwall") :: BasePart
 if not abyssAirwall then
     error("[AbyssLib] _AbyssAirwall folder not found in MapComponents folder")
     return nil
 end
 
-
-
 local abyssSpeedrunDatastore = DSS:GetOrderedDataStore(require(ServerStorage.ABYSS_DS_VERSION))
-
 
 --// helper functions
 
@@ -83,10 +73,7 @@ local function _notifyFireAll(text: string)
     Events.CreateNotify_S.FireList(CollectionService:GetTagged("PlayerEntity"), text)
 end
 
-
-
 local wait = task.wait
-
 
 function AbyssWorldLib:Init()
     Promise.try(AbyssWorldLib.Funcs[1]):await()
@@ -96,9 +83,7 @@ function AbyssWorldLib:Init()
     end
 end
 
-
 --// Private functions
-
 
 function AbyssWorldLib:GiveLoot()
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
@@ -150,7 +135,6 @@ function AbyssWorldLib:GiveLoot()
             warn(tostring(err))
         end)
 
-
         Promise.try(function()
             local items = player.Items :: Folder
 
@@ -182,14 +166,12 @@ function AbyssWorldLib:RepeatUntilComplete()
     end)
 end
 
-
 function AbyssWorldLib:ShowPity()
     for _, player: Player in CollectionService:GetTagged("PlayerEntity") do
         local abyssDropPity = player:GetAttribute("AbyssDropPity") or 0
         Events.CreateNotify_S.Fire(player, "[Pity Counter] Your pity is "..abyssDropPity)
     end
 end
-
 
 function AbyssWorldLib:PlaceMobs()
     local index = 1
@@ -211,7 +193,6 @@ function AbyssWorldLib:PlaceMobs()
         index += 1
     end
 end
-
 
 function AbyssWorldLib:Restart()
     if AbyssWorldLib.Started == false then return end
@@ -235,13 +216,10 @@ function AbyssWorldLib:Restart()
         char:PivotTo(baseSpawn.CFrame)
     end
 
-
     workspace:SetAttribute("AbyssTime", 0)
     workspace:SetAttribute("AbyssStarted", false)
     workspace:SetAttribute("AbyssFinished", false)
 end
-
-
 
 table.insert(AbyssWorldLib.Funcs, function()
     local abyssHashMap = MemoryStoreService:GetHashMap("_AbyssTeleportData_V2")
@@ -279,7 +257,6 @@ table.insert(AbyssWorldLib.Funcs, function()
     workspace:SetAttribute("AbyssTime", 0)
     workspace:SetAttribute("AbyssMode", mode)
 
-
     local totalMobs = abyssMobsContainer:GetChildren() :: { BasePart }
     local totalMobPositions = {}
 
@@ -288,9 +265,7 @@ table.insert(AbyssWorldLib.Funcs, function()
     end
     AbyssWorldLib.MobLocatorPositions = totalMobPositions
 
-
     workspace:SetAttribute("AbyssStarted", false)
-
 
     --// modifiers
     if table.find(modifiers, "BurnInflict") then
@@ -303,10 +278,6 @@ table.insert(AbyssWorldLib.Funcs, function()
         blurEffect.Parent = Lighting
     end
 end)
-
-
-
-
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.Abyss_StartAbyss_C.SetCallback(function(plr: Player)
@@ -328,8 +299,6 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
     end)
 end)
 
-
-
 table.insert(AbyssWorldLib.ListenFuncs, function()
     HarukaLib.Clock(1, function()
         if not workspace:GetAttribute("AbyssStarted") then return end
@@ -338,8 +307,6 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         HarukaLib:AddAttr(workspace, "AbyssTime", 1)
     end)
 end)
-
-
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
     AbyssWorldLib.AbyssCompleted.Event:Connect(function()
@@ -361,9 +328,6 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         end
     end)
 end)
-
-
-
 
 table.insert(AbyssWorldLib.ListenFuncs, function()
     Events.Abyss_AfterEndAction_S.SetCallback(function(plr: Player, actionId: string)
@@ -408,8 +372,6 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
     end)
 end)
 
-
-
 table.insert(AbyssWorldLib.ListenFuncs, function()
     local leader = nil
     CollectionService:GetInstanceAddedSignal("PlayerEntity"):Connect(function(player: Player)
@@ -420,7 +382,5 @@ table.insert(AbyssWorldLib.ListenFuncs, function()
         end
     end)
 end)
-
-
 
 AbyssWorldLib:Init()

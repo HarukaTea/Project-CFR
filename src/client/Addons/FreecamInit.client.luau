@@ -6,19 +6,15 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 local TextChatService = game:GetService("TextChatService")
 
-
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 
 local plr = Players.LocalPlayer
 
 local wait = task.wait
 
-
 if not workspace:GetAttribute("AllowFreecam") then return end
 
-
 local Freecam = require(RepS.HarukaShared.Shared.Freecam)
-
 
 local freecamCommand = Instance.new("TextChatCommand")
 freecamCommand.Name = "HarukaFreecamCommand"

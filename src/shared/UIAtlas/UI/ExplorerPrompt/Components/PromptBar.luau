@@ -19,16 +19,12 @@ local Children = Fusion.Children
 local v2New = Vector2.new
 local fromScale = UDim2.fromScale
 
-
-
 local ICON_TYPES = {
 	Default = "Default",
 	Market = "CAIcon",
 	Chest = "Default",
 	Crafting = "CAIcon",
 }
-
-
 
 return function (scope: Fusion.Scope, props: {
     PromptObject: ProximityPrompt,
@@ -40,9 +36,7 @@ return function (scope: Fusion.Scope, props: {
 }) : Frame?
     if props.PromptObject == nil then return nil end
 
-
     props.Platform = HarukaLib:GetDevice()
-
 
     local promptType = props.PromptObject.Name :: string
     if not AssetBook.PromptIcons[promptType] then
@@ -58,7 +52,6 @@ return function (scope: Fusion.Scope, props: {
         materialId = material.Name
     end
 
-
     local isClassGiver = props.PromptObject.Name == "Class"
     local classId = "None"
     if isClassGiver then
@@ -68,13 +61,11 @@ return function (scope: Fusion.Scope, props: {
         classId = statue.Name
     end
 
-
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
-
 
     local keyOrIcon = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
@@ -106,8 +97,6 @@ return function (scope: Fusion.Scope, props: {
             })
         elseif input == "Controller" then
             local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.PromptTrigger.Name] or KeybindsBook.Console.PromptTrigger.Name
-
-
 
             return Components.TextLabel(scope, {
                 Name = "Key",
@@ -141,7 +130,6 @@ return function (scope: Fusion.Scope, props: {
             })
         end
     end)
-
 
     local itemIconOrNomalIcon = nil
     if isMaterialGiver then
@@ -211,13 +199,11 @@ return function (scope: Fusion.Scope, props: {
         end
     end
 
-
     return Components.Frame(scope, {
         Name = "Prompt",
         BackgroundTransparency = 0,
         Size = fromScale(0.18, 0.9),
         LayoutOrder = props.LayoutOrder,
-
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return if use(props.CurrentPromptIndex) == props.LayoutOrder then Components.WHITE_COLOR else Components.BLACK_COLOR
@@ -246,7 +232,6 @@ return function (scope: Fusion.Scope, props: {
 
             itemIconOrNomalIcon,
 
-
             Components.TextLabel(scope, {
                 Name = "PromptText",
                 AnchorPoint = v2New(0, 0.5),
@@ -259,7 +244,6 @@ return function (scope: Fusion.Scope, props: {
                     return if use(props.CurrentPromptIndex) == props.LayoutOrder then Components.BLACK_COLOR else Components.WHITE_COLOR
                 end),
             }),
-
 
             Components.HoverImageButton(scope, {
                 [Fusion.OnEvent("MouseEnter")] = function()

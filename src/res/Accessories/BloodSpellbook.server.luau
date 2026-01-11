@@ -8,14 +8,11 @@ local Add, Empty = HarukaLib.Bin()
 
 local char = script:FindFirstAncestorOfClass("Model")
 
-
 local event = Instance.new("BindableEvent")
 event.Name = "EnemyGotHit"
 event.Parent = script
 
-
 script:SetAttribute("ReqDestroyingEvent", true)
-
 
 local function _giveATK()
     local maxHealth = char.Humanoid.MaxHealth :: number
@@ -27,7 +24,6 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
     ["Prop-Health"] = _giveATK,
     ["Prop-MaxHealth"] = _giveATK
 }))
-
 
 Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting, attacker, dmgProps)
     if dmgProps.Attacker ~= "ClassAttacks" then return end

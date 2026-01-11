@@ -6,7 +6,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 
-
 local Children = Fusion.Children
 
 local plr = Players.LocalPlayer
@@ -21,7 +20,6 @@ return function(scope: Fusion.Scope, props: {
     local maxClassEXP = FormulaBook.PlayerClassLevelCurveCal({
         Level = classLevel,
     })
-
 
     return Components.Frame(scope, {
         Name = "LevelEXPBar",

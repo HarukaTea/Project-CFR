@@ -14,7 +14,6 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
-
 local Pinia = require(script.Pinia)
 
 return function(plr: Player)
@@ -26,7 +25,6 @@ return function(plr: Player)
 
 	local scope = self.scope :: Fusion.Scope
 
-
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "PlayerList",
 		Parent = plr.PlayerGui,
@@ -34,7 +32,6 @@ return function(plr: Player)
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
         end),
-
 
         [Children] = {
             Fusion.New(scope, "Folder")({
@@ -207,7 +204,6 @@ return function(plr: Player)
         }
     })
     self.UI = UI
-
 
     return function ()
         Fusion.doCleanup(scope)

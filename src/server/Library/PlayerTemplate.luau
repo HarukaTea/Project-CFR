@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 export type PlayerItemDataJSON = {
     ItemId: string,
     Amount: number,
@@ -25,7 +24,6 @@ export type PlayerQuestDataJSON = {
     Completed: boolean,
     Objectives: { [string]: number }
 }
-
 
 export type PlayerDataJSON = {
     Level: number,
@@ -80,7 +78,6 @@ export type PlayerDataJSON = {
     IceCandyV1Given: boolean?
 }
 
-
 export type GamepassPurchaseLogJSON = {
     Purchased: boolean,
     PurchaseDateTime: string,
@@ -96,7 +93,6 @@ export type PlayerMainDataJSON = {
     }
 }
 
-
 export type JSON = {
     Slot1: {
         Attrs: PlayerDataJSON
@@ -108,8 +104,6 @@ export type JSON = {
         Attrs: PlayerDataJSON
     },
 } & PlayerMainDataJSON
-
-
 
 local playerStats = {
     Slot1 = {
@@ -167,7 +161,6 @@ local playerStats = {
 
     JoinDateTime = DateTime.now():ToIsoDate(),
 
-
     GamepassPurchaseLogs = {},
     DevProductsPurchaseLogs = {},
 
@@ -181,9 +174,7 @@ for class: string, _ in ClassBook do
     playerStats.Slot1.Attrs.ClassPerkPoints[class] = 2
 end
 
-
 playerStats.Slot2 = HarukaLib.TableUtils.DeepCopy(playerStats.Slot1)
 playerStats.Slot3 = HarukaLib.TableUtils.DeepCopy(playerStats.Slot1)
-
 
 return playerStats

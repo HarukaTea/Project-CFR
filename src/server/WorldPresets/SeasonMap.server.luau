@@ -1,19 +1,16 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-
 
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local mapConfig = worldConfig:GetAttribute("WinterMap") :: boolean
 if not mapConfig then return end
-
 
 --// christmas
 
@@ -31,7 +28,6 @@ local function _recolorTreePart(part: BasePart)
         part.Color = Color3.fromRGB(248, 248, 248):Lerp(Color3.new(), 0.35)
     end
 end
-
 
 for _, part: BasePart in CollectionService:GetTagged("TerrainPartEntity") do
     local isHalloween = part:IsDescendantOf(workspace.Maps.EventIslands.HalloweenArea)

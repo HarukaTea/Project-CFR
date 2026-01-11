@@ -16,7 +16,6 @@ local Book = {
 	},
 }
 
-
 PS:RegisterCollisionGroup(Book.Group.Hitbox)
 PS:RegisterCollisionGroup(Book.Group.PlayerBodyPart)
 PS:RegisterCollisionGroup(Book.Group.EnemyBodyPart)
@@ -24,7 +23,6 @@ PS:RegisterCollisionGroup(Book.Group.NPCBodyPart)
 PS:RegisterCollisionGroup(Book.Group.PlayerProjectile)
 PS:RegisterCollisionGroup(Book.Group.EnemyProjectile)
 PS:RegisterCollisionGroup(Book.Group.NoCollision)
-
 
 PS:CollisionGroupSetCollidable(Book.Group.Hitbox, "Default", true)
 PS:CollisionGroupSetCollidable(Book.Group.Hitbox, Book.Group.Hitbox, false)
@@ -35,7 +33,6 @@ PS:CollisionGroupSetCollidable(Book.Group.Hitbox, Book.Group.PlayerProjectile, f
 PS:CollisionGroupSetCollidable(Book.Group.Hitbox, Book.Group.EnemyProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.Hitbox, Book.Group.NoCollision, false)
 
-
 PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, "Default", true)
 PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, Book.Group.Hitbox, true)
 PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, Book.Group.PlayerBodyPart, false)
@@ -44,7 +41,6 @@ PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, Book.Group.NPCBodyPart
 PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, Book.Group.PlayerProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, Book.Group.EnemyProjectile, true)
 PS:CollisionGroupSetCollidable(Book.Group.PlayerBodyPart, Book.Group.NoCollision, false)
-
 
 PS:CollisionGroupSetCollidable(Book.Group.EnemyBodyPart, "Default", true)
 PS:CollisionGroupSetCollidable(Book.Group.EnemyBodyPart, Book.Group.Hitbox, false)
@@ -55,7 +51,6 @@ PS:CollisionGroupSetCollidable(Book.Group.EnemyBodyPart, Book.Group.PlayerProjec
 PS:CollisionGroupSetCollidable(Book.Group.EnemyBodyPart, Book.Group.EnemyProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.EnemyBodyPart, Book.Group.NoCollision, false)
 
-
 PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, "Default", true)
 PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, Book.Group.Hitbox, false)
 PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, Book.Group.PlayerBodyPart, false)
@@ -64,7 +59,6 @@ PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, Book.Group.NPCBodyPart, f
 PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, Book.Group.PlayerProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, Book.Group.EnemyProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.NPCBodyPart, Book.Group.NoCollision, false)
-
 
 PS:CollisionGroupSetCollidable(Book.Group.PlayerProjectile, "Default", true)
 PS:CollisionGroupSetCollidable(Book.Group.PlayerProjectile, Book.Group.Hitbox, false)
@@ -75,7 +69,6 @@ PS:CollisionGroupSetCollidable(Book.Group.PlayerProjectile, Book.Group.PlayerPro
 PS:CollisionGroupSetCollidable(Book.Group.PlayerProjectile, Book.Group.EnemyProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.PlayerProjectile, Book.Group.NoCollision, false)
 
-
 PS:CollisionGroupSetCollidable(Book.Group.EnemyProjectile, "Default", true)
 PS:CollisionGroupSetCollidable(Book.Group.EnemyProjectile, Book.Group.Hitbox, false)
 PS:CollisionGroupSetCollidable(Book.Group.EnemyProjectile, Book.Group.PlayerBodyPart, true)
@@ -85,8 +78,6 @@ PS:CollisionGroupSetCollidable(Book.Group.EnemyProjectile, Book.Group.PlayerProj
 PS:CollisionGroupSetCollidable(Book.Group.EnemyProjectile, Book.Group.EnemyProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.EnemyProjectile, Book.Group.NoCollision, false)
 
-
-
 PS:CollisionGroupSetCollidable(Book.Group.NoCollision, "Default", false)
 PS:CollisionGroupSetCollidable(Book.Group.NoCollision, Book.Group.Hitbox, false)
 PS:CollisionGroupSetCollidable(Book.Group.NoCollision, Book.Group.PlayerBodyPart, false)
@@ -95,6 +86,5 @@ PS:CollisionGroupSetCollidable(Book.Group.NoCollision, Book.Group.NPCBodyPart, f
 PS:CollisionGroupSetCollidable(Book.Group.NoCollision, Book.Group.PlayerProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.NoCollision, Book.Group.EnemyProjectile, false)
 PS:CollisionGroupSetCollidable(Book.Group.NoCollision, Book.Group.NoCollision, false)
-
 
 return Book

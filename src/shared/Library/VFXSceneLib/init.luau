@@ -4,15 +4,11 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local Types = require(script.Types)
-
 
 export type VFXSceneLib = Types.VFXSceneLib
 
-
 local VFXSceneLib = {} :: VFXSceneLib
-
 
 local function _tweenValue(start: number, duration: number, endTime: number)
 	local numVal = Instance.new('NumberValue')
@@ -32,11 +28,8 @@ local function _createMarkContainer() : Folder
     return tempMarkedContainer
 end
 
-
 VFXSceneLib._tweenValue = _tweenValue
 VFXSceneLib._createMarkContainer = _createMarkContainer
-
-
 
 for _, module: ModuleScript in script.Library:GetChildren() do
     VFXSceneLib[module.Name] = function(caster: Model, uniqueId: string)
@@ -46,6 +39,5 @@ end
 for _, module: ModuleScript in script.LibrarySP:GetChildren() do
     require(module)(VFXSceneLib)
 end
-
 
 return VFXSceneLib

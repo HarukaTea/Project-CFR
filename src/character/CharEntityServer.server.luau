@@ -1,7 +1,6 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 
-
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,15 +10,12 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
-
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 
 local Add, Empty = HarukaLib.Bin()
 
 local isDead = false
-
-
 
 type CharLibClass = {
     Funcs: { () -> nil },
@@ -30,12 +26,8 @@ type CharLibClass = {
 	_TriggerRagdoll: (self: CharLibClass) -> nil,
 }
 
-
 local CharLib = {} :: CharLibClass
 CharLib.Funcs = {}
-
-
-
 
 function CharLib:Init()
 	for _, func: () -> nil in self.Funcs do
@@ -44,7 +36,6 @@ function CharLib:Init()
 
 	char:SetAttribute("Haruka_CharServerInited", true)
 end
-
 
 function CharLib:Destroy()
     if isDead then return end
@@ -58,9 +49,7 @@ function CharLib:Destroy()
     ServerBindables.RToSpawnChar:Fire(plr)
 end
 
-
 --// Private functions
-
 
 table.insert(CharLib.Funcs, function()
 	Add(plr.CharacterRemoving:Connect(function()
@@ -89,7 +78,6 @@ table.insert(CharLib.Funcs, function()
 	end))
 end)
 
-
 table.insert(CharLib.Funcs, function()
 	local humanoid = char.Humanoid :: Humanoid
 
@@ -97,13 +85,11 @@ table.insert(CharLib.Funcs, function()
 	humanoid.RequiresNeck = false
 end)
 
-
 table.insert(CharLib.Funcs, function()
     Add(HarukaLib.Clock(0.5, function()
 		if not plr then return end
 		if not ServerLib:IsModelValid(char) then return end
 		if char:GetAttribute("IsInCombat") then return end
-
 
         local regionIn = HarukaLib:IsInRegion(char.PrimaryPart.Position, CollectionService:GetTagged("ZoneEntity"))
         if regionIn then
@@ -114,8 +100,6 @@ table.insert(CharLib.Funcs, function()
         end
     end))
 end)
-
-
 
 function CharLib:_TriggerRagdoll()
 	local humanoid = char.Humanoid :: Humanoid
@@ -187,6 +171,5 @@ function CharLib:_TriggerRagdoll()
 
 	humanoid.AutoRotate = false
 end
-
 
 CharLib:Init()

@@ -3,7 +3,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
-
 export type DMGPropsMetaData = {
     DMG: number,
     DMGType: "DMG" | "Magic",
@@ -17,8 +16,6 @@ export type ClassUltMetaData = {
 }
 
 local ArtifactUniversal = {}
-
-
 
 ArtifactUniversal.RegisterEnemyOnHit = function(
     source: Script,
@@ -40,7 +37,6 @@ ArtifactUniversal.RegisterEnemyOnHit = function(
     end)
 end
 
-
 ArtifactUniversal.RegisterClassUltCasted = function(
     source: Script,
     event: BindableEvent,
@@ -60,13 +56,9 @@ ArtifactUniversal.RegisterClassUltCasted = function(
     end)
 end
 
-
 ArtifactUniversal.RegisterPlayerDiedEmpty = function(source: Script, event: BindableEvent, empty: () -> nil)
     source.Destroying:Connect(empty)
     event.Event:Connect(empty)
 end
-
-
-
 
 return ArtifactUniversal

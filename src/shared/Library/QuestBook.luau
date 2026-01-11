@@ -5,7 +5,6 @@ export type QuestObjectiveJSON = {
     Target: number,
 }
 
-
 export type QuestJSON = {
     Id: string,
     QuestType: "Main" | "Side" | "Town",
@@ -29,8 +28,6 @@ export type QuestJSON = {
     }
 }
 
-
 local quests = {}
-
 
 return quests

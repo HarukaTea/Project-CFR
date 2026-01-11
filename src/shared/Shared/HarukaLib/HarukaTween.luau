@@ -3,7 +3,6 @@ local TweenService = game:GetService("TweenService")
 
 local wait = task.wait
 
-
 local DATA_TYPES = {
     number = function(a, b, t)
         return a + ((b - a) * t)
@@ -13,7 +12,6 @@ local DATA_TYPES = {
         return a:Lerp(b, t)
     end
 }
-
 
 local function fastBubbleSort(arr)
     local n = #arr
@@ -57,7 +55,6 @@ DATA_TYPES.ColorSequence = function(a, b, t)
     end
     fastBubbleSort(keyPoints)
 
-
     return ColorSequence.new(keyPoints)
 end
 DATA_TYPES.NumberRange = function(a, b, t)
@@ -67,7 +64,6 @@ DATA_TYPES.NumberRange = function(a, b, t)
     )
 end
 
-
 return function (object: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : BindableEvent
 	local properties = {}
 	local tweenSignal = nil
@@ -75,7 +71,6 @@ return function (object: Instance, style: TweenInfo, goal: { [string]: any }, ne
     if needSignal then
         tweenSignal = Instance.new("BindableEvent")
     end
-
 
 	for name: string, _: any in goal do
 		if name == "Pivot" then
@@ -105,7 +100,6 @@ return function (object: Instance, style: TweenInfo, goal: { [string]: any }, ne
 			local t = math.min(alpha, 1)
 
 			if style.Reverses then alpha = 1 - t end
-
 
 			local lerp = TweenService:GetValue(alpha, style.EasingStyle, style.EasingDirection)
 			for name: string, val: any in goal do

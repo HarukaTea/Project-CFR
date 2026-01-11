@@ -8,8 +8,6 @@ local EffectBook = require(RepS.HarukaShared.Library.StatusBook)
 
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
-
-
 local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
@@ -22,11 +20,9 @@ return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
     rotationValForTween.Parent = game:GetService("ServerStorage")
     table.insert(scope, rotationValForTween)
 
-
     rotationValForTween:GetPropertyChangedSignal("Value"):Connect(function()
         rotationVal:set(rotationValForTween.Value)
     end)
-
 
     local nowClock = DateTime.now().UnixTimestamp :: number
     local endClock = effect:GetAttribute("EndClock") :: number
@@ -35,7 +31,6 @@ return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
     HarukaLib:CreateTween(rotationValForTween, tweenInfo, {
         Value = 0
     }):Play()
-
 
     return Components.IconImageLabel(scope, {
         Name = effect.Value,
@@ -87,7 +82,6 @@ return function (scope: Fusion.Scope, effect: StringValue) : ImageLabel
                     Components.ScaledTextUIStroke(scope, {})
                 }
             }),
-
 
             ProgressCircle(scope, {
                 Direction = "Left",

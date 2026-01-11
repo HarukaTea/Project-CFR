@@ -39,7 +39,6 @@ return function(scope: Fusion.Scope, props: {
         hasOwnedGamepass:set(hasOwned)
     end))
 
-
     local isSelecting = Fusion.Value(scope, false)
 
     return Components.Frame(scope, {

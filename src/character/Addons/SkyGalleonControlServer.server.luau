@@ -3,30 +3,23 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local galleonConfig = worldConfig:GetAttribute("CanSkyGalleon") :: boolean
 if not galleonConfig then return end
 
-
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
-
 local Add, Empty = HarukaLib.Bin()
-
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 local currentGalleon: Model? = nil
 
-
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGServerInited")
-
-
 
 ServerLib:InitCharDeadTrackers({
     Add = Add,
@@ -34,7 +27,6 @@ ServerLib:InitCharDeadTrackers({
     Char = char,
     Player = plr
 })
-
 
 Add(HarukaLib:Hydrate(char.Humanoid, {
     ["Prop-SeatPart"] = function(part: BasePart)
@@ -48,18 +40,14 @@ Add(HarukaLib:Hydrate(char.Humanoid, {
     end
 }))
 
-
-
 Add(Events.DriveSkyGalleon_C.On(function(player: Player, moveVector: Vector3)
     if player ~= plr then return end
     if not currentGalleon then return end
     if not moveVector then return end
 
-
     local x, y, z = moveVector.X, moveVector.Y, moveVector.Z
     x, y, z = math.clamp(x, -1, 1), math.clamp(y, -1, 1), math.clamp(z, -1, 1)
     moveVector = Vector3.new(x, y, z)
-
 
     local currentCFrame = currentGalleon.PrimaryPart.CFrame
     local rotationInput = -moveVector.X
@@ -72,7 +60,6 @@ Add(Events.DriveSkyGalleon_C.On(function(player: Player, moveVector: Vector3)
     if math.abs(rotationInput) <= 0.4 then
         rotationInput = 0
     end
-
 
     local galleon, pos, rotation =
         currentGalleon,

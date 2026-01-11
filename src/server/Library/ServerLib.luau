@@ -20,8 +20,6 @@ local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
 
 local ServerLib = {}
 
-
-
 local terrainParams = RaycastParams.new()
 terrainParams.IgnoreWater = true
 terrainParams.FilterDescendantsInstances = CollectionService:GetTagged("TerrainPartEntity")
@@ -30,7 +28,6 @@ terrainParams.FilterType = Enum.RaycastFilterType.Include
 CollectionService:GetInstanceAddedSignal("TerrainPartEntity"):Connect(function(part)
 	terrainParams:AddToFilter(part)
 end)
-
 
 --// Helper functions
 
@@ -71,14 +68,12 @@ function ServerLib:WeldModel(part: BasePart, welded: Model)
 	end
 end
 
-
 function ServerLib:FindGroundByRay(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 35, -Vector3.yAxis * 159, terrainParams)
 	if rayResult then return rayResult.Position end
 
 	return givenPos
 end
-
 
 function ServerLib:WeldWeapon(weapon: Model, char: Model) : Model
 	local motor6D = weapon:FindFirstChildOfClass("Motor6D")
@@ -90,13 +85,11 @@ function ServerLib:WeldWeapon(weapon: Model, char: Model) : Model
 	weldTarget = char:FindFirstChild(weldTarget)
 	if not weldTarget then warn("Cannot weld weapon, target not found") return end
 
-
 	motor6D.Part0 = weldTarget
 	weapon.Parent = char
 
 	return weapon
 end
-
 
 function ServerLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 	local rayResult = workspace:Raycast(givenPos + Vector3.yAxis * 5, -Vector3.yAxis * 30, terrainParams)
@@ -105,7 +98,6 @@ function ServerLib:FindGroundByRayForOrb(givenPos: Vector3) : Vector3
 	return givenPos
 end
 
-
 function ServerLib:IsModelValid(model: Instance?) : boolean
 	if not model then return false end
     if not model.Parent then return false end
@@ -113,7 +105,6 @@ function ServerLib:IsModelValid(model: Instance?) : boolean
 
     return true
 end
-
 
 function ServerLib:IsCharValid(char: Instance?) : boolean
 	if not ServerLib:IsModelValid(char) then return false end
@@ -125,7 +116,6 @@ function ServerLib:IsCharValid(char: Instance?) : boolean
 
 	return true
 end
-
 
 function ServerLib:GetPlayerByUniqueId(uniqueId: string) : Player?
 	local player: Player = nil
@@ -141,7 +131,6 @@ function ServerLib:GetPlayerByUniqueId(uniqueId: string) : Player?
 
 	return player
 end
-
 
 function ServerLib:PlayWorldSound(sound: Sound, pos: Vector3)
 	local part = HarukaLib:CreateMockPart()
@@ -171,7 +160,6 @@ function ServerLib:InitCharDeadTrackers(props: {
 	local char = props.Char
 	local plr = props.Player
 
-
 	Add(plr.CharacterRemoving:Connect(function()
 		Empty()
 	end))
@@ -198,7 +186,6 @@ function ServerLib:FindGroundByRayForCombatLocation(givenPos: Vector3) : Vector3
 
 	return givenPos
 end
-
 
 function ServerLib:GetNearbyPlayers(position: Vector3, distance: number?)
 	local players = {}
@@ -256,11 +243,8 @@ function ServerLib:GenerateOrbPos(combatLocation: CFrame) : CFrame
 		warn(tostring(err))
 	end):await()
 
-
 	return orbLocation
 end
-
-
 
 function ServerLib:ShowNumber(target: Model, number: number, color: Color3?)
 	if not ServerLib:IsCharValid(target) then return end
@@ -274,7 +258,6 @@ function ServerLib:ShowNumber(target: Model, number: number, color: Color3?)
 	})
 end
 
-
 function ServerLib:ShowText(target: Model, text: string, color: Color3?)
 	if not ServerLib:IsCharValid(target) then return end
 
@@ -287,17 +270,14 @@ function ServerLib:ShowText(target: Model, text: string, color: Color3?)
 	})
 end
 
-
 function ServerLib:ApplyHitStatus(target: Model)
 	if not ServerLib:IsCharValid(target) then return end
-
 
 	Events.PlayVFXStatusToEntity_S.FireList(ServerLib:GetNearbyPlayers(target.PrimaryPart.Position), {
 		StatusId = "Hit",
 		Entity = target
 	})
 end
-
 
 function ServerLib:PlaceItemDropPart(plr: Player, itemId: string, amount: number, location: Vector3, autoPickup: boolean)
 	local itemUniqueId = HttpService:GenerateGUID(false)
@@ -319,7 +299,6 @@ function ServerLib:PlaceItemDropPart(plr: Player, itemId: string, amount: number
 	})
 end
 
-
 function ServerLib:RollStat(attr: string, val: any)
 	if typeof(val) == "number" then
 		local maxVal = FormulaBook.ItemUpgradeCurveCal(val)
@@ -331,7 +310,6 @@ function ServerLib:RollStat(attr: string, val: any)
 		return val
 	end
 end
-
 
 function ServerLib:GiveRandomStatForItem(itemId: string) : string
 	if not ItemBook:GetItemInfo(itemId) then return "" end
@@ -350,10 +328,8 @@ function ServerLib:GiveRandomStatForItem(itemId: string) : string
 	return ItemBook:BuildItemStat("Stat", finalDesync)
 end
 
-
 function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 	if not ItemBook:GetItemInfo(itemId) then return end
-
 
 	local items = plr.Items :: Folder
 	local itemInfo = ItemBook:GetItemInfo(itemId)
@@ -390,7 +366,6 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 		itemVal.Parent = items
 	end
 
-
 	local stackableList = AssetBook.StackableItemTypes
 	if table.find(stackableList, itemInfo.Type) then
 		for _ = 1, amount do
@@ -411,13 +386,11 @@ function ServerLib:GiveItemDrop(plr: Player, itemId: string, amount: number)
 		end
 	end
 
-
 	Events.PlayItemDropFX_S.Fire(plr, {
 		ItemId = itemId,
 		Amount = amount
 	})
 end
-
 
 function ServerLib:GiveEXPRewards(plr: Player, exp: number, classEXP: number)
 	exp = exp or 0
@@ -432,7 +405,6 @@ function ServerLib:GiveEXPRewards(plr: Player, exp: number, classEXP: number)
 	classEXP = math.clamp(classEXP, 0, FormulaBook.FAIRLY_BIG_NUMBER)
 	classEXP = math.floor(classEXP)
 
-
 	Promise.delay(1):andThen(function()
 		local class = plr:GetAttribute("Class") or "Chain"
 
@@ -445,7 +417,6 @@ function ServerLib:GiveEXPRewards(plr: Player, exp: number, classEXP: number)
 		})
 	end)
 end
-
 
 function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 	method = method or "Equip"
@@ -469,7 +440,6 @@ function ServerLib:EquipItem(plr: Player, itemUniqueId: string, method: string?)
 
 	local whiteList = { "Active", "Accessory", "Passive", "Weapon" }
 	if not table.find(whiteList, itemInfo.Type) then return end
-
 
 	local itemStat = itemSymbol:GetAttribute("ItemStat") :: string
 	local itemStatDesync = ItemBook:ParseItemStat("Stat", string.split(itemStat, ","))
@@ -518,7 +488,6 @@ function ServerLib:UnequipItem(plr: Player, itemUniqueId: string)
 	ServerLib:EquipItem(plr, itemUniqueId, "Unequip")
 end
 
-
 local function _refresh(plr: Player)
 	local refreshSymbol = Instance.new("StringValue")
 	refreshSymbol.Name = "_NULL"
@@ -546,7 +515,6 @@ function ServerLib:ChangeWeapon(plr: Player, itemId: string, itemUniqueId: strin
 
 	Events.PlaySound_S.Fire(plr, SoundService.SFXs.EXP)
 end
-
 
 function ServerLib:EquipArmor(char: Model, armorId: string)
 	if not ServerLib:IsCharValid(char) then return end
@@ -577,7 +545,6 @@ function ServerLib:UnequipArmor(char: Model, armorId: string)
 	if char:FindFirstChild(armorId) then char[armorId]:Destroy() end
 end
 
-
 function ServerLib:CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -> ()?, failureHandler: () -> ()?)
 	Promise.new(function()
 		local hasBadge = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
@@ -590,7 +557,6 @@ function ServerLib:CheckIfHaveBadge(badgeId: number, plr: Player, callBack: () -
 end
 function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 	if game.GameId ~= AssetBook.CFUniverseId_Main then return end
-
 
 	Promise.new(function()
 		local hasBadge = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
@@ -611,6 +577,5 @@ function ServerLib:GiveBadge(badgeId: number, plr: Player, callBack: () -> ()?)
 		if RunService:IsStudio() then warn(tostring(err)) end
 	end)
 end
-
 
 return ServerLib

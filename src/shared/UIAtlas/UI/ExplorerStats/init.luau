@@ -13,16 +13,12 @@ local MenuSlot = require(script.Components.MenuSlot)
 local LevelTimer = require(script.Components.LevelTimer)
 local LevelStarterComponent = require(script.Components.LevelStarterBtn)
 
-
 local HPBar = require(script.Components.HPBar)
 local ManaBar = require(script.Components.ManaBar)
 
-
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
-
 
 return function(plr: Player)
 	local self = {} :: Pinia.Self
@@ -31,18 +27,14 @@ return function(plr: Player)
 	self.char = plr.Character
     self.scope = Fusion.scoped()
 
-
 	Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerStats") then
         plr.PlayerGui.ExplorerStats:Destroy()
     end
 
-
     local scope = self.scope :: Fusion.Scope
     local isSelectingMenuSelection = Fusion.Value(scope, false)
-
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ExplorerStats",
@@ -73,7 +65,6 @@ return function(plr: Player)
                     IceCandy = self.IceCandy,
                 }),
 
-
                 Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                     local inputType = use(self.LastInputType)
 
@@ -96,7 +87,6 @@ return function(plr: Player)
                     end
                 end),
 
-
                 Components.Frame(scope, {
                     Name = "StatsFrame",
                     AnchorPoint = Vector2.new(0.5, 0),
@@ -114,7 +104,6 @@ return function(plr: Player)
                             Scale = if self.Device == "Phone" or self.Device == "Tablet" then 1.1 else 1
                         }),
 
-
                         HPBar(scope, {
                             HP = self.HP, MaxHP = self.MaxHP,
                             Shield = self.Shield, MaxShield = self.MaxShield
@@ -125,7 +114,6 @@ return function(plr: Player)
                         })
                     },
                 }),
-
 
                 Components.Frame(scope, {
                     Name = "EffectList",
@@ -142,7 +130,6 @@ return function(plr: Player)
                         })
                     }
                 }),
-
 
                 Components.TextLabel(scope, {
                     Name = "ServerLocation",
@@ -178,7 +165,6 @@ return function(plr: Player)
                 return use(self.IsUIShown2)
             end),
 
-
             [Children] = {
                 MenuSelections(scope, {
                     MenuShowValue = self.MenuSelectionShown
@@ -202,7 +188,6 @@ return function(plr: Player)
 
                         Components.UIScale(scope, {}),
                         Components.PaddingFrame(scope, "ZZZ"),
-
 
                         Components.Frame(scope, {
                             Name = "MenuSelections",
@@ -237,7 +222,6 @@ return function(plr: Player)
                             }
                         }),
 
-
                         Fusion.ForPairs(scope, {
                             "Backpack", "Character", "Settings"
                         }, function(_, scope: Fusion.Scope, index: number, slot: string)
@@ -249,10 +233,8 @@ return function(plr: Player)
                     }
                 }),
 
-
                 LevelStarterComponent(scope, "Abyss", self),
                 LevelStarterComponent(scope, "Dungeon", self),
-
 
                 Components.Frame(scope, {
                     Name = "TimerFrame",
@@ -287,9 +269,7 @@ return function(plr: Player)
     })
     self.UI = UI
 
-
 	require(script.Anims)(UI, self)
-
 
 	return function ()
         Fusion.doCleanup(scope)

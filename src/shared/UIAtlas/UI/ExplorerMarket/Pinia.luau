@@ -6,7 +6,6 @@ local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 export type Self = {
     plr: Player,
     char: Model,
@@ -40,16 +39,13 @@ export type Self = {
     EquippingItems: Fusion.Value<{ StringValue }>
 }
 
-
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
 
-
     self.IsUIShown = Value(false)
-
 
     self.CurrentSelectedItemUniqueId = Value("")
     self.CurrentSelectedItem = Value("")
@@ -69,18 +65,14 @@ return function (self: Self)
         IceCandy = Value(0),
     }
 
-
     self.Products = Fusion.Value(scope, {})
 
     self.ItemListAbsSize = Value(Vector2.zero)
 
     self.Items = Components.FusionComponents.useChildren(scope, self.plr.Items)
 
-
     local folder = Components.FusionComponents.useChildren(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
-
-
 
     --// track currency
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -99,8 +91,6 @@ return function (self: Self)
         end,
     }))
 
-
-
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
@@ -115,7 +105,6 @@ return function (self: Self)
 
         self.plr:SetAttribute("CurrentUIGroup", "Market")
     end))
-
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

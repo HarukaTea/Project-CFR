@@ -5,13 +5,9 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Types)
 
-
-
 local wait = task.wait
-
 
 return function (self: Types.ProjectileLib)
     local ProjectileLib = self
@@ -33,9 +29,6 @@ return function (self: Types.ProjectileLib)
     ProjectileLib.HardmodeWolfMove5 = ProjectileLib.FoxMove1
     ProjectileLib.BeeMove2 = ProjectileLib.FoxMove1
 
-
-
-
     ProjectileLib.FoxMove3 = function(projectile: Model, container: Folder)
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
             ShouldDetail = false,
@@ -43,10 +36,6 @@ return function (self: Types.ProjectileLib)
         })
     end
     ProjectileLib.HardmodeWolfMove3 = ProjectileLib.FoxMove3
-
-
-
-
 
     ProjectileLib.WolfMove4 = function(projectile: Model, container: Folder)
         projectile:FindFirstChildWhichIsA("Sound", true):Play()
@@ -69,9 +58,6 @@ return function (self: Types.ProjectileLib)
     end
     ProjectileLib.HardmodeWolfMove4 = ProjectileLib.WolfMove4
 
-
-
-
     ProjectileLib.FoxSpike1 = function(projectile: Model, container: Folder)
         projectile.Base.CFrame *= CFrame.new(0, 0, -80)
 
@@ -84,9 +70,6 @@ return function (self: Types.ProjectileLib)
         Promise.delay(1.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
     end
     ProjectileLib.HardmodeWolfSpike1 = ProjectileLib.FoxSpike1
-
-
-
 
     ProjectileLib.FoxSpike2 = function(projectile: Model, container: Folder)
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(1, 360)), 0))

@@ -11,14 +11,11 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local HarukaTypeWriter = require(RepS.HarukaShared.Shared.HarukaTypeWriter)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 
-
-
 export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
     UI: ScreenGui,
-
 
     IsChatShown: Fusion.Value<boolean>,
     Choices: Fusion.Value<{ string }>,
@@ -37,13 +34,11 @@ export type Self = {
     GoSkipDialogueSignal: BindableEvent,
 }
 
-
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
-
 
     self.IsChatShown = Value(false)
     self.Choices = Value({})
@@ -53,7 +48,6 @@ return function (self: Self)
 
     self.Speaker = Value("None")
     self.Dialogue = Value("None")
-
 
     local quests = FusionComponents.useChildren(scope, self.plr:WaitForChild("Quests", 999))
     self.Quests = quests :: Fusion.Value<{ StringValue }>
@@ -67,7 +61,6 @@ return function (self: Self)
     table.insert(scope, self.GoToNextDialogueByChoiceSignal)
     table.insert(scope, self.GoSkipDialogueSignal)
 
-
     --// track ui
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
@@ -76,8 +69,6 @@ return function (self: Self)
             self.IsChatShown:set(newPanel == "Chat")
         end
     }))
-
-
 
     --// track typewriter
     local typewriterObj = HarukaTypeWriter.new()
@@ -93,8 +84,6 @@ return function (self: Self)
         self.IsTypewriting:set(false)
     end)
 
-
-
     local npcChatting: Model? = nil
     local npcDialogues: {
         [string]: { string },
@@ -108,8 +97,6 @@ return function (self: Self)
     local dialogueIndexChatting: number = 1
     local dialoguesChatting: { string } = {}
     local questId: string = "Else"
-
-
 
     --// track dialogue system
     local function __clearDialogues()
@@ -158,7 +145,6 @@ return function (self: Self)
             __endChatting()
             return
         end
-
 
         local dialogue = forceDialogue or currentDialoguesChatting[currentDialogueIndexChatting] :: string
 
@@ -275,14 +261,11 @@ return function (self: Self)
             return
         end
 
-
         --- is not in choice dialogues state?
         --- this ensures dialogueIndexChatting is always the main dialogues
         if currentDialoguesChatting[1] == dialoguesChatting[1] then
             dialogueIndexChatting = currentDialogueIndexChatting
         end
-
-
 
         __setText(dialogue)
     end
@@ -295,7 +278,6 @@ return function (self: Self)
         __nextText("Continue", "ENTERCHOICE "..choiceIndex)
     end)
     self.GoSkipDialogueSignal.Event:Connect(__endChatting)
-
 
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
@@ -315,11 +297,9 @@ return function (self: Self)
         end
     end))
 
-
     table.insert(scope, function()
         HarukaLib:FreezePlayerControls("Unfreeze")
     end)
-
 
     local function _startChatting(npc: Model)
         if npc == nil then return end
@@ -340,8 +320,6 @@ return function (self: Self)
 
         HarukaLib:FreezePlayerControls("Freeze")
         __clearDialogues()
-
-
 
         local quests = Fusion.peek(self.Quests)
 

@@ -7,7 +7,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local ActiveSlot = require(script.Parent.ActiveSlot)
 local AbilitySlot = require(script.Parent.AbilitySlot)
 
@@ -45,8 +44,6 @@ return function(scope: Fusion.Scope, props: {
     local forceSizeMobile = Value(UDim2.fromOffset(0, 0))
     local forceJumpButtonSize = Value(0)
 
-
-
     Fusion.Observer(scope, props.UIViewportSize):onBind(function()
         local vpSize = Fusion.peek(props.UIViewportSize)
 
@@ -56,7 +53,6 @@ return function(scope: Fusion.Scope, props: {
 
         forceJumpButtonSize:set(jumpButtonSize)
 
-
         forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 1.6, jumpButtonSize / 1.6))
         if isSmallScreen then
             forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize - 20))
@@ -64,7 +60,6 @@ return function(scope: Fusion.Scope, props: {
             forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize * 1.75))
         end
     end)
-
 
     local frame = Components.Frame(scope, {
         Name = "PlayerActives",
@@ -198,7 +193,6 @@ return function(scope: Fusion.Scope, props: {
                                         Size = UDim2.fromScale(1, 0.25),
                                         Text = "READY",
 
-
                                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
                                             local x = charge / maxCharge
@@ -255,7 +249,6 @@ return function(scope: Fusion.Scope, props: {
                                 IsMobile = true,
                             }, self),
 
-
                             AbilitySlot(scope, {
                                 ActiveInfo = self.CharAbilityList[1],
 
@@ -273,7 +266,6 @@ return function(scope: Fusion.Scope, props: {
         }
     })
 
-
     local classUltSlot = frame.Div.PlayerControls.ClassQUlt
     local function _updateClassUlt()
         local charge, maxCharge = Fusion.peek(props.ClassUltProgress) :: number, Fusion.peek(props.MaxClassUltProgress) :: number
@@ -281,7 +273,6 @@ return function(scope: Fusion.Scope, props: {
 
         if x ~= x then x = 0 end
         x = math.clamp(x, 0, 0.999)
-
 
         HarukaLib:Tween(classUltSlot.UIGradient, Components.TweenInfos.half, {
             Transparency = NumberSequence.new({
@@ -302,7 +293,6 @@ return function(scope: Fusion.Scope, props: {
     end
     Fusion.Observer(scope, props.ClassUltProgress):onBind(_updateClassUlt)
     Fusion.Observer(scope, props.MaxClassUltProgress):onBind(_updateClassUlt)
-
 
     return frame
 end

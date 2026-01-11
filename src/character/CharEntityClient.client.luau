@@ -6,18 +6,15 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
-
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
-
 local Freecam = nil
 if workspace:GetAttribute("AllowFreecam") then
     Freecam = require(ReplicatedStorage.HarukaShared.Shared.Freecam)
 end
-
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players.LocalPlayer
@@ -28,9 +25,7 @@ local wait = task.wait
 
 repeat wait() until char:HasTag("PlayerCharEntity")
 
-
 local isDead = false
-
 
 type CharLibClass = {
     Funcs: { () -> nil },
@@ -45,17 +40,13 @@ type CharLibClass = {
     __Init_Lighting: (self: CharLibClass) -> nil,
 }
 
-
 local CharLib = {} :: CharLibClass
 CharLib.Funcs = {}
-
-
 
 function CharLib:Init()
     for _, func: () -> nil in self.Funcs do
         func()
     end
-
 
     Add(plr.CharacterRemoving:Connect(function()
         pcall(CharLib.__Destroy, CharLib)
@@ -86,11 +77,9 @@ function CharLib:Init()
         end
     end))
 
-
     self:__Init()
     self:_InitUI()
 end
-
 
 function CharLib:Destroy()
     if isDead then return end
@@ -99,9 +88,7 @@ function CharLib:Destroy()
     Empty()
 end
 
-
 --// Private functions
-
 
 function CharLib:__Init()
     Bindables.UpdateCameraPart:Fire(ReplicatedStorage.Packages.Unloads.ResetCamera)
@@ -111,7 +98,6 @@ function CharLib:__Init()
     CharLib:__Init_Abyss()
     CharLib:__Init_Lighting()
 end
-
 
 function CharLib:__Init_Lighting()
     local camera = workspace.CurrentCamera
@@ -123,8 +109,6 @@ function CharLib:__Init_Lighting()
     ReplicatedStorage.Packages.Unloads.IF1:Clone().Parent = camera
     ReplicatedStorage.Packages.Unloads.IF2:Clone().Parent = camera
 end
-
-
 
 function CharLib:__Init_Abyss()
     local abyssId = workspace:GetAttribute("AbyssId")
@@ -141,13 +125,11 @@ function CharLib:__Init_Abyss()
     end
 end
 
-
 function CharLib:_InitUI()
     for _, module: ModuleScript in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
 		if string.find(module.Name, ".spec") then continue end
         if string.find(module.Name, "_local") then continue end
         if string.find(module.Name, "_preload") then continue end
-
 
         Promise.try(function()
             local clear = require(module)(plr)
@@ -182,7 +164,6 @@ function CharLib:__Destroy()
     Bindables.PlaySound:Fire(ReplicatedStorage.Packages.Unloads.ResetSound)
     Bindables.PlaySound:Fire(SoundService.SFXs.Death)
 
-
     local deathBlur = Instance.new("BlurEffect")
     deathBlur.Name = "DeathBlur"
     deathBlur.Size = 15.99
@@ -193,20 +174,15 @@ function CharLib:__Destroy()
     end
 end
 
-
-
 function CharLib:_TriggerRagdoll()
     char.Torso:ApplyImpulse(char.Torso.CFrame.LookVector * -100)
 end
-
-
 
 table.insert(CharLib.Funcs, function()
     local humanoid = char.Humanoid :: Humanoid
     local animator = humanoid:WaitForChild("Animator") :: Animator
     local animationsClass = ReplicatedStorage.Packages.Anims.ClassAnims :: Folder
     local animationsChar = ReplicatedStorage.Packages.Anims.CharAnims :: Folder
-
 
     local self = {}
 
@@ -231,7 +207,6 @@ table.insert(CharLib.Funcs, function()
         anim.Priority = Enum.AnimationPriority.Action2
     end
     Add(self.ClassAttackAnims)
-
 
     self.CharAnims = {
         Idle = animator:LoadAnimation(animationsChar.Idle1),
@@ -261,7 +236,6 @@ table.insert(CharLib.Funcs, function()
     self.CharAnims.wave.Looped = false
     self.CharAnims.laugh.Looped = false
 
-
     local CLASS_ANIMS = {}
     for _, animContainer: Folder in animationsClass:GetChildren() do
         local class = animContainer.Name :: string
@@ -282,7 +256,6 @@ table.insert(CharLib.Funcs, function()
 
     self.OldAnim = nil :: AnimationTrack?
 
-
     local function _playAnim(anim: string)
         if not self.ClassAttackAnims[anim] then warn(`Can't found animation: {anim}!`) return end
 
@@ -290,8 +263,6 @@ table.insert(CharLib.Funcs, function()
     end
     Add(Bindables.PlayClassAnim.Event:Connect(_playAnim))
     Add(Events.PlayClassAnim_S.On(_playAnim))
-
-
 
     local charAnims = self.CharAnims
 
@@ -306,7 +277,6 @@ table.insert(CharLib.Funcs, function()
 	Add(humanoid.Running:Connect(function()
         local class = plr:GetAttribute("Class") :: string
         local isInCombat = char:GetAttribute("IsInCombat") :: boolean
-
 
 		if humanoid.MoveDirection.Magnitude > 0 then
             if isInCombat then
@@ -335,10 +305,7 @@ table.insert(CharLib.Funcs, function()
 		_playCharAnim(charAnims.Sit)
 	end))
 
-
 	_playCharAnim(charAnims.Idle)
-
-
 
     Add(Bindables.PlayerChatted.Event:Connect(function(msg: string, sender: Player)
         if sender ~= plr then return end
@@ -359,7 +326,6 @@ table.insert(CharLib.Funcs, function()
             end
         end
 
-
         local whiteList = { "dance1", "dance2", "dance3", "cheer", "point", "wave", "laugh" }
 
         if (charAnims.Idle.IsPlaying and table.find(whiteList, emote)) then
@@ -367,7 +333,6 @@ table.insert(CharLib.Funcs, function()
         end
     end))
 end)
-
 
 table.insert(CharLib.Funcs, function()
     local humanoid = char.Humanoid :: Humanoid
@@ -378,7 +343,6 @@ table.insert(CharLib.Funcs, function()
     Add(humanoid.Running:Connect(function(speed: number)
         isWalking = speed > humanoid.WalkSpeed / 2
     end))
-
 
     local allSounds = SoundService.FootstepSFXs:QueryDescendants("Sound")
     local lastMaterialSFX = nil
@@ -413,10 +377,6 @@ table.insert(CharLib.Funcs, function()
     end)
 end)
 
-
-
 CharLib:Init()
-
-
 
 char:SetAttribute("Haruka_CharClientInited", true)

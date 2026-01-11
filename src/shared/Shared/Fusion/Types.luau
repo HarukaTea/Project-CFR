@@ -156,7 +156,6 @@ export type TweenConstructor = <T>(
 	tweenInfo: UsedAs<TweenInfo>?
 ) -> Tween<T>
 
-
 -- Denotes children instances in an instance or component's property table.
 export type SpecialKey = {
 	type: "SpecialKey",

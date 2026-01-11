@@ -18,9 +18,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 
-
 local wait = task.wait
-
 
 local slotId = workspace:GetAttribute("Titlescreen_SlotId") or 1
 
@@ -29,17 +27,13 @@ local profileContainer = Players.LocalPlayer.ProfileContainer :: Folder
 local playTime = profileContainer:GetAttribute("Slot"..slotId.."_PlayTime") or 0 :: number
 local isFav = profileContainer:GetAttribute("Slot"..slotId.."_FavActionDone") or false :: boolean
 
-
 local enableFav = playTime >= 60 * 60 * 1 and isFav == false
 local scope = Fusion.scoped()
 local loadViewUI: ScreenGui = nil
 
-
 local shouldShow = enableFav
 
-
 Bindables.CreateCircularFade:Fire(2)
-
 
 if shouldShow then
     wait(1)
@@ -53,8 +47,6 @@ if shouldShow then
 
     wait(2.5)
 end
-
-
 
 if enableFav then
     local result = Components:CreateConfirmPrompt({
@@ -72,9 +64,6 @@ if enableFav then
     wait(2)
 end
 
-
-
-
 if shouldShow then
     Bindables.CreateCircularFade:Fire(2)
 
@@ -85,8 +74,6 @@ if shouldShow then
         end
     })
 end
-
-
 
 --// entering the game
 Events.Titlescreen_SlotActions_C.Fire({
@@ -101,6 +88,5 @@ Events.Titlescreen_SlotActions_C.Fire({
 if not shouldShow then
     wait(1.15)
 end
-
 
 Debris:AddItem(script, 30)

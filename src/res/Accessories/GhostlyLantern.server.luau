@@ -13,12 +13,9 @@ local Add, Empty = HarukaLib.Bin()
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 
-
-
 Add(char.TargetingList.ChildRemoved:Connect(function(child: ObjectValue)
     if not ServerLib:IsCharValid(char) then return end
     if not child:IsA("ObjectValue") then return end
-
 
     Events.CastItem_S_Response.Fire(plr, {
         SlotId = "Active1",
@@ -33,13 +30,11 @@ Add(char.TargetingList.ChildRemoved:Connect(function(child: ObjectValue)
         CooldownTime = 0
     })
 
-
     for _, cdSymbol: StringValue in workspace.MapComponents.ItemCDSymbolContainer:GetChildren() do
         if cdSymbol.Name == plr.Name then
             cdSymbol:Destroy()
         end
     end
 end))
-
 
 AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

@@ -15,7 +15,6 @@ local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 local SlimeUniversal = {}
 
-
 local wait = task.wait
 
 SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
@@ -37,13 +36,11 @@ SlimeUniversal.SlimeShot = function(entity: Model, target: Model)
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 end
 
-
 SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
     local projectileSupport = RepS.Packages.EnemyAttacks:FindFirstChild("SlimeMove2", true):Clone() :: Model
     local post = ServerLib:FindGroundByRay(entity.PrimaryPart.Position)
 
     projectileSupport:PivotTo(CFrame.new(post, post + entity.PrimaryPart.CFrame.LookVector))
-
 
     local hasProjectiles = 5
     for i = 1, hasProjectiles do
@@ -73,7 +70,6 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
         end
     end
 
-
     Promise.delay(0.5):andThen(function()
         for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..hasProjectiles) do
             local postR = ServerLib:FindGroundByRay(child.Position)
@@ -90,10 +86,7 @@ SlimeUniversal.SlimeWave = function(entity: Model, target: Model)
     Debris:AddItem(projectileSupport, 10)
 end
 
-
-
 SlimeUniversal.SlimeBarrageShot = function(entity: Model)
-
 
     Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
@@ -116,7 +109,6 @@ SlimeUniversal.SlimeBarrageShot = function(entity: Model)
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 end
 
-
 SlimeUniversal.SlimeSpin = function(entity: Model)
     wait(0.35)
     Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
@@ -133,16 +125,13 @@ SlimeUniversal.SlimeSpin = function(entity: Model)
     })
 end
 
-
 SlimeUniversal.SlimeBomb = function(entity: Model)
-
 
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib:FindGroundByRay(entity:GetAttribute("CombatLocation").Position + Vector3.new(
         math.random(-32, 32), 0,
         math.random(-32, 32)
     ))
-
 
     Events.PlayEnemyAnim_S.FireList(UniversalEntity:GetNearbyPlayers(entity), {
         Entity = entity,
@@ -157,7 +146,6 @@ SlimeUniversal.SlimeBomb = function(entity: Model)
         IsUniATK = true
     })
 
-
     Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
         ProjectileId = entity.Name.."Move4",
@@ -168,14 +156,11 @@ SlimeUniversal.SlimeBomb = function(entity: Model)
     UniversalEntity:EditProjectileList(projectileUniqueId, projectilePos, entity)
 end
 
-
-
 SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
     local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
-
 
     Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
@@ -196,14 +181,11 @@ SlimeUniversal.SlimeDive1 = function(entity: Model, target: Model)
     })
 end
 
-
-
 SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
     local projectileUniqueId = HttpService:GenerateGUID(false)
     local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
 
     local realProjectilePos = CFrame.new(projectilePos, projectilePos + entity.PrimaryPart.CFrame.LookVector) * CFrame.Angles(0, math.rad(math.random(360)), 0)
-
 
     Events.SpawnEnemyATKs_S.FireList(UniversalEntity:GetTargets(entity), {
         ProjectileUniqueId = projectileUniqueId,
@@ -231,7 +213,5 @@ SlimeUniversal.SlimeDive2 = function(entity: Model, target: Model)
         Pivot = diveUp
     })
 end
-
-
 
 return SlimeUniversal

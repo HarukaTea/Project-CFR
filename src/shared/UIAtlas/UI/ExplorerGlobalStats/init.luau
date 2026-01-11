@@ -7,7 +7,6 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
 
 return function(plr: Player)
@@ -17,14 +16,11 @@ return function(plr: Player)
 	self.char = plr.Character
     self.scope = Fusion.scoped()
 
-
 	Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerStatsGlobal") then
         plr.PlayerGui.ExplorerStatsGlobal:Destroy()
     end
-
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -56,7 +52,6 @@ return function(plr: Player)
                         }),
                     }
                 }),
-
 
                 Components.Frame(scope, {
                     Name = "BadgeAwarding",
@@ -125,9 +120,7 @@ return function(plr: Player)
     })
     self.UI = UI
 
-
 	require(script.Anims)(UI, self)
-
 
 	return function ()
         Fusion.doCleanup(scope)

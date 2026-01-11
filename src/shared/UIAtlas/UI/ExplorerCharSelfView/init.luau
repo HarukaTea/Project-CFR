@@ -11,7 +11,6 @@ local PerkPointsView = require(script.Components.PerkPointsView)
 local CharStatPanel = require(script.Components.CharStatsView)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
-
 local Children = Fusion.Children
 
 local Pinia = require(script.Pinia)
@@ -25,14 +24,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerCharSelfView") then
         plr.PlayerGui.ExplorerCharSelfView:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerCharSelfView",
@@ -80,10 +76,8 @@ return function (plr: Player)
     })
     self.UI = UI
 
-
     return function ()
         Fusion.doCleanup(scope)
-
 
     end
 end

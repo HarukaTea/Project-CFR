@@ -7,7 +7,6 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Types = require(script.Parent.Parent.Types)
 
-
 return function (self: Types.VFXSceneLib)
     local VFXSceneLib = self
 
@@ -20,7 +19,6 @@ return function (self: Types.VFXSceneLib)
         projectile.Parent = workspace.Terrain
         Debris:AddItem(projectile, 3)
 
-
         HarukaLib:CreateTween(projectile.Blast1, AssetBook.TweenInfos.twiceHalf, {
             Size = Vector3.new(16, 16, 16),
             Transparency = 1
@@ -31,7 +29,6 @@ return function (self: Types.VFXSceneLib)
             Transparency = 1
         }):Play()
     end
-
 
     VFXSceneLib.ChainUltExplosion = function(char: Model, projectileUniqueId: string)
         local eff = RepS.Packages.SkillProjectiles:FindFirstChild("ChainUltExplosion", true).Attachment:Clone() :: Attachment

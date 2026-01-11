@@ -19,16 +19,13 @@ AssetBook.TweenInfos = {
 	fifteen = TweenInfo.new(15, Enum.EasingStyle.Linear)
 }
 
-
 AssetBook.StackableItemTypes = { "Accessory", "Weapon", "Cosmetic" }
-
 
 AssetBook.ExtraIcons = {
 	Null = "rbxassetid://1637592633",
 	Unknown = "rbxassetid://114332372182764",
 	Marked = "rbxassetid://94557907177407"
 }
-
 
 AssetBook.ItemTierColors = {
 	Color3.fromHex('#626771'),
@@ -39,14 +36,12 @@ AssetBook.ItemTierColors = {
 	Color3.fromHex('#a72424')
 }
 
-
 AssetBook.PromptIcons = {
 	Default = "rbxassetid://13124035950",
 	Market = "rbxassetid://118291405899454",
 	Chest = "rbxassetid://89067747729088",
 	Crafting = "rbxassetid://117468861815122",
 }
-
 
 AssetBook.XboxControllerColors = {
 	X = Color3.fromHex('#1e90ff'),
@@ -55,9 +50,7 @@ AssetBook.XboxControllerColors = {
 	Y = Color3.fromHex('#f9ca24')
 }
 
-
 AssetBook.GamepassIds = {}
-
 
 AssetBook.DevProductIds = {
 	DonationPack1 = 3454021702,
@@ -79,15 +72,12 @@ AssetBook.BadgeIds = {
 	--// SkyAdventurer = 2140109709187125,
 }
 
-
-
 AssetBook.CurrencyIcons = {
     Gold = "rbxassetid://18421784947",
     Astra = "rbxassetid://93309091471652",
 	HalloweenCandy = "rbxassetid://101642799593354",
 	IceCandy = "rbxassetid://4806921700",
 }
-
 
 AssetBook.PlaceIds = {
 	-- CF REL
@@ -110,9 +100,6 @@ AssetBook.PlaceIds = {
 	}
 }
 
-
 AssetBook.CFUniverseId_Main = 7037847546
-
-
 
 return AssetBook

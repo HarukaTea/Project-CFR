@@ -4,12 +4,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 repeat task.wait() until workspace:GetAttribute("Haruka_GameEntered")
 
-
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
-
 local player = Players.LocalPlayer
-
 
 type PlayerLibClass = {
     Funcs: { [string]: () -> nil },
@@ -17,17 +14,14 @@ type PlayerLibClass = {
     Init: (self: PlayerLibClass) -> nil
 }
 
-
 local PlayerLib = {} :: PlayerLibClass
 PlayerLib.Funcs = {}
-
 
 function PlayerLib:Init()
     for _, func in self.Funcs do
         func()
     end
 end
-
 
 table.insert(PlayerLib.Funcs, function()
     for _, module in ReplicatedStorage.HarukaShared.UIAtlas.UI:GetChildren() do
@@ -39,7 +33,6 @@ table.insert(PlayerLib.Funcs, function()
         end)
     end
 end)
-
 
 PlayerLib:Init()
 

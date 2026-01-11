@@ -10,13 +10,10 @@ local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 local SlimeUniversal = require(script.Parent.SlimeUniversal)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -25,8 +22,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -41,11 +36,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
-
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -55,7 +47,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     end
 
     local function _lookAt(target: Model)
-
 
         entity:PivotTo(HarukaLib:CFLookAt(entity.PrimaryPart.Position, target.PrimaryPart.Position))
     end
@@ -88,7 +79,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         end
     end)
 
-
     --// combo attack functions
     table.insert(self.ComboAttackFuncs, function(target: Model, _, comboR: number)
         if comboR == 1 and math.random(1, 2) == 1 then
@@ -99,16 +89,13 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         end
     end)
 
-
    --// attack loop
    wait(0.1)
    UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
    --// end the promise chain
    resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

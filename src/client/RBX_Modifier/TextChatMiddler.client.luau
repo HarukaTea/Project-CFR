@@ -6,7 +6,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local RankBook = require(RepS.HarukaShared.Library.RankBook)
 
-
 TextChatService.OnIncomingMessage = function(message: TextChatMessage)
     local properties = Instance.new("TextChatMessageProperties")
 
@@ -19,7 +18,6 @@ TextChatService.OnIncomingMessage = function(message: TextChatMessage)
 
         Bindables.PlayerChatted:Fire(message.Text, sender)
         properties.PrefixText = string.format("%s", message.PrefixText)
-
 
         if string.find(message.Text, "/e") then
             return properties

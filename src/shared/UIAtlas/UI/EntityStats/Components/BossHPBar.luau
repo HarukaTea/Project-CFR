@@ -9,7 +9,6 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     TargetingList: Fusion.Value<{ ObjectValue }>
 })
@@ -29,7 +28,6 @@ return function (scope: Fusion.Scope, props: {
             end
         end
 
-
         if targetingBoss == nil then
             return nil
 
@@ -47,7 +45,6 @@ return function (scope: Fusion.Scope, props: {
             local DMGMultiplier = Value(100)
             local breakProgress = Value(0)
             local totalBreakProgress = Value(100)
-
 
             table.insert(scope, HarukaLib:Hydrate(targeting, {
                 ["Attr-Level"] = function(val: number)
@@ -71,7 +68,6 @@ return function (scope: Fusion.Scope, props: {
                     maxHP:set(newMaxHP)
                 end
             }))
-
 
             local frame =  Components.Frame(scope, {
                 Name = "BossHPBar",
@@ -147,7 +143,6 @@ return function (scope: Fusion.Scope, props: {
 
                         [Children] = {
                             Components.RoundUICorner(scope),
-
 
                             Components.ImageLabel(scope, {
                                 Name = "HighlightTex",
@@ -256,7 +251,6 @@ return function (scope: Fusion.Scope, props: {
                         }
                     }),
 
-
                     Components.Frame(scope, {
                         Name = "BreakBar",
                         AnchorPoint = Vector2.zero,
@@ -342,7 +336,6 @@ return function (scope: Fusion.Scope, props: {
                 }
             })
 
-
             --// track effect list
             ClientLib:TrackEffectListToUI({
                 Target = targeting,
@@ -350,10 +343,8 @@ return function (scope: Fusion.Scope, props: {
                 GuiContainer = frame.EffectList
             })
 
-
             return frame
         end
     end)
-
 
 end

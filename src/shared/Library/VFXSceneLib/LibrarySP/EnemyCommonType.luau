@@ -2,9 +2,7 @@
 local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local Types = require(script.Parent.Parent.Types)
-
 
 return function (self: Types.VFXSceneLib)
     local VFXSceneLib = self

@@ -5,7 +5,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 
-
 export type PartyClass = {
 	__index: PartyClass,
 	Leader: Player,
@@ -23,14 +22,11 @@ export type PartyClass = {
 	Destroy: (self: PartyClass) -> ()
 }
 
-
 local Party = {} :: PartyClass
 Party.__index = Party
 
-
 local playerToParty: { [Player]: PartyClass } = {}
 local PartyLib = {}
-
 
 --// Helper functions
 local function _createMemberSymbol(name: string, value: Instance, parent: Instance): ObjectValue
@@ -47,7 +43,6 @@ local function _setPlayerPartyData(plr: Player, party: PartyClass?)
 	plr:SetAttribute("IsInParty", party ~= nil)
 end
 
-
 --// Cleanup Loop
 HarukaLib.Clock(150, function()
 	local holderRoot = workspace.MapComponents:FindFirstChild("PartyHolder")
@@ -59,9 +54,6 @@ HarukaLib.Clock(150, function()
 		end
 	end
 end)
-
-
-
 
 function Party.new(leader: Player)
 	local self = setmetatable({}, Party)
@@ -93,7 +85,6 @@ function Party:RemoveMember(plr: Player)
 	local symbol = self.Holder:FindFirstChild(plr.Name)
 	if symbol then symbol:Destroy() end
 
-
 	if HarukaLib.TableUtils.CountDictLength(self.Members) <= 0 then
 		self:Disband()
 	end
@@ -111,7 +102,6 @@ function Party:Disband()
 	self.Members = {}
 	if self.Holder then self.Holder:Destroy() end
 end
-
 
 --// Public API
 
@@ -139,7 +129,6 @@ end
 
 function PartyLib:Accept(inviter: Player, invitee: Player)
 	if playerToParty[invitee] then return end
-
 
 	local party: PartyClass = playerToParty[inviter]
 	if not party then
@@ -209,6 +198,5 @@ function PartyLib:Leave(plr: Player)
 		end
 	end
 end
-
 
 return PartyLib

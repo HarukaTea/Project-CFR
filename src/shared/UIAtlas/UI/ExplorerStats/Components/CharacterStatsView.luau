@@ -7,7 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ClassSlot = require(script.Parent.ClassSlot)
 local DMGStat = require(script.Parent.DMGStat)
 
-
 local EventTokenStat = require(script.Parent.EventTokenStat)
 
 local Children = Fusion.Children
@@ -57,7 +56,6 @@ return function(scope: Fusion.Scope, props: {
                         EquippingItems = props.EquippingItems,
                     }),
 
-
                     Components.Frame(scope, {
                         Name = "Main",
                         AnchorPoint = Vector2.xAxis,
@@ -78,7 +76,6 @@ return function(scope: Fusion.Scope, props: {
                                         Padding = UDim.new(0.25, 0),
                                         VerticalAlignment = Enum.VerticalAlignment.Bottom,
                                     }),
-
 
                                     DMGStat(scope, {
                                         StatId = "DMG",

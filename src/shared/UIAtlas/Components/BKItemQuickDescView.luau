@@ -11,7 +11,6 @@ local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymb
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemVal: Fusion.Value<string>,
@@ -24,7 +23,6 @@ return function (scope: Fusion.Scope, props: {
 
     local info = ItemBook:GetItemInfo(props.Item)
     if not info then return nil end
-
 
     return Components.Frame(scope, {
         Name = "ItemQuickDesc",
@@ -51,7 +49,6 @@ return function (scope: Fusion.Scope, props: {
             }),
 
             Components.PaddingFrame(scope, "AAA"),
-
 
             Components.Frame(scope, {
                 Name = "ItemName",
@@ -210,7 +207,6 @@ return function (scope: Fusion.Scope, props: {
                         Size = UDim2.fromScale(1, 0.01),
                         LayoutOrder = 2,
                     }),
-
 
                     Components.TextLabel(scope, {
                         Name = "ItemObtainMethods",

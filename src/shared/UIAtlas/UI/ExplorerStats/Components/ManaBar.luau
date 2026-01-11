@@ -6,7 +6,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 return function (scope: Fusion.Scope, props: {
     Mana: Fusion.Value<number>,
     MaxMana: Fusion.Value<number>,
@@ -19,7 +18,6 @@ return function (scope: Fusion.Scope, props: {
         Size = UDim2.fromScale(0.18, 0.875),
         BackgroundTransparency = 0,
         BackgroundColor3 = Color3.fromRGB(),
-
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -46,7 +44,6 @@ return function (scope: Fusion.Scope, props: {
                     Components.RoundUICorner(scope)
                 }
             }),
-
 
             Components.TextLabel(scope, {
 				Name = "Stat",

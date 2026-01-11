@@ -5,18 +5,15 @@ local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
 
 local swimConfig = worldConfig:GetAttribute("CanSwim") :: boolean
 if not swimConfig then return end
 
-
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
-
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -25,9 +22,7 @@ local plr = Players.LocalPlayer
 local humanoid = char.Humanoid :: Humanoid
 local camera = workspace.CurrentCamera
 
-
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
-
 
 ClientLib:InitCharDeadTrackers({
     Add = Add,
@@ -35,8 +30,6 @@ ClientLib:InitCharDeadTrackers({
     Char = char,
     Player = plr
 })
-
-
 
 local waterParts = CollectionService:GetTagged("WaterPart")
 Add(CollectionService:GetInstanceAddedSignal("WaterPart"):Connect(function(part)
@@ -47,8 +40,6 @@ local waterEqualizers = CollectionService:GetTagged("WaterEqualizer")
 Add(CollectionService:GetInstanceAddedSignal("WaterEqualizer"):Connect(function()
     waterEqualizers = CollectionService:GetTagged("WaterEqualizer")
 end))
-
-
 
 local animator = char.Humanoid.Animator :: Animator
 local swimAnim = animator:LoadAnimation(ReplicatedStorage.Packages.Anims.CFMechanics.Swim)
@@ -64,11 +55,8 @@ local ANIMS = {
     SwimIdle = swimIdleAnim
 }
 
-
-
 if camera:FindFirstChild("WaterBlur") then camera.WaterBlur:Destroy() end
 if camera:FindFirstChild("WaterColor") then camera.WaterColor:Destroy() end
-
 
 local waterBlur = Instance.new("BlurEffect")
 waterBlur.Name = "WaterBlur"
@@ -82,7 +70,6 @@ waterColor.Name = "WaterColor"
 waterColor.TintColor = Color3.fromRGB(34, 81, 138)
 waterColor.Parent = camera
 Add(waterColor)
-
 
 local animState = nil
 local isSwimming = false
@@ -138,7 +125,6 @@ local function swimIn()
     end
 
     playSwimAnim("SwimIdle")
-
 
     Events.SetServerCharAttr_C.Fire({
         AttrId = "IsSwimming",

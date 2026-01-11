@@ -7,12 +7,9 @@ local ClassAttackLib = require(ServerScriptService.HarukaServer.Library.ClassAtt
 
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
 
-
 local Add, Empty = HarukaLib.Bin()
 
-
 local char = script:FindFirstAncestorOfClass("Model")
-
 
 local event = Instance.new("BindableEvent")
 event.Name = "EnemyStatusApplied"
@@ -21,7 +18,6 @@ event.Parent = script
 local event2 = Instance.new("BindableEvent")
 event2.Name = "EnemyStatusRemoved"
 event2.Parent = script
-
 
 Add(AccessoryUniversal.RegisterStatusApplied(script, event, char, function(targeting, attacker, statusProps)
     ClassAttackLib:DealDamageToEnemy(char, targeting, {
@@ -37,7 +33,5 @@ Add(AccessoryUniversal.RegisterEnemyStatusRemoved(script, event2, char, function
         Attacker = "VolatileGem"
     })
 end))
-
-
 
 AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)

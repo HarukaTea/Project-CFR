@@ -6,7 +6,6 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
@@ -43,7 +42,6 @@ return function(scope: Fusion.Scope, props: {
     table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
-
 
     local realSlot = props.Slot
     if props.Slot == "Character" then
@@ -82,7 +80,6 @@ return function(scope: Fusion.Scope, props: {
                 hasPoint:set(val > 0)
             end
         }))
-
 
         point = Components.ImageLabel(scope, {
             Name = "Hint",

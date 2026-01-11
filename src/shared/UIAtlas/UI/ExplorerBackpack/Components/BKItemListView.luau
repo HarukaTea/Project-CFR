@@ -6,11 +6,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
-
 local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
 
 local Children = Fusion.Children
-
 
 return function(scope: Fusion.Scope, self: { [string]: any }, isBackpackUI: boolean?)
     return Components.ScrollingFrame(scope, {
@@ -43,13 +41,11 @@ return function(scope: Fusion.Scope, self: { [string]: any }, isBackpackUI: bool
                 end
                 isVisible = table.find(category, info.Type) ~= nil
 
-
                 local tierNum = info.Tier - ((info.Tier - 1) % 2)
                 tierNum = math.clamp(tierNum, 1, 3)
 
                 local state = use(self.FilterTierList[tierNum])
                 isVisibleFactor2 = state
-
 
                 local isVisibleFactor3 = false
                 local text = use(self.FilterItemText)
@@ -66,7 +62,6 @@ return function(scope: Fusion.Scope, self: { [string]: any }, isBackpackUI: bool
                         isVisibleFactor3 = false
                     end
                 end
-
 
                 if isVisible and isVisibleFactor2 and isVisibleFactor3 then
                     return index, BKItemSlot(scope, {

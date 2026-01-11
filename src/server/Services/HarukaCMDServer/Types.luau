@@ -6,7 +6,6 @@ export type CallbackProps = {
     ResolveObj: () -> nil
 }
 
-
 export type CommandArgJSON = {
     Name: string,
     Type: string,
@@ -18,7 +17,6 @@ export type CommandArgJSON = {
     EnumItems: { string }?,
 }
 
-
 export type CommandJSON = {
     Name: string,
     Alias: string,
@@ -28,7 +26,6 @@ export type CommandJSON = {
     Callback: (props: CallbackProps) -> nil
 }
 
-
 export type HarukaCMDClass = {
     __index: HarukaCMDClass,
 
@@ -36,18 +33,14 @@ export type HarukaCMDClass = {
     Init: (self: HarukaCMDClass) -> nil,
     AddCommandBook: (self: HarukaCMDClass, commandBook: { CommandJSON }) -> nil,
 
-
     _InitRequestListenTracker: (self: HarukaCMDClass) -> nil,
     _InitCommandExecutionTracker: (self: HarukaCMDClass) -> nil,
 
     _ValidateCmd: (realCMD: CommandJSON, cmdArgs: { string }) -> (boolean, CommandJSON | {}),
 
-
     Commands: { CommandJSON },
     Add: <T>(item: T) -> T,
     Empty: () -> nil,
 }
-
-
 
 return nil

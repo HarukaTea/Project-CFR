@@ -10,14 +10,12 @@ local promises = {}
 
 local addTaskSignal = Instance.new("BindableEvent")
 
-
 addTaskSignal.Event:Connect(function(durationLater: number, callback: () -> nil, uniqueId: string)
     promises[uniqueId] = {
         Promise = Promise.delay(durationLater):andThenCall(callback):catch(function() end),
         Callback = callback,
     }
 end)
-
 
 GlobalTimer.AddTask = function(_, durationLater: number, callback: () -> nil) : string
     local uniqueId = HttpService:GenerateGUID(false)
@@ -26,8 +24,6 @@ GlobalTimer.AddTask = function(_, durationLater: number, callback: () -> nil) : 
 
     return uniqueId
 end
-
-
 
 GlobalTimer.DoTaskImmediately = function(_, uniqueId: string)
     if promises[uniqueId] then
@@ -38,13 +34,11 @@ GlobalTimer.DoTaskImmediately = function(_, uniqueId: string)
     end
 end
 
-
 GlobalTimer.CancelTaskImmediately = function(_, uniqueId: string)
     if promises[uniqueId] then
         promises[uniqueId].Promise:cancel()
         promises[uniqueId] = nil
     end
 end
-
 
 return GlobalTimer

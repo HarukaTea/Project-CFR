@@ -32,7 +32,6 @@ return function (scope: Fusion.Scope, props: {
         }):Play()
     end
 
-
     return Components.HarukaFrame(scope, {
         Name = "CenterHintLabel",
         BackgroundTransparency = 0.2,

@@ -13,7 +13,6 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, props: {
     Index: number,
     ActiveInfo: {
@@ -29,7 +28,6 @@ return function(scope: Fusion.Scope, props: {
         DisplayOrder: number,
         KeyDisplay: string
     },
-
 
     ForcePosition: UDim2?,
     ForceSize: Fusion.Value<UDim2>?,
@@ -48,12 +46,10 @@ return function(scope: Fusion.Scope, props: {
     local subscribeAdd, subscribeEmpty = HarukaLib.Bin()
     table.insert(scope, subscribeEmpty)
 
-
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
-
 
     local amountUI = nil
     if props.IsMobile then
@@ -96,7 +92,6 @@ return function(scope: Fusion.Scope, props: {
             }
         })
     end
-
 
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
@@ -148,7 +143,6 @@ return function(scope: Fusion.Scope, props: {
         end
     end)
 
-
     local itemObserver = Fusion.Observer(scope, props.ActiveInfo.ItemId)
     itemObserver:onBind(function()
         subscribeEmpty()
@@ -158,7 +152,6 @@ return function(scope: Fusion.Scope, props: {
         local item = Fusion.peek(props.ActiveInfo.ItemId) :: string
         local hasItem = ItemBook:GetItemInfo(item)
         if not hasItem then return end
-
 
         local plr = self.plr :: Player
         if not plr.Items:FindFirstChild(item) then return end
@@ -170,7 +163,6 @@ return function(scope: Fusion.Scope, props: {
         }))
     end)
 
-
     return Components.Frame(scope, {
         Name = "Active"..props.Index,
         BackgroundTransparency = 0,
@@ -179,11 +171,9 @@ return function(scope: Fusion.Scope, props: {
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
 
-
         Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(props.ForceSize) or UDim2.fromScale(1.2, 1.2)
         end),
-
 
         [Children] = {
             Components.RoundUICorner(scope),
@@ -228,7 +218,6 @@ return function(scope: Fusion.Scope, props: {
             key,
             amountUI,
 
-
             Components.TextLabel(scope, {
                 Name = "Cooldown",
                 AnchorPoint = Vector2.new(0.5, 0.5),
@@ -257,7 +246,6 @@ return function(scope: Fusion.Scope, props: {
                     Components.ScaledTextUIStroke(scope, {})
                 },
             }),
-
 
             ProgressCircle(scope, {
                 Direction = "Left",

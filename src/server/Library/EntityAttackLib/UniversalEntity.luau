@@ -10,16 +10,13 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 local ServerTable = require(SSS.HarukaServer.Library.ServerTable)
 
-
 local Types = require(script.Parent.Types)
-
 
 export type UniversalEntity = Types.UniversalEntity
 
 local wait = task.wait
 
 local UniversalEntity = {} :: UniversalEntity
-
 
 --// Helper functions
 
@@ -43,14 +40,11 @@ local function _getCharsByRadius(pos: Vector3, radius: number)
     return charList
 end
 
-
-
 function UniversalEntity:InitTemplate(t: Types.EntityAttackObj, entity: Model)
     t.EntityId = entity.Name
     t.Entity = entity
     t.Add, t.Empty = HarukaLib.Bin()
 end
-
 
 function UniversalEntity:InitResolveObj(entity: Model, resolveObj: () -> ())
     local function _checkIsValid()
@@ -70,13 +64,11 @@ function UniversalEntity:InitResolveObj(entity: Model, resolveObj: () -> ())
     entity:GetPropertyChangedSignal("Parent"):Connect(_checkIsValid)
 end
 
-
 function UniversalEntity:InitAttackTables(t: Types.EntityAttackObj)
     t.Anims = {}
     t.AttackFuncs = {}
     t.ComboAttackFuncs = {}
 end
-
 
 function UniversalEntity:InitAttackTasks(t: Types.EntityAttackObj, resolveObj: () -> ())
     table.insert(t.Promises, Promise.try(function()
@@ -88,7 +80,6 @@ function UniversalEntity:InitAttackTasks(t: Types.EntityAttackObj, resolveObj: (
     end):catch(function(err)
         warn(tostring(err))
     end))
-
 
     local RNG = Random.new()
 
@@ -139,7 +130,6 @@ function UniversalEntity:InitAttackTasks(t: Types.EntityAttackObj, resolveObj: (
     end
 end
 
-
 --- combat related functions
 function UniversalEntity:GetTargets(entity: Model) : { Player }
     local players = {}
@@ -149,7 +139,6 @@ function UniversalEntity:GetTargets(entity: Model) : { Player }
 
     return players
 end
-
 
 function UniversalEntity:GetNearbyPlayers(entity: Model) : { Player }
     local nearbyChars = _getCharsByRadius(entity.PrimaryPart.Position, 486)
@@ -161,7 +150,6 @@ function UniversalEntity:GetNearbyPlayers(entity: Model) : { Player }
 
     return players
 end
-
 
 function UniversalEntity:EditProjectileList(projectileUniqueId: string, projectilePos: Vector3 | CFrame, entity: Model)
     if typeof(projectilePos) == "CFrame" then
@@ -185,7 +173,6 @@ function UniversalEntity:EditProjectileList(projectileUniqueId: string, projecti
     ServerTable:AddItem(ServerTable.EnemyProjectileSymbols, projectileUniqueId, 15)
 end
 
-
 function UniversalEntity:CheckCombatState(entity: Model) : (boolean, "NoTarget" | "Dead" | "Combating")
     if #entity.TargetingList:GetChildren() <= 0 then
         return false, "NoTarget"
@@ -197,12 +184,9 @@ function UniversalEntity:CheckCombatState(entity: Model) : (boolean, "NoTarget" 
     return true, "Combating"
 end
 
-
 function UniversalEntity:CheckShockingState(entity: Model) : boolean
     return entity:FindFirstChild("ShockingSymbol") ~= nil
 end
-
-
 
 function UniversalEntity:GetRandomTarget(entity: Model) : Model
     local targetingList = entity.TargetingList:GetChildren()
@@ -211,12 +195,10 @@ function UniversalEntity:GetRandomTarget(entity: Model) : Model
     return targetingList[rIndex].Value or nil
 end
 
-
 function UniversalEntity:DeadTask(t: Types.EntityAttackObj)
     t.Died = true
     t.Empty()
 end
-
 
 function UniversalEntity:InitFlyingEssentials(entity: Model, offset: number)
     entity.PrimaryPart.CFrame *= CFrame.new(0, offset, 0)
@@ -227,6 +209,5 @@ function UniversalEntity:InitFlyingEssentials(entity: Model, offset: number)
     linearVel.VectorVelocity = Vector3.zero
     linearVel.Parent = entity.PrimaryPart
 end
-
 
 return UniversalEntity

@@ -11,17 +11,13 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -30,8 +26,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -46,13 +40,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
 
-
     UniversalEntity:InitFlyingEssentials(entity, 7)
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -60,8 +51,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         return true
     end
-
-
 
     local function _lookAt(target: Model)
 
@@ -81,7 +70,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             Entity = entity,
             AnimId = "SpikeAttack"
         })
-
 
         local projectileUniqueId = HttpService:GenerateGUID(false)
         local projectilePos = ServerLib:FindGroundByRay(target.PrimaryPart.Position)
@@ -127,7 +115,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         projectileSupport:PivotTo(CFrame.new(post, post + entity.PrimaryPart.CFrame.LookVector))
 
-
         local hasProjectiles = 5
         for i = 1, hasProjectiles do
             for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..i) do
@@ -156,7 +143,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             end
         end
 
-
         Promise.delay(0.5):andThen(function()
             for _, child: BasePart in projectileSupport:QueryDescendants("#Position"..hasProjectiles) do
                 if child.Name ~= "Position"..hasProjectiles then continue end
@@ -174,8 +160,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
 
         Debris:AddItem(projectileSupport, 10)
     end
-
-
 
     --// attack functions
     table.insert(self.AttackFuncs, function(target)
@@ -201,7 +185,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
             for _ = 1, math.random(1, 2) do
                 if not _checkIsTargetOrEntityValid(target) then break end
 
-
                 _moving()
                 wait(0.15)
             end
@@ -211,22 +194,18 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if comboR == 1 then
             if not _checkIsTargetOrEntityValid(target) then return end
 
-
             _beeRush(target)
             wait(0.6)
         end
     end)
 
-
     --// attack loop
     wait(0.5)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

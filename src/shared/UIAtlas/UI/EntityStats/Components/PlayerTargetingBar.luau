@@ -7,15 +7,11 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
-
 local Pinia = require(script.Parent.Parent.Pinia)
-
 
 local Children = Fusion.Children
 
-
 local ORDER = 1
-
 
 return function(scope: Fusion.Scope, props: {
     Targeting: ObjectValue,
@@ -29,18 +25,15 @@ return function(scope: Fusion.Scope, props: {
 
     if not EntityBook[targeting.Name] then return nil end
 
-
     ORDER += 2
     if ORDER > math.huge - 1 then
         ORDER = 1
     end
 
-
     local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local absContentSize = Value(Vector2.zero)
-
 
     local bar = Components.Frame(scope, {
         Name = targeting.Name,
@@ -202,7 +195,6 @@ return function(scope: Fusion.Scope, props: {
         }
     })
 
-
     local bar2 = Components.Frame(scope, {
         Name = targeting.Name.."_EffectList",
         AnchorPoint = Vector2.new(1, 0),
@@ -226,7 +218,6 @@ return function(scope: Fusion.Scope, props: {
         }
     })
 
-
     --// track effect list
     ClientLib:TrackEffectListToUI({
         Target = targeting,
@@ -234,7 +225,6 @@ return function(scope: Fusion.Scope, props: {
         GuiContainer = bar2,
         EffectContainer = bar2.EffectList
     })
-
 
     local humanoid = targeting.Humanoid :: Humanoid
     local function _updateHealth()
@@ -259,7 +249,6 @@ return function(scope: Fusion.Scope, props: {
         ["Prop-Health"] = _updateHealth,
         ["Prop-MaxHealth"] = _updateHealth,
     }))
-
 
     return {
         bar, bar2

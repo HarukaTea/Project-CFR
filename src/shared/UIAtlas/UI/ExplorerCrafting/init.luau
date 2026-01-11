@@ -23,9 +23,7 @@ local CraftGoldMatSlot = require(script.Components.CraftGoldMatSlot)
 
 local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
 
-
 local Children = Fusion.Children
-
 
 local Pinia = require(script.Pinia)
 
@@ -38,14 +36,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerCrafting") then
         plr.PlayerGui.ExplorerCrafting:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerCrafting",
@@ -101,13 +96,11 @@ return function (plr: Player)
                                 end
                                 isVisible = table.find(category, info.Type) ~= nil
 
-
                                 local tierNum = info.Tier - ((info.Tier - 1) % 2)
                                 tierNum = math.clamp(tierNum, 1, 3)
 
                                 local state = use(self.FilterTierList[tierNum])
                                 isVisibleFactor2 = state
-
 
                                 local isVisibleFactor3 = false
                                 local text = use(self.FilterItemText)
@@ -124,7 +117,6 @@ return function (plr: Player)
                                         isVisibleFactor3 = false
                                     end
                                 end
-
 
                                 if isVisible and isVisibleFactor2 and isVisibleFactor3 then
                                     return index, BKItemQuickSlot(scope, {
@@ -159,7 +151,6 @@ return function (plr: Player)
 
                         FillDirection = Enum.FillDirection.Horizontal,
                     }),
-
 
                     Components.TextLabel(scope, {
                         Name = "Empty",
@@ -356,7 +347,6 @@ return function (plr: Player)
                     }
                 }),
 
-
                 Components.Frame(scope, {
                     Name = "RSideBtns",
                     AnchorPoint = Vector2.new(0.5, 0),
@@ -370,7 +360,6 @@ return function (plr: Player)
                             VerticalAlignment = Enum.VerticalAlignment.Center,
                             Padding = UDim.new(0.01, 0),
                         }),
-
 
                         Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                             local item = use(self.CurrentSelectedItem) :: string
@@ -408,7 +397,6 @@ return function (plr: Player)
                             TextColor3 = Components.BLACK_COLOR,
                             Size = UDim2.fromScale(0, 0.56),
 
-
                             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local check = false
                                 for _, tierStatus in self.FilterTierList do
@@ -421,7 +409,6 @@ return function (plr: Player)
 
                                 return check
                             end),
-
 
                             [Children] = {
                                 Components.RoundUICorner(scope),
@@ -530,10 +517,8 @@ return function (plr: Player)
     })
     self.UI = UI
 
-
     return function ()
         Fusion.doCleanup(scope)
-
 
     end
 end

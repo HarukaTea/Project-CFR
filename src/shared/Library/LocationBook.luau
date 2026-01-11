@@ -16,6 +16,4 @@ export type LocationInfo = {
     BaseSpeed: number?,
 }
 
-
-
 return {}

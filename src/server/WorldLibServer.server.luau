@@ -1,7 +1,6 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_ServerValidated")
 
-
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -15,11 +14,9 @@ local Promise = require(RepS.HarukaShared.Shared.Promise)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local CADimension = require(SSS.HarukaServer.Shared.CADimension)
 
-
 type Dict = { [string]: {any} }
 
 local nowClock = os.clock()
-
 
 --// Init server settings
 do
@@ -32,7 +29,6 @@ do
     StarterGui.ScreenOrientation = Enum.ScreenOrientation.LandscapeSensor
 end
 
-
 --// Init server modules
 do
     require(SSS.HarukaServer.Services.ServerWorldLib):Init()
@@ -43,7 +39,6 @@ do
     require(SSS.HarukaServer.Library.ServerTable)
 end
 
-
 --// Init game debug
 do
     local HarukaCMD = require(SSS.HarukaServer.Services.HarukaCMDServer)
@@ -52,7 +47,6 @@ do
     harukaCMDObj:Init()
     harukaCMDObj:AddCommandBook(require(SSS.HarukaServer.Library.CommandBook))
 end
-
 
 --// Init server location
 do
@@ -89,12 +83,8 @@ do
     end)
 end
 
-
-
 print(`[ServerPreloadLib] HarukaServer Inited, Spent {string.format("%.2f", os.clock() - nowClock)} seconds`)
 workspace:SetAttribute("Haruka_ServerInited", true)
-
-
 
 --// server runtime too long
 do

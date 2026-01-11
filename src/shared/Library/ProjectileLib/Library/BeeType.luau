@@ -5,17 +5,12 @@ local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
-
 local Types = require(script.Parent.Parent.Types)
-
-
 
 local wait = task.wait
 
 return function (self: Types.ProjectileLib)
     local ProjectileLib = self
-
 
     ProjectileLib.BeeMove1 = function(projectile: Model, container: Folder)
         pcall(ProjectileLib._rotateAttentionPoint, projectile.PrimaryPart, container, {
@@ -25,15 +20,12 @@ return function (self: Types.ProjectileLib)
         pcall(function()
             wait(0.5)
 
-
             ProjectileLib._spawnProjectile(projectile, container, 6, function(sProjectile: Model)
                 sProjectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
             end)
         end)
     end
     ProjectileLib.LeafDragonMove1 = ProjectileLib.BeeMove1
-
-
 
     ProjectileLib.BeeSpike1 = function(projectile: Model, container: Folder)
         if not projectile:GetAttribute("NoSound") then

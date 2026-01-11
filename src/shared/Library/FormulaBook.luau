@@ -16,7 +16,6 @@ local formulas = {
 
     EXPEvent = 1,
 
-
     PlayerLevelCurveCal = function(props: {
         Level: number
     })
@@ -27,7 +26,6 @@ local formulas = {
     })
         return math.floor(80 * (props.Level ^ 1.4))
     end,
-
 
     -- // enemy curve calculation
 
@@ -41,7 +39,6 @@ local formulas = {
     })
         return math.floor(3 * (props.Level ^ 1.1))
     end,
-
 
     EnemyHealthCurveCal = function(props: {
         Level: number,
@@ -58,7 +55,6 @@ local formulas = {
         return math.ceil(base * props.EnvironmentBonus)
     end,
 
-
     EnemyDMGCurveCal = function(props: {
         Level: number,
         EnvironmentBonus: number?
@@ -74,7 +70,6 @@ local formulas = {
     })
         return math.floor(5 * props.Level)
     end,
-
 
     --// player curve calculation
 
@@ -98,10 +93,8 @@ local formulas = {
         end
         local extra = 1 + ((props.DMGPoints * baseFactor) / 100)
 
-
         return math.ceil(props.BaseDMG * extra)
     end,
-
 
     PlayerMagicCurveCal = function(props: {
         BaseMagic: number,
@@ -112,14 +105,12 @@ local formulas = {
         return math.ceil(props.BaseMagic * extra)
     end,
 
-
     PlayerCriChanceCurveCal = function(props: {
         BaseCritChance: number,
         DexPoints: number
     })
         return math.floor(props.BaseCritChance + math.min(40, math.floor(props.DexPoints * 0.8)))
     end,
-
 
     --// items
 
@@ -131,13 +122,11 @@ local formulas = {
 
 }
 
-
 if game.GameId ~= AssetBook.CFUniverseId_Main then
     formulas.EXPEvent = 80
 end
 if formulas.EXPEvent > 1 then
     print("EXP Event Enabled")
 end
-
 
 return formulas

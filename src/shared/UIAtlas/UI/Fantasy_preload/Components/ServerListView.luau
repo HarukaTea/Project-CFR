@@ -7,11 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
-
 local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
 local Children = Fusion.Children
-
 
 return function (scope: Fusion.Scope, props: {
     SaveSlotClickedSignal: BindableEvent,
@@ -29,7 +27,6 @@ return function (scope: Fusion.Scope, props: {
     local isVisible = Value(false)
     local serversAvailable = Components.FusionComponents.useChildren(scope, workspace.MapComponents.GlobalServers)
 
-
     props.ServerListClickedSignal.Event:Connect(function()
         isVisible:set(true)
     end)
@@ -39,7 +36,6 @@ return function (scope: Fusion.Scope, props: {
     props.SaveSlotBackSignal.Event:Connect(function()
         isVisible:set(false)
     end)
-
 
     local view; view = Components.Frame(scope, {
         Name = "ServerList",
@@ -62,7 +58,6 @@ return function (scope: Fusion.Scope, props: {
             CAPatternTex(scope, {
                 TileSize = UDim2.fromScale(0.07, 0.15)
             }),
-
 
             Components.TextLabel(scope, {
                 Name = "Title",
@@ -87,7 +82,6 @@ return function (scope: Fusion.Scope, props: {
                     return next(use(serversAvailable)) == nil
                 end)
             }),
-
 
             Components.ScrollingFrame(scope, {
                 Name = "ServerList_List",
@@ -114,16 +108,13 @@ return function (scope: Fusion.Scope, props: {
                         info.ServerName = info.ServerName or "The Initia"
                         info.WorldId = info.WorldId or "InitusWorld"
 
-
                         local order = 999 - symbol.Value
-
 
                         local id = string.sub(symbol.Name, 1, 8)
                         if symbol.Name == game.JobId then
                             id = "Current Server"
                             order = 5
                         end
-
 
                         return index, Components.HoverImageButton(scope, {
                             Name = "Server_"..index,
@@ -140,12 +131,10 @@ return function (scope: Fusion.Scope, props: {
                                 isSelecting:set(false)
                             end,
 
-
                             [Children] = {
                                 Components.UIAspectRatioConstraint(scope, 11.184),
 
                                 Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.2, 0) }),
-
 
                                 Components.ScaledUIStroke(scope, {
                                     Thickness = 0.03,
@@ -198,7 +187,6 @@ return function (scope: Fusion.Scope, props: {
                                         return if symbol.Value < 20 then Components.GREEN_COLOR else Components.RED_COLOR
                                     end),
 
-
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         if game.JobId == symbol.Name then
                                             Bindables.CreateNotify:Fire("Already in this server")
@@ -228,7 +216,6 @@ return function (scope: Fusion.Scope, props: {
             }),
         }
     })
-
 
     --// anims
     local visibleObserver = Fusion.Observer(scope, isVisible)

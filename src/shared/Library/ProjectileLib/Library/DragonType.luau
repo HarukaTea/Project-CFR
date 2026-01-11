@@ -3,10 +3,7 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Types = require(script.Parent.Parent.Types)
-
-
 
 local wait = task.wait
 
@@ -14,8 +11,6 @@ return function (self: Types.ProjectileLib)
     local ProjectileLib = self
 
     ProjectileLib.LeafDragonMove2 = function(projectile: Model, container: Folder)
-
-
 
         local r = if math.random(1, 2) == 1 then -90 else 0
 
@@ -38,13 +33,9 @@ return function (self: Types.ProjectileLib)
 
     ProjectileLib.LeafDragonMove3 = function(projectile: Model, container: Folder)
 
-
-
         Promise.delay(2):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 
-
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 1.2, 0))
-
 
         for _, part: BasePart in projectile:QueryDescendants("#Part") do
             part.Transparency = 0.8
@@ -58,10 +49,7 @@ return function (self: Types.ProjectileLib)
         end)
     end
 
-
     ProjectileLib.LeafDragonSpike3 = function(projectile: Model, container: Folder)
-
-
 
         Promise.delay(2):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
 

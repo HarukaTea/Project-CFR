@@ -2,14 +2,12 @@
 local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
-
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 
 local Types = require(script.Parent.Parent.Types)
-
 
 return function (self: Types.CastItemLib)
     local CastItemLib = self
@@ -25,7 +23,6 @@ return function (self: Types.CastItemLib)
         })
         if not check then return 0 end
 
-
         CastItemLib._drinkSoundFunc(char, function()
             local amount = StatusLib:HealPercentage(char, 20)
 
@@ -34,7 +31,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.PowerPotion = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
@@ -47,7 +43,6 @@ return function (self: Types.CastItemLib)
         })
         if not check then return 0 end
 
-
         CastItemLib._drinkSoundFunc(char, function()
             StatusLib:ATKBoost(char, {
                 DMGPower = 0.75,
@@ -57,7 +52,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.MagicPotion = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
@@ -69,7 +63,6 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
-
 
         CastItemLib._drinkSoundFunc(char, function()
             StatusLib:Boost("Magic", char, {
@@ -94,7 +87,6 @@ return function (self: Types.CastItemLib)
         })
         if not check then return 0 end
 
-
         CastItemLib._drinkSoundFunc(char, function()
             StatusLib:RestoreManaPercentage(char, 100)
 
@@ -103,7 +95,6 @@ return function (self: Types.CastItemLib)
 
         return nil
     end
-
 
     CastItemLib.EndurancePotion = function(player: Player, char: Model) : number?
         local check = CastItemLib._preCheck({
@@ -115,7 +106,6 @@ return function (self: Types.CastItemLib)
             Char = char
         })
         if not check then return 0 end
-
 
         CastItemLib._drinkSoundFunc(char, function()
             local maxShield = char:GetAttribute("MaxShield") :: number

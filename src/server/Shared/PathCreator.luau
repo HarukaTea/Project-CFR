@@ -7,8 +7,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-
-
 export type PathCreatorClass = {
     __index: PathCreatorClass,
 
@@ -44,10 +42,8 @@ export type PathCreatorClass = {
     moveConn: RBXScriptConnection?,
 }
 
-
 local PathCreator = {} :: PathCreatorClass
 PathCreator.__index = PathCreator
-
 
 local visualWaypoint = HarukaLib:CreateMockPart()
 visualWaypoint.Size = Vector3.new(0.3, 0.3, 0.3)
@@ -56,14 +52,11 @@ visualWaypoint.Material = Enum.Material.Neon
 visualWaypoint.Shape = Enum.PartType.Ball
 visualWaypoint.Transparency = 0
 
-
 local visualPointContainer = Instance.new("Folder")
 visualPointContainer.Name = "VisualPathPoints"
 visualPointContainer.Parent = workspace.Terrain
 
-
 --// Helper functions
-
 
 local function createVisualWaypoints(waypoints)
 	local visualWaypoints = {}
@@ -140,7 +133,6 @@ local function _comparePosition(self: PathCreatorClass)
 	end
 end
 
-
 --// Constructor
 function PathCreator.new(npc: Model, pfsArgs: { any })
     local self = setmetatable({
@@ -163,7 +155,6 @@ function PathCreator.new(npc: Model, pfsArgs: { any })
         }
 
     }, PathCreator)
-
 
     return self
 end
@@ -192,7 +183,6 @@ function PathCreator:Run(targetPos: Vector3, previousAsyncResult: boolean)
         return
     end
 
-
     --// pathfinding starts
     self.Status = (self.Humanoid and "Active") or "Idle"
     self.Target = targetPos
@@ -209,15 +199,12 @@ function PathCreator:Run(targetPos: Vector3, previousAsyncResult: boolean)
     --// in case npc stucks
     if self.Humanoid then _comparePosition(self) end
 
-
     destroyVisualWaypoints(self.VisualWaypoints)
     self.VisualWaypoints = (self.Visualize and createVisualWaypoints(self.Waypoints))
-
 
     self.moveConn = self.Humanoid and (self.moveConn or self.Humanoid.MoveToFinished:Connect(function(...)
         _moveToFinished(self, ...)
     end))
-
 
     self.RunClock = 1
 
@@ -237,7 +224,6 @@ function PathCreator:Run(targetPos: Vector3, previousAsyncResult: boolean)
     return true
 end
 
-
 --// stop the npc from following the path
 function PathCreator:Stop()
 	if self.Status == "Idle" then return end
@@ -247,7 +233,6 @@ function PathCreator:Stop()
 	self.Status = "Idle"
     self.VisualWaypoints = destroyVisualWaypoints(self.VisualWaypoints)
 end
-
 
 --[[
     Help compute whether the path is ok for npcs
@@ -268,7 +253,6 @@ function PathCreator:IsPathValid(targetPos: Vector3)
 
     return true
 end
-
 
 --// Clears the path object
 function PathCreator:Destroy()

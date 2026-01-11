@@ -8,12 +8,10 @@ local Bindables = require(RepS.HarukaShared.Library.Bindables)
 
 local ConfirmPrompt = require(script.Components.ConfirmPrompt)
 
-
 return function (plr: Player)
 	local self = {}
 
 	ClientLib:InitUIFramework(self, plr, "ConfirmPrompt", true)
-
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -38,14 +36,12 @@ return function (plr: Player)
 		})
 		UI.Parent = self.plr.PlayerGui
 
-
 		HarukaLib:UITween(UI, "In", {
 			TweenTime = 0.5,
 
 			PosTweenStyle = "FromT2B",
 			PosTweenBaseElement = UI.Center.ConfirmPrompt,
 		})
-
 
 		local finalResult = resultSignal.Event:Wait()
 

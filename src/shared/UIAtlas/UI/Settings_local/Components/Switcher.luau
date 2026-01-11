@@ -7,7 +7,6 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
@@ -17,7 +16,6 @@ return function(scope: Fusion.Scope, props: {
 })
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingSwitcher = Fusion.Value(scope, false)
-
 
 	return Components.Frame(scope, {
 		Name = props.OptionId,
@@ -51,8 +49,6 @@ return function(scope: Fusion.Scope, props: {
 				}
 			}),
 
-
-
             Components.TextLabel(scope, {
 				Name = "Value",
 				AnchorPoint = Vector2.new(0, 0.5),
@@ -72,9 +68,6 @@ return function(scope: Fusion.Scope, props: {
 					})
 				}
 			}),
-
-
-
 
 			Components.HoverImageButton(scope, {
 				Name = "Switcher",
@@ -98,7 +91,6 @@ return function(scope: Fusion.Scope, props: {
 						SettingValue = Fusion.peek(props.BooleanValue)
 					})
 				end,
-
 
 				[Children] = {
 					Components.RoundUICorner(scope),
@@ -125,13 +117,10 @@ return function(scope: Fusion.Scope, props: {
 					return if use(props.BooleanValue) then Components.WHITE_COLOR else Components.WHITE_COLOR:Lerp(Color3.fromRGB(), 0.5)
 				end),
 
-
 				[Children] = {
 					Components.RoundUICorner(scope)
 				}
 			}),
-
-
 
 			Components.Frame(scope, {
                 Name = "Hover",

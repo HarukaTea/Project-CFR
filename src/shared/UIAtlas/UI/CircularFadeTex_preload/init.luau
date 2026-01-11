@@ -21,10 +21,8 @@ return function (plr: Player)
 
 	local scope = self.scope :: Fusion.Scope
 
-
 	self.CirularFadeQueue = HarukaLib.Queue()
 	table.insert(scope, self.CirularFadeQueue)
-
 
 	--// receive circular fade requests
 	local function _createCircularFade(duration: number)
@@ -41,18 +39,15 @@ return function (plr: Player)
 		}
 		local newScope = Fusion.scoped()
 
-
 		self.CirularFadeQueue:SpawnMutex(nextCircularFade.Duration + 1)
 
         local UI = CircularFadeTex(newScope)
 		UI.Parent = self.plr.PlayerGui
 		Debris:AddItem(UI, nextCircularFade.Duration + 2)
 
-
 		Promise.delay(nextCircularFade.Duration + 2):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
-
 
 		HarukaLib:CreateTween(UI.Circle, Components.TweenInfos.half, {
 			Size = UDim2.fromScale(0, 0)

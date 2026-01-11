@@ -14,7 +14,6 @@ return function (scope: Fusion.Scope, props: {
     CutsceneUISignal: BindableEvent
 }) : ScreenGui
 
-
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
@@ -31,14 +30,12 @@ return function (scope: Fusion.Scope, props: {
     local isSelectingGroupFrame = Value(false)
     local isSelectingEventFrame = Value(false)
 
-
     local HAS_EVENT = true
     local EVENT_ID = "6946626955529421520"
 
     if game.GameId ~= AssetBook.CFUniverseId_Main then
         EVENT_ID = "6325041198050050620"
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "OuterTitlescreen",
@@ -89,7 +86,6 @@ return function (scope: Fusion.Scope, props: {
                                 })
                             }
                         }),
-
 
                         Components.HoverImageButton(scope, {
                             [Fusion.OnEvent("MouseEnter")] = function()
@@ -296,7 +292,6 @@ return function (scope: Fusion.Scope, props: {
             }
         }
     })
-
 
     return UI
 end

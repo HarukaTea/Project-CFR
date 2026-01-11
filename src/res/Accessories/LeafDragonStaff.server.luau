@@ -7,18 +7,13 @@ local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
 
-
 local Add, Empty = HarukaLib.Bin()
 
-
 local char = script:FindFirstAncestorOfClass("Model")
-
 
 local event = Instance.new("BindableEvent")
 event.Name = "EnemyGotHit"
 event.Parent = script
-
-
 
 Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting, attacker, dmgProps)
     if dmgProps.Attacker ~= "ClassAttacks" then return end
@@ -36,7 +31,6 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
             Power = 1,
         })
         debuffObj:Activate()
-
 
         
     end

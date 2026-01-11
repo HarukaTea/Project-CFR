@@ -6,19 +6,11 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 
-
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
-
-
 
 local Children = Fusion.Children
 
-
 type Dict = { [string]: any }
-
-
-
-
 
 return function(scope: Fusion.Scope, props: {
     BadgeCompletedCount: Fusion.Value<number>,
@@ -49,7 +41,6 @@ return function(scope: Fusion.Scope, props: {
                 }
             }),
 
-
             Components.TextLabel(scope, {
                 Name = "Tip",
                 AnchorPoint = Vector2.new(0.5, 0),
@@ -69,7 +60,6 @@ return function(scope: Fusion.Scope, props: {
                 Position = UDim2.fromScale(0.5, 0.75),
                 Size = UDim2.fromScale(1, 0.08),
 
-
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return `{use(props.BadgeCompletedCount)} / 6    COMPLETED`
                 end),
@@ -78,7 +68,6 @@ return function(scope: Fusion.Scope, props: {
                     Components.ScaledTextUIStroke(scope, {})
                 }
             }),
-
 
             Components.Frame(scope, {
                 Name = "ProgressBar",
@@ -114,7 +103,6 @@ return function(scope: Fusion.Scope, props: {
                 }
             }),
 
-
             Components.TextButton(scope, {
                 Name = "ClaimButton",
                 AnchorPoint = Vector2.new(0.5, 0),
@@ -140,7 +128,6 @@ return function(scope: Fusion.Scope, props: {
                     Events.ClaimBadgeReward_C.Fire()
                     props.HasGottenReward:set(true)
                 end,
-
 
                 [Children] = {
                     Components.RoundUICorner(scope),

@@ -7,13 +7,11 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Types = require(script.Types)
 
-
 export type ProjectileLib = Types.ProjectileLib
 
 local ProjectileLib = {} :: ProjectileLib
 
 local wait = task.wait
-
 
 local function _incomingCylinderAtt(projectileBase: BasePart)
     local cylinderMesh = Instance.new("CylinderMesh")
@@ -35,7 +33,6 @@ local function _incomingCylinderAtt(projectileBase: BasePart)
     eff.Parent = projectileBase
     Debris:AddItem(eff, 1)
 
-
     HarukaLib:CreateTween(eff, AssetBook.TweenInfos.half, {
         Size = Vector3.new(0.01, 100, 0.01), Transparency = 1
     }):Play()
@@ -55,7 +52,6 @@ local function _rotateAttentionPoint(projectileBase: BasePart, container: Folder
 
     if props.ShouldDetail then _incomingCylinderAtt(projectileBase) end
 
-
     HarukaLib:CreateTween(surfaceGui.Exclamation, AssetBook.TweenInfos.fifteen, { Rotation = rotation }):Play()
 
     pcall(function()
@@ -68,7 +64,6 @@ local function _fadeAwayAndDestroy(obj: Instance)
 
     obj:RemoveTag("PierceEntity")
     obj:RemoveTag("DMGEntity")
-
 
     if HarukaLib:IsBasePartType(obj) then
         HarukaLib:CreateTween(obj, AssetBook.TweenInfos.half, {
@@ -115,11 +110,8 @@ ProjectileLib._fadeAwayAndDestroy = _fadeAwayAndDestroy
 ProjectileLib._rotateAttentionPoint = _rotateAttentionPoint
 ProjectileLib._spawnProjectile = _spawnProjectile
 
-
-
 for _, module: ModuleScript in script.Library:GetChildren() do
     require(module)(ProjectileLib)
 end
-
 
 return ProjectileLib :: ProjectileLib

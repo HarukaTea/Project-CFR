@@ -6,15 +6,11 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
-
 local Children = Fusion.Children
-
 
 local Types = require(script.Parent.Types)
 
-
 type Dict = {[string]: any}
-
 
 return function (scope: Fusion.Scope, props: {
     IsShownVal: Fusion.Value<boolean>,
@@ -33,7 +29,6 @@ return function (scope: Fusion.Scope, props: {
 }, self: Types.HarukaCMDClass)
 
     local isSelectingCMD = Fusion.Value(scope, false)
-
 
     return Components.HarukaScreenGui(scope, {
         Name = "HarukaCMD",
@@ -59,7 +54,6 @@ return function (scope: Fusion.Scope, props: {
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         }),
 
-
                         Components.TextButton(scope, {
                             Name = "CMDPreview",
                             AutoButtonColor = false,
@@ -70,7 +64,6 @@ return function (scope: Fusion.Scope, props: {
                             BackgroundTransparency = 0,
 
                             [Fusion.Out("Text")] = props.CMDInput,
-
 
                             BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 return if use(isSelectingCMD) then Components.WHITE_COLOR else Components.BLACK_COLOR
@@ -152,7 +145,6 @@ return function (scope: Fusion.Scope, props: {
                             HorizontalAlignment = Enum.HorizontalAlignment.Center,
                         }),
 
-
                         Fusion.ForPairs(scope, props.Intellisense, function(_, scope: Fusion.Scope, index: number, cmd: Types.CommandJSON)
                             return index, Components.TextButton(scope, {
                                 Name = cmd.Name,
@@ -196,7 +188,6 @@ return function (scope: Fusion.Scope, props: {
                                 }
                             })
                         end),
-
 
                         Components.Frame(scope, {
                             Name = "Padding",
@@ -269,7 +260,6 @@ return function (scope: Fusion.Scope, props: {
                                         __getPlayers()
                                         table.insert(scope, CollectionService:GetInstanceAddedSignal("PlayerEntity"):Connect(__getPlayers))
                                         table.insert(scope, CollectionService:GetInstanceRemovedSignal("PlayerEntity"):Connect(__getPlayers))
-
 
                                         local searchObserver = Fusion.Observer(scope, extraArgSearchVal)
                                         searchObserver:onBind(function()
@@ -354,7 +344,6 @@ return function (scope: Fusion.Scope, props: {
                                                 VerticalAlignment = Enum.VerticalAlignment.Bottom,
                                                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                                             }),
-
 
                                             Fusion.ForPairs(scope, intellisenseItems, function(_, scope: Fusion.Scope, iindex: number, option: string)
                                                 return iindex, Components.TextButton(scope, {

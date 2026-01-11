@@ -14,8 +14,6 @@ export type ClassJSON = {
     DevClass: boolean?
 }
 
-
-
 return {
 	Chain = {
 		Icon = "rbxassetid://125482694089319",
@@ -29,7 +27,6 @@ return {
         }
 	},
 
-
     Burst = {
 		Icon = "rbxassetid://76032666495313",
 		Color = Color3.fromHex('#7bed9f'),
@@ -38,12 +35,10 @@ return {
         Skills = {
         },
 
-
         BaseStats = {
             OrbBounce = 150
         }
     },
-
 
     Flow = {
 		Icon = "rbxassetid://100313471486816",
@@ -53,12 +48,10 @@ return {
         Skills = {
         },
 
-
         BaseStats = {
             MaxMana = 500
         }
     },
-
 
     Reverberation = {
         Icon = "rbxassetid://120613067089872",
@@ -68,13 +61,11 @@ return {
         Skills = {
         },
 
-
         BaseStats = {
             SpeedCombat = 40,
             MaxClassUltProgress = 80
         }
     },
-
 
     Knight = {
         Icon = "rbxassetid://2965863677",
@@ -91,7 +82,6 @@ return {
 
         DevClass = true
     },
-
 
     Furioso = {
         Icon = "rbxassetid://125763677365170",
@@ -121,7 +111,6 @@ return {
 
         DevClass = true
     },
-
 
     Rogue = {
 		Icon = "rbxassetid://12284961892",

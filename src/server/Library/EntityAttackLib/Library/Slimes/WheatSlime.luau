@@ -3,23 +3,18 @@ local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 
-
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-
 
 local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 local SlimeUniversal = require(script.Parent.SlimeUniversal)
 
-
 local wait = task.wait
-
 
 local Entity = {} :: Types.EntityAttackObj
 Entity.__index = Entity
-
 
 function Entity.new(entity: Model)
     local self = setmetatable({}, Entity)
@@ -28,8 +23,6 @@ function Entity.new(entity: Model)
 
     return self
 end
-
-
 
 function Entity:DoAttackTasks(resolveObj: () -> nil)
     local entity = self.Entity :: Model
@@ -44,10 +37,8 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         resolveObj()
     end
 
-
     UniversalEntity:InitResolveObj(entity, resolveObjPack)
     UniversalEntity:InitAttackTables(self)
-
 
     local function _checkIsTargetOrEntityValid(target: Model)
         if not ServerLib:IsCharValid(entity) then return false end
@@ -85,12 +76,10 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         SlimeUniversal.SlimeDive2(entity, target)
     end
 
-
     --// attack functions
     table.insert(self.AttackFuncs, function(target: Model)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
-
 
             _slimeWave(target)
             wait(1)
@@ -99,7 +88,6 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
     table.insert(self.AttackFuncs, function(target: Model)
         for _ = 1, math.random(1, 3) do
             if not _checkIsTargetOrEntityValid(target) then break end
-
 
             _slimeBarrage()
             wait(1)
@@ -121,22 +109,18 @@ function Entity:DoAttackTasks(resolveObj: () -> nil)
         if comboR == 1 then
             if not _checkIsTargetOrEntityValid(target) then return end
 
-
             _slimeWave(target)
             wait(1)
         end
     end)
 
-
     --// attack loop
     wait(1)
     UniversalEntity:InitAttackTasks(self, resolveObjPack)
 
-
     --// end the promise chain
     resolveObjPack()
 end
-
 
 function Entity:Destroy()
     UniversalEntity:DeadTask(self)

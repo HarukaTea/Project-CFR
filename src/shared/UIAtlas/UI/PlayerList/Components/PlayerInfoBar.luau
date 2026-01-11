@@ -11,7 +11,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, props: {
     Char: Model,
     Player: Player
@@ -19,7 +18,6 @@ return function(scope: Fusion.Scope, props: {
     if not ClientLib:IsCharValid(props.Char) then return nil end
     if props.Player == nil then return nil end
     if props.Player.Name == Players.LocalPlayer.Name then return nil end
-
 
     local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
@@ -29,7 +27,6 @@ return function(scope: Fusion.Scope, props: {
     local class = Value("Burst")
     local role = Value("")
     local title = Value("Explorer")
-
 
     table.insert(scope, HarukaLib:Hydrate(props.Char.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
@@ -51,7 +48,6 @@ return function(scope: Fusion.Scope, props: {
         end
     }))
 
-
     return { Components.BillboardGui(scope, {
         Name = "PlayerInfoBar",
         Size = UDim2.fromScale(4.8, 1.2),
@@ -59,11 +55,9 @@ return function(scope: Fusion.Scope, props: {
         StudsOffset = Vector3.yAxis * 3,
         Adornee = props.Char.PrimaryPart,
 
-
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0
         end),
-
 
         [Children] = {
             Components.Frame(scope, {

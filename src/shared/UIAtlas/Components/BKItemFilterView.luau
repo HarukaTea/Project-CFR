@@ -16,7 +16,6 @@ return function (scope: Fusion.Scope, props: {
     UIOpenState: Fusion.Value<boolean>,
 })
 
-
     local isSelecting = Fusion.Value(scope, false)
 
     local function Title(text: string, order: number)
@@ -54,7 +53,6 @@ return function (scope: Fusion.Scope, props: {
                     }
                 }),
 
-
                 Components.TextLabel(scope, {
                     Name = "SearchTitle",
                     LayoutOrder = 1,
@@ -90,7 +88,6 @@ return function (scope: Fusion.Scope, props: {
                                         isSelecting:set(false)
                                     end,
 
-
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         props.UIOpenState:set(false)
                                     end
@@ -100,10 +97,8 @@ return function (scope: Fusion.Scope, props: {
                     }
                 }),
 
-
                 Title("Includes", 4),
                 Title("Sort Order", 6),
-
 
                 Components.TextBox(scope, {
                     Name = "SearchBox",
@@ -168,14 +163,12 @@ return function (scope: Fusion.Scope, props: {
                                 LayoutOrder = index,
                                 Size = UDim2.fromScale(0.95, 0.32),
 
-
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.GREY_COLOR
                                 end),
                                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return if use(props.FilterTierList[index]) then Components.GREY_COLOR else Components.WHITE_COLOR
                                 end),
-
 
                                 [Fusion.OnEvent("MouseEnter")] = function()
                                     isSelecting:set(true)
@@ -186,7 +179,6 @@ return function (scope: Fusion.Scope, props: {
                                 [Fusion.OnEvent("MouseButton1Click")] = function()
                                     props.FilterTierList[index]:set(not Fusion.peek(props.FilterTierList[index]))
                                 end,
-
 
                                 [Children] = {
                                     Components.UIAspectRatioConstraint(scope, 10.117),
@@ -215,7 +207,6 @@ return function (scope: Fusion.Scope, props: {
                                             return if use(props.FilterTierList[index]) then 0 else 1
                                         end),
 
-
                                         [Children] = {
                                             Components.RoundUICorner(scope),
                                             Components.ScaledUIStroke(scope, {
@@ -241,7 +232,6 @@ return function (scope: Fusion.Scope, props: {
                     Padding = UDim.new(0, 6),
                     HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 }),
-
 
                 Components.ScrollingFrame(scope, {
                     Name = "SortOrders",
@@ -278,7 +268,6 @@ return function (scope: Fusion.Scope, props: {
                                     return if use(props.SortMethodList[index]) then Components.GREY_COLOR else Components.WHITE_COLOR
                                 end),
 
-
                                 [Fusion.OnEvent("MouseEnter")] = function()
                                     isSelecting:set(true)
                                 end,
@@ -291,7 +280,6 @@ return function (scope: Fusion.Scope, props: {
                                     end
                                     props.SortMethodList[index]:set(true)
                                 end,
-
 
                                 [Children] = {
                                     Components.UIAspectRatioConstraint(scope, 10.117),
@@ -320,7 +308,6 @@ return function (scope: Fusion.Scope, props: {
                                             return if use(props.SortMethodList[index]) then 0 else 1
                                         end),
 
-
                                         [Children] = {
                                             Components.RoundUICorner(scope),
                                             Components.ScaledUIStroke(scope, {
@@ -348,7 +335,6 @@ return function (scope: Fusion.Scope, props: {
                 }),
             }
         }),
-
 
         Components.Frame(scope, {
             Name = "BottomBtns",

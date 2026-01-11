@@ -7,7 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 return function(scope: Fusion.Scope, props: {
 	BarVal: Fusion.Value<number>,
 	LayoutOrder: number,
@@ -37,7 +36,6 @@ return function(scope: Fusion.Scope, props: {
 		ResponseStyle = Enum.UIDragDetectorResponseStyle.Scale,
 		DragStyle = Enum.UIDragDetectorDragStyle.TranslateLine,
 
-
 		[Fusion.OnEvent("DragContinue")] = function()
 			local scale = Fusion.peek(nodePosition).X.Scale
 			local min = props.OptionInfo.Min
@@ -63,13 +61,11 @@ return function(scope: Fusion.Scope, props: {
 		end
 	}) :: UIDragDetector
 
-
 	--// Init
 	local percentage = ((props.OptionInfo.DefaultValue - props.OptionInfo.Min) / (props.OptionInfo.Max - props.OptionInfo.Min)) :: number
 
 	barVal:set(props.OptionInfo.DefaultValue)
 	props.OptionInfo.ValChanged:Fire(props.OptionInfo.DefaultValue)
-
 
 	local node = Components.HoverImageButton(scope, {
 		Name = "Node",
@@ -94,7 +90,6 @@ return function(scope: Fusion.Scope, props: {
 	})
 	node.Position = UDim2.fromScale(percentage, 0.5)
 
-
 	local safeNetObserver = Fusion.Observer(scope, nodePosition)
 	safeNetObserver:onBind(function()
 		local scale = Fusion.peek(nodePosition).X.Scale
@@ -104,7 +99,6 @@ return function(scope: Fusion.Scope, props: {
 			node.Position = UDim2.fromScale(scale, 0.5)
 		end
 	end)
-
 
 	local slider = Components.Frame(scope, {
 		Name = props.OptionId,
@@ -137,7 +131,6 @@ return function(scope: Fusion.Scope, props: {
 					})
 				}
 			}),
-
 
 			Components.TextLabel(scope, {
 				Name = "Value",
@@ -213,7 +206,6 @@ return function(scope: Fusion.Scope, props: {
 		}
 	})
 	slider.Slider.Node.UIDragDetector.BoundingUI = slider.BoundingSlider
-
 
 	return slider
 end

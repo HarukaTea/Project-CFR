@@ -13,8 +13,6 @@ local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
 
 local Children = Fusion.Children
 
-
-
 return function (scope: Fusion.Scope, props: {
     LoadingText: Fusion.Value<string>,
 })
@@ -44,7 +42,6 @@ return function (scope: Fusion.Scope, props: {
             })
         }
     })
-
 
     local UI = Components.HarukaScreenGui(scope, {
         Name = "LoadScreen",
@@ -87,7 +84,6 @@ return function (scope: Fusion.Scope, props: {
                             SortOrder = Enum.SortOrder.Name,
                         }),
 
-
                         Components.Frame(scope, {
                             Name = "AAA_Line",
                             BackgroundTransparency = 0.9,
@@ -111,7 +107,6 @@ return function (scope: Fusion.Scope, props: {
 
                         Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: Classbook.ClassJSON)
                             if classInfo.DevClass then return classId, nil end
-
 
                             return classId, Components.IconImageLabel(scope, {
                                 Name = "GGG_"..classId,
@@ -150,7 +145,6 @@ return function (scope: Fusion.Scope, props: {
         }
     })
 
-
     local tween = HarukaLib:CreateTween(texFrame, TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 999, true, 0), {
         Position = UDim2.new(0.5, 1500 / 1.5, 0.5, 1500 / 1.5),
         Size = UDim2.new(1, 1500 * 2, 1, 1500 * 2)
@@ -159,7 +153,6 @@ return function (scope: Fusion.Scope, props: {
         tween:Cancel()
     end)
     tween:Play()
-
 
     return UI
 end

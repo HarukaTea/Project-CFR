@@ -15,17 +15,14 @@ local TicketPurchase = require(script.Parent.Components.TicketPurchase)
 
 local Pinia = require(script.Parent.Pinia)
 
-
 return function (UI: ScreenGui, self: Pinia.Self)
     local scope = self.scope
     local bottom = UI.Bottom :: Frame
-
 
     --// cd anim
     table.insert(scope, Bindables.CDEndTimeReached.Event:Connect(function(slotId: number)
         local slot = bottom:FindFirstChild(slotId, true) :: Frame?
         if not slot then return end
-
 
         local newScope = Fusion.scoped()
 
@@ -33,17 +30,13 @@ return function (UI: ScreenGui, self: Pinia.Self)
         circle.Parent = slot
         Debris:AddItem(circle, 2)
 
-
         Promise.delay(2):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-
-
         HarukaLib:CreateTween(circle, Components.TweenInfos.onceHalf, { Size = UDim2.fromScale(2, 2) }):Play()
         HarukaLib:UITween(circle, "Out", { DelayTime = 0.2 })
     end))
-
 
     --// track effect list
     ClientLib:TrackEffectListToUI({
@@ -52,14 +45,12 @@ return function (UI: ScreenGui, self: Pinia.Self)
         GuiContainer = bottom.EffectList
     })
 
-
     --// track ticket purchases
     table.insert(scope, Events.OpenTravelTicketUI_S.On(function(data)
         if not UI then return end
         if not UI:FindFirstChild("Center") then return end
 
         if UI.Center:FindFirstChild("TicketPurchase") then return end
-
 
         local newScope = Fusion.scoped()
 
@@ -71,11 +62,9 @@ return function (UI: ScreenGui, self: Pinia.Self)
         Debris:AddItem(TicketPurchaseDreamField, 30)
         Debris:AddItem(blur, 30)
 
-
         Promise.delay(31):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
-
 
         HarukaLib:UITween(TicketPurchaseDreamField, "In", {})
     end))

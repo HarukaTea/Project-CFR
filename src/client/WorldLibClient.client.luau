@@ -1,7 +1,6 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_PlayerClientInited")
 
-
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local GuiService = game:GetService("GuiService")
@@ -9,7 +8,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
-
 
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
@@ -21,14 +19,10 @@ local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local VFXSceneLib = require(ReplicatedStorage.HarukaShared.Library.VFXSceneLib)
 
-
-
 local effectsFolder = ReplicatedStorage.Packages.Effects :: Folder
-
 
 local wait = task.wait
 local plr = Players.LocalPlayer
-
 
 type ClientWorldLibClass = {
     Funcs: { [string]: () -> nil },
@@ -36,17 +30,14 @@ type ClientWorldLibClass = {
     Init: (self: ClientWorldLibClass) -> nil
 }
 
-
 local ClientWorldLib = {} :: ClientWorldLibClass
 ClientWorldLib.Funcs = {}
-
 
 function ClientWorldLib:Init()
     for _, func: () -> nil in self.Funcs do
         func()
     end
 end
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local function playTween(data: {
@@ -72,8 +63,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end
     Bindables.ClientTween.Event:Connect(playTween)
 
-
-
     local function playSound(sound: Sound, timePos: number?)
         if not sound then return end
         if sound.Name == "ResetSound" then
@@ -93,8 +82,6 @@ table.insert(ClientWorldLib.Funcs, function()
     Events.PlaySound_S.On(playSound)
     Bindables.PlaySound.Event:Connect(playSound)
 
-
-
     local function playCameraScene(part: BasePart)
         if not part then return end
 
@@ -107,7 +94,6 @@ table.insert(ClientWorldLib.Funcs, function()
             return
         end
 
-
         camera.CameraType = Enum.CameraType.Scriptable
         camera.CameraSubject = part
         camera.CFrame = part.CFrame
@@ -115,15 +101,12 @@ table.insert(ClientWorldLib.Funcs, function()
     Events.UpdateCameraPart_S.On(playCameraScene)
     Bindables.UpdateCameraPart.Event:Connect(playCameraScene)
 
-
     local function updateCameraCFrame(cframe: CFrame)
         workspace.CurrentCamera.CFrame = cframe
     end
     Events.UpdateCameraCF_S.On(updateCameraCFrame)
     Bindables.UpdateCameraCF.Event:Connect(updateCameraCFrame)
 end)
-
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local function _handleChest(chest: Model)
@@ -152,8 +135,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end
     CollectionService:GetInstanceAddedSignal("ChestEntity"):Connect(_handleChest)
 end)
-
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local function _updateBorder(border: Model)
@@ -207,7 +188,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 end
             end
 
-
             ---// update transparency
             for _, child: Instance in innerBorder:GetChildren() do
                 if HarukaLib:IsBasePartType(child) and child.Name == "Part" then
@@ -221,7 +201,6 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("CombatBorder"):Connect(_updateBorder)
     CollectionService:GetInstanceAddedSignal("EncounterBorder"):Connect(_updateBorder)
 end)
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local function _updateOrb(orb: Model)
@@ -254,7 +233,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 Transparency = 0,
                 Position = orb.Part.Position - Vector3.yAxis * 6
             }):Play()
-
 
             local lifeTime = orb:GetAttribute("Duration") :: number
             Promise.delay(lifeTime - 5):andThen(function()
@@ -290,7 +268,6 @@ table.insert(ClientWorldLib.Funcs, function()
                     UseHarukaTween = true
                 })
 
-
                 HarukaLib:CreateTween(orb.ForceField, AssetBook.TweenInfos.onceHalf, {
                     Transparency = 1,
                     Position = orb.ForceField.Position + Vector3.new(0, -6, 0)
@@ -312,8 +289,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end
     CollectionService:GetInstanceAddedSignal("OrbEntity"):Connect(_updateOrb)
 end)
-
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local random = Random.new()
@@ -379,7 +354,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
 table.insert(ClientWorldLib.Funcs, function()
     local random = Random.new()
 
@@ -439,8 +413,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(ClientWorldLib.Funcs, function()
     local function _onHit(entity: Model)
         if not ClientLib:IsModelValid(entity) then return end
@@ -457,7 +429,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 FillTransparency = 1,
                 OutlineTransparency = 1
             }):Play()
-
 
             local hitEff = effectsFolder.HitEffect.BillboardGui:Clone() :: BillboardGui
             hitEff.Adornee = entity.PrimaryPart
@@ -482,8 +453,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(ClientWorldLib.Funcs, function()
     local function _doSimpleVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
@@ -491,7 +460,6 @@ table.insert(ClientWorldLib.Funcs, function()
         HarukaLib:EmitParticles(holder)
     end
     CollectionService:GetInstanceAddedSignal("VFXEntity"):Connect(_doSimpleVFXEntity)
-
 
     local function _doComplexVFXEntity(holder: BasePart)
         if not holder:IsDescendantOf(workspace) then return end
@@ -507,7 +475,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end
     CollectionService:GetInstanceAddedSignal("ComplexVFXEntity"):Connect(_doComplexVFXEntity)
 
-
     local function _doParticleVFXEntity(holder: ParticleEmitter)
         if not holder:IsDescendantOf(workspace) then return end
 
@@ -518,7 +485,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end
     CollectionService:GetInstanceAddedSignal("ParticleEntity"):Connect(_doParticleVFXEntity)
 end)
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local itemDropsContainer = Instance.new("Folder")
@@ -570,7 +536,6 @@ table.insert(ClientWorldLib.Funcs, function()
         end
     end)
 
-
     local function _destroyItemSphere(itemSphere: BasePart)
         if itemSphere:GetAttribute("IsDestroyed") then return end
 
@@ -592,7 +557,6 @@ table.insert(ClientWorldLib.Funcs, function()
                 timeout -= 0.1
             until timeout <= 0 or plr:DistanceFromCharacter(itemSphere.Position) <= 10 or itemSphere:GetAttribute("AutoPickup")
 
-
             Events.PickupItemDrops_C.Fire(itemSphere:GetAttribute("HarukaUniqueId") or "/")
 
             itemSphere.A0:Destroy()
@@ -607,7 +571,6 @@ table.insert(ClientWorldLib.Funcs, function()
             local mid1 = (start:Lerp(hit.CFrame, 0.3) * angles[math.random(#angles)]).Position
             local mid2 = (start:Lerp(hit.CFrame, 0.6) * angles[math.random(#angles)]).Position
             local elapsed = 0
-
 
             while true do
                 elapsed += RunService.RenderStepped:Wait() * 1.5
@@ -628,7 +591,6 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("ItemDisplayEntity"):Connect(_doItemSphere)
 end)
 
-
 table.insert(ClientWorldLib.Funcs, function()
     Events.OpeningChest_S.On(function(chest)
         if not ClientLib:IsModelValid(chest) then return end
@@ -642,7 +604,6 @@ table.insert(ClientWorldLib.Funcs, function()
         )
     end)
 end)
-
 
 table.insert(ClientWorldLib.Funcs, function()
     local windmillWings: { BasePart } = {}
@@ -669,7 +630,6 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("WindmillWings"):Connect(_handleWindmill)
     CollectionService:GetInstanceAddedSignal("SkyGalleon"):Connect(_handleGalleon)
 
-
     task.spawn(function()
         while wait(0.01) do
             for _, wing in windmillWings do
@@ -689,7 +649,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
 table.insert(ClientWorldLib.Funcs, function()
     Bindables.PromptTriggered.Event:Connect(function(prompt: ProximityPrompt)
         local adornee = prompt.Parent :: BasePart
@@ -704,7 +663,6 @@ table.insert(ClientWorldLib.Funcs, function()
         local distance = plr:DistanceFromCharacter(adornee.Position)
         if distance > prompt.MaxActivationDistance + 3 or distance < 0 then return end
 
-
         if plr:FindFirstChild("PromptTriggerCDClient") then return end
 
         local promptCDSymbol = Instance.new("BoolValue")
@@ -713,14 +671,11 @@ table.insert(ClientWorldLib.Funcs, function()
         promptCDSymbol.Parent = plr
         Debris:AddItem(promptCDSymbol, 0.3)
 
-
         if prompt.Name == "Slide" then
             Bindables.ActionSlide:Fire()
         end
     end)
 end)
-
-
 
 table.insert(ClientWorldLib.Funcs, function()
     Bindables.CloseExplorerUIs.Event:Connect(function()
@@ -731,9 +686,6 @@ table.insert(ClientWorldLib.Funcs, function()
         GuiService.SelectedObject = nil
     end)
 end)
-
-
-
 
 table.insert(ClientWorldLib.Funcs, function()
     --// party init
@@ -755,7 +707,6 @@ table.insert(ClientWorldLib.Funcs, function()
         if target.Parent.Parent:FindFirstChildOfClass("Humanoid") then target = target.Parent.Parent end
         if target == plr.Character then return end
         if not ClientLib:IsCharValid(plr.Character) then return end
-
 
         local thatPlr = Players:GetPlayerFromCharacter(target)
         if not thatPlr then return end
@@ -814,7 +765,6 @@ table.insert(ClientWorldLib.Funcs, function()
             if not ClientLib:IsCharValid(char) then return end
             if plr.PlayerGui:FindFirstChild("ConfirmPrompt") then return end
 
-
             local choice = Components:CreateConfirmPrompt({
                 Hint = `Accept party invite from <yellow>{Players[inviter].DisplayName}</font>?`,
                 ConfirmText = "YES",
@@ -829,7 +779,6 @@ table.insert(ClientWorldLib.Funcs, function()
         end
     end)
 
-
     Bindables.RToCreatePartyInvite.Event:Connect(function(player: Player)
         if player == Players.LocalPlayer then
             Bindables.CreateNotify:Fire("Can't invite yourself...")
@@ -843,7 +792,6 @@ table.insert(ClientWorldLib.Funcs, function()
 
         local character = thatPlr.Character
         if not ClientLib:IsCharValid(character) then return end
-
 
         if criRPGSettings:FindFirstChild("AllowPartyInvites") then
             local boolean = criRPGSettings.AllowPartyInvites.Value
@@ -876,8 +824,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(ClientWorldLib.Funcs, function()
     Events.SpawnEnemyTimer_S.On(function(data)
         local countdown = effectsFolder.RespawnTimer:Clone() :: BasePart
@@ -897,8 +843,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(ClientWorldLib.Funcs, function()
     Events.PlayVFXStatusToEntity_S.On(function(data)
         if not ClientLib:IsModelValid(data.Entity) then return end
@@ -911,7 +855,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
 table.insert(ClientWorldLib.Funcs, function()
     Events.PlayVFXStatusToPlayer_S.On(function(data)
         if not ClientLib:IsCharValid(data.Character) then return end
@@ -923,8 +866,6 @@ table.insert(ClientWorldLib.Funcs, function()
         end
     end)
 end)
-
-
 
 table.insert(ClientWorldLib.Funcs, function()
     Events.DoT_PlayVFXEff_S.On(function(data)
@@ -955,8 +896,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end)
 end)
 
-
-
 table.insert(ClientWorldLib.Funcs, function()
     local function _handleNPC(npc: Model)
         if not npc or not npc.PrimaryPart then return end
@@ -983,7 +922,6 @@ table.insert(ClientWorldLib.Funcs, function()
     CollectionService:GetInstanceAddedSignal("NPCEntity"):Connect(_handleNPC)
 end)
 
-
 table.insert(ClientWorldLib.Funcs, function()
     for _, npc: Model in workspace.MapComponents.Markets:QueryDescendants("Model") do
         if not npc:FindFirstChildOfClass("Humanoid") then continue end
@@ -1006,7 +944,6 @@ table.insert(ClientWorldLib.Funcs, function()
     end
 end)
 
-
 table.insert(ClientWorldLib.Funcs, function()
     for _, obj: Model in CollectionService:GetTagged("ClientAnimatorEntity") do
         if obj.PrimaryPart.Anchored then continue end
@@ -1026,7 +963,5 @@ table.insert(ClientWorldLib.Funcs, function()
         animTrack:Play()
     end
 end)
-
-
 
 ClientWorldLib:Init()

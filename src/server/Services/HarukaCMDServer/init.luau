@@ -7,28 +7,20 @@ local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SSS = game:GetService("ServerScriptService")
 
-
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
 local Events = require(script.ServerEvents)
 local GlobalEvents = require(SSS.HarukaServer.Library.ServerEvents)
 
-
-
 local Types = require(script.Types)
-
 
 export type CommandJSON = Types.CommandJSON
 export type HarukaCMDClass = Types.HarukaCMDClass
 
-
-
 local HarukaCMD = {} :: Types.HarukaCMDClass
 HarukaCMD.__index = HarukaCMD
-
 
 --// Constructor
 function HarukaCMD.new() : Types.HarukaCMDClass
@@ -40,13 +32,10 @@ function HarukaCMD.new() : Types.HarukaCMDClass
     return self
 end
 
-
-
 function HarukaCMD:Init()
     self:_InitRequestListenTracker()
     self:_InitCommandExecutionTracker()
 end
-
 
 function HarukaCMD:AddCommandBook(commandBook: { CommandJSON })
     for _, commandProps in commandBook do
@@ -54,14 +43,11 @@ function HarukaCMD:AddCommandBook(commandBook: { CommandJSON })
     end
 end
 
-
 function HarukaCMD:Destroy()
     self.Empty()
 end
 
-
 --// Private Methods
-
 
 --// Server Private Methods
 
@@ -79,12 +65,10 @@ function HarukaCMD:_InitRequestListenTracker()
     end)
 end
 
-
 function HarukaCMD:_InitCommandExecutionTracker()
     Events.RequestToExecuteCommand.SetCallback(function(plr: Player, data)
         local command = data.Command
         if command == nil then return end
-
 
         local cmdId = string.match(command, "^(/%S+)")
         if cmdId == "" or cmdId == nil then return end
@@ -104,7 +88,6 @@ function HarukaCMD:_InitCommandExecutionTracker()
         end
         if realCmd == nil then return end
 
-
         --// return true args
         local check, validatedArgs = self:_ValidateCmd(realCmd, cmdArgs)
         if not check then
@@ -112,13 +95,11 @@ function HarukaCMD:_InitCommandExecutionTracker()
             return
         end
 
-
         --// Check if the player has the required rank
         if (plr:GetAttribute("Rank") or 0) < realCmd.RankReq then
             GlobalEvents.CreateNotify_S.Fire(plr, "Permission Denied")
             return
         end
-
 
         Promise.new(function(resolve)
             if not RunService:IsStudio() and realCmd.RankReq > 1 and game.GameId == AssetBook.CFUniverseId_Main then
@@ -143,7 +124,6 @@ function HarukaCMD:_InitCommandExecutionTracker()
                 end)
             end
 
-
             realCmd.Callback({
                 Executor = plr,
                 Args = validatedArgs,
@@ -157,7 +137,6 @@ function HarukaCMD:_InitCommandExecutionTracker()
         end)
     end)
 end
-
 
 function HarukaCMD:_ValidateCmd(realCMD: CommandJSON, cmdArgs: { string }) : (boolean, CommandJSON | {})
     local realCMDArgs = HarukaLib.TableUtils.DeepCopy(cmdArgs)
@@ -257,6 +236,5 @@ function HarukaCMD:_ValidateCmd(realCMD: CommandJSON, cmdArgs: { string }) : (bo
 
     return true, realCMDArgs
 end
-
 
 return HarukaCMD

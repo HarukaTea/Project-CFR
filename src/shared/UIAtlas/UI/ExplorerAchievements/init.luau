@@ -16,7 +16,6 @@ local BadgeRewardFrame = require(script.Components.BadgeRewardFrame)
 
 local Children = Fusion.Children
 
-
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
@@ -28,14 +27,11 @@ return function (plr: Player)
 
     local scope = self.scope :: Fusion.Scope
 
-
     Pinia(self)
-
 
     if plr.PlayerGui:FindFirstChild("ExplorerAchievements") then
         plr.PlayerGui.ExplorerAchievements:Destroy()
     end
-
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerAchievements",
@@ -45,7 +41,6 @@ return function (plr: Player)
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
         end),
-
 
         [Children] = {
             Components.Frame(scope, {
@@ -62,11 +57,9 @@ return function (plr: Player)
                         Size = UDim2.fromScale(0.65, 1),
                         ScrollingDirection = Enum.ScrollingDirection.Y,
 
-
                         [Children] = {
                             Components.PaddingFrame(scope, "AAA"),
                             Components.PaddingFrame(scope, "ZZZ"),
-
 
                             Fusion.ForPairs(scope, AssetBook.BadgeIds, function(_, scope: Fusion.Scope, badge: string, badgeId: number)
 
@@ -88,7 +81,6 @@ return function (plr: Player)
                                     hasOwned:set(state)
                                 end))
 
-
                                 local isUnlocked = Fusion.Value(scope, false)
                                 table.insert(scope, HarukaLib:Hydrate(plr, {
                                     ["Attr-BADGE_"..badgeId] = function(state: boolean)
@@ -97,7 +89,6 @@ return function (plr: Player)
                                         isUnlocked:set(state)
                                     end
                                 }))
-
 
                                 local layoutOrder = 1
                                 local firstChar = string.sub(badge, 1, 1)
@@ -116,7 +107,6 @@ return function (plr: Player)
                                 else
                                     layoutOrder = 0
                                 end
-
 
                                 return badge, BadgeBar(scope, {
                                     BadgeId = badge,
@@ -164,7 +154,6 @@ return function (plr: Player)
         }
     })
     self.UI = UI
-
 
     return function ()
         Fusion.doCleanup(scope)

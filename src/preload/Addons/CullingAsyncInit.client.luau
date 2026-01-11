@@ -1,11 +1,9 @@
 
 repeat task.wait() until workspace:GetAttribute("Haruka_CompletedPreload")
 
-
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SS = game:GetService("ServerStorage")
-
 
 local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
 if not worldConfig then return end
@@ -13,13 +11,11 @@ if not worldConfig then return end
 local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
 if not cullingConfig then return end
 
-
 local flowerContainer = workspace:WaitForChild("MapComponents", 999):WaitForChild("FlowerContainer", 999)
 local treeContainer = workspace.MapComponents:WaitForChild("TreeContainer", 999)
 local npcContainer = workspace.MapComponents:WaitForChild("NPCs", 999)
 local nonNPCContainer = workspace.MapComponents:WaitForChild("Non-NPCs", 999)
 local mapModelContainer = workspace:WaitForChild("Maps", 999):WaitForChild("MapModelContainer", 999)
-
 
 local function _createFolder(name: string) : Folder
     if SS:FindFirstChild(name) then
@@ -39,8 +35,6 @@ local npcAFKContainer = _createFolder("NPCAFKContainer")
 local nonNPCAFKContainer = _createFolder("NonNPCAFKContainer")
 local mapModelAFKContainer = _createFolder("MapModelAFKContainer")
 
-
-
 local function _cullAFK(data: {
     Tag: string,
     Container: Folder,
@@ -50,7 +44,6 @@ local function _cullAFK(data: {
         entity.Parent = data.AFKContainer
     end
 end
-
 
 _cullAFK({
     Tag = "FlowerEntity",

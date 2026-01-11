@@ -14,7 +14,6 @@ return function(scope: Fusion.Scope, props: {
 
     local curTime = Fusion.Value(scope, 0)
 
-
     local timeVal = Instance.new("NumberValue")
     timeVal.Name = "CastTimeVal"
     timeVal.Value = 0
@@ -27,13 +26,11 @@ return function(scope: Fusion.Scope, props: {
         curTime:set(timeVal.Value)
     end)
 
-
     HarukaLib:CreateTween(
         timeVal,
         TweenInfo.new(props.Time, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
         { Value = props.Time }
     ):Play()
-
 
     return Components.Frame(scope, {
         Name = "CastTimeBar",
@@ -68,7 +65,6 @@ return function(scope: Fusion.Scope, props: {
 
                             return UDim2.fromScale(x, 1)
                         end), Components.TweenInfos.twiceHalf),
-
 
                         [Children] = {
                             Components.RoundUICorner(scope),

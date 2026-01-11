@@ -1,7 +1,6 @@
 
 local AbyssBook = {}
 
-
 export type AbyssTeamJSON = {
     MobId: string,
     Level: number
@@ -67,7 +66,6 @@ AbyssBook.TeamConfigIcons = {
     "rbxassetid://95284011272925",
 }
 
-
 AbyssBook.Modifiers = {
     "HealthBoost1", "ATKBoost1", "HealthBoost2", "BurnInflict", "BlurEffect", "HealthBoost3",
 }
@@ -81,10 +79,6 @@ AbyssBook.ModifierInfo = {
     BlurEffect = "Makes screen blurry",
     HealthBoost3 = "Enemy Health +150%",
 }
-
-
-
-
 
 AbyssBook.Loots = {}
 AbyssBook.Loots[1] = {
@@ -108,7 +102,6 @@ for index, _ in AbyssBook.Loots do
     table.insert(AbyssBook.Loots[index], "Light")
 end
 
-
 AbyssBook.LootsChance = {}
 for index, _ in AbyssBook.Loots do
     AbyssBook.LootsChance[index] = {}
@@ -117,8 +110,5 @@ for index, _ in AbyssBook.Loots do
         AbyssBook.LootsChance[index][loot] = 10
     end
 end
-
-
-
 
 return AbyssBook

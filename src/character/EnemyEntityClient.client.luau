@@ -7,7 +7,6 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local SS = game:GetService("ServerStorage")
 
-
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
@@ -17,13 +16,10 @@ local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 local Add, Empty = HarukaLib.Bin()
 
-
 local player = Players.LocalPlayer
 local char = script:FindFirstAncestorOfClass("Model")
 
-
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
-
 
 local entityStorage = nil
 
@@ -35,15 +31,12 @@ else
     entityStorage = SS:FindFirstChild("EntitiesAFK")
 end
 
-
-
 ClientLib:InitCharDeadTrackers({
     Add = Add,
     Empty = Empty,
     Char = char,
     Player = player
 })
-
 
 type EntityLibClass = {
     __index: EntityLibClass,
@@ -61,18 +54,12 @@ type EntityLibClass = {
     _DestroyModel: (self: EntityLibClass) -> nil,
 }
 
-
-
-
 local EntityLib = {} :: EntityLibClass
 EntityLib.__index = EntityLib
 
-
 local wait = task.wait
 
-
 local allEntityPool = {}
-
 
 Add(Events.PlayVFXStatusToEntity_S.On(function(data)
     if data.StatusId ~= "Found" then return end
@@ -89,14 +76,12 @@ Add(Events.PlayVFXStatusToEntity_S.On(function(data)
     encountered.Parent = entity
     Debris:AddItem(encountered, 1.15)
 
-
     HarukaLib:CreateTween(encountered.TextButton, AssetBook.TweenInfos.one, {
         TextTransparency = 1, TextStrokeTransparency = 1
     }):Play()
     HarukaLib:CreateTween(encountered, AssetBook.TweenInfos.half, {
         Size = UDim2.fromScale(1.5, 1.5)
     }):Play()
-
 
     local highlight = Instance.new("Highlight")
     highlight.FillColor = Color3.fromRGB(255, 0, 0)
@@ -106,7 +91,6 @@ Add(Events.PlayVFXStatusToEntity_S.On(function(data)
     highlight.Parent = entity
     Debris:AddItem(highlight, 1.15)
 
-
     HarukaLib:CreateTween(highlight, AssetBook.TweenInfos.one, {
         FillTransparency = 1,
         OutlineTransparency = 1
@@ -114,7 +98,6 @@ Add(Events.PlayVFXStatusToEntity_S.On(function(data)
 end))
 Add(Events.PlayEnemyAnim_S.On(function(data)
     if not ClientLib:IsCharValid(data.Entity) then return end
-
 
     for _, entityObj in allEntityPool do
         if entityObj.Entity == data.Entity then
@@ -142,7 +125,6 @@ Add(HarukaLib.Clock(1, function()
     end
 end))
 
-
 local encounterCD = false
 Add(HarukaLib.Clock(0.5, function()
     if encounterCD then return end
@@ -150,7 +132,6 @@ Add(HarukaLib.Clock(0.5, function()
     if char:GetAttribute("IsInCombat") then return end
     if char:GetAttribute("IsSwimming") then return end
     if char:GetAttribute("IsClimbing") then return end
-
 
     local nowClock = DateTime.now().UnixTimestamp
     local nearestEnemy = nil
@@ -194,11 +175,8 @@ Add(function()
     end
 end)
 
-
-
 function EntityLib.new(enemy: Model)
     if allEntityPool[enemy:GetAttribute("HarukaUniqueId")] then return nil end
-
 
     local self = setmetatable({}, EntityLib)
 
@@ -211,7 +189,6 @@ function EntityLib.new(enemy: Model)
 
     if self.Destroying then return nil end
     if enemy:GetAttribute("IsDead") then return nil end
-
 
     Promise.new(function(resolve)
         repeat wait() until enemy:WaitForChild("Humanoid", 2)
@@ -232,7 +209,6 @@ function EntityLib.new(enemy: Model)
     self.ModelAdd, self.ModelEmpty = HarukaLib.Bin()
     self.WorldAdd, self.WorldEmpty = HarukaLib.Bin()
 
-
     Promise.new(function(resolve)
         repeat wait() until enemy:WaitForChild("Humanoid", 2)
 
@@ -240,7 +216,6 @@ function EntityLib.new(enemy: Model)
 
     end):timeout(10):catch(function() end):await()
     if not enemy:FindFirstChild("Humanoid") then return nil end
-
 
     self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
@@ -262,13 +237,10 @@ function EntityLib.new(enemy: Model)
         self:_DestroyModel()
     end)
 
-
     allEntityPool[self.UniqueId] = self
-
 
     return self
 end
-
 
 function EntityLib:Init()
     self:_ListenAttributeTracker()
@@ -279,18 +251,14 @@ function EntityLib:Init()
     self:_SpawnHighlightIndicator()
 end
 
-
 function EntityLib:Destroy()
     self.Destroying = true
-
 
     allEntityPool[self.UniqueId] = nil
 
     self.ModelEmpty()
     self.Empty()
 end
-
-
 
 function EntityLib:PlayAnim(animId: string)
     if not self.Anims[animId] then
@@ -300,7 +268,6 @@ function EntityLib:PlayAnim(animId: string)
         end
         return
     end
-
 
     for animationId: string, track: AnimationTrack in self.Anims do
         if animationId ~= animId then
@@ -313,8 +280,6 @@ function EntityLib:PlayAnim(animId: string)
 
     self.Anims[animId]:Play()
 end
-
-
 
 --// Private functions
 
@@ -335,7 +300,6 @@ function EntityLib:_LoadAnims()
     if not entity.Humanoid:FindFirstChild("Animator") then
         Instance.new("Animator", entity.Humanoid)
     end
-
 
     for _, anim: Animation in animContainer:GetChildren() do
         if anim:IsA("ObjectValue") then
@@ -361,7 +325,6 @@ function EntityLib:_LoadAnims()
         self.Anims[anim.Name] = track
     end
 end
-
 
 function EntityLib:_DestroyModel()
     self.ModelEmpty()
@@ -399,7 +362,6 @@ function EntityLib:_MakeModel()
     end
     model:Destroy()
 
-
     local torso = entity.Torso
     if torso:IsA("ObjectValue") then
         torso = torso.Value
@@ -418,7 +380,6 @@ function EntityLib:_MakeModel()
     self:PlayAnim("Idle")
 end
 
-
 function EntityLib:_ListenAttributeTracker()
     local entity = self.Entity :: Model
 
@@ -435,7 +396,6 @@ function EntityLib:_ListenAttributeTracker()
 
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
             if distance >= 159 or distance <= 0 then return end
-
 
             for _, child in entity:QueryDescendants(HarukaLib.BasePartSelector) do
                 if child.Parent == entity then continue end
@@ -458,7 +418,6 @@ function EntityLib:_ListenAttributeTracker()
 
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
             if distance >= 159 or distance <= 0 then return end
-
 
             local cylinderMesh = Instance.new("CylinderMesh")
 
@@ -492,7 +451,6 @@ function EntityLib:_ListenAttributeTracker()
             if alreadyAttributeIsDead then return end
             if not ClientLib:IsModelValid(entity) then return end
 
-
             local distance = player:DistanceFromCharacter(entity.PrimaryPart.Position)
             if distance >= 159 or distance <= 0 then return end
 
@@ -511,7 +469,6 @@ function EntityLib:_ListenAttributeTracker()
         end
     }))
 end
-
 
 function EntityLib:_ListenMobWalkingTracker()
     local entity = self.Entity :: Model
@@ -537,16 +494,12 @@ function EntityLib:_ListenMobWalkingTracker()
     end)
 end
 
-
-
 function EntityLib:_SpawnHighlightIndicator()
     if DateTime.now().UnixTimestamp - char:GetAttribute("SpawnClock") <= 15 then return end
     if not ClientLib:IsModelValid(self.Entity) then return end
 
-
     local distance = player:DistanceFromCharacter(self.Entity.PrimaryPart.Position)
     if distance >= 159 or distance <= 0 then return end
-
 
     local highlight = Instance.new("Highlight")
     highlight.Parent = self.Entity
@@ -557,7 +510,6 @@ function EntityLib:_SpawnHighlightIndicator()
         OutlineTransparency = 1
     }):Play()
 end
-
 
 local function initEntity(enemy: Model)
     local entityObj = EntityLib.new(enemy)

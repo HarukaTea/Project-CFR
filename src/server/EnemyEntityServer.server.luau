@@ -24,9 +24,6 @@ local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
 
-
-
-
 type EntityLibClass = {
     __index: EntityLibClass,
 
@@ -52,7 +49,6 @@ type EntityLibClass = {
         ClassEXP: number
     },
 
-
     Locator: BasePart,
     LocatorUniqueId: string,
 
@@ -68,7 +64,6 @@ type EntityLibClass = {
     BoundingSize: number,
     NearestChar: string?,
 
-
     EntityObj: EntityAttackLib.EntityAttackLib,
 
     CombatInfo: {
@@ -82,19 +77,12 @@ type EntityLibClass = {
         IsDead: boolean
     },
 
-
     EntityDestroyed: boolean,
     Destroyed: boolean,
 }
 
-
-
-
 local EntityLib = {} :: EntityLibClass
 EntityLib.__index = EntityLib
-
-
-
 
 local PATH_COSTS = {
     Grass = 0,
@@ -107,11 +95,9 @@ local PATH_COSTS = {
     DangerZone = math.huge
 }
 
-
 local allEntityPool = {} :: { [string]: EntityLibClass }
 
 local wait = task.wait
-
 
 local _, borderSize = ReplicatedStorage.Packages.Unloads.EncounterBorder:GetBoundingBox()
 borderSize = borderSize.X
@@ -140,8 +126,6 @@ local function _getCharsByRadius(pos: Vector3, radius: number) : { Model }
     return charList
 end
 
-
-
 --// Init once
 local enemyDiedSignal = Instance.new("BindableEvent")
 local enterCombatSignal = Instance.new("BindableEvent")
@@ -156,10 +140,8 @@ enterCombatSignal.Event:Connect(function(entity: Model, target: Model, combatMod
     local clock = entity:GetAttribute("SpawnClock") :: number
     if DateTime.now().UnixTimestamp - clock <= 1 then return end
 
-
     if not ServerLib:IsCharValid(target) then return end
     if target:GetAttribute("IsInCombat") then return end
-
 
     for _, entityObj in allEntityPool do
         if entityObj.Entity == entity then
@@ -188,7 +170,6 @@ end)
 destroyEntityObjSignal.Event:Connect(function(uniqueId: string)
     if uniqueId == nil then return end
 
-
     local entityObj = allEntityPool[uniqueId]
     if entityObj then
         Promise.delay(1.599):andThenCall(entityObj.EntityDestroy, entityObj)
@@ -216,7 +197,6 @@ enemyDiedSignal.Event:Connect(function(uniqueId: string)
 
     allEntityPool[uniqueId] = nil
 
-
     local respawnTime = 12
     if workspace:GetAttribute("AbyssId") then
         respawnTime = 1
@@ -235,7 +215,6 @@ Events.StartCombat_C.SetCallback(function(plr: Player, data)
     local entity = data.Entity
     local combatMode = data.CombatMode
     if not combatMode then return end
-
 
     if not ServerLib:IsCharValid(entity) then return end
 
@@ -258,7 +237,6 @@ ServerBindables.PlayerDied.Event:Connect(function(charId: string)
     end
 end)
 
-
 local function _enemyVariant(locator: BasePart)
     if locator:GetAttribute("NoRandomName") then return end
 
@@ -270,10 +248,6 @@ local function _enemyVariant(locator: BasePart)
     end
 end
 
-
-
-
-
 function EntityLib.new(locator: BasePart)
     if locator:GetAttribute("HarukaUniqueId") then return end
 
@@ -284,7 +258,6 @@ function EntityLib.new(locator: BasePart)
 
     locator:SetAttribute("HarukaUniqueId", self.LocatorUniqueId)
 
-
     self.WholeAdd, self.WholeEmpty = HarukaLib.Bin()
     self.RoamAdd, self.RoamEmpty = HarukaLib.Bin()
     self.Add, self.Empty = HarukaLib.Bin()
@@ -294,7 +267,6 @@ function EntityLib.new(locator: BasePart)
 
     return self
 end
-
 
 function EntityLib:Init()
     self.WholeAdd(self.Locator:GetPropertyChangedSignal("Parent"):Connect(function()
@@ -308,7 +280,6 @@ function EntityLib:Init()
     end))
     self:EntityInit()
 
-
     --// for abyss
     self.WholeAdd(HarukaLib:Hydrate(self.Locator, {
         ["Attr-_RESPAWN_SYMBOL"] = function(state: boolean)
@@ -318,7 +289,6 @@ function EntityLib:Init()
         end
     }))
 end
-
 
 function EntityLib:EntityInit()
     self:_SpawnModel()
@@ -343,10 +313,8 @@ function EntityLib:EntityInit()
         end
     end, true))
 
-
     table.clear(self.CombatInfo)
     self.EntityDestroyed = false
-
 
     local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
     if isAbyss then
@@ -354,13 +322,11 @@ function EntityLib:EntityInit()
     end
 end
 
-
 function EntityLib:EntityDestroy()
     if self.Destroyed then return end
     if self.EntityDestroyed then return end
 
     self.EntityDestroyed = true
-
 
     local noRespawn = false
     if self.Locator then
@@ -371,7 +337,6 @@ function EntityLib:EntityDestroy()
     if not noRespawn then
         enemyDiedSignal:Fire(self.UniqueId)
     end
-
 
     self.RoamEmpty()
     self.Empty()
@@ -386,7 +351,6 @@ function EntityLib:EntityDestroy()
     end
 end
 
-
 function EntityLib:Destroy()
     if self.Destroyed then return end
 
@@ -399,15 +363,12 @@ function EntityLib:Destroy()
     allEntityPool[self.UniqueId] = nil
 end
 
-
 --// Private functions
-
 
 function EntityLib:_SpawnModel()
     if ServerLib:IsModelValid(self.Entity) then return end
 
     _enemyVariant(self.Locator)
-
 
     local locator = self.Locator :: BasePart
 	local enemyModel = ReplicatedStorage.Packages.EnemyModels:FindFirstChild(locator.Name, true) :: Model
@@ -422,7 +383,6 @@ function EntityLib:_SpawnModel()
 
     local uniqueId = HttpService:GenerateGUID(false)
     model:SetAttribute("HarukaUniqueId", uniqueId)
-
 
     self.UniqueId = uniqueId
 
@@ -452,14 +412,12 @@ function EntityLib:_SpawnModel()
     model:AddTag("EnemyEntity")
     model:SetAttribute("SpawnClock", DateTime.now().UnixTimestamp)
 
-
 	local humanoid = Instance.new("Humanoid")
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
 	humanoid.BreakJointsOnDeath = false
 	humanoid.UseJumpPower = true
 	humanoid.Parent = model
-
 
     local enumState = {
         Enum.HumanoidStateType.Climbing,
@@ -470,12 +428,10 @@ function EntityLib:_SpawnModel()
         humanoid:SetStateEnabled(state, false)
     end
 
-
     local locatorSymbol = Instance.new("ObjectValue")
     locatorSymbol.Name = "Locator"
     locatorSymbol.Value = locator
     locatorSymbol.Parent = model
-
 
 	model:PivotTo(locator.CFrame * CFrame.Angles(0, math.rad(math.random(360)), 0))
 
@@ -512,11 +468,8 @@ function EntityLib:_SpawnModel()
         end
 	end))
 
-
     allEntityPool[uniqueId] = self
 end
-
-
 
 function EntityLib:_ListenStatsTracker()
     local entity = self.Entity :: Model
@@ -553,14 +506,12 @@ function EntityLib:_ListenStatsTracker()
         entity:AddTag("BossEnemyEntity")
     end
 
-
     local function _updateHealth()
         local healthBuff = entity:GetAttribute("MaxHealthEx") :: number
         local healthExBuff = entity:GetAttribute("MaxHealthExPower") :: number
         local targeting = entity:GetAttribute("TotalTargeting") :: number
 
         local isBoss = entity:GetAttribute("IsBoss") :: boolean
-
 
         local finalHealth = FormulaBook.EnemyHealthCurveCal({
             Level = entity:GetAttribute("Level"),
@@ -590,8 +541,6 @@ function EntityLib:_ListenStatsTracker()
         ["Attr-EnvironmentBonus"] = _updateHealth,
     }))
 
-
-
     local function _updateDMG()
         local ex = entity:GetAttribute("DMGEx") :: number
         local exPower = entity:GetAttribute("DMGExPower") :: number
@@ -610,7 +559,6 @@ function EntityLib:_ListenStatsTracker()
         ["Attr-EnvironmentBonus"] = _updateDMG,
     }))
 
-
     local function _updateDMGTakenBonus()
         local ex = entity:GetAttribute("DMGTakenBonusEx") :: number
         local exPower = entity:GetAttribute("DMGTakenBonusExPower") :: number
@@ -624,14 +572,11 @@ function EntityLib:_ListenStatsTracker()
         ["Attr-DMGTakenBonusExPower"] = _updateDMGTakenBonus,
     }))
 
-
     entity.Humanoid.WalkSpeed = entityInfo.BaseSpeed
     entity.Humanoid.JumpPower = 0
 
     entity:SetAttribute("_EntityDataInited", true)
 end
-
-
 
 function EntityLib:_RoamTask()
     local locator = self.Locator :: BasePart
@@ -663,7 +608,6 @@ function EntityLib:_RoamTask()
 
     self.NearestChar = nil
 
-
     local function _checkValid()
         if not ServerLib:IsCharValid(entity) then return false end
         if entity:GetAttribute("IsInCombat") then return false end
@@ -688,7 +632,6 @@ function EntityLib:_RoamTask()
         return charList
     end
 
-
     --// roaming
     self.RoamAdd(task.spawn(function()
         if entity.Humanoid.WalkSpeed <= 0 then return end
@@ -700,7 +643,6 @@ function EntityLib:_RoamTask()
 
             --// server optimization
             if #_checkAlivedAndNear(locator.Position, 195) <= 0 then continue end
-
 
             local success, err = pcall(function()
                 local randomScatterPos = locator.CFrame.Position + Vector3.new(
@@ -714,7 +656,6 @@ function EntityLib:_RoamTask()
                 path:Run(rPos)
             end)
             if not success then warn(err) end
-
 
             RunService.Heartbeat:Wait()
         end
@@ -752,12 +693,10 @@ function EntityLib:_RoamTask()
                         self.NearestChar = nil
                         entity:SetAttribute("NearestChar", nil)
 
-
                         path:Run(locator.CFrame.Position)
                         resolve()
                         return
                     end
-
 
                     if self.NearestChar == nil then
                         Events.PlayVFXStatusToEntity_S.FireList(ServerLib:GetNearbyPlayers(curPos), {
@@ -786,7 +725,6 @@ function EntityLib:_RoamTask()
             end):await()
         end
     end))
-
 
     --// encountering
     self.RoamAdd(task.spawn(function()
@@ -835,13 +773,11 @@ function EntityLib:_RoamTask()
     end))
 end
 
-
 function EntityLib:_ErrorAndRespawn(step: number)
     warn("Error in entity: STEP "..tostring(step))
 
     destroyEntityObjSignal:Fire(self.UniqueId)
 end
-
 
 function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     if self.CombatInfo.IsInCombat then return end
@@ -861,7 +797,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end
     end)
     self.EntityObj = EntityAttackLib[entity.Name].new(entity)
-
 
     local hasPosVal = true
 
@@ -897,11 +832,9 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     local combatLocation = self.CombatInfo.CombatLocation :: CFrame
     entity:SetAttribute("CombatLocation", combatLocation)
 
-
     --// ready to fight
     entity.Humanoid.WalkSpeed = 0
     entity:PivotTo(combatLocation * CFrame.Angles(0, math.rad(math.random(360)), 0) + Vector3.yAxis * self.BoundingSize.Y)
-
 
     local encounterBorder: Model = nil
     local nearbyCount = 0
@@ -930,7 +863,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
 
         encounterBorder.Parent = workspace.MapComponents
         Debris:AddItem(encounterBorder, 5)
-
 
         if (target.PrimaryPart.Position - combatLocation.Position).Magnitude >= borderSize / 1.5 then
             target:PivotTo(combatLocation * CFrame.new(0, 6, 0))
@@ -961,7 +893,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end):await()
     end
 
-
     if not hasPosVal then
         local waitTime = 1.15
 
@@ -979,10 +910,8 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     end
     if encounterBorder then encounterBorder:Destroy() end
 
-
     --- check again!
     if not ServerLib:IsCharValid(target) then self:_ErrorAndRespawn(1) return end
-
 
     target = nil
 
@@ -993,7 +922,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end
     end
     if not ServerLib:IsCharValid(target) then self:_ErrorAndRespawn(2) return end
-
 
     --// we will check starter enemy
     if hasPosVal then
@@ -1021,7 +949,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end)
     end
 
-
     --// finally!
     local rLocation = ServerLib:FindGroundByRayForOrb(combatLocation.Position
         + Vector3.new(math.random(-15, 15), 0, math.random(-15, 15)))
@@ -1030,7 +957,6 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     entity:AddTag("EnemyEntity_Combat")
 
     self.CombatInfo.EnteringCombat_Ready = true
-
 
     --- make players into combat
     local nearbyCharCount = 1
@@ -1115,14 +1041,12 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
     entity:SetAttribute("CombatStartClock", DateTime.now().UnixTimestamp)
     entity:SetAttribute("TotalTargeting", nearbyCharCount)
 
-
     --// do attack tasks
     RunService.Heartbeat:Wait()
 
     wait(0.5)
     entity:SetAttribute("EnteredCombat", true)
     entity:SetAttribute("IsInCombat", true)
-
 
     Promise.new(function(resolve)
         self.EntityObj:DoAttackTasks(resolve)
@@ -1144,20 +1068,16 @@ function EntityLib:_EnterCombat(target: Model, combatMode: string?)
         end
     end):await()
 
-
     RunService.Heartbeat:Wait()
 
     self:_CombatEnd()
 end
-
-
 
 function EntityLib:_ClearEffectListTask()
     for _, effectTask in DoTLib:GetEffectsByTarget(self.Entity) do
         effectTask:Cancel()
     end
 end
-
 
 function EntityLib:_CombatEnd()
     if self.CombatInfo.IsDead then return end
@@ -1172,7 +1092,6 @@ function EntityLib:_CombatEnd()
 
     if not entity then self:_ErrorAndRespawn(4) return end
     if not entity.Parent then self:_ErrorAndRespawn(4) return end
-
 
     --- search for nearby entities, if there are any, will have to wait for them to die
     local foundTeamUpEnemies = false
@@ -1209,7 +1128,6 @@ function EntityLib:_CombatEnd()
         resolve(check)
     end):await()
 
-
     --// respawn team enemies
     Promise.new(function(resolve)
         if not foundTeamUpEnemies then
@@ -1227,7 +1145,6 @@ function EntityLib:_CombatEnd()
 
         warn(tostring(err))
     end):await()
-
 
     local function _giveLoot(drops: { [string]: number }, char: Model)
         local plr = Players:GetPlayerFromCharacter(char)
@@ -1253,11 +1170,9 @@ function EntityLib:_CombatEnd()
         end
     end
 
-
     local abyssId = workspace:GetAttribute("AbyssId")
     local dungeonId = workspace:GetAttribute("DungeonId")
     local isSPWorldType = abyssId ~= nil or dungeonId ~= nil
-
 
     --// give loots
     Promise.new(function(resolve)
@@ -1276,7 +1191,6 @@ function EntityLib:_CombatEnd()
             local thatChar = charSymbol.Value :: Model
 
             if not ServerLib:IsCharValid(thatChar) then continue end
-
 
             local charTargetingList = thatChar.TargetingList :: Folder
             for _, targetingSymbol in charTargetingList:GetChildren() do
@@ -1297,7 +1211,6 @@ function EntityLib:_CombatEnd()
                 --- get the first target again
                 thatChar.TargetingEnemy.Value = charTargetingList:FindFirstChildOfClass("ObjectValue").Value
             end
-
 
             --- give loots and badges, combat won!
             local success, err = pcall(function()
@@ -1354,8 +1267,6 @@ function EntityLib:_CombatEnd()
     end):await()
 end
 
-
-
 function EntityLib:_ApplyAbyssModifier()
     local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
     if not isAbyss then return end
@@ -1386,7 +1297,6 @@ function EntityLib:_ApplyAbyssModifier()
         end
     end
 end
-
 
 function EntityLib:_CalculateRewards() : {
     EXP: number,
@@ -1434,15 +1344,11 @@ function EntityLib:_CalculateRewards() : {
     }
 end
 
-
-
 local function initLocator(locator: BasePart)
     if not locator:IsA("BasePart") then return end
     if locator.Parent:IsA("BasePart") then return end
 
-
     locator.Transparency = 1
-
 
     local entityObj = EntityLib.new(locator)
     if entityObj then

@@ -24,7 +24,6 @@ return function(scope: Fusion.Scope, props: {
         badgeInfo:set(info)
     end))
 
-
     local frame = Components.Frame(scope, {
         Name = "BadgeAwarding",
         BackgroundColor3 = Color3.fromRGB(202, 196, 185),
@@ -35,7 +34,6 @@ return function(scope: Fusion.Scope, props: {
             Components.UICorner(scope, {
                 CornerRadius = UDim.new(0.15, 0),
             }),
-
 
             Components.IconImageLabel(scope, {
                 AnchorPoint = Vector2.new(0, 0.5),
@@ -69,7 +67,6 @@ return function(scope: Fusion.Scope, props: {
                     return use(badgeInfo).Name or ""
                 end)
             }),
-
 
             CFEmblemTex(scope, {
                 Transparency = 0.9,

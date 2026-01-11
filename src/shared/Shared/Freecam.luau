@@ -14,11 +14,9 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
-
 local guiContainer = Instance.new("Folder")
 guiContainer.Name = "GuiContainer"
 guiContainer.Parent = game:GetService("ServerStorage")
-
 
 local LocalPlayer = Players.LocalPlayer
 if not LocalPlayer then
@@ -33,7 +31,6 @@ Workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 		Camera = newCamera
 	end
 end)
-
 
 local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
 
@@ -297,9 +294,7 @@ local function StepFreecam(dt)
 	camPart.CFrame = cameraCFrame
 end
 
-
 local module = {}
-
 
 local connection = false
 
@@ -337,6 +332,5 @@ function module.Toggle(bool: boolean)
 		end
 	end
 end
-
 
 return module

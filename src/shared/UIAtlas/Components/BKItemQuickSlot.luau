@@ -8,8 +8,6 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local Children = Fusion.Children
 
-
-
 local function _getNamePriority(rawName: string?)
     local name = tostring(rawName or "")
 
@@ -66,7 +64,6 @@ return function(scope: Fusion.Scope, props: {
     local amount = Value(1)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
 
-
     return Components.Frame(scope, {
         Name = props.ItemSymbol.Name,
         BackgroundTransparency = 0,
@@ -93,7 +90,6 @@ return function(scope: Fusion.Scope, props: {
 
             return layoutOrder
         end),
-
 
         [Children] = {
             Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),

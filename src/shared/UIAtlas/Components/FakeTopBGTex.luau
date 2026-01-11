@@ -6,9 +6,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
-
 
 return function (scope: Fusion.Scope)
     return Components.Frame(scope, {
