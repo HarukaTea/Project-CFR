@@ -8,7 +8,7 @@ local SoundService = game:GetService("SoundService")
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local Particles = require(RepS.HarukaShared.Shared.Ambient.RainParticle).new()
+local Particles = require(RepS.HarukaShared.Services.RainParticle).new()
 
 --// Variables
 
