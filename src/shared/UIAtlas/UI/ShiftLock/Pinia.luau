@@ -3,7 +3,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
+local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -106,7 +106,7 @@ return function (self: Self)
             UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
             UserInputService.MouseIconEnabled = false
 
-            HarukaLib:CreateTween(self.CameraOffsetTweenVal, AssetBook.TweenInfos.twiceHalf, {
+            HarukaLib:CreateTween(self.CameraOffsetTweenVal, Components.TweenInfos.twiceHalf, {
                 Value = self.OFFSET
             }):Play()
 
@@ -122,7 +122,7 @@ return function (self: Self)
             UserInputService.MouseBehavior = Enum.MouseBehavior.Default
             UserInputService.MouseIconEnabled = true
 
-            HarukaLib:CreateTween(self.CameraOffsetTweenVal, AssetBook.TweenInfos.twiceHalf, {
+            HarukaLib:CreateTween(self.CameraOffsetTweenVal, Components.TweenInfos.twiceHalf, {
                 Value = CFrame.identity
             }):Play()
         end

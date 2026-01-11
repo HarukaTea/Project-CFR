@@ -1,4 +1,3 @@
-
 --[[
 	Procedures for checking lifetimes and printing helpful warnings about them.
 ]]
@@ -6,28 +5,21 @@
 local Package = script.Parent.Parent
 local Types = require(Package.Types)
 local External = require(Package.External)
-local nameOf = require(Package.Utility.nameOf)
+local blend = require(Package.Utility.blend)
 
 local checkLifetime = {}
 
 checkLifetime.formatters = {}
 
-function checkLifetime.formatters.useFunction(
-	self: unknown,
-	used: unknown
-): (string, string)
-	local selfName = nameOf(self, "object")
-	local usedName = nameOf(used, "object")
+function checkLifetime.formatters.useFunction(self: unknown, used: unknown): (string, string)
+	local selfName = blend.nameOf(self, "object")
+	local usedName = blend.nameOf(used, "object")
 	return `The use()-d {usedName}`, `the {selfName}`
 end
 
-function checkLifetime.formatters.boundProperty(
-	instance: Instance,
-	bound: unknown,
-	property: string
-): (string, string)
+function checkLifetime.formatters.boundProperty(instance: Instance, bound: unknown, property: string): (string, string)
 	local selfName = instance.Name
-	local boundName = nameOf(bound, "value")
+	local boundName = blend.nameOf(bound, "value")
 	return `The {boundName} (bound to the {property} property)`, `the {selfName} instance`
 end
 
@@ -37,7 +29,7 @@ function checkLifetime.formatters.boundAttribute(
 	attribute: string
 ): (string, string)
 	local selfName = instance.Name
-	local boundName = nameOf(bound, "value")
+	local boundName = blend.nameOf(bound, "value")
 	return `The {boundName} (bound to the {attribute} attribute)`, `the {selfName} instance`
 end
 
@@ -47,7 +39,7 @@ function checkLifetime.formatters.propertyOutputsTo(
 	property: string
 ): (string, string)
 	local selfName = instance.Name
-	local boundName = nameOf(bound, "object")
+	local boundName = blend.nameOf(bound, "object")
 	return `The {boundName} (which the {property} property outputs to)`, `the {selfName} instance`
 end
 
@@ -57,35 +49,25 @@ function checkLifetime.formatters.attributeOutputsTo(
 	attribute: string
 ): (string, string)
 	local selfName = instance.Name
-	local boundName = nameOf(bound, "object")
+	local boundName = blend.nameOf(bound, "object")
 	return `The {boundName} (which the {attribute} attribute outputs to)`, `the {selfName} instance`
 end
 
-function checkLifetime.formatters.boundTag(
-	instance: Instance,
-	bound: unknown,
-	tag: string
-): (string, string)
+function checkLifetime.formatters.boundTag(instance: Instance, bound: unknown, tag: string): (string, string)
 	local selfName = instance.Name
-	local boundName = nameOf(bound, "value")
+	local boundName = blend.nameOf(bound, "value")
 	return `The {boundName} (bound to the {tag} CollectionService tag)`, `the {selfName} instance`
 end
 
-function checkLifetime.formatters.refOutputsTo(
-	instance: Instance,
-	bound: unknown
-): (string, string)
+function checkLifetime.formatters.refOutputsTo(instance: Instance, bound: unknown): (string, string)
 	local selfName = instance.Name
-	local boundName = nameOf(bound, "object")
+	local boundName = blend.nameOf(bound, "object")
 	return `The {boundName} (which the Ref key outputs to)`, `the {selfName} instance`
 end
 
-function checkLifetime.formatters.animationGoal(
-	self: unknown,
-	goal: unknown
-): (string, string)
-	local selfName = nameOf(self, "object")
-	local goalName = nameOf(goal, "object")
+function checkLifetime.formatters.animationGoal(self: unknown, goal: unknown): (string, string)
+	local selfName = blend.nameOf(self, "object")
+	local goalName = blend.nameOf(goal, "object")
 	return `The goal {goalName}`, `the {selfName} that is following it`
 end
 
@@ -94,8 +76,8 @@ function checkLifetime.formatters.parameter(
 	used: unknown,
 	parameterName: string | false
 ): (string, string)
-	local selfName = nameOf(self, "object")
-	local usedName = nameOf(used, "object")
+	local selfName = blend.nameOf(self, "object")
+	local usedName = blend.nameOf(used, "object")
 	if parameterName == false then
 		return `The {usedName} parameter`, `the {selfName} that it was used for`
 	else
@@ -103,12 +85,9 @@ function checkLifetime.formatters.parameter(
 	end
 end
 
-function checkLifetime.formatters.observer(
-	self: unknown,
-	watched: unknown
-): (string, string)
-	local selfName = nameOf(self, "object")
-	local watchedName = nameOf(watched, "object")
+function checkLifetime.formatters.observer(self: unknown, watched: unknown): (string, string)
+	local selfName = blend.nameOf(self, "object")
+	local watchedName = blend.nameOf(watched, "object")
 	return `The watched {watchedName}`, `the {selfName} that's observing it for changes`
 end
 

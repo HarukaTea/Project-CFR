@@ -1,4 +1,3 @@
-
 --[[
 	Abstraction layer between Fusion internals and external debuggers, allowing
 	for deep introspection using function hooks.
@@ -18,9 +17,7 @@ local Debugger = {}
 	Swaps to a new debugger.
 	Returns the old debugger, so it can be used again later.
 ]]
-function Debugger.setDebugger(
-	newProvider: Types.ExternalDebugger?
-): Types.ExternalDebugger?
+function Debugger.setDebugger(newProvider: Types.ExternalDebugger?): Types.ExternalDebugger?
 	local oldProvider = currentProvider
 	if oldProvider ~= nil then
 		oldProvider.stopDebugging()
@@ -38,9 +35,7 @@ end
 	library, so that debuggers can register its existence and track changes
 	to the scope over time.
 ]]
-function Debugger.trackScope(
-	scope: Types.Scope<unknown>
-): ()
+function Debugger.trackScope(scope: Types.Scope<unknown>): ()
 	if currentProvider == nil then
 		return
 	end
@@ -53,9 +48,7 @@ end
 	the scope from internal trackers. Note that, due to scope pooling and user
 	code, never assume that this correlates with garbage collection events.
 ]]
-function Debugger.untrackScope(
-	scope: Types.Scope<unknown>
-): ()
+function Debugger.untrackScope(scope: Types.Scope<unknown>): ()
 	if currentProvider == nil then
 		return
 	end

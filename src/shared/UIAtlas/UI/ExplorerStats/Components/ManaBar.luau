@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HaurkaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -42,7 +41,7 @@ return function (scope: Fusion.Scope, props: {
                     x = math.clamp(x, 0, 1)
 
                     return UDim2.fromScale(x, 1)
-                end), AssetBook.TweenInfos.halfBack),
+                end), Components.TweenInfos.halfBack),
 
                 [Children] = {
                     Components.RoundUICorner(scope)

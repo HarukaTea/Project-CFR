@@ -5,9 +5,6 @@
 	returned for ratios below 0.5, and the second value for 0.5 and above.
 ]]
 
-local Package = script.Parent.Parent
-local Oklab = require(Package.Colour.Oklab)
-
 local function lerpType(
 	from: unknown,
 	to: unknown,
@@ -27,23 +24,13 @@ local function lerpType(
 
 		elseif typeString == "Color3" then
 			local to, from = to :: Color3, from :: Color3
-			local fromLab = Oklab.fromSRGB(from)
-			local toLab = Oklab.fromSRGB(to)
-			return Oklab.toSRGB(
-				fromLab:Lerp(toLab, ratio),
-				false
-			)
+			return from:Lerp(to, ratio)
 
 		elseif typeString == "ColorSequenceKeypoint" then
 			local to, from = to :: ColorSequenceKeypoint, from :: ColorSequenceKeypoint
-			local fromLab = Oklab.fromSRGB(from.Value)
-			local toLab = Oklab.fromSRGB(to.Value)
 			return ColorSequenceKeypoint.new(
 				(to.Time - from.Time) * ratio + from.Time,
-				Oklab.toSRGB(
-					fromLab:Lerp(toLab, ratio),
-					false
-				)
+				from.Value:Lerp(to.Value, ratio)
 			)
 
 		elseif typeString == "DateTime" then

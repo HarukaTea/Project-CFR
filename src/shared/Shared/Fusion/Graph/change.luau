@@ -1,4 +1,3 @@
-
 --[[
 	Prompts a graph object to re-evaluate its own value. If it meaningfully
 	changes, then dependents will have to re-evaluate their own values in the
@@ -16,9 +15,7 @@ local evaluate = require(Package.Graph.evaluate)
 -- cycle and error out?
 local TERMINATION_TIME = 1
 
-local function change(
-	target: Types.GraphObject
-): ()
+local function change(target: Types.GraphObject): ()
 	if target.validity == "busy" then
 		return External.logError("infiniteLoop")
 	end
@@ -28,9 +25,9 @@ local function change(
 		return
 	end
 
-	local searchInNow: {Types.GraphObject} = {}
-	local searchInNext: {Types.GraphObject} = {}
-	local invalidateList: {Types.GraphObject} = {}
+	local searchInNow: { Types.GraphObject } = {}
+	local searchInNext: { Types.GraphObject } = {}
+	local invalidateList: { Types.GraphObject } = {}
 
 	searchInNow[1] = target
 	local terminateBy = os.clock() + TERMINATION_TIME * External.safetyTimerMultiplier
@@ -54,7 +51,7 @@ local function change(
 		table.clear(searchInNext)
 	until done
 
-	local eagerList: {Types.GraphObject} = {}
+	local eagerList: { Types.GraphObject } = {}
 
 	for _, invalidateTarget in invalidateList do
 		invalidateTarget.validity = "invalid"

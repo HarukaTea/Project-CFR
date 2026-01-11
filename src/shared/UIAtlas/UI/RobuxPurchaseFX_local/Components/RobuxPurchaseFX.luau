@@ -27,7 +27,7 @@ return function (scope: Fusion.Scope)
 
     table.insert(scope, task.spawn(function()
         while ui and ui:FindFirstChild("Full") do
-            local frame = Fusion.Hydrate(scope, Components:RefUI("RbxRobuxPurchaseFrame_1"))({}, true)
+            local frame = Fusion.Hydrate(scope, Components:RefUI("RbxRobuxPurchaseFrame_1", true))({})
             Debris:AddItem(frame, 2)
 
 

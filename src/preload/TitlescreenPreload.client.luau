@@ -74,20 +74,8 @@ do
     local holderGui = _createTempHolderGui()
 
     --// replicated first service sometimes wont load
-    repeat wait() until RepS:WaitForChild("HarukaShared", 999)
-    repeat wait() until RepS.HarukaShared:WaitForChild("Shared", 999)
-    repeat wait() until RepS.HarukaShared:WaitForChild("UIAtlas", 999)
-    repeat wait() until RepS.HarukaShared:WaitForChild("Library", 999)
-    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("Components", 999)
-    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
-    repeat wait() until RepS.HarukaShared.UIAtlas.Components:WaitForChild("LoadView", 999)
-    repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Fusion", 999)
-    repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
-    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("HarukaComponents", 999)
-    repeat wait() until RepS.HarukaShared.UIAtlas:WaitForChild("FusionComponents", 999)
-    repeat wait() until RepS.HarukaShared.Library:WaitForChild("ClientLib", 999)
+    repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
     repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
-    repeat wait() until workspace:WaitForChild("MapComponents", 999)
 
 
     --// Load view

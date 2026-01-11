@@ -1,4 +1,3 @@
-
 --[[
 	Constructs and returns a new For state object which processes keys and
 	values in pairs.
@@ -16,9 +15,8 @@ local External = require(Package.External)
 local For = require(Package.State.For)
 local Value = require(Package.State.Value)
 local Computed = require(Package.State.Computed)
-local ForTypes = require(Package.State.For.ForTypes)
 -- Logging
-local parseError = require(Package.Logging.parseError)
+local blend = require(Package.Utility.blend)
 -- Memory
 local doCleanup = require(Package.Memory.doCleanup)
 
@@ -35,8 +33,8 @@ local SUB_OBJECT_META = {
 		useOutputPair = function(self, use)
 			local pair = use(self._outputPairState)
 			return pair.key, pair.value
-		end
-	}
+		end,
+	},
 }
 
 local function SubObject<KI, KO, VI, VO, S>(
@@ -44,7 +42,7 @@ local function SubObject<KI, KO, VI, VO, S>(
 	initialKey: KI,
 	initialValue: VI,
 	processor: (Types.Use, Types.Scope<S>, KI, VI) -> (KO, VO)
-): ForTypes.SubObject<S, KI, KO, VI, VO>
+): Types.SubObject<S, KI, KO, VI, VO>
 	local self = {}
 	self.maybeScope = scope
 	self.inputKey = initialKey
@@ -52,19 +50,19 @@ local function SubObject<KI, KO, VI, VO, S>(
 	self._inputKeyState = Value(scope, initialKey)
 	self._inputValueState = Value(scope, initialValue)
 	self._processor = processor
-	self._outputPairState = Computed(scope, function(use, scope): {key: KO?, value: VO?}
+	self._outputPairState = Computed(scope, function(use, scope): { key: KO?, value: VO? }
 		local inputKey = use(self._inputKeyState)
 		local inputValue = use(self._inputValueState)
-		local ok, outputKey, outputValue = xpcall(self._processor, parseError, use, scope, inputKey, inputValue)
+		local ok, outputKey, outputValue = xpcall(self._processor, blend.parseError, use, scope, inputKey, inputValue)
 		if ok then
-			return {key = outputKey, value = outputValue}
+			return { key = outputKey, value = outputValue }
 		else
 			local error: Types.Error = outputKey :: any
 			error.context = `while processing key {tostring(inputKey)} and value {tostring(inputValue)}`
 			External.logErrorNonFatal("callbackError", error)
 			doCleanup(scope)
 			table.clear(scope)
-			return {key = nil, value = nil}
+			return { key = nil, value = nil }
 		end
 	end)
 	return setmetatable(self, SUB_OBJECT_META) :: any
@@ -72,16 +70,12 @@ end
 
 local function ForPairs<KI, KO, VI, VO, S>(
 	scope: Types.Scope<S>,
-	inputTable: Types.UsedAs<{[KI]: VI}>,
+	inputTable: Types.UsedAs<{ [KI]: VI }>,
 	processor: (Types.Use, Types.Scope<S>, KI, VI) -> (KO, VO)
 ): Types.For<KO, VO>
-	return For(
-		scope,
-		inputTable,
-		function(scope, initialKey, initialValue)
-			return SubObject(scope, initialKey, initialValue, processor)
-		end
-	)
+	return For(scope, inputTable, function(scope, initialKey, initialValue)
+		return SubObject(scope, initialKey, initialValue, processor)
+	end)
 end
 
 return ForPairs :: Types.ForPairsConstructor

@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -71,7 +70,7 @@ return function(scope: Fusion.Scope, props: {
 
                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if use(isSelecting) then UDim2.fromScale(1, 1) else UDim2.fromScale(0.9, 0.9)
-                end), AssetBook.TweenInfos.threeHalf)
+                end), Components.TweenInfos.threeHalf)
             }),
 
 
@@ -105,7 +104,7 @@ return function(scope: Fusion.Scope, props: {
         if state then
             label.BottomLine.Size = UDim2.fromScale(0, 0.05)
 
-            HarukaLib:CreateTween(label.BottomLine, AssetBook.TweenInfos.threeHalf, {
+            HarukaLib:CreateTween(label.BottomLine, Components.TweenInfos.threeHalf, {
                 Size = UDim2.fromScale(1, 0.05)
             }):Play()
         end

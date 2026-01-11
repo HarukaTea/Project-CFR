@@ -55,7 +55,7 @@ return function(plr: Player)
 					end),
 
 					[Fusion.OnEvent("MouseButton1Click")] = function()
-						if self.char:FindFirstChild("Humanoid") and self.char.PrimaryPart then
+						if self.char and self.char:FindFirstChildOfClass("Humanoid") and self.char.PrimaryPart then
 							self.ChangeShiftLockState:Fire(if Fusion.peek(self.LockEnabled) then "Off" else "On")
 						end
 					end,

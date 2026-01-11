@@ -1,4 +1,3 @@
-
 --[[
 	Forms a dependency on a graph object.
 ]]
@@ -7,12 +6,9 @@ local Package = script.Parent.Parent
 local Types = require(Package.Types)
 local External = require(Package.External)
 local evaluate = require(Package.Graph.evaluate)
-local nameOf = require(Package.Utility.nameOf)
+local blend = require(Package.Utility.blend)
 
-local function depend<T>(
-	dependent: Types.GraphObject,
-	dependency: Types.GraphObject
-): ()
+local function depend<T>(dependent: Types.GraphObject, dependency: Types.GraphObject): ()
 	-- Ensure dependencies are evaluated and up-to-date
 	-- when they are depended on. Also, newly created objects
 	-- might not have any transitive dependencies captured yet,
@@ -20,7 +16,12 @@ local function depend<T>(
 	evaluate(dependency, false)
 
 	if table.isfrozen(dependent.dependencySet) or table.isfrozen(dependency.dependentSet) then
-		External.logError("cannotDepend", nil, nameOf(dependent, "Dependent"), nameOf(dependency, "dependency"))
+		External.logError(
+			"cannotDepend",
+			nil,
+			blend.nameOf(dependent, "Dependent"),
+			blend.nameOf(dependency, "dependency")
+		)
 	end
 	dependency.dependentSet[dependent] = true
 	dependent.dependencySet[dependency] = true

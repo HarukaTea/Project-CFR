@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -179,7 +178,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     return UDim2.fromScale(x, 1)
 
-                                end), AssetBook.TweenInfos.half),
+                                end), Components.TweenInfos.half),
                                 BackgroundColor3 = Color3.fromRGB(193, 61, 57),
 
                                 [Children] = {
@@ -202,7 +201,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     return UDim2.fromScale(x, 1)
 
-                                end), AssetBook.TweenInfos.one),
+                                end), Components.TweenInfos.one),
                                 BackgroundColor3 = Color3.fromRGB(193, 61, 57):Lerp(Color3.new(), 0.5),
 
                                 [Children] = {
@@ -285,7 +284,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     return UDim2.fromScale(x, 1)
 
-                                end), AssetBook.TweenInfos.half),
+                                end), Components.TweenInfos.half),
                                 BackgroundColor3 = Color3.fromRGB(253, 203, 110),
 
                                 [Children] = {
@@ -308,7 +307,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     return UDim2.fromScale(x, 1)
 
-                                end), AssetBook.TweenInfos.one),
+                                end), Components.TweenInfos.one),
                                 BackgroundColor3 = Color3.fromRGB(253, 203, 110):Lerp(Color3.new(), 0.5),
 
                                 [Children] = {

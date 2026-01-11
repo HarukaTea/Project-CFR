@@ -45,11 +45,8 @@ return function(scope: Fusion.Scope, props: {
         Info = UDim2.fromScale(0.8, 0.8)
     }
 
-
-	return Components.TextButton(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("ExecuteButton", false, true))({
         Name = "ExecuteButton_"..props.Id,
-        AutoButtonColor = true,
-        BackgroundColor3 = Components.WHITE_COLOR,
 
         AnchorPoint = props.AnchorPoint,
         LayoutOrder = props.LayoutOrder,
@@ -59,49 +56,17 @@ return function(scope: Fusion.Scope, props: {
         [Fusion.OnEvent("MouseButton1Click")] = props.ButtonClickFunc,
 
         [Children] = {
-            Components.RoundUICorner(scope),
-
-            Components.UIListLayout(scope, {
-                FillDirection = Enum.FillDirection.Horizontal,
-                Padding = UDim.new(0.05, 0),
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-            }),
-            Components.UIPadding(scope, {}),
-
-            Components.Frame(scope, {
-                Name = "Icon",
-                LayoutOrder = 1,
-                ZIndex = 0,
-                BackgroundTransparency = 0,
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
+            Fusion.Hydrate(scope, Components:RefUI("Icon_EB1_1", false, true))({
                 [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.IconImageLabel(scope, {
-                        AnchorPoint = Vector2.new(0.5, 0.5),
-                        Position = UDim2.fromScale(0.5, 0.5),
+                    Fusion.Hydrate(scope, Components:RefUI("IconLabel_EB1_2", true))({
                         Size = SIZES[props.ButtonType],
-
                         Image = ICONS[props.ButtonType],
                         ImageColor3 = COLORS[props.ButtonType],
                     })
                 }
             }),
-            Components.TextLabel(scope, {
-                Name = "ButtonText",
-                LayoutOrder = 2,
-                Size = UDim2.fromScale(0.8, 0.9),
-                TextColor3 = Components.BLACK_COLOR,
-
+            Fusion.Hydrate(scope, Components:RefUI("ButtonText_EB1_1", true))({
                 Text = props.ButtonText,
-
-                [Children] = {
-                    Components.UIPadding(scope, {
-                        PaddingLeft = UDim.new(),
-                        PaddingTop = UDim.new(),
-                        PaddingBottom = UDim.new(),
-                    })
-                }
             })
         }
     })

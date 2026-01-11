@@ -48,9 +48,6 @@ HarukaComponents.TweenInfos = AssetBook.TweenInfos
 HarukaComponents.DefaultTween = HarukaComponents.TweenInfos.twiceHalf
 
 
-HarukaComponents.UIAtlas = RepS.Packages.UIAtlas :: Folder
-
-
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
 
 
@@ -81,8 +78,28 @@ HarukaComponents._reconcileProps = _reconcileProps
 HarukaComponents._createNewCompoent = _createNewCompoent
 
 
-function HarukaComponents:RefUI(uiId: string) : Instance?
-	return HarukaComponents.UIAtlas:FindFirstChild(uiId, true)
+function HarukaComponents:RefUI(uiId: string, keepAll: boolean?, keepUIObjOnly: boolean?) : Instance?
+	local obj = RepS.Packages.UIAtlas:FindFirstChild(uiId, true) :: Instance
+	if obj == nil then
+		warn("Failed to find UI element with ID: "..uiId)
+		return nil
+	end
+
+	obj = obj:Clone()
+	obj.Name = string.match(obj.Name, "^([^_]+)")
+
+	if not keepAll and not keepUIObjOnly then
+		obj:ClearAllChildren()
+	end
+	if keepUIObjOnly then
+		for _, child: Instance in obj:GetChildren() do
+			if not string.find(child.ClassName, "UI") then
+				child:Destroy()
+			end
+		end
+	end
+
+	return obj
 end
 
 
@@ -597,26 +614,30 @@ end
 
 
 
-function HarukaComponents:CreateConfirmPrompt(scope: Fusion.Scope, data: {
+function HarukaComponents:CreateConfirmPrompt(data: {
 	Hint: string,
 	ConfirmText: string,
 	CancelText: string,
-
 	ConfirmUniqueId: string
 })
-	local innerScope = Fusion.innerScope(scope)
+	local scope = Fusion.scoped()
 	local waitSignal = Instance.new("BindableEvent")
-	table.insert(innerScope, waitSignal)
+	table.insert(scope, waitSignal)
 
-	table.insert(innerScope, Bindables.ConfirmPromptChosen.Event:Connect(function(
+	local function _clear()
+		pcall(function()
+			waitSignal:Fire("NO")
+			Fusion.doCleanup(scope)
+		end)
+	end
+	table.insert(scope, task.delay(35, _clear))
+
+	table.insert(scope, Bindables.ConfirmPromptChosen.Event:Connect(function(
 		uniqueId: string,
 		result: "YES" | "NO"
 	)
 		if uniqueId ~= data.ConfirmUniqueId then return end
-
-		waitSignal:Fire(result)
-
-		Fusion.doCleanup(innerScope)
+		_clear()
 	end))
 
 	Bindables.CreateConfirmPrompt:Fire(data)

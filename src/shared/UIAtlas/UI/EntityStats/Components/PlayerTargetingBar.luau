@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -252,7 +251,7 @@ return function(scope: Fusion.Scope, props: {
         })
         HarukaLib:Tween(
             bar.TitleSection.Icon.UIStroke.UIGradient,
-            AssetBook.TweenInfos.half,
+            Components.TweenInfos.half,
             { Transparency = result }
         )
     end

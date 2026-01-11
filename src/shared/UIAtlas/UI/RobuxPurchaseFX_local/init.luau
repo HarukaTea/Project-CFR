@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
 local CollectionService = game:GetService("CollectionService")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
@@ -14,8 +15,7 @@ local RobuxPurchaseFX = require(script.Components.RobuxPurchaseFX)
 return function (plr: Player)
 	local self = {}
 
-	self.plr = plr
-	self.scope = Fusion.scoped()
+    ClientLib:InitUIFramework(self, plr, "RobuxPurchaseFX_UI", true)
 
 	--// receive requests
 	local function _onPurchaseRequest()

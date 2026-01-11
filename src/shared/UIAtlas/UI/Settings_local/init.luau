@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -26,11 +27,9 @@ local SettingsTemplate = require(script.SettingsTemplate)
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    self.plr = plr
-    self.scope = Fusion.scoped()
+    ClientLib:InitUIFramework(self, plr, "Settings", true)
 
     self.INFO = require(script.SettingsTemplate) :: SettingsTemplate.SettingsJSON
-
 
     Pinia(self)
 

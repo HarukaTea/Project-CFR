@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
@@ -11,8 +12,7 @@ local ConfirmPrompt = require(script.Components.ConfirmPrompt)
 return function (plr: Player)
 	local self = {}
 
-	self.plr = plr
-	self.scope = Fusion.scoped()
+	ClientLib:InitUIFramework(self, plr, "ConfirmPrompt", true)
 
 
 	local scope = self.scope :: Fusion.Scope

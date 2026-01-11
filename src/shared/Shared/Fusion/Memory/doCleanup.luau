@@ -1,4 +1,3 @@
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --[[
@@ -20,11 +19,9 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
 local FusionAdd, FusionEmpty = HarukaLib.Bin()
 
-local alreadyDestroying: {[Types.Task]: true} = {}
+local alreadyDestroying: { [Types.Task]: true } = {}
 
-local function doCleanup(
-	thing: Types.Task
-): ()
+local function doCleanup(thing: Types.Task): ()
 	if alreadyDestroying[thing] then
 		return External.logError("destroyedTwice")
 	end

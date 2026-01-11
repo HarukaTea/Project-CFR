@@ -18,8 +18,8 @@ export type Self = {
 	char: Model,
 	scope: Fusion.Scope,
 
-	fsHintsQueue: HarukaLib.HarukaQueue,
-	centerHintsQueue: HarukaLib.HarukaQueue,
+	FSHintsQueue: HarukaLib.HarukaQueue,
+	CenterHintsQueue: HarukaLib.HarukaQueue,
 
 	UI: ScreenGui
 }
@@ -31,10 +31,10 @@ return function (self: Self)
 	local scope = self.scope :: Fusion.Scope
 
 
-	self.fsHintsQueue = HarukaLib.Queue()
-	self.centerHintsQueue = HarukaLib.Queue()
-	table.insert(scope, self.fsHintsQueue)
-	table.insert(scope, self.centerHintsQueue)
+	self.FSHintsQueue = HarukaLib.Queue()
+	self.CenterHintsQueue = HarukaLib.Queue()
+	table.insert(scope, self.FSHintsQueue)
+	table.insert(scope, self.CenterHintsQueue)
 
 
 
@@ -74,20 +74,20 @@ return function (self: Self)
 
 	--// receive fs hint requests
 	local function _createFSHint(text: string, duration: number)
-		self.fsHintsQueue:Push({
+		self.FSHintsQueue:Push({
 			Text = text, Duration = duration
 		})
 	end
 	local function _onFSHintAdded()
-		if self.fsHintsQueue:IsLocked() then return end
-		if self.fsHintsQueue:IsEmpty() then return end
+		if self.FSHintsQueue:IsLocked() then return end
+		if self.FSHintsQueue:IsEmpty() then return end
 
-		local nextHint = self.fsHintsQueue:Pop() :: {
+		local nextHint = self.FSHintsQueue:Pop() :: {
 			Text: string, Duration: number
 		}
 		local newScope = Fusion.scoped()
 
-		self.fsHintsQueue:SpawnMutex(nextHint.Duration)
+		self.FSHintsQueue:SpawnMutex(nextHint.Duration)
 
 
 		local fullNotify = FullHintLabel(newScope, {
@@ -108,23 +108,23 @@ return function (self: Self)
 	table.insert(scope, Events.CreateFSNotify_S.On(_createFSHint))
 	table.insert(scope, Bindables.CreateFSNotify.Event:Connect(_createFSHint))
 
-	self.fsHintsQueue.RefreshSignal.Event:Connect(_onFSHintAdded)
+	self.FSHintsQueue.RefreshSignal.Event:Connect(_onFSHintAdded)
 
 
 	--// receive center hint requests
 	local function _createCenterNotify(text: string, showBar: boolean)
-		self.centerHintsQueue:Push({
+		self.CenterHintsQueue:Push({
 			Text = text, ShowBar = showBar
 		})
 	end
 	local function _onCenterHintAdded()
-		if self.centerHintsQueue:IsLocked() then return end
-		if self.centerHintsQueue:IsEmpty() then return end
+		if self.CenterHintsQueue:IsLocked() then return end
+		if self.CenterHintsQueue:IsEmpty() then return end
 
-		self.centerHintsQueue:SpawnMutex(1.5)
+		self.CenterHintsQueue:SpawnMutex(1.5)
 
 
-		local nextHint = self.centerHintsQueue:Pop() :: {
+		local nextHint = self.CenterHintsQueue:Pop() :: {
 			Text: string, ShowBar: boolean
 		}
 		local newScope = Fusion.scoped()
@@ -149,5 +149,5 @@ return function (self: Self)
 	table.insert(scope, Events.CreateCenterNotify_S.On(_createCenterNotify))
 	table.insert(scope, Bindables.CreateCenterNotify.Event:Connect(_createCenterNotify))
 
-	self.centerHintsQueue.RefreshSignal.Event:Connect(_onCenterHintAdded)
+	self.CenterHintsQueue.RefreshSignal.Event:Connect(_onCenterHintAdded)
 end

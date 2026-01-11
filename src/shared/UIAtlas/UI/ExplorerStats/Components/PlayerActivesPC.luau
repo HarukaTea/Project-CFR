@@ -317,7 +317,7 @@ return function(scope: Fusion.Scope, props: {
         x = math.clamp(x, 0, 0.999)
 
 
-        HarukaLib:Tween(classUltSlot.UIGradient, AssetBook.TweenInfos.half, {
+        HarukaLib:Tween(classUltSlot.UIGradient, Components.TweenInfos.half, {
             Transparency = NumberSequence.new({
                 NumberSequenceKeypoint.new(0, 0),
                 NumberSequenceKeypoint.new(x, 0),
@@ -325,7 +325,7 @@ return function(scope: Fusion.Scope, props: {
                 NumberSequenceKeypoint.new(1, 1)
             })
         })
-        HarukaLib:Tween(classUltSlot.Icon.UIGradient, AssetBook.TweenInfos.half, {
+        HarukaLib:Tween(classUltSlot.Icon.UIGradient, Components.TweenInfos.half, {
             Transparency = NumberSequence.new({
                 NumberSequenceKeypoint.new(0, 0),
                 NumberSequenceKeypoint.new(x, 0),

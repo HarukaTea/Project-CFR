@@ -149,7 +149,7 @@ return function (self: Self)
 
 
 
-	table.insert(scope, Bindables.PromptTriggered:Connect(function(thatPrompt: ProximityPrompt)
+	table.insert(scope, Bindables.PromptTriggered.Event:Connect(function(thatPrompt: ProximityPrompt)
 		SoundService.SFXs.ChatNext:Play()
 
 		thatPrompt.Enabled = false

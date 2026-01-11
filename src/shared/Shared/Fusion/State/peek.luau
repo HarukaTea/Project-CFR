@@ -1,4 +1,3 @@
-
 --[[
 	Extracts a value of type T from its input.
 
@@ -8,14 +7,12 @@
 local Package = script.Parent.Parent
 local Types = require(Package.Types)
 -- State
-local castToState = require(Package.State.castToState)
+local blend = require(Package.Utility.blend)
 -- Graph
 local evaluate = require(Package.Graph.evaluate)
 
-local function peek<T>(
-	target: Types.UsedAs<T>
-): T
-	local targetState = castToState(target)
+local function peek<T>(target: Types.UsedAs<T>): T
+	local targetState = blend.castToState(target)
 	if targetState ~= nil then
 		evaluate(targetState, false)
 		return targetState._EXTREMELY_DANGEROUS_usedAsValue :: T

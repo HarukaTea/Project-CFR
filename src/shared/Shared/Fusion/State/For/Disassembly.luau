@@ -1,4 +1,3 @@
-
 --[[
 	Breaks down an input table into reactive sub-objects for each pair.
 ]]
@@ -10,57 +9,47 @@ local External = require(Package.External)
 local depend = require(Package.Graph.depend)
 -- State
 local peek = require(Package.State.peek)
-local castToState = require(Package.State.castToState)
-local ForTypes = require(Package.State.For.ForTypes)
 -- Memory
 local doCleanup = require(Package.Memory.doCleanup)
 local deriveScope = require(Package.Memory.deriveScope)
 -- Utility
-local nameOf = require(Package.Utility.nameOf)
+local blend = require(Package.Utility.blend)
 local nicknames = require(Package.Utility.nicknames)
 
-type Self<S, KI, KO, VI, VO> = ForTypes.Disassembly<S, KI, KO, VI, KO> & {
+type Self<S, KI, KO, VI, VO> = Types.Disassembly<S, KI, KO, VI, KO> & {
 	scope: (S & Types.Scope<unknown>)?,
-	_inputTable: Types.UsedAs<{[KI]: VI}>,
-	_constructor: (
-		Types.Scope<S>,
-		initialKey: KI,
-		initialValue: VI
-	) -> ForTypes.SubObject<S, KI, KO, VI, VO>,
-	_subObjects: {[ForTypes.SubObject<S, KI, KO, VI, VO>]: true}
+	_inputTable: Types.UsedAs<{ [KI]: VI }>,
+	_constructor: (Types.Scope<S>, initialKey: KI, initialValue: VI) -> Types.SubObject<S, KI, KO, VI, VO>,
+	_subObjects: { [Types.SubObject<S, KI, KO, VI, VO>]: true },
 }
-
 
 local class = {}
 class.type = "Graph"
 class.kind = "For.Disassembly"
 class.timeliness = "lazy"
 
-local METATABLE = table.freeze {__index = class}
+local METATABLE = table.freeze({ __index = class })
 
 local function Disassembly<S, KI, KO, VI, VO>(
 	scope: S & Types.Scope<unknown>,
-	inputTable: Types.UsedAs<{[KI]: VI}>,
+	inputTable: Types.UsedAs<{ [KI]: VI }>,
 	constructor: (
 		Types.Scope<S>,
 		initialKey: KI,
 		initialValue: VI
-	) -> ForTypes.SubObject<S, KI, KO, VI, VO>
-): ForTypes.Disassembly<S, KI, KO, VI, KO>
+	) -> Types.SubObject<S, KI, KO, VI, VO>
+): Types.Disassembly<S, KI, KO, VI, KO>
 	local createdAt = os.clock()
-	local self = setmetatable(
-		{
-			createdAt = createdAt,
-			dependencySet = {},
-			dependentSet = {},
-			scope = scope,
-			validity = "invalid",
-			_inputTable = inputTable,
-			_constructor = constructor,
-			_subObjects = {}
-		},
-		METATABLE
-	) :: any
+	local self = setmetatable({
+		createdAt = createdAt,
+		dependencySet = {},
+		dependentSet = {},
+		scope = scope,
+		validity = "invalid",
+		_inputTable = inputTable,
+		_constructor = constructor,
+		_subObjects = {},
+	}, METATABLE) :: any
 
 	local destroy = function()
 		self.scope = nil
@@ -81,11 +70,7 @@ local function Disassembly<S, KI, KO, VI, VO>(
 	return self
 end
 
-function class.populate<S, KI, KO, VI, VO>(
-	self: Self<S, KI, KO, VI, VO>,
-	use: Types.Use,
-	output: {[KO]: VO}
-): ()
+function class.populate<S, KI, KO, VI, VO>(self: Self<S, KI, KO, VI, VO>, use: Types.Use, output: { [KO]: VO }): ()
 	local minArrayIndex = math.huge
 	local maxArrayIndex = -math.huge
 	local hasHoles = false
@@ -106,7 +91,7 @@ function class.populate<S, KI, KO, VI, VO>(
 	end
 	-- Be careful of NaN here
 	if hasHoles and maxArrayIndex > minArrayIndex then
-		local output: {[number]: VO} = output :: any
+		local output: { [number]: VO } = output :: any
 		local moveToIndex = minArrayIndex
 		for moveFromIndex = minArrayIndex, maxArrayIndex do
 			local outputValue = output[moveFromIndex]
@@ -121,24 +106,22 @@ function class.populate<S, KI, KO, VI, VO>(
 	end
 end
 
-function class._evaluate<S, KI, KO, VI, VO>(
-	self: Self<S, KI, KO, VI, VO>
-): boolean
+function class._evaluate<S, KI, KO, VI, VO>(self: Self<S, KI, KO, VI, VO>): boolean
 	local outerScope = self.scope :: S & Types.Scope<unknown>
-	local inputState = castToState(self._inputTable)
+	local inputState = blend.castToState(self._inputTable)
 	if inputState ~= nil then
 		if inputState.scope == nil then
 			External.logError(
 				"useAfterDestroy",
 				nil,
-				`The input {nameOf(inputState, "table")}`,
+				`The input {blend.nameOf(inputState, "table")}`,
 				`the For object that is watching it`
 			)
 		end
 		depend(self, inputState)
 	end
 
-	local pendingPairs = {} :: {[KI]: VI}
+	local pendingPairs = {} :: { [KI]: VI }
 	for key, value in peek(self._inputTable) do
 		pendingPairs[key] = value
 	end

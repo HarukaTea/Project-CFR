@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
@@ -120,7 +119,7 @@ return function(scope: Fusion.Scope, props: {
 
 				Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
 					return if use(props.BooleanValue) then UDim2.fromScale(0.92, 0.5) else UDim2.fromScale(0.87, 0.5)
-				end), AssetBook.TweenInfos.twiceHalf),
+				end), Components.TweenInfos.twiceHalf),
 
 				BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
 					return if use(props.BooleanValue) then Components.WHITE_COLOR else Components.WHITE_COLOR:Lerp(Color3.fromRGB(), 0.5)

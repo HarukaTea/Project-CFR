@@ -1,4 +1,3 @@
-
 --[[
 	Applies a table of properties to an instance, including binding to any
 	given state objects and applying any special keys.
@@ -15,39 +14,25 @@
 local Package = script.Parent.Parent
 local Types = require(Package.Types)
 local External = require(Package.External)
--- Logging
-local parseError = require(Package.Logging.parseError)
 -- Memory
 local checkLifetime = require(Package.Memory.checkLifetime)
 -- Graph
 local Observer = require(Package.Graph.Observer)
 -- State
-local castToState = require(Package.State.castToState)
 local peek = require(Package.State.peek)
 -- Utility
-local xtypeof = require(Package.Utility.xtypeof)
+local blend = require(Package.Utility.blend)
 
-local function setProperty_unsafe(
-	instance: Instance,
-	property: string,
-	value: unknown
-)
+local function setProperty_unsafe(instance: Instance, property: string, value: unknown)
 	(instance :: any)[property] = value
 end
 
-local function testPropertyAssignable(
-	instance: Instance,
-	property: string
-)
+local function testPropertyAssignable(instance: Instance, property: string)
 	(instance :: any)[property] = (instance :: any)[property]
 end
 
-local function setProperty(
-	instance: Instance,
-	property: string,
-	value: unknown
-)
-	local success, err = xpcall(setProperty_unsafe :: any, parseError, instance, property, value)
+local function setProperty(instance: Instance, property: string, value: unknown)
+	local success, err = xpcall(setProperty_unsafe :: any, blend.parseError, instance, property, value)
 
 	if not success then
 		if not pcall(testPropertyAssignable, instance, property) then
@@ -61,7 +46,14 @@ local function setProperty(
 			if givenType == expectedType then
 				External.logErrorNonFatal("propertySetError", err)
 			else
-				External.logErrorNonFatal("invalidPropertyType", nil, instance.ClassName, property, expectedType, givenType)
+				External.logErrorNonFatal(
+					"invalidPropertyType",
+					nil,
+					instance.ClassName,
+					property,
+					expectedType,
+					givenType
+				)
 			end
 		end
 	end
@@ -73,11 +65,14 @@ local function bindProperty(
 	property: string,
 	value: Types.UsedAs<unknown>
 )
-	if castToState(value) then
+	if blend.castToState(value) then
 		checkLifetime.bOutlivesA(
-			scope, instance,
-			value.scope, value.oldestTask,
-			checkLifetime.formatters.boundProperty, property
+			scope,
+			instance,
+			value.scope,
+			value.oldestTask,
+			checkLifetime.formatters.boundProperty,
+			property
 		)
 		-- value is a state object - bind to changes
 		Observer(scope, value :: any):onBind(function()
@@ -89,20 +84,16 @@ local function bindProperty(
 	end
 end
 
-local function applyInstanceProps(
-	scope: Types.Scope<unknown>,
-	props: Types.PropertyTable,
-	applyTo: Instance
-)
+local function applyInstanceProps(scope: Types.Scope<unknown>, props: Types.PropertyTable, applyTo: Instance)
 	local specialKeys = {
-		self = {} :: {[Types.SpecialKey]: unknown},
-		descendants = {} :: {[Types.SpecialKey]: unknown},
-		ancestor = {} :: {[Types.SpecialKey]: unknown},
-		observer = {} :: {[Types.SpecialKey]: unknown}
+		self = {} :: { [Types.SpecialKey]: unknown },
+		descendants = {} :: { [Types.SpecialKey]: unknown },
+		ancestor = {} :: { [Types.SpecialKey]: unknown },
+		observer = {} :: { [Types.SpecialKey]: unknown },
 	}
 
 	for key, value in pairs(props) do
-		local keyType = xtypeof(key)
+		local keyType = blend.xtypeof(key)
 
 		if keyType == "string" then
 			if key ~= "Parent" then

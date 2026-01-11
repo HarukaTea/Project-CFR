@@ -60,7 +60,7 @@ return function (scope: Fusion.Scope, props: {
     local isVisible = Value(true)
     local posX = Value(POS[props.SlotId])
 
-    table.insert(scope, props.SaveSlotClickedSignal:Connect(function(index: number)
+    table.insert(scope, props.SaveSlotClickedSignal.Event:Connect(function(index: number)
         isVisible:set(false)
         posX:set(POS[props.SlotId])
 
@@ -69,7 +69,7 @@ return function (scope: Fusion.Scope, props: {
             posX:set(0.2)
         end
     end))
-    table.insert(scope, props.SaveSlotBackSignal:Connect(function()
+    table.insert(scope, props.SaveSlotBackSignal.Event:Connect(function()
         isVisible:set(true)
         posX:set(POS[props.SlotId])
     end))
@@ -117,7 +117,7 @@ return function (scope: Fusion.Scope, props: {
 
         Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Scope, _)
             return UDim2.fromScale(use(posX), 0.5)
-        end), AssetBook.TweenInfos.half),
+        end), Components.TweenInfos.half),
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(isVisible)

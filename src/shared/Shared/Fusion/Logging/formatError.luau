@@ -1,4 +1,3 @@
-
 --[[
 	Formats a Fusion-specific error message.
 ]]

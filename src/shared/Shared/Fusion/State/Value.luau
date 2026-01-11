@@ -1,4 +1,3 @@
-
 --[[
 	A state object which allows regular Luau code to control its value.
 
@@ -10,7 +9,7 @@ local Types = require(Package.Types)
 -- Graph
 local change = require(Package.Graph.change)
 -- Utility
-local isSimilar = require(Package.Utility.isSimilar)
+local blend = require(Package.Utility.blend)
 local nicknames = require(Package.Utility.nicknames)
 
 type Self<T, S> = Types.Value<T, S>
@@ -19,26 +18,20 @@ local class = {}
 class.type = "State"
 class.kind = "Value"
 class.timeliness = "lazy"
-class.dependencySet = table.freeze {}
+class.dependencySet = table.freeze({})
 
-local METATABLE = table.freeze {__index = class}
+local METATABLE = table.freeze({ __index = class })
 
-local function Value<T>(
-	scope: Types.Scope<unknown>,
-	initialValue: T
-): Types.Value<T, any>
+local function Value<T>(scope: Types.Scope<unknown>, initialValue: T): Types.Value<T, any>
 	local createdAt = os.clock()
-	local self: Self<T, any> = setmetatable(
-		{
-			createdAt = createdAt,
-			dependentSet = {},
-			lastChange = os.clock(),
-			scope = scope,
-			validity = "valid",
-			_EXTREMELY_DANGEROUS_usedAsValue = initialValue
-		},
-		METATABLE
-	) :: any
+	local self: Self<T, any> = setmetatable({
+		createdAt = createdAt,
+		dependentSet = {},
+		lastChange = os.clock(),
+		scope = scope,
+		validity = "valid",
+		_EXTREMELY_DANGEROUS_usedAsValue = initialValue,
+	}, METATABLE) :: any
 	local destroy = function()
 		self.scope = nil
 	end
@@ -48,18 +41,14 @@ local function Value<T>(
 	return self
 end
 
-function class.set<T, S>(
-	self: Self<T, S>,
-	newValue: S,
-	force: boolean?
-): S
+function class.set<T, S>(self: Self<T, S>, newValue: S, force: boolean?): S
 	local oldValue = self._EXTREMELY_DANGEROUS_usedAsValue
 
 	if force then
 		self._EXTREMELY_DANGEROUS_usedAsValue = newValue :: any
 		change(self)
 	end
-	if not isSimilar(oldValue, newValue) then
+	if not blend.isSimilar(oldValue, newValue) then
 		self._EXTREMELY_DANGEROUS_usedAsValue = newValue :: any
 		change(self)
 	end
@@ -67,9 +56,7 @@ function class.set<T, S>(
 	return newValue
 end
 
-function class._evaluate<T, S>(
-	_self: Self<T, S>
-): boolean
+function class._evaluate<T, S>(_self: Self<T, S>): boolean
 	-- The similarity test is done in advance when the value is set, so this
 	-- should be fine.
 	return true

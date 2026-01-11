@@ -2,7 +2,6 @@
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
@@ -69,7 +68,7 @@ return function (scope: Fusion.Scope, props: {
 
                             return UDim2.fromScale(barHeight, 1)
 
-                        end), AssetBook.TweenInfos.twiceHalf),
+                        end), Components.TweenInfos.twiceHalf),
 
 
                         [Children] = {

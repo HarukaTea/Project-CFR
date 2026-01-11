@@ -33,15 +33,9 @@ export type Animatable =
 	Vector3int16
 
 -- A task which can be accepted for cleanup.
-export type Task =
-	Instance |
-	thread |
-	RBXScriptConnection |
-	() -> () |
-	{Task}
-
+export type Task = any | {any}
 -- A scope of tasks to clean up.
-export type Scope<Constructors = any> = {Task} & Constructors
+export type Scope<Constructors = any> = {Task}
 
 -- An object which uses a scope to dictate how long it lives.
 export type ScopedObject = {
@@ -123,6 +117,23 @@ export type ForPairsConstructor =  <KI, KO, VI, VO, S>(
 	processor: (Use, S, key: KI, value: VI) -> (KO, VO)
 ) -> For<KO, VO>
 
+export type SubObject<S, KI, KO, VI, VO> = {
+	-- Not all sub objects need to store a scope, for example if the scope
+	-- remains empty, it'll be given back to the scope pool.
+	maybeScope: Scope<S>?,
+	inputKey: KI,
+	inputValue: VI,
+	roamKeys: boolean,
+	roamValues: boolean,
+	invalidateInputKey: (SubObject<S, KI, KO, VI, VO>) -> (),
+	invalidateInputValue: (SubObject<S, KI, KO, VI, VO>) -> (),
+	useOutputPair: (SubObject<S, KI, KO, VI, VO>, Use) -> (KO?, VO?)
+}
+
+export type Disassembly<S, KI, KO, VI, VO> = GraphObject & {
+	populate: (Disassembly<S, KI, KO, VI, VO>, Use, output: {[KO]: VO}) -> ()
+}
+
 -- An object which can listen for updates on another state object.
 export type Observer = GraphObject & {
 	type: "Observer",
@@ -170,7 +181,7 @@ export type NewConstructor = (
 export type HydrateConstructor = (
 	scope: Scope<unknown>,
 	target: Instance
-) -> (propertyTable: PropertyTable, keepAllChildren: boolean?) -> Instance
+) -> (propertyTable: PropertyTable) -> Instance
 
 -- Is there a sane way to write out this type?
 -- ... I sure hope so.
@@ -212,7 +223,6 @@ export type Fusion = {
 	doCleanup: (Task) -> (),
 	scoped: ScopedConstructor,
 	deriveScope: DeriveScopeConstructor,
-	innerScope: DeriveScopeConstructor,
 
 	peek: Use,
 	Value: ValueConstructor,

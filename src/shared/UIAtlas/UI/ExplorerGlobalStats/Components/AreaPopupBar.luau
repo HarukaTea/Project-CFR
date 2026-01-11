@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local LocationBook = require(RepS.HarukaShared.Library.LocationBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -60,7 +59,7 @@ return function(scope: Fusion.Scope, props: {
                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return UDim2.new(0, use(absTextSize).X + 15.99 * 2.599, 0.08, 0)
 
-                end), AssetBook.TweenInfos.one),
+                end), Components.TweenInfos.one),
             })
         }
     })

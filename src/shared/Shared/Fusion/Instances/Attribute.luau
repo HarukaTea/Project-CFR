@@ -1,4 +1,3 @@
-
 --[[
 	A special key for property tables, which allows users to apply custom
 	attributes to instances
@@ -11,31 +10,27 @@ local checkLifetime = require(Package.Memory.checkLifetime)
 -- Graph
 local Observer = require(Package.Graph.Observer)
 -- State
-local castToState = require(Package.State.castToState)
+local blend = require(Package.Utility.blend)
 local peek = require(Package.State.peek)
 
-local keyCache: {[string]: Types.SpecialKey} = {}
+local keyCache: { [string]: Types.SpecialKey } = {}
 
-local function Attribute(
-	attributeName: string
-): Types.SpecialKey
+local function Attribute(attributeName: string): Types.SpecialKey
 	local key = keyCache[attributeName]
 	if key == nil then
 		key = {
 			type = "SpecialKey",
 			kind = "Attribute",
 			stage = "self",
-			apply = function(
-				self: Types.SpecialKey,
-				scope: Types.Scope<unknown>,
-				value: unknown,
-				applyTo: Instance
-			)
-				if castToState(value) then
+			apply = function(self: Types.SpecialKey, scope: Types.Scope<unknown>, value: unknown, applyTo: Instance)
+				if blend.castToState(value) then
 					checkLifetime.bOutlivesA(
-						scope, applyTo,
-						value.scope, value.oldestTask,
-						checkLifetime.formatters.boundAttribute, attributeName
+						scope,
+						applyTo,
+						value.scope,
+						value.oldestTask,
+						checkLifetime.formatters.boundAttribute,
+						attributeName
 					)
 					Observer(scope, value :: any):onBind(function()
 						applyTo:SetAttribute(attributeName, peek(value))
@@ -43,7 +38,7 @@ local function Attribute(
 				else
 					applyTo:SetAttribute(attributeName, value)
 				end
-			end
+			end,
 		}
 		keyCache[attributeName] = key
 	end

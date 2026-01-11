@@ -2,7 +2,6 @@
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -68,7 +67,7 @@ return function(scope: Fusion.Scope, props: {
                             x = math.clamp(x, 0, 1)
 
                             return UDim2.fromScale(x, 1)
-                        end), AssetBook.TweenInfos.twiceHalf),
+                        end), Components.TweenInfos.twiceHalf),
 
 
                         [Children] = {

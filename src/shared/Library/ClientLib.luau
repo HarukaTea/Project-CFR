@@ -359,9 +359,11 @@ function ClientLib:InitCharDeadTrackers(props: {
 end
 
 
-function ClientLib:InitUIFramework(t: Dict, plr: Player, uiId: string)
+function ClientLib:InitUIFramework(t: Dict, plr: Player, uiId: string, withoutChar: boolean?)
 	t.plr = plr
-	t.char = plr.Character
+	if not withoutChar then
+		t.char = plr.Character
+	end
 	t.scope = Fusion.scoped()
 
 	if plr.PlayerGui:FindFirstChild(uiId) then

@@ -17,7 +17,30 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
 
-local Types = require(RepS.HarukaShared.Shared.HarukaCMDClient.Types)
+export type CallbackProps = {
+    Executor: Player,
+    Args: { any },
+
+    ResolveObj: () -> nil
+}
+export type CommandArgJSON = {
+    Name: string,
+    Type: string,
+
+    ShouldBeInteger: boolean?,
+    RangeMin: number?,
+    RangeMax: number?,
+
+    EnumItems: { string }?,
+}
+export type CommandJSON = {
+    Name: string,
+    Alias: string,
+    Args: { CommandArgJSON },
+    RankReq: number,
+
+    Callback: (props: CallbackProps) -> nil
+}
 
 
 local UNIVERSE_IDS = {
@@ -26,12 +49,6 @@ local UNIVERSE_IDS = {
 local testerRank = UNIVERSE_IDS[tostring(game.GameId)] or 127
 
 local wait = task.wait
-
-
-export type CallbackProps = Types.CallbackProps
-export type CommandArgJSON = Types.CommandArgJSON
-export type CommandJSON = Types.CommandJSON
-
 
 
 --// pick all spawnpoints

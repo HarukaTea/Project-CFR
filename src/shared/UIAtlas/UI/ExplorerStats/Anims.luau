@@ -2,8 +2,8 @@
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -40,7 +40,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
 
 
-        HarukaLib:CreateTween(circle, AssetBook.TweenInfos.onceHalf, { Size = UDim2.fromScale(2, 2) }):Play()
+        HarukaLib:CreateTween(circle, Components.TweenInfos.onceHalf, { Size = UDim2.fromScale(2, 2) }):Play()
         HarukaLib:UITween(circle, "Out", { DelayTime = 0.2 })
     end))
 

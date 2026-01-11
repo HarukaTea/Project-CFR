@@ -45,13 +45,11 @@ end
 
 local Fusion: Fusion = table.freeze({
 	-- General
-	version = { major = 0, minor = 4, isRelease = false },
+	version = { major = 0, minor = 4, isRelease = false, forked = "haruka" },
 	Contextual = require(script.Utility.Contextual),
 
 	-- Memory
-	deriveScope = require(script.Memory.deriveScope),
 	doCleanup = require(script.Memory.doCleanup),
-	innerScope = require(script.Memory.innerScope),
 	scoped = require(script.Memory.scoped),
 
 	-- Graph
@@ -70,6 +68,7 @@ local Fusion: Fusion = table.freeze({
 	OnEvent = require(script.Instances.OnEvent),
 	Out = require(script.Instances.Out),
 	Tag = require(script.Instances.Tag),
+	Hydrate = require(script.Instances.Hydrate),
 
 	-- Animation
 	Tween = require(script.Animation.Tween),

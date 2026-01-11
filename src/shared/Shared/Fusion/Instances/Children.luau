@@ -1,4 +1,3 @@
-
 --[[
 	A special key for property tables, which parents any given descendants into
 	an instance.
@@ -9,10 +8,10 @@ local Types = require(Package.Types)
 local External = require(Package.External)
 local Observer = require(Package.Graph.Observer)
 local peek = require(Package.State.peek)
-local castToState = require(Package.State.castToState)
+local blend = require(Package.Utility.blend)
 local doCleanup = require(Package.Memory.doCleanup)
 
-type Set<T> = {[T]: unknown}
+type Set<T> = { [T]: unknown }
 
 -- Experimental flag: name children based on the key used in the [Children] table
 local EXPERIMENTAL_AUTO_NAMING = false
@@ -21,18 +20,13 @@ return {
 	type = "SpecialKey",
 	kind = "Children",
 	stage = "descendants",
-	apply = function(
-		self: Types.SpecialKey,
-		scope: Types.Scope<unknown>,
-		value: unknown,
-		applyTo: Instance
-	)
+	apply = function(self: Types.SpecialKey, scope: Types.Scope<unknown>, value: unknown, applyTo: Instance)
 		local newParented: Set<Instance> = {}
 		local oldParented: Set<Instance> = {}
 
 		-- save scopes for state object observers
-		local newScopes: {[Types.StateObject<unknown>]: Types.Scope<unknown>} = {}
-		local oldScopes: {[Types.StateObject<unknown>]: Types.Scope<unknown>} = {}
+		local newScopes: { [Types.StateObject<unknown>]: Types.Scope<unknown> } = {}
+		local oldScopes: { [Types.StateObject<unknown>]: Types.Scope<unknown> } = {}
 
 		-- Rescans this key's value to find new instances to parent and state objects
 		-- to observe for changes; then unparents instances no longer found and
@@ -41,10 +35,7 @@ return {
 			oldParented, newParented = newParented, oldParented
 			oldScopes, newScopes = newScopes, oldScopes
 
-			local function processChild(
-				child: unknown,
-				autoName: string?
-			)
+			local function processChild(child: unknown, autoName: string?)
 				local childType = typeof(child)
 
 				if childType == "Instance" then
@@ -63,8 +54,7 @@ return {
 					if EXPERIMENTAL_AUTO_NAMING and autoName ~= nil then
 						child.Name = autoName
 					end
-
-				elseif castToState(child) then
+				elseif blend.castToState(child) then
 					-- case 2; state object
 					local value = peek(child)
 					-- allow nil to represent the absence of a child
@@ -84,7 +74,6 @@ return {
 					end
 
 					newScopes[child] = childScope
-
 				elseif childType == "table" then
 					-- case 3; table of objects
 					for key, subChild in pairs(child) do
@@ -99,7 +88,6 @@ return {
 
 						processChild(subChild, subAutoName)
 					end
-
 				else
 					External.logWarn("unrecognisedChildType", childType)
 				end
@@ -131,5 +119,5 @@ return {
 
 		-- perform initial child parenting
 		updateChildren()
-	end
+	end,
 } :: Types.SpecialKey

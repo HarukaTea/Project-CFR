@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
@@ -15,8 +16,7 @@ local AfterPinia = require(script.AfterPinia)
 return function (plr: Player)
     local self = {} :: AfterPinia.Self
 
-    self.plr = plr
-    self.scope = Fusion.scoped()
+    ClientLib:InitUIFramework(self, plr, "ExplorerHints", true)
 
 
     local scope = self.scope :: Fusion.Scope
@@ -31,20 +31,7 @@ return function (plr: Player)
             Position = UDim2.new(0.5, 0, 0, 56),
 
             [Children] = {
-                Components.Frame(scope, {
-                    Name = "Hints",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 0),
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            Padding = UDim.new(0, 12),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        }),
-
-                        Components.UIScale(scope, {})
-                    }
-                })
+                Fusion.Hydrate(scope, Components:RefUI("Hints_1", false, true))({})
             }
         }
     })
@@ -54,9 +41,8 @@ return function (plr: Player)
     AfterPinia(self)
 
 
+    local harukaListObj = HarukaListLayout.new(UI.Top.Hints.UIListLayout)
+    harukaListObj:Enable()
 
-    local AGLObj = HarukaListLayout.new(UI.Top.Hints.UIListLayout)
-    AGLObj:Enable()
-
-    table.insert(scope, AGLObj)
+    table.insert(scope, harukaListObj)
 end

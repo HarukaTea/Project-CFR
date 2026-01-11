@@ -1,30 +1,14 @@
 
 local Debris = game:GetService("Debris")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local wait = task.wait
-
-
-repeat wait() until ReplicatedStorage:WaitForChild("HarukaShared", 999)
-repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Shared", 999)
-repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
-
-
 local ContentProvider = game:GetService("ContentProvider")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local wait = task.wait
 
-
-
-repeat wait() until ReplicatedStorage.HarukaShared:WaitForChild("Library", 999)
-repeat wait() until ReplicatedStorage.HarukaShared.Library:WaitForChild("AssetBook", 999)
-repeat wait() until ReplicatedStorage.HarukaShared.Library:WaitForChild("Bindables", 999)
-repeat wait() until ReplicatedStorage.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
-repeat wait() until ReplicatedStorage:WaitForChild("Packages", 999)
-repeat wait() until ReplicatedStorage.Packages:WaitForChild("Unloads", 999)
-repeat wait() until ReplicatedStorage.Packages.Unloads:WaitForChild("TeleportUI", 999)
+repeat wait() until workspace:GetAttribute("Haruka_ClientValidated")
+repeat wait() until workspace:GetAttribute("Haruka_ServerInited")
 
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
