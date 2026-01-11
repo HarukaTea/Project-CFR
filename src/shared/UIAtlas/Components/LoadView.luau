@@ -66,82 +66,80 @@ return function (scope: Fusion.Scope, props: {
             }
         },
 
-        BottomProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "AllClasses",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Size = UDim2.fromScale(0.95, 0.6),
-                    Position = UDim2.fromScale(0.5, 0),
-                    ClipsDescendants = true,
+        BottomChildren = {
+            Components.Frame(scope, {
+                Name = "AllClasses",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Size = UDim2.fromScale(0.95, 0.6),
+                Position = UDim2.fromScale(0.5, 0),
+                ClipsDescendants = true,
 
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            Padding = UDim.new(0.008, 0),
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            SortOrder = Enum.SortOrder.Name,
-                        }),
+                [Children] = {
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.008, 0),
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                        SortOrder = Enum.SortOrder.Name,
+                    }),
 
-                        Components.Frame(scope, {
-                            Name = "AAA_Line",
-                            BackgroundTransparency = 0.9,
-                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                            Size = UDim2.fromScale(1, 0.1)
-                        }),
-                        Components.Frame(scope, {
-                            Name = "ZZZ_Line",
-                            BackgroundTransparency = 0.9,
-                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                            Size = UDim2.fromScale(1, 0.1)
-                        }),
-                        Components.Frame(scope, {
-                            Name = "BBB_Padding",
-                            Size = UDim2.fromOffset(1, 1)
-                        }),
-                        Components.Frame(scope, {
-                            Name = "YYY_Padding",
-                            Size = UDim2.fromOffset(1, 1)
-                        }),
+                    Components.Frame(scope, {
+                        Name = "AAA_Line",
+                        BackgroundTransparency = 0.9,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        Size = UDim2.fromScale(1, 0.1)
+                    }),
+                    Components.Frame(scope, {
+                        Name = "ZZZ_Line",
+                        BackgroundTransparency = 0.9,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        Size = UDim2.fromScale(1, 0.1)
+                    }),
+                    Components.Frame(scope, {
+                        Name = "BBB_Padding",
+                        Size = UDim2.fromOffset(1, 1)
+                    }),
+                    Components.Frame(scope, {
+                        Name = "YYY_Padding",
+                        Size = UDim2.fromOffset(1, 1)
+                    }),
 
-                        Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: Classbook.ClassJSON)
-                            if classInfo.DevClass then return classId, nil end
+                    Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: Classbook.ClassJSON)
+                        if classInfo.DevClass then return classId, nil end
 
-                            return classId, Components.IconImageLabel(scope, {
-                                Name = "GGG_"..classId,
-                                Image = classInfo.Icon,
-                                ImageColor3 = classInfo.Color
-                            })
-                        end)
-                    }
-                }),
-
-                Components.Frame(scope, {
-                    Name = "Tips",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Size = UDim2.fromScale(1, 0.6),
-                    Position = UDim2.fromScale(0.5, -0.8),
-
-                    [Children] = {
-                        Components.TextLabel(scope, {
-                            Name = "Desc",
-                            Size = UDim2.fromScale(1, 0.8),
-                            Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                                return use(props.LoadingText)
-                            end),
+                        return classId, Components.IconImageLabel(scope, {
+                            Name = "GGG_"..classId,
+                            Image = classInfo.Icon,
+                            ImageColor3 = classInfo.Color
                         })
-                    }
-                }),
+                    end)
+                }
+            }),
 
-                Components.Frame(scope, {
-                    Name = "CFEmblemTexFrame",
+            Components.Frame(scope, {
+                Name = "Tips",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Size = UDim2.fromScale(1, 0.6),
+                Position = UDim2.fromScale(0.5, -0.8),
 
-                    [Children] = {
-                        texEmblem
-                    }
-                })
-            }
+                [Children] = {
+                    Components.TextLabel(scope, {
+                        Name = "Desc",
+                        Size = UDim2.fromScale(1, 0.8),
+                        Text = Fusion.Computed(scope, function(use: Fusion.Use)
+                            return use(props.LoadingText)
+                        end),
+                    })
+                }
+            }),
+
+            Components.Frame(scope, {
+                Name = "CFEmblemTexFrame",
+
+                [Children] = {
+                    texEmblem
+                }
+            })
         }
     })
 

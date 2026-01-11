@@ -25,22 +25,17 @@ return function (scope: Fusion.Scope, props: {
     props[Fusion.Children] = props[Fusion.Children] or {}
 
     return Components.Frame(scope, {
-        Name = "CFEmblemTexFrame",
+        Name = "CFEmblemTex",
         ClipsDescendants = true,
         ZIndex = 0,
 
         [Children] = {
-            Components.ImageLabel(scope, {
-                Name = "Emblem",
-                AnchorPoint = Vector2.new(0, 0.5),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                ZIndex = 2,
-
+            Fusion.Hydrate(scope, Components:RefUI("Emblem_CFETex1_1"))({
                 Position = props.Position,
                 Size = props.Size,
                 Image = "rbxassetid://72405016863286",
                 ImageTransparency = props.Transparency,
-                ImageColor3 = props.Color,
+                ImageColor3 = props.Color
             }),
 
             [Children] = props[Fusion.Children],

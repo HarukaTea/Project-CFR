@@ -60,69 +60,65 @@ return function (scope: Fusion.Scope, props: {
         end),
 
     }, {
-        BottomProps = {
-            [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                    if use(isBackButtonShown) then
-                        return ExecuteButton(scope, {
-                            AnchorPoint = Vector2.new(0.5, 0),
-                            Position = UDim2.fromScale(0.5, 0),
+        BottomChildren = {
+            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                if use(isBackButtonShown) then
+                    return ExecuteButton(scope, {
+                        AnchorPoint = Vector2.new(0.5, 0),
+                        Position = UDim2.fromScale(0.5, 0),
 
-                            Size = UDim2.fromScale(0.16, 0.68),
-                            ButtonText = "BACK",
-                            ButtonType = "Cancel",
-                            ButtonClickFunc = function()
-                                props.CutsceneUISignal:Fire()
-                            end
-                        })
-                    else
-                        return nil
-                    end
-                end)
-            }
+                        Size = UDim2.fromScale(0.16, 0.68),
+                        ButtonText = "BACK",
+                        ButtonType = "Cancel",
+                        ButtonClickFunc = function()
+                            props.CutsceneUISignal:Fire()
+                        end
+                    })
+                else
+                    return nil
+                end
+            end)
         },
 
-        CenterProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "SaveSlots",
-                    Position = UDim2.fromScale(0.5, 0.3),
+        CenterChildren = {
+            Components.Frame(scope, {
+                Name = "SaveSlots",
+                Position = UDim2.fromScale(0.5, 0.3),
 
-                    [Children] = {
-                        Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope, index: number, charVal: Fusion.Value<Model?>)
-                            return index, SaveSlot(scope, {
-                                SlotId = index,
-                                CharacterModel = charVal,
+                [Children] = {
+                    Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope, index: number, charVal: Fusion.Value<Model?>)
+                        return index, SaveSlot(scope, {
+                            SlotId = index,
+                            CharacterModel = charVal,
 
-                                SaveSlotClickedSignal = saveSlotClickedSignal,
-                                SaveSlotBackSignal = saveSlotBackSignal,
-                                ReadyToTeleportSignal = readyToTeleportSignal,
-
-                                ServerListClickedSignal = serverListClickedSignal,
-
-                                IsUIShown = isShown,
-                            })
-                        end)
-                    }
-                }),
-
-                Components.Frame(scope, {
-                    Name = "ServerList",
-                    Position = UDim2.fromScale(0.5, 0.3),
-
-                    [Children] = {
-                        ServerListView(scope, {
                             SaveSlotClickedSignal = saveSlotClickedSignal,
                             SaveSlotBackSignal = saveSlotBackSignal,
                             ReadyToTeleportSignal = readyToTeleportSignal,
 
                             ServerListClickedSignal = serverListClickedSignal,
 
-                            SlotChosen = whichSlotIsChosen,
+                            IsUIShown = isShown,
                         })
-                    }
-                })
-            }
+                    end)
+                }
+            }),
+
+            Components.Frame(scope, {
+                Name = "ServerList",
+                Position = UDim2.fromScale(0.5, 0.3),
+
+                [Children] = {
+                    ServerListView(scope, {
+                        SaveSlotClickedSignal = saveSlotClickedSignal,
+                        SaveSlotBackSignal = saveSlotBackSignal,
+                        ReadyToTeleportSignal = readyToTeleportSignal,
+
+                        ServerListClickedSignal = serverListClickedSignal,
+
+                        SlotChosen = whichSlotIsChosen,
+                    })
+                }
+            })
         }
     })
 

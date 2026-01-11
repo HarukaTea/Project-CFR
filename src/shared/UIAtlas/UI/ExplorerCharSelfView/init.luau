@@ -56,22 +56,20 @@ return function (plr: Player)
             }
         },
 
-        CenterProps = {
-            [Children] = {
-                PerkPointsView(scope, {
-                    Class = self.Class,
-                    Level = self.Level,
-                    EXP = self.EXP,
+        CenterChildren = {
+            PerkPointsView(scope, {
+                Class = self.Class,
+                Level = self.Level,
+                EXP = self.EXP,
 
-                    PointList = self.Points,
-                    PerkPoints = self.PerkPoints,
-                }),
+                PointList = self.Points,
+                PerkPoints = self.PerkPoints,
+            }),
 
-                CharStatPanel(scope, {
-                    StatList = self.Stats,
-                    BaseStatList = self.BaseStats
-                })
-            }
+            CharStatPanel(scope, {
+                StatList = self.Stats,
+                BaseStatList = self.BaseStats
+            })
         }
     })
     self.UI = UI

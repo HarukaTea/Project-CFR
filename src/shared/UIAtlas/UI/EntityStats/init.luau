@@ -57,64 +57,60 @@ return function (plr: Player)
             })
         }
     }, {
-        TopProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "BossHPBar",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 0.2),
+        TopChildren = {
+            Components.Frame(scope, {
+                Name = "BossHPBar",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.2),
 
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        }),
+                [Children] = {
+                    Components.UIListLayout(scope, {
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                    }),
 
-                        Components.UIScale(scope, {
-                            Scale = 0.85
-                        }),
+                    Components.UIScale(scope, {
+                        Scale = 0.85
+                    }),
 
-                        BossHPBar(scope, {
-                            TargetingList = self.TargetingList
-                        })
-                    }
-                })
-            }
+                    BossHPBar(scope, {
+                        TargetingList = self.TargetingList
+                    })
+                }
+            })
         },
-        CenterProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "TargetingListDiv",
-                    AnchorPoint = Vector2.new(1, 0),
-                    Position = UDim2.fromScale(0.95, 0),
+        CenterChildren = {
+            Components.Frame(scope, {
+                Name = "TargetingListDiv",
+                AnchorPoint = Vector2.new(1, 0),
+                Position = UDim2.fromScale(0.95, 0),
 
-                    [Children] = {
-                        Components.UIScale(scope, {}),
+                [Children] = {
+                    Components.UIScale(scope, {}),
 
-                        Components.Frame(scope, {
-                            Name = "TargetingList",
-                            AnchorPoint = Vector2.new(1, 0),
-                            Position = UDim2.fromScale(0.99, -0.4),
-                            Size = UDim2.fromScale(0.6, 1),
+                    Components.Frame(scope, {
+                        Name = "TargetingList",
+                        AnchorPoint = Vector2.new(1, 0),
+                        Position = UDim2.fromScale(0.99, -0.4),
+                        Size = UDim2.fromScale(0.6, 1),
 
-                            [Children] = {
-                                Components.UIListLayout(scope, {
-                                    Padding = UDim.new(0.25, 0),
-                                    HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                    VerticalAlignment = Enum.VerticalAlignment.Center
-                                }),
+                        [Children] = {
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.25, 0),
+                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                                VerticalAlignment = Enum.VerticalAlignment.Center
+                            }),
 
-                                Fusion.ForPairs(scope, self.TargetingList, function(_, scope: Fusion.Scope, index: number, targeting: ObjectValue)
-                                    return index, PlayerTargetingBar(scope, {
-                                        Targeting = targeting,
-                                        TargetingEnemy = self.TargetingEnemy,
-                                        TargetArrowPos = self.TargetArrowPos
-                                    }, self)
-                                end),
-                            }
-                        }),
-                    }
-                })
-            }
+                            Fusion.ForPairs(scope, self.TargetingList, function(_, scope: Fusion.Scope, index: number, targeting: ObjectValue)
+                                return index, PlayerTargetingBar(scope, {
+                                    Targeting = targeting,
+                                    TargetingEnemy = self.TargetingEnemy,
+                                    TargetArrowPos = self.TargetArrowPos
+                                }, self)
+                            end),
+                        }
+                    }),
+                }
+            })
         }
     })
     self.UI = UI

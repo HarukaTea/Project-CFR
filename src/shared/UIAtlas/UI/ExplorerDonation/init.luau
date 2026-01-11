@@ -104,48 +104,44 @@ return function (plr: Player)
             }
         },
 
-        CenterProps = {
-            [Children] = {
-                Components.ScrollingFrame(scope, {
-                    Name = "DonationRankLeaderboard",
-                    AnchorPoint = Vector2.new(0, 0.5),
-                    Position = UDim2.fromScale(0.02, 1),
-                    Size = UDim2.fromScale(0.4, 7.3),
-                    ScrollBarThickness = 5,
-                    ScrollingDirection = Enum.ScrollingDirection.Y,
+        CenterChildren = {
+            Components.ScrollingFrame(scope, {
+                Name = "DonationRankLeaderboard",
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.02, 1),
+                Size = UDim2.fromScale(0.4, 7.3),
+                ScrollBarThickness = 5,
+                ScrollingDirection = Enum.ScrollingDirection.Y,
 
-                    [Children] = {
-                        Components.PaddingFrame(scope, "AAA"),
+                [Children] = {
+                    Components.PaddingFrame(scope, "AAA"),
 
-                        Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: IntValue)
-                            return index, DonationRankSlot(scope, {
-                                Index = val:GetAttribute("Order"),
-                                Value = val.Value,
-                                PlayerName = val:GetAttribute("PlayerName"),
-                                AvatarId = val:GetAttribute("PlayerThumbnail"),
-                            })
-                        end)
-                    }
+                    Fusion.ForPairs(scope, self.DonationRanks, function(_, scope: Fusion.Scope, index: number, val: IntValue)
+                        return index, DonationRankSlot(scope, {
+                            Index = val:GetAttribute("Order"),
+                            Value = val.Value,
+                            PlayerName = val:GetAttribute("PlayerName"),
+                            AvatarId = val:GetAttribute("PlayerThumbnail"),
+                        })
+                    end)
+                }
 
-                }, {
-                    Padding = UDim.new(0, 0),
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                })
-            }
+            }, {
+                Padding = UDim.new(0, 0),
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            })
         },
 
-        BottomProps = {
-            [Children] = {
-                Components.TextLabel(scope, {
-                    Name = "SupportTip",
-                    AnchorPoint = Vector2.new(0.5, 1),
-                    Position = UDim2.fromScale(0.5, 0.7),
-                    Size = UDim2.fromScale(0.95, 0.5),
-                    Text = "Every support is greatly appreciated!",
-                    TextTransparency = 0.5,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                })
-            }
+        BottomChildren = {
+            Components.TextLabel(scope, {
+                Name = "SupportTip",
+                AnchorPoint = Vector2.new(0.5, 1),
+                Position = UDim2.fromScale(0.5, 0.7),
+                Size = UDim2.fromScale(0.95, 0.5),
+                Text = "Every support is greatly appreciated!",
+                TextTransparency = 0.5,
+                TextXAlignment = Enum.TextXAlignment.Left,
+            })
         }
     })
     self.UI = UI

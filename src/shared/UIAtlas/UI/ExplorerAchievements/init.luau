@@ -144,13 +144,11 @@ return function (plr: Player)
             }
         },
 
-        CenterProps = {
-            [Children] = {
-                BadgeRewardFrame(scope, {
-                    BadgeCompletedCount = self.BadgeCompletedCount,
-                    HasGottenReward = self.HasGottenReward
-                })
-            }
+        CenterChildren = {
+            BadgeRewardFrame(scope, {
+                BadgeCompletedCount = self.BadgeCompletedCount,
+                HasGottenReward = self.HasGottenReward
+            })
         }
     })
     self.UI = UI

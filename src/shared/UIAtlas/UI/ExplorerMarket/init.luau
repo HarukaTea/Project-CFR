@@ -144,107 +144,103 @@ return function (plr: Player)
             ZIndex = 0
         },
 
-        BottomProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "RSideBtns",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, -0.1),
-                    Size = UDim2.fromScale(0.96, 1),
+        BottomChildren = {
+            Components.Frame(scope, {
+                Name = "RSideBtns",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, -0.1),
+                Size = UDim2.fromScale(0.96, 1),
 
-                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return not use(self.IsPurchasing)
+                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return not use(self.IsPurchasing)
+                end),
+
+                [Children] = {
+                    Components.UIListLayout(scope, {
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                        Padding = UDim.new(0.01, 0),
+                    }),
+
+                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        local curItem = use(self.CurrentSelectedItem) :: string
+
+                        if curItem ~= "" then
+                            return ExecuteButton(scope, {
+                                Size = UDim2.fromScale(0.15, 0.7),
+                                ButtonText = "Purchase",
+                                ButtonType = "Confirm",
+                                ButtonClickFunc = function()
+                                    self.IsPurchasing:set(true)
+                                end
+                            })
+                        else
+                            return nil
+                        end
                     end),
-
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            Padding = UDim.new(0.01, 0),
-                        }),
-
-                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                            local curItem = use(self.CurrentSelectedItem) :: string
-
-                            if curItem ~= "" then
-                                return ExecuteButton(scope, {
-                                    Size = UDim2.fromScale(0.15, 0.7),
-                                    ButtonText = "Purchase",
-                                    ButtonType = "Confirm",
-                                    ButtonClickFunc = function()
-                                        self.IsPurchasing:set(true)
-                                    end
-                                })
-                            else
-                                return nil
-                            end
-                        end),
-                    }
-                })
-            }
+                }
+            })
         },
 
         TopProps = {
-            Position = UDim2.fromScale(0.5, 0.02),
+            Position = UDim2.fromScale(0.5, 0.02)
+        },
+        TopChildren = {
+            Components.Frame(scope, {
+                Name = "Economy",
+                Size = UDim2.fromScale(0.82, 1),
 
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "Economy",
-                    Size = UDim2.fromScale(0.82, 1),
+                Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return not use(self.IsPurchasing)
+                end),
 
-                    Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                        return not use(self.IsPurchasing)
-                    end),
+                [Children] = {
+                    Components.UIListLayout(scope, {
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                        Padding = UDim.new(0.015, 0),
+                    }),
 
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            FillDirection = Enum.FillDirection.Horizontal,
-                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                            VerticalAlignment = Enum.VerticalAlignment.Center,
-                            Padding = UDim.new(0.015, 0),
-                        }),
+                    Fusion.ForPairs(scope, table.create(1, true), function(use: Fusion.Use, scope: Fusion.Scope, index: number, _)
+                        local currency = use(self.CurrencyUsing)
 
-                        Fusion.ForPairs(scope, table.create(1, true), function(use: Fusion.Use, scope: Fusion.Scope, index: number, _)
-                            local currency = use(self.CurrencyUsing)
+                        return index, BottombarEcoSlot(scope, {
+                            Currency = currency,
+                            Index = index,
 
-                            return index, BottombarEcoSlot(scope, {
-                                Currency = currency,
-                                Index = index,
+                            CurrencyVal = self.Currency[currency]
+                        })
+                    end)
+                }
+            }),
 
-                                CurrencyVal = self.Currency[currency]
-                            })
-                        end)
-                    }
-                }),
-
-                FakeTopBGTex(scope)
-            }
+            FakeTopBGTex(scope)
         },
 
         CenterProps = {
-            ZIndex = 10,
+            ZIndex = 10
+        },
+        CenterChildren = {
+            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                if not use(self.IsPurchasing) then return nil end
 
-            [Children] = {
-                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                    if not use(self.IsPurchasing) then return nil end
+                local currencyId = use(self.CurrencyUsing)
 
-                    local currencyId = use(self.CurrencyUsing)
+                return MKPurchasePrompt(scope, {
+                    ProductId = use(self.CurrentSelectedItem),
+                    UniqueId = use(self.CurrentSelectedItemUniqueId),
 
-                    return MKPurchasePrompt(scope, {
-                        ProductId = use(self.CurrentSelectedItem),
-                        UniqueId = use(self.CurrentSelectedItemUniqueId),
+                    IsPurchasing = self.IsPurchasing,
+                    Action = "Purchase",
 
-                        IsPurchasing = self.IsPurchasing,
-                        Action = "Purchase",
+                    CurrentSelectedItem = self.CurrentSelectedItem,
+                    CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
 
-                        CurrentSelectedItem = self.CurrentSelectedItem,
-                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-
-                        CurrencyId = currencyId,
-                    })
-                end)
-            }
+                    CurrencyId = currencyId,
+                })
+            end)
         }
     })
     self.UI = UI

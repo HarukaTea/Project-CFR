@@ -41,9 +41,12 @@ HarukaComponents.TweenInfos = AssetBook.TweenInfos
 HarukaComponents.DefaultTween = HarukaComponents.TweenInfos.twiceHalf
 
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
+export type FusionChildrenEntry = { Instance | Fusion.Computed<Instance?> }
 
 --// Init once only
 local existingButtonElements = {}
+
+local Children = Fusion.Children
 
 local wait = task.wait
 
@@ -51,8 +54,8 @@ local wait = task.wait
 
 local function _reconcileProps(default: FusionPropsEntry, props: FusionPropsEntry)
 	for prop, val: any in props do
-		if prop == Fusion.Children and default[Fusion.Children] then
-			table.insert(default[Fusion.Children], val)
+		if prop == Children and default[Children] then
+			table.insert(default[Children], val)
 			continue
 		end
 
@@ -107,7 +110,12 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 	TopProps: FusionPropsEntry?,
 	CenterProps: FusionPropsEntry?,
 	BottomProps: FusionPropsEntry?,
-	FullProps: FusionPropsEntry?
+	FullProps: FusionPropsEntry?,
+
+	TopChildren: FusionChildrenEntry?,
+	CenterChildren: FusionChildrenEntry?,
+	BottomChildren: FusionChildrenEntry?,
+	FullChildren: FusionChildrenEntry?
 }?) : ScreenGui
 
 	guiProps = guiProps or {}
@@ -115,35 +123,61 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 		TopProps = {},
 		CenterProps = {},
 		BottomProps = {},
-		FullProps = {}
+		FullProps = {},
+		TopChildren = {},
+		CenterChildren = {},
+		BottomChildren = {},
+		FullChildren = {}
 	}
 
 	local topProps, centerProps, bottomProps, fullProps =
-		childProps.TopProps or {}, childProps.CenterProps or {}, childProps.BottomProps or {}, childProps.FullProps or {}
+		childProps.TopProps or {},
+		childProps.CenterProps or {},
+		childProps.BottomProps or {},
+		childProps.FullProps or {}
+
+	local topChildren, centerChildren, bottomChildren, fullChildren =
+		childProps.TopChildren or {},
+		childProps.CenterChildren or {},
+		childProps.BottomChildren or {},
+		childProps.FullChildren or {}
+
+	if not topProps[Children] then
+		topProps[Children] = topChildren
+	end
+	if not centerProps[Children] then
+		centerProps[Children] = centerChildren
+	end
+	if not bottomProps[Children] then
+		bottomProps[Children] = bottomChildren
+	end
+	if not fullProps[Children] then
+		fullProps[Children] = fullChildren
+	end
 
 	local defaultTopProps = {
 		Name = "Top",
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.fromScale(0.5, 0),
 
-		[Fusion.Children] = {}
+		[Children] = {}
 	}
 	local defaultCenterProps = {
 		Name = "Center",
 
-		[Fusion.Children] = {}
+		[Children] = {}
 	}
 	local defaultBottomProps = {
 		Name = "Bottom",
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.fromScale(0.5, 1),
 
-		[Fusion.Children] = {}
+		[Children] = {}
 	}
 	local defaultFSProps = {
 		Name = "Full",
 
-		[Fusion.Children] = {}
+		[Children] = {}
 	}
 	_reconcileProps(defaultTopProps, topProps)
 	_reconcileProps(defaultCenterProps, centerProps)
@@ -151,16 +185,16 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 	_reconcileProps(defaultFSProps, fullProps)
 
 	local top, center, bottom, full = nil, nil, nil, nil
-	if not HarukaLib.TableUtils.IsEmpty(topProps) then
+	if HarukaLib.TableUtils.CountDictLength(topProps) > 1 then
 		top = HarukaComponents.HarukaFrame(scope, defaultTopProps)
 	end
-	if not HarukaLib.TableUtils.IsEmpty(centerProps) then
+	if HarukaLib.TableUtils.CountDictLength(centerProps) > 1 then
 		center = HarukaComponents.HarukaFrame(scope, defaultCenterProps)
 	end
-	if not HarukaLib.TableUtils.IsEmpty(bottomProps) then
+	if HarukaLib.TableUtils.CountDictLength(bottomProps) > 1 then
 		bottom = HarukaComponents.HarukaFrame(scope, defaultBottomProps)
 	end
-	if not HarukaLib.TableUtils.IsEmpty(fullProps) then
+	if HarukaLib.TableUtils.CountDictLength(fullProps) > 1 then
 		full = HarukaComponents.Frame(scope, defaultFSProps)
 	end
 
@@ -172,7 +206,7 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		Enabled = true,
 
-		[Fusion.Children] = {
+		[Children] = {
 			top, center, bottom, full
 		}
 	})
@@ -232,12 +266,12 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: FusionProps
 			end)
 		end
 
-		table.insert(props[Fusion.Children], 1, HarukaComponents.UIListLayout(scope, listProps))
+		table.insert(props[Children], 1, HarukaComponents.UIListLayout(scope, listProps))
 
 	elseif listProps.CellPadding ~= nil then --- UIGridLayout
 		listProps[Fusion.Out("AbsoluteContentSize")] = absContentSize
 
-		table.insert(props[Fusion.Children], 1, HarukaComponents.UIGridLayout(scope, listProps))
+		table.insert(props[Children], 1, HarukaComponents.UIGridLayout(scope, listProps))
 	end
 
 	return _createNewCompoent(scope, props, "ScrollingFrame", {
@@ -275,7 +309,7 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: FusionProps
 		end),
 
 		[Fusion.Out("AbsoluteSize")] = absSize,
-		[Fusion.Children] = {}
+		[Children] = {}
 	})
 end
 
@@ -334,7 +368,7 @@ function HarukaComponents.IconImageLabel(scope: Fusion.Scope, props: FusionProps
 		Selectable = false,
 		SelectionOrder = -1,
 
-		[Fusion.Children] = {
+		[Children] = {
 			HarukaComponents.RoundUICorner(scope)
 		}
 	}
@@ -513,7 +547,7 @@ function HarukaComponents.PaddingFrame(scope: Fusion.Scope, name: string) : Fram
 end
 
 function HarukaComponents.HarukaFrame(scope: Fusion.Scope, props: FusionPropsEntry) : Frame
-	table.insert(props[Fusion.Children], 1, HarukaComponents.UIAspectRatioConstraint(scope))
+	table.insert(props[Children], 1, HarukaComponents.UIAspectRatioConstraint(scope))
 
 	props.Size = UDim2.fromScale(1, 0.1)
 

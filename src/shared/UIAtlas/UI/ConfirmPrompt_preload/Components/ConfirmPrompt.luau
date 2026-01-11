@@ -24,44 +24,42 @@ return function (scope: Fusion.Scope, props: {
 		DisplayOrder = UIPriorityBook.System,
 
 	}, {
-        CenterProps = {
-            [Children] = {
-                Fusion.Hydrate(scope, Components:RefUI("ConfirmPrompt_1", false, true, {
-                    "InnerFakeStroke", "Emblem"
-                }))({
-                    [Children] = {
-                        Fusion.Hydrate(scope, Components:RefUI("BtnsFrame_CP1_1", false, true))({
-                            [Children] = {
-                                ExecuteButton(scope, {
-                                    Id = "Confirm",
-                                    Size = UDim2.fromScale(0.45, 0.75),
-                                    ButtonText = props.ConfirmText,
-                                    ButtonType = "Confirm",
-                                    ButtonClickFunc = function()
-                                        props.ResultSignal:Fire("YES")
-                                    end
-                                }),
-                                ExecuteButton(scope, {
-                                    Id = "Decline",
-                                    LayoutOrder = 2,
-                                    Size = UDim2.fromScale(0.45, 0.75),
-                                    ButtonText = props.CancelText,
-                                    ButtonType = "Cancel",
-                                    ButtonClickFunc = function()
-                                        props.ResultSignal:Fire("NO")
-                                    end
-                                })
-                            }
-                        }),
+        CenterChildren = {
+            Fusion.Hydrate(scope, Components:RefUI("ConfirmPrompt_1", false, true, {
+                "InnerFakeStroke", "Emblem"
+            }))({
+                [Children] = {
+                    Fusion.Hydrate(scope, Components:RefUI("BtnsFrame_CP1_1", false, true))({
+                        [Children] = {
+                            ExecuteButton(scope, {
+                                Id = "Confirm",
+                                Size = UDim2.fromScale(0.45, 0.75),
+                                ButtonText = props.ConfirmText,
+                                ButtonType = "Confirm",
+                                ButtonClickFunc = function()
+                                    props.ResultSignal:Fire("YES")
+                                end
+                            }),
+                            ExecuteButton(scope, {
+                                Id = "Decline",
+                                LayoutOrder = 2,
+                                Size = UDim2.fromScale(0.45, 0.75),
+                                ButtonText = props.CancelText,
+                                ButtonType = "Cancel",
+                                ButtonClickFunc = function()
+                                    props.ResultSignal:Fire("NO")
+                                end
+                            })
+                        }
+                    }),
 
-                        Fusion.Hydrate(scope, Components:RefUI("Prompt_CP1_1"))({
-                            TextSize = Fusion.Computed(scope, function(use: Fusion.Use)
-                                return math.ceil(use(absTextBGSize).Y / (40 / 27))
-                            end),
-                        })
-                    }
-                })
-            }
+                    Fusion.Hydrate(scope, Components:RefUI("Prompt_CP1_1"))({
+                        TextSize = Fusion.Computed(scope, function(use: Fusion.Use)
+                            return math.ceil(use(absTextBGSize).Y / (40 / 27))
+                        end),
+                    })
+                }
+            })
         },
 
         FullProps = {

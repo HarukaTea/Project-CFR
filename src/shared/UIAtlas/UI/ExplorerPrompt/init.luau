@@ -39,37 +39,35 @@ return function(plr: Player)
 
 	}, {
         CenterProps = {
-            ZIndex = 2,
+            ZIndex = 2
+        },
+        CenterChildren = {
+            Components.Frame(scope, {
+                Name = "Prompts",
+                Position = fromScale(0.65, 0.5),
+                Size = fromScale(1, 0.7),
 
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "Prompts",
-                    Position = fromScale(0.65, 0.5),
-                    Size = fromScale(1, 0.7),
+                [Children] = {
+                    Components.UIListLayout(scope, {
+                        Padding = udNew(0.3, 0),
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                        VerticalAlignment = Enum.VerticalAlignment.Center
+                    }),
 
-                    [Children] = {
-                        Components.UIListLayout(scope, {
-                            Padding = udNew(0.3, 0),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            VerticalAlignment = Enum.VerticalAlignment.Center
-                        }),
-
-                        Fusion.ForPairs(scope, self.PromptList, function(_, scope: Fusion.Scope, index: number, prompt: ObjectValue)
-                            return index, PromptBar(scope, {
-                                PromptObject = prompt.Value,
-                                CurrentPromptIndex = self.CurrentPromptIndex,
-                                LayoutOrder = index
-                            })
-                        end)
-                    },
-                }),
-            }
+                    Fusion.ForPairs(scope, self.PromptList, function(_, scope: Fusion.Scope, index: number, prompt: ObjectValue)
+                        return index, PromptBar(scope, {
+                            PromptObject = prompt.Value,
+                            CurrentPromptIndex = self.CurrentPromptIndex,
+                            LayoutOrder = index
+                        })
+                    end)
+                },
+            })
         }
     })
     self.UI = UI
 
     return function ()
         Fusion.doCleanup(scope)
-
     end
 end

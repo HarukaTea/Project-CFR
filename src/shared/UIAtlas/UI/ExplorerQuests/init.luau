@@ -136,51 +136,49 @@ return function(plr: Player)
         }
 
 	}, {
-        BottomProps = {
-            [Children] = {
-                Components.Frame(scope, {
-                    Name = "Quests",
-                    AnchorPoint = Vector2.zero,
-                    Position = UDim2.fromScale(0.125, -0.8),
+        BottomChildren = {
+            Components.Frame(scope, {
+                Name = "Quests",
+                AnchorPoint = Vector2.zero,
+                Position = UDim2.fromScale(0.125, -0.8),
 
-                    [Children] = {
-                        Components.UIScale(scope, {
-                            Scale = 0.95
-                        }),
+                [Children] = {
+                    Components.UIScale(scope, {
+                        Scale = 0.95
+                    }),
 
-                        Components.UIListLayout(scope, {
-                            Padding = UDim.new(0.1, 0),
-                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                        }),
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.1, 0),
+                        VerticalAlignment = Enum.VerticalAlignment.Bottom,
+                    }),
 
-                        Fusion.ForPairs(scope, self.Quests, function(_, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
-                            if questSymbol.Value then return nil end
-                            if not QuestBook[questSymbol.Name] then return nil end
+                    Fusion.ForPairs(scope, self.Quests, function(_, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
+                        if questSymbol.Value then return nil end
+                        if not QuestBook[questSymbol.Name] then return nil end
 
-                            local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
+                        local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
 
-                            local isCompleted = Fusion.Value(scope, false)
-                            table.insert(scope, HarukaLib:Hydrate(questSymbol, {
-                                ["Prop-Value"] = function(state: boolean)
-                                    state = state or false
-                                    isCompleted:set(state)
-                                end
-                            }))
+                        local isCompleted = Fusion.Value(scope, false)
+                        table.insert(scope, HarukaLib:Hydrate(questSymbol, {
+                            ["Prop-Value"] = function(state: boolean)
+                                state = state or false
+                                isCompleted:set(state)
+                            end
+                        }))
 
-                            return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                                if use(isCompleted) then return nil end
+                        return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            if use(isCompleted) then return nil end
 
-                                return QuestBar(scope, {
-                                    QuestType = questInfo.QuestType,
-                                    QuestId = questInfo.Id,
-                                    QuestVal = questSymbol,
-                                    COLORS = self.COLORS
-                                })
-                            end)
+                            return QuestBar(scope, {
+                                QuestType = questInfo.QuestType,
+                                QuestId = questInfo.Id,
+                                QuestVal = questSymbol,
+                                COLORS = self.COLORS
+                            })
                         end)
-                    }
-                })
-            }
+                    end)
+                }
+            })
         }
     })
     self.UI = UI

@@ -60,26 +60,11 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.Frame(scope, {
-                Name = "TitleSection",
-                BackgroundTransparency = 0,
-
+            Fusion.Hydrate(scope, Components:RefUI("TitleSection_PI1_1", false, true))({
                 [Children] = {
-                    Components.RoundUICorner(scope),
-
-                    Components.UIListLayout(scope, {
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        Padding = UDim.new(0.05, 0),
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                    }),
-
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Components.IconImageLabel(scope, {
-                        Size = UDim2.fromScale(1.5, 1.5),
-                        LayoutOrder = 3,
-
+                    Fusion.Hydrate(scope, Components:RefUI("Icon_PI1_2", true))({
                         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local classId = use(class) :: string
 
@@ -91,33 +76,16 @@ return function(scope: Fusion.Scope, props: {
 
                             if not ClassBook[classId] then return Color3.new(1, 1, 1) end
                             return ClassBook[classId].Color
-                        end),
+                        end)
                     }),
 
-                    Components.TextLabel(scope, {
-                        Name = "PlayerLevel",
-                        LayoutOrder = 2,
-                        Size = UDim2.fromScale(0.4, 0.8),
-                        BackgroundTransparency = 0,
-                        BackgroundColor3 = Components.WHITE_COLOR,
-                        TextColor3 = Components.BLACK_COLOR,
-
+                    Fusion.Hydrate(scope, Components:RefUI("PlayerLevel_PI1_2", true))({
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(level)}`
-                        end),
-
-                        [Children] = {
-                            Components.RoundUICorner(scope),
-                            Components.UIPadding(scope, {
-                                PaddingTop = UDim.new(0.05, 0),
-                                PaddingBottom = UDim.new(0.05, 0),
-                                PaddingLeft = UDim.new(0, 4),
-                                PaddingRight = UDim.new(0, 4),
-                            })
-                        }
-                    }),
+                        end)
+                    })
                 }
-            }),
+            })
         }
     }), Components.BillboardGui(scope, {
         Name = "PlayerInfoBar",
@@ -131,15 +99,9 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.TextLabel(scope, {
-                Name = "PlayerDisplayName",
-                Text = props.Player.DisplayName,
-                AutoLocalize = false,
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
-                }
-            }),
+            Fusion.Hydrate(scope, Components:RefUI("DisplayName_PN1_1", true))({
+                Text = props.Player.DisplayName
+            })
         }
     }), Components.BillboardGui(scope, {
         Name = "PlayerTitleBar",
@@ -153,21 +115,14 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.TextLabel(scope, {
-                Name = "PlayerTitle",
-
+            Fusion.Hydrate(scope, Components:RefUI("Title_PT1_1", true))({
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     local titleState = use(title) :: string
                     if titleState == nil then return "" end
                     if titleState == "" then return "" end
 
                     return `- {titleState} -`
-                end),
-                TextColor3 = Color3.fromHex('#ffeaa7'),
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
-                }
+                end)
             })
         }
     }), Components.BillboardGui(scope, {
@@ -182,21 +137,14 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.TextLabel(scope, {
-                Name = "PlayerRole",
-
+            Fusion.Hydrate(scope, Components:RefUI("Role_PR1_1", true))({
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     local roleState = use(role) :: string
                     if roleState == nil then return "" end
                     if roleState == "" then return "" end
 
                     return `- {roleState} -`
-                end),
-                TextColor3 = Color3.fromHex('#ffeaa7'),
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
-                }
+                end)
             })
         }
     })

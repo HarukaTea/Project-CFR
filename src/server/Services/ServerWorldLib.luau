@@ -8,7 +8,6 @@ local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
-local StarterGui = game:GetService("StarterGui")
 
 export type ServerWorldLibClass = {
     Funcs: { () -> nil },
@@ -83,11 +82,13 @@ table.insert(ServerWorldLib.Funcs, function()
     _clearFolder("Trashcan", ServerStorage)
     _clearFolder("Brushtool2_Plugin_Storage", ServerStorage)
     _clearFolder("RBX_ANIMSAVES", ServerStorage)
+    _clearFolder("DebugTools", ServerStorage.Packages)
 
     -- nah
-    StarterGui:ClearAllChildren()
+    game:GetService("StarterGui"):ClearAllChildren()
     game:GetService("Teams"):ClearAllChildren()
     game:GetService("StarterPack"):ClearAllChildren()
+    game:GetService("TestService"):ClearAllChildren()
 
     for _, susScript: Script in workspace:QueryDescendants('Script,LocalScript') do
         susScript:Destroy()

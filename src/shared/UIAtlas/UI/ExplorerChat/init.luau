@@ -7,8 +7,6 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local ChatView = require(script.Components.ChatView)
 
-local Children = Fusion.Children
-
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
@@ -37,23 +35,21 @@ return function (plr: Player)
         end),
 
     }, {
-        BottomProps = {
-            [Children] = {
-                ChatView(scope, {
-                    IsChatShown = self.IsChatShown,
+        BottomChildren = {
+            ChatView(scope, {
+                IsChatShown = self.IsChatShown,
 
-                    ChoiceList = self.Choices,
-                    Speaker = self.Speaker,
-                    Dialogue = self.Dialogue,
-                    IsTypewriting = self.IsTypewriting,
-                    NPCId = self.NPCId,
-                    MaxUTFShown = self.MaxUTFShown,
+                ChoiceList = self.Choices,
+                Speaker = self.Speaker,
+                Dialogue = self.Dialogue,
+                IsTypewriting = self.IsTypewriting,
+                NPCId = self.NPCId,
+                MaxUTFShown = self.MaxUTFShown,
 
-                    GoToNextDialogueSignal = self.GoToNextDialogueSignal,
-                    GoToNextDialogueByChoiceSignal = self.GoToNextDialogueByChoiceSignal,
-                    GoSkipDialogueSignal = self.GoSkipDialogueSignal,
-                })
-            }
+                GoToNextDialogueSignal = self.GoToNextDialogueSignal,
+                GoToNextDialogueByChoiceSignal = self.GoToNextDialogueByChoiceSignal,
+                GoSkipDialogueSignal = self.GoSkipDialogueSignal,
+            })
         }
     })
     self.UI = UI

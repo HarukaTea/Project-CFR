@@ -7,8 +7,6 @@ local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local Children = Fusion.Children
-
 local Pinia = require(script.Pinia)
 
 return function(plr: Player)
@@ -39,25 +37,23 @@ return function(plr: Player)
 		Parent = plr.PlayerGui,
 
 	}, {
-		CenterProps = {
-			[Children] = {
-				lock,
+		CenterChildren = {
+			lock,
 
-				Fusion.Hydrate(scope, Components:RefUI("ShiftLock_1"))({
-					Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-						return use(self.LastInputType) ~= "Keyboard"
-					end),
-					Image = Fusion.Computed(scope, function(use: Fusion.Use)
-						return use(self.Icon)
-					end),
+			Fusion.Hydrate(scope, Components:RefUI("ShiftLock_1"))({
+				Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+					return use(self.LastInputType) ~= "Keyboard"
+				end),
+				Image = Fusion.Computed(scope, function(use: Fusion.Use)
+					return use(self.Icon)
+				end),
 
-					[Fusion.OnEvent("MouseButton1Click")] = function()
-						if self.char and self.char:FindFirstChildOfClass("Humanoid") and self.char.PrimaryPart then
-							self.ChangeShiftLockState:Fire(if Fusion.peek(self.LockEnabled) then "Off" else "On")
-						end
-					end,
-				})
-			}
+				[Fusion.OnEvent("MouseButton1Click")] = function()
+					if self.char and self.char:FindFirstChildOfClass("Humanoid") and self.char.PrimaryPart then
+						self.ChangeShiftLockState:Fire(if Fusion.peek(self.LockEnabled) then "Off" else "On")
+					end
+				end,
+			})
 		}
 	})
 	self.UI = UI

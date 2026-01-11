@@ -29,23 +29,21 @@ return function(plr: Player)
         end),
 
 	}, {
-        BottomProps = {
-            [Children] = {
-                Fusion.Hydrate(scope, Components:RefUI("ClassAbilityDiv_Bottom_1", false, true))({
-                    [Children] = {
-                        Fusion.Hydrate(scope, Components:RefUI("ReverberationStyle_CA1_1", true))({
-                            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                return use(self.Class) == "Reverberation" and use(self.IsInCombat)
-                            end),
-                        }),
+        BottomChildren = {
+            Fusion.Hydrate(scope, Components:RefUI("ClassAbilityDiv_Bottom_1", false, true))({
+                [Children] = {
+                    Fusion.Hydrate(scope, Components:RefUI("ReverberationStyle_CA1_1", true))({
+                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(self.Class) == "Reverberation" and use(self.IsInCombat)
+                        end),
+                    }),
 
-                        ChainBar(scope, {
-                            ClassVal = self.ChainCombo,
-                            Char = self.char
-                        })
-                    }
-                })
-            }
+                    ChainBar(scope, {
+                        ClassVal = self.ChainCombo,
+                        Char = self.char
+                    })
+                }
+            })
         }
     })
     self.UI = UI
