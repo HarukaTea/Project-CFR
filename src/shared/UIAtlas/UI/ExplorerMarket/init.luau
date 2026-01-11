@@ -2,21 +2,14 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
-local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
-local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
-
 
 local MKProductBar = require(script.Components.MKProductBar)
 local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
-local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
 local BottombarEcoSlot = require(RepS.HarukaShared.UIAtlas.Components.BottombarEcoSlot)
-local BKItemSlot = require(RepS.HarukaShared.UIAtlas.Components.BKItemSlot)
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)
-local BKItemFilterView = require(RepS.HarukaShared.UIAtlas.Components.BKItemFilterView)
-local BottombarOptionBtn = require(RepS.HarukaShared.UIAtlas.Components.BottombarOptionBtn)
 
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)

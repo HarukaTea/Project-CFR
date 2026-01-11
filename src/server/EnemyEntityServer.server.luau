@@ -10,9 +10,6 @@ local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 local SoundService = game:GetService("SoundService")
 
-
-
-local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -23,9 +20,6 @@ local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerB
 local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
 local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityAttackLib)
 local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
-
-
-local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)

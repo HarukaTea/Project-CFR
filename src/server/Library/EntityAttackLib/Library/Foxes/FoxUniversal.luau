@@ -8,8 +8,6 @@ local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
-local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 

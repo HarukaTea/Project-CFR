@@ -3,7 +3,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
@@ -28,7 +27,9 @@ return function (scope: Fusion.Scope, props: {
 	}, {
         CenterProps = {
             [Children] = {
-                Fusion.Hydrate(scope, Components:RefUI("ConfirmPrompt_1", false, true))({
+                Fusion.Hydrate(scope, Components:RefUI("ConfirmPrompt_1", false, true, {
+                    "InnerFakeStroke", "Emblem"
+                }))({
                     [Children] = {
                         Fusion.Hydrate(scope, Components:RefUI("BtnsFrame_CP1_1", false, true))({
                             [Children] = {
@@ -53,9 +54,6 @@ return function (scope: Fusion.Scope, props: {
                                 })
                             }
                         }),
-
-                        Fusion.Hydrate(scope, Components:RefUI("InnerFakeStroke_CP1_1", false, true))({}),
-                        Fusion.Hydrate(scope, Components:RefUI("Emblem_CP1_1"))({}),
 
                         Fusion.Hydrate(scope, Components:RefUI("Prompt_CP1_1"))({
                             TextSize = Fusion.Computed(scope, function(use: Fusion.Use)

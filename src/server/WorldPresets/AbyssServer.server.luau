@@ -23,9 +23,6 @@ local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerB
 local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)
 
 local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
-local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-
-
 
 export type AbyssWorldLibClass = {
     Funcs: { () -> nil },

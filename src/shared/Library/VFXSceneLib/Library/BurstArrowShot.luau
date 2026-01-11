@@ -2,9 +2,7 @@
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local BezierMath = require(RepS.HarukaShared.Shared.HarmonyLib.BezierMath)
 
 

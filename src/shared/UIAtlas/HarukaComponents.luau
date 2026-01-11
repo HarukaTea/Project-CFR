@@ -78,7 +78,12 @@ HarukaComponents._reconcileProps = _reconcileProps
 HarukaComponents._createNewCompoent = _createNewCompoent
 
 
-function HarukaComponents:RefUI(uiId: string, keepAll: boolean?, keepUIObjOnly: boolean?) : Instance?
+function HarukaComponents:RefUI(
+	uiId: string,
+	keepAll: boolean?,
+	keepUIObjOnly: boolean?,
+	whiteList: { string }?
+) : Instance?
 	local obj = RepS.Packages.UIAtlas:FindFirstChild(uiId, true) :: Instance
 	if obj == nil then
 		warn("Failed to find UI element with ID: "..uiId)
@@ -88,12 +93,18 @@ function HarukaComponents:RefUI(uiId: string, keepAll: boolean?, keepUIObjOnly: 
 	obj = obj:Clone()
 	obj.Name = string.match(obj.Name, "^([^_]+)")
 
+	whiteList = whiteList or {}
+
 	if not keepAll and not keepUIObjOnly then
-		obj:ClearAllChildren()
+		for _, child: Instance in obj:GetChildren() do
+			if not table.find(whiteList, child.Name) then
+				child:Destroy()
+			end
+		end
 	end
 	if keepUIObjOnly then
 		for _, child: Instance in obj:GetChildren() do
-			if not string.find(child.ClassName, "UI") then
+			if not string.find(child.ClassName, "UI") and not table.find(whiteList, child.Name) then
 				child:Destroy()
 			end
 		end

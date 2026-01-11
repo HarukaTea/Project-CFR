@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
-local Events = require(RepS.HarukaShared.Library.Events)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local BKItemDescView = require(RepS.HarukaShared.UIAtlas.Components.BKItemDescView)

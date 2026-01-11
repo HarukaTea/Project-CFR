@@ -12,9 +12,6 @@ local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerB
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
 
-local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
-
-
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
 

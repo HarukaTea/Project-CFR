@@ -3,7 +3,6 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local ClassSlot = require(script.Parent.ClassSlot)
 local DMGStat = require(script.Parent.DMGStat)

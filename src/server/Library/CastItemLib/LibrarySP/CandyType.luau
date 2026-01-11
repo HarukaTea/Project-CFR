@@ -1,8 +1,6 @@
 
-local RepS = game:GetService("ReplicatedStorage")
 local SSS = game:GetService("ServerScriptService")
 
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local StatusLib = require(SSS.HarukaServer.Library.StatusLib)
 local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 

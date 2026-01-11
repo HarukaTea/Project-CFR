@@ -12,7 +12,6 @@ local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
 if not cullingConfig then return end
 
 
-local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)

@@ -21,7 +21,6 @@ local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDa
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
 local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
 local PartyLib = require(ServerScriptService.HarukaServer.Services.PartyLib)

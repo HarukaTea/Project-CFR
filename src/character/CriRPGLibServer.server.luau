@@ -12,7 +12,6 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
 local ClassOrbCallbackLib = require(ServerScriptService.HarukaServer.Library.ClassOrbCallbackLib)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
 
 local ServerTable = require(ServerScriptService.HarukaServer.Library.ServerTable)
 

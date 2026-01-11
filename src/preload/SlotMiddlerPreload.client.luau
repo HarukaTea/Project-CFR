@@ -19,9 +19,6 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 
 
-local LoadView = require(RepS.HarukaShared.UIAtlas.Components.LoadView)
-
-
 local wait = task.wait
 
 

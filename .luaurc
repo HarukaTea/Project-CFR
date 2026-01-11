@@ -8,7 +8,7 @@
         "SameLineStatement": false,
         "ImplicitReturn": false,
         "ComparisonPrecedence": false,
-        "ImportUnused": false,
+        "ImportUnused": true,
         "FunctionUnused": false,
         "UninitializedLocal": false,
         "MultiLineStatement": false

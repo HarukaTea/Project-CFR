@@ -11,8 +11,6 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
-
-local Types = require(script.Parent.Parent.Parent.Types)
 local UniversalEntity = require(script.Parent.Parent.Parent.UniversalEntity)
 
 local SlimeUniversal = {}

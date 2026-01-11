@@ -4,7 +4,6 @@ local RepS = game:GetService("ReplicatedStorage")
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
 

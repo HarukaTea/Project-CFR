@@ -9,10 +9,6 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local CloseTab = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
-local TopbarCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.TopbarCategoryBtn)
-local SideCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.SideCategoryBtn)
-
-
 local DevProductSlot = require(script.Components.DevProductSlot)
 local DonationRankSlot = require(RepS.HarukaShared.UIAtlas.Components.LBRankSlot)
 

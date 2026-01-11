@@ -2,8 +2,6 @@
 local RepS = game:GetService("ReplicatedStorage")
 
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
-local Promise = require(RepS.HarukaShared.Shared.Promise)
-
 
 export type Self = {
     plr: Player,

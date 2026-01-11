@@ -14,11 +14,6 @@ local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
 if not cullingConfig then return end
 
 
-local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
-local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
-
-
 local flowerContainer = workspace:WaitForChild("MapComponents", 999):WaitForChild("FlowerContainer", 999)
 local treeContainer = workspace.MapComponents:WaitForChild("TreeContainer", 999)
 local npcContainer = workspace.MapComponents:WaitForChild("NPCs", 999)

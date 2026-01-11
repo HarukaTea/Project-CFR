@@ -7,8 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
-local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymbol)
-
 local Children = Fusion.Children
 
 

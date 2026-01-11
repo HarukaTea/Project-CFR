@@ -2,8 +2,6 @@
 local TextChatService = game:GetService("TextChatService")
 local RepS = game:GetService("ReplicatedStorage")
 
-
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 
 local chatWindow = TextChatService.ChatWindowConfiguration
