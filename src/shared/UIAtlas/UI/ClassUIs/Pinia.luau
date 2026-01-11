@@ -1,11 +1,8 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
-local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
-
 
 export type Self = {
     plr: Player,

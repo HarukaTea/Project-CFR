@@ -407,7 +407,7 @@ return function (scope: Fusion.Scope, props: {
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         if id == "Erase" then
-                                            local result = Components:CreateConfirmPrompt(scope, {
+                                            local result = Components:CreateConfirmPrompt({
                                                 Hint = "Delete this save file? This action cannot be undone.",
                                                 ConfirmText = "YES",
                                                 CancelText = "NO",
@@ -417,7 +417,7 @@ return function (scope: Fusion.Scope, props: {
 
                                             if result == "NO" then return end
 
-                                            local result = Components:CreateConfirmPrompt(scope, {
+                                            local result = Components:CreateConfirmPrompt({
                                                 Hint = "This will <red>PERMANENTLY DELETE</font> your save. Are you sure?",
                                                 ConfirmText = "YES",
                                                 CancelText = "NO",

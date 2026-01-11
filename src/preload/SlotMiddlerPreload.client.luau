@@ -57,7 +57,7 @@ end
 
 
 if enableFav then
-    local result = Components:CreateConfirmPrompt(scope, {
+    local result = Components:CreateConfirmPrompt({
         CancelText = "No",
         ConfirmText = "Yes",
         Hint = "You've played for over 30 mins! Would you like to favorite the game?",

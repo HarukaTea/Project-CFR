@@ -11,7 +11,6 @@ local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
 
 
-local Fusion = require(ReplicatedStorage.HarukaShared.Shared.Fusion)
 local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
@@ -747,10 +746,6 @@ table.insert(ClientWorldLib.Funcs, function()
     local isInvitingTo = false
     local isHovered = false
 
-
-    local partyScope = Fusion.scoped()
-
-
     local function _targetCheck(target: BasePart) : Model | nil
         if isInviting then return end
         if not target then return end
@@ -820,7 +815,7 @@ table.insert(ClientWorldLib.Funcs, function()
             if plr.PlayerGui:FindFirstChild("ConfirmPrompt") then return end
 
 
-            local choice = Components:CreateConfirmPrompt(partyScope, {
+            local choice = Components:CreateConfirmPrompt({
                 Hint = `Accept party invite from <yellow>{Players[inviter].DisplayName}</font>?`,
                 ConfirmText = "YES",
                 CancelText = "NO",
@@ -867,7 +862,7 @@ table.insert(ClientWorldLib.Funcs, function()
         end
         isInvitingTo = true
 
-        local choice = Components:CreateConfirmPrompt(partyScope, {
+        local choice = Components:CreateConfirmPrompt({
             Hint = `Invite <yellow>{thatPlr.DisplayName}</font> to your party?`,
             ConfirmText = "YES",
             CancelText = "NO",
