@@ -81,12 +81,7 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
             }),
 
             Components.HoverImageButton(scope, {
-                [Fusion.OnEvent("MouseEnter")] = function()
-                    isSelecting:set(true)
-                end,
-                [Fusion.OnEvent("MouseLeave")] = function()
-                    isSelecting:set(false)
-                end,
+                Components.ConnectSelectEvents(isSelecting),
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if not props.MenuShownValue then return end

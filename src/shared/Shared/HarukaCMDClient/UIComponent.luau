@@ -86,12 +86,8 @@ return function (scope: Fusion.Scope, props: {
                             return extraArgsText
                         end),
 
-                        [Fusion.OnEvent("MouseEnter")] = function()
-                            isSelectingCMD:set(true)
-                        end,
-                        [Fusion.OnEvent("MouseLeave")] = function()
-                            isSelectingCMD:set(false)
-                        end,
+                        Components.ConnectSelectEvents(isSelectingCMD),
+
                         [Fusion.OnEvent("MouseButton1Click")] = function()
                             self.ExecuteCommandFunc()
                         end,

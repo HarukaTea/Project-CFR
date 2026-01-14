@@ -47,6 +47,7 @@ repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Promise", 999)
 
 repeat wait() until RepS.HarukaShared:WaitForChild("Library", 999)
 
+repeat wait() until RepS.Packages:WaitForChild("UIAtlas", 999)
 repeat wait() until RepS.Packages:WaitForChild("Unloads", 999)
 repeat wait() until RepS.Packages.Unloads:WaitForChild("TeleportUI", 999)
 

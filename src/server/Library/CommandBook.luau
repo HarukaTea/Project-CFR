@@ -16,30 +16,11 @@ local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)
 
-export type CallbackProps = {
-    Executor: Player,
-    Args: { any },
+local Types = require(SSS.HarukaServer.Services.HarukaCMDServer.Types)
 
-    ResolveObj: () -> nil
-}
-export type CommandArgJSON = {
-    Name: string,
-    Type: string,
-
-    ShouldBeInteger: boolean?,
-    RangeMin: number?,
-    RangeMax: number?,
-
-    EnumItems: { string }?,
-}
-export type CommandJSON = {
-    Name: string,
-    Alias: string,
-    Args: { CommandArgJSON },
-    RankReq: number,
-
-    Callback: (props: CallbackProps) -> nil
-}
+export type CallbackProps = Types.CallbackProps
+export type CommandArgJSON = Types.CommandArgJSON
+export type CommandJSON = Types.CommandJSON
 
 local UNIVERSE_IDS = {
     ["6754928573"] = 2

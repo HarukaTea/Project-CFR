@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
 
@@ -30,6 +31,8 @@ return function (scope: Fusion.Scope, props: {
             }))({
                 [Children] = {
                     Fusion.Hydrate(scope, Components:RefUI("BtnsFrame_CP1_1", false, true))({
+                        [Fusion.Out("AbsoluteSize")] = absTextBGSize,
+
                         [Children] = {
                             ExecuteButton(scope, {
                                 Id = "Confirm",
@@ -57,6 +60,7 @@ return function (scope: Fusion.Scope, props: {
                         TextSize = Fusion.Computed(scope, function(use: Fusion.Use)
                             return math.ceil(use(absTextBGSize).Y / (40 / 27))
                         end),
+                        Text = HarukaLib:RichTextify(props.Hint)
                     })
                 }
             })

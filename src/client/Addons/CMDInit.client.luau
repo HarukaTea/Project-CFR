@@ -12,24 +12,19 @@ local plr = Players.LocalPlayer
 local wait = task.wait
 
 --// rejoin command debug for all players
-local worldId = workspace:GetAttribute("WorldId") :: string
-local whiteList = { "InitusWorld", "TheInitiaRevamp" }
+local rejoinCommand = Instance.new("TextChatCommand")
+rejoinCommand.Name = "HarukaRejoinCommand"
+rejoinCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
+rejoinCommand.PrimaryAlias = "/rejoin"
+rejoinCommand.SecondaryAlias = "!rejoin"
+rejoinCommand.AutocompleteVisible = true
+rejoinCommand.Enabled = true
 
-if worldId and table.find(whiteList, worldId) then
-    local rejoinCommand = Instance.new("TextChatCommand")
-    rejoinCommand.Name = "HarukaRejoinCommand"
-    rejoinCommand.Parent = TextChatService:WaitForChild("TextChatCommands")
-    rejoinCommand.PrimaryAlias = "/rejoin"
-    rejoinCommand.SecondaryAlias = "!rejoin"
-    rejoinCommand.AutocompleteVisible = true
-    rejoinCommand.Enabled = true
-
-    rejoinCommand.Triggered:Connect(function(textSource: TextSource)
-        if textSource.UserId == plr.UserId then
-            Events.RejoinGame_C.Fire()
-        end
-    end)
-end
+rejoinCommand.Triggered:Connect(function(textSource: TextSource)
+    if textSource.UserId == plr.UserId then
+        Events.RejoinGame_C.Fire()
+    end
+end)
 
 wait(5)
 local UNIVERSE_IDS = {

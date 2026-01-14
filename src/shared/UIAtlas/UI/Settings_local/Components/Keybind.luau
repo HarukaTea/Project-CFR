@@ -80,12 +80,7 @@ return function(scope: Fusion.Scope, props: {
                     Components.HoverImageButton(scope, {
                         ZIndex = 10,
 
-                        [Fusion.OnEvent("MouseEnter")] = function()
-                            isSelectingKey:set(true)
-                        end,
-                        [Fusion.OnEvent("MouseLeave")] = function()
-                            isSelectingKey:set(false)
-                        end,
+                        Components.ConnectSelectEvents(isSelectingKey),
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
                             text:set("PRESS A KEY")
@@ -128,12 +123,7 @@ return function(scope: Fusion.Scope, props: {
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				[Fusion.OnEvent("MouseEnter")] = function()
-					isSelecting:set(true)
-				end,
-				[Fusion.OnEvent("MouseLeave")] = function()
-					isSelecting:set(false)
-				end,
+				Components.ConnectSelectEvents(isSelecting),
 			})
 		}
 	})

@@ -196,12 +196,7 @@ return function(scope: Fusion.Scope, props: {
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				[Fusion.OnEvent("MouseEnter")] = function()
-					isSelecting:set(true)
-				end,
-				[Fusion.OnEvent("MouseLeave")] = function()
-					isSelecting:set(false)
-				end,
+				Components.ConnectSelectEvents(isSelecting),
 			})
 		}
 	})

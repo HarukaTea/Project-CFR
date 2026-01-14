@@ -140,12 +140,7 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     Components.HoverImageButton(scope, {
-                                        [Fusion.OnEvent("MouseEnter")] = function()
-                                            isSelectingUlt:set(true)
-                                        end,
-                                        [Fusion.OnEvent("MouseLeave")] = function()
-                                            isSelectingUlt:set(false)
-                                        end,
+                                        Components.ConnectSelectEvents(isSelectingUlt),
 
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
                                             self.CastClassUlt_C:Fire()

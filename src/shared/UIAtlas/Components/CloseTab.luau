@@ -29,50 +29,30 @@ return function (scope: Fusion.Scope, props: {
     end
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
+        if not Fusion.peek(props.ViewShownValue) then return end
 
         local isGamepad = string.find(input.UserInputType.Name, "Gamepad")
         if not isGamepad then return end
 
-        if input.KeyCode == Enum.KeyCode.ButtonB and Fusion.peek(props.ViewShownValue) then
+        if input.KeyCode == Enum.KeyCode.ButtonB then
             _close()
         end
     end))
 
-    return Components.Frame(scope, {
-        Name = "Tab",
-        AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.fromScale(0.5, 0.02),
-
+    return Fusion.Hydrate(scope, Components:RefUI("CloseTab_1", false, true))({
         [Children] = {
-            Components.UIListLayout(scope, {
-                Padding = UDim.new(0.015, 0),
-                FillDirection = Enum.FillDirection.Horizontal,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-                HorizontalAlignment = Enum.HorizontalAlignment.Right,
-            }),
-
             Components.PaddingFrame(scope, "ZZZ"),
 
-            Components.Frame(scope, {
-                Name = "Close",
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
+            Fusion.Hydrate(scope, Components:RefUI("Close_CTab1_1"))({
                 [Children] = {
-                    Components.ImageLabel(scope, {
-                        Name = "Icon",
-                        Image = "rbxassetid://82804434423267",
-
+                    Fusion.Hydrate(scope, Components:RefUI("Icon_CTabClose1_1"))({
                         ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return if use(isSelecting) then Color3.fromRGB(255, 255, 0) else Color3.new(1, 1, 1)
                         end)
                     }),
+
                     Components.HoverImageButton(scope, {
-                        [Fusion.OnEvent("MouseEnter")] = function()
-                            isSelecting:set(true)
-                        end,
-                        [Fusion.OnEvent("MouseLeave")] = function()
-                            isSelecting:set(false)
-                        end,
+                        Components.ConnectSelectEvents(isSelecting),
 
                         [Fusion.OnEvent("MouseButton1Click")] = _close
                     })

@@ -77,12 +77,8 @@ return function(scope: Fusion.Scope, props: {
 				Position = UDim2.fromScale(0.87, 0.5),
 				Size = UDim2.fromScale(0.1, 0.8),
 
-				[Fusion.OnEvent("MouseEnter")] = function()
-					isSelectingSwitcher:set(true)
-				end,
-				[Fusion.OnEvent("MouseLeave")] = function()
-					isSelectingSwitcher:set(false)
-				end,
+				Components.ConnectSelectEvents(isSelectingSwitcher),
+
 				[Fusion.OnEvent("MouseButton1Click")] = function()
 					props.BooleanValue:set(not Fusion.peek(props.BooleanValue))
 
@@ -125,12 +121,7 @@ return function(scope: Fusion.Scope, props: {
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				[Fusion.OnEvent("MouseEnter")] = function()
-					isSelecting:set(true)
-				end,
-				[Fusion.OnEvent("MouseLeave")] = function()
-					isSelecting:set(false)
-				end,
+				Components.ConnectSelectEvents(isSelecting),
 			})
 		}
 	})

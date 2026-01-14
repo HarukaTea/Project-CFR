@@ -43,7 +43,7 @@ return function(scope: Fusion.Scope, props: {
         Info = UDim2.fromScale(0.8, 0.8)
     }
 
-    return Fusion.Hydrate(scope, Components:RefUI("ExecuteButton", false, true))({
+    return Fusion.Hydrate(scope, Components:RefUI("ExecuteButton_1", false, true))({
         Name = "ExecuteButton_"..props.Id,
 
         AnchorPoint = props.AnchorPoint,

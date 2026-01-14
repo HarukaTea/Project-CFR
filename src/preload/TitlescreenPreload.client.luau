@@ -109,20 +109,24 @@ do
     local shouldSkipTitlescreen = workspace:GetAttribute("NoRequiresTitlescreen")
     local forceSlotChosen = "Slot1"
 
-    if teleportData then
-        if type(teleportData) == "table" then
-            if teleportData.FromAbyss or teleportData.ToAbyss then
-                local slotIds = teleportData.SlotChosen or {}
+    if teleportData and type(teleportData) == "table" then
+        if teleportData.FromAbyss or teleportData.ToAbyss then
+            local slotIds = teleportData.SlotChosen or {}
 
+            shouldSkipTitlescreen = true
+            forceSlotChosen = slotIds[Players.LocalPlayer.Name] or "Slot1"
+
+        elseif teleportData.Rejoin then
+            local slotChosen = teleportData.SlotChosen
+            if slotChosen then
                 shouldSkipTitlescreen = true
-                forceSlotChosen = slotIds[Players.LocalPlayer.Name] or "Slot1"
+                forceSlotChosen = slotChosen
             end
         end
     end
     if shouldSkipTitlescreen then
         workspace:SetAttribute("ShouldSkipTitlescreen", true)
     else
-        repeat wait() until RepS:WaitForChild("Packages", 999)
         repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
         repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("MainCamera", 999)
     end

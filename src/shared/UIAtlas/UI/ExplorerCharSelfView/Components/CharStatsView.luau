@@ -62,8 +62,10 @@ return function (scope: Fusion.Scope, props: {
         [Children] = {
             Components.PaddingFrame(scope, "AAA"),
 
-            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope, index: number, val)
-
+            Fusion.ForPairs(scope, props.StatList, function(_, scope: Fusion.Scope, index: number, val: {
+                Id: string,
+                Val: { Fusion.Value<number> }
+            })
                 local correspondingBaseStat = nil
                 for _, baseStatInfo in props.BaseStatList do
                     if baseStatInfo.Id == val.Id then
@@ -76,39 +78,22 @@ return function (scope: Fusion.Scope, props: {
                     return index, nil
                 end
 
-                return index, Components.Frame(scope, {
+                return index, Fusion.Hydrate(scope, Components:RefUI("StatTemplate_ECSV1_1", false, true))({
                     Name = "BBB_"..val.Id,
-                    BackgroundColor3 = Color3.fromRGB(),
                     BackgroundTransparency = if index % 2 == 0 then 0.1 else 0.65,
-                    Size = UDim2.fromScale(1, 0.1),
                     LayoutOrder = index,
 
                     [Children] = {
-                        Components.UIAspectRatioConstraint(scope, 21.063),
-
-                        Components.TextLabel(scope, {
-                            Name = "Title",
-                            Position = UDim2.fromScale(0.08, 0),
-                            Size = UDim2.fromScale(0.3, 1),
-                            Text = val.Id,
-                            TextXAlignment = Enum.TextXAlignment.Left,
-
-                            [Children] = {
-                                Components.UIPadding(scope, {
-                                    PaddingTop = UDim.new(0.15, 0),
-                                    PaddingBottom = UDim.new(0.15, 0),
-                                    PaddingLeft = UDim.new(0, 0),
-                                    PaddingRight = UDim.new(0, 0)
-                                })
-                            }
+                        Fusion.Hydrate(scope, Components:RefUI("Icon_ECSV2_1", true))({
+                            Image = STAT_ICONS[val.Id] or AssetBook.ExtraIcons.Unknown,
+                            ImageColor3 = STAT_ICON_COLORS[val.Id] or Color3.fromRGB(255, 255, 255)
                         }),
-                        Components.TextLabel(scope, {
-                            Name = "Stat",
-                            AnchorPoint = Vector2.xAxis,
-                            Position = UDim2.fromScale(0.98, 0),
-                            Size = UDim2.fromScale(0.3, 1),
-                            TextXAlignment = Enum.TextXAlignment.Right,
 
+                        Fusion.Hydrate(scope, Components:RefUI("Title_ECSV2_1", true))({
+                            Text = val.Id,
+                        }),
+
+                        Fusion.Hydrate(scope, Components:RefUI("Stat_ECSV2_1", true))({
                             Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                 local shouldUsePercent = false
                                 if string.find(val.Id, "CRIT DMG") then
@@ -124,31 +109,9 @@ return function (scope: Fusion.Scope, props: {
                                 end
                             end),
                             TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                if use(val.Val[1]) > use(correspondingBaseStat.Val[1]) then
-                                    return Color3.fromRGB(0, 255, 255)
-                                else
-                                    return Color3.fromHex('#ffffff')
-                                end
+                                return if use(val.Val[1]) > use(correspondingBaseStat.Val[1]) then Color3.fromRGB(0, 255, 255) else Color3.fromHex('#ffffff')
                             end),
-
-                            [Children] = {
-                                Components.UIPadding(scope, {
-                                    PaddingTop = UDim.new(0.15, 0),
-                                    PaddingBottom = UDim.new(0.15, 0),
-                                    PaddingLeft = UDim.new(0, 0),
-                                    PaddingRight = UDim.new(0, 0)
-                                })
-                            }
                         }),
-
-                        Components.IconImageLabel(scope, {
-                            Position = UDim2.fromScale(0.02, 0.5),
-                            AnchorPoint = Vector2.new(0, 0.5),
-                            Size = UDim2.fromScale(0.8, 0.8),
-
-                            Image = STAT_ICONS[val.Id] or AssetBook.ExtraIcons.Unknown,
-                            ImageColor3 = STAT_ICON_COLORS[val.Id] or Color3.fromRGB(255, 255, 255),
-                        })
                     }
                 })
             end)

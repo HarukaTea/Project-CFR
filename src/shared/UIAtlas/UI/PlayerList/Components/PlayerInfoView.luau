@@ -12,11 +12,9 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local RankBook = require(RepS.HarukaShared.Library.RankBook)
 
-local New, Children, Computed = Fusion.New, Fusion.Children, Fusion.Computed
+local Children, Computed = Fusion.Children, Fusion.Computed
 
-local v2New, udNew = Vector2.new, UDim.new
 local fromScale = UDim2.fromScale
-local fromRGB = Color3.fromRGB
 
 local plr = Players.LocalPlayer
 
@@ -57,20 +55,10 @@ return function (scope: Fusion.Scope, props: {
         }))
 
         local function redButtonBase(text: string, func: () -> nil) : TextButton
-            return Components.TextButton(scope, {
-                Name = "DeclineTypeButton",
-                Size = UDim2.fromScale(0.9, 0.075),
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.78),
-                BackgroundColor3 = Components.RED_COLOR,
-                TextColor3 = Components.BLACK_COLOR,
+            return Fusion.Hydrate(scope, Components:RefUI("DeclineButton_PInfo1_1", true))({
                 Text = text,
 
                 [Fusion.OnEvent("MouseButton1Click")] = func,
-
-                [Children] = {
-                    Components.RoundUICorner(scope)
-                }
             })
         end
 
@@ -98,22 +86,10 @@ return function (scope: Fusion.Scope, props: {
                         })
                     end)
                 else
-                    return Components.TextButton(scope, {
-                        Name = "InviteParty",
-                        Size = UDim2.fromScale(0.9, 0.075),
-                        AnchorPoint = Vector2.new(0.5, 0),
-                        Position = UDim2.fromScale(0.5, 0.78),
-                        BackgroundColor3 = Components.GREEN_COLOR,
-                        TextColor3 = Components.BLACK_COLOR,
-                        Text = "INVITE TO PARTY",
-
+                    return Fusion.Hydrate(scope, Components:RefUI("AcceptButton_PInfo1_1", true))({
                         [Fusion.OnEvent("MouseButton1Click")] = function()
                             Bindables.RToCreatePartyInvite:Fire(player)
-                        end,
-
-                        [Children] = {
-                            Components.RoundUICorner(scope)
-                        }
+                        end
                     })
                 end
             end
@@ -130,10 +106,9 @@ return function (scope: Fusion.Scope, props: {
                 fromScale(0.753, 0.558),
             }
 
-            return Components.IconImageLabel(scope, {
+            return Fusion.Hydrate(scope, Components:RefUI("Slot_PInfo1_1", true))({
                 Name = "Slot"..index,
                 Position = POSITIONS[index],
-                Size = fromScale(0.165, 0.165),
 
                 Image = Computed(scope, function(use: Fusion.Use, _)
                     local item: StringValue = nil
@@ -181,21 +156,11 @@ return function (scope: Fusion.Scope, props: {
             })
         end
 
-        return Components.Frame(scope, {
-            Name = "PlayerInfo",
-            Size = fromScale(0.15, 4.5),
-            ZIndex = 10,
-            BackgroundTransparency = 0.1,
-            LayoutOrder = 1,
-
+        return Fusion.Hydrate(scope, Components:RefUI("PlayerInfo_PL1_1", false, true, {
+            "HorizonLine", "Emblem"
+        }))({
             [Children] = {
-                New(scope, "UICorner")({ CornerRadius = udNew(0.05, 0) }),
-
-                Components.IconImageLabel(scope, {
-                    Name = "Class",
-                    Position = fromScale(0.05, 0.055),
-                    Size = fromScale(0.175, 0.175),
-
+                Fusion.Hydrate(scope, Components:RefUI("Class_PInfo1_1", true))({
                     Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         local classId = use(class) :: string
 
@@ -207,32 +172,17 @@ return function (scope: Fusion.Scope, props: {
 
                         if not ClassBook[classId] then return Color3.new(1, 1, 1) end
                         return ClassBook[classId].Color
-                    end),
+                    end)
                 }),
-                Components.TextLabel(scope, {
-                    Name = "DisplayName",
-                    Position = fromScale(0.3, 0.05),
-                    Size = fromScale(0.63, 0.095),
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    AutoLocalize = false,
-                    Text = player.DisplayName,
-                }),
-                Components.TextLabel(scope, {
-                    Name = "UserName",
-                    Position = fromScale(0.3, 0.15),
-                    Size = fromScale(0.63, 0.06),
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    TextColor3 = fromRGB(193, 193, 193),
-                    AutoLocalize = false,
 
+                Fusion.Hydrate(scope, Components:RefUI("DisplayName_PInfo1_1"))({
+                    Text = player.DisplayName
+                }),
+                Fusion.Hydrate(scope, Components:RefUI("UserName_PInfo1_1"))({
                     Text = `@{player.Name}`
                 }),
-                Components.TextLabel(scope, {
-                    Name = "LevelAndPlayTime",
-                    Position = fromScale(0.06, 0.245),
-                    Size = fromScale(0.866, 0.077),
-                    TextColor3 = fromRGB(255, 255, 0),
 
+                Fusion.Hydrate(scope, Components:RefUI("LevelAndPlayTime_PInfo1_1"))({
                     Text = Computed(scope, function(use: Fusion.Use)
                         local playTime = use(playTime) :: number
                         local convertedTime = playTime / 3600
@@ -252,31 +202,17 @@ return function (scope: Fusion.Scope, props: {
                         return `Lv.{use(level)} - {playTime}`
                     end)
                 }),
-                New(scope, "Frame")({
-                    Name = "HorizonLine",
-                    AnchorPoint = v2New(0.5, 0),
-                    Position = fromScale(0.5, 0.35),
-                    Size = fromScale(0.9, 0.01),
-                    BackgroundTransparency = 0.7,
 
-                    [Children] = {
-                        Components.RoundUICorner(scope)
-                    }
-                }),
-
-                Components.ImageLabel(scope, {
-                    Name = "Emblem",
-                    ZIndex = 0,
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    Position = UDim2.fromScale(0.5, 0.4),
-                    Image = "rbxassetid://70702384179449",
-                    ImageTransparency = 0.925,
-                    Size = UDim2.fromScale(0.45, 0.45),
-                    SizeConstraint = Enum.SizeConstraint.RelativeXX,
-
-                    [Children] = {
-                        Components.RoundUICorner(scope)
-                    }
+                Fusion.Hydrate(scope, Components:RefUI("Title_PInfo1_1"))({
+                    TextColor3 = Computed(scope, function(use: Fusion.Use)
+                        local info = RankBook.PlayerTitleInfo[use(playerRoleTitle)] or {
+                            Color = "#ffffff"
+                        }
+                        return Color3.fromHex(info.Color)
+                    end),
+                    Text = Computed(scope, function(use: Fusion.Use)
+                        return `- {use(playerRoleTitle)} -`
+                    end)
                 }),
 
                 PlayerItemSlot(1),
@@ -288,22 +224,6 @@ return function (scope: Fusion.Scope, props: {
                 PlayerItemSlot(7),
 
                 button,
-
-                Components.TextLabel(scope, {
-                    Name = "PlayerTitle",
-                    Position = fromScale(0.06, 0.9),
-                    Size = fromScale(0.866, 0.077),
-
-                    TextColor3 = Computed(scope, function(use: Fusion.Use)
-                        local info = RankBook.PlayerTitleInfo[use(playerRoleTitle)] or {
-                            Color = "#ffffff"
-                        }
-                        return Color3.fromHex(info.Color)
-                    end),
-                    Text = Computed(scope, function(use: Fusion.Use)
-                        return `- {use(playerRoleTitle)} -`
-                    end)
-                }),
             }
         })
     end)

@@ -187,4 +187,121 @@ function blend.getTweenRatio(tweenInfo: TweenInfo, currentTime: number): number
 	return ratio
 end
 
+
+
+
+
+function blend._readSpecialKey(props) : {
+	HoverFunc: () -> nil,
+	LeaveFunc: () -> nil,
+	ClickFunc: () -> nil,
+}
+	local hoverFunc, leaveFunc, clickFunc = nil, nil, nil
+
+	for k, v in props do
+		local keyType = blend.xtypeof(k)
+		local valueType = blend.xtypeof(v)
+
+		if keyType == "SpecialKey" then
+			if k.kind == "OnEvent" then
+				if k.attr == "MouseEnter" then
+					hoverFunc = v
+					props[k] = nil
+				elseif k.attr == "MouseLeave" then
+					leaveFunc = v
+					props[k] = nil
+				elseif k.attr == "MouseButton1Click" then
+					clickFunc = v
+					props[k] = nil
+				end
+			end
+
+		elseif valueType == "nestedSpecialKey" then
+			for k2, v2 in v.applys do
+				if k2.kind == "OnEvent" then
+					if k2.attr == "MouseEnter" then
+						hoverFunc = v2
+						props[k].applys[k2] = nil
+					elseif k2.attr == "MouseLeave" then
+						leaveFunc = v2
+						props[k].applys[k2] = nil
+					end
+				end
+			end
+		end
+	end
+	return {
+		HoverFunc = hoverFunc,
+		LeaveFunc = leaveFunc,
+		ClickFunc = clickFunc
+	}
+end
+function blend._trackButtonEvents(
+	scope: Types.Scope,
+	button: TextButton,
+	hoverFunc: () -> nil,
+	leaveFunc: () -> nil,
+	clickFunc: () -> nil
+)
+	local screenGui = button:FindFirstAncestorOfClass("ScreenGui")
+	local isHovering = false
+	local buttonColor = button.BackgroundColor3
+
+	local function _isButtonValid() : boolean
+		if not screenGui or not screenGui.Enabled then return false end
+		if not button.Visible then return false end
+		return true
+	end
+	local function _triggerLeave()
+		if not isHovering then return end
+		isHovering = false
+		if leaveFunc then leaveFunc() end
+
+		button.BackgroundColor3 = buttonColor
+	end
+	local function _triggerHover()
+		if isHovering then return end
+		if not _isButtonValid() then return end
+		isHovering = true
+		if hoverFunc then hoverFunc() end
+
+		button.BackgroundColor3 = buttonColor:Lerp(Color3.new(), 0.4)
+	end
+
+	table.insert(scope, task.spawn(function()
+		if not screenGui then
+			repeat task.wait() until button:FindFirstAncestorOfClass("ScreenGui")
+			screenGui = button:FindFirstAncestorOfClass("ScreenGui")
+		end
+
+		table.insert(scope, screenGui:GetPropertyChangedSignal("Enabled"):Connect(function()
+			local state = screenGui.Enabled
+			if state == false then
+				_triggerLeave()
+			end
+		end))
+	end))
+
+	local shouldListenEvent = false
+	if button.ClassName == "TextButton" then
+		shouldListenEvent = true
+	end
+	if hoverFunc or leaveFunc then
+		shouldListenEvent = true
+	end
+
+	if shouldListenEvent then
+		table.insert(scope, button.MouseLeave:Connect(_triggerLeave))
+		table.insert(scope, button.SelectionLost:Connect(_triggerLeave))
+		table.insert(scope, button.MouseEnter:Connect(_triggerHover))
+		table.insert(scope, button.SelectionGained:Connect(_triggerHover))
+	end
+	if clickFunc then
+		table.insert(scope, button.MouseButton1Click:Connect(function()
+			if not _isButtonValid() then return end
+			clickFunc()
+		end))
+	end
+end
+
 return blend

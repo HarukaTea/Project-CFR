@@ -32,65 +32,27 @@ return function (scope: Fusion.Scope, props: {
         end
     }))
 
-    return Components.BillboardGui(scope, {
-        Name = "EnemyInfoBar_"..props.Enemy.Name,
+    return Fusion.Hydrate(scope, Components:RefUI("EnemyInfo/Info"))({
         Adornee = props.Enemy.PrimaryPart,
-        MaxDistance = 115,
-        Size = UDim2.fromScale(8, 2),
-        StudsOffset = Vector3.yAxis * 6,
-
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0
         end),
 
         [Children] = {
-            Components.Frame(scope, {
-                Name = "TitleSection",
-                BackgroundTransparency = 0,
-
+            Fusion.Hydrate(scope, Components:RefUI("TitleSection_EI1_1", false, true))({
                 [Children] = {
-                    Components.RoundUICorner(scope),
-
-                    Components.UIListLayout(scope, {
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        Padding = UDim.new(0.05, 0),
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                    }),
-
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Components.IconImageLabel(scope, {
-                        Size = UDim2.fromScale(1.5, 1.5),
-                        LayoutOrder = 3,
-
-                        Image = EntityBook[props.Enemy.Name].Icon,
+                    Fusion.Hydrate(scope, Components:RefUI("Icon_EI1_1", true))({
+                        Image = EntityBook[props.Enemy.Name].Icon
                     }),
-
-                    Components.TextLabel(scope, {
-                        Name = "EnemyLevel",
-                        LayoutOrder = 2,
-                        Size = UDim2.fromScale(0.4, 0.8),
-                        BackgroundTransparency = 0,
-                        BackgroundColor3 = Components.WHITE_COLOR,
-                        TextColor3 = Components.BLACK_COLOR,
-
+                    Fusion.Hydrate(scope, Components:RefUI("EnemyLevel_EI1_1", true))({
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(level)}`
-                        end),
-
-                        [Children] = {
-                            Components.RoundUICorner(scope),
-                            Components.UIPadding(scope, {
-                                PaddingTop = UDim.new(0.05, 0),
-                                PaddingBottom = UDim.new(0.05, 0),
-                                PaddingLeft = UDim.new(0, 4),
-                                PaddingRight = UDim.new(0, 4),
-                            })
-                        }
-                    }),
+                        end)
+                    })
                 }
-            }),
+            })
         }
     })
 end

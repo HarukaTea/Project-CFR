@@ -20,15 +20,15 @@ return function (UI: ScreenGui, self: Pinia.Self)
     --// reverb
     table.insert(scope, Events.Class_ReverberationSupport.On(function(num: number)
         if not bottom then return end
-        if not bottom:FindFirstChild("ClassAbilityDiv_Bottom") then return end
-        if not bottom.ClassAbilityDiv_Bottom:FindFirstChild("ReverberationStyle") then return end
+        if not bottom:FindFirstChild("ClassAbilityDiv") then return end
+        if not bottom.ClassAbilityDiv:FindFirstChild("ReverberationStyle") then return end
 
         local newScope = Fusion.scoped()
 
         local pk = ReverberationPK(newScope, {
             Num = num
         })
-        pk.Parent = bottom.ClassAbilityDiv_Bottom.ReverberationStyle
+        pk.Parent = bottom.ClassAbilityDiv.ReverberationStyle
 
         Debris:AddItem(pk, 2.5)
 

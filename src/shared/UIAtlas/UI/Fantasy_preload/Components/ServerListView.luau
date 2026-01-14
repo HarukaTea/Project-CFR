@@ -7,8 +7,6 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
-local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
-
 local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
@@ -37,49 +35,17 @@ return function (scope: Fusion.Scope, props: {
         isVisible:set(false)
     end)
 
-    local view; view = Components.Frame(scope, {
-        Name = "ServerList",
-        BackgroundTransparency = 0,
-        Size = UDim2.fromScale(0.6, 8),
-        Position = UDim2.fromScale(0.65, 0.5),
-
+    local view; view = Fusion.Hydrate(scope, Components:RefUI("ServerList_CFTitle2_1", false, true, {
+        "CAPatternTex", "Title"
+    }))({
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(isVisible)
         end),
 
         [Children] = {
-            Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.03, 0) }),
-
-            Components.ScaledUIStroke(scope, {
-                Thickness = 0.01,
-                Color = Color3.new(),
-            }),
-
-            CAPatternTex(scope, {
-                TileSize = UDim2.fromScale(0.07, 0.15)
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "Title",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.02),
-                Size = UDim2.fromScale(0.86, 0.075),
-                RichText = true,
-
-                Text = "<u>Global Servers</u>",
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "Empty",
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.fromScale(0.5, 0.5),
-                Size = UDim2.fromScale(1, 0.07),
-
-                Text = "NO SERVERS AVAILABLE",
-                TextColor3 = Color3.fromRGB(159, 159, 159),
-
+            Fusion.Hydrate(scope, Components:RefUI("Empty_CFTitleServer1_1"))({
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return next(use(serversAvailable)) == nil
+                    return HarukaLib.TableUtils.IsEmpty(use(serversAvailable))
                 end)
             }),
 
@@ -109,33 +75,21 @@ return function (scope: Fusion.Scope, props: {
                         info.WorldId = info.WorldId or "InitusWorld"
 
                         local order = 999 - symbol.Value
-
                         local id = string.sub(symbol.Name, 1, 8)
                         if symbol.Name == game.JobId then
                             id = "Current Server"
                             order = 5
                         end
 
-                        return index, Components.HoverImageButton(scope, {
+                        return index, Fusion.Hydrate(scope, Components:RefUI("ServerSlot_CFTitleServer1_1", false, false, {
+                            "UICorner", "UIAspectRatioConstraint", "Icon"
+                        }))({
                             Name = "Server_"..index,
-                            Size = UDim2.fromScale(0.94, 0.2),
-                            BackgroundColor3 = Color3.new(),
-                            BackgroundTransparency = 0,
-
                             LayoutOrder = order,
 
-                            [Fusion.OnEvent("MouseEnter")] = function()
-                                isSelecting:set(true)
-                            end,
-                            [Fusion.OnEvent("MouseLeave")] = function()
-                                isSelecting:set(false)
-                            end,
+                            Components.ConnectSelectEvents(isSelecting),
 
                             [Children] = {
-                                Components.UIAspectRatioConstraint(scope, 11.184),
-
-                                Fusion.New(scope, "UICorner")({ CornerRadius = UDim.new(0.2, 0) }),
-
                                 Components.ScaledUIStroke(scope, {
                                     Thickness = 0.03,
 
@@ -144,45 +98,18 @@ return function (scope: Fusion.Scope, props: {
                                     end)
                                 }),
 
-                                Components.IconImageLabel(scope, {
-                                    Name = "Icon",
-                                    AnchorPoint = Vector2.new(0, 0.5),
-                                    Position = UDim2.fromScale(0.023, 0.5),
-                                    Size = UDim2.fromScale(0.8, 0.8),
-                                    BackgroundColor3 = Components.BLACK_COLOR,
-
-                                    Image = "rbxassetid://124997253539716"
-                                }),
-                                Components.TextLabel(scope, {
-                                    Name = "ServerId",
-                                    Position = UDim2.fromScale(0.11, 0.098),
-                                    Size = UDim2.fromScale(0.85, 0.35),
-                                    RichText = true,
-                                    TextXAlignment = Enum.TextXAlignment.Left,
-                                    AutoLocalize = false,
-
+                                Fusion.Hydrate(scope, Components:RefUI("ServerId_CFTitleServer1_1"))({
                                     Text = info.ServerName..[[<font color="#444444">]].." [ "..info.ServerLocation..", "..info.CityLocation.." / "..id.."]</font>"
                                 }),
-                                Components.TextLabel(scope, {
-                                    Name = "PlayerCount",
-                                    Position = UDim2.fromScale(0.11, 0.48),
-                                    Size = UDim2.fromScale(0.85, 0.35),
-                                    TextXAlignment = Enum.TextXAlignment.Left,
 
+                                Fusion.Hydrate(scope, Components:RefUI("PlayerCount_CFTitleServer1_1"))({
                                     Text = "Adventurers: "..symbol.Value.." / 20",
                                     TextColor3 = Fusion.Computed(scope, function()
                                         return if symbol.Value < 20 then Color3.fromRGB(0, 198, 96) else Color3.fromRGB(255, 0, 0)
                                     end)
                                 }),
 
-                                Components.TextButton(scope, {
-                                    Name = "JoinBtn",
-                                    AnchorPoint = Vector2.new(1, 0.5),
-                                    Position = UDim2.fromScale(0.98, 0.5),
-                                    Size = UDim2.fromScale(0.13, 0.4),
-                                    Text = "JOIN",
-                                    TextColor3 = Components.BLACK_COLOR,
-
+                                Fusion.Hydrate(scope, Components:RefUI("JoinBtn_CFTitleServer1_1", true))({
                                     BackgroundColor3 = Fusion.Computed(scope, function()
                                         return if symbol.Value < 20 then Components.GREEN_COLOR else Components.RED_COLOR
                                     end),
@@ -192,19 +119,8 @@ return function (scope: Fusion.Scope, props: {
                                             Bindables.CreateNotify:Fire("Already in this server")
                                             return
                                         end
-
                                         Events.ServerHop_C.Fire(symbol.Name)
-                                    end,
-
-                                    [Children] = {
-                                        Components.RoundUICorner(scope),
-                                        Components.UIPadding(scope, {
-                                            PaddingTop = UDim.new(0.05, 0),
-                                            PaddingBottom = UDim.new(0.05, 0),
-                                            PaddingLeft = UDim.new(0, 0),
-                                            PaddingRight = UDim.new(0, 0)
-                                        })
-                                    }
+                                    end
                                 })
                             }
                         })

@@ -492,7 +492,7 @@ local function _refresh(plr: Player)
 	local refreshSymbol = Instance.new("StringValue")
 	refreshSymbol.Name = "_NULL"
 	refreshSymbol.Value = "_NULL"
-	refreshSymbol:SetAttribute("HarukaUniqueId", "1599mkk40")
+	refreshSymbol:SetAttribute("HarukaUniqueId", "/")
 	refreshSymbol.Parent = plr.EquippingItems
 
 	Debris:AddItem(refreshSymbol, 1)

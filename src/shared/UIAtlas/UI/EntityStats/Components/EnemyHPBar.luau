@@ -16,10 +16,7 @@ return function (scope: Fusion.Scope, props: {
     if not ClientLib:IsCharValid(props.Enemy) then return nil end
     if not EntityBook[props.Enemy.Name] then return nil end
 
-    local function Value<T>(val: T): Fusion.Value<T>
-        return Fusion.Value(scope, val)
-    end
-    local HP = Value(100)
+    local HP = Fusion.Value(scope, 100)
 
     table.insert(scope, HarukaLib:Hydrate(props.Enemy.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
@@ -27,47 +24,16 @@ return function (scope: Fusion.Scope, props: {
         end,
     }))
 
-    local billboardGui = Components.BillboardGui(scope, {
-        Name = "EnemyHPBar_"..props.Enemy.Name,
+    local billboardGui = Fusion.Hydrate(scope, Components:RefUI("EnemyInfo/HP", false, true, {
+        "EffectList"
+    }))({
         Adornee = props.Enemy.PrimaryPart,
-        MaxDistance = 115,
-        Size = UDim2.fromScale(25.5, 6),
-        StudsOffset = Vector3.yAxis * 12,
-
-        Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return use(HP) > 0
-        end),
 
         [Children] = {
-            Components.TextLabel(scope, {
-                Name = "HP",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.6),
-                Size = UDim2.fromScale(1, 0.5),
-
+            Fusion.Hydrate(scope, Components:RefUI("HP_EI1_1", true))({
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(HP)
-                end),
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {}, true)
-                }
-            }),
-
-            Components.Frame(scope, {
-                Name = "EffectList",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Size = UDim2.fromScale(1, 0.3),
-                Position = UDim2.fromScale(0.5, 0.3),
-
-                [Children] = {
-                    Components.UIListLayout(scope, {
-                        Padding = UDim.new(0.01, 0),
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center
-                    })
-                }
+                end)
             })
         }
     })

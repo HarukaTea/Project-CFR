@@ -19,37 +19,21 @@ return function(scope: Fusion.Scope, props: {
 
     local ICONS = AssetBook.CurrencyIcons
 
-    return Components.HoverImageButton(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("BottomEcoTemplate_Eco1_1", false, false, {
+        "UICorner"
+    }))({
         Name = props.Currency,
-        AutoButtonColor = false,
-        Size = UDim2.fromScale(0.15, 0.7),
-        BackgroundColor3 = Components.BLACK_COLOR,
-        BackgroundTransparency = 0,
         LayoutOrder = props.Index,
 
-        [Fusion.OnEvent("MouseEnter")] = function()
-            isSelecting:set(true)
-        end,
-        [Fusion.OnEvent("MouseLeave")] = function()
-            isSelecting:set(false)
-        end,
+        Components.ConnectSelectEvents(isSelecting),
 
         [Children] = {
-            Components.RoundUICorner(scope),
-
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.08,
 
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)
-            }),
-
-            Components.UIListLayout(scope, {
-                FillDirection = Enum.FillDirection.Horizontal,
-                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-                Padding = UDim.new(0.05, 0)
             }),
 
             Components.PaddingFrame(scope, "AAA"),
@@ -60,10 +44,7 @@ return function(scope: Fusion.Scope, props: {
                 LayoutOrder = 1,
             }),
 
-            Components.TextLabel(scope, {
-                Name = "CurrencyHave",
-                Size = UDim2.fromScale(0.65, 0.7),
-
+            Fusion.Hydrate(scope, Components:RefUI("CurrencyHave_Eco1_1"))({
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local currency = use(props.CurrencyVal)
 
@@ -73,8 +54,6 @@ return function(scope: Fusion.Scope, props: {
                         return HarukaLib:ShortifyNumber(currency, 1)
                     end
                 end),
-
-                TextXAlignment = Enum.TextXAlignment.Right,
             })
         }
     })

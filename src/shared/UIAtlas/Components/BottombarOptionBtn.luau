@@ -19,11 +19,8 @@ return function(scope: Fusion.Scope, props: {
         Filter = "rbxassetid://88154353103061"
     }
 
-    return Components.Frame(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("LSideBtnTemplate_LS1_1", false, true))({
         Name = props.Option,
-        Size = UDim2.fromScale(0.85, 0.85),
-        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-        BackgroundTransparency = 0,
         LayoutOrder = props.Index,
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -31,15 +28,8 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.RoundUICorner(scope),
-
             Components.HoverImageButton(scope, {
-                [Fusion.OnEvent("MouseEnter")] = function()
-                    isSelecting:set(true)
-                end,
-                [Fusion.OnEvent("MouseLeave")] = function()
-                    isSelecting:set(false)
-                end,
+                Components.ConnectSelectEvents(isSelecting),
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if props.Option == "Filter" then
@@ -48,18 +38,12 @@ return function(scope: Fusion.Scope, props: {
                 end
             }),
 
-            Components.ImageLabel(scope, {
-                Name = "Icon",
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.fromScale(0.5, 0.5),
-                Size = UDim2.fromScale(0.6, 0.6),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
+            Fusion.Hydrate(scope, Components:RefUI("Icon_LSideBtn1_1"))({
                 Image = ICONS[props.Option],
 
                 ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if use(isSelecting) then Components.BLACK_COLOR else Components.WHITE_COLOR
-                end),
+                end)
             })
         }
     })

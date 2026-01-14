@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -16,7 +17,6 @@ local Pinia = require(script.Pinia)
 return function (plr: Player)
     if workspace:GetAttribute("NoRequiresTitlescreen") then return nil end
 
-    repeat wait() until workspace:WaitForChild("MapComponents", 999)
     repeat wait() until workspace.MapComponents:WaitForChild("Titlescreen", 999)
     repeat wait() until workspace.MapComponents.Titlescreen:WaitForChild("CharPreviewLocator", 999)
 
@@ -24,8 +24,7 @@ return function (plr: Player)
 
     local self = {} :: Pinia.Self
 
-    self.plr = plr
-    self.scope = Fusion.scoped()
+    ClientLib:InitUIFramework(self, plr, "Titlescreen", true)
 
     Pinia(self)
 

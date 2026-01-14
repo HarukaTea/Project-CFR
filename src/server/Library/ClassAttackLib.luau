@@ -245,7 +245,7 @@ ClassAttackLib.Chain_Ult = function(plr: Player, symbolAttrs: Dict)
 
             Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
                 Caster = char,
-                ProjectileUniqueId = "1599mkk40",
+                ProjectileUniqueId = "/",
                 SceneId = "ChainUltExplosion"
             })
             Events.PlaySound_S.Fire(plr, SoundService.SFXs.FireExplosionCharge)
@@ -268,7 +268,7 @@ ClassAttackLib.Burst = function(plr: Player, symbolAttrs: Dict)
 
     Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
         Caster = char,
-        ProjectileUniqueId = "1599mkk40",
+        ProjectileUniqueId = "/",
         SceneId = "BurstArrowShot"
     })
 
@@ -433,7 +433,7 @@ ClassAttackLib.Flow = function(plr: Player, symbolAttrs: Dict)
 
     Events.PlayVFXScene_S.FireList(_getNearbyPlayers(char), {
         Caster = char,
-        ProjectileUniqueId = "1599mkk40",
+        ProjectileUniqueId = "/",
         SceneId = "FlowballShot"
     })
 

@@ -42,6 +42,9 @@ return function (plr: Player)
 			PosTweenStyle = "FromT2B",
 			PosTweenBaseElement = UI.Center.ConfirmPrompt,
 		})
+		table.insert(confirmScope, task.delay(60, function()
+			resultSignal:Fire("NO")
+		end))
 
 		local finalResult = resultSignal.Event:Wait()
 

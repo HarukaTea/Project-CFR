@@ -62,28 +62,24 @@ return function (scope: Fusion.Scope, props: {
     }, {
         BottomChildren = {
             Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                if use(isBackButtonShown) then
-                    return ExecuteButton(scope, {
-                        AnchorPoint = Vector2.new(0.5, 0),
-                        Position = UDim2.fromScale(0.5, 0),
+                if not use(isBackButtonShown) then return nil end
 
-                        Size = UDim2.fromScale(0.16, 0.68),
-                        ButtonText = "BACK",
-                        ButtonType = "Cancel",
-                        ButtonClickFunc = function()
-                            props.CutsceneUISignal:Fire()
-                        end
-                    })
-                else
-                    return nil
-                end
+                return ExecuteButton(scope, {
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 0),
+                    Size = UDim2.fromScale(0.16, 0.68),
+                    ButtonText = "BACK",
+                    ButtonType = "Cancel",
+                    ButtonClickFunc = function()
+                        props.CutsceneUISignal:Fire()
+                    end
+                })
             end)
         },
 
         CenterChildren = {
-            Components.Frame(scope, {
-                Name = "SaveSlots",
-                Position = UDim2.fromScale(0.5, 0.3),
+            Fusion.Hydrate(scope, Components:RefUI("SaveSlots_CFTitle2_1"))({
+                Visible = true,
 
                 [Children] = {
                     Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope, index: number, charVal: Fusion.Value<Model?>)
@@ -103,9 +99,9 @@ return function (scope: Fusion.Scope, props: {
                 }
             }),
 
-            Components.Frame(scope, {
+            Fusion.Hydrate(scope, Components:RefUI("SaveSlots_CFTitle2_1"))({
                 Name = "ServerList",
-                Position = UDim2.fromScale(0.5, 0.3),
+                Visible = true,
 
                 [Children] = {
                     ServerListView(scope, {

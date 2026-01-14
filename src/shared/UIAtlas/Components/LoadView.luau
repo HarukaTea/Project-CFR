@@ -9,101 +9,24 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Classbook = require(RepS.HarukaShared.Library.ClassBook)
 
-local CAPatternTex = require(RepS.HarukaShared.UIAtlas.Components.CAPatternTex)
-
 local Children = Fusion.Children
 
 return function (scope: Fusion.Scope, props: {
     LoadingText: Fusion.Value<string>,
 })
-
-    local texFrame = Components.Frame(scope, {
-        Name = "CAPatternTexFrame",
-
-        [Children] = {
-            CAPatternTex(scope, {
-                Transparency = 0.985,
-                TileSize = UDim2.fromOffset(55, 55)
-            })
-        }
-    })
-    local texEmblem = Components.ImageLabel(scope, {
-        Name = "Emblem",
-        AnchorPoint = Vector2.new(0.5, 1),
-        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-        Position = UDim2.fromScale(0.5, -1),
-        Size = UDim2.fromScale(1.5, 1.5),
-        Image = "rbxassetid://74364175030818",
-        BackgroundTransparency = 1,
-
-        [Children] = {
-            Components.UICorner(scope, {
-                CornerRadius = UDim.new(0.2, 0)
-            })
-        }
-    })
-
     local UI = Components.HarukaScreenGui(scope, {
         Name = "LoadScreen",
         DisplayOrder = UIPriorityBook.Highest - 2,
         Parent = Players.LocalPlayer.PlayerGui,
 
+        [Children] = {
+            Fusion.Hydrate(scope, Components:RefUI("Full_LoadView1_1", true))({}),
+        }
+
     }, {
-        FullProps = {
-            ZIndex = 0,
-            BackgroundTransparency = 0,
-
-            [Children] = {
-                texFrame,
-
-                Components.ImageLabel(scope, {
-                    Name = "NoctuaryBorder",
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    Position = UDim2.fromScale(0.5, 0.5),
-                    Image = "rbxassetid://113507506875113",
-                    ZIndex = 2
-                })
-            }
-        },
-
         BottomChildren = {
-            Components.Frame(scope, {
-                Name = "AllClasses",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Size = UDim2.fromScale(0.95, 0.6),
-                Position = UDim2.fromScale(0.5, 0),
-                ClipsDescendants = true,
-
+            Fusion.Hydrate(scope, Components:RefUI("AllClasses_LoadView1_1", true))({
                 [Children] = {
-                    Components.UIListLayout(scope, {
-                        Padding = UDim.new(0.008, 0),
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                        SortOrder = Enum.SortOrder.Name,
-                    }),
-
-                    Components.Frame(scope, {
-                        Name = "AAA_Line",
-                        BackgroundTransparency = 0.9,
-                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                        Size = UDim2.fromScale(1, 0.1)
-                    }),
-                    Components.Frame(scope, {
-                        Name = "ZZZ_Line",
-                        BackgroundTransparency = 0.9,
-                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                        Size = UDim2.fromScale(1, 0.1)
-                    }),
-                    Components.Frame(scope, {
-                        Name = "BBB_Padding",
-                        Size = UDim2.fromOffset(1, 1)
-                    }),
-                    Components.Frame(scope, {
-                        Name = "YYY_Padding",
-                        Size = UDim2.fromOffset(1, 1)
-                    }),
-
                     Fusion.ForPairs(scope, Classbook, function(_, scope: Fusion.Scope, classId: string, classInfo: Classbook.ClassJSON)
                         if classInfo.DevClass then return classId, nil end
 
@@ -116,34 +39,17 @@ return function (scope: Fusion.Scope, props: {
                 }
             }),
 
-            Components.Frame(scope, {
-                Name = "Tips",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Size = UDim2.fromScale(1, 0.6),
-                Position = UDim2.fromScale(0.5, -0.8),
+            Fusion.Hydrate(scope, Components:RefUI("Emblem_LoadView1_1", true))({}),
 
-                [Children] = {
-                    Components.TextLabel(scope, {
-                        Name = "Desc",
-                        Size = UDim2.fromScale(1, 0.8),
-                        Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                            return use(props.LoadingText)
-                        end),
-                    })
-                }
-            }),
-
-            Components.Frame(scope, {
-                Name = "CFEmblemTexFrame",
-
-                [Children] = {
-                    texEmblem
-                }
+            Fusion.Hydrate(scope, Components:RefUI("LoadingText_LoadView1_1"))({
+                Text = Fusion.Computed(scope, function(use: Fusion.Use)
+                    return use(props.LoadingText)
+                end)
             })
         }
     })
 
-    local tween = HarukaLib:CreateTween(texFrame, TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 999, true, 0), {
+    local tween = HarukaLib:CreateTween(UI.Full.CAPatternTexFrame, TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 999, true, 0), {
         Position = UDim2.new(0.5, 1500 / 1.5, 0.5, 1500 / 1.5),
         Size = UDim2.new(1, 1500 * 2, 1, 1500 * 2)
     })

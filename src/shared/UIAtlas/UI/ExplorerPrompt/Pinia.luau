@@ -40,7 +40,7 @@ return function (self: Self)
 	self.CurrentPromptIndex = Value(1)
 	self.IsUIShown = Value(true)
 
-	local promptNodes = {}
+	local promptNodes: { [ProximityPrompt]: BasePart } = {}
 
 	--// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -65,12 +65,8 @@ return function (self: Self)
 
 		local part = prompt.Parent :: BasePart
 		if not part then return end
+		if not part:IsA("BasePart") then return end
 		if not part.Parent then return end
-
-		if not part:IsA("BasePart") then
-			warn("Invalid prompt parent object")
-			return
-		end
 
 		prompt:SetAttribute("PromptUniqueId", HttpService:GenerateGUID(false))
 		prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
@@ -81,51 +77,50 @@ return function (self: Self)
 		prompt.MaxActivationDistance = 15.99
 
 		promptNodes[prompt] = part
+
+		--- remember to clear it
+		prompt:GetPropertyChangedSignal("Parent"):Connect(function()
+			if prompt.Parent == nil then
+				promptNodes[prompt] = nil
+			end
+		end)
 	end
 	for _, child: ProximityPrompt in CollectionService:GetTagged("PromptEntity") do
 		_updatePrompt(child)
 	end
-	CollectionService:GetInstanceAddedSignal("PromptEntity"):Connect(_updatePrompt)
+	table.insert(scope, CollectionService:GetInstanceAddedSignal("PromptEntity"):Connect(_updatePrompt))
 
 	table.insert(scope, task.spawn(function()
 		while wait(0.1599) do
 			local isAlive = ClientLib:IsCharValid(char)
 			local sitting = char.Humanoid.SeatPart
+			local activeIds = {}
 
-			local nearbyPrompts = {}
-			if sitting == nil and isAlive then
-				for prompt: ProximityPrompt, part in promptNodes do
+			if not sitting and isAlive then
+				for prompt, part in promptNodes do
 					if not prompt then continue end
-					if not prompt.Parent then continue end
 					if not part then continue end
-					if not part.Parent then continue end
+					if not prompt.Parent then continue end
+					if not prompt.Enabled then continue end
+					if not prompt:IsDescendantOf(workspace) then continue end
 
 					local distance = self.plr:DistanceFromCharacter(part.Position)
 					if distance > 0 and distance <= 15.99 then
-						table.insert(nearbyPrompts, prompt)
+						local uniqueId = prompt:GetAttribute("PromptUniqueId") :: string
+						activeIds[uniqueId] = prompt
 					end
 				end
 			end
-			local uniqueIdList = {}
-
-			for _, prompt: ProximityPrompt in nearbyPrompts do
-				if not prompt.Enabled then continue end
-				if not prompt:IsDescendantOf(workspace) then continue end
-
-				local uniqueId = prompt:GetAttribute("PromptUniqueId") :: string
-				table.insert(uniqueIdList, uniqueId)
-
-				if promptSymbolContainer:FindFirstChild(uniqueId) then continue end
-
-				local symbol = Instance.new("ObjectValue")
-				symbol.Name = uniqueId
-				symbol.Value = prompt
-				symbol.Parent = promptSymbolContainer
+			for uniqueId, prompt in activeIds do
+				if not promptSymbolContainer:FindFirstChild(uniqueId) then
+					local symbol = Instance.new("ObjectValue")
+					symbol.Name = uniqueId
+					symbol.Value = prompt
+					symbol.Parent = promptSymbolContainer
+				end
 			end
-			for _, child: Instance in promptSymbolContainer:GetChildren() do
-				if not child:IsA("ObjectValue") then continue end
-
-				if not table.find(uniqueIdList, child.Name) then
+			for _, child in promptSymbolContainer:GetChildren() do
+				if child:IsA("ObjectValue") and not activeIds[child.Name] then
 					child:Destroy()
 				end
 			end
@@ -204,6 +199,10 @@ return function (self: Self)
 	--// activate
 	table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)
 		if gpe then return end
+
+		local isGamepad = string.find(inputObj.UserInputType.Name, "Gamepad")
+        local isKeyboard = string.find(inputObj.UserInputType.Name, "Keyboard")
+        if not isGamepad and not isKeyboard then return end
 
 		if inputObj.KeyCode == KeybindsBook.PC.PromptTrigger or inputObj.KeyCode == KeybindsBook.Console.PromptTrigger then
 			if not Fusion.peek(self.IsUIShown) then return end

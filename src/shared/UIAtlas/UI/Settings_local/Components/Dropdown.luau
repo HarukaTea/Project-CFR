@@ -67,12 +67,7 @@ return function(scope: Fusion.Scope, props: {
                     Components.HoverImageButton(scope, {
                         ZIndex = 10,
 
-                        [Fusion.OnEvent("MouseEnter")] = function()
-                            isSelectingDropdown:set(true)
-                        end,
-                        [Fusion.OnEvent("MouseLeave")] = function()
-                            isSelectingDropdown:set(false)
-                        end,
+                        Components.ConnectSelectEvents(isSelectingDropdown),
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
                             isSelectingDropdownList:set(not Fusion.peek(isSelectingDropdownList))
@@ -148,7 +143,6 @@ return function(scope: Fusion.Scope, props: {
 
                                 return index, Components.TextButton(scope, {
                                     Name = option,
-                                    AutoButtonColor = true,
                                     Text = option,
                                     Size = UDim2.fromScale(0.9, 1),
 
@@ -188,12 +182,8 @@ return function(scope: Fusion.Scope, props: {
                                         return Components.WHITE_COLOR
                                     end),
 
-                                    [Fusion.OnEvent("MouseEnter")] = function()
-                                        isHovering:set(true)
-                                    end,
-                                    [Fusion.OnEvent("MouseLeave")] = function()
-                                        isHovering:set(false)
-                                    end,
+                                    Components.ConnectSelectEvents(isHovering),
+
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         props.DropdownValue:set(option)
                                         isSelectingDropdownList:set(false)
@@ -236,12 +226,7 @@ return function(scope: Fusion.Scope, props: {
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				[Fusion.OnEvent("MouseEnter")] = function()
-					isSelecting:set(true)
-				end,
-				[Fusion.OnEvent("MouseLeave")] = function()
-					isSelecting:set(false)
-				end,
+				Components.ConnectSelectEvents(isSelecting),
 			})
 		}
 	})

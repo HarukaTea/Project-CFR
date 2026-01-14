@@ -19,74 +19,30 @@ return function (scope: Fusion.Scope, props: {
     local isSelecting = Fusion.Value(scope, false)
 
     local function Title(text: string, order: number)
-        return Components.TextLabel(scope, {
+        return Fusion.Hydrate(scope, Components:RefUI("TitleTemplate_Filter1_1", true))({
             Name = text.."Title",
             LayoutOrder = order,
-            Size = UDim2.fromScale(0.9, 0.05),
-            TextXAlignment = Enum.TextXAlignment.Left,
-
             Text = text,
-
-            [Children] = {
-                Components.UIAspectRatioConstraint(scope, 14.438),
-            }
         })
     end
 
     return {
-        Components.Frame(scope, {
-            Name = "Inner",
-            BackgroundTransparency = 0,
-
+        Fusion.Hydrate(scope, Components:RefUI("Inner_Filter1_1", false, true, {
+            "PaddingAAA"
+        }))({
             [Children] = {
-                Components.UIListLayout(scope, {
-                    Padding = UDim.new(0.03, 0),
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                }),
-
-                Components.Frame(scope, {
-                    Name = "PaddingAAA",
-                    Size = UDim2.new(0, 1, 0.05, 0),
-
+                Fusion.Hydrate(scope, Components:RefUI("SearchTitle_Filter1_1", false, true))({
                     [Children] = {
-                        Components.UIAspectRatioConstraint(scope, 0.043),
-                    }
-                }),
-
-                Components.TextLabel(scope, {
-                    Name = "SearchTitle",
-                    LayoutOrder = 1,
-                    Size = UDim2.fromScale(0.9, 0.05),
-                    TextXAlignment = Enum.TextXAlignment.Left,
-
-                    Text = "Search",
-
-                    [Children] = {
-                        Components.UIAspectRatioConstraint(scope, 14.438),
-
-                         Components.Frame(scope, {
-                            Name = "Close",
-                            Size = UDim2.fromScale(2, 2),
-                            Position = UDim2.fromScale(1, -1),
-                            AnchorPoint = Vector2.new(1, 0),
-                            SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
+                        Fusion.Hydrate(scope, Components:RefUI("Close_Filter1_1"))({
                             [Children] = {
-                                Components.ImageLabel(scope, {
-                                    Name = "Icon",
-                                    Image = "rbxassetid://82804434423267",
-
+                                Fusion.Hydrate(scope, Components:RefUI("Icon_FilterClose1_1"))({
                                     ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                         return if use(isSelecting) then Color3.fromRGB(255, 255, 0) else Color3.new(1, 1, 1)
                                     end)
                                 }),
+
                                 Components.HoverImageButton(scope, {
-                                    [Fusion.OnEvent("MouseEnter")] = function()
-                                        isSelecting:set(true)
-                                    end,
-                                    [Fusion.OnEvent("MouseLeave")] = function()
-                                        isSelecting:set(false)
-                                    end,
+                                    Components.ConnectSelectEvents(isSelecting),
 
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         props.UIOpenState:set(false)
@@ -100,44 +56,11 @@ return function (scope: Fusion.Scope, props: {
                 Title("Includes", 4),
                 Title("Sort Order", 6),
 
-                Components.TextBox(scope, {
-                    Name = "SearchBox",
-                    LayoutOrder = 3,
-                    Size = UDim2.fromScale(0.9, 0.06),
-                    PlaceholderText = "Item Name Here",
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    BackgroundTransparency = 0,
-                    BackgroundColor3 = Components.GREY_COLOR,
-
+                Fusion.Hydrate(scope, Components:RefUI("SearchBox_Filter1_1", true))({
                     Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return use(props.FilterItemText)
                     end),
-
                     [Fusion.Out("Text")] = props.FilterItemText,
-
-                    [Children] = {
-                        Components.UIAspectRatioConstraint(scope, 11.359),
-
-                        Components.RoundUICorner(scope),
-                        Components.ScaledUIStroke(scope, {
-                            Thickness = 0.05,
-                        }),
-
-                        Components.UIPadding(scope, {
-                            PaddingTop = UDim.new(0.17, 0),
-                            PaddingBottom = UDim.new(0.17, 0)
-                        }),
-
-                        Components.ImageLabel(scope, {
-                            Name = "SearchIcon",
-                            AnchorPoint = Vector2.new(0, 0.5),
-                            Position = UDim2.fromScale(-0.1, 0.5),
-                            Size = UDim2.fromScale(0.8, 0.8),
-                            SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                            Image = "rbxassetid://82194349460454",
-                            ImageColor3 = Components.WHITE_COLOR
-                        })
-                    }
                 }),
 
                 Components.ScrollingFrame(scope, {
@@ -152,16 +75,13 @@ return function (scope: Fusion.Scope, props: {
                         Components.PaddingFrame(scope, "ZZZ"),
 
                         Fusion.ForPairs(scope, {"I", "III", "V"}, function(_, scope: Fusion.Scope, index: number, tier: string)
-
                             local isSelecting = Fusion.Value(scope, false)
 
-                            return index,  Components.TextButton(scope, {
+                            return index, Fusion.Hydrate(scope, Components:RefUI("TierTemplate_Filter1_1", false, true))({
                                 Name = "Tier"..index,
 
                                 Text = "Tier "..tier.."+",
-                                TextXAlignment = Enum.TextXAlignment.Right,
                                 LayoutOrder = index,
-                                Size = UDim2.fromScale(0.95, 0.32),
 
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return if use(props.FilterTierList[index]) then Components.WHITE_COLOR else Components.GREY_COLOR
@@ -170,57 +90,23 @@ return function (scope: Fusion.Scope, props: {
                                     return if use(props.FilterTierList[index]) then Components.GREY_COLOR else Components.WHITE_COLOR
                                 end),
 
-                                [Fusion.OnEvent("MouseEnter")] = function()
-                                    isSelecting:set(true)
-                                end,
-                                [Fusion.OnEvent("MouseLeave")] = function()
-                                    isSelecting:set(false)
-                                end,
+                                Components.ConnectSelectEvents(isSelecting),
+
                                 [Fusion.OnEvent("MouseButton1Click")] = function()
                                     props.FilterTierList[index]:set(not Fusion.peek(props.FilterTierList[index]))
                                 end,
 
                                 [Children] = {
-                                    Components.UIAspectRatioConstraint(scope, 10.117),
-                                    Components.UICorner(scope, { CornerRadius = UDim.new(0.05, 0) }),
-
-                                    Components.ScaledUIStroke(scope, {
-                                        Thickness = 0.05
-                                    }),
-
-                                    Components.UIPadding(scope, {
-                                        PaddingTop = UDim.new(0.2, 0),
-                                        PaddingBottom = UDim.new(0.2, 0),
-                                    }),
-
-                                    Components.UIListLayout(scope, {
-                                        FillDirection = Enum.FillDirection.Horizontal,
-                                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                                    }),
-
-                                    Components.Frame(scope, {
-                                        Name = "IsSelected",
-                                        Size = UDim2.fromScale(0.92, 0.92),
-                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
+                                    Fusion.Hydrate(scope, Components:RefUI("IsSelected_TierFilter1_1", false, true))({
                                         BackgroundTransparency = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             return if use(props.FilterTierList[index]) then 0 else 1
                                         end),
 
                                         [Children] = {
-                                            Components.RoundUICorner(scope),
-                                            Components.ScaledUIStroke(scope, {
-                                                Thickness = 0.1,
-                                            }),
-
-                                            Components.ImageLabel(scope, {
-                                                Name = "SelectedIcon",
-                                                Image = "rbxassetid://125595342982836",
-                                                ImageColor3 = Color3.fromRGB(85, 255, 127),
-
+                                            Fusion.Hydrate(scope, Components:RefUI("SelectedIcon_TierFilter1_1"))({
                                                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                                     return use(props.FilterTierList[index])
-                                                end),
+                                                end)
                                             })
                                         }
                                     })
@@ -245,7 +131,6 @@ return function (scope: Fusion.Scope, props: {
                         Components.PaddingFrame(scope, "ZZZ"),
 
                         Fusion.ForPairs(scope, {"T5", "T1"}, function(_, scope: Fusion.Scope, index: number, sortMethod: string)
-
                             local isSelecting = Fusion.Value(scope, false)
 
                             local TEXTS = {
@@ -253,13 +138,11 @@ return function (scope: Fusion.Scope, props: {
                                 T1 = "Sort By Tier (I-V)",
                             }
 
-                            return index,  Components.TextButton(scope, {
+                            return index, Fusion.Hydrate(scope, Components:RefUI("SortMethodTemplate_SortFilter1_1", false, true))({
                                 Name = "SortMethod"..index,
 
                                 Text = TEXTS[sortMethod],
-                                TextXAlignment = Enum.TextXAlignment.Right,
                                 LayoutOrder = index,
-                                Size = UDim2.fromScale(0.95, 0.32),
 
                                 BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return if use(props.SortMethodList[index]) then Components.WHITE_COLOR else Components.GREY_COLOR
@@ -268,12 +151,8 @@ return function (scope: Fusion.Scope, props: {
                                     return if use(props.SortMethodList[index]) then Components.GREY_COLOR else Components.WHITE_COLOR
                                 end),
 
-                                [Fusion.OnEvent("MouseEnter")] = function()
-                                    isSelecting:set(true)
-                                end,
-                                [Fusion.OnEvent("MouseLeave")] = function()
-                                    isSelecting:set(false)
-                                end,
+                                Components.ConnectSelectEvents(isSelecting),
+
                                 [Fusion.OnEvent("MouseButton1Click")] = function()
                                     for _, val in props.SortMethodList do
                                         val:set(false)
@@ -282,46 +161,16 @@ return function (scope: Fusion.Scope, props: {
                                 end,
 
                                 [Children] = {
-                                    Components.UIAspectRatioConstraint(scope, 10.117),
-                                    Components.UICorner(scope, { CornerRadius = UDim.new(0.05, 0) }),
-
-                                    Components.ScaledUIStroke(scope, {
-                                        Thickness = 0.05
-                                    }),
-
-                                    Components.UIPadding(scope, {
-                                        PaddingTop = UDim.new(0.2, 0),
-                                        PaddingBottom = UDim.new(0.2, 0),
-                                    }),
-
-                                    Components.UIListLayout(scope, {
-                                        FillDirection = Enum.FillDirection.Horizontal,
-                                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                                    }),
-
-                                    Components.Frame(scope, {
-                                        Name = "IsSelected",
-                                        Size = UDim2.fromScale(0.92, 0.92),
-                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
+                                    Fusion.Hydrate(scope, Components:RefUI("IsSelected_TierFilter1_1", false, true))({
                                         BackgroundTransparency = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             return if use(props.SortMethodList[index]) then 0 else 1
                                         end),
 
                                         [Children] = {
-                                            Components.RoundUICorner(scope),
-                                            Components.ScaledUIStroke(scope, {
-                                                Thickness = 0.1
-                                            }),
-
-                                            Components.ImageLabel(scope, {
-                                                Name = "SelectedIcon",
-                                                Image = "rbxassetid://125595342982836",
-                                                ImageColor3 = Color3.fromRGB(85, 255, 127),
-
+                                            Fusion.Hydrate(scope, Components:RefUI("SelectedIcon_TierFilter1_1"))({
                                                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                                     return use(props.SortMethodList[index])
-                                                end),
+                                                end)
                                             })
                                         }
                                     })
@@ -336,22 +185,8 @@ return function (scope: Fusion.Scope, props: {
             }
         }),
 
-        Components.Frame(scope, {
-            Name = "BottomBtns",
-            Size = UDim2.fromScale(0.95, 0.06),
-            Position = UDim2.fromScale(0.5, 0.97),
-            AnchorPoint = Vector2.new(0.5, 1),
-
+        Fusion.Hydrate(scope, Components:RefUI("BottomBtns_Filter1_1", false, true))({
             [Children] = {
-                Components.UIAspectRatioConstraint(scope, 11.957),
-
-                Components.UIListLayout(scope, {
-                    FillDirection = Enum.FillDirection.Horizontal,
-                    Padding = UDim.new(0.02, 0),
-                    HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                    VerticalAlignment = Enum.VerticalAlignment.Center,
-                }),
-
                 ExecuteButton(scope, {
                     Size = UDim2.fromScale(0.45, 1),
                     ButtonText = "Reset",

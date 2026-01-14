@@ -3,47 +3,11 @@ local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
+local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local Children = Fusion.Children
-
-local function _getNamePriority(rawName: string?)
-    local name = tostring(rawName or "")
-
-    name = string.gsub(name, "%s+", "")
-    if name == "" then
-        return 14500000
-    end
-
-    name = name :: string
-    name = string.lower(name)
-
-    local BASE = 27
-    local maxChars = 5
-    local key = 0
-
-    for i = 1, math.min(#name, maxChars) do
-        local ch = string.sub(name, i, i)
-        local v
-
-        if string.match(ch, "%a") then
-            v = string.byte(ch) - string.byte("a")
-            if v < 0 or v > 25 then
-                v = 26
-            end
-        else
-            v = 26
-        end
-
-        key = key * BASE + v
-    end
-    if key > 14500000 then
-        key = 14500000
-    end
-
-    return key
-end
 
 return function(scope: Fusion.Scope, props: {
     ItemSymbol: IntConstrainedValue,
@@ -60,13 +24,12 @@ return function(scope: Fusion.Scope, props: {
     if not info then return nil end
 
     local isSelecting = Value(false)
-
-    local amount = Value(1)
     local uniqueId = props.ItemSymbol:GetAttribute("HarukaUniqueId")
 
-    return Components.Frame(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("BKQuickItemSlot_1", false, false, {
+        "UICorner"
+    }))({
         Name = props.ItemSymbol.Name,
-        BackgroundTransparency = 0,
         BackgroundColor3 = AssetBook.ItemTierColors[info.Tier],
 
         LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -76,7 +39,7 @@ return function(scope: Fusion.Scope, props: {
             local T1Sort = use(props.CurrentSortOrderList[2])
 
             local tier = info.Tier or 1
-            local nameKey = _getNamePriority(info.Name)
+            local nameKey = HarukaLib:GetNameOrder(info.Name)
 
             local tierOrder = 0
             if T1Sort then
@@ -92,8 +55,6 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
-
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.035,
 
@@ -103,13 +64,7 @@ return function(scope: Fusion.Scope, props: {
             }),
 
             Components.HoverImageButton(scope, {
-                [Fusion.OnEvent("MouseEnter")] = function()
-                    isSelecting:set(true)
-                end,
-                [Fusion.OnEvent("MouseLeave")] = function()
-                    isSelecting:set(false)
-                end,
-
+                Components.ConnectSelectEvents(isSelecting),
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if Fusion.peek(props.CurrentSelectedItemUniqueId) == uniqueId then
                         props.CurrentSelectedItemUniqueId:set("")
@@ -122,39 +77,13 @@ return function(scope: Fusion.Scope, props: {
                 end
             }),
 
-            Components.IconImageLabel(scope, {
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.fromScale(0.49, 0.35),
-                Size = UDim2.fromScale(0.55, 0.55),
-                SizeConstraint = Enum.SizeConstraint.RelativeXX,
-
-                Image = info.Icon,
+            Fusion.Hydrate(scope, Components:RefUI("Icon_BKQIS1_1", true))({
+                Image = info.Icon
             }),
 
-            Components.TextLabel(scope, {
-                Name = "Amount",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.75),
-                Size = UDim2.fromScale(1, 0.25),
-                BackgroundColor3 = Components.WHITE_COLOR,
-                BackgroundTransparency = 0,
-                FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
-                TextColor3 = Components.BLACK_COLOR,
-
-                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    local stackableList = AssetBook.StackableItemTypes
-
-                    if table.find(stackableList, info.Type) then
-                        return `Lv.{info.Level}`
-                    else
-                        return `x{use(amount)}`
-                    end
-                end),
-
-                [Children] = {
-                    Components.UICorner(scope, { CornerRadius = UDim.new(0.25, 0) })
-                }
-            }),
+            Fusion.Hydrate(scope, Components:RefUI("Level_BKQIS1_1", true))({
+                Text = `Lv.{info.Level}`,
+            })
         }
     })
 end

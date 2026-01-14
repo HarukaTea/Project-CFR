@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
@@ -16,15 +17,9 @@ local Pinia = require(script.Pinia)
 return function(plr: Player)
 	local self = {} :: Pinia.Self
 
-	self.plr = plr
-    self.char = plr.Character
-    self.scope = Fusion.scoped()
+    ClientLib:InitUIFramework(self, plr, "ExplorerQuests")
 
 	Pinia(self)
-
-    if plr.PlayerGui:FindFirstChild("ExplorerQuests") then
-        plr.PlayerGui.ExplorerQuests:Destroy()
-    end
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -116,17 +111,9 @@ return function(plr: Player)
                                 StudsOffset = Vector3.yAxis * 5,
 
                                 [Children] = {
-                                    Components.TextLabel(scope, {
-                                        Name = "Indicator",
-                                        Text = "?",
-                                        TextColor3 = self.COLORS[questInfo.QuestType],
-                                        FontFace = Font.fromName("Arial", Enum.FontWeight.Bold),
-                                        AutoLocalize = false,
-
-                                        [Children] = {
-                                            Components.ScaledTextUIStroke(scope, {}, true)
-                                        }
-                                    })
+                                    Fusion.Hydrate(scope, Components:RefUI("Indicator_QIndicator1_1", true))({
+                                        TextColor3 = self.COLORS[questInfo.QuestType]
+                                    }),
                                 }
                             })
                         end)
@@ -137,21 +124,8 @@ return function(plr: Player)
 
 	}, {
         BottomChildren = {
-            Components.Frame(scope, {
-                Name = "Quests",
-                AnchorPoint = Vector2.zero,
-                Position = UDim2.fromScale(0.125, -0.8),
-
+            Fusion.Hydrate(scope, Components:RefUI("QuestsList_EQuests1_1", false, true))({
                 [Children] = {
-                    Components.UIScale(scope, {
-                        Scale = 0.95
-                    }),
-
-                    Components.UIListLayout(scope, {
-                        Padding = UDim.new(0.1, 0),
-                        VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                    }),
-
                     Fusion.ForPairs(scope, self.Quests, function(_, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
                         if questSymbol.Value then return nil end
                         if not QuestBook[questSymbol.Name] then return nil end

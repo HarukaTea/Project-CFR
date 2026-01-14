@@ -24,7 +24,6 @@ return function (self: Self)
     table.insert(scope, self.CutsceneUISignal)
 
     self.CharVals = {}
-
     for _ = 1, 3 do
         table.insert(self.CharVals, Fusion.Value(scope, nil))
     end

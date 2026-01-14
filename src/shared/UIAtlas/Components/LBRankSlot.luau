@@ -21,60 +21,22 @@ return function (scope: Fusion.Scope, props: {
         text = HarukaLib:TimeifyNumber(props.Value / 1000, true)
     end
 
-    return Components.Frame(scope, {
-        Name = props.PlayerName,
-        BackgroundColor3 = Color3.fromRGB(),
+    return Fusion.Hydrate(scope, Components:RefUI("LBRankSlot_1", false, true))({
         BackgroundTransparency = if props.Index % 2 == 0 then 0.1 else 0.65,
-        Size = UDim2.fromScale(1, 0.1),
         LayoutOrder = props.Index,
 
         [Children] = {
-            Components.UIAspectRatioConstraint(scope, 14.042),
-
-            Components.TextLabel(scope, {
-                Name = "PlayerName",
-                Position = UDim2.fromScale(0.1, 0),
-                Size = UDim2.fromScale(0.5, 1),
-                Text = props.PlayerName,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                AutoLocalize = false,
-
-                TextColor3 = if props.Index <= 3 then Color3.fromRGB(255, 255, 0) else Components.WHITE_COLOR,
-
-                [Children] = {
-                    Components.UIPadding(scope, {
-                        PaddingTop = UDim.new(0.15, 0),
-                        PaddingBottom = UDim.new(0.15, 0),
-                        PaddingLeft = UDim.new(0, 0),
-                        PaddingRight = UDim.new(0, 0)
-                    })
-                }
-            }),
-            Components.TextLabel(scope, {
-                Name = "ValShow",
-                AnchorPoint = Vector2.xAxis,
-                Position = UDim2.fromScale(0.95, 0),
-                Size = UDim2.fromScale(0.3, 1),
-                TextXAlignment = Enum.TextXAlignment.Right,
-                Text = text,
-                AutoLocalize = false,
-
-                [Children] = {
-                    Components.UIPadding(scope, {
-                        PaddingTop = UDim.new(0.15, 0),
-                        PaddingBottom = UDim.new(0.15, 0),
-                        PaddingLeft = UDim.new(0, 0),
-                        PaddingRight = UDim.new(0, 0)
-                    })
-                }
-            }),
-
-            Components.IconImageLabel(scope, {
-                Position = UDim2.fromScale(0.02, 0.5),
-                AnchorPoint = Vector2.new(0, 0.5),
-                Size = UDim2.fromScale(0.8, 0.8),
-
+            Fusion.Hydrate(scope, Components:RefUI("Icon_LBRS1_1", true))({
                 Image = props.AvatarId
+            }),
+
+            Fusion.Hydrate(scope, Components:RefUI("Title_LBRS1_1", true))({
+                Text = props.PlayerName,
+                TextColor3 = if props.Index <= 3 then Color3.fromRGB(255, 255, 0) else Components.WHITE_COLOR
+            }),
+
+            Fusion.Hydrate(scope, Components:RefUI("Stat_LBRS1_1", true))({
+                Text = text
             })
         }
     })

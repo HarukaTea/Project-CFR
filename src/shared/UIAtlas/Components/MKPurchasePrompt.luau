@@ -250,7 +250,6 @@ return function(scope: Fusion.Scope, props: {
 
                                     Components.TextButton(scope, {
                                         Name = "DecreaseBtn",
-                                        AutoButtonColor = true,
                                         BackgroundColor3 = Components.RED_COLOR,
                                         TextColor3 = Components.BLACK_COLOR,
                                         SizeConstraint = Enum.SizeConstraint.RelativeYY,
@@ -276,7 +275,6 @@ return function(scope: Fusion.Scope, props: {
 
                                     Components.TextButton(scope, {
                                         Name = "IncreaseBtn",
-                                        AutoButtonColor = true,
                                         BackgroundColor3 = Components.GREEN_COLOR,
                                         TextColor3 = Components.BLACK_COLOR,
                                         SizeConstraint = Enum.SizeConstraint.RelativeYY,

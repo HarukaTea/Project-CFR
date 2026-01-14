@@ -534,6 +534,20 @@ function HarukaLib:UnbanPlayerByUserId(userId: number)
 	end
 end
 
+local UI_CLASS_PROPS = {
+	Frame = { "BackgroundTransparency" },
+	TextLabel = { "BackgroundTransparency", "TextTransparency", "TextStrokeTransparency" },
+	TextButton = { "BackgroundTransparency", "TextTransparency", "TextStrokeTransparency" },
+	ImageLabel = { "ImageTransparency", "BackgroundTransparency" },
+	ImageButton = { "ImageTransparency", "BackgroundTransparency" },
+	ScrollingFrame = { "BackgroundTransparency", "ScrollBarImageTransparency" },
+	CanvasGroup = { "GroupTransparency" },
+	UIStroke = { "Transparency" },
+}
+local DEFAULT_UITWEEN_PROPS = {
+	DelayTime = 0,
+	TweenTime = 0.2,
+}
 --[[
 	Helper function to tween the transparency of a UI element
 ]]
@@ -549,32 +563,20 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 	PosTweenBaseElement: GuiObject?,
 	PosTweenOffset: number?
 })
-	props = props or {
-		DelayTime = nil,
-		TweenTime = nil,
-		SetOriPropsWhenOut = nil,
-		FollowOriPropsWhenIn = nil,
-		TweenCallback = nil,
-		PosTweenStyle = nil,
-		PosTweenBaseElement = nil,
-		PosTweenOffset = nil
-	}
+	props = props or {}
+	props.DelayTime = props.DelayTime or DEFAULT_UITWEEN_PROPS.DelayTime
+	props.TweenTime = props.TweenTime or DEFAULT_UITWEEN_PROPS.TweenTime
 
-	if props.TweenCallback and style == "Out" then
-		local clonedTweenOutUI = ui:Clone()
-		clonedTweenOutUI.Parent = ui.Parent
-		Debris:AddItem(clonedTweenOutUI, 1)
-
-		ui = clonedTweenOutUI
-
-		pcall(props.TweenCallback, clonedTweenOutUI)
-
-	elseif props.TweenCallback and style == "In" then
+	local isOut = style == "Out"
+	if props.TweenCallback then
+		if isOut then
+			local cloned = ui:Clone()
+			cloned.Parent = ui.Parent
+			Debris:AddItem(cloned, 1)
+			ui = cloned
+		end
 		pcall(props.TweenCallback, ui)
 	end
-
-	props.DelayTime = props.DelayTime or 0
-	props.TweenTime = props.TweenTime or 0.2
 
 	local tweenInfo = TweenInfo.new(props.TweenTime,
 		Enum.EasingStyle.Sine,
@@ -585,140 +587,79 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 
 	table.insert(tweenObjs, ui)
 
-	local function _tweenGoal(obj: GuiObject, attr: string, tweenProps: { [string]: any })
-		if not obj then return end
-		if not obj.Parent then return end
-
-		pcall(function()
-			local original = obj[attr] :: number?
-			local attrOriginal = obj:GetAttribute("HarukaUITween_Ori_"..attr) :: number?
-
-			if style == "In" then
-				obj[attr] = 1
-
-				if original ~= 1 then tweenProps[attr] = original end
-				if props.FollowOriPropsWhenIn and attrOriginal and attrOriginal ~= 1 then
-					tweenProps[attr] = attrOriginal
-				end
-
-			elseif style == "Out" then
-				if obj[attr] then
-					tweenProps[attr] = 1
-
-					if props.SetOriPropsWhenOut and obj:GetAttribute("HarukaUITween_Ori_"..attr) == nil then
-						obj:SetAttribute("HarukaUITween_Ori_"..attr, original)
-					end
-				end
-			end
-		end)
-		pcall(function()
-			obj.Interactable = false
-		end)
-	end
-	local function _startTween(obj: GuiObject, tweenProps: { [string]: any })
-		if not obj then return end
-		if not obj.Parent then return end
-
-		pcall(function()
-			HarukaLib:CreateTween(obj, tweenInfo, tweenProps):Play()
-		end)
-		pcall(function()
-			obj.Interactable = true
-		end)
-	end
-
 	for _, obj in tweenObjs do
-		local tweenProps = {}
-
 		if not obj then continue end
 		if not obj.Parent then continue end
 
-		if obj:IsA("Frame") then
-			if not obj.Visible then continue end
+		local propsToTween = UI_CLASS_PROPS[obj.ClassName]
+		if not propsToTween then continue end
 
-			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
+		local isVisible = if obj:IsA("UIStroke") then obj.Enabled else obj.Visible
+		if not isVisible then continue end
 
-		elseif obj:IsA("TextLabel") or obj:IsA("TextButton") then
-			if not obj.Visible then continue end
+		local tweenGoals = {}
+		for _, attr in propsToTween do
+			local original = obj[attr]
+			if original == nil then continue end
 
-			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
-			_tweenGoal(obj, "TextTransparency", tweenProps)
-			_tweenGoal(obj, "TextStrokeTransparency", tweenProps)
-
-		elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-			if not obj.Visible then continue end
-
-			_tweenGoal(obj, "ImageTransparency", tweenProps)
-			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
-
-		elseif obj:IsA("ScrollingFrame") then
-			if not obj.Visible then continue end
-
-			_tweenGoal(obj, "BackgroundTransparency", tweenProps)
-			_tweenGoal(obj, "ScrollBarImageTransparency", tweenProps)
-
-		elseif obj:IsA("CanvasGroup") then
-			if not obj.Visible then continue end
-
-			_tweenGoal(obj, "GroupTransparency", tweenProps)
-
-		elseif obj:IsA("UIStroke") then
-			if not obj.Enabled then continue end
-
-			_tweenGoal(obj, "Transparency", tweenProps)
-		else
-			continue
+			local attrKey = "HarukaUITween_Ori_" .. attr
+			if isOut then
+				tweenGoals[attr] = 1
+				if props.SetOriPropsWhenOut and obj:GetAttribute(attrKey) == nil then
+					obj:SetAttribute(attrKey, original)
+				end
+			else
+				obj[attr] = 1
+				local target = original
+				if props.FollowOriPropsWhenIn then
+					target = obj:GetAttribute(attrKey) or original
+				end
+				if target ~= 1 then
+					tweenGoals[attr] = target
+				end
+			end
 		end
-
-		if props.DelayTime > 0 then
-			task.delay(props.DelayTime, _startTween, obj, tweenProps)
-		else
-			_startTween(obj, tweenProps)
+		if HarukaLib.TableUtils.IsEmpty(tweenGoals) == false then
+			local function doTween()
+				pcall(function() obj.Interactable = false end)
+				HarukaLib:CreateTween(obj, tweenInfo, tweenGoals):Play()
+				pcall(function() obj.Interactable = true end)
+			end
+			if props.DelayTime > 0 then
+				task.delay(props.DelayTime, doTween)
+			else
+				doTween()
+			end
 		end
 	end
 
-	if props.PosTweenStyle and props.PosTweenBaseElement then
-		local nowPos = props.PosTweenBaseElement.Position
-		local goalPos = nowPos
+	local baseEl = props.PosTweenBaseElement
+	if props.PosTweenStyle and baseEl then
+		local pos = baseEl.Position
+		local offset = props.PosTweenOffset or 8
+		local dir = isOut and -1 or 1
+		local offsetX, offsetY = 0, 0
+		local tweenStyle = props.PosTweenStyle
 
-		local offset = props.PosTweenOffset or 15.99 / 2
-		local fixFactor = if style == "In" then 1 else -1
-
-		if props.PosTweenStyle == "FromB2T" then
-			goalPos = UDim2.new(nowPos.X.Scale, nowPos.X.Offset, nowPos.Y.Scale, nowPos.Y.Offset + offset * fixFactor)
-
-		elseif props.PosTweenStyle == "FromT2B" then
-			goalPos = UDim2.new(nowPos.X.Scale, nowPos.X.Offset, nowPos.Y.Scale, nowPos.Y.Offset - offset * fixFactor)
-
-		elseif props.PosTweenStyle == "FromL2R" then
-			goalPos = UDim2.new(nowPos.X.Scale, nowPos.X.Offset - offset * fixFactor, nowPos.Y.Scale, nowPos.Y.Offset)
-
-		elseif props.PosTweenStyle == "FromR2L" then
-			goalPos = UDim2.new(nowPos.X.Scale, nowPos.X.Offset + offset * fixFactor, nowPos.Y.Scale, nowPos.Y.Offset)
+		if tweenStyle == "FromB2T" then offsetY = offset * dir
+		elseif tweenStyle == "FromT2B" then offsetY = -offset * dir
+		elseif tweenStyle == "FromL2R" then offsetX = -offset * dir
+		elseif tweenStyle == "FromR2L" then offsetX = offset * dir
 		end
 
-		if style == "Out" then
-			goalPos, nowPos = nowPos, goalPos
+		local startPos = UDim2.new(pos.X.Scale, pos.X.Offset + offsetX, pos.Y.Scale, pos.Y.Offset + offsetY)
+		local endPos = pos
+		if isOut then startPos, endPos = endPos, startPos end
+
+		local function tweenPos()
+			baseEl.Position = startPos
+
+			HarukaLib:CreateTween(baseEl, tweenInfo, { Position = pos }):Play()
 		end
-
-		local function _tweenPosition()
-			props.PosTweenBaseElement.Position = goalPos
-
-			local tween = TweenService:Create(props.PosTweenBaseElement, tweenInfo, {
-				Position = nowPos
-			})
-			tween.Completed:Once(function()
-				props.PosTweenBaseElement.Position = if style == "In" then nowPos else goalPos
-
-				tween:Destroy()
-			end)
-			tween:Play()
-		end
-
 		if props.DelayTime > 0 then
-			task.delay(props.DelayTime, _tweenPosition)
+			task.delay(props.DelayTime, tweenPos)
 		else
-			_tweenPosition()
+			tweenPos()
 		end
 	end
 end
@@ -1038,6 +979,38 @@ function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, s
 	end
 
 	return result
+end
+
+-- Get the priority of a name, used for sorting
+function HarukaLib:GetNameOrder(rawName: string?) : number
+    local name = tostring(rawName or "")
+
+    name = string.gsub(name, "%s+", "")
+    if name == "" then
+        return 14500000
+    end
+    name = name :: string
+    name = string.lower(name)
+
+    local BASE = 27
+    local maxChars = 5
+    local key = 0
+
+    for i = 1, math.min(#name, maxChars) do
+        local ch = string.sub(name, i, i)
+        local v
+
+        if string.match(ch, "%a") then
+            v = string.byte(ch) - string.byte("a")
+            if v < 0 or v > 25 then v = 26 end
+        else
+            v = 26
+        end
+        key = key * BASE + v
+    end
+    if key > 14500000 then key = 14500000 end
+
+    return key
 end
 
 return HarukaLib

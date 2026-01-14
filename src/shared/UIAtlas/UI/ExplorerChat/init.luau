@@ -1,6 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
@@ -12,17 +13,11 @@ local Pinia = require(script.Pinia)
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    self.plr = plr
-    self.char = plr.Character
-    self.scope = Fusion.scoped()
-
-    local scope = self.scope :: Fusion.Scope
+    ClientLib:InitUIFramework(self, plr, "ExplorerChat")
 
     Pinia(self)
 
-    if plr.PlayerGui:FindFirstChild("ExplorerChat") then
-        plr.PlayerGui.ExplorerChat:Destroy()
-    end
+    local scope = self.scope :: Fusion.Scope
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerChat",
@@ -56,6 +51,5 @@ return function (plr: Player)
 
     return function ()
         Fusion.doCleanup(scope)
-
     end
 end

@@ -37,71 +37,21 @@ return function (scope: Fusion.Scope, props: {
         end
     end
 
-    return Components.Frame(scope, {
-        Name = "QuestBar_"..questId,
-
+    return Fusion.Hydrate(scope, Components:RefUI("QuestBar_EQuests1_1", false, true))({
         [Children] = {
-            Components.UIListLayout(scope, {
-                Padding = UDim.new(0.01, 0),
-                FillDirection = Enum.FillDirection.Horizontal,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-            }),
-
-            Components.IconImageLabel(scope, {
-                Size = UDim2.fromScale(0.8, 0.8),
-                Image = "rbxassetid://123153183547809",
-                LayoutOrder = 1,
-
+            Fusion.Hydrate(scope, Components:RefUI("Icon_EQuests2_1", false, true))({
                 [Children] = {
-                    Components.Frame(scope, {
-                        Name = "Symbol",
-                        BackgroundColor3 = props.COLORS[props.QuestType],
-                        BackgroundTransparency = 0,
-                        AnchorPoint = Vector2.one,
-                        Size = UDim2.fromScale(0.35, 0.35),
-                        Position = UDim2.fromScale(1, 1),
-                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
-
-                        [Children] = {
-                            Components.RoundUICorner(scope),
-                            Components.ScaledUIStroke(scope, {
-                                Thickness = 0.15,
-                                Color = Components.BLACK_COLOR
-                            })
-                        }
-                    }),
+                    Fusion.Hydrate(scope, Components:RefUI("Symbol_EQuests2_1", true))({
+                        BackgroundColor3 = props.COLORS[props.QuestType]
+                    })
                 }
             }),
 
-            Components.Frame(scope, {
-                Name = "Info",
-                LayoutOrder = 2,
-
+            Fusion.Hydrate(scope, Components:RefUI("Info_EQuests2_1"))({
                 [Children] = {
-                    Components.TextLabel(scope, {
-                        Name = "Title",
-                        Position = UDim2.fromScale(0, 0),
-                        Size = UDim2.fromScale(1, 0.5),
-                        Text = QuestBook[questId].Name,
-                        TextColor3 = props.COLORS[props.QuestType],
-                        TextXAlignment = Enum.TextXAlignment.Left,
-
-                        [Children] = {
-                            Components.ScaledTextUIStroke(scope, {
-                                Thickness = 0.1
-                            })
-                        }
-                    }),
-                    Components.TextLabel(scope, {
-                        Name = "Info",
-                        Position = UDim2.fromScale(0, 0.55),
-                        Size = UDim2.fromScale(1, 0.4),
-                        RichText = true,
-                        TextXAlignment = Enum.TextXAlignment.Left,
-
+                    Fusion.Hydrate(scope, Components:RefUI("Info_EQuests3_2", true))({
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local target = QuestBook[questId].Target
-
                             if notHasObjective then
                                 return HarukaLib:RichTextify(target)
                             end
@@ -117,18 +67,16 @@ return function (scope: Fusion.Scope, props: {
                                 if not val then return "nil" end
 
                                 val = use(val)
-
                                 return tostring(val)
                             end)
 
                             return HarukaLib:RichTextify(result)
                         end),
+                    }),
 
-                        [Children] = {
-                            Components.ScaledTextUIStroke(scope, {
-                                Thickness = 0.1
-                            })
-                        }
+                    Fusion.Hydrate(scope, Components:RefUI("Title_EQuests3_2", true))({
+                        Text = QuestBook[questId].Name,
+                        TextColor3 = props.COLORS[props.QuestType]
                     })
                 }
             })

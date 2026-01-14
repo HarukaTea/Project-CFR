@@ -92,20 +92,31 @@ local function applyInstanceProps(scope: Types.Scope<unknown>, props: Types.Prop
 		observer = {} :: { [Types.SpecialKey]: unknown },
 	}
 
+	local function _applySpecialKey(key: Types.SpecialKey, value: unknown)
+		local stage = (key :: Types.SpecialKey).stage
+		local keys = specialKeys[stage]
+		if keys == nil then
+			External.logError("unrecognisedPropertyStage", nil, stage)
+		else
+			keys[key] = value
+		end
+	end
+
 	for key, value in pairs(props) do
 		local keyType = blend.xtypeof(key)
+		local valueType = blend.xtypeof(value)
 
 		if keyType == "string" then
 			if key ~= "Parent" then
 				bindProperty(scope, applyTo, key :: string, value)
 			end
 		elseif keyType == "SpecialKey" then
-			local stage = (key :: Types.SpecialKey).stage
-			local keys = specialKeys[stage]
-			if keys == nil then
-				External.logError("unrecognisedPropertyStage", nil, stage)
-			else
-				keys[key] = value
+			_applySpecialKey(key, value)
+
+		--- fix OnEvent tables not registering
+		elseif valueType == "nestedSpecialKey" then
+			for k, v in value.applys do
+				_applySpecialKey(k, v)
 			end
 		else
 			-- we don't recognise what this key is supposed to be

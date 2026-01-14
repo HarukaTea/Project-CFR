@@ -1,15 +1,15 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
-local MKK_NUMBER = 1599 * 40 ^ 2
+local FAIRLY_BIG_NUMBER = 1599 * 40 ^ 2
 
 export type Self = {
     plr: Player,
@@ -28,6 +28,7 @@ export type Self = {
     CameraOffsetTweenVal: CFrameValue,
 
     LastInputType: Fusion.Value<string>,
+    ShiftlockConn: RBXScriptConnection?,
 }
 
 return function (self: Self)
@@ -50,6 +51,8 @@ return function (self: Self)
 
     self.LastInputType = FusionComponents.useXboxControllerHotInput(scope)
 
+    self.ShiftlockConn = nil
+
     local cameraAdd, cameraEmpty = HarukaLib.Bin()
     table.insert(scope, cameraEmpty)
 
@@ -68,29 +71,37 @@ return function (self: Self)
         end))
     end)
 
+    local function _disconnectEvents()
+        if self.ShiftlockConn then
+            self.ShiftlockConn:Disconnect()
+            self.ShiftlockConn = nil
+        end
+    end
     local function _enableShiftLock()
         local char = self.char
         local humanoid = char.Humanoid :: Humanoid
         local hrp = char.PrimaryPart
 
-        RS:BindToRenderStep("ShiftLockUpdate", Enum.RenderPriority.Camera.Value + 1, function()
-            if not ClientLib:IsCharValid(char) then return end
+        if self.ShiftlockConn then
+            _disconnectEvents()
+        end
+        self.ShiftlockConn = RunService.RenderStepped:Connect(function()
+            if not char then return end
+            if not char.PrimaryPart then return end
+            if not humanoid then return end
+            if not humanoid.Parent then return end
+            if humanoid.Health <= 0 then return end
+            if humanoid.Sit then return end
 
             humanoid.AutoRotate = false
+            local lookVector = workspace.CurrentCamera.CFrame.LookVector
 
-            if not humanoid.Sit then
-                local lookVector = workspace.CurrentCamera.CFrame.LookVector
-
-                hrp.CFrame = CFrame.new(hrp.Position, Vector3.new(
-                    lookVector.X * MKK_NUMBER,
-                    hrp.Position.Y,
-                    lookVector.Z * MKK_NUMBER
-                ))
-            end
+            hrp.CFrame = CFrame.new(hrp.Position, Vector3.new(
+                lookVector.X * FAIRLY_BIG_NUMBER,
+                hrp.Position.Y,
+                lookVector.Z * FAIRLY_BIG_NUMBER
+            ))
         end)
-    end
-    local function _disconnectEvents()
-        RS:UnbindFromRenderStep("ShiftLockUpdate")
     end
     local function _setLockState(state: "On" | "Off")
         _disconnectEvents()

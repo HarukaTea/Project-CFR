@@ -40,26 +40,7 @@ return function(scope: Fusion.Scope, props: {
 
         UDim2.fromScale(-1.3, 0.5)
     }
-    local forceDivLocationMobile = Value(UDim2.fromOffset(0, 0))
-    local forceSizeMobile = Value(UDim2.fromOffset(0, 0))
-    local forceJumpButtonSize = Value(0)
-
-    Fusion.Observer(scope, props.UIViewportSize):onBind(function()
-        local vpSize = Fusion.peek(props.UIViewportSize)
-
-        local minAxis = math.min(vpSize.X, vpSize.Y)
-        local isSmallScreen = minAxis <= 500
-        local jumpButtonSize = if isSmallScreen then 70 else 120
-
-        forceJumpButtonSize:set(jumpButtonSize)
-
-        forceSizeMobile:set(UDim2.fromOffset(jumpButtonSize / 1.6, jumpButtonSize / 1.6))
-        if isSmallScreen then
-            forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize - 20))
-        else
-            forceDivLocationMobile:set(UDim2.new(1, -(jumpButtonSize * 1.5 - 10), 1, -jumpButtonSize * 1.75))
-        end
-    end)
+    local forceSizeMobile = UDim2.fromScale(0.2 / 1.7, 0.2 / 1.7)
 
     local frame = Components.Frame(scope, {
         Name = "PlayerActives",
@@ -69,16 +50,10 @@ return function(scope: Fusion.Scope, props: {
         [Children] = {
             Components.Frame(scope, {
                 Name = "Div",
-                AnchorPoint = Vector2.zero,
-
-                Position = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(forceDivLocationMobile)
-                end),
-                Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    local size = use(forceJumpButtonSize)
-
-                    return UDim2.fromOffset(size, size)
-                end),
+                AnchorPoint = Vector2.one,
+                Position = UDim2.fromScale(0.97, 0.95),
+                Size = UDim2.fromScale(0.2, 0.2),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
                 [Children] = {
                     Components.Frame(scope, {
@@ -121,12 +96,7 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     Components.HoverImageButton(scope, {
-                                        [Fusion.OnEvent("MouseEnter")] = function()
-                                            isSelectingUlt:set(true)
-                                        end,
-                                        [Fusion.OnEvent("MouseLeave")] = function()
-                                            isSelectingUlt:set(false)
-                                        end,
+                                        Components.ConnectSelectEvents(isSelectingUlt),
 
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
                                             self.CastClassUlt_C:Fire()

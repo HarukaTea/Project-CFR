@@ -144,11 +144,9 @@ end
 function ClientLib:TrackEffectListToUI(props: {
 	Target: Model,
 	Scope: Fusion.Scope,
-	GuiContainer: GuiObject,
-	EffectContainer: GuiObject?
+	GuiContainer: GuiObject
 })
-
-	local effectContainer = props.EffectContainer or props.GuiContainer
+	local effectContainer = props.GuiContainer
 
 	local EffectSlot = require(RepS.HarukaShared.UIAtlas.Components.EffectSlot)
 

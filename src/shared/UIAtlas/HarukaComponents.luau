@@ -1,11 +1,12 @@
 
-local HttpService = game:GetService("HttpService")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
+local fusionBlendUtility = require(RepS.HarukaShared.Shared.Fusion.Utility.blend)
 
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
@@ -40,26 +41,31 @@ HarukaComponents.BLUE_COLOR = CriRPGColorLab.BLUE_COLOR
 HarukaComponents.TweenInfos = AssetBook.TweenInfos
 HarukaComponents.DefaultTween = HarukaComponents.TweenInfos.twiceHalf
 
+HarukaComponents.UIAtlas = RepS.Packages.UIAtlas :: Folder
+
 export type FusionPropsEntry = { [string | Fusion.SpecialKey]: any }
 export type FusionChildrenEntry = { Instance | Fusion.Computed<Instance?> }
 
 --// Init once only
-local existingButtonElements = {}
-
 local Children = Fusion.Children
-
-local wait = task.wait
 
 --// Helper functions
 
 local function _reconcileProps(default: FusionPropsEntry, props: FusionPropsEntry)
-	for prop, val: any in props do
-		if prop == Children and default[Children] then
-			table.insert(default[Children], val)
-			continue
+	local hasChildrenInDefault = false
+	for k, v in props do
+		local keyType = fusionBlendUtility.xtypeof(k)
+		if keyType == "SpecialKey" and k.kind == "Children" then
+			for k2, v2 in default do
+				local keyType2 = fusionBlendUtility.xtypeof(k2)
+				if keyType2 == "SpecialKey" and k2.kind == "Children" then
+					table.insert(v2, v)
+					hasChildrenInDefault = true
+				end
+			end
+			if hasChildrenInDefault then continue end
 		end
-
-		default[prop] = val
+		default[k] = v
 	end
 end
 local function _createNewCompoent(scope: Fusion.Scope, props: FusionPropsEntry, uiType: string, default: FusionPropsEntry) : any
@@ -119,84 +125,61 @@ function HarukaComponents.HarukaScreenGui(scope: Fusion.Scope, guiProps: FusionP
 }?) : ScreenGui
 
 	guiProps = guiProps or {}
-	childProps = childProps or {
-		TopProps = {},
-		CenterProps = {},
-		BottomProps = {},
-		FullProps = {},
-		TopChildren = {},
-		CenterChildren = {},
-		BottomChildren = {},
-		FullChildren = {}
-	}
+	childProps = childProps or {}
 
-	local topProps, centerProps, bottomProps, fullProps =
-		childProps.TopProps or {},
-		childProps.CenterProps or {},
-		childProps.BottomProps or {},
-		childProps.FullProps or {}
+	local function createSection(
+		name: string,
+		defaultProps: FusionPropsEntry,
+		userProps: FusionPropsEntry?,
+		userChildren: FusionChildrenEntry?
+	)
+		userProps = userProps or {}
+		userChildren = userChildren or {}
 
-	local topChildren, centerChildren, bottomChildren, fullChildren =
-		childProps.TopChildren or {},
-		childProps.CenterChildren or {},
-		childProps.BottomChildren or {},
-		childProps.FullChildren or {}
+		local hasProps = HarukaLib.TableUtils.IsEmpty(userProps) == false
+		local hasChildren = #userChildren > 0 or HarukaLib.TableUtils.IsEmpty(userChildren) == false
+		if not hasProps and not hasChildren then return nil end
 
-	if not topProps[Children] then
-		topProps[Children] = topChildren
-	end
-	if not centerProps[Children] then
-		centerProps[Children] = centerChildren
-	end
-	if not bottomProps[Children] then
-		bottomProps[Children] = bottomChildren
-	end
-	if not fullProps[Children] then
-		fullProps[Children] = fullChildren
+		local hasChildrenInProps = false
+		for k, v in userProps do
+			local keyType = fusionBlendUtility.xtypeof(k)
+			if keyType == "SpecialKey" and k.kind == "Children" then
+				hasChildrenInProps = true
+				break
+			end
+		end
+		if not hasChildrenInProps then
+			userProps[Children] = userChildren
+		end
+
+		_reconcileProps(defaultProps, userProps)
+		if name == "Full" then
+			return HarukaComponents.Frame(scope, defaultProps)
+		else
+			return HarukaComponents.HarukaFrame(scope, defaultProps)
+		end
 	end
 
-	local defaultTopProps = {
+	local defaultPropsTop = {
 		Name = "Top",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.fromScale(0.5, 0),
-
-		[Children] = {}
+		Position = UDim2.fromScale(0.5, 0)
 	}
-	local defaultCenterProps = {
-		Name = "Center",
-
-		[Children] = {}
+	local defaultPropsCenter = {
+		Name = "Center"
 	}
-	local defaultBottomProps = {
+	local defaultPropsBottom = {
 		Name = "Bottom",
 		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.fromScale(0.5, 1),
-
-		[Children] = {}
+		Position = UDim2.fromScale(0.5, 1)
 	}
-	local defaultFSProps = {
-		Name = "Full",
-
-		[Children] = {}
+	local defaultPropsFull = {
+		Name = "Full"
 	}
-	_reconcileProps(defaultTopProps, topProps)
-	_reconcileProps(defaultCenterProps, centerProps)
-	_reconcileProps(defaultBottomProps, bottomProps)
-	_reconcileProps(defaultFSProps, fullProps)
-
-	local top, center, bottom, full = nil, nil, nil, nil
-	if HarukaLib.TableUtils.CountDictLength(topProps) > 1 then
-		top = HarukaComponents.HarukaFrame(scope, defaultTopProps)
-	end
-	if HarukaLib.TableUtils.CountDictLength(centerProps) > 1 then
-		center = HarukaComponents.HarukaFrame(scope, defaultCenterProps)
-	end
-	if HarukaLib.TableUtils.CountDictLength(bottomProps) > 1 then
-		bottom = HarukaComponents.HarukaFrame(scope, defaultBottomProps)
-	end
-	if HarukaLib.TableUtils.CountDictLength(fullProps) > 1 then
-		full = HarukaComponents.Frame(scope, defaultFSProps)
-	end
+	local top = createSection("Top", defaultPropsTop, childProps.TopProps, childProps.TopChildren)
+	local center = createSection("Center", defaultPropsCenter, childProps.CenterProps, childProps.CenterChildren)
+	local bottom = createSection("Bottom", defaultPropsBottom, childProps.BottomProps, childProps.BottomChildren)
+	local full = createSection("Full", defaultPropsFull, childProps.FullProps, childProps.FullChildren)
 
 	return _createNewCompoent(scope, guiProps, "ScreenGui", {
 		ClipToDeviceSafeArea = false,
@@ -230,50 +213,44 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: FusionProps
 	local absContentSize = Fusion.Value(scope, Vector2.zero)
 	local VPSize = FusionComponents.useViewportSize(scope)
 
-	listProps = listProps or {
-		Padding = UDim.new(0, 0),
-	}
-	props = props or {
-		ScrollingDirection = Enum.ScrollingDirection.Y,
-	}
+	listProps = listProps or {}
+
+	props = props or {}
 	props.ScrollingDirection = props.ScrollingDirection or Enum.ScrollingDirection.Y
 
-	if listProps.Padding ~= nil then --- UIListLayout
+	props[Children] = props[Children] or {}
+
+	local isListLayout = listProps.Padding ~= nil
+	local isGridLayout = listProps.CellPadding ~= nil
+	if isListLayout or isGridLayout then
 		listProps[Fusion.Out("AbsoluteContentSize")] = absContentSize
+	end
+
+	if isListLayout then --- UIListLayout
 		listProps.FillDirection = listProps.FillDirection or Enum.FillDirection.Vertical
 
 		local device = HarukaLib:GetAccurateDevice()
 		if device == "Phone" or device == "Tablet" then
 			local originalPadding = listProps.Padding
-			local fillDirection = listProps.FillDirection.Name or "Vertical"
+			local isVertical = (listProps.FillDirection == Enum.FillDirection.Vertical)
 
 			listProps.Padding = Fusion.Computed(scope, function(use: Fusion.Use, _)
-				if fillDirection == "Vertical" then
-					local Y = use(VPSize).Y
-					local finalY = Y / (DESIGN_VP_SIZE.Y / originalPadding.Offset)
+				local vpSize = use(VPSize)
+				local axis = if isVertical then "Y" else "X"
+				local designSize = if isVertical then DESIGN_VP_SIZE.Y else DESIGN_VP_SIZE.X
+				local scaled = vpSize[axis] / (designSize / originalPadding.Offset)
 
-					finalY = math.min(originalPadding.Offset, finalY)
-
-					return UDim.new(0, finalY)
-				elseif fillDirection == "Horizontal" then
-					local X = use(VPSize).X
-					local finalX = X / (DESIGN_VP_SIZE.X / originalPadding.Offset)
-
-					finalX = math.min(originalPadding.Offset, finalX)
-
-					return UDim.new(0, finalX)
-				end
+				return UDim.new(0, math.min(originalPadding.Offset, scaled))
 			end)
 		end
 
 		table.insert(props[Children], 1, HarukaComponents.UIListLayout(scope, listProps))
 
-	elseif listProps.CellPadding ~= nil then --- UIGridLayout
-		listProps[Fusion.Out("AbsoluteContentSize")] = absContentSize
-
+	elseif isGridLayout then --- UIGridLayout
 		table.insert(props[Children], 1, HarukaComponents.UIGridLayout(scope, listProps))
 	end
 
+	local scrollAxis = props.ScrollingDirection.Name
 	return _createNewCompoent(scope, props, "ScrollingFrame", {
 		BackgroundColor3 = BLACK_BG_COLOR,
 		BackgroundTransparency = 1,
@@ -284,28 +261,17 @@ function HarukaComponents.ScrollingFrame(scope: Fusion.Scope, props: FusionProps
 		Size = UDim2.fromScale(1, 1),
 
 		CanvasSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
-			local target = props.ScrollingDirection.Name
-
-			if use(absContentSize)[target] > use(absSize)[target] then
-				if target == "Y" then
-					return UDim2.fromOffset(0, use(absContentSize)[target] + 15 / 2)
-				elseif target == "X" then
-					return UDim2.fromOffset(use(absContentSize)[target] + 15 / 2, 0)
-				else
-					return UDim2.fromOffset(0, 0)
-				end
-			else
-				return UDim2.fromOffset(0, 0)
+			local contentSize = use(absContentSize)[scrollAxis]
+			local frameSize = use(absSize)[scrollAxis]
+			if contentSize > frameSize then
+				local offset = contentSize + 8
+				return if scrollAxis == "Y" then UDim2.fromOffset(0, offset) else UDim2.fromOffset(offset, 0)
 			end
+
+			return UDim2.fromOffset(0, 0)
 		end),
 		ScrollingEnabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-			local target = props.ScrollingDirection.Name
-
-			if use(absContentSize)[target] > use(absSize)[target] then
-				return true
-			else
-				return false
-			end
+			return use(absContentSize)[scrollAxis] > use(absSize)[scrollAxis]
 		end),
 
 		[Fusion.Out("AbsoluteSize")] = absSize,
@@ -326,7 +292,8 @@ function HarukaComponents.TextLabel(scope: Fusion.Scope, props: FusionPropsEntry
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(1, 1),
 		Selectable = false,
-		SelectionOrder = -1
+		SelectionOrder = -1,
+		Text = ""
 	})
 end
 
@@ -378,14 +345,9 @@ function HarukaComponents.IconImageLabel(scope: Fusion.Scope, props: FusionProps
 end
 
 function HarukaComponents.HoverImageButton(scope: Fusion.Scope, props: FusionPropsEntry) : ImageButton
-	local hoverFunc, leaveFunc, clickFunc =
-		props[Fusion.OnEvent("MouseEnter")], props[Fusion.OnEvent("MouseLeave")], props[Fusion.OnEvent("MouseButton1Click")]
+	local data = fusionBlendUtility._readSpecialKey(props)
+	local hoverFunc, leaveFunc, clickFunc = data.HoverFunc, data.LeaveFunc, data.ClickFunc
 
-	props[Fusion.OnEvent("MouseButton1Click")] = nil
-	props[Fusion.OnEvent("MouseEnter")] = nil
-	props[Fusion.OnEvent("MouseLeave")] = nil
-
-	local uniqueId = HttpService:GenerateGUID(false)
 	local button = _createNewCompoent(scope, props, "ImageButton", {
 		Name = "Hover",
 		BackgroundColor3 = Color3.new(),
@@ -396,31 +358,19 @@ function HarukaComponents.HoverImageButton(scope: Fusion.Scope, props: FusionPro
 		Image = "",
 		BorderSizePixel = 0,
 		AutoButtonColor = false,
-
-		[Fusion.Attribute("HarukaUniqueId")] = uniqueId
 	})
 
-	HarukaComponents:TrackButtonEvents(scope, button, hoverFunc, leaveFunc, clickFunc)
-
-	table.insert(scope, existingButtonElements[uniqueId])
-	table.insert(scope, function()
-		existingButtonElements[uniqueId] = nil
-	end)
+	fusionBlendUtility._trackButtonEvents(scope, button, hoverFunc, leaveFunc, clickFunc)
 
 	return button
 end
 
 function HarukaComponents.TextButton(scope: Fusion.Scope, props: FusionPropsEntry) : TextButton
-	local hoverFunc, leaveFunc, clickFunc =
-		props[Fusion.OnEvent("MouseEnter")], props[Fusion.OnEvent("MouseLeave")], props[Fusion.OnEvent("MouseButton1Click")]
+	local data = fusionBlendUtility._readSpecialKey(props)
+	local hoverFunc, leaveFunc, clickFunc = data.HoverFunc, data.LeaveFunc, data.ClickFunc
 
-	props[Fusion.OnEvent("MouseButton1Click")] = nil
-	props[Fusion.OnEvent("MouseEnter")] = nil
-	props[Fusion.OnEvent("MouseLeave")] = nil
-
-	local uniqueId = HttpService:GenerateGUID(false)
 	local button = _createNewCompoent(scope, props, "TextButton", {
-		AutoButtonColor = true,
+		AutoButtonColor = false,
 		BackgroundColor3 = BLACK_BG_COLOR,
 		FontFace = Font.fromName("SourceSansPro", Enum.FontWeight.Bold),
 		TextColor3 = WHITE_BG_COLOR,
@@ -430,16 +380,10 @@ function HarukaComponents.TextButton(scope: Fusion.Scope, props: FusionPropsEntr
 		TextStrokeTransparency = 1,
 		TextSize = 100,
 		Size = UDim2.fromScale(1, 1),
-
-		[Fusion.Attribute("HarukaUniqueId")] = uniqueId
+		Text = "",
 	})
 
-	HarukaComponents:TrackButtonEvents(scope, button, hoverFunc, leaveFunc, clickFunc)
-
-	table.insert(scope, existingButtonElements[uniqueId])
-	table.insert(scope, function()
-		existingButtonElements[uniqueId] = nil
-	end)
+	fusionBlendUtility._trackButtonEvents(scope, button, hoverFunc, leaveFunc, clickFunc)
 
 	return button
 end
@@ -609,105 +553,46 @@ function HarukaComponents.UIGradient(scope: Fusion.Scope, props: FusionPropsEntr
 	return _createNewCompoent(scope, props, "UIGradient", {})
 end
 
+function HarukaComponents.ConnectSelectEvents(isSelecting: Fusion.Value<boolean>) : {
+	[Fusion.SpecialKey]: () -> nil
+}
+	return {
+		type = "nestedSpecialKey",
+		applys = {
+			[Fusion.OnEvent("MouseEnter")] = function()
+				isSelecting:set(true)
+			end,
+			[Fusion.OnEvent("MouseLeave")] = function()
+				isSelecting:set(false)
+			end,
+		}
+	}
+end
+
 function HarukaComponents:CreateConfirmPrompt(data: {
 	Hint: string,
 	ConfirmText: string,
 	CancelText: string,
 	ConfirmUniqueId: string
-})
+}) : BindableEvent
 	local scope = Fusion.scoped()
 	local waitSignal = Instance.new("BindableEvent")
 	table.insert(scope, waitSignal)
-
-	local function _clear()
-		pcall(function()
-			waitSignal:Fire("NO")
-			Fusion.doCleanup(scope)
-		end)
-	end
-	table.insert(scope, task.delay(35, _clear))
 
 	table.insert(scope, Bindables.ConfirmPromptChosen.Event:Connect(function(
 		uniqueId: string,
 		result: "YES" | "NO"
 	)
 		if uniqueId ~= data.ConfirmUniqueId then return end
-		_clear()
+
+		waitSignal:Fire(result)
+
+		Fusion.doCleanup(scope)
 	end))
 
 	Bindables.CreateConfirmPrompt:Fire(data)
 
 	return waitSignal
-end
-
-function HarukaComponents:TrackButtonEvents(scope: Fusion.Scope, button: GuiObject, hoverFunc: () -> nil, leaveFunc: () -> nil, clickFunc: () -> nil)
-	local function _isButtonValid(screenGui: ScreenGui?) : boolean
-		if not screenGui then return false end
-		if not button.Visible then return false end
-
-		return true
-	end
-
-	local screenGui = button:FindFirstAncestorOfClass("ScreenGui")
-
-	local mouseLeave = nil
-	if leaveFunc then
-		mouseLeave = Instance.new("BindableEvent")
-	end
-	table.insert(scope, task.spawn(function()
-		repeat wait() until button:FindFirstAncestorOfClass("ScreenGui")
-
-		screenGui = button:FindFirstAncestorOfClass("ScreenGui")
-		existingButtonElements[button:GetAttribute("HarukaUniqueId")].ScreenGuiObj = screenGui
-
-		if leaveFunc then
-			table.insert(scope, HarukaLib:Hydrate(screenGui, {
-				["Prop-Enabled"] = function(state: boolean)
-					if state == false then
-						mouseLeave:Fire()
-					end
-				end
-			}))
-		end
-	end))
-
-	existingButtonElements[button:GetAttribute("HarukaUniqueId")] = {
-		UIObj = button,
-		ScreenGuiObj = screenGui,
-	}
-
-	if leaveFunc then
-		mouseLeave.Event:Connect(function()
-			if not _isButtonValid(screenGui) then return end
-			if leaveFunc then leaveFunc() end
-		end)
-		button.MouseLeave:Connect(function()
-			if not _isButtonValid(screenGui) then return end
-			if leaveFunc then leaveFunc() end
-		end)
-		button.SelectionLost:Connect(function()
-			if not _isButtonValid(screenGui) then return end
-			if leaveFunc then leaveFunc() end
-		end)
-	end
-	if hoverFunc then
-		button.MouseEnter:Connect(function()
-			if not _isButtonValid(screenGui) then return end
-			if hoverFunc then hoverFunc() end
-		end)
-		button.SelectionGained:Connect(function()
-			if not _isButtonValid(screenGui) then return end
-			if hoverFunc then hoverFunc() end
-		end)
-	end
-	if clickFunc then
-		button.MouseButton1Click:Connect(function()
-			if not screenGui or not screenGui.Enabled then return false end
-			if not button.Visible then return false end
-
-			if clickFunc then clickFunc() end
-		end)
-	end
 end
 
 return HarukaComponents

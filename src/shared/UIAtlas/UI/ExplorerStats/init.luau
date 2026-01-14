@@ -208,12 +208,8 @@ return function(plr: Player)
                             }),
 
                             Components.HoverImageButton(scope, {
-                                [Fusion.OnEvent("MouseEnter")] = function()
-                                    isSelectingMenuSelection:set(true)
-                                end,
-                                [Fusion.OnEvent("MouseLeave")] = function()
-                                    isSelectingMenuSelection:set(false)
-                                end,
+                                Components.ConnectSelectEvents(isSelectingMenuSelection),
+
                                 [Fusion.OnEvent("MouseButton1Click")] = function()
                                     self.MenuSelectionShown:set(not Fusion.peek(self.MenuSelectionShown))
                                 end,

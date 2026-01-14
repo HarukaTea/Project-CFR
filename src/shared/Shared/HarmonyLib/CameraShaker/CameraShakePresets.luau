@@ -1,11 +1,10 @@
 -- Camera Shake Presets
--- Stephen Leitnick
--- February 26, 2018
+-- @Author: Stephen Leitnick, Modified by HarukaTea
+-- February 26, 2018, Modified in Jan 12, 2026
 
 local CameraShakeInstance = require(script.Parent.CameraShakeInstance)
 
 local CameraShakePresets = {
-
 	-- A high-magnitude, short, yet smooth shake.
 	-- Should happen once.
 	Bump = function()
@@ -21,6 +20,15 @@ local CameraShakePresets = {
 		local c = CameraShakeInstance.new(5, 10, 0, 1.5)
 		c.PositionInfluence = Vector3.new(0.25, 0.25, 0.25)
 		c.RotationInfluence = Vector3.new(4, 1, 1)
+		return c
+	end,
+
+	-- A mild shake with a low roughness.
+	-- Should happen once.
+	MildExplosion = function()
+		local c = CameraShakeInstance.new(4, 7, 0, 1.15)
+		c.PositionInfluence = Vector3.new(0.2, 0.2, 0.2)
+		c.RotationInfluence = Vector3.new(2, 1, 1)
 		return c
 	end,
 
@@ -70,12 +78,4 @@ local CameraShakePresets = {
 	end,
 }
 
-return setmetatable({}, {
-	__index = function(t, i)
-		local f = CameraShakePresets[i]
-		if type(f) == "function" then
-			return f()
-		end
-		error('No preset found with index "' .. i .. '"')
-	end,
-})
+return CameraShakePresets

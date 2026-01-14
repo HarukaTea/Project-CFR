@@ -112,6 +112,12 @@ table.insert(ServerWorldLib.Funcs, function()
 end)
 
 table.insert(ServerWorldLib.Funcs, function()
+    for _, gui: ScreenGui in ReplicatedStorage.Packages.UIAtlas:QueryDescendants('ScreenGui') do
+        gui.Enabled = false
+    end
+end)
+
+table.insert(ServerWorldLib.Funcs, function()
     for index: number, lootsInfo: { string } in AbyssBook.Loots do
         for _, loot: string in lootsInfo do
             local lootVal = Instance.new("IntConstrainedValue")

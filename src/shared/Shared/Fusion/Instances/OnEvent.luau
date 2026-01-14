@@ -3,6 +3,8 @@
 	an instance.
 ]]
 
+local RunService = game:GetService("RunService")
+
 local Package = script.Parent.Parent
 local Types = require(Package.Types)
 local External = require(Package.External)
@@ -20,6 +22,7 @@ local function OnEvent(eventName: string): Types.SpecialKey
 			type = "SpecialKey",
 			kind = "OnEvent",
 			stage = "observer",
+			attr = eventName,
 			apply = function(self: Types.SpecialKey, scope: Types.Scope<unknown>, callback: unknown, applyTo: Instance)
 				local ok, event = pcall(getProperty_unsafe, applyTo, eventName)
 				if not ok or typeof(event) ~= "RBXScriptSignal" then
@@ -28,6 +31,10 @@ local function OnEvent(eventName: string): Types.SpecialKey
 					External.logError("invalidEventHandler", nil, eventName)
 				else
 					table.insert(scope, event:Connect(callback :: any))
+
+					if RunService:IsStudio() then
+						print("[Fusion] Connected event listener to:", applyTo.Name, eventName)
+					end
 				end
 			end,
 		}

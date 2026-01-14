@@ -48,7 +48,12 @@ return function (plr: Player)
                 Name = "EnemyEntity_InfoBars",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, self.EnemiesOverworld, function(_, scope: Fusion.Scope, index: number, enemy: Model)
+                    Fusion.ForPairs(scope, self.EnemiesOverworld, function(
+                        _,
+                        scope: Fusion.Scope,
+                        index: number,
+                        enemy: Model
+                    )
                         return index, EnemyInfoBar(scope, {
                             Enemy = enemy,
                         })
@@ -58,20 +63,8 @@ return function (plr: Player)
         }
     }, {
         TopChildren = {
-            Components.Frame(scope, {
-                Name = "BossHPBar",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.2),
-
+            Fusion.Hydrate(scope, Components:RefUI("BossHPBar_1", false, true))({
                 [Children] = {
-                    Components.UIListLayout(scope, {
-                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                    }),
-
-                    Components.UIScale(scope, {
-                        Scale = 0.85
-                    }),
-
                     BossHPBar(scope, {
                         TargetingList = self.TargetingList
                     })
@@ -79,36 +72,24 @@ return function (plr: Player)
             })
         },
         CenterChildren = {
-            Components.Frame(scope, {
-                Name = "TargetingListDiv",
-                AnchorPoint = Vector2.new(1, 0),
-                Position = UDim2.fromScale(0.95, 0),
-
+            Fusion.Hydrate(scope, Components:RefUI("TargetingListDiv_1", false, true))({
                 [Children] = {
-                    Components.UIScale(scope, {}),
-
-                    Components.Frame(scope, {
-                        Name = "TargetingList",
-                        AnchorPoint = Vector2.new(1, 0),
-                        Position = UDim2.fromScale(0.99, -0.4),
-                        Size = UDim2.fromScale(0.6, 1),
-
+                    Fusion.Hydrate(scope, Components:RefUI("TargetingList_Entity1_1", false, true))({
                         [Children] = {
-                            Components.UIListLayout(scope, {
-                                Padding = UDim.new(0.25, 0),
-                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                VerticalAlignment = Enum.VerticalAlignment.Center
-                            }),
-
-                            Fusion.ForPairs(scope, self.TargetingList, function(_, scope: Fusion.Scope, index: number, targeting: ObjectValue)
+                            Fusion.ForPairs(scope, self.TargetingList, function(
+                                _,
+                                scope: Fusion.Scope,
+                                index: number,
+                                targeting: ObjectValue
+                            )
                                 return index, PlayerTargetingBar(scope, {
                                     Targeting = targeting,
                                     TargetingEnemy = self.TargetingEnemy,
                                     TargetArrowPos = self.TargetArrowPos
                                 }, self)
-                            end),
+                            end)
                         }
-                    }),
+                    })
                 }
             })
         }

@@ -64,11 +64,29 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 
     Events.RejoinGame_C.SetCallback(function(plr: Player)
-        local worldId = workspace:GetAttribute("WorldId") :: string
-
-        if worldId and worldId == "InitusWorld" then
-            TeleportService:TeleportAsync(game.PlaceId, { plr })
+        local numPlayers = #Players:GetPlayers()
+        if numPlayers <= 1 then
+            Events.CreateNotify_S.Fire(plr, "Cannot rejoin, server will be empty without you")
+            return
         end
+
+        local teleportOptions = Instance.new("TeleportOptions")
+        teleportOptions.ServerInstanceId = game.JobId
+
+        local slotChosen = nil
+        local isAbyss = workspace:GetAttribute("AbyssId") ~= nil
+        local isDungeon = workspace:GetAttribute("DungeonId") ~= nil
+
+        if isAbyss or isDungeon then
+            slotChosen = plr:GetAttribute("SlotChosen") or "Slot1"
+        end
+
+        teleportOptions:SetTeleportData({
+            Rejoin = true,
+            SlotChosen = slotChosen
+        })
+
+        TeleportService:TeleportAsync(game.PlaceId, { plr }, teleportOptions)
     end)
 
     -- handle server hop
@@ -850,7 +868,7 @@ table.insert(GlobalCriRPGLib.Funcs, function()
             local refreshSymbol = Instance.new("StringValue")
             refreshSymbol.Name = "_NULL"
             refreshSymbol.Value = "_NULL"
-            refreshSymbol:SetAttribute("HarukaUniqueId", "1599mkk40")
+            refreshSymbol:SetAttribute("HarukaUniqueId", "/")
             refreshSymbol.Parent = plr.EquippingItems
             Debris:AddItem(refreshSymbol, 1)
         end

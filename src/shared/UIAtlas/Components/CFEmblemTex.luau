@@ -10,9 +10,7 @@ return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     Size: UDim2?,
     Position: UDim2?,
-    Color: Fusion.Computed<Color3>? | Color3?,
-
-    [Fusion.SpecialKey]: Components.FusionPropsEntry?,
+    Color: Fusion.Computed<Color3>? | Color3?
 })
 
     props = props or {}
@@ -33,12 +31,9 @@ return function (scope: Fusion.Scope, props: {
             Fusion.Hydrate(scope, Components:RefUI("Emblem_CFETex1_1"))({
                 Position = props.Position,
                 Size = props.Size,
-                Image = "rbxassetid://72405016863286",
                 ImageTransparency = props.Transparency,
                 ImageColor3 = props.Color
-            }),
-
-            [Children] = props[Fusion.Children],
+            })
         }
     })
 end
