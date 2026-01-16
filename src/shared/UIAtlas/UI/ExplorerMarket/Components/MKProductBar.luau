@@ -28,15 +28,12 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
-    return Components.Frame(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("ProductTemplate_EMarket1_1", false, false, {
+        "UICorner", "UIAspectRatioConstraint"
+    }))({
         Name = "Product_"..props.ProductId,
-        BackgroundTransparency = 0.1,
-        Size = UDim2.fromScale(0.97, 0.18),
 
         [Children] = {
-            Components.UIAspectRatioConstraint(scope, 11.804),
-
-            Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.035,
 
@@ -60,19 +57,9 @@ return function(scope: Fusion.Scope, props: {
                 end
             }),
 
-            Components.Frame(scope, {
-                Name = "Div",
-                Size = UDim2.fromScale(0.97, 0.9),
-
+            Fusion.Hydrate(scope, Components:RefUI("Div_EMarketProduct1_1", false, true))({
                 [Children] = {
-                    Components.UIListLayout(scope, {
-                        Padding = UDim.new(0.015, 0),
-                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                        FillDirection = Enum.FillDirection.Horizontal
-                    }),
-
-                    Components.IconImageLabel(scope, {
-                        Size = UDim2.fromScale(0.9, 0.9),
+                    Fusion.Hydrate(scope, Components:RefUI("Icon_EMarketProduct2_1", true))({
                         Image = info.Icon
                     }),
 
@@ -80,36 +67,10 @@ return function(scope: Fusion.Scope, props: {
                         Name = "ItemInfoAttrs",
 
                         [Children] = {
-                            Components.Frame(scope, {
-                                Name = "ItemName",
-                                LayoutOrder = 1,
-                                AnchorPoint = Vector2.zero,
-                                Position = UDim2.fromScale(0, 0),
-                                Size = UDim2.fromScale(1, 0.4),
-
+                            Fusion.Hydrate(scope, Components:RefUI("ItemName_EMPIA1_1", false, true))({
                                 [Children] = {
-                                    Components.UIListLayout(scope, {
-                                        Padding = UDim.new(0.005, 0),
-                                        FillDirection = Enum.FillDirection.Horizontal,
-                                        VerticalAlignment = Enum.VerticalAlignment.Center
-                                    }),
-
-                                    Components.TextLabel(scope, {
-                                        Name = "ItemName",
-                                        AutomaticSize = Enum.AutomaticSize.X,
-                                        Text = info.Name,
-                                        Size = UDim2.fromScale(0, 1),
-                                        TextXAlignment = Enum.TextXAlignment.Left,
-                                        LayoutOrder = 0,
-
-                                        [Children] = {
-                                            Components.UIPadding(scope, {
-                                                PaddingTop = UDim.new(),
-                                                PaddingBottom = UDim.new(),
-                                                PaddingLeft = UDim.new(0, 4),
-                                                PaddingRight = UDim.new(0, 9)
-                                            })
-                                        }
+                                    Fusion.Hydrate(scope, Components:RefUI("ItemName_EMPIA2_1", true))({
+                                        Text = info.Name
                                     }),
 
                                     Fusion.ForPairs(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, index: number, _)
@@ -119,72 +80,25 @@ return function(scope: Fusion.Scope, props: {
                                     end)
                                 }
                             }),
-                            Components.Frame(scope, {
-                                Name = "ItemTags",
-                                AnchorPoint = Vector2.xAxis,
-                                Position = UDim2.fromScale(0.92, 0.05),
-                                Size = UDim2.fromScale(1, 0.4),
-
+                            Fusion.Hydrate(scope, Components:RefUI("ItemTags_EMPIA1_1", false, true))({
                                 [Children] = {
-                                    Components.UIListLayout(scope, {
-                                        Padding = UDim.new(0.005, 0),
-                                        FillDirection = Enum.FillDirection.Horizontal,
-                                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                                        HorizontalAlignment = Enum.HorizontalAlignment.Right
-                                    }),
-
-                                    Components.TextLabel(scope, {
-                                        Name = "ItemLevel",
-                                        AutomaticSize = Enum.AutomaticSize.X,
-                                        BackgroundTransparency = 0,
-                                        BackgroundColor3 = Components.WHITE_COLOR,
+                                    Fusion.Hydrate(scope, Components:RefUI("ItemLevel_EMPIA2_1", true))({
                                         Text = `Req Lv.{info.Level}`,
-                                        TextColor3 = Components.BLACK_COLOR,
-                                        Size = UDim2.fromScale(0, 1),
-                                        LayoutOrder = 0,
-
-                                        Visible = info.Level > 1,
-
-                                        [Children] = {
-                                            Components.RoundUICorner(scope),
-                                            Components.UIPadding(scope, {
-                                                PaddingLeft = UDim.new(0, 12),
-                                                PaddingRight = UDim.new(0, 12)
-                                            })
-                                        }
+                                        Visible = info.Level > 1
                                     }),
                                 }
                             }),
-                            Components.Frame(scope, {
-                                Name = "ItemPrice",
-                                LayoutOrder = 2,
-                                AnchorPoint = Vector2.zero,
-                                Position = UDim2.fromScale(0, 0.5),
-                                Size = UDim2.fromScale(1, 0.45),
-
+                            Fusion.Hydrate(scope, Components:RefUI("ItemPrice_EMPIA1_1", false, true))({
                                 [Children] = {
-                                    Components.UIListLayout(scope, {
-                                        FillDirection = Enum.FillDirection.Horizontal,
-                                        VerticalAlignment = Enum.VerticalAlignment.Center,
-                                        Padding = UDim.new(0.02, 0)
-                                    }),
-
                                     Components.IconImageLabel(scope, {
                                         LayoutOrder = 1,
-
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             return CURRENCY_ICONS[use(props.CurrencyId)]
                                         end)
                                     }),
 
-                                    Components.TextLabel(scope, {
-                                        Name = "Price",
-                                        AutomaticSize = Enum.AutomaticSize.X,
-                                        Text = HarukaLib:CommaifyNumber(info.Price),
-                                        Size = UDim2.fromScale(0, 1),
-                                        TextXAlignment = Enum.TextXAlignment.Left,
-                                        LayoutOrder = 2,
-                                        FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold)
+                                    Fusion.Hydrate(scope, Components:RefUI("Price_EMPIA2_1"))({
+                                        Text = HarukaLib:CommaifyNumber(info.Price)
                                     }),
                                 }
                             })
