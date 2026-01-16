@@ -143,7 +143,9 @@ return function (self: Types.ProjectileLib)
         end
         if not noSound then projectile:FindFirstChildWhichIsA("Sound", true):Play() end
 
-        Promise.delay(4.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(4.5):andThen(function()
+            ProjectileLib._fadeAwayAndDestroy(projectile)
+        end):catch(function() end)
 
         local blastInfo = TweenInfo.new(0.3)
 

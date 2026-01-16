@@ -127,7 +127,9 @@ function DoTLib:Activate()
             end
         end))
     end
-    Promise.delay(self.Duration + 0.1):andThenCall(self.Cancel, self):catch(function() end)
+    Promise.delay(self.Duration + 0.1):andThen(function()
+        self:Cancel()
+    end):catch(function() end)
 
     --// fire char bindable
     if Players:GetPlayerFromCharacter(self.Creator) and self.Target:HasTag("EnemyEntity") then

@@ -1486,7 +1486,7 @@ function Promise.fromEvent(event, predicate)
 			return disconnect()
 		else
 			onCancel(disconnect)
-			return nil
+			return
 		end
 	end)
 end

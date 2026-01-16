@@ -32,8 +32,9 @@ return function (self: Types.ProjectileLib)
     end
 
     ProjectileLib.LeafDragonMove3 = function(projectile: Model, container: Folder)
-
-        Promise.delay(2):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(2):andThen(function()
+            ProjectileLib._fadeAwayAndDestroy(projectile)
+        end):catch(function() end)
 
         projectile:PivotTo(projectile.PrimaryPart.CFrame * CFrame.new(0, 1.2, 0))
 
@@ -50,8 +51,9 @@ return function (self: Types.ProjectileLib)
     end
 
     ProjectileLib.LeafDragonSpike3 = function(projectile: Model, container: Folder)
-
-        Promise.delay(2):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(2):andThen(function()
+            ProjectileLib._fadeAwayAndDestroy(projectile)
+        end):catch(function() end)
 
         projectile.Part.Transparency = 0.8
 

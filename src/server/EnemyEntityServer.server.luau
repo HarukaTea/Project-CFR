@@ -172,7 +172,9 @@ destroyEntityObjSignal.Event:Connect(function(uniqueId: string)
 
     local entityObj = allEntityPool[uniqueId]
     if entityObj then
-        Promise.delay(1.599):andThenCall(entityObj.EntityDestroy, entityObj)
+        Promise.delay(1.599):andThen(function()
+            entityObj:EntityDestroy()
+        end)
     end
 end)
 Players.PlayerRemoving:Connect(function(player)

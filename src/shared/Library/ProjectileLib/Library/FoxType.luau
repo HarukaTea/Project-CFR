@@ -54,7 +54,9 @@ return function (self: Types.ProjectileLib)
             projectile.Fang2:AddTag("PierceEntity")
         end):catch(function() end)
 
-        Promise.delay(4.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(4.5):andThen(function()
+            ProjectileLib._fadeAwayAndDestroy(projectile)
+        end):catch(function() end)
     end
     ProjectileLib.HardmodeWolfMove4 = ProjectileLib.WolfMove4
 
@@ -67,7 +69,9 @@ return function (self: Types.ProjectileLib)
 
         projectile:AddTag("DMGEntity")
 
-        Promise.delay(1.5):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(1.5):andThen(function()
+            ProjectileLib._fadeAwayAndDestroy(projectile)
+        end):catch(function() end)
     end
     ProjectileLib.HardmodeWolfSpike1 = ProjectileLib.FoxSpike1
 
@@ -81,7 +85,9 @@ return function (self: Types.ProjectileLib)
 
         projectile:AddTag("DMGEntity")
 
-        Promise.delay(6):andThenCall(ProjectileLib._fadeAwayAndDestroy, projectile):catch(function() end)
+        Promise.delay(6):andThen(function()
+            ProjectileLib._fadeAwayAndDestroy(projectile)
+        end):catch(function() end)
     end
     ProjectileLib.HardmodeWolfSpike2 = ProjectileLib.FoxSpike2
 end

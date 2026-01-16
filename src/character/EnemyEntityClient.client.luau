@@ -219,7 +219,9 @@ function EntityLib.new(enemy: Model)
 
     self.Add(enemy.Humanoid.HealthChanged:Connect(function(health: number)
 		if health <= 0 then
-			Promise.delay(1):andThenCall(self.Destroy, self):catch(function() end)
+            Promise.delay(1):andThen(function()
+                self:Destroy()
+            end):catch(function() end)
 		end
 	end))
     self.Add(enemy.PrimaryPart:GetPropertyChangedSignal("Parent"):Connect(function()
