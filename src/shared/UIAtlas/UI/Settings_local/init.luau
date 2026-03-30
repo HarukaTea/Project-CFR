@@ -43,26 +43,10 @@ return function (plr: Player)
         end),
 
         [Children] = {
-            Components.Frame(scope, {
-                Name = "FullCenter",
-                Size = UDim2.fromScale(0.944, 0.7),
-                Position = UDim2.fromScale(0.5, 0.53),
-
+            Fusion.Hydrate(scope, Components:RefUI("FullCenter_Settings1_1", false, true))({
                 [Children] = {
-                    Components.UIAspectRatioConstraint(scope, 3.389),
-
-                    Components.Frame(scope, {
-                        Name = "Categories",
-                        AnchorPoint = Vector2.zero,
-                        Position = UDim2.fromScale(0, 0),
-                        Size = UDim2.fromScale(0.2, 1),
-
+                    Fusion.Hydrate(scope, Components:RefUI("Categories_Settings1_2", false, true))({
                         [Children] = {
-                            Components.UIListLayout(scope, {
-                                Padding = UDim.new(0.04, 0),
-                                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                            }),
-
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
                                 PanelTitle: string,
                                 LayoutOrder: number,
@@ -87,12 +71,7 @@ return function (plr: Player)
                         }
                     }),
 
-                    Components.Frame(scope, {
-                        Name = "Settings",
-                        AnchorPoint = Vector2.zero,
-                        Position = UDim2.fromScale(0.225, 0),
-                        Size = UDim2.fromScale(0.775, 1),
-
+                    Fusion.Hydrate(scope, Components:RefUI("Settings_Settings1_2", false, true))({
                         [Children] = {
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
                                 PanelTitle: string,

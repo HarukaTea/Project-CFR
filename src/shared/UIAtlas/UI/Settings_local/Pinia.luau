@@ -154,7 +154,7 @@ return function (self: Self)
 
             self.INFO[panelId].Includes[optionId].DefaultValue = defaultValue
 
-            table.insert(scope, optionInfo.ValChanged)
+            table.insert(scope, optionInfo.OnValChanged)
         end
     end
     --// track switcher
@@ -192,20 +192,20 @@ return function (self: Self)
         end
     end
 
-    self.INFO.Sounds.Includes.MusicVolume.ValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.MusicVolume.OnValChanged.Event:Connect(function(val: number)
         SoundService.Musics.Volume = val
     end)
-    self.INFO.Sounds.Includes.SFXVolume.ValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.SFXVolume.OnValChanged.Event:Connect(function(val: number)
         SoundService.SFXs.Volume = val
     end)
-    self.INFO.Sounds.Includes.FootstepVolume.ValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.FootstepVolume.OnValChanged.Event:Connect(function(val: number)
         SoundService.FootstepSFXs.Volume = val
     end)
-    self.INFO.Sounds.Includes.AmbientVolume.ValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.AmbientVolume.OnValChanged.Event:Connect(function(val: number)
         SoundService.Environment.Volume = val
     end)
 
-    self.INFO.Interface.Includes.UIScale.ValChanged.Event:Connect(function(val: number)
+    self.INFO.Interface.Includes.UIScale.OnValChanged.Event:Connect(function(val: number)
         workspace:SetAttribute("UIScaleFactor", val)
 
         for _, ui in self.plr.PlayerGui:QueryDescendants("UIScale") do

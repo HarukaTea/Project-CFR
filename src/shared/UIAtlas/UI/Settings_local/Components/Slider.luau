@@ -20,7 +20,7 @@ return function(scope: Fusion.Scope, props: {
 		Max: number,
 		DefaultValue: number,
 
-		ValChanged: BindableEvent
+		OnValChanged: BindableEvent
 	},
 
     OptionId: string,
@@ -52,7 +52,7 @@ return function(scope: Fusion.Scope, props: {
 			end
 
 			barVal:set(val)
-			props.OptionInfo.ValChanged:Fire(val)
+			props.OptionInfo.OnValChanged:Fire(val)
 
 			Events.SaveSettings_C.Fire({
 				SettingId = props.OptionId,
@@ -65,7 +65,7 @@ return function(scope: Fusion.Scope, props: {
 	local percentage = ((props.OptionInfo.DefaultValue - props.OptionInfo.Min) / (props.OptionInfo.Max - props.OptionInfo.Min)) :: number
 
 	barVal:set(props.OptionInfo.DefaultValue)
-	props.OptionInfo.ValChanged:Fire(props.OptionInfo.DefaultValue)
+	props.OptionInfo.OnValChanged:Fire(props.OptionInfo.DefaultValue)
 
 	local node = Components.HoverImageButton(scope, {
 		Name = "Node",

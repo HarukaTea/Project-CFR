@@ -14,7 +14,7 @@ export type IncludesJSON = {
 	DefaultValue: any,
 	AllowDecimals: boolean,
 
-	ValChanged: BindableEvent,
+	OnValChanged: BindableEvent,
 }
 
 export type SettingsJSON = {
@@ -46,7 +46,7 @@ local template = {
 				DefaultValue = 1,
 				AllowDecimals = true,
 
-				ValChanged = Instance.new("BindableEvent")
+				OnValChanged = Instance.new("BindableEvent")
 			},
             SFXVolume = {
 				OptionTitle = "SFX Volume",
@@ -58,7 +58,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 1.2,
 
-				ValChanged = Instance.new("BindableEvent")
+				OnValChanged = Instance.new("BindableEvent")
 			},
 			FootstepVolume = {
 				OptionTitle = "Footstep Volume",
@@ -70,7 +70,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 0.9,
 
-				ValChanged = Instance.new("BindableEvent")
+				OnValChanged = Instance.new("BindableEvent")
 			},
 			AmbientVolume = {
 				OptionTitle = "Ambient Volume",
@@ -82,7 +82,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 0.8,
 
-				ValChanged = Instance.new("BindableEvent")
+				OnValChanged = Instance.new("BindableEvent")
 			}
 		}
     },
@@ -101,7 +101,7 @@ local template = {
 				Max = 1.2,
 				DefaultValue = if device == "Phone" or device == "Tablet" then 1.15 else 1,
 
-				ValChanged = Instance.new("BindableEvent")
+				OnValChanged = Instance.new("BindableEvent")
 			},
 			HideUI = {
 				OptionTitle = "Hide UI",

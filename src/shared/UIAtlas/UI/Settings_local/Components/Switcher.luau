@@ -17,19 +17,15 @@ return function(scope: Fusion.Scope, props: {
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingSwitcher = Fusion.Value(scope, false)
 
-	return Components.Frame(scope, {
+	return Fusion.Hydrate(scope, Components:RefUI("SwitcherT_Settings1_2", false, false, {
+		"UIAspectRatioConstraint", "UICorner"
+	}))({
 		Name = props.OptionId,
-		Size = UDim2.fromScale(0.9, 0.08),
-        BackgroundTransparency = 0,
         LayoutOrder = props.LayoutOrder,
 
 		[Children] = {
-            Components.UIAspectRatioConstraint(scope, 29.548),
-
-            Components.RoundUICorner(scope),
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.1,
-
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
                     return use(isSelecting)
                 end),

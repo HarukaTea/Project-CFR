@@ -16,10 +16,8 @@ return function (scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
-    return Components.Frame(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("CategoryBtnT_Settings1_3", false, true))({
         Name = props.PanelId,
-        BackgroundTransparency = 0,
-        Size = UDim2.fromScale(1, 0.09),
         LayoutOrder = props.LayoutOrder,
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
@@ -27,19 +25,12 @@ return function (scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.RoundUICorner(scope),
-            Components.TextLabel(scope, {
-                Name = "Title",
+            Fusion.Hydrate(scope, Components:RefUI("Title_CBTS1_4", true))({
                 Text = props.PanelTitle,
-                TextXAlignment = Enum.TextXAlignment.Left,
 
                 TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use)
                     return if use(props.PanelSelected) == props.PanelId or use(isSelecting) then Components.BLACK_COLOR else Components.WHITE_COLOR
                 end),
-
-                [Children] = {
-                    Components.UIPadding(scope, {})
-                }
             }),
 
             Components.HoverImageButton(scope, {
@@ -50,6 +41,5 @@ return function (scope: Fusion.Scope, props: {
                 end
             })
         }
-
     })
 end
