@@ -7,6 +7,8 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local Pinia = require(script.Pinia)
 
+local Children = Fusion.Children
+
 return function(plr: Player)
 	local self = {} :: Pinia.Self
 
@@ -45,12 +47,16 @@ return function(plr: Player)
                 end),
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("ItemDrops_IDrops1_1", true))({
+            Fusion.Hydrate(scope, Components:RefUI("ItemDrops_IDrops1_1", false, true))({
                 Name = "ItemDropsDiv",
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(self.IsUIShown2)
                 end),
+
+                [Children] = {
+                    Fusion.Hydrate(scope, Components:RefUI("ItemAcquiredFrame_IDrops1_2", false, true))({})
+                }
             })
         },
 

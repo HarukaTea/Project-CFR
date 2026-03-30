@@ -141,7 +141,7 @@ return function(plr: Player)
                         }, self)
                     end),
 
-                    Fusion.Hydrate(scope, Components:RefUI("MenuSelections_PStats1_1", false, false, {
+                    Fusion.Hydrate(scope, Components:RefUI("MenuSelectionSlot_PStats1_1", false, false, {
                         "UICorner"
                     }))({
                         [Children] = {

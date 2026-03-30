@@ -128,8 +128,10 @@ return function(scope: Fusion.Scope, props: {
     return Fusion.Hydrate(scope, Components:RefUI("ActiveSlot_ActiveSlot1_1", false, false, {
         "UICorner",
     }))({
+        Name = "ActiveSlot"..props.Index,
         LayoutOrder = if props.Index == 3 then 159 else props.Index,
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
+        AnchorPoint = Vector2.new(0.5, 0.5),
 
         Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(props.ForceSize) or UDim2.fromScale(1.2, 1.2)
@@ -173,10 +175,12 @@ return function(scope: Fusion.Scope, props: {
             ProgressCircle(scope, {
                 Direction = "Left",
                 RotationVal = props.ActiveInfo.CDRotation,
+                ZIndex = 3,
             }),
             ProgressCircle(scope, {
                 Direction = "Right",
                 RotationVal = props.ActiveInfo.CDRotation,
+                ZIndex = 3,
             }),
 
             Fusion.Hydrate(scope, Components:RefUI("Cooldown_ActiveSlot1_1", true))({

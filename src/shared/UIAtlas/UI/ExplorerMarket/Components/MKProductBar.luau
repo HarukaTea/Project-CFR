@@ -75,7 +75,8 @@ return function(scope: Fusion.Scope, props: {
 
                                     Fusion.ForPairs(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, index: number, _)
                                         return index, StarTierSymbol(scope, {
-                                            Size = UDim2.fromScale(0.8, 0.8)
+                                            Size = UDim2.fromScale(0.8, 0.8),
+                                            LayoutOrder = 233 + index,
                                         })
                                     end)
                                 }

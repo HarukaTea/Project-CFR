@@ -20,7 +20,7 @@ return function(scope: Fusion.Scope, props: {
     local ICONS = AssetBook.CurrencyIcons
 
     return Fusion.Hydrate(scope, Components:RefUI("BottomEcoTemplate_Eco1_1", false, false, {
-        "UICorner"
+        "UICorner", "UIListLayout"
     }))({
         Name = props.Currency,
         LayoutOrder = props.Index,

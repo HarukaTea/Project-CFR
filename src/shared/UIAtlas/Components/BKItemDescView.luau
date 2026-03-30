@@ -339,7 +339,7 @@ return function (scope: Fusion.Scope, props: {
                             Fusion.Hydrate(scope, Components:RefUI("TierIndicator_BKID1_1"))({
                                 BackgroundColor3 = AssetBook.ItemTierColors[info.Tier]
                             }),
-                            Fusion.Hydrate(scope, Components:RefUI("ItemName_BKID1_1"))({
+                            Fusion.Hydrate(scope, Components:RefUI("ItemName_BKID1_4"))({
                                 Text = info.Name,
                             }),
                         }

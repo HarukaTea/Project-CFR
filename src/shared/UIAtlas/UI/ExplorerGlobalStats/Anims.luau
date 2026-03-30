@@ -221,11 +221,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
         local badgeId = achivementQueue:Pop()
         local newScope = Fusion.scoped()
 
-        local expBar = BadgeAwarding(newScope, {
+        local badgeBar = BadgeAwarding(newScope, {
             BadgeId = tonumber(badgeId),
         })
-        expBar.Parent = UI.Bottom.BadgeAwarding
-        Debris:AddItem(expBar, 5)
+        badgeBar.Parent = UI.Bottom.BadgeAwarding
+        Debris:AddItem(badgeBar, 5)
 
         Promise.delay(5):andThen(function()
 			Fusion.doCleanup(newScope)
@@ -233,8 +233,8 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         SoundService.SFXs.QuestCompleted:Play()
 
-        HarukaLib:UITransTween(expBar, "In", { TweenTime = 0.6 })
-        HarukaLib:UITransTween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
+        HarukaLib:UITransTween(badgeBar, "In", { TweenTime = 0.6 })
+        HarukaLib:UITransTween(badgeBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
     end
     table.insert(scope, Events.PlayBadgeNotify_S.On(function(badgeId: string)
         achivementQueue:Push(badgeId)

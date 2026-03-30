@@ -29,6 +29,8 @@ return function(scope: Fusion.Scope, props: {
 	end))
 
 	return Fusion.Hydrate(scope, Components:RefUI("ItemDropBar_IDrops1_2"))({
+		Name = "ItemDropBar_"..props.ItemId,
+
 		[Children] = {
 			Fusion.Hydrate(scope, Components:RefUI("Bar_IDrops1_3", false, true))({
 				Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use)

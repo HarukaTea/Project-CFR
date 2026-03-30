@@ -41,7 +41,7 @@ local function _cullAFK(data: {
     AFKContainer: Folder,
 })
     for _, entity: Model in CollectionService:GetTagged(data.Tag) do
-        entity.Parent = data.AFKContainer
+        entity.Parent = data.Container
     end
 end
 

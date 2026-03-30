@@ -63,6 +63,8 @@ return function(scope: Fusion.Scope, props: {
     end)
 
     local frame = Fusion.Hydrate(scope, Components:RefUI("PlayerActives_PActives1_1", false, true))({
+        Name = "PlayerActives",
+
         [Children] = {
             Fusion.Hydrate(scope, Components:RefUI("Div_PActives1_1"))({
                 [Children] = {
@@ -165,6 +167,8 @@ return function(scope: Fusion.Scope, props: {
         }
     })
     local frame2 = Fusion.Hydrate(scope, Components:RefUI("PlayerActives_PActives1_1", false, true))({
+        Name = "PlayerActives2",
+
         [Children] = {
             Fusion.Hydrate(scope, Components:RefUI("Div2_PActives1_1"))({
                 [Children] = {

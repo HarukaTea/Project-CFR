@@ -164,7 +164,7 @@ return function(scope: Fusion.Scope, props: {
                                         end
 
                                         if use(isHovering) then
-                                            return Components.WHITE_COLOR:Lerp(Color3.new(), 0.2)
+                                            return Components.WHITE_COLOR
                                         end
 
                                         return Components.BLACK_COLOR

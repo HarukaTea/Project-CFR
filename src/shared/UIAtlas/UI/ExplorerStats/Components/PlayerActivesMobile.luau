@@ -41,7 +41,7 @@ return function(scope: Fusion.Scope, props: {
 
         UDim2.fromScale(-1.3, 0.5)
     }
-    local forceSizeMobile = Fusion.Value(UDim2.fromScale(0.2 / 1.7, 0.2 / 1.7))
+    local forceSizeMobile = Value(UDim2.fromScale(0.2 / 1.7, 0.2 / 1.7))
 
     Fusion.Observer(scope, jmpBtnSize):onBind(function()
         local size = Fusion.peek(jmpBtnSize)
@@ -62,6 +62,7 @@ return function(scope: Fusion.Scope, props: {
                         "UICorner", "UIGradient"
                     }))({
                         Position = forceLocationsMobile[5],
+                        AnchorPoint = Vector2.new(0.5, 0.5),
 
                         Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return use(forceSizeMobile)

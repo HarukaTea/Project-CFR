@@ -94,7 +94,7 @@ return function (scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("InnerComponent_MSPStats1_1", false))({
+            Fusion.Hydrate(scope, Components:RefUI("InnerComponent_MSPStats1_1", false, true))({
                 [Children] = {
                     Selections(scope, 1, {
                         SelectionSlot(scope, {

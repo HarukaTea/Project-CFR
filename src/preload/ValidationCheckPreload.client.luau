@@ -24,8 +24,9 @@ repeat wait() until RepS:WaitForChild("Packages", 999)
 repeat wait() until RepS.HarukaShared:WaitForChild("Shared", 999)
 repeat wait() until RepS.HarukaShared:WaitForChild("UIAtlas", 999)
 repeat wait() until RepS.HarukaShared:WaitForChild("Library", 999)
+repeat wait() until RepS.HarukaShared:WaitForChild("Controllers", 999)
 
-repeat wait() until RepS.HarukaShared.Library:WaitForChild("ClientLib", 999)
+repeat wait() until RepS.HarukaShared.Controllers:WaitForChild("ClientLib", 999)
 repeat wait() until RepS.HarukaShared.Library:WaitForChild("AssetBook", 999)
 repeat wait() until RepS.HarukaShared.Library:WaitForChild("Bindables", 999)
 
@@ -45,9 +46,6 @@ repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Fusion", 999)
 repeat wait() until RepS.HarukaShared.Shared:WaitForChild("HarukaLib", 999)
 repeat wait() until RepS.HarukaShared.Shared:WaitForChild("Promise", 999)
 
-repeat wait() until RepS.HarukaShared:WaitForChild("Library", 999)
-
-repeat wait() until RepS.Packages:WaitForChild("UIAtlas", 999)
 repeat wait() until RepS.Packages:WaitForChild("Unloads", 999)
 repeat wait() until RepS.Packages.Unloads:WaitForChild("TeleportUI", 999)
 
