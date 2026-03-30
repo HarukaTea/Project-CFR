@@ -32,31 +32,11 @@ return function(scope: Fusion.Scope, props: {
         { Value = props.Time }
     ):Play()
 
-    return Components.Frame(scope, {
-        Name = "CastTimeBar",
-        Size = UDim2.fromScale(0.4, 1),
-
+    return Fusion.Hydrate(scope, Components:RefUI("CastTimeBar_CTB1_1", false, true, { "Casting" }))({
         [Children] = {
-            Components.UIListLayout(scope, {
-                Padding = UDim.new(0.15, 0),
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-            }),
-
-            Components.Frame(scope, {
-                Name = "TimeBar",
-                BackgroundTransparency = 0,
-                Size = UDim2.fromScale(1, 0.25),
-
+            Fusion.Hydrate(scope, Components:RefUI("Bar_CTBBar1_1", false, true))({
                 [Children] = {
-                    Components.RoundUICorner(scope),
-
-                    Components.Frame(scope, {
-                        Name = "Bar",
-                        AnchorPoint = Vector2.new(0, 0),
-                        Position = UDim2.fromScale(0, 0),
-                        BackgroundTransparency = 0,
-                        BackgroundColor3 = Color3.fromHex('#7ce4f8'),
-
+                    Fusion.Hydrate(scope, Components:RefUI("Bar_CTBBar1_2", true))({
                         Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local x = (props.Time - use(curTime)) / props.Time
 
@@ -65,23 +45,7 @@ return function(scope: Fusion.Scope, props: {
 
                             return UDim2.fromScale(x, 1)
                         end), Components.TweenInfos.twiceHalf),
-
-                        [Children] = {
-                            Components.RoundUICorner(scope),
-                        }
-                    }),
-                }
-            }),
-
-            Components.TextLabel(scope, {
-                Name = "TimeLeft",
-                Size = UDim2.fromScale(1, 0.5),
-                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-
-                Text = "CASTING",
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
+                    })
                 }
             })
         }

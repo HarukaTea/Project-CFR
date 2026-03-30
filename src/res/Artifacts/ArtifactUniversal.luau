@@ -1,7 +1,7 @@
 
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 
 export type DMGPropsMetaData = {
     DMG: number,

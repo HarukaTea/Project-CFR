@@ -9,7 +9,7 @@ if not worldConfig then return end
 local galleonConfig = worldConfig:GetAttribute("CanSkyGalleon") :: boolean
 if not galleonConfig then return end
 
-local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
+local ClientLib = require(ReplicatedStorage.HarukaShared.Controllers.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 
@@ -21,7 +21,7 @@ local currentGalleon: Model? = nil
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
-ClientLib:InitCharDeadTrackers({
+ClientLib:TrackCharDiedEvent({
     Add = Add,
     Empty = Empty,
     Char = char,

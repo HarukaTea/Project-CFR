@@ -53,13 +53,8 @@ return function(scope: Fusion.Scope, props: {
 
     local amountUI = nil
     if props.IsMobile then
-        amountUI = Components.TextLabel(scope, {
+        amountUI = Fusion.Hydrate(scope, Components:RefUI("AmountMobile_ActiveSlot1_1", true))({
             Name = "Amount",
-            AnchorPoint = Vector2.new(0, 1),
-            Position = UDim2.fromScale(0, 1),
-            Size = UDim2.fromScale(1, 0.425),
-            FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
-            TextXAlignment = Enum.TextXAlignment.Left,
 
             Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return `x{use(amount)}`
@@ -67,18 +62,10 @@ return function(scope: Fusion.Scope, props: {
             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return use(amount) > 1
             end),
-
-            [Children] = {
-                Components.ScaledTextUIStroke(scope, {})
-            }
         })
     else
-        amountUI = Components.TextLabel(scope, {
+        amountUI = Fusion.Hydrate(scope, Components:RefUI("AmountPC_ActiveSlot1_1", true))({
             Name = "Amount",
-            AnchorPoint = Vector2.new(0.5, 0),
-            Position = UDim2.fromScale(0.5, -0.45),
-            Size = UDim2.fromScale(1, 0.425),
-            FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
 
             Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return `x{use(amount)}`
@@ -86,10 +73,6 @@ return function(scope: Fusion.Scope, props: {
             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return use(amount) > 1
             end),
-
-            [Children] = {
-                Components.ScaledTextUIStroke(scope, {})
-            }
         })
     end
 
@@ -101,42 +84,21 @@ return function(scope: Fusion.Scope, props: {
         boolean = boolean
 
         if input == "Controller" then
-            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console["Active"..props.Index].Name] or KeybindsBook.Console["Active"..props.Index].Name
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console["Active"..props.Index].Name]
+                or KeybindsBook.Console["Active"..props.Index].Name
 
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
+            return Fusion.Hydrate(scope, Components:RefUI("Key_ActiveSlot1_1", true))({
                 Text = keybind,
-                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0.6, 0.4),
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
-                ZIndex = 10,
-                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then
+                    Color3.new() else Color3.new(1, 1, 1),
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then
+                    AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
             })
-        elseif input == "Keyboard" then
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC["Active"..props.Index].Name] or KeybindsBook.PC["Active"..props.Index].Name,
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0.4, 0.4),
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                ZIndex = 10,
-                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
 
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+        elseif input == "Keyboard" then
+            return Fusion.Hydrate(scope, Components:RefUI("Key_ActiveSlot1_1", true))({
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC["Active"..props.Index].Name]
+                    or KeybindsBook.PC["Active"..props.Index].Name,
             })
         else
             return nil
@@ -163,12 +125,10 @@ return function(scope: Fusion.Scope, props: {
         }))
     end)
 
-    return Components.Frame(scope, {
-        Name = "Active"..props.Index,
-        BackgroundTransparency = 0,
-        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+    return Fusion.Hydrate(scope, Components:RefUI("ActiveSlot_ActiveSlot1_1", false, false, {
+        "UICorner",
+    }))({
         LayoutOrder = if props.Index == 3 then 159 else props.Index,
-        AnchorPoint = Vector2.new(0.5, 0.5),
         Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
 
         Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -176,11 +136,8 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Components.RoundUICorner(scope),
-
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.05,
-
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)
@@ -213,35 +170,6 @@ return function(scope: Fusion.Scope, props: {
             key,
             amountUI,
 
-            Components.TextLabel(scope, {
-                Name = "Cooldown",
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.fromScale(0.5, 0.5),
-                BackgroundTransparency = 0.6,
-                ZIndex = 2,
-                FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
-
-                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return use(props.ActiveInfo.Cooldown)
-                end),
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return if tonumber(use(props.ActiveInfo.Cooldown)) > 0 then true else false
-                end),
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-
-                    Components.UIPadding(scope, {
-                        PaddingTop = UDim.new(0.22, 0),
-                        PaddingLeft = UDim.new(0.22, 0),
-                        PaddingRight = UDim.new(0.22, 0),
-                        PaddingBottom = UDim.new(0.22, 0),
-                    }),
-
-                    Components.ScaledTextUIStroke(scope, {})
-                },
-            }),
-
             ProgressCircle(scope, {
                 Direction = "Left",
                 RotationVal = props.ActiveInfo.CDRotation,
@@ -249,6 +177,15 @@ return function(scope: Fusion.Scope, props: {
             ProgressCircle(scope, {
                 Direction = "Right",
                 RotationVal = props.ActiveInfo.CDRotation,
+            }),
+
+            Fusion.Hydrate(scope, Components:RefUI("Cooldown_ActiveSlot1_1", true))({
+                Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(props.ActiveInfo.Cooldown)
+                end),
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return if tonumber(use(props.ActiveInfo.Cooldown)) > 0 then true else false
+                end),
             })
         }
     })

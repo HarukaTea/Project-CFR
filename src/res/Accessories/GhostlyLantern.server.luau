@@ -5,7 +5,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 
 local Add, Empty = HarukaLib.Bin()

@@ -41,99 +41,54 @@ return function(scope: Fusion.Scope, props: {
         boolean = boolean
 
         if input == "Controller" then
-            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.ClassUlt.Name] or KeybindsBook.Console.ClassUlt.Name
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.ClassUlt.Name]
+                or KeybindsBook.Console.ClassUlt.Name
 
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
+            return Fusion.Hydrate(scope, Components:RefUI("Key_ClassUlt1_1", true))({
                 Text = keybind,
-                Size = UDim2.fromScale(0.25, 0.4),
-                AutomaticSize = Enum.AutomaticSize.X,
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
-                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
-                ZIndex = 2,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then
+                    AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then
+                    Color3.new() else Color3.new(1, 1, 1),
             })
-        elseif input == "Keyboard" then
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.ClassUlt.Name] or KeybindsBook.PC.ClassUlt.Name,
-                AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2.fromScale(0.25, 0.4),
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-                ZIndex = 2,
 
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+        elseif input == "Keyboard" then
+            return Fusion.Hydrate(scope, Components:RefUI("Key_ClassUlt1_1", true))({
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.ClassUlt.Name]
+                    or KeybindsBook.PC.ClassUlt.Name,
             })
         else
             return nil
         end
     end)
 
-    local frame = Components.Frame(scope, {
-        Name = "PlayerActives",
-        AnchorPoint = Vector2.new(1, 1),
-        Position = UDim2.fromScale(1, 1),
-
+    local frame = Fusion.Hydrate(scope, Components:RefUI("PlayerActives_PActives1_1", false, true))({
         [Children] = {
-            Components.UIScale(scope, {
-                Scale = 1
-            }),
-
-            Components.Frame(scope, {
-                Name = "Div",
-                AnchorPoint = Vector2.xAxis,
-                Position = UDim2.fromScale(0.985, -0.2),
-                Size = UDim2.fromScale(0.33, 1),
-
+            Fusion.Hydrate(scope, Components:RefUI("Div_PActives1_1"))({
                 [Children] = {
-                    Components.Frame(scope, {
-                        Name = "PlayerControls",
-
+                    Fusion.Hydrate(scope, Components:RefUI("PlayerControls_PActives1_1", false, true))({
                         [Children] = {
-                            Components.UIListLayout(scope, {
-                                FillDirection = Enum.FillDirection.Horizontal,
-                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                                Padding = UDim.new(0.015, 0)
-                            }),
+                            ActiveSlot(scope, {
+                                Index = 1,
+                                ActiveInfo = self.ActiveList[1]
+                            }, self),
 
-                            Components.Frame(scope, {
-                                Name = "ClassQUlt",
-                                LayoutOrder = 233,
-                                Size = UDim2.fromScale(1.8, 1.8),
-                                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                                BackgroundTransparency = 0,
-                                BackgroundColor3 = Color3.new(),
+                            ActiveSlot(scope, {
+                                Index = 2,
+                                ActiveInfo = self.ActiveList[2]
+                            }, self),
 
+                            ActiveSlot(scope, {
+                                Index = 3,
+                                ActiveInfo = self.ActiveList[3]
+                            }, self),
+
+                            Fusion.Hydrate(scope, Components:RefUI("ClassQUlt_ActiveSlot1_1", false, false, {
+                                "UICorner", "UIGradient"
+                            }))({
                                 [Children] = {
-                                    Components.RoundUICorner(scope),
-
-                                    Components.UIGradient(scope, {
-                                        Rotation = -90,
-
-                                        Transparency = NumberSequence.new({
-                                            NumberSequenceKeypoint.new(0, 0),
-                                            NumberSequenceKeypoint.new(0.001, 0),
-                                            NumberSequenceKeypoint.new(0.002, 1),
-                                            NumberSequenceKeypoint.new(1, 1)
-                                        })
-                                    }),
-
                                     Components.ScaledUIStroke(scope, {
                                         Thickness = 0.035,
-
                                         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             return use(isSelectingUlt)
                                         end),
@@ -147,12 +102,7 @@ return function(scope: Fusion.Scope, props: {
                                         end
                                     }),
 
-                                    Components.IconImageLabel(scope, {
-                                        Name = "BaseIcon",
-                                        ZIndex = 0,
-                                        ImageTransparency = 0.7,
-                                        BackgroundTransparency = 0.7,
-
+                                    Fusion.Hydrate(scope, Components:RefUI("BaseIcon_ClassUlt1_1", true))({
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
@@ -160,10 +110,7 @@ return function(scope: Fusion.Scope, props: {
                                             return classInfo.Icon
                                         end),
                                     }),
-                                    Components.IconImageLabel(scope, {
-                                        Name = "Icon",
-                                        BackgroundTransparency = 1,
-
+                                    Fusion.Hydrate(scope, Components:RefUI("Icon_ClassUlt1_1", true))({
                                         Image = Fusion.Computed(scope, function(use: Fusion.Use)
                                             local classInfo = ClassBook[use(props.Class)]
                                             if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
@@ -185,28 +132,9 @@ return function(scope: Fusion.Scope, props: {
                                                 Color3.new(1, 1, 1)
                                             else classInfo.Color
                                         end),
-
-                                        [Children] = {
-                                            Components.UIGradient(scope, {
-                                                Rotation = -90,
-
-                                                Transparency = NumberSequence.new({
-                                                    NumberSequenceKeypoint.new(0, 0),
-                                                    NumberSequenceKeypoint.new(0.001, 0),
-                                                    NumberSequenceKeypoint.new(0.002, 1),
-                                                    NumberSequenceKeypoint.new(1, 1)
-                                                })
-                                            }),
-                                        }
                                     }),
 
-                                    Components.TextLabel(scope, {
-                                        Name = "UltReady",
-                                        AnchorPoint = Vector2.new(0.5, 0),
-                                        Position = UDim2.fromScale(0.5, -0.25),
-                                        Size = UDim2.fromScale(1, 0.25),
-                                        Text = "READY",
-
+                                    Fusion.Hydrate(scope, Components:RefUI("UltReady_ClassUlt1_1", true))({
                                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
                                             local x = charge / maxCharge
@@ -225,75 +153,30 @@ return function(scope: Fusion.Scope, props: {
 
                                             return classInfo.Color
                                         end),
-
-                                        [Children] = {
-                                            Components.ScaledTextUIStroke(scope, {})
-                                        }
                                     }),
 
                                     key
                                 }
-                            }),
-
-                            ActiveSlot(scope, {
-                                Index = 1,
-                                ActiveInfo = self.ActiveList[1]
-                            }, self),
-
-                            ActiveSlot(scope, {
-                                Index = 2,
-                                ActiveInfo = self.ActiveList[2]
-                            }, self),
-
-                            ActiveSlot(scope, {
-                                Index = 3,
-                                ActiveInfo = self.ActiveList[3]
-                            }, self),
+                            })
                         }
                     })
                 }
-
             })
-
         }
     })
-    local frame2 = Components.Frame(scope, {
-        Name = "PlayerActives2",
-        AnchorPoint = Vector2.new(1, 1),
-        Position = UDim2.fromScale(1, 1),
-
+    local frame2 = Fusion.Hydrate(scope, Components:RefUI("PlayerActives_PActives1_1", false, true))({
         [Children] = {
-            Components.UIScale(scope, {
-                Scale = 1
-            }),
-
-            Components.Frame(scope, {
-                Name = "Div2",
-                AnchorPoint = Vector2.xAxis,
-                Position = UDim2.fromScale(0.985, -2.5),
-                Size = UDim2.fromScale(0.33, 1),
-
+            Fusion.Hydrate(scope, Components:RefUI("Div2_PActives1_1"))({
                 [Children] = {
-                    Components.Frame(scope, {
-                        Name = "PlayerControls",
-
+                    Fusion.Hydrate(scope, Components:RefUI("PlayerControls_PActives1_1", false, true))({
                         [Children] = {
-                            Components.UIListLayout(scope, {
-                                FillDirection = Enum.FillDirection.Horizontal,
-                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                                VerticalAlignment = Enum.VerticalAlignment.Bottom,
-                                Padding = UDim.new(0.015, 0)
-                            }),
-
                             AbilitySlot(scope, {
                                 ActiveInfo = self.CharAbilityList[1]
                             }, self)
                         }
                     })
                 }
-
             })
-
         }
     })
 

@@ -11,7 +11,7 @@ if not galleonConfig then return end
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 
 local Add, Empty = HarukaLib.Bin()
 
@@ -21,7 +21,7 @@ local currentGalleon: Model? = nil
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGServerInited")
 
-ServerLib:InitCharDeadTrackers({
+ServerLib:TrackCharDiedEvent({
     Add = Add,
     Empty = Empty,
     Char = char,

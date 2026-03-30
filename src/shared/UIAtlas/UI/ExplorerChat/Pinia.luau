@@ -125,10 +125,10 @@ return function (self: Self)
         self.plr:SetAttribute("CurrentUIGroup", "None")
     end
     local function __setText(text: string)
-        self.Dialogue:set(HarukaLib:RichTextify(text))
+        self.Dialogue:set(HarukaLib:RichText(text))
         self.MaxUTFShown:set(0)
 
-        typewriterObj:TypeText(HarukaLib:RichTextify(text))
+        typewriterObj:TypeText(HarukaLib:RichText(text))
     end
     local function __nextText(method: "Skip" | "Continue", forceDialogue: string?)
         if method == "Skip" then

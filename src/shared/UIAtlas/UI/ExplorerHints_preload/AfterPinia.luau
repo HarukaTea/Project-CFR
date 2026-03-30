@@ -54,8 +54,8 @@ return function (self: Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-		HarukaLib:UITween(normalHint, "In", { TweenTime = 0.5 })
-		HarukaLib:UITween(normalHint, "Out", { TweenTime = 0.5, DelayTime = 3 })
+		HarukaLib:UITransTween(normalHint, "In", { TweenTime = 0.5 })
+		HarukaLib:UITransTween(normalHint, "Out", { TweenTime = 0.5, DelayTime = 3 })
 	end
 	table.insert(scope, Events.CreateNotify_S.On(_createHint))
 	table.insert(scope, Bindables.CreateNotify.Event:Connect(_createHint))
@@ -75,7 +75,7 @@ return function (self: Self)
 		}
 		local newScope = Fusion.scoped()
 
-		self.FSHintsQueue:SpawnMutex(nextHint.Duration)
+		self.FSHintsQueue:EnableMutex(nextHint.Duration)
 
 		local fullNotify = FullHintLabel(newScope, {
 			Text = nextHint.Text,
@@ -87,13 +87,13 @@ return function (self: Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-		HarukaLib:UITween(fullNotify, "In", {})
-		HarukaLib:UITween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
+		HarukaLib:UITransTween(fullNotify, "In", {})
+		HarukaLib:UITransTween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
 	end
 	table.insert(scope, Events.CreateFSNotify_S.On(_createFSHint))
 	table.insert(scope, Bindables.CreateFSNotify.Event:Connect(_createFSHint))
 
-	self.FSHintsQueue.RefreshSignal.Event:Connect(_onFSHintAdded)
+	self.FSHintsQueue.OnPushed.Event:Connect(_onFSHintAdded)
 
 	--// receive center hint requests
 	local function _createCenterNotify(text: string, showBar: boolean)
@@ -105,7 +105,7 @@ return function (self: Self)
 		if self.CenterHintsQueue:IsLocked() then return end
 		if self.CenterHintsQueue:IsEmpty() then return end
 
-		self.CenterHintsQueue:SpawnMutex(1.5)
+		self.CenterHintsQueue:EnableMutex(1.5)
 
 		local nextHint = self.CenterHintsQueue:Pop() :: {
 			Text: string, ShowBar: boolean
@@ -123,11 +123,11 @@ return function (self: Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-		HarukaLib:UITween(notifyBar, "In", { TweenTime = 0.5 })
-		HarukaLib:UITween(notifyBar, "Out", { TweenTime = 0.5, DelayTime = 0.9 })
+		HarukaLib:UITransTween(notifyBar, "In", { TweenTime = 0.5 })
+		HarukaLib:UITransTween(notifyBar, "Out", { TweenTime = 0.5, DelayTime = 0.9 })
 	end
 	table.insert(scope, Events.CreateCenterNotify_S.On(_createCenterNotify))
 	table.insert(scope, Bindables.CreateCenterNotify.Event:Connect(_createCenterNotify))
 
-	self.CenterHintsQueue.RefreshSignal.Event:Connect(_onCenterHintAdded)
+	self.CenterHintsQueue.OnPushed.Event:Connect(_onCenterHintAdded)
 end

@@ -98,7 +98,7 @@ return function(scope: Fusion.Scope, props: {
                                     }),
 
                                     Fusion.Hydrate(scope, Components:RefUI("Price_EMPIA2_1"))({
-                                        Text = HarukaLib:CommaifyNumber(info.Price)
+                                        Text = HarukaLib:AddCommaToNum(info.Price)
                                     }),
                                 }
                             })

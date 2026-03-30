@@ -8,7 +8,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 
 local char = script:FindFirstAncestorOfClass("Model")
 local plr = Players:GetPlayerFromCharacter(char)
@@ -92,12 +92,12 @@ table.insert(CharLib.Funcs, function()
 		if char:GetAttribute("IsInCombat") then return end
 
         local regionIn = HarukaLib:IsInRegion(char.PrimaryPart.Position, CollectionService:GetTagged("ZoneEntity"))
-        if regionIn then
-            if char:GetAttribute("AreaIn") == regionIn.Name then return end
+		if not regionIn then return end
 
-            plr:SetAttribute("LastSeen", regionIn.Name)
-            char:SetAttribute("AreaIn", regionIn.Name)
-        end
+		if char:GetAttribute("AreaIn") == regionIn.Name then return end
+
+		plr:SetAttribute("LastSeen", regionIn.Name)
+		char:SetAttribute("AreaIn", regionIn.Name)
     end))
 end)
 

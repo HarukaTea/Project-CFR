@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -203,7 +203,7 @@ return function(scope: Fusion.Scope, props: {
                                             typedAmount = math.clamp(typedAmount, 1, MAX_PURCHASE_AMOUNT)
 
                                             local priceType = if props.Action == "Sell" then "SellPrice" else "Price"
-                                            return `{HarukaLib:CommaifyNumber(use(info)[priceType] * typedAmount)}`
+                                            return `{HarukaLib:AddCommaToNum(use(info)[priceType] * typedAmount)}`
                                         end),
                                     }),
                                 }

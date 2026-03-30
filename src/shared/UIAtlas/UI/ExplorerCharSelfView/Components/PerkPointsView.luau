@@ -5,7 +5,7 @@ local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
@@ -70,7 +70,7 @@ return function(scope: Fusion.Scope, props: {
                     }),
 
                     Fusion.Hydrate(scope, Components:RefUI("PlayerName_ExpLvl1_1", true))({
-                        Text = HarukaLib:RichTextify(`{Players.LocalPlayer.DisplayName}  <gray>(#{Players.LocalPlayer.UserId})</font>`)
+                        Text = HarukaLib:RichText(`{Players.LocalPlayer.DisplayName}  <gray>(#{Players.LocalPlayer.UserId})</font>`)
                     }),
 
                     Fusion.Hydrate(scope, Components:RefUI("Level_ExpLvl1_1", true))({

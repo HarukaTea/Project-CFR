@@ -123,7 +123,7 @@ return function (scope: Fusion.Scope, props: {
     shownObserver:onBind(function()
         local shown = Fusion.peek(isShown) :: boolean
         if shown then
-            HarukaLib:UITween(UI.Center, "In", {
+            HarukaLib:UITransTween(UI.Center, "In", {
                 FollowOriPropsWhenIn = true,
 
                 TweenTime = 0.5,
@@ -131,7 +131,7 @@ return function (scope: Fusion.Scope, props: {
                 PosTweenBaseElement = UI.Center
             })
         else
-            HarukaLib:UITween(UI.Center, "Out", {
+            HarukaLib:UITransTween(UI.Center, "Out", {
                 SetOriPropsWhenOut = true,
 
                 PosTweenStyle = "FromT2B",

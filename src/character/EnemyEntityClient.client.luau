@@ -9,7 +9,7 @@ local SS = game:GetService("ServerStorage")
 
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
-local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
+local ClientLib = require(ReplicatedStorage.HarukaShared.Controllers.ClientLib)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
@@ -31,7 +31,7 @@ else
     entityStorage = SS:FindFirstChild("EntitiesAFK")
 end
 
-ClientLib:InitCharDeadTrackers({
+ClientLib:TrackCharDiedEvent({
     Add = Add,
     Empty = Empty,
     Char = char,

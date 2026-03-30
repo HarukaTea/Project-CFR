@@ -9,7 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
 
-local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
+local ClientLib = require(ReplicatedStorage.HarukaShared.Controllers.ClientLib)
 local Bindables = require(ReplicatedStorage.HarukaShared.Library.Bindables)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
@@ -17,7 +17,7 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local BezierMath = require(ReplicatedStorage.HarukaShared.Shared.HarmonyLib.BezierMath)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
-local VFXSceneLib = require(ReplicatedStorage.HarukaShared.Library.VFXSceneLib)
+local VFXSceneLib = require(ReplicatedStorage.HarukaShared.Controllers.VFXSceneLib)
 
 local effectsFolder = ReplicatedStorage.Packages.Effects :: Folder
 

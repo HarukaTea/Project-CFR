@@ -7,13 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
-local udNew = UDim.new
-
 local statIcons = {
     DMG = "rbxassetid://2965862892",
     Magic = "rbxassetid://2965863231",
-
-    HalloweenCandy = "rbxassetid://101642799593354",
     Gold = "rbxassetid://18421784947"
 }
 
@@ -26,39 +22,29 @@ return function (scope: Fusion.Scope, props: {
     LayoutOrder: number,
 })
 
-    return Components.Frame(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("DMGStat_PStat1_2", false, true))({
         Name = props.StatId,
         LayoutOrder = props.LayoutOrder,
 
         [Children] = {
-            Components.UIListLayout(scope, {
-                Padding = udNew(0.015, 0),
-                HorizontalAlignment = Enum.HorizontalAlignment.Left,
-                FillDirection = Enum.FillDirection.Horizontal,
-            }),
-
             Components.IconImageLabel(scope, {
                 Name = "StatIcon_"..props.StatId,
                 LayoutOrder = 1,
 
                 Image = statIcons[props.StatId],
             }),
-            Components.TextLabel(scope, {
+
+            Fusion.Hydrate(scope, Components:RefUI("StatText_PStat1_4", true))({
                 Name = "StatText_"..props.StatId,
                 LayoutOrder = 2,
-                TextXAlignment = Enum.TextXAlignment.Left,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     if props.StatId == "DMG" then
-                        return HarukaLib:CommaifyNumber(use(props.StatValue)).."-"..HarukaLib:CommaifyNumber(use(props.StatValue2))
+                        return HarukaLib:AddCommaToNum(use(props.StatValue)).."-"..HarukaLib:AddCommaToNum(use(props.StatValue2))
                     else
-                        return HarukaLib:CommaifyNumber(use(props.StatValue))
+                        return HarukaLib:AddCommaToNum(use(props.StatValue))
                     end
-                end),
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {})
-                }
+                end)
             })
         },
     })

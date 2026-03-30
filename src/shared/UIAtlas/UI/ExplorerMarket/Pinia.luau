@@ -60,9 +60,6 @@ return function (self: Self)
     self.Currency = {
         Gold = Value(0),
         Astra = Value(0),
-
-        HalloweenCandy = Value(0),
-        IceCandy = Value(0),
     }
 
     self.Products = Fusion.Value(scope, {})
@@ -81,14 +78,7 @@ return function (self: Self)
         end,
         ["Attr-Astra"] = function(val: number)
             self.Currency.Astra:set(val)
-        end,
-
-        ["Attr-HalloweenCandy"] = function(val: number)
-            self.Currency.HalloweenCandy:set(val)
-        end,
-        ["Attr-IceCandy"] = function(val: number)
-            self.Currency.IceCandy:set(val)
-        end,
+        end
     }))
 
     --// track menu

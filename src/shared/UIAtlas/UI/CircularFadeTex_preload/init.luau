@@ -2,7 +2,7 @@
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -39,7 +39,7 @@ return function (plr: Player)
 		}
 		local newScope = Fusion.scoped()
 
-		self.CirularFadeQueue:SpawnMutex(nextCircularFade.Duration + 1)
+		self.CirularFadeQueue:EnableMutex(nextCircularFade.Duration + 1)
 
         local UI = CircularFadeTex(newScope)
 		UI.Parent = self.plr.PlayerGui
@@ -61,5 +61,5 @@ return function (plr: Player)
     table.insert(scope, Events.CreateCircularFade_S.On(_createCircularFade))
 	table.insert(scope, Bindables.CreateCircularFade.Event:Connect(_createCircularFade))
 
-	self.CirularFadeQueue.RefreshSignal.Event:Connect(_onCircularFadeAdded)
+	self.CirularFadeQueue.OnPushed.Event:Connect(_onCircularFadeAdded)
 end

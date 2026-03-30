@@ -10,17 +10,16 @@ local SoundService = game:GetService("SoundService")
 local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Library.ClassOrbSpawnAlgoLib)
-local ClassOrbCallbackLib = require(ServerScriptService.HarukaServer.Library.ClassOrbCallbackLib)
+local ClassOrbSpawnAlgoLib = require(ServerScriptService.HarukaServer.Services.ClassOrbSpawnAlgoLib)
 
 local ServerTable = require(ServerScriptService.HarukaServer.Library.ServerTable)
 
 local ArtifactBook = require(ReplicatedStorage.HarukaShared.Library.ArtifactBook)
-local ArtifactLib = require(ServerScriptService.HarukaServer.Library.ArtifactLib)
+local ArtifactLib = require(ServerScriptService.HarukaServer.Services.ArtifactLib)
 local ClassBook = require(ReplicatedStorage.HarukaShared.Library.ClassBook)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 
 local CharTemplate = require(ServerScriptService.HarukaServer.Library.CharTemplate)
@@ -64,7 +63,7 @@ function CriRPGLib:Init()
     char:SetAttribute("Haruka_CriRPGServerInited", true)
     char:AddTag("PlayerCharEntity")
 
-    ServerLib:InitCharDeadTrackers({
+    ServerLib:TrackCharDiedEvent({
         Char = char,
         Player = plr,
         Add = Add,
@@ -256,13 +255,6 @@ table.insert(CriRPGLib.Funcs, function()
     ServerTable.OrbSymbols[charUniqueId] = {}
 
     local orbSpawnAdd, orbSpawnEmpty = HarukaLib.Bin()
-    local function _spawnOrb_Callback(orbData: ClassOrbCallbackLib.ClassOrbData)
-        local class = plr:GetAttribute("Class") or "Burst"
-
-        if ClassOrbCallbackLib[class] then
-            ClassOrbCallbackLib[class](orbData, char)
-        end
-    end
     local function _spawnOrb_done(orbName: string, extraProps: {
         Offset: Vector3?,
         ForceLocation: CFrame?,
@@ -318,10 +310,6 @@ table.insert(CriRPGLib.Funcs, function()
                 OrbLocationPos = orbPos.Position,
                 OrbUniStyle = orbUniStyle
             })
-
-            if extraProps.NeedCallback then
-                _spawnOrb_Callback(ServerTable.OrbSymbols[charUniqueId][orbUniqueId])
-            end
         end
     end
     local function _spawnOrb()
@@ -1069,7 +1057,7 @@ table.insert(CriRPGLib.Funcs, function()
         if areaQueue:IsLocked() then return end
         if areaQueue:IsEmpty() then return end
 
-        areaQueue:SpawnMutex(1.5)
+        areaQueue:EnableMutex(1.5)
 
         local location = areaQueue:Pop() :: string
 
@@ -1079,7 +1067,7 @@ table.insert(CriRPGLib.Funcs, function()
             char:SetAttribute("BaseJumpPower", LocationBook[location].BaseJumpPower or 50)
         end
     end
-    areaQueue.RefreshSignal.Event:Connect(_changeLocation)
+    areaQueue.OnPushed.Event:Connect(_changeLocation)
 
     Add(HarukaLib:Hydrate(char, {
         ["Attr-AreaIn"] = function(region: string)

@@ -11,7 +11,7 @@ local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
 if not cullingConfig then return end
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local ClientLib = require(ReplicatedStorage.HarukaShared.Library.ClientLib)
+local ClientLib = require(ReplicatedStorage.HarukaShared.Controllers.ClientLib)
 local Events = require(ReplicatedStorage.HarukaShared.Library.Events)
 
 local Add, Empty = HarukaLib.Bin()
@@ -21,7 +21,7 @@ local plr = Players.LocalPlayer
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
-ClientLib:InitCharDeadTrackers({
+ClientLib:TrackCharDiedEvent({
     Add = Add,
     Empty = Empty,
     Char = char,

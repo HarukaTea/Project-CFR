@@ -54,19 +54,9 @@ return function(scope: Fusion.Scope, props: {
 
             boolean = boolean
 
-            return Components.TextLabel(scope, {
-                Name = "Key",
-                AnchorPoint = Vector2.one,
-                AutomaticSize = Enum.AutomaticSize.X,
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name] or KeybindsBook.PC[realSlot].Name,
-                Size = UDim2.fromScale(0.5, 0.5),
-                Position = UDim2.fromScale(1.05, 1),
-                BackgroundTransparency = 0,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+            return Fusion.Hydrate(scope, Components:RefUI("Key_MSTPStats1_2", true))({
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name]
+                    or KeybindsBook.PC[realSlot].Name,
             })
         end)
     end
@@ -81,47 +71,26 @@ return function(scope: Fusion.Scope, props: {
             end
         }))
 
-        point = Components.ImageLabel(scope, {
-            Name = "Hint",
-            BackgroundColor3 = Color3.fromRGB(195, 0, 0),
-            BackgroundTransparency = 0,
-            AnchorPoint = Vector2.xAxis,
-            Position = UDim2.fromScale(1.05, -0.1),
-            Size = UDim2.fromScale(0.4, 0.4),
-            SizeConstraint = Enum.SizeConstraint.RelativeYY,
-            ZIndex = 3,
-
+        point = Fusion.Hydrate(scope, Components:RefUI("Hint_MSTPStats1_2", true))({
             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return use(hasPoint)
-            end),
-
-            [Children] = {
-                Components.RoundUICorner(scope),
-                Components.TextLabel(scope, {
-                    Name = "Attention",
-                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Heavy),
-                    Text = "!"
-                })
-            }
+            end)
         })
     end
 
-    return Components.Frame(scope, {
+    return Fusion.Hydrate(scope, Components:RefUI("MenuSlotT_PStats1_1", false, false, {
+        "UICorner"
+    }))({
         Name = props.Slot,
-        BackgroundTransparency = 0,
-        SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = props.Index,
 
         [Children] = {
-            Components.RoundUICorner(scope),
-
             Components.IconImageLabel(scope, {
                 Image = Icons[props.Slot],
             }),
 
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.05,
-
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)

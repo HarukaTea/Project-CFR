@@ -17,23 +17,11 @@ return function (scope: Fusion.Scope, props: {
 
     local bar1: Frame = nil
 
-    bar1 = Components.Frame(scope, {
-        Name = "HPBar",
-        LayoutOrder = 1,
-        Size = UDim2.fromScale(0.18, 0.875),
-        BackgroundTransparency = 0,
-        BackgroundColor3 = Color3.fromRGB(),
-
+    bar1 = Fusion.Hydrate(scope, Components:RefUI("HPBar_PStats1_1", false, true, {
+        "Title", "Icon", "Shield"
+    }))({
         [Children] = {
-            Components.RoundUICorner(scope),
-
-            Components.Frame(scope, {
-                Name = "Bar",
-                AnchorPoint = Vector2.zero,
-                BackgroundTransparency = 0,
-                Position = UDim2.fromScale(0, 0),
-                BackgroundColor3 = Color3.fromHex('#90c21f'),
-
+            Fusion.Hydrate(scope, Components:RefUI("Bar_HPBarPStats1_1", true))({
                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local HP, maxHP = use(props.HP) :: number, use(props.MaxHP) :: number
 
@@ -44,68 +32,13 @@ return function (scope: Fusion.Scope, props: {
 
                     return UDim2.fromScale(x, 1)
                 end), Components.TweenInfos.halfBack),
-
-                [Children] = {
-                    Components.RoundUICorner(scope)
-                }
             }),
 
-            Components.ScaledUIStroke(scope, {
-                Name = "Shield",
-                Thickness = 0.2,
-                Color = Color3.fromRGB(255, 255, 0),
-
-                [Children] = {
-                    Components.UIGradient(scope, {
-                        Transparency = NumberSequence.new({
-                            NumberSequenceKeypoint.new(0, 0),
-                            NumberSequenceKeypoint.new(0.001, 0),
-                            NumberSequenceKeypoint.new(0.002, 1),
-                            NumberSequenceKeypoint.new(1, 1)
-                        })
-                    })
-                }
-            }),
-
-            Components.TextLabel(scope, {
-				Name = "Stat",
-				AnchorPoint = Vector2.new(0.5, 0),
-				Position = UDim2.fromScale(0.5, 0),
-				Size = UDim2.fromScale(0.94, 1),
-				TextXAlignment = Enum.TextXAlignment.Right,
-
+            Fusion.Hydrate(scope, Components:RefUI("Stat_HPBarPStats1_1", true))({
 				Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
 					return use(props.HP) .. " / " .. use(props.MaxHP)
-				end),
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {
-                        Thickness = 0.08,
-                    })
-                }
-			}),
-			Components.TextLabel(scope, {
-				Name = "Title",
-				AnchorPoint = Vector2.new(0.5, 0),
-				Position = UDim2.fromScale(0.5, 0),
-				Size = UDim2.fromScale(0.62, 1),
-				TextXAlignment = Enum.TextXAlignment.Left,
-				TextStrokeTransparency = 0.7,
-				Text = "HEALTH",
-
-                [Children] = {
-                    Components.ScaledTextUIStroke(scope, {
-                        Thickness = 0.08,
-                    })
-                }
-			}),
-			Components.IconImageLabel(scope, {
-				AnchorPoint = Vector2.new(0, 0.5),
-				Position = UDim2.fromScale(0.02, 0.5),
-				Size = UDim2.fromScale(1.8, 1.8),
-				Image = "rbxassetid://104142948728530",
-                ImageColor3 = Color3.fromHex('#90c21f'),
-			}),
+				end)
+			})
         }
     })
 

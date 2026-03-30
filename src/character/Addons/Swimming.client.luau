@@ -11,7 +11,7 @@ if not worldConfig then return end
 local swimConfig = worldConfig:GetAttribute("CanSwim") :: boolean
 if not swimConfig then return end
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 
@@ -24,7 +24,7 @@ local camera = workspace.CurrentCamera
 
 repeat task.wait() until char:GetAttribute("Haruka_CriRPGClientInited")
 
-ClientLib:InitCharDeadTrackers({
+ClientLib:TrackCharDiedEvent({
     Add = Add,
     Empty = Empty,
     Char = char,

@@ -5,8 +5,8 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ArtifactUniversal = require(ReplicatedStorage.HarukaRes.Artifacts.ArtifactUniversal)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
+local StatusLib = require(ServerScriptService.HarukaServer.Services.StatusLib)
 
 local Add, Empty = HarukaLib.Bin()
 

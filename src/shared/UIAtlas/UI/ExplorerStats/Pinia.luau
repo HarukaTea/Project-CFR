@@ -113,10 +113,7 @@ export type Self = {
     RequestToCastItem: BindableEvent,
     RequestToDash: BindableEvent,
 
-    ClassActiveCastCD: boolean,
-
-    HalloweenCandy: Fusion.Value<number>,
-    IceCandy: Fusion.Value<number>,
+    ClassActiveCastCD: boolean
 }
 
 return function (self: Self)
@@ -182,9 +179,6 @@ return function (self: Self)
 
     self.UIViewportSize = FusionComponents.useUIViewportSize(scope)
     self.Device = HarukaLib:GetAccurateDevice()
-
-    self.HalloweenCandy = Value(0)
-    self.IceCandy = Value(0)
 
     --// track server
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -694,14 +688,6 @@ return function (self: Self)
         ["Attr-Gold"] = function(val: number)
             val = val or 0
             self.Gold:set(val)
-        end,
-        ["Attr-HalloweenCandy"] = function(val: number)
-            val = val or 0
-            self.HalloweenCandy:set(val)
-        end,
-        ["Attr-IceCandy"] = function(val: number)
-            val = val or 0
-            self.IceCandy:set(val)
         end
     }))
 end

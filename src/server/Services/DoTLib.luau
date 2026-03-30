@@ -37,8 +37,8 @@ local DoTLib = {} :: DoTLibClass
 DoTLib.__index = DoTLib
 
 local GlobalTimer = require(ServerScriptService.HarukaServer.Shared.GlobalTimer)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
-local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
+local StatusLib = require(ServerScriptService.HarukaServer.Services.StatusLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 

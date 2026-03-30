@@ -38,7 +38,7 @@ return function (scope: Fusion.Scope, props: {
 
         [Children] = {
             Fusion.Hydrate(scope, Components:RefUI("Hint_CH1_2", true))({
-                Text = HarukaLib:RichTextify(props.Text)
+                Text = HarukaLib:RichText(props.Text)
             }),
 
             bar1, bar2

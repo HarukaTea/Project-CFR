@@ -18,7 +18,7 @@ local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
 local QuestLib = require(ServerScriptService.HarukaServer.Services.QuestLib)
@@ -234,45 +234,6 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             end
 
         end):catch(function()  end)
-
-        --// get christmas/halloween rewards if donated before
-        Promise.try(function()
-            local donation = PlayerProfileLib._GetCurrentDonation(profile) or 0
-            local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig")
-            if not worldConfig then return end
-
-            local eventConfig = worldConfig:FindFirstChild("EventConfig")
-            local isChristmas = eventConfig and eventConfig:GetAttribute("ChristmasEvent")
-            local isHalloween = eventConfig and eventConfig:GetAttribute("HalloweenEvent")
-
-            if isChristmas and plr:GetAttribute("ClaimedChristmasDonation") == false then
-                plr:SetAttribute("ClaimedChristmasDonation", true)
-
-                if donation > 0 then
-                    Events.CreateNotify_S.Fire(plr, "Thanks for donating to Christmas event! You will receive 100 free Christmas token!")
-                    HarukaLib:AddAttr(plr, "IceCandy", 100)
-                end
-            end
-            if isHalloween and plr:GetAttribute("ClaimedHalloweenDonation") == false then
-                plr:SetAttribute("ClaimedHalloweenDonation", true)
-                if donation > 0 then
-                    Events.CreateNotify_S.Fire(plr, "Thanks for donating to Halloween event! You will receive 100 free Halloween candy!")
-                    HarukaLib:AddAttr(plr, "HalloweenCandy", 100)
-                end
-            end
-
-            if isChristmas and workspace.MapComponents:FindFirstChild("Gifts") then
-                local giftsFound = validatedData.ChristmasGifts
-                for giftId: string, _ in giftsFound do
-                    local gift = workspace.MapComponents.Gifts:FindFirstChild(giftId)
-                    if gift then
-                        gift:SetAttribute("Player_"..plr.UserId, true)
-                    end
-                end
-
-                plr:SetAttribute("ChristmasGiftFound", HarukaLib.TableUtils.CountDictLength(giftsFound))
-            end
-        end):catch(function() end)
 
         --// apply player rank in another thread
         Promise.try(function()

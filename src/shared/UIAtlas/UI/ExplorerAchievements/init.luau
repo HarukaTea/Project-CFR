@@ -2,7 +2,7 @@
 local BadgeService = game:GetService("BadgeService")
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)

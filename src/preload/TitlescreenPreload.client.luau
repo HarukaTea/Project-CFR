@@ -89,7 +89,7 @@ do
         LoadingText = LoadingTextVal
     })
 
-    HarukaLib:UITween(UI, "In", {
+    HarukaLib:UITransTween(UI, "In", {
         TweenCallback = function()
             Debris:AddItem(holderGui, 1)
         end
@@ -137,7 +137,7 @@ do
     isAlreadyLoaded = true
 
     if not shouldSkipTitlescreen then
-        HarukaLib:UITween(UI, "Out", {
+        HarukaLib:UITransTween(UI, "Out", {
             TweenCallback = function()
                 Fusion.doCleanup(scope)
             end
@@ -158,7 +158,7 @@ do
         --// init ambient
         SoundService.Musics.Titlescreen:Play()
 
-        local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+        local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
         ClientLib:LoadLightingPreset("Titlescreen")
     end
 
@@ -169,7 +169,7 @@ do
     workspace:SetAttribute("Haruka_TitlescreenDestroying", true)
 
     if shouldSkipTitlescreen then
-        HarukaLib:UITween(UI, "Out", {
+        HarukaLib:UITransTween(UI, "Out", {
             TweenCallback = function()
                 Fusion.doCleanup(scope)
             end
@@ -177,7 +177,7 @@ do
     end
     pcall(function()
         if not workspace:GetAttribute("NoResetLightingConfig") then
-            local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+            local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 
             local worldId = workspace:GetAttribute("WorldId") or "InitusWorld"
             ClientLib:LoadLightingPreset(worldId)

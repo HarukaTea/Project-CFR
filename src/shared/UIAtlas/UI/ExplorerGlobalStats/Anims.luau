@@ -43,7 +43,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-        HarukaLib:UITween(gotHitFX, "Out", { TweenTime = 0.5 } )
+        HarukaLib:UITransTween(gotHitFX, "Out", { TweenTime = 0.5 } )
     end))
 
     --// got heal fx
@@ -60,7 +60,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-        HarukaLib:UITween(gotHealFX, "Out", { TweenTime = 1.15 } )
+        HarukaLib:UITransTween(gotHealFX, "Out", { TweenTime = 1.15 } )
     end))
 
     --// got powered fx
@@ -77,7 +77,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-        HarukaLib:UITween(gotPoweredFX, "Out", { TweenTime = 1.15 } )
+        HarukaLib:UITransTween(gotPoweredFX, "Out", { TweenTime = 1.15 } )
     end))
 
     --// track new items
@@ -110,7 +110,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
 
-        expDropQueue:SpawnMutex(4)
+        expDropQueue:EnableMutex(4)
 
         local data = expDropQueue:Pop()
         local newScope = Fusion.scoped()
@@ -131,11 +131,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-        HarukaLib:UITween(expBar, "In", {})
-        HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
+        HarukaLib:UITransTween(expBar, "In", {})
+        HarukaLib:UITransTween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
 
-        HarukaLib:UITween(classExpBar, "In", {})
-        HarukaLib:UITween(classExpBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
+        HarukaLib:UITransTween(classExpBar, "In", {})
+        HarukaLib:UITransTween(classExpBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
     end
     table.insert(scope, Events.OpenEXPAwardBar_S.On(function(data)
         expDropQueue:Push({
@@ -144,7 +144,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         })
     end))
 
-    expDropQueue.RefreshSignal.Event:Connect(_onNewEXPAdded)
+    expDropQueue.OnPushed.Event:Connect(_onNewEXPAdded)
 
     --// track region in
     local regionQueue = HarukaLib.Queue()
@@ -159,7 +159,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if not UI then return end
         if not UI:FindFirstChild("Top") then return end
 
-        regionQueue:SpawnMutex(1.5)
+        regionQueue:EnableMutex(1.5)
 
         local nextRegion = regionQueue:Pop() :: string
         local newScope = Fusion.scoped()
@@ -174,8 +174,8 @@ return function (UI: ScreenGui, self: Pinia.Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-        HarukaLib:UITween(regionBar, "In", {})
-        HarukaLib:UITween(regionBar, "Out", { TweenTime = 0.5, DelayTime = 2.5 })
+        HarukaLib:UITransTween(regionBar, "In", {})
+        HarukaLib:UITransTween(regionBar, "Out", { TweenTime = 0.5, DelayTime = 2.5 })
     end
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-AreaIn"] = function(region: string)
@@ -186,7 +186,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
     }))
     _onNewRegionAdded()
 
-    regionQueue.RefreshSignal.Event:Connect(_onNewRegionAdded)
+    regionQueue.OnPushed.Event:Connect(_onNewRegionAdded)
 
     --// track cast cd
     table.insert(scope, Events.OpenCastTimeBar_S.On(function(castTime: number)
@@ -205,7 +205,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 		end):catch(function() end)
 
         wait(castTime)
-        HarukaLib:UITween(castingTimeBar, "Out", {})
+        HarukaLib:UITransTween(castingTimeBar, "Out", {})
     end))
 
     --// track new achievements
@@ -216,7 +216,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if achivementQueue:IsLocked() then return end
         if achivementQueue:IsEmpty() then return end
 
-        achivementQueue:SpawnMutex(4)
+        achivementQueue:EnableMutex(4)
 
         local badgeId = achivementQueue:Pop()
         local newScope = Fusion.scoped()
@@ -233,12 +233,12 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         SoundService.SFXs.QuestCompleted:Play()
 
-        HarukaLib:UITween(expBar, "In", { TweenTime = 0.6 })
-        HarukaLib:UITween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
+        HarukaLib:UITransTween(expBar, "In", { TweenTime = 0.6 })
+        HarukaLib:UITransTween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
     end
     table.insert(scope, Events.PlayBadgeNotify_S.On(function(badgeId: string)
         achivementQueue:Push(badgeId)
     end))
 
-    achivementQueue.RefreshSignal.Event:Connect(_onNewAchievementAdded)
+    achivementQueue.OnPushed.Event:Connect(_onNewAchievementAdded)
 end

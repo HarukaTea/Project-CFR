@@ -1,7 +1,7 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
@@ -36,7 +36,7 @@ return function (plr: Player)
 		})
 		UI.Parent = self.plr.PlayerGui
 
-		HarukaLib:UITween(UI, "In", {
+		HarukaLib:UITransTween(UI, "In", {
 			TweenTime = 0.5,
 
 			PosTweenStyle = "FromT2B",
@@ -50,13 +50,13 @@ return function (plr: Player)
 
 		Bindables.ConfirmPromptChosen:Fire(data.ConfirmUniqueId, finalResult)
 
-		HarukaLib:UITween(UI, "Out", {
+		HarukaLib:UITransTween(UI, "Out", {
 			TweenCallback = function(tweenOutUI)
 				Fusion.doCleanup(confirmScope)
 
 				tweenOutUI.Full:Destroy()
 
-				HarukaLib:UITween(tweenOutUI, "Out", {
+				HarukaLib:UITransTween(tweenOutUI, "Out", {
 					PosTweenStyle = "FromT2B",
 					PosTweenBaseElement = tweenOutUI.Center.ConfirmPrompt,
 				})

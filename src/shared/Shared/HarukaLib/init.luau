@@ -18,10 +18,10 @@ local HarukaLib = {}
 
     **Example:**
     ``````lua
-    HarukaLib:ShortifyNumber(1000, 2) --- 1.00K
+    HarukaLib:AbbreviateNum(1000, 2) --- 1.00K
     ``````
 ]]
-function HarukaLib:ShortifyNumber(number: number, decimalPlaces: number) : string
+function HarukaLib:AbbreviateNum(number: number, decimalPlaces: number) : string
 	local prefixes = { "", "K", "M", "B", "T", "Q", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd" }
 	local abbrFactor = math.floor(math.floor(math.log10(number)) / 3)
 
@@ -167,10 +167,10 @@ local COLOR_LIST = {
 
 	**Example:**
 	``````lua
-	HarukaLib:RichTextify("<blue>Hello</font>,<red>World</font>!")
+	HarukaLib:RichText("<blue>Hello</font>,<red>World</font>!")
 	``````
 ]]
-function HarukaLib:RichTextify(text: string) : string
+function HarukaLib:RichText(text: string) : string
 	if not text then return "" end
 
 	for oriTag: string, rbxColorTag: string in COLOR_LIST do
@@ -268,7 +268,7 @@ end
 --[[
 	Inspired by `Janitor`, and `Fusion.doCleanup`, you can add anything to the bin.
 
-	Return a function to destroy the items inside the bin, bin can reused.
+	Return a function to destroy the items inside the bin, bin can reused, support clearing `Promises`
 ]]
 function HarukaLib.Bin()
 	local bin = {}
@@ -364,7 +364,7 @@ end
 --[[
 	Inspired by `AdvancedTweenV2`, it can tween any property of any instance.
 
-	Return a signal class, it will fire when the tween is completed.
+	Return a `BindableEvent`, it will fire when the tween is completed.
 ]]
 function HarukaLib:Tween(obj: Instance, style: TweenInfo, goal: { [string]: any }, needSignal: boolean?) : BindableEvent
 	return Tween(obj, style, goal, needSignal)
@@ -406,7 +406,7 @@ function HarukaLib:TypeCheck(checkTask: string, val: any, props: {
 end
 
 --[[
-	Inspired by `Sol's RNG`, basically it will roll a thing depends on the weight you give
+	Inspired by `RNG`, basically it will roll a thing depends on the weight you give
 
 	**Example:**
 	``````lua
@@ -492,7 +492,7 @@ function HarukaLib:CombineRbxId(id: string | number)
 end
 
 --[[
-	Helper function to ban a player, Server-Side ONLY
+	Helper function to ban a player, server-side only
 ]]
 function HarukaLib:BanPlayerByUserId(userId: number, properties: {
 	Duration: number,
@@ -544,14 +544,14 @@ local UI_CLASS_PROPS = {
 	CanvasGroup = { "GroupTransparency" },
 	UIStroke = { "Transparency" },
 }
-local DEFAULT_UITWEEN_PROPS = {
+local DEFAULT_UITransTween_PROPS = {
 	DelayTime = 0,
 	TweenTime = 0.2,
 }
 --[[
 	Helper function to tween the transparency of a UI element
 ]]
-function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
+function HarukaLib:UITransTween(ui: GuiObject, style: "In" | "Out", props: {
 	DelayTime: number?,
 	TweenTime: number?,
 
@@ -564,8 +564,8 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 	PosTweenOffset: number?
 })
 	props = props or {}
-	props.DelayTime = props.DelayTime or DEFAULT_UITWEEN_PROPS.DelayTime
-	props.TweenTime = props.TweenTime or DEFAULT_UITWEEN_PROPS.TweenTime
+	props.DelayTime = props.DelayTime or DEFAULT_UITransTween_PROPS.DelayTime
+	props.TweenTime = props.TweenTime or DEFAULT_UITransTween_PROPS.TweenTime
 
 	local isOut = style == "Out"
 	if props.TweenCallback then
@@ -602,7 +602,7 @@ function HarukaLib:UITween(ui: GuiObject, style: "In" | "Out", props: {
 			local original = obj[attr]
 			if original == nil then continue end
 
-			local attrKey = "HarukaUITween_Ori_" .. attr
+			local attrKey = "HarukaUITransTween_Ori_" .. attr
 			if isOut then
 				tweenGoals[attr] = 1
 				if props.SetOriPropsWhenOut and obj:GetAttribute(attrKey) == nil then
@@ -686,10 +686,10 @@ end
 
 	**Example:**
 	``````lua
-	HarukaLib:CommaifyNumber(123456789) -- "123,456,789"
+	HarukaLib:AddCommaToNum(123456789) -- "123,456,789"
 	``````
 ]]
-function HarukaLib:CommaifyNumber(num: number) : string
+function HarukaLib:AddCommaToNum(num: number) : string
 	if not num then return "" end
 
 	local formatted = tostring(math.floor(num))
@@ -708,10 +708,10 @@ end
 
 	**Example:**
 	``````lua
-	HarukaLib:TimeifyNumber(123) -- "02:03"
+	HarukaLib:NumToTime(123) -- "02:03"
 	``````
 ]]
-function HarukaLib:TimeifyNumber(seconds: number, shouldScaleToMs: boolean?) : string
+function HarukaLib:NumToTime(seconds: number, shouldScaleToMs: boolean?) : string
 	if seconds == nil then return "??:??" end
 	if seconds <= 0 then return "00:00" end
 
@@ -753,10 +753,9 @@ export type HarukaQueue = {
 	Push: (self: HarukaQueue, value: any) -> nil,
 	Pop: (self: HarukaQueue) -> any?,
 	Destroy: (self: HarukaQueue) -> nil,
+	EnableMutex: (self: HarukaQueue, delay: number) -> nil,
 
-	SpawnMutex: (self: HarukaQueue, delay: number) -> nil,
-
-	RefreshSignal: BindableEvent,
+	OnPushed: BindableEvent,
 }
 function HarukaLib.Queue() : HarukaQueue
 	local Queue = {} :: HarukaQueue
@@ -769,8 +768,7 @@ function HarukaLib.Queue() : HarukaQueue
 		self.Last = -1
 		self.Queue = {}
 		self.Locked = false
-
-		self.RefreshSignal = Instance.new("BindableEvent")
+		self.OnPushed = Instance.new("BindableEvent")
 
 		return self
 	end
@@ -782,12 +780,12 @@ function HarukaLib.Queue() : HarukaQueue
 		return #self.Queue
 	end
 
-	function Queue:SpawnMutex(delay: number)
+	function Queue:EnableMutex(delay: number)
 		self.Locked = true
 
 		task.delay(delay, function()
 			self.Locked = false
-			self.RefreshSignal:Fire()
+			self.OnPushed:Fire()
 		end)
 	end
 	function Queue:IsLocked() : boolean
@@ -800,7 +798,7 @@ function HarukaLib.Queue() : HarukaQueue
 		self.Queue[last] = value
 
 		if not self.Locked then
-			self.RefreshSignal:Fire()
+			self.OnPushed:Fire()
 		end
 	end
 	function Queue:Pop() : any?
@@ -817,7 +815,7 @@ function HarukaLib.Queue() : HarukaQueue
 	end
 
 	function Queue:Destroy()
-		self.RefreshSignal:Destroy()
+		self.OnPushed:Destroy()
 	end
 
 	return Queue.new()
@@ -874,21 +872,6 @@ function HarukaLib:CreateMockPart() : BasePart
 end
 
 --[[
-	Quickly return an empty part for mocking
-]]
-function HarukaLib:CreateMockModel() : BasePart
-	local model = Instance.new("Model")
-	model.Name = "MockModel"
-
-	local part = HarukaLib:CreateMockPart()
-	part.Parent = model
-
-	model.PrimaryPart = part
-
-	return model
-end
-
---[[
 	Quickly set all particles of an object to a state
 ]]
 function HarukaLib:SetParticleState(obj: Instance, state: boolean, childrenOnly: boolean?)
@@ -919,10 +902,10 @@ function HarukaLib:CreateTween(instance: Instance, tweenInfo: TweenInfo, tweenPr
 end
 
 --[[
-	Toggles the Enabled property ParticleEmitters (and Beams if IncludeBeams is true)
+	Toggles the Enabled property `ParticleEmitters` (and `Beams` if IncludeBeams is true)
 	in (Parent) to (Value), or reverses the value if (Switch)
 ]]
-function HarukaLib:ZonitoToggleParticles(instance: Instance, val: boolean, reverse: boolean, includeBeams: boolean, childrenOnly: boolean?)
+function HarukaLib:ToggleVFX(instance: Instance, val: boolean, reverse: boolean, includeBeams: boolean, childrenOnly: boolean?)
 	if childrenOnly then
 		for _, v in instance:GetChildren() do
 			if v:IsA("ParticleEmitter") then
@@ -960,7 +943,7 @@ function HarukaLib:ZonitoToggleParticles(instance: Instance, val: boolean, rever
 	end
 end
 
--- Note: Yields
+--- the same as while do
 function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, successCallback: nil | () -> nil) : any
 	local result = nil
 
@@ -981,7 +964,9 @@ function HarukaLib.TryUntil(pCallback: () -> (boolean, any), waitTime: number, s
 	return result
 end
 
--- Get the priority of a name, used for sorting
+--[[
+	the helper function to get the priority of a name, used for sorting
+]]
 function HarukaLib:GetNameOrder(rawName: string?) : number
     local name = tostring(rawName or "")
 

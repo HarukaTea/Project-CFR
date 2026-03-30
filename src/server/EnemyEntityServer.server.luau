@@ -13,13 +13,13 @@ local SoundService = game:GetService("SoundService")
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 local PathCreator = require(ServerScriptService.HarukaServer.Shared.PathCreator)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
 local DoTLib = require(ServerScriptService.HarukaServer.Services.DoTLib)
-local EntityAttackLib = require(ServerScriptService.HarukaServer.Library.EntityAttackLib)
-local StatusLib = require(ServerScriptService.HarukaServer.Library.StatusLib)
+local EntityAttackLib = require(ServerScriptService.HarukaServer.Services.EntityAttackLib)
+local StatusLib = require(ServerScriptService.HarukaServer.Services.StatusLib)
 
 local EntityBook = require(ReplicatedStorage.HarukaShared.Library.EntityBook)
 local EntityTemplate = require(ServerScriptService.HarukaServer.Library.EntityTemplate)
@@ -1184,7 +1184,7 @@ function EntityLib:_CombatEnd()
             isEnemyDeadCheck = true
         end
 
-        --// FIX: there was a bug if enemy fall into void it would die
+        --// there was a bug if enemy fall into void it would die
         if not ServerLib:IsModelValid(entity) then
             isEnemyDeadCheck = false
         end
@@ -1216,51 +1216,40 @@ function EntityLib:_CombatEnd()
 
             --- give loots and badges, combat won!
             local success, err = pcall(function()
-                if not foundTeamUpEnemies and isEnemyDeadCheck then
-                    if isSPWorldType then
-                        self.Locator:SetAttribute("NoRespawn", true)
-                    end
+                if foundTeamUpEnemies then return end
+                if not isEnemyDeadCheck then return end
 
-                    local entityInfo = EntityBook[entity.Name]
-
-                    _giveLoot(entityInfo.Drops, thatChar)
-                    _giveBadge(entityInfo, thatChar)
-
-                    for _, diedEntitySymbol in entity.TeamUpEnemies:GetChildren() do
-                        local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
-
-                        if isSPWorldType then
-                            diedEntitySymbol.Value:SetAttribute("NoRespawn", true)
-                        end
-
-                        _giveLoot(diedEntityInfo.Drops, thatChar)
-                        _giveBadge(diedEntityInfo, thatChar)
-                    end
-
-                    local rewardsData = self:_CalculateRewards()
-                    local totalEXP, totalGold, totalClassEXP = rewardsData.EXP, rewardsData.Gold, rewardsData.ClassEXP
-
-                    local plr = Players:GetPlayerFromCharacter(thatChar)
-                    if plr then
-                        ServerLib:GiveEXPRewards(plr, totalEXP, totalClassEXP)
-
-                        HarukaLib:AddAttr(plr, "Gold", totalGold)
-                        ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
-
-                        HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
-
-                        --// event tokens
-                        Promise.try(function()
-                            local totalToken = math.floor(totalGold / 7)
-
-                            HarukaLib:AddAttr(plr, "IceCandy", totalToken)
-                            ServerLib:ShowText(thatChar, `+{totalToken} ICE TOKEN`, Color3.fromHex('#ffeaa7'))
-
-                            HarukaLib:AddAttr(plr, "HalloweenCandy", totalToken)
-                            ServerLib:ShowText(thatChar, `+{totalToken} HALLOWEEN TOKEN`, Color3.fromHex('#ffeaa7'))
-                        end):catch(function() end)
-                    end
+                if isSPWorldType then
+                    self.Locator:SetAttribute("NoRespawn", true)
                 end
+                local entityInfo = EntityBook[entity.Name]
+
+                _giveLoot(entityInfo.Drops, thatChar)
+                _giveBadge(entityInfo, thatChar)
+
+                for _, diedEntitySymbol in entity.TeamUpEnemies:GetChildren() do
+                    local diedEntityInfo = EntityBook[diedEntitySymbol.Value.Name]
+
+                    if isSPWorldType then
+                        diedEntitySymbol.Value:SetAttribute("NoRespawn", true)
+                    end
+
+                    _giveLoot(diedEntityInfo.Drops, thatChar)
+                    _giveBadge(diedEntityInfo, thatChar)
+                end
+
+                local rewardsData = self:_CalculateRewards()
+                local totalEXP, totalGold, totalClassEXP = rewardsData.EXP, rewardsData.Gold, rewardsData.ClassEXP
+
+                local plr = Players:GetPlayerFromCharacter(thatChar)
+                if not plr then return end
+
+                ServerLib:GiveEXPRewards(plr, totalEXP, totalClassEXP)
+
+                HarukaLib:AddAttr(plr, "Gold", totalGold)
+                ServerLib:ShowText(thatChar, `+{totalGold} GOLD`, Color3.fromHex('#ffeaa7'))
+
+                HarukaLib:AddAttr(plr, "CombatWonTimes", 1)
             end)
             if not success then warn(err) end
         end

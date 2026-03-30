@@ -2,7 +2,7 @@
 local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Events = require(RepS.HarukaShared.Library.Events)
@@ -35,7 +35,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
 		end):catch(function() end)
 
         HarukaLib:CreateTween(circle, Components.TweenInfos.onceHalf, { Size = UDim2.fromScale(2, 2) }):Play()
-        HarukaLib:UITween(circle, "Out", { DelayTime = 0.2 })
+        HarukaLib:UITransTween(circle, "Out", { DelayTime = 0.2 })
     end))
 
     --// track effect list
@@ -54,18 +54,18 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         local newScope = Fusion.scoped()
 
-        local TicketPurchaseDreamField, blur = TicketPurchase(scope, {
+        local ticketUI, blur = TicketPurchase(scope, {
             MerchantId = data.MerchantId,
             Price = data.Price
         })
-        TicketPurchaseDreamField.Parent = UI.Center
-        Debris:AddItem(TicketPurchaseDreamField, 30)
+        ticketUI.Parent = UI.Center
+        Debris:AddItem(ticketUI, 30)
         Debris:AddItem(blur, 30)
 
         Promise.delay(31):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
-        HarukaLib:UITween(TicketPurchaseDreamField, "In", {})
+        HarukaLib:UITransTween(ticketUI, "In", {})
     end))
 end

@@ -3,8 +3,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
-local ClassAttackLib = require(ServerScriptService.HarukaServer.Library.ClassAttackLib)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ClassAttackLib = require(ServerScriptService.HarukaServer.Services.ClassAttackLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 
 local AccessoryUniversal = require(ReplicatedStorage.HarukaRes.Accessories.AccessoryUniversal)
 

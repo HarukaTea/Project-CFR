@@ -11,7 +11,7 @@ local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
-local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
+local ServerLib = require(SSS.HarukaServer.Services.ServerLib)
 
 local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 local CharTemplate = require(SSS.HarukaServer.Library.CharTemplate)

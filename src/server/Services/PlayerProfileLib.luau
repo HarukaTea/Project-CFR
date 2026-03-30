@@ -9,7 +9,7 @@ local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local FormulaBook = require(ReplicatedStorage.HarukaShared.Library.FormulaBook)
 local ServerBindables = require(ServerScriptService.HarukaServer.Library.ServerBindables)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local QuestBook = require(ReplicatedStorage.HarukaShared.Library.QuestBook)
 
@@ -483,15 +483,6 @@ function PlayerProfileLib:_CompensateData(slot: string)
             HarukaLib:AddAttr(self.Player, "EXP", 400 * 1000)
 
             Events.CreateNotify_S.Fire(self.Player, "You have received free 400k exp as compensation for the formula change!")
-        end
-    end
-    if not self.Player:GetAttribute("IceCandyV1Given") then
-        self.Player:SetAttribute("IceCandyV1Given", true)
-
-        if slotTimestamp < v1compensationTime then
-            HarukaLib:AddAttr(self.Player, "IceCandy", 100)
-
-            Events.CreateNotify_S.Fire(self.Player, "You have received free 100 ice candy as compensation for the quest change!")
         end
     end
 end

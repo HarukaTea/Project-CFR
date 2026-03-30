@@ -49,9 +49,9 @@ return function(scope: Fusion.Scope, props: {
                     local currency = use(props.CurrencyVal)
 
                     if use(isSelecting) then
-                        return HarukaLib:CommaifyNumber(currency)
+                        return HarukaLib:AddCommaToNum(currency)
                     else
-                        return HarukaLib:ShortifyNumber(currency, 1)
+                        return HarukaLib:AbbreviateNum(currency, 1)
                     end
                 end),
             })

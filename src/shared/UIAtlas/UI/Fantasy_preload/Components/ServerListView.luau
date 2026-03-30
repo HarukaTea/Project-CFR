@@ -138,7 +138,7 @@ return function (scope: Fusion.Scope, props: {
     visibleObserver:onBind(function()
         local vis = Fusion.peek(isVisible)
         if vis then
-            HarukaLib:UITween(view, "In", {
+            HarukaLib:UITransTween(view, "In", {
                 TweenTime = 0.5,
 
                 PosTweenStyle = "FromR2L",

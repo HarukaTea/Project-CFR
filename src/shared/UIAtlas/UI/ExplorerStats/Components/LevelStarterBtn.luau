@@ -10,10 +10,8 @@ local Pinia = require(script.Parent.Parent.Pinia)
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
-    return { Components.Frame(scope, {
+    return { Fusion.Hydrate(scope, Components:RefUI("LevelStarterAbyss_PStat1_1", false, true))({
         Name = "LevelStarter_"..levelId,
-        AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.fromScale(0.5, 1.5),
         ZIndex = 5,
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -28,22 +26,7 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
         end),
 
         [Children] = {
-            Components.UIScale(scope, {
-                Scale = 1
-            }),
-            Components.UIListLayout(scope, {
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-            }),
-
-            Components.TextButton(scope, {
-                Name = "StarterBtn",
-                Size = UDim2.fromScale(0.15, 0.65),
-                Text = "START",
-                BackgroundTransparency = 0,
-                BackgroundColor3 = Components.BLUE_COLOR,
-                TextColor3 = Components.BLACK_COLOR,
-
+            Fusion.Hydrate(scope, Components:RefUI("StarterBtn_LSAPStat1_2", true))({
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if levelId == "Abyss" then
                         Events.Abyss_StartAbyss_C.Fire()
@@ -51,19 +34,12 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
                     elseif levelId == "Dungeon" then
 
                     end
-                end,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+                end
             })
         }
     }),
-    Components.Frame(scope, {
+    Fusion.Hydrate(scope, Components:RefUI("LevelEndActionsAbyss_PStats1_1", false, true))({
         Name = "LevelEndActions_"..levelId,
-        AnchorPoint = Vector2.new(0.5, 0),
-        Position = UDim2.fromScale(0.5, 1.5),
         ZIndex = 5,
 
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -77,23 +53,7 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
         end),
 
         [Children] = {
-            Components.UIScale(scope, {
-                Scale = 1
-            }),
-            Components.UIListLayout(scope, {
-                Padding = UDim.new(0.5, 0),
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-            }),
-
-            Components.TextButton(scope, {
-                Name = "RestarterBtn",
-                Size = UDim2.fromScale(0.2, 0.65),
-                Text = "RESTART",
-                BackgroundTransparency = 0,
-                BackgroundColor3 = Components.BLUE_COLOR,
-                TextColor3 = Components.BLACK_COLOR,
-
+            Fusion.Hydrate(scope, Components:RefUI("RestartBtn_LEAPStats1_1", true))({
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if levelId == "Abyss" then
                         Events.Abyss_AfterEndAction_S.Fire("Restart")
@@ -105,21 +65,9 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
                     elseif levelId == "Dungeon" then
 
                     end
-                end,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+                end
             }),
-            Components.TextButton(scope, {
-                Name = "LeaveBtn",
-                Size = UDim2.fromScale(0.2, 0.65),
-                Text = "BACK TO INITUS",
-                BackgroundTransparency = 0,
-                BackgroundColor3 = Components.RED_COLOR,
-                TextColor3 = Components.BLACK_COLOR,
-
+            Fusion.Hydrate(scope, Components:RefUI("LeaveBtn_LEAPStats1_1", true))({
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if levelId == "Abyss" then
                         Events.Abyss_AfterEndAction_S.Fire("Leave")
@@ -131,12 +79,7 @@ return function(scope: Fusion.Scope, levelId: string, self: Pinia.Self)
                     elseif levelId == "Dungeon" then
 
                     end
-                end,
-
-                [Children] = {
-                    Components.RoundUICorner(scope),
-                    Components.UIPadding(scope, {})
-                }
+                end
             })
         }
     })

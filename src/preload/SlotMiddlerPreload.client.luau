@@ -43,7 +43,7 @@ if shouldShow then
     loadViewUI = LoadView(scope, {
         LoadingText = LoadingTextVal
     })
-    HarukaLib:UITween(loadViewUI, "In")
+    HarukaLib:UITransTween(loadViewUI, "In")
 
     wait(2.5)
 end
@@ -68,7 +68,7 @@ if shouldShow then
     Bindables.CreateCircularFade:Fire(2)
 
     wait(1)
-    HarukaLib:UITween(loadViewUI, "Out", {
+    HarukaLib:UITransTween(loadViewUI, "Out", {
         TweenCallback = function()
             Fusion.doCleanup(scope)
         end

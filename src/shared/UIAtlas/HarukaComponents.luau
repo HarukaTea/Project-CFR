@@ -22,7 +22,7 @@ CriRPGColorLab.BLUE_COLOR = Color3.fromHex('#7ce4f8')
 local HarukaComponents = {}
 HarukaComponents.FusionComponents = FusionComponents
 
-local DESIGN_VP_SIZE = Vector2.new(1172, 479.2)
+local DESIGN_VP_SIZE = Vector2.new(1172, 456.8)
 HarukaComponents.DESIGN_VP_SIZE = DESIGN_VP_SIZE
 
 local UIASPECT_RATIO = 25.628

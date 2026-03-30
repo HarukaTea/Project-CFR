@@ -18,7 +18,7 @@ return function (scope: Fusion.Scope, props: {
 
     local text = `{props.Value}`
     if props.IsAbyss then
-        text = HarukaLib:TimeifyNumber(props.Value / 1000, true)
+        text = HarukaLib:NumToTime(props.Value / 1000, true)
     end
 
     return Fusion.Hydrate(scope, Components:RefUI("LBRankSlot_1", false, true))({

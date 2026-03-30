@@ -18,5 +18,6 @@
     "luau-lsp.ignoreGlobs": [
         "**/_Index/**",
         "**/spec/**"
-    ]
+    ],
+    "stylua.targetReleaseVersion": "latest"
 }

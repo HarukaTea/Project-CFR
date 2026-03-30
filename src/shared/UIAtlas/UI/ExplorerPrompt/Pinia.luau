@@ -7,7 +7,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)

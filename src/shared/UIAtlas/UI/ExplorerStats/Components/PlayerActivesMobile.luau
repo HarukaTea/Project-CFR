@@ -30,6 +30,7 @@ return function(scope: Fusion.Scope, props: {
         return Fusion.Value(scope, val)
     end
     local isSelectingUlt = Value(false)
+    local jmpBtnSize = Value(Vector2.one)
 
     local forceLocationsMobile = {
         UDim2.fromScale(-0.5, 0.5),
@@ -40,203 +41,147 @@ return function(scope: Fusion.Scope, props: {
 
         UDim2.fromScale(-1.3, 0.5)
     }
-    local forceSizeMobile = UDim2.fromScale(0.2 / 1.7, 0.2 / 1.7)
+    local forceSizeMobile = Fusion.Value(UDim2.fromScale(0.2 / 1.7, 0.2 / 1.7))
 
-    local frame = Components.Frame(scope, {
-        Name = "PlayerActives",
-        AnchorPoint = Vector2.new(1, 1),
-        Position = UDim2.fromScale(1, 1),
+    Fusion.Observer(scope, jmpBtnSize):onBind(function()
+        local size = Fusion.peek(jmpBtnSize)
+
+        forceSizeMobile:set(UDim2.fromOffset(size.Y / 1.7, size.Y / 1.7))
+    end)
+
+
+    local frame = Fusion.Hydrate(scope, Components:RefUI("DivUniControls_DUC1_1", false, true))({
+        [Fusion.Out("AbsoluteSize")] = jmpBtnSize,
 
         [Children] = {
             Components.Frame(scope, {
                 Name = "Div",
-                AnchorPoint = Vector2.one,
-                Position = UDim2.fromScale(0.97, 0.95),
-                Size = UDim2.fromScale(0.2, 0.2),
-                SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
                 [Children] = {
-                    Components.Frame(scope, {
-                        Name = "PlayerControls",
+                    Fusion.Hydrate(scope, Components:RefUI("ClassQUlt_ActiveSlot1_1", false, false, {
+                        "UICorner", "UIGradient"
+                    }))({
+                        Position = forceLocationsMobile[5],
+
+                        Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            return use(forceSizeMobile)
+                        end),
 
                         [Children] = {
-                            Components.Frame(scope, {
-                                Name = "ClassQUlt",
-                                AnchorPoint = Vector2.new(0.5, 0.5),
-                                SizeConstraint = Enum.SizeConstraint.RelativeYY,
-                                BackgroundTransparency = 0,
-                                BackgroundColor3 = Color3.new(),
-
-                                Position = forceLocationsMobile[5],
-
-                                Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                    return use(forceSizeMobile)
+                            Components.ScaledUIStroke(scope, {
+                                Thickness = 0.035,
+                                Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    return use(isSelectingUlt)
                                 end),
-
-                                [Children] = {
-                                    Components.RoundUICorner(scope),
-
-                                    Components.UIGradient(scope, {
-                                        Rotation = -90,
-
-                                        Transparency = NumberSequence.new({
-                                            NumberSequenceKeypoint.new(0, 0),
-                                            NumberSequenceKeypoint.new(0.001, 0),
-                                            NumberSequenceKeypoint.new(0.002, 1),
-                                            NumberSequenceKeypoint.new(1, 1)
-                                        })
-                                    }),
-
-                                    Components.ScaledUIStroke(scope, {
-                                        Thickness = 0.035,
-
-                                        Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            return use(isSelectingUlt)
-                                        end),
-                                    }),
-
-                                    Components.HoverImageButton(scope, {
-                                        Components.ConnectSelectEvents(isSelectingUlt),
-
-                                        [Fusion.OnEvent("MouseButton1Click")] = function()
-                                            self.CastClassUlt_C:Fire()
-                                        end
-                                    }),
-
-                                    Components.IconImageLabel(scope, {
-                                        Name = "BaseIcon",
-                                        ZIndex = 0,
-                                        ImageTransparency = 0.7,
-                                        BackgroundTransparency = 0.7,
-
-                                        Image = Fusion.Computed(scope, function(use: Fusion.Use)
-                                            local classInfo = ClassBook[use(props.Class)]
-                                            if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
-
-                                            return classInfo.Icon
-                                        end),
-                                    }),
-                                    Components.IconImageLabel(scope, {
-                                        Name = "Icon",
-                                        BackgroundTransparency = 1,
-
-                                        Image = Fusion.Computed(scope, function(use: Fusion.Use)
-                                            local classInfo = ClassBook[use(props.Class)]
-                                            if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
-
-                                            return classInfo.Icon
-                                        end),
-                                        ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            local classInfo = ClassBook[use(props.Class)]
-                                            if classInfo == nil then return Color3.new(1, 1, 1) end
-
-                                            local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
-                                            local x = charge / maxCharge
-
-                                            if x ~= x then x = 0 end
-                                            x = math.clamp(x, 0, 0.999)
-                                            if x < 0.999 then return Color3.new(1, 1, 1) end
-
-                                            return if classInfo.Skills["UltSkill_WithoutRecolor"] then
-                                                Color3.new(1, 1, 1)
-                                            else classInfo.Color
-                                        end),
-
-                                        [Children] = {
-                                            Components.UIGradient(scope, {
-                                                Rotation = -90,
-
-                                                Transparency = NumberSequence.new({
-                                                    NumberSequenceKeypoint.new(0, 0),
-                                                    NumberSequenceKeypoint.new(0.001, 0),
-                                                    NumberSequenceKeypoint.new(0.002, 1),
-                                                    NumberSequenceKeypoint.new(1, 1)
-                                                })
-                                            }),
-                                        }
-                                    }),
-
-                                    Components.TextLabel(scope, {
-                                        Name = "UltReady",
-                                        AnchorPoint = Vector2.new(0.5, 0),
-                                        Position = UDim2.fromScale(0.5, -0.25),
-                                        Size = UDim2.fromScale(1, 0.25),
-                                        Text = "READY",
-
-                                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
-                                            local x = charge / maxCharge
-
-                                            if x ~= x then x = 0 end
-                                            x = math.clamp(x, 0, 0.999)
-
-                                            if x >= 0.999 then return true end
-
-                                            return false
-                                        end),
-                                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                                            local classInfo = ClassBook[use(props.Class)]
-
-                                            if classInfo == nil then return Color3.new(1, 1, 1) end
-
-                                            return classInfo.Color
-                                        end),
-
-                                        [Children] = {
-                                            Components.ScaledTextUIStroke(scope, {})
-                                        }
-                                    }),
-                                }
                             }),
 
-                            ActiveSlot(scope, {
-                                Index = 1,
-                                ActiveInfo = self.ActiveList[1],
+                            Components.HoverImageButton(scope, {
+                                Components.ConnectSelectEvents(isSelectingUlt),
 
-                                ForcePosition = forceLocationsMobile[1],
-                                ForceSize = forceSizeMobile,
+                                [Fusion.OnEvent("MouseButton1Click")] = function()
+                                    self.CastClassUlt_C:Fire()
+                                end
+                            }),
 
-                                IsMobile = true,
-                            }, self),
+                            Fusion.Hydrate(scope, Components:RefUI("BaseIcon_ClassUlt1_1", true))({
+                                Image = Fusion.Computed(scope, function(use: Fusion.Use)
+                                    local classInfo = ClassBook[use(props.Class)]
+                                    if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                            ActiveSlot(scope, {
-                                Index = 2,
-                                ActiveInfo = self.ActiveList[2],
+                                    return classInfo.Icon
+                                end),
+                            }),
+                            Fusion.Hydrate(scope, Components:RefUI("Icon_ClassUlt1_1", true))({
+                                Image = Fusion.Computed(scope, function(use: Fusion.Use)
+                                    local classInfo = ClassBook[use(props.Class)]
+                                    if classInfo == nil then return AssetBook.ExtraIcons.Unknown end
 
-                                ForcePosition = forceLocationsMobile[2],
-                                ForceSize = forceSizeMobile,
+                                    return classInfo.Icon
+                                end),
+                                ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local classInfo = ClassBook[use(props.Class)]
+                                    if classInfo == nil then return Color3.new(1, 1, 1) end
 
-                                IsMobile = true,
-                            }, self),
+                                    local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
+                                    local x = charge / maxCharge
 
-                            ActiveSlot(scope, {
-                                Index = 3,
-                                ActiveInfo = self.ActiveList[3],
+                                    if x ~= x then x = 0 end
+                                    x = math.clamp(x, 0, 0.999)
+                                    if x < 0.999 then return Color3.new(1, 1, 1) end
 
-                                ForcePosition = forceLocationsMobile[3],
-                                ForceSize = forceSizeMobile,
+                                    return if classInfo.Skills["UltSkill_WithoutRecolor"] then
+                                        Color3.new(1, 1, 1)
+                                    else classInfo.Color
+                                end),
+                            }),
 
-                                IsMobile = true,
-                            }, self),
+                            Fusion.Hydrate(scope, Components:RefUI("UltReady_ClassUlt1_1", true))({
+                                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local charge, maxCharge = use(props.ClassUltProgress) :: number, use(props.MaxClassUltProgress) :: number
+                                    local x = charge / maxCharge
 
-                            AbilitySlot(scope, {
-                                ActiveInfo = self.CharAbilityList[1],
+                                    if x ~= x then x = 0 end
+                                    x = math.clamp(x, 0, 0.999)
 
-                                ForcePosition = forceLocationsMobile[4],
-                                ForceSize = forceSizeMobile,
+                                    if x >= 0.999 then return true end
 
-                                IsMobile = true,
-                            }, self)
+                                    return false
+                                end),
+                                TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                    local classInfo = ClassBook[use(props.Class)]
+
+                                    if classInfo == nil then return Color3.new(1, 1, 1) end
+
+                                    return classInfo.Color
+                                end),
+                            }),
                         }
-                    })
+                    }),
+
+                    ActiveSlot(scope, {
+                        Index = 1,
+                        ActiveInfo = self.ActiveList[1],
+
+                        ForcePosition = forceLocationsMobile[1],
+                        ForceSize = forceSizeMobile,
+
+                        IsMobile = true,
+                    }, self),
+
+                    ActiveSlot(scope, {
+                        Index = 2,
+                        ActiveInfo = self.ActiveList[2],
+
+                        ForcePosition = forceLocationsMobile[2],
+                        ForceSize = forceSizeMobile,
+
+                        IsMobile = true,
+                    }, self),
+
+                    ActiveSlot(scope, {
+                        Index = 3,
+                        ActiveInfo = self.ActiveList[3],
+
+                        ForcePosition = forceLocationsMobile[3],
+                        ForceSize = forceSizeMobile,
+
+                        IsMobile = true,
+                    }, self),
+
+                    AbilitySlot(scope, {
+                        ActiveInfo = self.CharAbilityList[1],
+
+                        ForcePosition = forceLocationsMobile[4],
+                        ForceSize = forceSizeMobile,
+
+                        IsMobile = true,
+                    }, self)
                 }
-
             })
-
         }
     })
 
-    local classUltSlot = frame.Div.PlayerControls.ClassQUlt
+    local classUltSlot = frame.Div.ClassQUlt
     local function _updateClassUlt()
         local charge, maxCharge = Fusion.peek(props.ClassUltProgress) :: number, Fusion.peek(props.MaxClassUltProgress) :: number
         local x = charge / maxCharge

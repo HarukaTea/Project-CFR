@@ -390,7 +390,7 @@ return function (scope: Fusion.Scope, props: {
                         }
                     }),
 
-                    ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichTextify(info.Stat)),
+                    ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichText(info.Stat)),
 
                     Fusion.ForPairs(scope, info.ExtraStatInfoDesync, function(_, scope: Fusion.Scope, attr: string, val: any)
                         return attr, ItemEffectShowcase(scope, {
@@ -407,7 +407,7 @@ return function (scope: Fusion.Scope, props: {
                         })
                     end),
 
-                    ItemStatAutomaticY("DDD_ItemDesc", 233, HarukaLib:RichTextify(info.Desc), Color3.fromRGB(159, 159, 159)),
+                    ItemStatAutomaticY("DDD_ItemDesc", 233, HarukaLib:RichText(info.Desc), Color3.fromRGB(159, 159, 159)),
 
                     Fusion.Hydrate(scope, Components:RefUI("E_ArtifactTitle_BKID1_1", true))({
                         Name = "EEE_ArtifactTitle",

@@ -60,7 +60,7 @@ return function (scope: Fusion.Scope, props: {
                         TextSize = Fusion.Computed(scope, function(use: Fusion.Use)
                             return math.ceil(use(absTextBGSize).Y / (40 / 27))
                         end),
-                        Text = HarukaLib:RichTextify(props.Hint)
+                        Text = HarukaLib:RichText(props.Hint)
                     })
                 }
             })

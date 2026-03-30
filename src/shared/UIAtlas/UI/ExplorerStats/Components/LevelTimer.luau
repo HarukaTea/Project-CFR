@@ -54,7 +54,7 @@ return function (scope: Fusion.Scope, props: {
                 FontFace = Font.fromName("Roboto", Enum.FontWeight.Bold),
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
-                    return HarukaLib:TimeifyNumber(use(props.CountdownTime))
+                    return HarukaLib:NumToTime(use(props.CountdownTime))
                 end),
 
                 [Children] = {

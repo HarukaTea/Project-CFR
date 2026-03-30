@@ -3,7 +3,7 @@ local Debris = game:GetService("Debris")
 local RepS = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
@@ -36,7 +36,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
             Fusion.doCleanup(newScope)
         end):catch(function() end)
 
-        HarukaLib:UITween(pk, "Out", { TweenTime = 0.5, DelayTime = 2 })
+        HarukaLib:UITransTween(pk, "Out", { TweenTime = 0.5, DelayTime = 2 })
 
         SoundService.SFXs.DiceRoll:Play()
     end))

@@ -10,14 +10,14 @@ local ServerStorage = game:GetService("ServerStorage")
 local SoundService = game:GetService("SoundService")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local VFXSceneLib = require(RepS.HarukaShared.Library.VFXSceneLib)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local VFXSceneLib = require(RepS.HarukaShared.Controllers.VFXSceneLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local LocationBook = require(RepS.HarukaShared.Library.LocationBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
-local ProjectileLib = require(RepS.HarukaShared.Library.ProjectileLib)
+local ProjectileLib = require(RepS.HarukaShared.Controllers.ProjectileLib)
 local StatusBook = require(RepS.HarukaShared.Library.StatusBook)
 
 local char = script:FindFirstAncestorOfClass("Model")
@@ -78,7 +78,7 @@ function CriRPGLib:Init()
         func()
     end
 
-    ClientLib:InitCharDeadTrackers({
+    ClientLib:TrackCharDiedEvent({
         Char = char,
         Player = plr,
 
@@ -218,7 +218,7 @@ table.insert(CriRPGLib.Funcs, function()
         if areaQueue:IsLocked() then return end
         if areaQueue:IsEmpty() then return end
 
-        areaQueue:SpawnMutex(1.5)
+        areaQueue:EnableMutex(1.5)
 
         local location = areaQueue:Pop() :: string
 
@@ -337,7 +337,7 @@ table.insert(CriRPGLib.Funcs, function()
             end
         end
     end
-    areaQueue.RefreshSignal.Event:Connect(_changeLocation)
+    areaQueue.OnPushed.Event:Connect(_changeLocation)
 
     Add(HarukaLib:Hydrate(char, {
         ["Attr-AreaIn"] = function(region: string)
@@ -377,7 +377,7 @@ table.insert(CriRPGLib.Funcs, function()
         orbCooldown.Parent = orb
         Debris:AddItem(orbCooldown, 0.25)
 
-        ClientLib:WeldModel(orb:FindFirstChild("Base") or orb:FindFirstChild("Middle"), orb)
+        ClientLib:WeldCATypeModel(orb:FindFirstChild("Base") or orb:FindFirstChild("Middle"), orb)
 
         orb.Parent = orbContainer
 
@@ -461,53 +461,53 @@ table.insert(CriRPGLib.Funcs, function()
             local SFX: Sound = if SFXId then SoundService.SFXs:FindFirstChild(SFXId) else SoundService.SFXs.OrbHit
             SFX:Play()
 
-            if not orb:GetAttribute("DontBounce") then
-                humanoid.Jump = true
+            if orb:GetAttribute("DontBounce") then return end
 
-                if char.PrimaryPart:FindFirstChild("OrbBV") then
-                    char.PrimaryPart.OrbBV:Destroy()
-                    char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-                end
-                if char.PrimaryPart:FindFirstChild("Dash") then
-                    char.PrimaryPart.Dash:Destroy()
-                    char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-                end
+            humanoid.Jump = true
 
-                local bounceWeight = 36
-                local bounceBuff = char:GetAttribute("OrbBounce") / 100
-
-                bounceWeight *= bounceBuff
-
-                local vectorVelocity = char.Humanoid.MoveDirection * 10 + Vector3.yAxis * bounceWeight
-                if orb:GetAttribute("HorizontalVelocity") then
-                    vectorVelocity = char.Humanoid.MoveDirection * bounceWeight * 4.5 + Vector3.yAxis * 20
-                end
-
-                local linearVelocity = Instance.new("LinearVelocity")
-                linearVelocity.Name = "OrbBV"
-                linearVelocity.Attachment0 = char.PrimaryPart.CF_RootNode
-                linearVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
-                linearVelocity.ForceLimitsEnabled = false
-                linearVelocity.VectorVelocity = vectorVelocity
-                linearVelocity.Parent = char.PrimaryPart
-                Debris:AddItem(linearVelocity, 0.05)
-
-                humanoid.AutoRotate = false
-
-                local customAnim = orb:GetAttribute("CustomAnim") :: string
-                if customAnim then
-                    Bindables.PlayClassAnim:Fire(customAnim)
-                else
-                    Bindables.PlayClassAnim:Fire(`{class}Attack{if animStep == 1 then "" else "2"}`)
-                end
-
-                animStep = if animStep == 1 then 2 else 1
-
-                local enemy = char.TargetingEnemy :: ObjectValue?
-                if not ClientLib:IsCharValid(enemy.Value) then return end
-
-                char.PrimaryPart.CFrame = HarukaLib:CFLookAt(char.PrimaryPart.Position, enemy.Value.PrimaryPart.Position)
+            if char.PrimaryPart:FindFirstChild("OrbBV") then
+                char.PrimaryPart.OrbBV:Destroy()
+                char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
             end
+            if char.PrimaryPart:FindFirstChild("Dash") then
+                char.PrimaryPart.Dash:Destroy()
+                char.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+            end
+
+            local bounceWeight = 36
+            local bounceBuff = char:GetAttribute("OrbBounce") / 100
+
+            bounceWeight *= bounceBuff
+
+            local vectorVelocity = char.Humanoid.MoveDirection * 10 + Vector3.yAxis * bounceWeight
+            if orb:GetAttribute("HorizontalVelocity") then
+                vectorVelocity = char.Humanoid.MoveDirection * bounceWeight * 4.5 + Vector3.yAxis * 20
+            end
+
+            local linearVelocity = Instance.new("LinearVelocity")
+            linearVelocity.Name = "OrbBV"
+            linearVelocity.Attachment0 = char.PrimaryPart.CF_RootNode
+            linearVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
+            linearVelocity.ForceLimitsEnabled = false
+            linearVelocity.VectorVelocity = vectorVelocity
+            linearVelocity.Parent = char.PrimaryPart
+            Debris:AddItem(linearVelocity, 0.05)
+
+            humanoid.AutoRotate = false
+
+            local customAnim = orb:GetAttribute("CustomAnim") :: string
+            if customAnim then
+                Bindables.PlayClassAnim:Fire(customAnim)
+            else
+                Bindables.PlayClassAnim:Fire(`{class}Attack{if animStep == 1 then "" else "2"}`)
+            end
+
+            animStep = if animStep == 1 then 2 else 1
+
+            local enemy = char.TargetingEnemy :: ObjectValue?
+            if not ClientLib:IsCharValid(enemy.Value) then return end
+
+            char.PrimaryPart.CFrame = HarukaLib:CFLookAt(char.PrimaryPart.Position, enemy.Value.PrimaryPart.Position)
 
         elseif hit.Parent:HasTag("DMGEntity") then
             if dmgCD then return end
@@ -531,17 +531,17 @@ table.insert(CriRPGLib.Funcs, function()
             end
 
             local DoTStatus = "Normal"
-            if hit.Parent:HasTag("PoisonEntity") then
-                DoTStatus = "Poison"
-            end
-            if hit.Parent:HasTag("BurnEntity") then
-                DoTStatus = "Burn"
-            end
-            if hit.Parent:HasTag("FreezeEntity") then
-                DoTStatus = "Freeze"
-            end
-            if hit.Parent:HasTag("ShockingEntity") then
-                DoTStatus = "Shocking"
+            local statusList = {
+                PoisonEntity = "Poison",
+                BurnEntity = "Burn",
+                FreezeEntity = "Freeze",
+                ShockingEntity = "Shocking"
+            }
+            for tag, status in statusList do
+                if hit.Parent:HasTag(tag) then
+                    DoTStatus = status
+                    break
+                end
             end
 
             Events.DMGPlayer_C.Fire({

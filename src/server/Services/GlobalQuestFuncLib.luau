@@ -8,7 +8,7 @@ local QuestLib = require(SSS.HarukaServer.Services.QuestLib)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Events = require(SSS.HarukaServer.Library.ServerEvents)
-local ServerLib = require(SSS.HarukaServer.Library.ServerLib)
+local ServerLib = require(SSS.HarukaServer.Services.ServerLib)
 
 export type GlobalQuestFuncLibClass = {
     Funcs: { () -> nil },

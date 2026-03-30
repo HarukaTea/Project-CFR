@@ -22,7 +22,7 @@ local AbyssBook = require(ReplicatedStorage.HarukaShared.Library.AbyssBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 local CollisionBook = require(ServerScriptService.HarukaServer.Library.CollisionBook)
-local ServerLib = require(ServerScriptService.HarukaServer.Library.ServerLib)
+local ServerLib = require(ServerScriptService.HarukaServer.Services.ServerLib)
 local ItemBook = require(ReplicatedStorage.HarukaShared.Library.ItemBook)
 local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
@@ -582,7 +582,7 @@ table.insert(ServerWorldLib.Funcs, function()
         for _, child: Instance in mob:GetChildren() do
             if child:IsA("BasePart") and mob:FindFirstChild(child.Name .. "Model") then
                 local model = mob[child.Name .. "Model"] :: Model
-                ServerLib:WeldModel(child, model)
+                ServerLib:WeldCATypeModel(child, model)
             end
         end
     end

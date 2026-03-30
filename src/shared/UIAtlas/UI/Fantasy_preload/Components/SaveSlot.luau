@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local RepS = game:GetService("ReplicatedStorage")
 
 local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
-local ClientLib = require(RepS.HarukaShared.Library.ClientLib)
+local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)

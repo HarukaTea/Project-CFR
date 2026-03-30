@@ -13,18 +13,15 @@ return function(scope: Fusion.Scope, props: {
 
     local absTextSize = Fusion.Value(scope, Vector2.zero)
 
-    return Components.Frame(scope, {
-        Name = "AreaPopup",
-        Position = UDim2.fromScale(0.5, 1.5),
-
+    return Fusion.Hydrate(scope, Components:RefUI("AreaPopup_APA1_1"))({
         [Children] = {
-            Components.TextLabel(scope, {
-                Name = "AreaName",
-                AutomaticSize = Enum.AutomaticSize.X,
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0),
-                Size = UDim2.fromScale(0, 1),
+            Fusion.Hydrate(scope, Components:RefUI("AreaDecoBar_APA1_1"))({
+                Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return UDim2.new(0, use(absTextSize).X + 15.99 * 2.599, 0.08, 0)
+                end), Components.TweenInfos.one),
+            }),
 
+            Fusion.Hydrate(scope, Components:RefUI("AreaName_APA1_1", true))({
                 [Fusion.Out("AbsoluteSize")] = absTextSize,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -34,32 +31,10 @@ return function(scope: Fusion.Scope, props: {
                         warn(`Lacking of location data for area: {area}`)
                         return ""
                     end
-                    if area == "None" then
-                        return ""
-                    end
+                    if area == "None" then return "" end
 
                     return LocationBook[area].Name
                 end),
-
-                [Children] = {
-                    Components.UIPadding(scope, {}),
-                    Components.ScaledTextUIStroke(scope, {
-                        Thickness = 0.07
-                    })
-                }
-            }),
-
-            Components.Frame(scope, {
-                Name = "AreaDecoBar",
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 1.1),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BackgroundTransparency = 0,
-
-                Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return UDim2.new(0, use(absTextSize).X + 15.99 * 2.599, 0.08, 0)
-
-                end), Components.TweenInfos.one),
             })
         }
     })

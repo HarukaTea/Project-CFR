@@ -53,7 +53,7 @@ return function (scope: Fusion.Scope, props: {
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local target = QuestBook[questId].Target
                             if notHasObjective then
-                                return HarukaLib:RichTextify(target)
+                                return HarukaLib:RichText(target)
                             end
 
                             local pattern = "_OBJECTIVE(%d+)_"
@@ -70,7 +70,7 @@ return function (scope: Fusion.Scope, props: {
                                 return tostring(val)
                             end)
 
-                            return HarukaLib:RichTextify(result)
+                            return HarukaLib:RichText(result)
                         end),
                     }),
 

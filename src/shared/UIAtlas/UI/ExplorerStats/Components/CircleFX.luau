@@ -6,6 +6,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
+--- techically we dont need `RefUI` here
 return function(scope: Fusion.Scope)
     return Components.Frame(scope, {
         Name = "CircleFX",
