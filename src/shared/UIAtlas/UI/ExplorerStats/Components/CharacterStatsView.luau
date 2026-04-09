@@ -7,6 +7,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local ClassSlot = require(script.Parent.ClassSlot)
 local DMGStat = require(script.Parent.DMGStat)
 
+
+local EventTokenStat = require(script.Parent.EventTokenStat)
+
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -25,13 +28,27 @@ return function(scope: Fusion.Scope, props: {
     MaxDMG: Fusion.Value<number>,
     Magic: Fusion.Value<number>,
 
-    Gold: Fusion.Value<number>
+    Gold: Fusion.Value<number>,
+
+    HalloweenCandy: Fusion.Value<number>,
+    IceCandy: Fusion.Value<number>,
 })
 
-    return Fusion.Hydrate(scope, Components:RefUI("CharacterStats_PStats1_1", false, true))({
+    return Components.Frame(scope, {
+        Name = "CharacterStats",
+        AnchorPoint = Vector2.new(0, 1),
+        Position = UDim2.fromScale(0, 1),
+
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("DivStats_PStats1_1", false))({
+            Components.UIScale(scope, {
+                Scale = 0.9
+            }),
+
+            Components.Frame(scope, {
                 Name = "Div",
+                AnchorPoint = Vector2.zero,
+                Position = UDim2.fromScale(0.015, -1),
+                Size = UDim2.fromScale(0.33, 1),
 
                 [Children] = {
                     ClassSlot(scope, {
@@ -40,12 +57,29 @@ return function(scope: Fusion.Scope, props: {
                         EquippingItems = props.EquippingItems,
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("MainStats_PStats1_1", false, true))({
+
+                    Components.Frame(scope, {
                         Name = "Main",
+                        AnchorPoint = Vector2.xAxis,
+                        Position = UDim2.fromScale(1, -0.1),
+                        Size = UDim2.fromScale(0.9, 1),
 
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("DMGStats_PStats1_1", false, true))({
+                            Components.RoundUICorner(scope),
+
+                            Components.Frame(scope, {
+                                Name = "DMGStats",
+                                AnchorPoint = Vector2.zero,
+                                Size = UDim2.fromScale(1, 0.5),
+                                Position = UDim2.fromScale(-0.1, -1.65),
+
                                 [Children] = {
+                                    Components.UIListLayout(scope, {
+                                        Padding = UDim.new(0.25, 0),
+                                        VerticalAlignment = Enum.VerticalAlignment.Bottom,
+                                    }),
+
+
                                     DMGStat(scope, {
                                         StatId = "DMG",
                                         StatValue = props.MinDMG,
@@ -61,6 +95,17 @@ return function(scope: Fusion.Scope, props: {
                                         StatId = "Gold",
                                         StatValue = props.Gold,
                                         LayoutOrder = -1
+                                    }),
+
+                                    EventTokenStat(scope, {
+                                        StatId = "HalloweenCandy",
+                                        StatValue = props.HalloweenCandy,
+                                        LayoutOrder = -2,
+                                    }),
+                                    EventTokenStat(scope, {
+                                        StatId = "IceCandy",
+                                        StatValue = props.IceCandy,
+                                        LayoutOrder = -3,
                                     })
                                 }
                             }),

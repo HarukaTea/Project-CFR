@@ -12,9 +12,13 @@ local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
 
+
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 local StarTierSymbol = require(RepS.HarukaShared.UIAtlas.Components.StarTierSymbol)
 
 local Children = Fusion.Children
+
+
 
 local ITEM_EFFECTS_ICONS = {
 	CanLight = "rbxassetid://2965771738",
@@ -87,6 +91,8 @@ local ITEM_EFFECTS_IS_PERCENTAGE = {
     ShockingChanceEx = true,
 }
 
+
+
 return function (scope: Fusion.Scope, props: {
     Item: string,
     ItemUniqueId: string,
@@ -99,6 +105,7 @@ return function (scope: Fusion.Scope, props: {
 
     local absDescFrameSize = Fusion.Value(scope, Vector2.zero)
 
+
     local info = ItemBook:GetItemInfo(props.Item)
     if not info then return nil end
 
@@ -106,28 +113,38 @@ return function (scope: Fusion.Scope, props: {
 
     local artifactInfo = ArtifactBook:GetArtifactInfo(info.ArtifactId)
 
-    local itemSymbol: IntConstrainedValue = nil
-    local targetContainer: { IntConstrainedValue } = {}
 
+    local itemSymbol: IntConstrainedValue = nil
     if props.IsMarket then
-        targetContainer = CollectionService:GetTagged("MarketProductEntity")
+        for _, symbol: Instance in CollectionService:GetTagged("MarketProductEntity") do
+            if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
+                itemSymbol = symbol
+                break
+            end
+        end
     elseif props.IsCrafting then
-        targetContainer = CollectionService:GetTagged("CraftingProductEntity")
+        for _, symbol: IntConstrainedValue in CollectionService:GetTagged("CraftingProductEntity") do
+            if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
+                itemSymbol = symbol
+                break
+            end
+        end
     else
-        targetContainer = props.Items
-    end
-    for _, symbol in targetContainer do
-        if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
-            itemSymbol = symbol
-            break
+        local items = props.Items :: { IntConstrainedValue }
+
+        for _, symbol: IntConstrainedValue in items do
+            if symbol:GetAttribute("HarukaUniqueId") == props.ItemUniqueId then
+                itemSymbol = symbol
+                break
+            end
         end
     end
     if itemSymbol == nil then return nil end
 
+
     local isFavItem = Fusion.Value(scope, false)
     local isFav: ImageButton = nil
     if props.IsMarket or props.IsCrafting then
-        --- do nothing
     else
         table.insert(scope, HarukaLib:Hydrate(itemSymbol, {
             ["Attr-IsFav"] = function(state: boolean)
@@ -137,7 +154,15 @@ return function (scope: Fusion.Scope, props: {
             end
         }))
 
-        isFav = Fusion.Hydrate(scope, Components:RefUI("FavButton_BKID1_1", false, true))({
+        isFav =  Components.HoverImageButton(scope, {
+            Name = "FavButton",
+            AnchorPoint = Vector2.zero,
+            Position = UDim2.fromScale(0.05, 0.1),
+            Size = UDim2.fromScale(0.1, 0.1),
+            SizeConstraint = Enum.SizeConstraint.RelativeXX,
+            BackgroundColor3 = Color3.fromRGB(),
+            BackgroundTransparency = 0,
+
             [Fusion.OnEvent("MouseButton1Click")] = function()
                 Events.FavOrLockItem_C.Fire({
                     ActionId = "Fav",
@@ -146,7 +171,15 @@ return function (scope: Fusion.Scope, props: {
             end,
 
             [Children] = {
-                Fusion.Hydrate(scope, Components:RefUI("Star_BKIDFB1_1"))({
+                Components.RoundUICorner(scope),
+                Components.ImageLabel(scope, {
+                    Name = "Star",
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    Position = UDim2.fromScale(0.5, 0.5),
+                    Size = UDim2.fromScale(0.7, 0.7),
+                    SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                    Image = "rbxassetid://114302766654339",
+
                     ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return if use(isFavItem) then Color3.fromRGB(255, 204, 50) else Color3.fromRGB(159, 159, 159)
                     end)
@@ -155,10 +188,10 @@ return function (scope: Fusion.Scope, props: {
         })
     end
 
+
     local isLockedItem = Fusion.Value(scope, false)
     local isLocked: ImageButton = nil
     if props.IsMarket or props.IsCrafting then
-        --- do nothing
     else
         table.insert(scope, HarukaLib:Hydrate(itemSymbol, {
             ["Attr-IsLocked"] = function(state: boolean)
@@ -168,7 +201,15 @@ return function (scope: Fusion.Scope, props: {
             end
         }))
 
-        isLocked =  Fusion.Hydrate(scope, Components:RefUI("LockedButton_BKID1_1", false, true))({
+        isLocked =  Components.HoverImageButton(scope, {
+            Name = "LockedButton",
+            AnchorPoint = Vector2.zero,
+            Position = UDim2.fromScale(0.175, 0.1),
+            Size = UDim2.fromScale(0.1, 0.1),
+            SizeConstraint = Enum.SizeConstraint.RelativeXX,
+            BackgroundColor3 = Color3.fromRGB(),
+            BackgroundTransparency = 0,
+
             [Fusion.OnEvent("MouseButton1Click")] = function()
                 Events.FavOrLockItem_C.Fire({
                     ActionId = "Lock",
@@ -177,7 +218,15 @@ return function (scope: Fusion.Scope, props: {
             end,
 
             [Children] = {
-                Fusion.Hydrate(scope, Components:RefUI("Lock_BKIDLB1_1"))({
+                Components.RoundUICorner(scope),
+                Components.ImageLabel(scope, {
+                    Name = "Lock",
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    Position = UDim2.fromScale(0.5, 0.5),
+                    Size = UDim2.fromScale(0.7, 0.7),
+                    SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                    Image = "rbxassetid://118831261287451",
+
                     ImageColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                         return if use(isLockedItem) then Color3.fromHex('#d63031') else Color3.fromRGB(159, 159, 159)
                     end)
@@ -186,11 +235,14 @@ return function (scope: Fusion.Scope, props: {
         })
     end
 
+
     local itemStat = itemSymbol:GetAttribute("ItemStat")
     if itemStat == nil then return nil end
 
     local itemStatExtra = string.split(itemStat, ",")
     itemStatExtra = ItemBook:ParseItemStat("Stat", itemStatExtra)
+
+
 
     local artifactEquipped = Fusion.Value(scope, 0)
     local equippingObserver = Fusion.Observer(scope, props.EquippingItems)
@@ -210,6 +262,8 @@ return function (scope: Fusion.Scope, props: {
         artifactEquipped:set(amount)
     end)
 
+
+
     local function ItemEffectShowcase(scope: Fusion.Scope, properties: {
         Attr: string,
         Val: any,
@@ -218,11 +272,26 @@ return function (scope: Fusion.Scope, props: {
     })
         local attr, val = properties.Attr, properties.Val
 
-        return Fusion.Hydrate(scope, Components:RefUI("CA_ItemEffect_Template_BKID1_1", false, true))({
+        return Components.Frame(scope, {
             Name = "CCC_ItemEffect_"..attr,
+            Size = UDim2.fromScale(0.95, 0.17),
+            LayoutOrder = 3,
+            BackgroundTransparency = 0,
+            BackgroundColor3 = Color3.fromRGB(),
 
             [Children] = {
-                Fusion.Hydrate(scope, Components:RefUI("EffectIcon_BKIDIE1_1", true))({
+                Components.RoundUICorner(scope),
+                Components.UIAspectRatioConstraint(scope, 9.813),
+
+                Components.UIListLayout(scope, {
+                    FillDirection = Enum.FillDirection.Horizontal,
+                    Padding = UDim.new(0.03, 0),
+                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                }),
+
+                Components.IconImageLabel(scope, {
+                    Name = "EffectIcon",
+
                     Image = Fusion.Computed(scope, function()
                         if string.find(attr, "Can") then
                             return ITEM_EFFECTS_ICONS[attr] or AssetBook.ExtraIcons.Unknown
@@ -236,6 +305,7 @@ return function (scope: Fusion.Scope, props: {
                             if classInfo == nil then
                                 return AssetBook.ExtraIcons.Unknown
                             end
+
                             return classInfo.Icon
                         else
                             return ITEM_EFFECTS_ICONS[attr] or AssetBook.ExtraIcons.Unknown
@@ -247,6 +317,7 @@ return function (scope: Fusion.Scope, props: {
                             if classInfo == nil then
                                 return Color3.new(1, 1, 1)
                             end
+
                             return classInfo.Color
                         end
                         if string.find(attr, "Can") then
@@ -260,7 +331,12 @@ return function (scope: Fusion.Scope, props: {
                         return Color3.new(1, 1, 1)
                     end),
                 }),
-                Fusion.Hydrate(scope, Components:RefUI("Stat_BKIDIE1_1", true))({
+                Components.TextLabel(scope, {
+                    Name = "Stat",
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    RichText = true,
+                    Size = UDim2.fromScale(0.8, 1),
+
                     Text = Fusion.Computed(scope, function()
                         if val == true or val == false then
                             return `<font color="#e9cc9f">Ability: </font> `..string.sub(attr, 4)
@@ -271,15 +347,20 @@ return function (scope: Fusion.Scope, props: {
                             local DEFAULT_TEXT = `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}`
 
                             local basePot = itemInfo.StatInfoDesync[attr]
-                            if basePot == nil then return DEFAULT_TEXT end
+                            if basePot == nil then
+                                return DEFAULT_TEXT
+                            end
 
                             local maxPot = FormulaBook.ItemUpgradeCurveCal(basePot)
 
                             local potRatio
                             local upgradeRange = maxPot - basePot
-                            if upgradeRange == 0 then return DEFAULT_TEXT end
+                            if upgradeRange == 0 then
+                                return DEFAULT_TEXT
+                            end
 
                             potRatio = math.floor( ((val - basePot) / upgradeRange) * 100 )
+
 
                             local color = Components.RED_COLOR:ToHex()
                             if potRatio >= 30 and potRatio <= 70 then
@@ -288,13 +369,24 @@ return function (scope: Fusion.Scope, props: {
                                 color = Components.GREEN_COLOR:ToHex()
                             end
 
-                            if potRatio <= 0 then return DEFAULT_TEXT end
-
-                            return `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}   <font color="#{color}">(+{potRatio}%)</font>`
+                            if potRatio > 0 then
+                                return `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}   <font color="#{color}">(+{potRatio}%)</font>`
+                            else
+                                return DEFAULT_TEXT
+                            end
                         else
                             return `<font color="#e9cc9f">{ITEM_EFFECTS_NAMES[attr]}: </font> {val}{if ITEM_EFFECTS_IS_PERCENTAGE[attr] then "%" else ""}`
                         end
-                    end)
+                    end),
+
+                    [Children] = {
+                        Components.UIPadding(scope, {
+                            PaddingTop = UDim.new(0.14, 0),
+                            PaddingBottom = UDim.new(0.14, 0),
+                            PaddingLeft = UDim.new(0, 0),
+                            PaddingRight = UDim.new(0, 0)
+                        })
+                    }
                 })
             }
         })
@@ -309,10 +401,18 @@ return function (scope: Fusion.Scope, props: {
             text = "- 3 Piece: "..text
         end
 
-        return Fusion.Hydrate(scope, Components:RefUI("B_ItemStats_AutoYTemplate_BKID1_1"))({
+        return Components.TextLabel(scope, {
             Name = name,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            Size = UDim2.fromScale(0.95, 0),
             LayoutOrder = order,
+            TextScaled = false,
+            TextWrapped = true,
+            RichText = true,
+            LineHeight = 1.2,
+
             Text = text,
+            TextXAlignment = Enum.TextXAlignment.Left,
             TextColor3 = color or Color3.fromRGB(255, 255, 255),
 
             TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -322,33 +422,102 @@ return function (scope: Fusion.Scope, props: {
         })
     end
 
-    return Fusion.Hydrate(scope, Components:RefUI("ItemDesc_BK1_1", false, true))({
+
+
+    return Components.Frame(scope, {
+        Name = "ItemDesc",
+        BackgroundTransparency = 0,
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.fromScale(0.98, 0.8),
+        Size = UDim2.fromScale(0.28, 7),
+
         Visible = Fusion.Computed(scope, function()
             return ItemBook:GetItemInfo(props.Item) ~= nil
         end),
 
         [Children] = {
+            Components.UICorner(scope, { CornerRadius = UDim.new(0.015, 0) }),
+
+            Components.ScaledUIStroke(scope, {
+                Thickness = 0.02,
+                Color = Color3.new()
+            }),
+
+            Components.UIListLayout(scope, {
+                Padding = UDim.new(0.03, 0),
+                HorizontalAlignment = Enum.HorizontalAlignment.Center
+            }),
+
             Components.PaddingFrame(scope, "AAA"),
 
-            Fusion.Hydrate(scope, Components:RefUI("ItemName_BKID1_1", false, true))({
+
+            Components.Frame(scope, {
+                Name = "ItemName",
+                LayoutOrder = 2,
+                Size = UDim2.fromScale(0.9, 0.1),
+
                 [Fusion.Out("AbsoluteSize")] = absDescFrameSize,
 
                 [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("LeftOrder_BKID1_1", false, true))({
+                    Components.UIAspectRatioConstraint(scope, 9.093),
+
+                    Components.Frame(scope, {
+                        Name = "LeftOrder",
+
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("TierIndicator_BKID1_1"))({
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.05, 0),
+                                FillDirection = Enum.FillDirection.Horizontal,
+                                VerticalAlignment = Enum.VerticalAlignment.Center,
+                                HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "TierIndicator",
+                                Size = UDim2.fromScale(0.02, 0.65),
+
+                                BackgroundTransparency = 0,
                                 BackgroundColor3 = AssetBook.ItemTierColors[info.Tier]
                             }),
-                            Fusion.Hydrate(scope, Components:RefUI("ItemName_BKID1_4"))({
+                            Components.TextLabel(scope, {
+                                Name = "ItemName",
+                                Size = UDim2.fromScale(0, 0.7),
+                                AutomaticSize = Enum.AutomaticSize.X,
+                                TextXAlignment = Enum.TextXAlignment.Left,
+
                                 Text = info.Name,
                             }),
                         }
                     }),
-                    Fusion.Hydrate(scope, Components:RefUI("RightOrder_BKID1_1", false, true))({
+                    Components.Frame(scope, {
+                        Name = "RightOrder",
+
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("Req_BKID1_1", true))({
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.05, 0),
+                                FillDirection = Enum.FillDirection.Horizontal,
+                                VerticalAlignment = Enum.VerticalAlignment.Center,
+                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                            }),
+
+                            Components.TextLabel(scope, {
+                                Name = "Req",
+                                AutomaticSize = Enum.AutomaticSize.X,
+                                BackgroundColor3 = Components.WHITE_COLOR,
+                                BackgroundTransparency = 0,
+                                Size = UDim2.fromScale(0, 0.7),
+                                TextColor3 = Components.BLACK_COLOR,
+
                                 Text = `Req Lv.{info.Level}`,
-                                Visible = info.Type ~= "Material"
+                                Visible = info.Type ~= "Material",
+
+                                [Children] = {
+                                    Components.RoundUICorner(scope),
+                                    Components.UIPadding(scope, {
+                                        PaddingRight = UDim.new(0, 9),
+                                        PaddingLeft = UDim.new(0, 9)
+                                    })
+                                }
                             })
                         }
                     }),
@@ -361,25 +530,52 @@ return function (scope: Fusion.Scope, props: {
                 Size = UDim2.fromScale(0.9, 0.8),
 
                 [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("A_ItemIcon_BKID1_1", false, false, {
-                        "UICorner", "UIAspectRatioConstraint", "CFEmblemTexFrame"
-                    }))({
+                    Components.Frame(scope, {
                         Name = "AAA_ItemIcon",
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 0,
+                        Size = UDim2.fromScale(0.95, 0.3),
+                        LayoutOrder = 0,
+                        ClipsDescendants = true,
 
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("UIGradient_BKID1_1"))({
+                            Components.UIAspectRatioConstraint(scope, 3.652),
+                            Components.UICorner(scope, { CornerRadius = UDim.new(0.1, 0) }),
+
+                            Components.UIGradient(scope, {
                                 Color = ColorSequence.new(
                                     AssetBook.ItemTierColors[info.Tier]:Lerp(Color3.new(1, 1, 1), 0.6),
                                     AssetBook.ItemTierColors[info.Tier]
-                                )
+                                ),
+                                Rotation = 60,
+                                Transparency = NumberSequence.new({
+                                    NumberSequenceKeypoint.new(0, 0.75),
+                                    NumberSequenceKeypoint.new(1, 0.5)
+                                })
                             }),
 
-                            Fusion.Hydrate(scope, Components:RefUI("Icon_BKIDIC1_1", true))({
+                            Components.IconImageLabel(scope, {
+                                AnchorPoint = Vector2.new(0, 0.5),
+                                Position = UDim2.fromScale(0.75, 0.5),
+                                Size = UDim2.fromScale(0.2, 0.2),
+                                SizeConstraint = Enum.SizeConstraint.RelativeXX,
+
                                 Image = info.Icon
                             }),
 
-                            Fusion.Hydrate(scope, Components:RefUI("ItemTiers_BKID1_1", false, true))({
+                            Components.Frame(scope, {
+                                Name = "ItemTiers",
+                                AnchorPoint = Vector2.new(0.5, 1),
+                                Position = UDim2.fromScale(0.5, 0.9),
+                                Size = UDim2.fromScale(0.9, 0.22),
+
                                 [Children] = {
+                                    Components.UIListLayout(scope, {
+                                        FillDirection = Enum.FillDirection.Horizontal,
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                                    }),
+
                                     Fusion.ForPairs(scope, table.create(info.Tier, true), function(_, scope: Fusion.Scope, index: number, _)
                                         return index, StarTierSymbol(scope, {})
                                     end)
@@ -387,8 +583,14 @@ return function (scope: Fusion.Scope, props: {
                             }),
 
                             isFav, isLocked,
+
+                            CFEmblemTex(scope, {
+                                Transparency = 0.91,
+                                Position = UDim2.fromScale(0.3, 0.5)
+                            })
                         }
                     }),
+
 
                     ItemStatAutomaticY("BBB_ItemStats", 1, HarukaLib:RichText(info.Stat)),
 
@@ -409,15 +611,26 @@ return function (scope: Fusion.Scope, props: {
 
                     ItemStatAutomaticY("DDD_ItemDesc", 233, HarukaLib:RichText(info.Desc), Color3.fromRGB(159, 159, 159)),
 
-                    Fusion.Hydrate(scope, Components:RefUI("E_ArtifactTitle_BKID1_1", true))({
+
+                    Components.TextLabel(scope, {
                         Name = "EEE_ArtifactTitle",
+                        Size = UDim2.fromScale(0.95, 0.125),
+                        LayoutOrder = 234,
+                        RichText = true,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+
+                        TextColor3 = Color3.fromRGB(153, 255, 136),
 
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `<u>{artifactInfo.ArtifactTitle}({use(artifactEquipped)}):</u>`
                         end),
                         Visible = Fusion.Computed(scope, function()
                             return artifactInfo.ArtifactTitle ~= nil
-                        end)
+                        end),
+
+                        [Children] = {
+                            Components.UIAspectRatioConstraint(scope, 13.346)
+                        }
                     }),
 
                     ItemStatAutomaticY("FFF_Artifact2PieceDesc", 235, artifactInfo.TwoPieceEff, Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -427,25 +640,58 @@ return function (scope: Fusion.Scope, props: {
                         return if use(artifactEquipped) >= 3 then Color3.fromRGB(153, 255, 136) else Color3.fromRGB(159, 159, 159)
                     end)),
 
-                    Fusion.Hydrate(scope, Components:RefUI("H_HorizontalLine_BKID1_1", true))({
-                        Name = "HHH_HorizontalLine",
-                    }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("I_ItemTags_BKID1_1", false, true))({
-                        Name = "III_ItemTags",
+
+                    Components.Frame(scope, {
+                        Name = "HHH_HorizontalLine",
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 0.5,
+                        Size = UDim2.fromScale(1, 0.015),
+                        LayoutOrder = 333,
 
                         [Children] = {
+                            Components.UIAspectRatioConstraint(scope, 117.07)
+                        }
+                    }),
+
+                    Components.Frame(scope, {
+                        Name = "III_ItemTags",
+                        Size = UDim2.fromScale(0.95, 0.12),
+                        LayoutOrder = 334,
+
+                        [Children] = {
+                            Components.UIAspectRatioConstraint(scope, 13.902),
+
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.03, 0),
+                                FillDirection = Enum.FillDirection.Horizontal,
+                                VerticalAlignment = Enum.VerticalAlignment.Center,
+                            }),
+
                             Fusion.ForPairs(scope, info.TagsDesync, function(_, scope: Fusion.Scope, index: number, tag: string)
-                                return index, Fusion.Hydrate(scope, Components:RefUI("Tag_Template_BKID1_1", true))({
-                                    Name = tag,
+                                return index, Components.TextLabel(scope, {
+                                    Name = "Tag",
                                     LayoutOrder = index,
+                                    AutomaticSize = Enum.AutomaticSize.X,
+                                    Size = UDim2.fromScale(0, 1),
+                                    BackgroundTransparency = 0,
+                                    BackgroundColor3 = Components.WHITE_COLOR,
+                                    TextColor3 = Components.BLACK_COLOR,
 
                                     Text = Fusion.Computed(scope, function()
                                         local result = string.gsub(tag, "(%u)(%l+)", function(first, rest)
                                             return " "..string.upper(first)..string.lower(rest)
                                         end)
                                         return result
-                                    end)
+                                    end),
+
+                                    [Children] = {
+                                        Components.RoundUICorner(scope),
+                                        Components.UIPadding(scope, {
+                                            PaddingLeft = UDim.new(0, 3),
+                                            PaddingRight = UDim.new(0, 3)
+                                        })
+                                    }
                                 })
                             end)
                         }

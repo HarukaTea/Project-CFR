@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
@@ -24,18 +23,29 @@ local CraftGoldMatSlot = require(script.Components.CraftGoldMatSlot)
 
 local MKPurchasePrompt = require(RepS.HarukaShared.UIAtlas.Components.MKPurchasePrompt)
 
+
 local Children = Fusion.Children
+
 
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "ExplorerCrafting")
+    self.plr = plr
+    self.char = plr.Character
+    self.scope = Fusion.scoped()
+
+    local scope = self.scope :: Fusion.Scope
+
 
     Pinia(self)
 
-    local scope = self.scope :: Fusion.Scope
+
+    if plr.PlayerGui:FindFirstChild("ExplorerCrafting") then
+        plr.PlayerGui.ExplorerCrafting:Destroy()
+    end
+
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerCrafting",
@@ -47,7 +57,13 @@ return function (plr: Player)
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("CenterLeft_ECraft1_1"))({
+            Components.Frame(scope, {
+                Name = "CenterLeft",
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.03, 0.421),
+                Size = UDim2.fromScale(0.6, 0.462),
+                ClipsDescendants = true,
+
                 [Children] = {
                     Components.ScrollingFrame(scope, {
                         Name = "Items",
@@ -85,11 +101,13 @@ return function (plr: Player)
                                 end
                                 isVisible = table.find(category, info.Type) ~= nil
 
+
                                 local tierNum = info.Tier - ((info.Tier - 1) % 2)
                                 tierNum = math.clamp(tierNum, 1, 3)
 
                                 local state = use(self.FilterTierList[tierNum])
                                 isVisibleFactor2 = state
+
 
                                 local isVisibleFactor3 = false
                                 local text = use(self.FilterItemText)
@@ -106,6 +124,7 @@ return function (plr: Player)
                                         isVisibleFactor3 = false
                                     end
                                 end
+
 
                                 if isVisible and isVisibleFactor2 and isVisibleFactor3 then
                                     return index, BKItemQuickSlot(scope, {
@@ -141,7 +160,15 @@ return function (plr: Player)
                         FillDirection = Enum.FillDirection.Horizontal,
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("Empty_BK1_1"))({
+
+                    Components.TextLabel(scope, {
+                        Name = "Empty",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(1, 0.1),
+                        Text = "EMPTY",
+                        TextTransparency = 0.8,
+
                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return use(self.AvailableItems).X <= 0
                         end)
@@ -149,47 +176,42 @@ return function (plr: Player)
                 }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Center2_BK1_1", false, true))({
+            Components.Frame(scope, {
+                Name = "Left",
+                AnchorPoint = Vector2.new(0, 0),
+                Position = UDim2.fromScale(0, 0),
+                Size = UDim2.fromScale(0.3, 1),
+                ZIndex = 3,
+
                 [Children] = {
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        return BKItemDescView(scope, {
-                            Item = use(self.CurrentSelectedItem),
-                            ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
-                            EquippingItems = self.EquippingItems,
-                            Items = use(self.Items),
-                        })
-                    end),
+                    Components.Frame(scope, {
+                        Name = "FilterOptions",
+                        ZIndex = 10,
 
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        return BKItemQuickDescView(scope, {
-                            Item = use(self.CurrentSelectedMaterial),
-
-                            ItemVal = self.CurrentSelectedMaterial,
-                            IsViewingVal = self.IsCrafting
-                        })
-                    end),
-                }
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("Top2_BK1_1", false, true))({
-                [Children] = {
-                    CloseTab(scope, {
-                        ViewShownValue = self.IsUIShown
-                    }),
-                }
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("Left_BK1_1"))({
-                [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("FilterOptions_BK1_1", false, false, {
-                        "Shadows"
-                    }))({
                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return use(self.FilterViewShown)
                         end),
 
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("Inner_FOBK1_1"))({
+                            Components.Frame(scope, {
+                                Name = "Shadows",
+                                AnchorPoint = Vector2.new(0, 0),
+                                Position = UDim2.fromScale(1, 0),
+                                BackgroundColor3 = Color3.fromRGB(),
+                                BackgroundTransparency = 0,
+
+                                [Children] = {
+                                    Components.UIGradient(scope, {
+                                        Transparency = NumberSequence.new(1, 0.5),
+                                        Rotation = 180
+                                    })
+                                }
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "Inner",
+                                ZIndex = 2,
+
                                 [Children] = {
                                     BKItemFilterView(scope, {
                                         FilterTierList = self.FilterTierList,
@@ -205,10 +227,43 @@ return function (plr: Player)
                 }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("ShadowOverlay2_BK1_1"))({
+            Components.Frame(scope, {
+                Name = "Center_ZIndex2",
+                Size = UDim2.fromScale(1, 0.1),
+                ZIndex = 10,
+
+                [Children] = {
+                    Components.UIAspectRatioConstraint(scope),
+
+                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                        if not use(self.IsCrafting) then return nil end
+
+                        return MKPurchasePrompt(scope, {
+                            ProductId = use(self.CurrentSelectedItem),
+                            UniqueId = use(self.CurrentSelectedItemUniqueId),
+
+                            IsPurchasing = self.IsCrafting,
+                            Action = "Craft",
+
+                            CurrentSelectedItem = self.CurrentSelectedItem,
+                            CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+
+                            CurrencyId = "Gold",
+                        })
+                    end)
+                }
+            }),
+
+            Components.Frame(scope, {
+                Name = "ShadowOverlay2",
+                BackgroundTransparency = 0.3,
+                ZIndex = 3,
+                Interactable = false,
+                Active = false,
+
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(self.IsCrafting)
-                end)
+                end),
             }),
         }
 
@@ -219,139 +274,266 @@ return function (plr: Player)
         },
 
         TopProps = {
-            Position = UDim2.fromScale(0.5, 0.02)
-        },
-        TopChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("Categories_BK1_1", false, true))({
-                [Children] = {
-                    Fusion.ForPairs(scope, {
-                        "Accessory", "Artifact", "Weapon", "Active", "Material", "Misc"
-                    }, function(_, scope: Fusion.Scope, index: number, category: string)
-                        return index, TopbarCategoryBtn(scope, {
-                            Category = category,
-                            Index = index,
+            Position = UDim2.fromScale(0.5, 0.02),
 
-                            CurrentSelectedItem = self.CurrentSelectedItem,
-                            CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                            CurrentCategory = self.CurrentCategory,
-                        })
-                    end)
-                }
-            }),
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "Categories",
 
-            FakeTopBGTex(scope)
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        Fusion.ForPairs(scope, { "Accessory", "Artifact", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                            return index, TopbarCategoryBtn(scope, {
+                                Category = category,
+                                Index = index,
+
+                                CurrentSelectedItem = self.CurrentSelectedItem,
+                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                CurrentCategory = self.CurrentCategory,
+                            })
+                        end)
+                    }
+                }),
+
+                CloseTab(scope, {
+                    ViewShownValue = self.IsUIShown
+                }),
+                FakeTopBGTex(scope)
+            }
         },
 
         CenterProps = {
-            ZIndex = 2
-        },
-        CenterChildren = {
-            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                if not use(self.IsCrafting) then return nil end
+            ZIndex = 2,
 
-                return MKPurchasePrompt(scope, {
-                    ProductId = use(self.CurrentSelectedItem),
-                    UniqueId = use(self.CurrentSelectedItemUniqueId),
+            [Children] = {
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    return BKItemDescView(scope, {
+                        Item = use(self.CurrentSelectedItem),
+                        ItemUniqueId = use(self.CurrentSelectedItemUniqueId),
+                        EquippingItems = self.EquippingItems,
 
-                    IsPurchasing = self.IsCrafting,
-                    Action = "Craft",
-
-                    CurrentSelectedItem = self.CurrentSelectedItem,
-                    CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-
-                    CurrencyId = "Gold",
-                })
-            end),
-        },
-
-        BottomChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("LSideBtns_BK1_1", false, true))({
-                [Children] = {
-                    BottombarOptionBtn(scope, {
-                        Option = "Filter",
-                        Index = 1
-                    }, self),
-                }
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("RSideBtns_BK1_1", false, true))({
-                [Children] = {
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        local item = use(self.CurrentSelectedItem) :: string
-                        local itemInfo = ItemBook:GetItemInfo(item)
-                        if itemInfo == nil then return nil end
-
-                        return ExecuteButton(scope, {
-                            Size = UDim2.fromScale(0.15, 0.7),
-                            ButtonText = "Craft",
-                            ButtonType = "Confirm",
-                            ButtonClickFunc = function()
-                                self.IsCrafting:set(true)
-                            end
-                        })
-                    end),
-                }
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("FilterModeStatus_BK1_1"))({
-                [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("FilterModeHint_BK1_1", true))({
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local check = false
-                            for _, tierStatus in self.FilterTierList do
-                                if use(tierStatus) == false then
-                                    check = true
-                                    break
-                                end
-                            end
-                            if use(self.FilterItemText) ~= "" then check = true end
-                            return check
-                        end)
+                        IsCrafting = true
                     })
-                }
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("CraftingMaterials_ECraft1_1", false, false, {
-                "Title"
-            }))({
-                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    local currentItem = use(self.CurrentSelectedItem) :: string
-                    currentItem = currentItem or ""
-                    return currentItem ~= ""
                 end),
 
-                [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("Materials_ECraft2_1", false, true))({
-                        [Children] = {
-                            Fusion.ForPairs(scope, self.CraftingMaterials, function(_, scope: Fusion.Scope, itemId: string, amount: number)
-                                return itemId, CraftItemMatSlot(scope, {
-                                    ItemId = itemId,
-                                    Items = self.PlayerItems,
-                                    Amount = amount,
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    return BKItemQuickDescView(scope, {
+                        Item = use(self.CurrentSelectedMaterial),
 
-                                    SelectedMaterialVal = self.CurrentSelectedMaterial,
-                                })
-                            end),
-
-                            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                                local price = use(self.CraftingPrice) :: number
-                                if price <= 0 then return nil end
-
-                                return CraftGoldMatSlot(scope, {
-                                    GoldVal = self.Gold,
-                                    Amount = price
-                                })
-                            end),
-
-                        }
+                        ItemVal = self.CurrentSelectedMaterial,
+                        IsViewingVal = self.IsCrafting
                     })
-                }
-            })
+                end),
+            }
+        },
+
+        BottomProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "LSideBtns",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.3),
+                    Size = UDim2.fromScale(0.96, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        BottombarOptionBtn(scope, {
+                            Option = "Filter",
+                            Index = 1
+                        }, self),
+                    }
+                }),
+
+
+                Components.Frame(scope, {
+                    Name = "RSideBtns",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.1),
+                    Size = UDim2.fromScale(0.96, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.01, 0),
+                        }),
+
+
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            local item = use(self.CurrentSelectedItem) :: string
+                            local itemInfo = ItemBook:GetItemInfo(item)
+                            if itemInfo == nil then
+                                return nil
+                            end
+
+                            return ExecuteButton(scope, {
+                                Size = UDim2.fromScale(0.15, 0.7),
+                                ButtonText = "Craft",
+                                ButtonType = "Confirm",
+                                ButtonClickFunc = function()
+                                    self.IsCrafting:set(true)
+                                end
+                            })
+                        end),
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "FilterModeStatus",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.1),
+
+                    [Children] = {
+                        Components.TextLabel(scope, {
+                            Name = "FilterModeHint",
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            Position = UDim2.fromScale(0.4, 0.5),
+                            AutomaticSize = Enum.AutomaticSize.X,
+                            Text = "FILTER MODE: ON",
+                            BackgroundTransparency = 0,
+                            BackgroundColor3 = Components.WHITE_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
+                            Size = UDim2.fromScale(0, 0.56),
+
+
+                            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                local check = false
+                                for _, tierStatus in self.FilterTierList do
+                                    if use(tierStatus) == false then
+                                        check = true
+                                        break
+                                    end
+                                end
+                                if use(self.FilterItemText) ~= "" then check = true end
+
+                                return check
+                            end),
+
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.UIPadding(scope, {
+                                    PaddingLeft = UDim.new(0, 15),
+                                    PaddingRight = UDim.new(0, 15)
+                                })
+                            }
+                        })
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "CraftingMaterials",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -1.5),
+
+                    Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                        local currentItem = use(self.CurrentSelectedItem) :: string
+                        currentItem = currentItem or ""
+
+                        return currentItem ~= ""
+                    end),
+
+                    [Children] = {
+                        Components.Frame(scope, {
+                            Name = "Title",
+                            AnchorPoint = Vector2.zero,
+                            Position = UDim2.fromScale(0.2, -1),
+                            Size = UDim2.fromScale(0.48, 1),
+                            ClipsDescendants = true,
+
+                            [Children] = {
+                                Components.UIListLayout(scope, {
+                                    FillDirection = Enum.FillDirection.Horizontal,
+                                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                                }),
+
+                                Components.TextLabel(scope, {
+                                    Name = "Title",
+                                    AutomaticSize = Enum.AutomaticSize.X,
+                                    Size = UDim2.fromScale(0, 0.6),
+                                    Text = "MATERIALS",
+                                    TextTransparency = 0.5,
+
+                                    [Children] = {
+                                        Components.UIPadding(scope, {
+                                            PaddingTop = UDim.new(0.05, 0),
+                                            PaddingBottom = UDim.new(0.05, 0),
+                                            PaddingLeft = UDim.new(0.05, 0),
+                                            PaddingRight = UDim.new(0, 12)
+                                        })
+                                    }
+                                }),
+                                Components.Frame(scope, {
+                                    Name = "Bar",
+                                    Size = UDim2.fromScale(0.5, 0.07),
+                                    BackgroundTransparency = 0.8,
+                                    BackgroundColor3 = Components.WHITE_COLOR,
+                                    LayoutOrder = 2,
+                                })
+                            }
+                        }),
+                        Components.Frame(scope, {
+                            Name = "Materials",
+                            AnchorPoint = Vector2.zero,
+                            Position = UDim2.fromScale(0.2, 0),
+                            ZIndex = 2,
+
+                            [Children] = {
+                                Components.UIListLayout(scope, {
+                                    Padding = UDim.new(0.01, 0),
+                                    FillDirection = Enum.FillDirection.Horizontal,
+                                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                                }),
+
+                                Fusion.ForPairs(scope, self.CraftingMaterials, function(_, scope: Fusion.Scope, itemId: string, amount: number)
+                                    return itemId, CraftItemMatSlot(scope, {
+                                        ItemId = itemId,
+                                        Items = self.PlayerItems,
+                                        Amount = amount,
+
+                                        SelectedMaterialVal = self.CurrentSelectedMaterial,
+                                    })
+                                end),
+
+                                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                    local price = use(self.CraftingPrice) :: number
+
+                                    if price > 0 then
+                                        return CraftGoldMatSlot(scope, {
+                                            GoldVal = self.Gold,
+                                            Amount = price
+                                        })
+                                    else
+                                        return nil
+                                    end
+                                end),
+
+                            }
+                        })
+                    }
+                })
+            }
         }
     })
     self.UI = UI
 
+
     return function ()
         Fusion.doCleanup(scope)
+
+
     end
 end

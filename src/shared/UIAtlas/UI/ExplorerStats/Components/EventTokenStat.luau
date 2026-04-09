@@ -9,12 +9,13 @@ local Children = Fusion.Children
 
 local udNew = UDim.new
 
-local statIcons = {
-    DMG = "rbxassetid://2965862892",
-    Magic = "rbxassetid://2965863231",
-
+local STAT_ICONS = {
     HalloweenCandy = "rbxassetid://101642799593354",
-    Gold = "rbxassetid://18421784947"
+    IceCandy = "rbxassetid://4806921700"
+}
+local STAT_COLORS = {
+    HalloweenCandy = Color3.fromRGB(255, 234, 167),
+    IceCandy = Color3.fromRGB(129, 236, 236)
 }
 
 return function (scope: Fusion.Scope, props: {
@@ -29,10 +30,11 @@ return function (scope: Fusion.Scope, props: {
     return Components.Frame(scope, {
         Name = props.StatId,
         LayoutOrder = props.LayoutOrder,
+        Size = UDim2.fromScale(0.35, 1),
 
         [Children] = {
             Components.UIListLayout(scope, {
-                Padding = udNew(0.015, 0),
+                Padding = udNew(0.04, 0),
                 HorizontalAlignment = Enum.HorizontalAlignment.Left,
                 FillDirection = Enum.FillDirection.Horizontal,
             }),
@@ -41,19 +43,16 @@ return function (scope: Fusion.Scope, props: {
                 Name = "StatIcon_"..props.StatId,
                 LayoutOrder = 1,
 
-                Image = statIcons[props.StatId],
+                Image = STAT_ICONS[props.StatId],
             }),
             Components.TextLabel(scope, {
                 Name = "StatText_"..props.StatId,
                 LayoutOrder = 2,
                 TextXAlignment = Enum.TextXAlignment.Left,
+                TextColor3 = STAT_COLORS[props.StatId],
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    if props.StatId == "DMG" then
-                        return HarukaLib:AddCommaToNum(use(props.StatValue)).."-"..HarukaLib:AddCommaToNum(use(props.StatValue2))
-                    else
-                        return HarukaLib:AddCommaToNum(use(props.StatValue))
-                    end
+                    return HarukaLib:AddCommaToNum(use(props.StatValue))
                 end),
 
                 [Children] = {

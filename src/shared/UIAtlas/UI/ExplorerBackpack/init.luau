@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Events = require(RepS.HarukaShared.Library.Events)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
@@ -24,16 +23,26 @@ local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
 local Children = Fusion.Children
 
+
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "ExplorerBackpack")
+    self.plr = plr
+    self.char = plr.Character
+    self.scope = Fusion.scoped()
+
+    local scope = self.scope :: Fusion.Scope
+
 
     Pinia(self)
 
-    local scope = self.scope :: Fusion.Scope
+
+    if plr.PlayerGui:FindFirstChild("ExplorerBackpack") then
+        plr.PlayerGui.ExplorerBackpack:Destroy()
+    end
+
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerBackpack",
@@ -45,11 +54,24 @@ return function (plr: Player)
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("CenterLeft_BK1_1"))({
+            Components.Frame(scope, {
+                Name = "CenterLeft",
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.03, 0.52),
+                Size = UDim2.fromScale(0.65, 0.66),
+                ClipsDescendants = true,
+
                 [Children] = {
                     BKItemListView(scope, self, true),
 
-                    Fusion.Hydrate(scope, Components:RefUI("Empty_BK1_1"))({
+                    Components.TextLabel(scope, {
+                        Name = "Empty",
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Position = UDim2.fromScale(0.5, 0.5),
+                        Size = UDim2.fromScale(1, 0.1),
+                        Text = "EMPTY",
+                        TextTransparency = 0.8,
+
                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return use(self.AvailableItems).X <= 0
                         end)
@@ -57,13 +79,26 @@ return function (plr: Player)
                 }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("ShadowOverlay2_BK1_1"))({
+
+            Components.Frame(scope, {
+                Name = "ShadowOverlay2",
+                BackgroundTransparency = 0.3,
+                ZIndex = 3,
+                Interactable = false,
+                Active = false,
+
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(self.IsPurchasing)
-                end)
+                end),
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Top2_BK1_1", false, true))({
+
+            Components.HarukaFrame(scope, {
+                Name = "Top2",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.02),
+                ZIndex = 10,
+
                 [Children] = {
                     CloseTab(scope, {
                         ViewShownValue = self.IsUIShown
@@ -71,12 +106,18 @@ return function (plr: Player)
                 }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Center2_BK1_1", false, true))({
+
+            Components.Frame(scope, {
+                Name = "Center_ZIndex2",
+                Size = UDim2.fromScale(1, 0.1),
+
                 Interactable = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return not use(self.IsPurchasing)
                 end),
 
                 [Children] = {
+                    Components.UIAspectRatioConstraint(scope),
+
                     Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
                         return BKItemDescView(scope, {
                             Item = use(self.CurrentSelectedItem),
@@ -88,17 +129,43 @@ return function (plr: Player)
                 }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Left_BK1_1"))({
+
+            Components.Frame(scope, {
+                Name = "Left",
+                AnchorPoint = Vector2.new(0, 0),
+                Position = UDim2.fromScale(0, 0),
+                Size = UDim2.fromScale(0.3, 1),
+                ZIndex = 3,
+
                 [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("FilterOptions_BK1_1", false, false, {
-                        "Shadows"
-                    }))({
+                    Components.Frame(scope, {
+                        Name = "FilterOptions",
+                        ZIndex = 10,
+
                         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return use(self.FilterViewShown)
                         end),
 
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("Inner_FOBK1_1"))({
+                            Components.Frame(scope, {
+                                Name = "Shadows",
+                                AnchorPoint = Vector2.new(0, 0),
+                                Position = UDim2.fromScale(1, 0),
+                                BackgroundColor3 = Color3.fromRGB(),
+                                BackgroundTransparency = 0,
+
+                                [Children] = {
+                                    Components.UIGradient(scope, {
+                                        Transparency = NumberSequence.new(1, 0.5),
+                                        Rotation = 180
+                                    })
+                                }
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "Inner",
+                                ZIndex = 2,
+
                                 [Children] = {
                                     BKItemFilterView(scope, {
                                         FilterTierList = self.FilterTierList,
@@ -121,196 +188,287 @@ return function (plr: Player)
             ZIndex = 0
         },
 
-        BottomChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("Economy_BK1_1", false, true))({
-                [Children] = {
-                    Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
-                        return index, BottombarEcoSlot(scope, {
-                            Currency = currency,
-                            Index = index,
 
-                            CurrencyVal = self.Currency[currency]
-                        })
-                    end)
-                }
-            }),
+        BottomProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "Economy",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.3),
+                    Size = UDim2.fromScale(0.85, 1),
 
-            Fusion.Hydrate(scope, Components:RefUI("LSideBtns_BK1_1", false, true))({
-                [Children] = {
-                    BottombarOptionBtn(scope, {
-                        Option = "Filter",
-                        Index = 1
-                    }, self),
-                }
-            }),
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
 
-            Fusion.Hydrate(scope, Components:RefUI("RSideBtns_BK1_1", false, true))({
-                [Children] = {
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        local item = use(self.CurrentSelectedItem) :: string
-                        local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
+                        Fusion.ForPairs(scope, { "Gold" }, function(_, scope: Fusion.Scope, index: number, currency: string)
+                            return index, BottombarEcoSlot(scope, {
+                                Currency = currency,
+                                Index = index,
 
-                        local itemInfo = ItemBook:GetItemInfo(item)
-                        if itemInfo == nil then return nil end
-
-                        local blackList = { "Material", "Quest", "Passive" }
-                        if table.find(blackList, itemInfo.Type) then return nil end
-
-                        local equippingItems = use(self.EquippingItems)
-                        local found = false
-                        for _, equipping: StringValue in equippingItems do
-                            if (equipping:GetAttribute("HarukaUniqueId") or "nil") == itemUniqueId then
-                                found = true
-                                break
-                            end
-                        end
-
-                        local function _requestToEquip()
-                            if self.EquipCD then return end
-
-                            self.EquipCD = true
-                            task.delay(0.3, function()
-                                if self == nil then return end
-                                self.EquipCD = false
-                            end)
-
-                            local curItem = Fusion.peek(self.CurrentSelectedItem) :: string
-                            local curItemUniqueId = Fusion.peek(self.CurrentSelectedItemUniqueId) :: string
-
-                            if curItem and curItem ~= "" and curItemUniqueId and curItemUniqueId ~= "" then
-                                Events.EquipItem_C.Fire({
-                                    ItemId = Fusion.peek(self.CurrentSelectedItem),
-                                    ItemUniqueId = Fusion.peek(self.CurrentSelectedItemUniqueId),
-                                })
-                            end
-                        end
-
-                        if itemInfo.Type == "Weapon" then
-                            if found then return nil end
-
-                            return ExecuteButton(scope, {
-                                Size = UDim2.fromScale(0.15, 0.7),
-                                ButtonText = "Equip",
-                                ButtonType = "Confirm",
-                                LayoutOrder = 233,
-                                ButtonClickFunc = function()
-                                    _requestToEquip()
-                                end
+                                CurrencyVal = self.Currency[currency]
                             })
-                        end
-                        if found then
-                            return ExecuteButton(scope, {
-                                Size = UDim2.fromScale(0.15, 0.7),
-                                ButtonText = "Unequip",
-                                ButtonType = "Cancel",
-                                LayoutOrder = 233,
-                                ButtonClickFunc = function()
-                                    _requestToEquip()
-                                end
-                            })
-                        else
-                            return ExecuteButton(scope, {
-                                Size = UDim2.fromScale(0.15, 0.7),
-                                ButtonText = "Equip",
-                                ButtonType = "Confirm",
-                                LayoutOrder = 233,
-                                ButtonClickFunc = function()
-                                    _requestToEquip()
-                                end
-                            })
-                        end
-                    end),
+                        end)
+                    }
+                }),
 
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        local item = use(self.CurrentSelectedItem) :: string
 
-                        local itemInfo = ItemBook:GetItemInfo(item)
-                        if itemInfo == nil then return nil end
+                Components.Frame(scope, {
+                    Name = "LSideBtns",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.3),
+                    Size = UDim2.fromScale(0.96, 1),
 
-                        local blackList = { "Quest", "Passive", "Cosmetic", "Title" }
-                        if table.find(blackList, itemInfo.Type) then return nil end
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
 
-                        return ExecuteButton(scope, {
-                            Size = UDim2.fromScale(0.115, 0.7),
-                            ButtonText = "Sell",
-                            ButtonType = "Cancel",
-                            LayoutOrder = 2,
-                            ButtonClickFunc = function()
-                                self.IsPurchasing:set(true)
+                        BottombarOptionBtn(scope, {
+                            Option = "Filter",
+                            Index = 1
+                        }, self),
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "RSideBtns",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.1),
+                    Size = UDim2.fromScale(0.96, 1),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.01, 0),
+                        }),
+
+
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            local item = use(self.CurrentSelectedItem) :: string
+                            local itemUniqueId = use(self.CurrentSelectedItemUniqueId) :: string
+
+                            local itemInfo = ItemBook:GetItemInfo(item)
+                            if itemInfo == nil then
+                                return nil
                             end
-                        })
-                    end),
-                }
-            }),
 
-            Fusion.Hydrate(scope, Components:RefUI("FilterModeStatus_BK1_1"))({
-                [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("FilterModeHint_BK1_1", true))({
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            local check = false
-                            for _, tierStatus in self.FilterTierList do
-                                if use(tierStatus) == false then
-                                    check = true
+                            local blackList = { "Material", "Quest", "Passive" }
+                            if table.find(blackList, itemInfo.Type) then
+                                return nil
+                            end
+
+                            local equippingItems = use(self.EquippingItems)
+                            local found = false
+                            for _, equipping: StringValue in equippingItems do
+                                if (equipping:GetAttribute("HarukaUniqueId") or "nil") == itemUniqueId then
+                                    found = true
                                     break
                                 end
                             end
-                            if use(self.FilterItemText) ~= "" then check = true end
-                            return check
-                        end)
-                    })
-                }
-            })
+
+                            local function _requestToEquip()
+                                if self.EquipCD then return end
+
+                                self.EquipCD = true
+                                task.delay(0.3, function()
+                                    if self == nil then return end
+                                    self.EquipCD = false
+                                end)
+
+                                local curItem = Fusion.peek(self.CurrentSelectedItem) :: string
+                                local curItemUniqueId = Fusion.peek(self.CurrentSelectedItemUniqueId) :: string
+
+                                if curItem and curItem ~= "" and curItemUniqueId and curItemUniqueId ~= "" then
+                                    Events.EquipItem_C.Fire({
+                                        ItemId = Fusion.peek(self.CurrentSelectedItem),
+                                        ItemUniqueId = Fusion.peek(self.CurrentSelectedItemUniqueId),
+                                    })
+                                end
+                            end
+
+                            if itemInfo.Type == "Weapon" then
+                                if not found then
+                                    return ExecuteButton(scope, {
+                                        Size = UDim2.fromScale(0.15, 0.7),
+                                        ButtonText = "Equip",
+                                        ButtonType = "Confirm",
+                                        LayoutOrder = 233,
+                                        ButtonClickFunc = function()
+                                            _requestToEquip()
+                                        end
+                                    })
+                                else
+                                    return nil
+                                end
+                            end
+                            if found then
+                                return ExecuteButton(scope, {
+                                    Size = UDim2.fromScale(0.15, 0.7),
+                                    ButtonText = "Unequip",
+                                    ButtonType = "Cancel",
+                                    LayoutOrder = 233,
+                                    ButtonClickFunc = function()
+                                        _requestToEquip()
+                                    end
+                                })
+                            else
+                                return ExecuteButton(scope, {
+                                    Size = UDim2.fromScale(0.15, 0.7),
+                                    ButtonText = "Equip",
+                                    ButtonType = "Confirm",
+                                    LayoutOrder = 233,
+                                    ButtonClickFunc = function()
+                                        _requestToEquip()
+                                    end
+                                })
+                            end
+                        end),
+
+
+                        Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                            local item = use(self.CurrentSelectedItem) :: string
+
+                            local itemInfo = ItemBook:GetItemInfo(item)
+                            if itemInfo == nil then
+                                return nil
+                            end
+
+                            local blackList = { "Quest", "Passive", "Cosmetic", "Title" }
+                            if table.find(blackList, itemInfo.Type) then
+                                return nil
+                            end
+
+                            return {
+                                ExecuteButton(scope, {
+                                    Size = UDim2.fromScale(0.115, 0.7),
+                                    ButtonText = "Sell",
+                                    ButtonType = "Cancel",
+                                    LayoutOrder = 2,
+                                    ButtonClickFunc = function()
+                                        self.IsPurchasing:set(true)
+                                    end
+                                })
+                            }
+                        end),
+                    }
+                }),
+
+                Components.Frame(scope, {
+                    Name = "FilterModeStatus",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, -0.1),
+
+                    [Children] = {
+                        Components.TextLabel(scope, {
+                            Name = "FilterModeHint",
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            Position = UDim2.fromScale(0.4, 0.5),
+                            AutomaticSize = Enum.AutomaticSize.X,
+                            Text = "FILTER MODE: ON",
+                            BackgroundTransparency = 0,
+                            BackgroundColor3 = Components.WHITE_COLOR,
+                            TextColor3 = Components.BLACK_COLOR,
+                            Size = UDim2.fromScale(0, 0.56),
+
+
+                            Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                local check = false
+                                for _, tierStatus in self.FilterTierList do
+                                    if use(tierStatus) == false then
+                                        check = true
+                                        break
+                                    end
+                                end
+                                if use(self.FilterItemText) ~= "" then check = true end
+
+                                return check
+                            end),
+
+
+                            [Children] = {
+                                Components.RoundUICorner(scope),
+                                Components.UIPadding(scope, {
+                                    PaddingLeft = UDim.new(0, 15),
+                                    PaddingRight = UDim.new(0, 15)
+                                })
+                            }
+                        })
+                    }
+                })
+            }
         },
 
         TopProps = {
-            Position = UDim2.fromScale(0.5, 0.02)
-        },
-        TopChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("Categories_BK1_1", false, true))({
-                [Children] = {
-                    Fusion.ForPairs(scope, {
-                        "Accessory", "Artifact", "Weapon", "Active", "Material", "Misc"
-                    }, function(_, scope: Fusion.Scope, index: number, category: string)
-                        return index, TopbarCategoryBtn(scope, {
-                            Category = category,
-                            Index = index,
+            Position = UDim2.fromScale(0.5, 0.02),
 
-                            CurrentSelectedItem = self.CurrentSelectedItem,
-                            CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
-                            CurrentCategory = self.CurrentCategory,
-                        })
-                    end)
-                }
-            }),
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "Categories",
 
-            FakeTopBGTex(scope)
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            FillDirection = Enum.FillDirection.Horizontal,
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            VerticalAlignment = Enum.VerticalAlignment.Center,
+                            Padding = UDim.new(0.015, 0),
+                        }),
+
+                        Fusion.ForPairs(scope, { "Accessory", "Artifact", "Weapon", "Active", "Material", "Misc" }, function(_, scope: Fusion.Scope, index: number, category: string)
+                            return index, TopbarCategoryBtn(scope, {
+                                Category = category,
+                                Index = index,
+
+                                CurrentSelectedItem = self.CurrentSelectedItem,
+                                CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                                CurrentCategory = self.CurrentCategory,
+                            })
+                        end)
+                    }
+                }),
+
+                FakeTopBGTex(scope)
+            }
         },
 
         CenterProps = {
-            ZIndex = 10
-        },
-        CenterChildren = {
-            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                if not use(self.IsPurchasing) then return nil end
+            ZIndex = 10,
 
-                return MKPurchasePrompt(scope, {
-                    ProductId = use(self.CurrentSelectedItem),
-                    UniqueId = use(self.CurrentSelectedItemUniqueId),
+            [Children] = {
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    if not use(self.IsPurchasing) then return nil end
 
-                    IsPurchasing = self.IsPurchasing,
-                    Action = "Sell",
+                    return MKPurchasePrompt(scope, {
+                        ProductId = use(self.CurrentSelectedItem),
+                        UniqueId = use(self.CurrentSelectedItemUniqueId),
 
-                    CurrentSelectedItem = self.CurrentSelectedItem,
-                    CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+                        IsPurchasing = self.IsPurchasing,
+                        Action = "Sell",
 
-                    CurrencyId = "Gold",
-                })
-            end)
+                        CurrentSelectedItem = self.CurrentSelectedItem,
+                        CurrentSelectedItemUniqueId = self.CurrentSelectedItemUniqueId,
+
+                        CurrencyId = "Gold",
+                    })
+                end)
+            }
         }
     })
     self.UI = UI
 
+
     return function ()
         Fusion.doCleanup(scope)
+
+
     end
 end

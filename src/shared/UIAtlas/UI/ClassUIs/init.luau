@@ -1,24 +1,36 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
+local ReverberationFrame = require(script.Components.ReverberationFrame)
+local FuriosoFrame = require(script.Components.FuriosoFrame)
 local ChainBar = require(script.Components.ChainBar)
 
 local Children = Fusion.Children
 
 local Pinia = require(script.Pinia)
 
+
 return function(plr: Player)
 	local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "ClassUIs")
+	self.plr = plr
+	self.char = plr.Character
+    self.scope = Fusion.scoped()
+
 
 	Pinia(self)
 
+
+    if plr.PlayerGui:FindFirstChild("ClassUIs") then
+        plr.PlayerGui.ClassUIs:Destroy()
+    end
+
+
     local scope = self.scope :: Fusion.Scope
+
 
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "ClassUIs",
@@ -29,26 +41,35 @@ return function(plr: Player)
         end),
 
 	}, {
-        BottomChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("ClassAbilityDiv_Bottom_1", false, true))({
-                [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("ReverberationStyle_CA1_1", true))({
-                        Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return use(self.Class) == "Reverberation" and use(self.IsInCombat)
-                        end),
-                    }),
+        BottomProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "ClassAbilityDiv_Bottom",
 
-                    ChainBar(scope, {
-                        ClassVal = self.ChainCombo,
-                        Char = self.char
-                    })
-                }
-            })
+                    [Children] = {
+                        Components.UIScale(scope, {
+                            Scale = 1
+                        }),
+
+                        ReverberationFrame(scope, self),
+                        FuriosoFrame(scope, self),
+
+                        ChainBar(scope, {
+                            ClassVal = self.ChainCombo,
+                            Char = self.char
+                        })
+                    }
+                })
+
+            }
         }
     })
     self.UI = UI
 
+
     require(script.Anims)(UI, self)
+
+
 
 	return function ()
         Fusion.doCleanup(scope)

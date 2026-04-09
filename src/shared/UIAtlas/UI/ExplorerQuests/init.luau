@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local QuestBook = require(RepS.HarukaShared.Library.QuestBook)
@@ -12,14 +11,25 @@ local QuestIndicator = require(script.Components.QuestIndicator)
 
 local Children = Fusion.Children
 
+
 local Pinia = require(script.Pinia)
+
 
 return function(plr: Player)
 	local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "ExplorerQuests")
+	self.plr = plr
+    self.char = plr.Character
+    self.scope = Fusion.scoped()
+
 
 	Pinia(self)
+
+
+    if plr.PlayerGui:FindFirstChild("ExplorerQuests") then
+        plr.PlayerGui.ExplorerQuests:Destroy()
+    end
+
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -30,6 +40,7 @@ return function(plr: Player)
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown) and use(self.IsUIShown2)
         end),
+
 
         [Children] = {
             Fusion.New(scope, "Folder")({
@@ -48,6 +59,7 @@ return function(plr: Player)
 
                         local realLocator = workspace.Maps:FindFirstChild(locator, true)
                         if realLocator == nil then return nil end
+
 
                         local isCompleted = Fusion.Value(scope, false)
                         table.insert(scope, HarukaLib:Hydrate(questSymbol, {
@@ -90,7 +102,9 @@ return function(plr: Player)
                         local npcModel = workspace.MapComponents.NPCs:FindFirstChild(npc, true)
                         if not npcModel then return nil end
 
+
                         if npcModel:GetAttribute("_NoLocationMarker") then return nil end
+
 
                         local isCompleted = Fusion.Value(scope, false)
                         table.insert(scope, HarukaLib:Hydrate(questSymbol, {
@@ -111,9 +125,17 @@ return function(plr: Player)
                                 StudsOffset = Vector3.yAxis * 5,
 
                                 [Children] = {
-                                    Fusion.Hydrate(scope, Components:RefUI("Indicator_QIndicator1_1", true))({
-                                        TextColor3 = self.COLORS[questInfo.QuestType]
-                                    }),
+                                    Components.TextLabel(scope, {
+                                        Name = "Indicator",
+                                        Text = "?",
+                                        TextColor3 = self.COLORS[questInfo.QuestType],
+                                        FontFace = Font.fromName("Arial", Enum.FontWeight.Bold),
+                                        AutoLocalize = false,
+
+                                        [Children] = {
+                                            Components.ScaledTextUIStroke(scope, {}, true)
+                                        }
+                                    })
                                 }
                             })
                         end)
@@ -123,36 +145,52 @@ return function(plr: Player)
         }
 
 	}, {
-        BottomChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("QuestsList_EQuests1_1", false, true))({
-                [Children] = {
-                    Fusion.ForPairs(scope, self.Quests, function(_, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
-                        if questSymbol.Value then return nil end
-                        if not QuestBook[questSymbol.Name] then return nil end
+        BottomProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "Quests",
+                    AnchorPoint = Vector2.zero,
+                    Position = UDim2.fromScale(0.125, -0.8),
 
-                        local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
+                    [Children] = {
+                        Components.UIScale(scope, {
+                            Scale = 0.95
+                        }),
 
-                        local isCompleted = Fusion.Value(scope, false)
-                        table.insert(scope, HarukaLib:Hydrate(questSymbol, {
-                            ["Prop-Value"] = function(state: boolean)
-                                state = state or false
-                                isCompleted:set(state)
-                            end
-                        }))
+                        Components.UIListLayout(scope, {
+                            Padding = UDim.new(0.1, 0),
+                            VerticalAlignment = Enum.VerticalAlignment.Bottom,
+                        }),
 
-                        return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                            if use(isCompleted) then return nil end
+                        Fusion.ForPairs(scope, self.Quests, function(_, scope: Fusion.Scope, index: number, questSymbol: BoolValue)
+                            if questSymbol.Value then return nil end
+                            if not QuestBook[questSymbol.Name] then return nil end
 
-                            return QuestBar(scope, {
-                                QuestType = questInfo.QuestType,
-                                QuestId = questInfo.Id,
-                                QuestVal = questSymbol,
-                                COLORS = self.COLORS
-                            })
+                            local questInfo = QuestBook[questSymbol.Name] :: QuestBook.QuestJSON
+
+                            local isCompleted = Fusion.Value(scope, false)
+                            table.insert(scope, HarukaLib:Hydrate(questSymbol, {
+                                ["Prop-Value"] = function(state: boolean)
+                                    state = state or false
+                                    isCompleted:set(state)
+                                end
+                            }))
+
+
+                            return index, Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                if use(isCompleted) then return nil end
+
+                                return QuestBar(scope, {
+                                    QuestType = questInfo.QuestType,
+                                    QuestId = questInfo.Id,
+                                    QuestVal = questSymbol,
+                                    COLORS = self.COLORS
+                                })
+                            end)
                         end)
-                    end)
-                }
-            })
+                    }
+                })
+            }
         }
     })
     self.UI = UI

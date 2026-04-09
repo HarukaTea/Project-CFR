@@ -6,7 +6,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 local wait = task.wait
+
 
 export type Self = {
     plr: Player,
@@ -26,11 +28,13 @@ export type Self = {
     PartyMembers: Fusion.Value<{ Model }>,
 }
 
+
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
+
 
     local players, chars =
         FusionComponents.useTagged(scope, "PlayerEntity"),
@@ -45,7 +49,11 @@ return function (self: Self)
     self.PlayerSelecting = Fusion.Value(self.scope, nil)
     self.PlayerSelected = Fusion.Value(self.scope, nil)
 
+
     self.PartyMembers = Value({})
+
+
+
 
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -55,6 +63,7 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "None")
         end
     }))
+
 
     --// track tab input
     table.insert(scope, UserInputService.InputBegan:Connect(function(input, gpe)
@@ -67,6 +76,7 @@ return function (self: Self)
             self.PlayerSelected:set(nil)
         end
     end))
+
 
     --// track party
     local partyAdd, partyEmpty = HarukaLib.Bin()

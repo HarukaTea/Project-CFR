@@ -1,17 +1,19 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 
 local ConfirmPrompt = require(script.Components.ConfirmPrompt)
 
+
 return function (plr: Player)
 	local self = {}
 
-	ClientLib:InitUIFramework(self, plr, "ConfirmPrompt", true)
+	self.plr = plr
+	self.scope = Fusion.scoped()
+
 
 	local scope = self.scope :: Fusion.Scope
 
@@ -36,15 +38,14 @@ return function (plr: Player)
 		})
 		UI.Parent = self.plr.PlayerGui
 
+
 		HarukaLib:UITransTween(UI, "In", {
 			TweenTime = 0.5,
 
 			PosTweenStyle = "FromT2B",
 			PosTweenBaseElement = UI.Center.ConfirmPrompt,
 		})
-		table.insert(confirmScope, task.delay(60, function()
-			resultSignal:Fire("NO")
-		end))
+
 
 		local finalResult = resultSignal.Event:Wait()
 

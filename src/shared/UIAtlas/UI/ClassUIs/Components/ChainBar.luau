@@ -2,6 +2,7 @@
 local RepS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
@@ -9,6 +10,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
+
 
 return function (scope: Fusion.Scope, props: {
     ClassVal: Fusion.Value<number>,
@@ -22,7 +24,6 @@ return function (scope: Fusion.Scope, props: {
 
     table.insert(scope, RunService.Heartbeat:Connect(function()
         if not ClientLib:IsModelValid(char) then return end
-        if Fusion.peek(props.ClassVal) <= 0 then return end
 
         local rayResult = ClientLib:FindGroundByRay(char.PrimaryPart.Position)
 
@@ -34,16 +35,32 @@ return function (scope: Fusion.Scope, props: {
         end
     }))
 
-    return Fusion.Hydrate(scope, Components:RefUI("ChainStyle_CA1_1"))({
+
+    return Components.Frame(scope, {
+        Name = "ChainStyle",
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.fromScale(0.5, -1.8),
+
         Visible = Fusion.Computed(scope, function(use: Fusion.Use)
             return use(props.ClassVal) > 0
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("BarBG_CA1_1", false, true))({
+            Components.Frame(scope, {
+                AnchorPoint = Vector2.new(0.5, 1),
+                Name = "BarBG",
+                BackgroundTransparency = 0,
+                Position = UDim2.fromScale(0.5, 1),
+                Size = UDim2.fromScale(0.25, 0.2),
+
                 [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("TweenBar_CA1_1", true))({
+                    Components.RoundUICorner(scope),
+
+                    Components.Frame(scope, {
+                        Name = "TweenBar",
+
                         BackgroundColor3 = ClassBook.Chain.Color,
+                        BackgroundTransparency = 0,
 
                         Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use)
                             local jHeight = use(jumpHeight) * 1.599 ^ 3 :: number
@@ -52,7 +69,12 @@ return function (scope: Fusion.Scope, props: {
 
                             return UDim2.fromScale(barHeight, 1)
 
-                        end), Components.TweenInfos.twiceHalf),
+                        end), AssetBook.TweenInfos.twiceHalf),
+
+
+                        [Children] = {
+                            Components.RoundUICorner(scope)
+                        }
                     })
                 }
             })

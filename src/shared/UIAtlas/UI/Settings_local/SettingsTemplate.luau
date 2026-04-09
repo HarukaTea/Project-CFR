@@ -5,6 +5,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
+
 export type IncludesJSON = {
 	OptionTitle: string,
 	Type: string,
@@ -14,7 +15,7 @@ export type IncludesJSON = {
 	DefaultValue: any,
 	AllowDecimals: boolean,
 
-	OnValChanged: BindableEvent,
+	ValChanged: BindableEvent,
 }
 
 export type SettingsJSON = {
@@ -28,7 +29,11 @@ export type SettingsJSON = {
 	}
 }
 
+
+
 local device = HarukaLib:GetAccurateDevice()
+
+
 
 local template = {
     Sounds = {
@@ -46,7 +51,7 @@ local template = {
 				DefaultValue = 1,
 				AllowDecimals = true,
 
-				OnValChanged = Instance.new("BindableEvent")
+				ValChanged = Instance.new("BindableEvent")
 			},
             SFXVolume = {
 				OptionTitle = "SFX Volume",
@@ -58,7 +63,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 1.2,
 
-				OnValChanged = Instance.new("BindableEvent")
+				ValChanged = Instance.new("BindableEvent")
 			},
 			FootstepVolume = {
 				OptionTitle = "Footstep Volume",
@@ -70,7 +75,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 0.9,
 
-				OnValChanged = Instance.new("BindableEvent")
+				ValChanged = Instance.new("BindableEvent")
 			},
 			AmbientVolume = {
 				OptionTitle = "Ambient Volume",
@@ -82,7 +87,7 @@ local template = {
 				Max = 2,
 				DefaultValue = 0.8,
 
-				OnValChanged = Instance.new("BindableEvent")
+				ValChanged = Instance.new("BindableEvent")
 			}
 		}
     },
@@ -101,7 +106,7 @@ local template = {
 				Max = 1.2,
 				DefaultValue = if device == "Phone" or device == "Tablet" then 1.15 else 1,
 
-				OnValChanged = Instance.new("BindableEvent")
+				ValChanged = Instance.new("BindableEvent")
 			},
 			HideUI = {
 				OptionTitle = "Hide UI",
@@ -168,5 +173,6 @@ local template = {
 		Includes = KeybindsBook.Console
 	}
 }
+
 
 return template

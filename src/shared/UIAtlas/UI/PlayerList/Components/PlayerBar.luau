@@ -8,9 +8,11 @@ local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
+
 
 return function (scope: Fusion.Scope, props: {
     Player: Player,
@@ -27,12 +29,14 @@ return function (scope: Fusion.Scope, props: {
         props.Index = 0
     end
 
+
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local thatClass = Value("Burst")
     local thatRoles = Components.FusionComponents.useChildren(scope, props.Player:WaitForChild("Roles"))
     local thatLevel = Value(1)
+
 
     table.insert(scope, HarukaLib:Hydrate(props.Player, {
         ["Attr-Class"] = function(class: string)
@@ -43,49 +47,70 @@ return function (scope: Fusion.Scope, props: {
         end
     }))
 
-    return Fusion.Hydrate(scope, Components:RefUI("PlayerBar_PL1_1", false, true))({
+
+    return Components.Frame(scope, {
         Name = props.Player.Name,
+        BackgroundTransparency = 0,
         LayoutOrder = props.Index,
+        Size = UDim2.fromScale(0.95, 0.15),
+
 
         BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return if use(props.PlayerSelecting) == props.Player then Components.WHITE_COLOR else Components.BLACK_COLOR
         end),
 
+
         [Children] = {
+            Components.UIAspectRatioConstraint(scope, 7.688),
+
+            Components.RoundUICorner(scope),
+
+            Components.UIGradient(scope, {
+                Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),
+                    NumberSequenceKeypoint.new(0.1, 1),
+                    NumberSequenceKeypoint.new(0.3, 0),
+                    NumberSequenceKeypoint.new(1, 0),
+                })
+            }),
+
+
             CFEmblemTex(scope, {
                 Transparency = 0.94,
                 Size = UDim2.fromScale(4, 4),
                 Position = UDim2.fromScale(0.15, 0.5),
 
                 Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return if use(props.PlayerSelecting) == props.Player then Components.BLACK_COLOR else Components.WHITE_COLOR
+                    if use(props.PlayerSelecting) == props.Player then
+                        return Components.BLACK_COLOR
+                    else
+                        return Components.WHITE_COLOR
+                    end
                 end),
             }),
 
-            Components.HoverImageButton(scope, {
-                ZIndex = 10,
 
-                [Fusion.OnEvent("MouseEnter")] = function()
-                    props.PlayerSelecting:set(props.Player)
-                end,
-                [Fusion.OnEvent("MouseLeave")] = function()
-                    props.PlayerSelecting:set(nil)
-                end,
-                [Fusion.OnEvent("MouseButton1Click")] = function()
-                    if Fusion.peek(props.PlayerSelected) == props.Player then
-                        props.PlayerSelected:set(nil)
-                        return
-                    end
+            Components.Frame(scope, {
+                Name = "Main",
 
-                    props.PlayerSelected:set(props.Player)
-                end
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("Main_PlayerBar1_1", false, true))({
                 [Children] = {
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.015, 0),
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                    }),
+
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.Hydrate(scope, Components:RefUI("PlayerLevel_PB1_1", true))({
+
+                    Components.TextLabel(scope, {
+                        Name = "PlayerLevel",
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        Size = UDim2.fromScale(0, 0.8),
+                        BackgroundTransparency = 0,
+                        LayoutOrder = 233,
+
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(thatLevel)}`
                         end),
@@ -95,27 +120,24 @@ return function (scope: Fusion.Scope, props: {
                         TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return if use(props.PlayerSelecting) == props.Player then Components.WHITE_COLOR else Components.BLACK_COLOR
                         end),
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+                            Components.UIPadding(scope, {
+                                PaddingTop = UDim.new(0.05, 0),
+                                PaddingBottom = UDim.new(0.05, 0),
+                                PaddingLeft = UDim.new(0, 4),
+                                PaddingRight = UDim.new(0, 4),
+                            })
+                        }
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("PlayerDisplayName_PB1_1"))({
-                        Text = string.sub(props.Player.DisplayName, 1, 12),
 
-                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            if use(props.PlayerSelecting) == props.Player then
-                                return Components.BLACK_COLOR
-                            else
-                                if table.find(use(props.PartyMembers), props.Player) then
-                                    return Color3.fromHex('#81ecec')
-                                end
-                                if #use(thatRoles) > 0 then
-                                    return Color3.fromHex('#ffeaa7')
-                                end
-                                return Components.WHITE_COLOR
-                            end
-                        end),
-                    }),
+                    Components.IconImageLabel(scope, {
+                        Name = "ClassIcon",
+                        Size = UDim2.fromScale(0.8, 0.8),
+                        LayoutOrder = 232,
 
-                    Fusion.Hydrate(scope, Components:RefUI("ClassIcon_PB1_1", true))({
                         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local classId = use(thatClass) :: string
 
@@ -130,8 +152,48 @@ return function (scope: Fusion.Scope, props: {
                         end),
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("Badges_PB1_1", true))({
+                    Components.TextLabel(scope, {
+                        Name = "PlayerDisplayName",
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        Size = UDim2.fromScale(0, 0.6),
+                        LayoutOrder = 231,
+                        RichText = true,
+                        AutoLocalize = false,
+                        Text = string.sub(props.Player.DisplayName, 1, 12),
+
+                        TextColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                            if use(props.PlayerSelecting) == props.Player then
+                                return Components.BLACK_COLOR
+                            else
+                                if #use(thatRoles) > 0 then
+                                    return Color3.fromHex('#ffeaa7')
+                                end
+                                if table.find(use(props.PartyMembers), props.Player) then
+                                    return Color3.fromHex('#81ecec')
+                                end
+                                return Components.WHITE_COLOR
+                            end
+                        end),
+                    }),
+
+
+
+                    Components.Frame(scope, {
+                        Name = "Roles",
+                        LayoutOrder = 1,
+                        Size = UDim2.fromScale(0.7, 0.7),
+                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
                         [Children] = {
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.1, 0),
+                                FillDirection = Enum.FillDirection.Horizontal,
+                                VerticalAlignment = Enum.VerticalAlignment.Center,
+                                HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                                SortOrder = Enum.SortOrder.Name
+                            }),
+
+
                             Fusion.ForPairs(scope, thatRoles, function(_, scope: Fusion.Scope, index: number, role: BoolValue)
                                 local ICONS = {
                                     Premium = "rbxassetid://102910527174929",
@@ -147,10 +209,50 @@ return function (scope: Fusion.Scope, props: {
 
                                     Image = ICONS[role.Name or "None"] or AssetBook.ExtraIcons.Unknown,
                                 })
+                            end),
+
+                            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                if table.find(use(props.PartyMembers), props.Player) then
+                                    return Components.Frame(scope, {
+                                        Name = "AAA_IsPartyMember",
+                                        BackgroundTransparency = 0,
+                                        BackgroundColor3 = Color3.fromHex('#81ecec'),
+                                        Size = UDim2.fromScale(0.4, 0.4),
+                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
+                                        [Children] = {
+                                            Components.RoundUICorner(scope)
+                                        }
+                                    })
+                                end
                             end)
                         }
                     })
                 }
+            }),
+
+            Components.HoverImageButton(scope, {
+                AnchorPoint = Vector2.new(1, 0),
+                Position = UDim2.fromScale(1, 0),
+                Size = UDim2.fromScale(0.7, 1),
+                ZIndex = 10,
+
+
+                [Fusion.OnEvent("MouseEnter")] = function()
+                    props.PlayerSelecting:set(props.Player)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                    props.PlayerSelecting:set(nil)
+                end,
+
+                [Fusion.OnEvent("MouseButton1Click")] = function()
+                    if Fusion.peek(props.PlayerSelected) == props.Player then
+                        props.PlayerSelected:set(nil)
+                        return
+                    end
+
+                    props.PlayerSelected:set(props.Player)
+                end
             })
         }
     })

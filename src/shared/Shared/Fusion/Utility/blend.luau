@@ -255,7 +255,7 @@ function blend._trackButtonEvents(
 	local function _triggerLeave()
 		if not isHovering then return end
 		isHovering = false
-		if leaveFunc then leaveFunc() end
+		if leaveFunc then leaveFunc() return end
 
 		button.BackgroundColor3 = buttonColor
 	end
@@ -263,7 +263,7 @@ function blend._trackButtonEvents(
 		if isHovering then return end
 		if not _isButtonValid() then return end
 		isHovering = true
-		if hoverFunc then hoverFunc() end
+		if hoverFunc then hoverFunc() return end
 
 		button.BackgroundColor3 = buttonColor:Lerp(Color3.new(), 0.4)
 	end

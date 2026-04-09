@@ -14,6 +14,7 @@ local Children = Fusion.Children
 
 local wait = task.wait
 
+
 local Pinia = require(script.Pinia)
 
 return function(plr: Player)
@@ -25,6 +26,7 @@ return function(plr: Player)
 
 	local scope = self.scope :: Fusion.Scope
 
+
 	local UI; UI = Components.HarukaScreenGui(scope, {
 		Name = "PlayerList",
 		Parent = plr.PlayerGui,
@@ -32,6 +34,7 @@ return function(plr: Player)
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(self.IsUIShown)
         end),
+
 
         [Children] = {
             Fusion.New(scope, "Folder")({
@@ -67,77 +70,144 @@ return function(plr: Player)
 							adornee:set(newChar.PrimaryPart)
 						end))
 
-						return index, { Fusion.Hydrate(scope, Components:RefUI("PartyMember/Indicator_PL1_1", true))({
-                            Adornee = Fusion.Computed(scope, function(use: Fusion.Use)
-								return use(adornee)
-							end)
+						return index, { Components.BillboardGui(scope, {
+							Name = "PartyMarker_"..member.Name,
+							Size = UDim2.fromOffset(45, 45),
 
-                        }), Fusion.Hydrate(scope, Components:RefUI("PartyHighlight_PL1_1", true))({
+							Adornee = Fusion.Computed(scope, function(use: Fusion.Use)
+								return use(adornee)
+							end),
+
+							[Children] = {
+								Components.Frame(scope, {
+									Name = "MarkerFrame",
+									BackgroundColor3 = Color3.new(1, 1, 1),
+									BackgroundTransparency = 0.1,
+									Rotation = 45,
+									Size = UDim2.fromScale(0.2, 0.2),
+									ZIndex = 999,
+
+									[Children] = {
+                                        Components.UICorner(scope, {
+                                            CornerRadius = UDim.new(0.2, 0)
+                                        }),
+										Components.ScaledUIStroke(scope, {
+											Thickness = 0.2,
+                                            Color = Components.BLACK_COLOR
+										})
+									}
+								})
+							}
+						}), Fusion.New(scope, "Highlight")({
+                            Name = "PartyHighlight_"..member.Name,
+                            DepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
+                            FillColor = Color3.fromRGB(0, 255, 255),
+                            FillTranspreancy = 0.9,
+                            OutlineColor = Components.WHITE_COLOR,
+                            OutlineTransparency = 0,
+
                             Adornee = Fusion.Computed(scope, function(use: Fusion.Use)
 								return use(adornee)
 							end)
-                        })
-                    }
+                        }) }
 					end)
 				}
 			})
         }
 	}, {
-        TopChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("PlayerListFrame_PL1_1", false, true))({
-                [Children] = {
-                    Components.PaddingFrame(scope, "ZZZ"),
+        TopProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "PlayerList",
+                    AnchorPoint = Vector2.xAxis,
+                    Position = UDim2.fromScale(1, 0),
 
-                    Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                        local state = use(self.IsUIFolded)
-                        if state then return nil end
+                    [Children] = {
+                        Components.UIScale(scope, {
+                            Scale = 1.05
+                        }),
 
-                        return Components.ScrollingFrame(scope, {
-                            Name = "PlayerList",
-                            ScrollingDirection = Enum.ScrollingDirection.Y,
-                            Size = UDim2.fromScale(0.18, 4),
-                            ScrollBarThickness = 0,
-                            LayoutOrder = 2,
+                        Components.Frame(scope, {
+                            Name = "PlayerListFrame",
+                            AnchorPoint = Vector2.xAxis,
+                            Position = UDim2.fromScale(1, 1.5),
 
                             [Children] = {
-                                Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope, index: number, player: Player)
-                                    return index, PlayerBar(scope, {
-                                        Player = player,
+                                Components.PaddingFrame(scope, "ZZZ"),
+                                Components.UIListLayout(scope, {
+                                    FillDirection = Enum.FillDirection.Horizontal,
+                                    HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                                    Padding = UDim.new(0.01, 0),
+                                    VerticalAlignment = Enum.VerticalAlignment.Top,
+                                }),
 
-                                        PlayerSelecting = self.PlayerSelecting,
-                                        PlayerSelected = self.PlayerSelected,
+                                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                                    local state = use(self.IsUIFolded)
+                                    if state then return nil end
 
-                                        PartyMembers = self.PartyMembers,
+                                    return Components.ScrollingFrame(scope, {
+                                        Name = "PlayerList",
+                                        ScrollingDirection = Enum.ScrollingDirection.Y,
+                                        Size = UDim2.fromScale(0.18, 4),
+                                        ScrollBarThickness = 0,
+                                        LayoutOrder = 2,
+
+                                        [Children] = {
+                                            Fusion.ForPairs(scope, self.Players, function(_, scope: Fusion.Scope, index: number, player: Player)
+                                                return index, PlayerBar(scope, {
+                                                    Player = player,
+
+                                                    PlayerSelecting = self.PlayerSelecting,
+                                                    PlayerSelected = self.PlayerSelected,
+
+                                                    PartyMembers = self.PartyMembers,
+                                                })
+                                            end)
+                                        }
+                                    }, {
+                                        Padding = UDim.new(0, 6),
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Right,
                                     })
-                                end)
+                                end),
+
+                                PlayerInfoView(scope, {
+                                    PlayerSelecting = self.PlayerSelected,
+                                    PartyMembers = self.PartyMembers
+                                }),
+
+                                Components.TextButton(scope, {
+                                    Name = "CloseButton",
+                                    AnchorPoint = Vector2.xAxis,
+                                    BackgroundTransparency = 0,
+                                    BackgroundColor3 = Components.WHITE_COLOR,
+                                    TextColor3 = Components.BLACK_COLOR,
+                                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Heavy),
+                                    LayoutOrder = -1,
+
+                                    Size = UDim2.fromScale(0.03, 0.5),
+                                    Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                                        return if use(self.IsUIFolded) then "<" else ">"
+                                    end),
+
+                                    [Fusion.OnEvent("MouseButton1Click")] = function()
+                                        self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
+                                        self.PlayerSelected:set(nil)
+                                        self.PlayerSelecting:set(nil)
+                                    end,
+
+                                    [Children] = {
+                                        Components.RoundUICorner(scope)
+                                    }
+                                })
                             }
-                        }, {
-                            Padding = UDim.new(0, 6),
-                            HorizontalAlignment = Enum.HorizontalAlignment.Right,
                         })
-                    end),
-
-                    PlayerInfoView(scope, {
-                        PlayerSelecting = self.PlayerSelected,
-                        PartyMembers = self.PartyMembers
-                    }),
-
-                    Fusion.Hydrate(scope, Components:RefUI("CloseButton_PL1_1", true))({
-                        Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                            return if use(self.IsUIFolded) then "<" else ">"
-                        end),
-
-                        [Fusion.OnEvent("MouseButton1Click")] = function()
-                            self.IsUIFolded:set(not Fusion.peek(self.IsUIFolded))
-                            self.PlayerSelected:set(nil)
-                            self.PlayerSelecting:set(nil)
-                        end
-                    })
-                }
-            })
+                    }
+                }),
+            }
         }
     })
     self.UI = UI
+
 
     return function ()
         Fusion.doCleanup(scope)

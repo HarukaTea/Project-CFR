@@ -11,6 +11,8 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
+
 export type Self = {
     plr: Player,
     char: Model,
@@ -30,6 +32,7 @@ export type Self = {
     ForceSwitchTargetFunc: (target: Model) -> nil,
 }
 
+
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
@@ -44,6 +47,7 @@ return function (self: Self)
     self.TargetingList = FusionComponents.useChildren(scope, char:WaitForChild("TargetingList", 999))
     self.TargetingEnemy = FusionComponents.useValue(scope, char:WaitForChild("TargetingEnemy", 999))
 
+
     self.IsUIShown = Value(true)
 
     --// track menu
@@ -55,6 +59,7 @@ return function (self: Self)
         end
     }))
 
+
     --// handle arrow position
 
     local targetArrowTweenSymbol = Instance.new("Frame")
@@ -63,7 +68,9 @@ return function (self: Self)
     targetArrowTweenSymbol.Parent = game:GetService("ServerStorage")
     table.insert(scope, targetArrowTweenSymbol)
 
+
     self.TargetArrowPos = Value(targetArrowTweenSymbol.Position)
+
 
     table.insert(scope, HarukaLib:Hydrate(targetArrowTweenSymbol, {
         ["Prop-Position"] = function(pos: UDim2)
@@ -77,6 +84,7 @@ return function (self: Self)
     table.insert(scope, arrowTween)
 
     arrowTween:Play()
+
 
     --// switch target
     self.SwitchTargetFunc = function()
@@ -104,11 +112,13 @@ return function (self: Self)
         local nextTarget = enemies[curIndex]
         if curTarget == nextTarget then return end
 
+
         Events.SwitchTargetEnemy_C.Fire(nextTarget)
     end
     self.ForceSwitchTargetFunc = function(target: Model)
         local curTarget = char.TargetingEnemy.Value
         if curTarget == target then return end
+
 
         SoundService.SFXs.MobSelect:Play()
 
@@ -121,6 +131,7 @@ return function (self: Self)
         local isKeyboard = string.find(inputObj.UserInputType.Name, "Keyboard")
         if not isGamepad and not isKeyboard then return end
 
+
         if isGamepad then
             if inputObj.KeyCode == KeybindsBook.Console.TargetSwitch then
                 self.SwitchTargetFunc()
@@ -131,6 +142,7 @@ return function (self: Self)
             end
         end
     end))
+
 
     self.IsUIShown2 = Value(true)
 

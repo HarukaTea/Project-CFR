@@ -16,7 +16,10 @@ local Events = require(RepS.HarukaShared.Library.Events)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
+
 local wait = task.wait
+
+
 
 export type Self = {
     plr: Player,
@@ -29,6 +32,8 @@ export type Self = {
 	PromptList: Fusion.Value<{ ObjectValue }>,
 }
 
+
+
 return function (self: Self)
 	local function Value(val: any)
 		return Fusion.Value(self.scope, val)
@@ -37,10 +42,13 @@ return function (self: Self)
 
 	local char = self.char :: Model
 
+
 	self.CurrentPromptIndex = Value(1)
 	self.IsUIShown = Value(true)
 
-	local promptNodes: { [ProximityPrompt]: BasePart } = {}
+
+	local promptNodes = {}
+
 
 	--// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -51,22 +59,30 @@ return function (self: Self)
         end
     }))
 
+
 	local promptSymbolContainer = Instance.new("Folder")
 	promptSymbolContainer.Name = "UI_PromptSymbols"
 	promptSymbolContainer.Parent = game:GetService("ServerStorage")
 	table.insert(scope, promptSymbolContainer)
 
+
 	local promptSymbols = FusionComponents.useChildren(scope, promptSymbolContainer)
 	self.PromptList = promptSymbols
+
 
 	--// track prompts
 	local function _updatePrompt(prompt: ProximityPrompt)
 		if not prompt:IsA("ProximityPrompt") then return end
 
+
 		local part = prompt.Parent :: BasePart
 		if not part then return end
-		if not part:IsA("BasePart") then return end
 		if not part.Parent then return end
+
+		if not part:IsA("BasePart") then
+			warn("Invalid prompt parent object")
+			return
+		end
 
 		prompt:SetAttribute("PromptUniqueId", HttpService:GenerateGUID(false))
 		prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
@@ -76,56 +92,62 @@ return function (self: Self)
 		prompt.HoldDuration = 0
 		prompt.MaxActivationDistance = 15.99
 
-		promptNodes[prompt] = part
 
-		--- remember to clear it
-		prompt:GetPropertyChangedSignal("Parent"):Connect(function()
-			if prompt.Parent == nil then
-				promptNodes[prompt] = nil
-			end
-		end)
+		promptNodes[prompt] = part
 	end
 	for _, child: ProximityPrompt in CollectionService:GetTagged("PromptEntity") do
 		_updatePrompt(child)
 	end
-	table.insert(scope, CollectionService:GetInstanceAddedSignal("PromptEntity"):Connect(_updatePrompt))
+	CollectionService:GetInstanceAddedSignal("PromptEntity"):Connect(_updatePrompt)
+
+
 
 	table.insert(scope, task.spawn(function()
 		while wait(0.1599) do
 			local isAlive = ClientLib:IsCharValid(char)
 			local sitting = char.Humanoid.SeatPart
-			local activeIds = {}
 
-			if not sitting and isAlive then
-				for prompt, part in promptNodes do
+			local nearbyPrompts = {}
+			if sitting == nil and isAlive then
+				for prompt: ProximityPrompt, part in promptNodes do
 					if not prompt then continue end
-					if not part then continue end
 					if not prompt.Parent then continue end
-					if not prompt.Enabled then continue end
-					if not prompt:IsDescendantOf(workspace) then continue end
+					if not part then continue end
+					if not part.Parent then continue end
 
 					local distance = self.plr:DistanceFromCharacter(part.Position)
 					if distance > 0 and distance <= 15.99 then
-						local uniqueId = prompt:GetAttribute("PromptUniqueId") :: string
-						activeIds[uniqueId] = prompt
+						table.insert(nearbyPrompts, prompt)
 					end
 				end
 			end
-			for uniqueId, prompt in activeIds do
-				if not promptSymbolContainer:FindFirstChild(uniqueId) then
-					local symbol = Instance.new("ObjectValue")
-					symbol.Name = uniqueId
-					symbol.Value = prompt
-					symbol.Parent = promptSymbolContainer
-				end
+			local uniqueIdList = {}
+
+			for _, prompt: ProximityPrompt in nearbyPrompts do
+				if not prompt.Enabled then continue end
+				if not prompt:IsDescendantOf(workspace) then continue end
+
+				local uniqueId = prompt:GetAttribute("PromptUniqueId") :: string
+				table.insert(uniqueIdList, uniqueId)
+
+				if promptSymbolContainer:FindFirstChild(uniqueId) then continue end
+
+				local symbol = Instance.new("ObjectValue")
+				symbol.Name = uniqueId
+				symbol.Value = prompt
+				symbol.Parent = promptSymbolContainer
 			end
-			for _, child in promptSymbolContainer:GetChildren() do
-				if child:IsA("ObjectValue") and not activeIds[child.Name] then
+			for _, child: Instance in promptSymbolContainer:GetChildren() do
+				if not child:IsA("ObjectValue") then continue end
+
+				if not table.find(uniqueIdList, child.Name) then
 					child:Destroy()
 				end
 			end
 		end
 	end))
+
+
 
 	table.insert(scope, Bindables.PromptTriggered.Event:Connect(function(thatPrompt: ProximityPrompt)
 		SoundService.SFXs.ChatNext:Play()
@@ -154,6 +176,7 @@ return function (self: Self)
 			promptSymbolContainer[uniqueId]:Destroy()
 		end
 	end))
+
 
 	--// track prompts list
 	local promptListObserver = Fusion.Observer(scope, self.PromptList)
@@ -196,13 +219,10 @@ return function (self: Self)
 		end
 	end))
 
+
 	--// activate
 	table.insert(scope, UserInputService.InputBegan:Connect(function(inputObj, gpe)
 		if gpe then return end
-
-		local isGamepad = string.find(inputObj.UserInputType.Name, "Gamepad")
-        local isKeyboard = string.find(inputObj.UserInputType.Name, "Keyboard")
-        if not isGamepad and not isKeyboard then return end
 
 		if inputObj.KeyCode == KeybindsBook.PC.PromptTrigger or inputObj.KeyCode == KeybindsBook.Console.PromptTrigger then
 			if not Fusion.peek(self.IsUIShown) then return end
@@ -217,11 +237,13 @@ return function (self: Self)
 
 			if self.plr:FindFirstChild("PromptTriggerCD") then return end
 
+
 			local cdSymbol = Instance.new("BoolValue")
 			cdSymbol.Name = "PromptTriggerCD"
 			cdSymbol.Value = true
 			cdSymbol.Parent = self.plr
 			Debris:AddItem(cdSymbol, 0.2)
+
 
 			Bindables.PromptTriggered:Fire(currentPrompt)
 			Events.PromptTriggered_C.Fire(currentPrompt)

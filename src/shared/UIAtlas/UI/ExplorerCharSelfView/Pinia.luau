@@ -5,6 +5,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 export type Self = {
     plr: Player,
     char: Model,
@@ -39,6 +40,7 @@ export type Self = {
     }
 }
 
+
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
@@ -51,6 +53,7 @@ return function (self: Self)
     self.Level = Value(1)
     self.EXP = Value(0)
 
+
     self.PerkPoints = Value(0)
     self.Points = {
         STR = Value(0),
@@ -58,6 +61,7 @@ return function (self: Self)
         INT = Value(0),
         VIT = Value(0)
     }
+
 
     self.Stats = {
         {
@@ -107,6 +111,7 @@ return function (self: Self)
         })
     end
 
+
     local function _setVal(stat: string, val: number)
         for _, s in self.Stats do
             if s.Id == stat then
@@ -123,6 +128,7 @@ return function (self: Self)
             end
         end
     end
+
 
     --// track points
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -143,12 +149,14 @@ return function (self: Self)
         end
     }))
 
+
     --// track class
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-Class"] = function(class: string)
             self.Class:set(class)
         end
     }))
+
 
     --// track level and exp
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -159,6 +167,7 @@ return function (self: Self)
             self.EXP:set(exp)
         end
     }))
+
 
     --// track stats
     table.insert(scope, HarukaLib:Hydrate(self.char, {
@@ -274,6 +283,8 @@ return function (self: Self)
         end,
     }))
 
+
+
     table.insert(scope, HarukaLib:Hydrate(self.char.Humanoid, {
         ["Prop-MaxHealth"] = function(val: number)
             _setVal("HP", val)
@@ -286,6 +297,7 @@ return function (self: Self)
         end,
     }))
 
+
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
@@ -294,6 +306,7 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "CharSelfView")
         end
     }))
+
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

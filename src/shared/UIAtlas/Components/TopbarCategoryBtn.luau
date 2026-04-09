@@ -1,9 +1,11 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+
 
 local IconShadeTex = require(RepS.HarukaShared.UIAtlas.Components.IconShadeTex)
 
@@ -37,14 +39,21 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
-    local label = Fusion.Hydrate(scope, Components:RefUI("TopbarCategoryTemplate_TCT1_1", false, true))({
+    local label = Components.Frame(scope, {
         Name = props.Category,
+        SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = props.Index,
 
         [Children] = {
-            Components.HoverImageButton(scope, {
-                Components.ConnectSelectEvents(isSelecting),
+            Components.RoundUICorner(scope),
 
+            Components.HoverImageButton(scope, {
+                [Fusion.OnEvent("MouseEnter")] = function()
+                    isSelecting:set(true)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                    isSelecting:set(false)
+                end,
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     props.CurrentSelectedItem:set("")
                     props.CurrentSelectedItemUniqueId:set("")
@@ -52,16 +61,26 @@ return function(scope: Fusion.Scope, props: {
                 end
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Icon_TCT1_1", true))({
+
+            Components.IconImageLabel(scope, {
                 Image = ICONS[props.Category],
                 ImageColor3 = COLORS[props.Category],
 
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.fromScale(0.5, 0.5),
+
                 Size = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if use(isSelecting) then UDim2.fromScale(1, 1) else UDim2.fromScale(0.9, 0.9)
-                end), Components.TweenInfos.threeHalf)
+                end), AssetBook.TweenInfos.threeHalf)
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("BottomLine_TCT1_1"))({
+
+            Components.Frame(scope, {
+                Name = "BottomLine",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 1.2),
+                Size = UDim2.fromScale(1, 0.05),
+                BackgroundTransparency = 0,
                 BackgroundColor3 = COLORS[props.Category],
 
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -86,7 +105,7 @@ return function(scope: Fusion.Scope, props: {
         if state then
             label.BottomLine.Size = UDim2.fromScale(0, 0.05)
 
-            HarukaLib:CreateTween(label.BottomLine, Components.TweenInfos.threeHalf, {
+            HarukaLib:CreateTween(label.BottomLine, AssetBook.TweenInfos.threeHalf, {
                 Size = UDim2.fromScale(1, 0.05)
             }):Play()
         end

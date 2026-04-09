@@ -7,11 +7,13 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 local Events = require(RepS.HarukaShared.Library.Events)
 
+
 export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
     UI: ScreenGui,
+
 
     IsUIShown: Fusion.Value<boolean>,
     Items: Fusion.Value<{ Instance }>,
@@ -39,6 +41,7 @@ export type Self = {
     AvailableItems: Fusion.Value<number>,
 }
 
+
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
@@ -49,12 +52,14 @@ return function (self: Self)
 
     self.Items = Components.FusionComponents.useTagged(scope, "CraftingProductEntity")
 
+
     self.PlayerItems = Components.FusionComponents.useChildren(scope, self.plr.Items)
 
     local folder = Components.FusionComponents.useChildren(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
 
     self.Gold = Value(0)
+
 
     self.FilterViewShown = Value(false)
     self.FilterTierList = {
@@ -86,6 +91,7 @@ return function (self: Self)
     self.IsCrafting = Value(false)
     self.CurrentSelectedMaterial = Value("")
 
+
     --// track item
     Fusion.Observer(scope, self.CurrentSelectedItem):onBind(function()
         self.CraftingMaterials:set({})
@@ -99,12 +105,14 @@ return function (self: Self)
         self.CraftingPrice:set(itemInfo.Price)
     end)
 
+
     --// track gold
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-Gold"] = function(val: number)
             self.Gold:set(val)
         end
     }))
+
 
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -118,6 +126,7 @@ return function (self: Self)
     table.insert(scope, Events.OpenCraftingUI_S.On(function(data)
         self.plr:SetAttribute("CurrentUIGroup", "Crafting")
     end))
+
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

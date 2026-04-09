@@ -8,6 +8,9 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
+local fromScale = UDim2.fromScale
+
+
 local SELECTION_ICONS = {
     TalentTree = "rbxassetid://77981089608399",
     Backpack = "rbxassetid://87334829671948",
@@ -26,6 +29,7 @@ local SELECTION_ICONS = {
     Empty = AssetBook.ExtraIcons.Unknown
 }
 
+
 local function SelectionSlot(scope: Fusion.Scope, props: {
     LayoutOrder: number,
     SelectionId: string,
@@ -37,31 +41,54 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
-    return Fusion.Hydrate(scope, Components:RefUI("SelectionSlot_MSPStats1_3", false, false, {
-        "UICorner"
-    }))({
+    return Components.Frame(scope, {
         Name = props.SelectionId,
         LayoutOrder = props.LayoutOrder,
+        SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
         [Children] = {
+            Components.UICorner(scope, { CornerRadius = UDim.new(0.05, 0) }),
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.025,
+
                 Color = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if use(isSelecting) then Color3.fromRGB(255, 255, 255) else Color3.fromRGB(61, 61, 61)
                 end),
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Icon_MSPStat1_3", true))({
+            Components.ImageLabel(scope, {
+                Name = "Icon",
+                BackgroundTransparency = 0,
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.075),
+                Size = UDim2.fromScale(0.6, 0.6),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
                 Image = SELECTION_ICONS[props.SelectionId] or AssetBook.ExtraIcons.Unknown,
                 ImageColor3 = if props.SelectionId == "Empty" then Color3.fromRGB(110, 110, 110) else Color3.new(1, 1, 1),
+
+                [Children] = {
+                    Components.RoundUICorner(scope)
+                }
             }),
-            Fusion.Hydrate(scope, Components:RefUI("Title_MSPStat1_3", true))({
+            Components.TextLabel(scope, {
+                Name = "Title",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.72),
+                Size = UDim2.fromScale(1, 0.2),
+                RichText = true,
+
                 Text = if props.SelectionId == "Empty" then "EMPTY" else `<u>{string.upper(props.Title)}</u>`,
                 TextColor3 = if props.SelectionId == "Empty" then Color3.fromRGB(110, 110, 110) else Color3.new(1, 1, 1),
             }),
 
             Components.HoverImageButton(scope, {
-                Components.ConnectSelectEvents(isSelecting),
+                [Fusion.OnEvent("MouseEnter")] = function()
+                    isSelecting:set(true)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                    isSelecting:set(false)
+                end,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if not props.MenuShownValue then return end
@@ -74,11 +101,19 @@ local function SelectionSlot(scope: Fusion.Scope, props: {
     })
 end
 local function Selections(scope: Fusion.Scope, order: number, children: any) : Frame
-    return Fusion.Hydrate(scope, Components:RefUI("Selections1_MSPStats1_2", false, true))({
+    return Components.Frame(scope, {
         Name = "Selections_"..order,
+        Size = fromScale(1, 0.45),
         LayoutOrder = order,
 
         [Children] = {
+            Components.UIListLayout(scope, {
+                Padding = UDim.new(0.05, 0),
+                FillDirection = Enum.FillDirection.Horizontal,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            }),
+
             children
         }
     })
@@ -88,14 +123,33 @@ return function (scope: Fusion.Scope, props: {
     MenuShowValue: Fusion.Value<boolean>,
 
 }) : Frame
-    return Fusion.Hydrate(scope, Components:RefUI("MenuSelections_PStats1_1", false, true))({
+    return Components.Frame(scope, {
+        Name = "MenuSelections",
+        BackgroundTransparency = 0,
+        Size = fromScale(0.41, 5),
+
         Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(props.MenuShowValue)
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("InnerComponent_MSPStats1_1", false, true))({
+            Components.UICorner(scope, { CornerRadius = UDim.new(0.03, 0) }),
+            Components.ScaledUIStroke(scope, {
+                Color = Color3.fromRGB(61, 61, 61),
+                Thickness = 0.015,
+            }),
+
+            Components.Frame(scope, {
+                Name = "InnerComponent",
+                Size = fromScale(0.95, 0.92),
+
                 [Children] = {
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.07, 0),
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                    }),
+
                     Selections(scope, 1, {
                         SelectionSlot(scope, {
                             LayoutOrder = 1,

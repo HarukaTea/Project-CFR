@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
@@ -13,16 +12,25 @@ local PlayerTargetingBar = require(script.Components.PlayerTargetingBar)
 
 local Children = Fusion.Children
 
+
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "EntityStats")
+    self.plr = plr
+    self.char = plr.Character
+    self.scope = Fusion.scoped()
 
-    Pinia(self)
 
     local scope = self.scope
+    Pinia(self)
+
+
+    if plr.PlayerGui:FindFirstChild("EntityStats") then
+        plr.PlayerGui.EntityStats:Destroy()
+    end
+
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "EntityStats",
@@ -48,12 +56,7 @@ return function (plr: Player)
                 Name = "EnemyEntity_InfoBars",
 
                 [Children] = {
-                    Fusion.ForPairs(scope, self.EnemiesOverworld, function(
-                        _,
-                        scope: Fusion.Scope,
-                        index: number,
-                        enemy: Model
-                    )
+                    Fusion.ForPairs(scope, self.EnemiesOverworld, function(_, scope: Fusion.Scope, index: number, enemy: Model)
                         return index, EnemyInfoBar(scope, {
                             Enemy = enemy,
                         })
@@ -62,39 +65,68 @@ return function (plr: Player)
             })
         }
     }, {
-        TopChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("BossHPBar_1", false, true))({
-                [Children] = {
-                    BossHPBar(scope, {
-                        TargetingList = self.TargetingList
-                    })
-                }
-            })
+        TopProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "BossHPBar",
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.fromScale(0.5, 0.2),
+
+                    [Children] = {
+                        Components.UIListLayout(scope, {
+                            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                        }),
+
+                        Components.UIScale(scope, {
+                            Scale = 0.85
+                        }),
+
+                        BossHPBar(scope, {
+                            TargetingList = self.TargetingList
+                        })
+                    }
+                })
+            }
         },
-        CenterChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("TargetingListDiv_1", false, true))({
-                [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("TargetingList_Entity1_1", false, true))({
-                        [Children] = {
-                            Fusion.ForPairs(scope, self.TargetingList, function(
-                                _,
-                                scope: Fusion.Scope,
-                                index: number,
-                                targeting: ObjectValue
-                            )
-                                return index, PlayerTargetingBar(scope, {
-                                    Targeting = targeting,
-                                    TargetingEnemy = self.TargetingEnemy,
-                                    TargetArrowPos = self.TargetArrowPos
-                                }, self)
-                            end)
-                        }
-                    })
-                }
-            })
+        CenterProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "TargetingListDiv",
+                    AnchorPoint = Vector2.new(1, 0),
+                    Position = UDim2.fromScale(0.95, 0),
+
+                    [Children] = {
+                        Components.UIScale(scope, {}),
+
+                        Components.Frame(scope, {
+                            Name = "TargetingList",
+                            AnchorPoint = Vector2.new(1, 0),
+                            Position = UDim2.fromScale(0.99, -0.4),
+                            Size = UDim2.fromScale(0.6, 1),
+
+                            [Children] = {
+                                Components.UIListLayout(scope, {
+                                    Padding = UDim.new(0.25, 0),
+                                    HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                                    VerticalAlignment = Enum.VerticalAlignment.Center
+                                }),
+
+                                Fusion.ForPairs(scope, self.TargetingList, function(_, scope: Fusion.Scope, index: number, targeting: ObjectValue)
+                                    return index, PlayerTargetingBar(scope, {
+                                        Targeting = targeting,
+                                        TargetingEnemy = self.TargetingEnemy,
+                                        TargetArrowPos = self.TargetArrowPos
+                                    }, self)
+                                end),
+                            }
+                        }),
+                    }
+                })
+            }
         }
     })
     self.UI = UI
+
 
     return function ()
         Fusion.doCleanup(scope)

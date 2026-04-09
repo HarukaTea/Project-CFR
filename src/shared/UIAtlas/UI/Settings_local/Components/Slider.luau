@@ -7,6 +7,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
+
 return function(scope: Fusion.Scope, props: {
 	BarVal: Fusion.Value<number>,
 	LayoutOrder: number,
@@ -20,7 +21,7 @@ return function(scope: Fusion.Scope, props: {
 		Max: number,
 		DefaultValue: number,
 
-		OnValChanged: BindableEvent
+		ValChanged: BindableEvent
 	},
 
     OptionId: string,
@@ -35,6 +36,7 @@ return function(scope: Fusion.Scope, props: {
 	uiDragDetector = Fusion.New(scope, "UIDragDetector")({
 		ResponseStyle = Enum.UIDragDetectorResponseStyle.Scale,
 		DragStyle = Enum.UIDragDetectorDragStyle.TranslateLine,
+
 
 		[Fusion.OnEvent("DragContinue")] = function()
 			local scale = Fusion.peek(nodePosition).X.Scale
@@ -52,7 +54,7 @@ return function(scope: Fusion.Scope, props: {
 			end
 
 			barVal:set(val)
-			props.OptionInfo.OnValChanged:Fire(val)
+			props.OptionInfo.ValChanged:Fire(val)
 
 			Events.SaveSettings_C.Fire({
 				SettingId = props.OptionId,
@@ -61,11 +63,13 @@ return function(scope: Fusion.Scope, props: {
 		end
 	}) :: UIDragDetector
 
+
 	--// Init
 	local percentage = ((props.OptionInfo.DefaultValue - props.OptionInfo.Min) / (props.OptionInfo.Max - props.OptionInfo.Min)) :: number
 
 	barVal:set(props.OptionInfo.DefaultValue)
-	props.OptionInfo.OnValChanged:Fire(props.OptionInfo.DefaultValue)
+	props.OptionInfo.ValChanged:Fire(props.OptionInfo.DefaultValue)
+
 
 	local node = Components.HoverImageButton(scope, {
 		Name = "Node",
@@ -90,6 +94,7 @@ return function(scope: Fusion.Scope, props: {
 	})
 	node.Position = UDim2.fromScale(percentage, 0.5)
 
+
 	local safeNetObserver = Fusion.Observer(scope, nodePosition)
 	safeNetObserver:onBind(function()
 		local scale = Fusion.peek(nodePosition).X.Scale
@@ -99,6 +104,7 @@ return function(scope: Fusion.Scope, props: {
 			node.Position = UDim2.fromScale(scale, 0.5)
 		end
 	end)
+
 
 	local slider = Components.Frame(scope, {
 		Name = props.OptionId,
@@ -131,6 +137,7 @@ return function(scope: Fusion.Scope, props: {
 					})
 				}
 			}),
+
 
 			Components.TextLabel(scope, {
 				Name = "Value",
@@ -196,11 +203,17 @@ return function(scope: Fusion.Scope, props: {
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				Components.ConnectSelectEvents(isSelecting),
+				[Fusion.OnEvent("MouseEnter")] = function()
+					isSelecting:set(true)
+				end,
+				[Fusion.OnEvent("MouseLeave")] = function()
+					isSelecting:set(false)
+				end,
 			})
 		}
 	})
 	slider.Slider.Node.UIDragDetector.BoundingUI = slider.BoundingSlider
+
 
 	return slider
 end

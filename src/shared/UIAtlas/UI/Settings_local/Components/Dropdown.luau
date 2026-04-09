@@ -7,6 +7,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
+
 return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
     OptionId: string,
@@ -20,6 +21,8 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelectingDropdownList = Fusion.Value(scope, false)
     local totalListSize = Fusion.Value(scope, Vector2.zero)
+
+
 
 	return Components.Frame(scope, {
 		Name = props.OptionId,
@@ -53,6 +56,7 @@ return function(scope: Fusion.Scope, props: {
 				}
 			}),
 
+
             Components.Frame(scope, {
                 Name = "DropdownButton",
                 AnchorPoint = Vector2.new(1, 0.5),
@@ -67,7 +71,12 @@ return function(scope: Fusion.Scope, props: {
                     Components.HoverImageButton(scope, {
                         ZIndex = 10,
 
-                        Components.ConnectSelectEvents(isSelectingDropdown),
+                        [Fusion.OnEvent("MouseEnter")] = function()
+                            isSelectingDropdown:set(true)
+                        end,
+                        [Fusion.OnEvent("MouseLeave")] = function()
+                            isSelectingDropdown:set(false)
+                        end,
 
                         [Fusion.OnEvent("MouseButton1Click")] = function()
                             isSelectingDropdownList:set(not Fusion.peek(isSelectingDropdownList))
@@ -111,6 +120,7 @@ return function(scope: Fusion.Scope, props: {
                 }
             }),
 
+
 			Components.Frame(scope, {
                 Name = "DropdownList",
                 AnchorPoint = Vector2.xAxis,
@@ -143,6 +153,7 @@ return function(scope: Fusion.Scope, props: {
 
                                 return index, Components.TextButton(scope, {
                                     Name = option,
+                                    AutoButtonColor = true,
                                     Text = option,
                                     Size = UDim2.fromScale(0.9, 1),
 
@@ -164,7 +175,7 @@ return function(scope: Fusion.Scope, props: {
                                         end
 
                                         if use(isHovering) then
-                                            return Components.WHITE_COLOR
+                                            return Components.WHITE_COLOR:Lerp(Color3.new(), 0.2)
                                         end
 
                                         return Components.BLACK_COLOR
@@ -182,8 +193,12 @@ return function(scope: Fusion.Scope, props: {
                                         return Components.WHITE_COLOR
                                     end),
 
-                                    Components.ConnectSelectEvents(isHovering),
-
+                                    [Fusion.OnEvent("MouseEnter")] = function()
+                                        isHovering:set(true)
+                                    end,
+                                    [Fusion.OnEvent("MouseLeave")] = function()
+                                        isHovering:set(false)
+                                    end,
                                     [Fusion.OnEvent("MouseButton1Click")] = function()
                                         props.DropdownValue:set(option)
                                         isSelectingDropdownList:set(false)
@@ -223,10 +238,16 @@ return function(scope: Fusion.Scope, props: {
                 }
 			}),
 
+
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				Components.ConnectSelectEvents(isSelecting),
+				[Fusion.OnEvent("MouseEnter")] = function()
+					isSelecting:set(true)
+				end,
+				[Fusion.OnEvent("MouseLeave")] = function()
+					isSelecting:set(false)
+				end,
 			})
 		}
 	})

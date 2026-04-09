@@ -6,6 +6,8 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
+
 local Children = Fusion.Children
 
 return function(scope: Fusion.Scope, props: {
@@ -23,27 +25,56 @@ return function(scope: Fusion.Scope, props: {
     end))
 
 
-    local frame = Fusion.Hydrate(scope, Components:RefUI("BadgeAwardingBar_BAFX1_1", false, true, {
-        "CFEmblemTex"
-    }))({
+    local frame = Components.Frame(scope, {
+        Name = "BadgeAwarding",
+        BackgroundColor3 = Color3.fromRGB(202, 196, 185),
+        BackgroundTransparency = 0,
+        Size = UDim2.fromScale(0.3, 1.5),
+
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Icon_BAFX1_1", true))({
+            Components.UICorner(scope, {
+                CornerRadius = UDim.new(0.15, 0),
+            }),
+
+
+            Components.IconImageLabel(scope, {
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.fromScale(0.05, 0.5),
+                Size = UDim2.fromScale(0.8, 0.8),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
                 Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return HarukaLib:CombineRbxId(use(badgeInfo).IconImageId) or ""
                 end)
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Title_BAFX1_1", true))({
+            Components.TextLabel(scope, {
+                Name = "Title",
+                Position = UDim2.fromScale(0.25, 0.15),
+                Size = UDim2.fromScale(0.7, 0.35),
+                TextColor3 = Components.BLACK_COLOR,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                RichText = true,
+
                 Text = "<u>New Achievement!</u>"
             }),
-
-            Fusion.Hydrate(scope, Components:RefUI("Desc_BAFX1_1", true))({
+            Components.TextLabel(scope, {
                 Name = "BadgeTitle",
+                Position = UDim2.fromScale(0.25, 0.55),
+                Size = UDim2.fromScale(0.7, 0.25),
+                TextColor3 = Components.BLACK_COLOR,
+                TextXAlignment = Enum.TextXAlignment.Left,
 
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(badgeInfo).Name or ""
                 end)
             }),
+
+
+            CFEmblemTex(scope, {
+                Transparency = 0.9,
+                Position = UDim2.fromScale(0.5, 0.5),
+            })
         }
     })
 

@@ -1,11 +1,13 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
+local AssetBook = require(RepS.HarukaShared.Library.AssetBook)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Events = require(RepS.HarukaShared.Library.Events)
 
 local Children = Fusion.Children
+
 
 return function(scope: Fusion.Scope, props: {
 	LayoutOrder: number,
@@ -17,15 +19,20 @@ return function(scope: Fusion.Scope, props: {
 	local isSelecting = Fusion.Value(scope, false)
     local isSelectingSwitcher = Fusion.Value(scope, false)
 
-	return Fusion.Hydrate(scope, Components:RefUI("SwitcherT_Settings1_2", false, false, {
-		"UIAspectRatioConstraint", "UICorner"
-	}))({
+
+	return Components.Frame(scope, {
 		Name = props.OptionId,
+		Size = UDim2.fromScale(0.9, 0.08),
+        BackgroundTransparency = 0,
         LayoutOrder = props.LayoutOrder,
 
 		[Children] = {
+            Components.UIAspectRatioConstraint(scope, 29.548),
+
+            Components.RoundUICorner(scope),
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.1,
+
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use)
                     return use(isSelecting)
                 end),
@@ -44,6 +51,8 @@ return function(scope: Fusion.Scope, props: {
 					})
 				}
 			}),
+
+
 
             Components.TextLabel(scope, {
 				Name = "Value",
@@ -65,6 +74,9 @@ return function(scope: Fusion.Scope, props: {
 				}
 			}),
 
+
+
+
 			Components.HoverImageButton(scope, {
 				Name = "Switcher",
 				BackgroundColor3 = Color3.fromRGB(55, 55, 55),
@@ -73,8 +85,12 @@ return function(scope: Fusion.Scope, props: {
 				Position = UDim2.fromScale(0.87, 0.5),
 				Size = UDim2.fromScale(0.1, 0.8),
 
-				Components.ConnectSelectEvents(isSelectingSwitcher),
-
+				[Fusion.OnEvent("MouseEnter")] = function()
+					isSelectingSwitcher:set(true)
+				end,
+				[Fusion.OnEvent("MouseLeave")] = function()
+					isSelectingSwitcher:set(false)
+				end,
 				[Fusion.OnEvent("MouseButton1Click")] = function()
 					props.BooleanValue:set(not Fusion.peek(props.BooleanValue))
 
@@ -83,6 +99,7 @@ return function(scope: Fusion.Scope, props: {
 						SettingValue = Fusion.peek(props.BooleanValue)
 					})
 				end,
+
 
 				[Children] = {
 					Components.RoundUICorner(scope),
@@ -103,21 +120,29 @@ return function(scope: Fusion.Scope, props: {
 
 				Position = Fusion.Tween(scope, Fusion.Computed(scope, function(use: Fusion.Use, _)
 					return if use(props.BooleanValue) then UDim2.fromScale(0.92, 0.5) else UDim2.fromScale(0.87, 0.5)
-				end), Components.TweenInfos.twiceHalf),
+				end), AssetBook.TweenInfos.twiceHalf),
 
 				BackgroundColor3 = Fusion.Computed(scope, function(use: Fusion.Use, _)
 					return if use(props.BooleanValue) then Components.WHITE_COLOR else Components.WHITE_COLOR:Lerp(Color3.fromRGB(), 0.5)
 				end),
+
 
 				[Children] = {
 					Components.RoundUICorner(scope)
 				}
 			}),
 
+
+
 			Components.Frame(scope, {
                 Name = "Hover",
 
-				Components.ConnectSelectEvents(isSelecting),
+				[Fusion.OnEvent("MouseEnter")] = function()
+					isSelecting:set(true)
+				end,
+				[Fusion.OnEvent("MouseLeave")] = function()
+					isSelecting:set(false)
+				end,
 			})
 		}
 	})

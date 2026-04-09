@@ -4,17 +4,18 @@ local RepS = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
 local CollectionService = game:GetService("CollectionService")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local Bindables = require(RepS.HarukaShared.Library.Bindables)
 local Promise = require(RepS.HarukaShared.Shared.Promise)
 
 local RobuxPurchaseFX = require(script.Components.RobuxPurchaseFX)
 
+
 return function (plr: Player)
 	local self = {}
 
-    ClientLib:InitUIFramework(self, plr, "RobuxPurchaseFX_UI", true)
+	self.plr = plr
+	self.scope = Fusion.scoped()
 
 	--// receive requests
 	local function _onPurchaseRequest()
@@ -27,11 +28,14 @@ return function (plr: Player)
 
         Debris:AddItem(ui, 60)
 
+
         Promise.delay(62):andThen(function()
             Fusion.doCleanup(newScope)
         end):catch(function() end)
 	end
     Bindables.DevProductPurchasing.Event:Connect(_onPurchaseRequest)
+
+
 
     local function _onPurchaseFinished()
         for _, fx: ScreenGui in CollectionService:GetTagged("_RobuxPurchaseFXUI") do

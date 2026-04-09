@@ -1,23 +1,33 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local ChatView = require(script.Components.ChatView)
 
+local Children = Fusion.Children
+
+
 local Pinia = require(script.Pinia)
 
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "ExplorerChat")
+    self.plr = plr
+    self.char = plr.Character
+    self.scope = Fusion.scoped()
+
+    local scope = self.scope :: Fusion.Scope
+
 
     Pinia(self)
 
-    local scope = self.scope :: Fusion.Scope
+
+    if plr.PlayerGui:FindFirstChild("ExplorerChat") then
+        plr.PlayerGui.ExplorerChat:Destroy()
+    end
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "ExplorerChat",
@@ -30,26 +40,31 @@ return function (plr: Player)
         end),
 
     }, {
-        BottomChildren = {
-            ChatView(scope, {
-                IsChatShown = self.IsChatShown,
+        BottomProps = {
+            [Children] = {
+                ChatView(scope, {
+                    IsChatShown = self.IsChatShown,
 
-                ChoiceList = self.Choices,
-                Speaker = self.Speaker,
-                Dialogue = self.Dialogue,
-                IsTypewriting = self.IsTypewriting,
-                NPCId = self.NPCId,
-                MaxUTFShown = self.MaxUTFShown,
+                    ChoiceList = self.Choices,
+                    Speaker = self.Speaker,
+                    Dialogue = self.Dialogue,
+                    IsTypewriting = self.IsTypewriting,
+                    NPCId = self.NPCId,
+                    MaxUTFShown = self.MaxUTFShown,
 
-                GoToNextDialogueSignal = self.GoToNextDialogueSignal,
-                GoToNextDialogueByChoiceSignal = self.GoToNextDialogueByChoiceSignal,
-                GoSkipDialogueSignal = self.GoSkipDialogueSignal,
-            })
+                    GoToNextDialogueSignal = self.GoToNextDialogueSignal,
+                    GoToNextDialogueByChoiceSignal = self.GoToNextDialogueByChoiceSignal,
+                    GoSkipDialogueSignal = self.GoSkipDialogueSignal,
+                })
+            }
         }
     })
     self.UI = UI
 
+
     return function ()
         Fusion.doCleanup(scope)
+
+
     end
 end

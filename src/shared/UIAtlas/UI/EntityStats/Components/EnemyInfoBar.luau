@@ -9,17 +9,20 @@ local EntityBook = require(RepS.HarukaShared.Library.EntityBook)
 
 local Children = Fusion.Children
 
+
 return function (scope: Fusion.Scope, props: {
     Enemy: Model,
 })
     if not ClientLib:IsCharValid(props.Enemy) then return nil end
     if not EntityBook[props.Enemy.Name] then return nil end
 
+
     local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local level = Value(1)
     local HP = Value(100)
+
 
     table.insert(scope, HarukaLib:Hydrate(props.Enemy.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
@@ -32,27 +35,67 @@ return function (scope: Fusion.Scope, props: {
         end
     }))
 
-    return Fusion.Hydrate(scope, Components:RefUI("EnemyInfo/Info"))({
+
+    return Components.BillboardGui(scope, {
+        Name = "EnemyInfoBar_"..props.Enemy.Name,
         Adornee = props.Enemy.PrimaryPart,
+        MaxDistance = 115,
+        Size = UDim2.fromScale(8, 2),
+        StudsOffset = Vector3.yAxis * 6,
+
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0
         end),
 
+
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("TitleSection_EI1_1", false, true))({
+            Components.Frame(scope, {
+                Name = "TitleSection",
+                BackgroundTransparency = 0,
+
                 [Children] = {
+                    Components.RoundUICorner(scope),
+
+                    Components.UIListLayout(scope, {
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        Padding = UDim.new(0.05, 0),
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                    }),
+
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.Hydrate(scope, Components:RefUI("Icon_EI1_1", true))({
-                        Image = EntityBook[props.Enemy.Name].Icon
+                    Components.IconImageLabel(scope, {
+                        Size = UDim2.fromScale(1.5, 1.5),
+                        LayoutOrder = 3,
+
+                        Image = EntityBook[props.Enemy.Name].Icon,
                     }),
-                    Fusion.Hydrate(scope, Components:RefUI("EnemyLevel_EI1_1", true))({
+
+                    Components.TextLabel(scope, {
+                        Name = "EnemyLevel",
+                        LayoutOrder = 2,
+                        Size = UDim2.fromScale(0.4, 0.8),
+                        BackgroundTransparency = 0,
+                        BackgroundColor3 = Components.WHITE_COLOR,
+                        TextColor3 = Components.BLACK_COLOR,
+
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(level)}`
-                        end)
-                    })
+                        end),
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+                            Components.UIPadding(scope, {
+                                PaddingTop = UDim.new(0.05, 0),
+                                PaddingBottom = UDim.new(0.05, 0),
+                                PaddingLeft = UDim.new(0, 4),
+                                PaddingRight = UDim.new(0, 4),
+                            })
+                        }
+                    }),
                 }
-            })
+            }),
         }
     })
 end

@@ -21,8 +21,12 @@ return function(scope: Fusion.Scope, props: {
     EquippingItems: Fusion.Value<{ StringValue }>,
 })
 
-    return Fusion.Hydrate(scope, Components:RefUI("ClassSlot_PStats1_1", false, true))({
+    return Components.IconImageLabel(scope, {
         Name = "Weapon",
+        AnchorPoint = Vector2.yAxis,
+        Position = UDim2.fromScale(0, 1),
+        Size = UDim2.fromScale(1.7, 1.7),
+        ZIndex = 10,
 
         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
             local equippingItems = use(props.EquippingItems) :: { any }
@@ -38,6 +42,7 @@ return function(scope: Fusion.Scope, props: {
                 return AssetBook.ExtraIcons.Null
             end
 
+
             local weaponId = weapon.Value :: string
             local itemInfo = ItemBook:GetItemInfo(weaponId)
 
@@ -48,8 +53,15 @@ return function(scope: Fusion.Scope, props: {
             return itemInfo.Icon
         end),
 
+
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Class_PStats1_2", true))({
+            Components.IconImageLabel(scope, {
+                Name = "Class",
+                AnchorPoint = Vector2.yAxis,
+                Position = UDim2.fromScale(-0.1, 1),
+                Size = UDim2.fromScale(0.5, 0.5),
+
+
                 Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local classId = use(props.Class) :: string
 
@@ -76,11 +88,17 @@ return function(scope: Fusion.Scope, props: {
                         local itemInfo = ItemBook:GetItemInfo(item)
                         if itemInfo == nil then return index, nil end
 
-                        return index, Fusion.Hydrate(scope, Components:RefUI("Passive1_PStats1_3", true))({
+
+                        return index, Components.IconImageLabel(scope, {
                             Name = "Passive"..index,
+                            AnchorPoint = Vector2.new(0.5, 0.5),
+                            Size = UDim2.fromScale(0.45, 0.45),
 
                             Image = Fusion.Computed(scope, function()
-                                if itemInfo == nil then return AssetBook.ExtraIcons.Null end
+                                if itemInfo == nil then
+                                    return AssetBook.ExtraIcons.Null
+                                end
+
                                 return itemInfo.Icon
                             end),
 

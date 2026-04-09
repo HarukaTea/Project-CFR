@@ -6,6 +6,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local Children = Fusion.Children
@@ -43,6 +44,7 @@ return function(scope: Fusion.Scope, props: {
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
 
+
     local realSlot = props.Slot
     if props.Slot == "Character" then
         realSlot = "CharSelfView"
@@ -54,9 +56,19 @@ return function(scope: Fusion.Scope, props: {
 
             boolean = boolean
 
-            return Fusion.Hydrate(scope, Components:RefUI("Key_MSTPStats1_2", true))({
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name]
-                    or KeybindsBook.PC[realSlot].Name,
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                AutomaticSize = Enum.AutomaticSize.X,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC[realSlot].Name] or KeybindsBook.PC[realSlot].Name,
+                Size = UDim2.fromScale(0.5, 0.5),
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
             })
         end)
     end
@@ -71,26 +83,48 @@ return function(scope: Fusion.Scope, props: {
             end
         }))
 
-        point = Fusion.Hydrate(scope, Components:RefUI("Hint_MSTPStats1_2", true))({
+
+        point = Components.ImageLabel(scope, {
+            Name = "Hint",
+            BackgroundColor3 = Color3.fromRGB(195, 0, 0),
+            BackgroundTransparency = 0,
+            AnchorPoint = Vector2.xAxis,
+            Position = UDim2.fromScale(1.05, -0.1),
+            Size = UDim2.fromScale(0.4, 0.4),
+            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+            ZIndex = 3,
+
             Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                 return use(hasPoint)
-            end)
+            end),
+
+            [Children] = {
+                Components.RoundUICorner(scope),
+                Components.TextLabel(scope, {
+                    Name = "Attention",
+                    FontFace = Font.fromName("Montserrat", Enum.FontWeight.Heavy),
+                    Text = "!"
+                })
+            }
         })
     end
 
-    return Fusion.Hydrate(scope, Components:RefUI("MenuSlotT_PStats1_1", false, false, {
-        "UICorner"
-    }))({
+    return Components.Frame(scope, {
         Name = props.Slot,
+        BackgroundTransparency = 0,
+        SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = props.Index,
 
         [Children] = {
+            Components.RoundUICorner(scope),
+
             Components.IconImageLabel(scope, {
                 Image = Icons[props.Slot],
             }),
 
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.05,
+
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)
@@ -99,8 +133,12 @@ return function(scope: Fusion.Scope, props: {
             key, point,
 
             Components.HoverImageButton(scope, {
-                Components.ConnectSelectEvents(isSelecting),
-
+                [Fusion.OnEvent("MouseEnter")] = function()
+                    isSelecting:set(true)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                    isSelecting:set(false)
+                end,
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     local plr = self.plr :: Player
 

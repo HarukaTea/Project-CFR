@@ -7,6 +7,7 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
+
 local ProgressCircle = require(RepS.HarukaShared.UIAtlas.Components.ProgressCircle)
 
 local Children = Fusion.Children
@@ -26,6 +27,7 @@ return function(scope: Fusion.Scope, props: {
         KeyDisplay: string
     },
 
+
     ForcePosition: UDim2?,
     ForceSize: Fusion.Value<UDim2>?,
 
@@ -37,11 +39,13 @@ return function(scope: Fusion.Scope, props: {
 
     local isSelecting = Fusion.Value(scope, false)
 
+
     local lastInput = Components.FusionComponents.useXboxControllerHotInput(scope)
     local refreshBoolean = Fusion.Value(scope, false)
     table.insert(scope, KeybindsBook.OnKeybindChanged.Event:Connect(function()
         refreshBoolean:set(not Fusion.peek(refreshBoolean))
     end))
+
 
     local key = Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
         local input = use(lastInput) :: string
@@ -50,48 +54,80 @@ return function(scope: Fusion.Scope, props: {
         boolean = boolean
 
         if input == "Controller" then
-            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.Dash.Name]
-                or KeybindsBook.Console.Dash.Name
+            local keybind = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.Console.Dash.Name] or KeybindsBook.Console.Dash.Name
 
-            return Fusion.Hydrate(scope, Components:RefUI("Key_ActiveSlot1_1", true))({
+
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
                 Text = keybind,
-                TextColor3 = if AssetBook.XboxControllerColors[keybind] then
-                    Color3.new() else Color3.new(1, 1, 1),
-                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then
-                    AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
+                Size = UDim2.fromScale(0.4, 0.4),
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+                BackgroundColor3 = if AssetBook.XboxControllerColors[keybind] then AssetBook.XboxControllerColors[keybind] else Components.BLACK_COLOR,
+                TextColor3 = if AssetBook.XboxControllerColors[keybind] then Color3.new() else Color3.new(1, 1, 1),
+                ZIndex = 10,
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
             })
         elseif input == "Keyboard" then
-            return Fusion.Hydrate(scope, Components:RefUI("Key_ActiveSlot1_1", true))({
-                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.Dash.Name]
-                    or KeybindsBook.PC.Dash.Name,
+            return Components.TextLabel(scope, {
+                Name = "Key",
+                AnchorPoint = Vector2.one,
+                Text = KeybindsBook.KEYBIND_ID_NAMES[KeybindsBook.PC.Dash.Name] or KeybindsBook.PC.Dash.Name,
+                Size = UDim2.fromScale(0.4, 0.4),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                Position = UDim2.fromScale(1.05, 1),
+                BackgroundTransparency = 0,
+                ZIndex = 10,
+                FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
             })
         else
             return nil
         end
     end)
 
-    return Fusion.Hydrate(scope, Components:RefUI("ActiveSlot_ActiveSlot1_1", false, false, {
-        "UICorner",
-    }))({
+
+    return Components.Frame(scope, {
         Name = "Ability1",
+        BackgroundTransparency = 0,
+        SizeConstraint = Enum.SizeConstraint.RelativeYY,
         LayoutOrder = 0,
-        Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
         AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = props.ForcePosition or UDim2.fromScale(0.5, 0.5),
+
 
         Size = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(props.ForceSize) or UDim2.fromScale(1.2, 1.2)
         end),
 
+
         [Children] = {
+            Components.RoundUICorner(scope),
+
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.05,
+
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(isSelecting)
                 end)
             }),
 
             Components.HoverImageButton(scope, {
-                Components.ConnectSelectEvents(isSelecting),
+                [Fusion.OnEvent("MouseEnter")] = function()
+                   isSelecting:set(true)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                   isSelecting:set(false)
+                end,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     self.RequestToDash:Fire()
@@ -104,24 +140,43 @@ return function(scope: Fusion.Scope, props: {
 
             key,
 
-            ProgressCircle(scope, {
-                Direction = "Left",
-                RotationVal = props.ActiveInfo.CDRotation,
-                ZIndex = 3,
-            }),
-            ProgressCircle(scope, {
-                Direction = "Right",
-                RotationVal = props.ActiveInfo.CDRotation,
-                ZIndex = 3,
-            }),
+            Components.TextLabel(scope, {
+                Name = "Cooldown",
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.fromScale(0.5, 0.5),
+                BackgroundTransparency = 0.6,
+                ZIndex = 2,
+                FontFace = Font.fromName("TitilliumWeb", Enum.FontWeight.Bold),
 
-            Fusion.Hydrate(scope, Components:RefUI("Cooldown_ActiveSlot1_1", true))({
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return use(props.ActiveInfo.Cooldown)
                 end),
                 Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     return if tonumber(use(props.ActiveInfo.Cooldown)) > 0 then true else false
                 end),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+
+                    Components.UIPadding(scope, {
+                        PaddingTop = UDim.new(0.22, 0),
+                        PaddingLeft = UDim.new(0.22, 0),
+                        PaddingRight = UDim.new(0.22, 0),
+                        PaddingBottom = UDim.new(0.22, 0),
+                    }),
+
+                    Components.ScaledTextUIStroke(scope, {})
+                },
+            }),
+
+
+            ProgressCircle(scope, {
+                Direction = "Left",
+                RotationVal = props.ActiveInfo.CDRotation,
+            }),
+            ProgressCircle(scope, {
+                Direction = "Right",
+                RotationVal = props.ActiveInfo.CDRotation,
             })
         }
     })

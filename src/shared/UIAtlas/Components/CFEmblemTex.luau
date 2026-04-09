@@ -6,11 +6,14 @@ local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 
 local Children = Fusion.Children
 
+
 return function (scope: Fusion.Scope, props: {
     Transparency: number?,
     Size: UDim2?,
     Position: UDim2?,
-    Color: Fusion.Computed<Color3>? | Color3?
+    Color: Fusion.Computed<Color3>? | Color3?,
+
+    [Fusion.SpecialKey]: Components.FusionPropsEntry?,
 })
 
     props = props or {}
@@ -23,17 +26,25 @@ return function (scope: Fusion.Scope, props: {
     props[Fusion.Children] = props[Fusion.Children] or {}
 
     return Components.Frame(scope, {
-        Name = "CFEmblemTex",
+        Name = "CFEmblemTexFrame",
         ClipsDescendants = true,
         ZIndex = 0,
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Emblem_CFETex1_1"))({
+            Components.ImageLabel(scope, {
+                Name = "Emblem",
+                AnchorPoint = Vector2.new(0, 0.5),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                ZIndex = 2,
+
                 Position = props.Position,
                 Size = props.Size,
+                Image = "rbxassetid://72405016863286",
                 ImageTransparency = props.Transparency,
-                ImageColor3 = props.Color
-            })
+                ImageColor3 = props.Color,
+            }),
+
+            [Children] = props[Fusion.Children],
         }
     })
 end

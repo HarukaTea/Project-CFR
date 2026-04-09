@@ -1,7 +1,6 @@
 
 local RepS = game:GetService("ReplicatedStorage")
 
-local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
@@ -9,6 +8,7 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 
 local CloseView = require(RepS.HarukaShared.UIAtlas.Components.CloseTab)
 local SideCategoryBtn = require(RepS.HarukaShared.UIAtlas.Components.SideCategoryBtn)
+
 
 local FakeTopBGTex = require(RepS.HarukaShared.UIAtlas.Components.FakeTopBGTex)
 
@@ -19,17 +19,21 @@ local Keybind = require(script.Components.Keybind)
 
 local Children = Fusion.Children
 
+
 local Pinia = require(script.Pinia)
 local SettingsTemplate = require(script.SettingsTemplate)
 
 return function (plr: Player)
     local self = {} :: Pinia.Self
 
-    ClientLib:InitUIFramework(self, plr, "Settings", true)
+    self.plr = plr
+    self.scope = Fusion.scoped()
 
     self.INFO = require(script.SettingsTemplate) :: SettingsTemplate.SettingsJSON
 
+
     Pinia(self)
+
 
     local scope = self.scope :: Fusion.Scope
 
@@ -43,10 +47,26 @@ return function (plr: Player)
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("FullCenter_Settings1_1", false, true))({
+            Components.Frame(scope, {
+                Name = "FullCenter",
+                Size = UDim2.fromScale(0.944, 0.7),
+                Position = UDim2.fromScale(0.5, 0.53),
+
                 [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("Categories_Settings1_2", false, true))({
+                    Components.UIAspectRatioConstraint(scope, 3.389),
+
+                    Components.Frame(scope, {
+                        Name = "Categories",
+                        AnchorPoint = Vector2.zero,
+                        Position = UDim2.fromScale(0, 0),
+                        Size = UDim2.fromScale(0.2, 1),
+
                         [Children] = {
+                            Components.UIListLayout(scope, {
+                                Padding = UDim.new(0.04, 0),
+                                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                            }),
+
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
                                 PanelTitle: string,
                                 LayoutOrder: number,
@@ -71,7 +91,12 @@ return function (plr: Player)
                         }
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("Settings_Settings1_2", false, true))({
+                    Components.Frame(scope, {
+                        Name = "Settings",
+                        AnchorPoint = Vector2.zero,
+                        Position = UDim2.fromScale(0.225, 0),
+                        Size = UDim2.fromScale(0.775, 1),
+
                         [Children] = {
                             Fusion.ForPairs(scope, self.INFO, function(_, scope: Fusion.Scope, panelId: string, panelInfo: {
                                 PanelTitle: string,
@@ -84,6 +109,7 @@ return function (plr: Player)
                                 if string.find(panelId, "Keybinds") and HarukaLib:GetDevice() == "Mobile" then
                                     return panelId, nil
                                 end
+
 
                                 return panelId, Components.ScrollingFrame(scope, {
                                     Name = panelId,
@@ -110,6 +136,8 @@ return function (plr: Player)
                                                     KeybindBegan = self.ValidInputBegan,
                                                 })
                                             end
+
+
 
                                             if optionInfo.Type == "Slider" then
                                                 return optionId, Slider(scope, {

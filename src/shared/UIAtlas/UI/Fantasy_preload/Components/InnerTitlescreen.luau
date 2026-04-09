@@ -12,6 +12,7 @@ local ServerListView = require(script.Parent.ServerListView)
 
 local Children = Fusion.Children
 
+
 return function (scope: Fusion.Scope, props: {
     SlotUISignal: BindableEvent,
     CutsceneUISignal: BindableEvent,
@@ -30,6 +31,7 @@ return function (scope: Fusion.Scope, props: {
     local serverListClickedSignal = Instance.new("BindableEvent")
     table.insert(scope, serverListClickedSignal)
 
+
     local isShown = Fusion.Value(scope, false)
     local isBackButtonShown = Fusion.Value(scope, true)
 
@@ -42,6 +44,7 @@ return function (scope: Fusion.Scope, props: {
         isShown:set(true)
     end))
 
+
     saveSlotClickedSignal.Event:Connect(function(id: number)
         isBackButtonShown:set(false)
 
@@ -50,6 +53,7 @@ return function (scope: Fusion.Scope, props: {
     saveSlotBackSignal.Event:Connect(function()
         isBackButtonShown:set(true)
     end)
+
 
     local UI; UI = Components.HarukaScreenGui(scope, {
         Name = "InnerTitlescreen",
@@ -60,63 +64,74 @@ return function (scope: Fusion.Scope, props: {
         end),
 
     }, {
-        BottomChildren = {
-            Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
-                if not use(isBackButtonShown) then return nil end
+        BottomProps = {
+            [Children] = {
+                Fusion.Computed(scope, function(use: Fusion.Use, scope: Fusion.Scope)
+                    if use(isBackButtonShown) then
+                        return ExecuteButton(scope, {
+                            AnchorPoint = Vector2.new(0.5, 0),
+                            Position = UDim2.fromScale(0.5, 0),
 
-                return ExecuteButton(scope, {
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.fromScale(0.5, 0),
-                    Size = UDim2.fromScale(0.16, 0.68),
-                    ButtonText = "BACK",
-                    ButtonType = "Cancel",
-                    ButtonClickFunc = function()
-                        props.CutsceneUISignal:Fire()
+                            Size = UDim2.fromScale(0.16, 0.68),
+                            ButtonText = "BACK",
+                            ButtonType = "Cancel",
+                            ButtonClickFunc = function()
+                                props.CutsceneUISignal:Fire()
+                            end
+                        })
+                    else
+                        return nil
                     end
-                })
-            end)
+                end)
+            }
         },
 
-        CenterChildren = {
-            Fusion.Hydrate(scope, Components:RefUI("SaveSlots_CFTitle2_1"))({
-                Visible = true,
 
-                [Children] = {
-                    Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope, index: number, charVal: Fusion.Value<Model?>)
-                        return index, SaveSlot(scope, {
-                            SlotId = index,
-                            CharacterModel = charVal,
+        CenterProps = {
+            [Children] = {
+                Components.Frame(scope, {
+                    Name = "SaveSlots",
+                    Position = UDim2.fromScale(0.5, 0.3),
 
+                    [Children] = {
+                        Fusion.ForPairs(scope, props.CharVals, function(_, scope: Fusion.Scope, index: number, charVal: Fusion.Value<Model?>)
+                            return index, SaveSlot(scope, {
+                                SlotId = index,
+                                CharacterModel = charVal,
+
+                                SaveSlotClickedSignal = saveSlotClickedSignal,
+                                SaveSlotBackSignal = saveSlotBackSignal,
+                                ReadyToTeleportSignal = readyToTeleportSignal,
+
+                                ServerListClickedSignal = serverListClickedSignal,
+
+                                IsUIShown = isShown,
+                            })
+                        end)
+                    }
+                }),
+
+
+                Components.Frame(scope, {
+                    Name = "ServerList",
+                    Position = UDim2.fromScale(0.5, 0.3),
+
+                    [Children] = {
+                        ServerListView(scope, {
                             SaveSlotClickedSignal = saveSlotClickedSignal,
                             SaveSlotBackSignal = saveSlotBackSignal,
                             ReadyToTeleportSignal = readyToTeleportSignal,
 
                             ServerListClickedSignal = serverListClickedSignal,
 
-                            IsUIShown = isShown,
+                            SlotChosen = whichSlotIsChosen,
                         })
-                    end)
-                }
-            }),
-
-            Fusion.Hydrate(scope, Components:RefUI("SaveSlots_CFTitle2_1"))({
-                Name = "ServerList",
-                Visible = true,
-
-                [Children] = {
-                    ServerListView(scope, {
-                        SaveSlotClickedSignal = saveSlotClickedSignal,
-                        SaveSlotBackSignal = saveSlotBackSignal,
-                        ReadyToTeleportSignal = readyToTeleportSignal,
-
-                        ServerListClickedSignal = serverListClickedSignal,
-
-                        SlotChosen = whichSlotIsChosen,
-                    })
-                }
-            })
+                    }
+                })
+            }
         }
     })
+
 
     --// anims
     local shownObserver = Fusion.Observer(scope, isShown)
@@ -139,6 +154,7 @@ return function (scope: Fusion.Scope, props: {
             })
         end
     end)
+
 
     return UI
 end

@@ -7,7 +7,11 @@ local ClientLib = require(RepS.HarukaShared.Controllers.ClientLib)
 
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+local Children = Fusion.Children
+
+
 local Pinia = require(script.Pinia)
+
 
 return function(plr: Player)
 	if HarukaLib:GetDevice() == "VR" then
@@ -23,9 +27,17 @@ return function(plr: Player)
 
 	local scope = self.scope :: Fusion.Scope
 
+
 	local lock: ImageLabel
 	if isPC then
-		lock = Fusion.Hydrate(scope, Components:RefUI("Lock_1"))({
+		lock = Components.ImageLabel(scope, {
+			Name = "Lock",
+			Position = UDim2.fromScale(0.5, 0.5),
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Size = UDim2.fromOffset(32, 32),
+
+			Image = "rbxasset://textures/MouseLockedCursor.png",
+
 			Visible = Fusion.Computed(scope, function(use: Fusion.Use)
 				return use(self.LockEnabled)
 			end)
@@ -37,29 +49,35 @@ return function(plr: Player)
 		Parent = plr.PlayerGui,
 
 	}, {
-		CenterChildren = {
-			lock,
+		CenterProps = {
+			[Children] = {
+				lock,
 
-			Fusion.Hydrate(scope, Components:RefUI("ShiftLock_1"))({
-				Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
-					return use(self.LastInputType) ~= "Keyboard"
-				end),
-				Image = Fusion.Computed(scope, function(use: Fusion.Use)
-					return use(self.Icon)
-				end),
+				Components.HoverImageButton(scope, {
+					Name = "ShiftLock",
+					Size = UDim2.fromScale(0.8, 0.8),
+					SizeConstraint = Enum.SizeConstraint.RelativeYY,
+					Position = UDim2.fromScale(0.99, -1),
+					AnchorPoint = Vector2.new(1, 0.5),
 
-				[Fusion.OnEvent("MouseButton1Click")] = function()
-					if self.char
-						and self.char:FindFirstChildOfClass("Humanoid")
-						and self.char.PrimaryPart then
+					Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+						return use(self.LastInputType) ~= "Keyboard"
+					end),
+					Image = Fusion.Computed(scope, function(use: Fusion.Use)
+						return use(self.Icon)
+					end),
 
-						self.ChangeShiftLockState:Fire(if Fusion.peek(self.LockEnabled) then "Off" else "On")
-					end
-				end,
-			})
+					[Fusion.OnEvent("MouseButton1Click")] = function()
+						if self.char:FindFirstChild("Humanoid") and self.char.PrimaryPart then
+							self.ChangeShiftLockState:Fire(if Fusion.peek(self.LockEnabled) then "Off" else "On")
+						end
+					end,
+				}),
+			}
 		}
 	})
 	self.UI = UI
+
 
 	return function ()
 		self.ChangeShiftLockState:Fire("Off")

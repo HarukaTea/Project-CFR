@@ -7,6 +7,7 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 export type Self = {
     plr: Player,
     char: Model,
@@ -22,6 +23,8 @@ export type Self = {
     PanelList: { string },
 }
 
+
+
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
@@ -30,8 +33,10 @@ return function (self: Self)
 
     self.IsUIShown = Value(false)
 
+
     local ranks = Components.FusionComponents.useChildren(scope, workspace.MapComponents:WaitForChild("DonationRankContainer", 999))
     self.DonationRanks = ranks :: Fusion.Value<{ IntValue }>
+
 
     --// track menu
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -48,6 +53,7 @@ return function (self: Self)
             end
         end
     }))
+
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

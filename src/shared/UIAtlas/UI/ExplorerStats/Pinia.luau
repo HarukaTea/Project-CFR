@@ -12,6 +12,8 @@ local FusionComponents = require(RepS.HarukaShared.UIAtlas.FusionComponents)
 
 local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
+
+
 export type Self = {
     plr: Player,
     char: Model,
@@ -109,12 +111,20 @@ export type Self = {
         }
     }?,
 
+
     CastClassUlt_C: BindableEvent,
     RequestToCastItem: BindableEvent,
     RequestToDash: BindableEvent,
 
-    ClassActiveCastCD: boolean
+    ClassActiveCastCD: boolean,
+
+
+    HalloweenCandy: Fusion.Value<number>,
+    IceCandy: Fusion.Value<number>,
 }
+
+
+
 
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
@@ -123,7 +133,9 @@ return function (self: Self)
     local scope = self.scope :: Fusion.Scope
     local plr = self.plr :: Player
 
+
     plr:SetAttribute("CurrentUIGroup", "None")
+
 
     self.ServerLocation = Value("Unknown")
     self.CityLocation = Value("Void")
@@ -165,13 +177,16 @@ return function (self: Self)
     self.DungeonLeftTime = Value(0)
     self.DungeonEndActionsClicked = Value(false)
 
+
     self.AbyssId = Fusion.Value(self.scope, nil)
     self.AbyssStarted = Value(false)
     self.AbyssFinished = Value(false)
     self.AbyssTime = Value(0)
     self.AbyssEndActionsClicked = Value(false)
 
+
     self.MenuSelectionShown = Value(false)
+
 
     self.Gold = Value(0)
 
@@ -179,6 +194,11 @@ return function (self: Self)
 
     self.UIViewportSize = FusionComponents.useUIViewportSize(scope)
     self.Device = HarukaLib:GetAccurateDevice()
+
+
+    self.HalloweenCandy = Value(0)
+    self.IceCandy = Value(0)
+
 
     --// track server
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -208,6 +228,7 @@ return function (self: Self)
             self.IsUIShown2:set(not state)
         end
     }))
+
 
     --// track skills
     local skillCDContainer = Instance.new("Folder")
@@ -276,6 +297,7 @@ return function (self: Self)
         slot.CDSymbol = cdSymbol
     end
 
+
     --// track passive skills
     self.PassiveList = {
         {}, {}, {}
@@ -287,6 +309,7 @@ return function (self: Self)
         slot.ItemId = Value("None")
         slot.ItemUniqueId = Value("None")
     end
+
 
     local equipping = FusionComponents.useChildren(scope, self.plr:WaitForChild("EquippingItems", 999))
     self.EquippingItems = equipping :: Fusion.Value<{ StringValue }>
@@ -305,8 +328,10 @@ return function (self: Self)
             local itemInfo = ItemBook:GetItemInfo(equipping.Value)
             if itemInfo == nil then continue end
 
+
             local index = equipping.Name
             local uniqueId = equipping:GetAttribute("HarukaUniqueId") :: string
+
 
             if string.find(index, "Active") then
                 local slotInfo = list[tonumber(string.sub(index, 7))]
@@ -324,6 +349,8 @@ return function (self: Self)
     end
     Fusion.Observer(scope, self.EquippingItems):onBind(_handleItemEquip)
 
+
+
     --// track input
     self.CastClassUlt_C = Instance.new("BindableEvent")
     self.RequestToCastItem = Instance.new("BindableEvent")
@@ -332,6 +359,7 @@ return function (self: Self)
     table.insert(scope, self.CastClassUlt_C)
     table.insert(scope, self.RequestToCastItem)
     table.insert(scope, self.RequestToDash)
+
 
     local function _normalCancelCD(info: { [string]: any })
         task.delay(0.15, function()
@@ -356,6 +384,7 @@ return function (self: Self)
 
         local equippingItems = plr.EquippingItems :: Folder
         if not equippingItems:FindFirstChild(slotIdStr) then return end
+
 
         local itemSymbol = equippingItems[slotIdStr] :: StringValue
 
@@ -391,6 +420,8 @@ return function (self: Self)
         end)
         Events.CastClassUlt_C.Fire()
     end)
+
+
 
     local function _createCooldownAnim(cdTime: number, info: { [string]: any })
         if info.RunningTasks then
@@ -463,10 +494,12 @@ return function (self: Self)
 
         _createCooldownAnim(5, info)
 
+
         local direction = char.Humanoid.MoveDirection :: Vector3
         if direction.Magnitude <= 0 then
             direction = char.PrimaryPart.CFrame.LookVector
         end
+
 
         local linearVelo = Instance.new("LinearVelocity")
         linearVelo.Name = "Dash"
@@ -476,6 +509,7 @@ return function (self: Self)
         linearVelo.VectorVelocity = direction * 100
         linearVelo.Parent = char.PrimaryPart
         Debris:AddItem(linearVelo, 0.2)
+
 
         for _, part: BasePart in char:GetChildren() do
             if HarukaLib:IsBasePartType(part) then
@@ -499,6 +533,8 @@ return function (self: Self)
 
         Bindables.PlayClassAnim:Fire("Dash")
     end)
+
+
 
     local uiButtons = {
         "Backpack", "CharSelfView", "Settings",
@@ -544,6 +580,7 @@ return function (self: Self)
         end
     end))
 
+
     --// track class
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-Class"] = function(val: string)
@@ -560,6 +597,7 @@ return function (self: Self)
             self.MaxClassUltProgress:set(val)
         end
     }))
+
 
     --// track stat
     table.insert(scope, HarukaLib:Hydrate(self.char, {
@@ -586,6 +624,7 @@ return function (self: Self)
         end
     }))
 
+
     --// track combat
     table.insert(scope, HarukaLib:Hydrate(self.char, {
         ["Attr-IsInCombat"] = function(val: boolean)
@@ -603,6 +642,7 @@ return function (self: Self)
         end,
     }))
 
+
     --// track hp
     table.insert(scope, HarukaLib:Hydrate(self.char.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
@@ -612,6 +652,7 @@ return function (self: Self)
             self.MaxHP:set(newMaxHP)
         end
     }))
+
 
     --// track cd
     local function _updateCD(targetList: string, val: number, index: number)
@@ -647,6 +688,7 @@ return function (self: Self)
         }))
     end
 
+
     --// track dungeon
     table.insert(scope, HarukaLib:Hydrate(workspace, {
         ["Attr-DungeonId"] = function(id: string)
@@ -664,6 +706,7 @@ return function (self: Self)
             self.DungeonLeftTime:set(val)
         end
     }))
+
 
     --// track abyss
     table.insert(scope, HarukaLib:Hydrate(workspace, {
@@ -683,11 +726,20 @@ return function (self: Self)
         end
     }))
 
+
     --// track currency
     table.insert(scope, HarukaLib:Hydrate(plr, {
         ["Attr-Gold"] = function(val: number)
             val = val or 0
             self.Gold:set(val)
+        end,
+        ["Attr-HalloweenCandy"] = function(val: number)
+            val = val or 0
+            self.HalloweenCandy:set(val)
+        end,
+        ["Attr-IceCandy"] = function(val: number)
+            val = val or 0
+            self.IceCandy:set(val)
         end
     }))
 end

@@ -11,6 +11,7 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
 local Children = Fusion.Children
 
+
 return function(scope: Fusion.Scope, props: {
     Char: Model,
     Player: Player
@@ -18,6 +19,7 @@ return function(scope: Fusion.Scope, props: {
     if not ClientLib:IsCharValid(props.Char) then return nil end
     if props.Player == nil then return nil end
     if props.Player.Name == Players.LocalPlayer.Name then return nil end
+
 
     local function Value<T>(val: T): Fusion.Value<T>
         return Fusion.Value(scope, val)
@@ -27,6 +29,7 @@ return function(scope: Fusion.Scope, props: {
     local class = Value("Burst")
     local role = Value("")
     local title = Value("Explorer")
+
 
     table.insert(scope, HarukaLib:Hydrate(props.Char.Humanoid, {
         ["Prop-Health"] = function(newHP: number)
@@ -48,6 +51,7 @@ return function(scope: Fusion.Scope, props: {
         end
     }))
 
+
     return { Components.BillboardGui(scope, {
         Name = "PlayerInfoBar",
         Size = UDim2.fromScale(4.8, 1.2),
@@ -55,16 +59,33 @@ return function(scope: Fusion.Scope, props: {
         StudsOffset = Vector3.yAxis * 3,
         Adornee = props.Char.PrimaryPart,
 
+
         Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
             return use(HP) > 0
         end),
 
+
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("TitleSection_PI1_1", false, true))({
+            Components.Frame(scope, {
+                Name = "TitleSection",
+                BackgroundTransparency = 0,
+
                 [Children] = {
+                    Components.RoundUICorner(scope),
+
+                    Components.UIListLayout(scope, {
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        Padding = UDim.new(0.05, 0),
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                    }),
+
                     Components.PaddingFrame(scope, "ZZZ"),
 
-                    Fusion.Hydrate(scope, Components:RefUI("Icon_PI1_2", true))({
+                    Components.IconImageLabel(scope, {
+                        Size = UDim2.fromScale(1.5, 1.5),
+                        LayoutOrder = 3,
+
                         Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             local classId = use(class) :: string
 
@@ -76,16 +97,33 @@ return function(scope: Fusion.Scope, props: {
 
                             if not ClassBook[classId] then return Color3.new(1, 1, 1) end
                             return ClassBook[classId].Color
-                        end)
+                        end),
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("PlayerLevel_PI1_2", true))({
+                    Components.TextLabel(scope, {
+                        Name = "PlayerLevel",
+                        LayoutOrder = 2,
+                        Size = UDim2.fromScale(0.4, 0.8),
+                        BackgroundTransparency = 0,
+                        BackgroundColor3 = Components.WHITE_COLOR,
+                        TextColor3 = Components.BLACK_COLOR,
+
                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                             return `Lv.{use(level)}`
-                        end)
-                    })
+                        end),
+
+                        [Children] = {
+                            Components.RoundUICorner(scope),
+                            Components.UIPadding(scope, {
+                                PaddingTop = UDim.new(0.05, 0),
+                                PaddingBottom = UDim.new(0.05, 0),
+                                PaddingLeft = UDim.new(0, 4),
+                                PaddingRight = UDim.new(0, 4),
+                            })
+                        }
+                    }),
                 }
-            })
+            }),
         }
     }), Components.BillboardGui(scope, {
         Name = "PlayerInfoBar",
@@ -99,9 +137,15 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("DisplayName_PN1_1", true))({
-                Text = props.Player.DisplayName
-            })
+            Components.TextLabel(scope, {
+                Name = "PlayerDisplayName",
+                Text = props.Player.DisplayName,
+                AutoLocalize = false,
+
+                [Children] = {
+                    Components.ScaledTextUIStroke(scope, {})
+                }
+            }),
         }
     }), Components.BillboardGui(scope, {
         Name = "PlayerTitleBar",
@@ -115,14 +159,21 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Title_PT1_1", true))({
+            Components.TextLabel(scope, {
+                Name = "PlayerTitle",
+
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     local titleState = use(title) :: string
                     if titleState == nil then return "" end
                     if titleState == "" then return "" end
 
                     return `- {titleState} -`
-                end)
+                end),
+                TextColor3 = Color3.fromHex('#ffeaa7'),
+
+                [Children] = {
+                    Components.ScaledTextUIStroke(scope, {})
+                }
             })
         }
     }), Components.BillboardGui(scope, {
@@ -137,14 +188,21 @@ return function(scope: Fusion.Scope, props: {
         end),
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Role_PR1_1", true))({
+            Components.TextLabel(scope, {
+                Name = "PlayerRole",
+
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     local roleState = use(role) :: string
                     if roleState == nil then return "" end
                     if roleState == "" then return "" end
 
                     return `- {roleState} -`
-                end)
+                end),
+                TextColor3 = Color3.fromHex('#ffeaa7'),
+
+                [Children] = {
+                    Components.ScaledTextUIStroke(scope, {})
+                }
             })
         }
     })

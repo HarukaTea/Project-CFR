@@ -18,9 +18,12 @@ local RegionBar = require(script.Parent.Components.AreaPopupBar)
 local CastingTimeBar = require(script.Parent.Components.CastTimeBar)
 local BadgeAwarding = require(script.Parent.Components.BadgeAwarding)
 
+
 local Pinia = require(script.Parent.Pinia)
 
+
 local wait = task.wait
+
 
 return function (UI: ScreenGui, self: Pinia.Self)
     local scope = self.scope
@@ -43,8 +46,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
+
         HarukaLib:UITransTween(gotHitFX, "Out", { TweenTime = 0.5 } )
     end))
+
+
 
     --// got heal fx
     table.insert(scope, Events.PlayHealedScreenFX_S.On(function()
@@ -56,16 +62,20 @@ return function (UI: ScreenGui, self: Pinia.Self)
         gotHealFX.Parent = self.UI
         Debris:AddItem(gotHealFX, 2)
 
+
         Promise.delay(2):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
+
         HarukaLib:UITransTween(gotHealFX, "Out", { TweenTime = 1.15 } )
     end))
+
 
     --// got powered fx
     table.insert(scope, Events.PlayStatPoweredScreenFX_S.On(function()
         if spawnClock then return end
+
 
         local newScope = Fusion.scoped()
 
@@ -73,17 +83,21 @@ return function (UI: ScreenGui, self: Pinia.Self)
         gotPoweredFX.Parent = self.UI
         Debris:AddItem(gotPoweredFX, 2)
 
+
         Promise.delay(2):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
+
         HarukaLib:UITransTween(gotPoweredFX, "Out", { TweenTime = 1.15 } )
     end))
+
 
     --// track new items
     table.insert(scope, Events.PlayItemDropFX_S.On(function(data)
         if not UI then return end
         if not UI:FindFirstChild("Bottom") then return end
+
 
         local newScope = Fusion.scoped()
 
@@ -94,14 +108,17 @@ return function (UI: ScreenGui, self: Pinia.Self)
         itemDropBar.Parent = UI.Bottom.ItemDropsDiv.ItemAcquiredFrame
         Debris:AddItem(itemDropBar, 3.6)
 
+
         Promise.delay(3.6):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
     end))
 
+
     --// track new exp awarded
     local expDropQueue = HarukaLib.Queue()
     table.insert(scope, expDropQueue)
+
 
     local function _onNewEXPAdded()
         if expDropQueue:IsLocked() then return end
@@ -111,6 +128,7 @@ return function (UI: ScreenGui, self: Pinia.Self)
         if not UI:FindFirstChild("Top") then return end
 
         expDropQueue:EnableMutex(4)
+
 
         local data = expDropQueue:Pop()
         local newScope = Fusion.scoped()
@@ -127,9 +145,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
         classExpBar.Parent = UI.Top.LevelEXP
         Debris:AddItem(classExpBar, 4)
 
+
         Promise.delay(4):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
+
 
         HarukaLib:UITransTween(expBar, "In", {})
         HarukaLib:UITransTween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3.5 })
@@ -146,9 +166,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
     expDropQueue.OnPushed.Event:Connect(_onNewEXPAdded)
 
+
     --// track region in
     local regionQueue = HarukaLib.Queue()
     table.insert(scope, regionQueue)
+
 
     local function _onNewRegionAdded()
         if regionQueue:IsLocked() then return end
@@ -170,9 +192,11 @@ return function (UI: ScreenGui, self: Pinia.Self)
         regionBar.Parent = UI.Top
         Debris:AddItem(regionBar, 3.5)
 
+
         Promise.delay(3.5):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
+
 
         HarukaLib:UITransTween(regionBar, "In", {})
         HarukaLib:UITransTween(regionBar, "Out", { TweenTime = 0.5, DelayTime = 2.5 })
@@ -188,10 +212,12 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
     regionQueue.OnPushed.Event:Connect(_onNewRegionAdded)
 
+
     --// track cast cd
     table.insert(scope, Events.OpenCastTimeBar_S.On(function(castTime: number)
         if not UI then return end
         if not UI:FindFirstChild("Bottom") then return end
+
 
         local newScope = Fusion.scoped()
         local castingTimeBar = CastingTimeBar(newScope, {
@@ -200,17 +226,21 @@ return function (UI: ScreenGui, self: Pinia.Self)
         castingTimeBar.Parent = UI.Bottom.CastTimeBars
         Debris:AddItem(castingTimeBar, castTime + 0.2)
 
+
         Promise.delay(castTime + 1):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
+
 
         wait(castTime)
         HarukaLib:UITransTween(castingTimeBar, "Out", {})
     end))
 
+
     --// track new achievements
     local achivementQueue = HarukaLib.Queue()
     table.insert(scope, achivementQueue)
+
 
     local function _onNewAchievementAdded()
         if achivementQueue:IsLocked() then return end
@@ -218,23 +248,28 @@ return function (UI: ScreenGui, self: Pinia.Self)
 
         achivementQueue:EnableMutex(4)
 
+
+
         local badgeId = achivementQueue:Pop()
         local newScope = Fusion.scoped()
 
-        local badgeBar = BadgeAwarding(newScope, {
+        local expBar = BadgeAwarding(newScope, {
             BadgeId = tonumber(badgeId),
         })
-        badgeBar.Parent = UI.Bottom.BadgeAwarding
-        Debris:AddItem(badgeBar, 5)
+        expBar.Parent = UI.Bottom.BadgeAwarding
+        Debris:AddItem(expBar, 5)
+
 
         Promise.delay(5):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
 
+
         SoundService.SFXs.QuestCompleted:Play()
 
-        HarukaLib:UITransTween(badgeBar, "In", { TweenTime = 0.6 })
-        HarukaLib:UITransTween(badgeBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
+
+        HarukaLib:UITransTween(expBar, "In", { TweenTime = 0.6 })
+        HarukaLib:UITransTween(expBar, "Out", { TweenTime = 0.5, DelayTime = 3 })
     end
     table.insert(scope, Events.PlayBadgeNotify_S.On(function(badgeId: string)
         achivementQueue:Push(badgeId)

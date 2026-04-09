@@ -8,10 +8,9 @@ local UIPriorityBook = require(RepS.HarukaShared.Library.UIPriorityBook)
 local Children = Fusion.Children
 
 
--- we dont need `RefUI` here
 return function (scope: Fusion.Scope)
     return Components.HarukaScreenGui(scope, {
-        Name = "GotPoweredShade",
+        Name = "GotHealShade",
         DisplayOrder = UIPriorityBook.System - 1,
 
         [Children] = {

@@ -14,6 +14,7 @@ local KeybindsBook = require(RepS.HarukaShared.Library.KeybindsBook)
 
 local SettingsTemplate = require(script.Parent.SettingsTemplate)
 
+
 export type Self = {
     plr: Player,
     char: Model,
@@ -36,6 +37,7 @@ export type Self = {
 
     INFO: SettingsTemplate.SettingsJSON
 }
+
 
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
@@ -70,6 +72,7 @@ return function (self: Self)
 
     local scope = self.scope :: Fusion.Scope
 
+
     --// track visible
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
         ["Attr-CurrentUIGroup"] = function(newPanel: string)
@@ -78,6 +81,7 @@ return function (self: Self)
             self.IsSettingsShown:set(newPanel == "Settings")
         end
     }))
+
 
     --// track valid input
     local validKeycodeNames = {}
@@ -98,10 +102,12 @@ return function (self: Self)
         local isKeyboard = string.find(input.UserInputType.Name, "Keyboard")
         if not isGamepad and not isKeyboard then return end
 
+
         if Fusion.peek(self.IsInKeybindMode) and validKeycodeNames[input.KeyCode.Name] then
             self.ValidInputBegan:Fire(input.KeyCode.Name)
         end
     end))
+
 
     --// load saved keybinds
     if HarukaLib:GetDevice() ~= "Mobile" then
@@ -120,6 +126,7 @@ return function (self: Self)
         end
     end
 
+
     --// track ui blur
     local blur = Components.BlurFS(scope, {
         Name = "UIBlur_Settings",
@@ -131,9 +138,11 @@ return function (self: Self)
     })
     blur.Parent = workspace.CurrentCamera
 
+
     --// track slider
     for panelId, panelInfo in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
+
 
         self.SliderProgressVals[panelId] = {}
         self.SliderVals[panelId] = {}
@@ -154,12 +163,13 @@ return function (self: Self)
 
             self.INFO[panelId].Includes[optionId].DefaultValue = defaultValue
 
-            table.insert(scope, optionInfo.OnValChanged)
+            table.insert(scope, optionInfo.ValChanged)
         end
     end
     --// track switcher
     for panelId, panelInfo in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
+
 
         self.SwitcherVals[panelId] = {}
 
@@ -178,6 +188,7 @@ return function (self: Self)
     for panelId, panelInfo in self.INFO do
         if panelId == "KeybindsPC" or panelId == "KeybindsConsole" then continue end
 
+
         self.DropdownVals[panelId] = {}
 
         for optionId, optionInfo in panelInfo.Includes do
@@ -192,26 +203,30 @@ return function (self: Self)
         end
     end
 
-    self.INFO.Sounds.Includes.MusicVolume.OnValChanged.Event:Connect(function(val: number)
+
+    self.INFO.Sounds.Includes.MusicVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.Musics.Volume = val
     end)
-    self.INFO.Sounds.Includes.SFXVolume.OnValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.SFXVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.SFXs.Volume = val
     end)
-    self.INFO.Sounds.Includes.FootstepVolume.OnValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.FootstepVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.FootstepSFXs.Volume = val
     end)
-    self.INFO.Sounds.Includes.AmbientVolume.OnValChanged.Event:Connect(function(val: number)
+    self.INFO.Sounds.Includes.AmbientVolume.ValChanged.Event:Connect(function(val: number)
         SoundService.Environment.Volume = val
     end)
 
-    self.INFO.Interface.Includes.UIScale.OnValChanged.Event:Connect(function(val: number)
+
+    self.INFO.Interface.Includes.UIScale.ValChanged.Event:Connect(function(val: number)
         workspace:SetAttribute("UIScaleFactor", val)
 
         for _, ui in self.plr.PlayerGui:QueryDescendants("UIScale") do
             ui.Scale = (ui:GetAttribute("BaseScale") or 1) * val
         end
     end)
+
+
 
     --// track graphics
     local function _changePartToPlastic(part: BasePart)
@@ -274,12 +289,14 @@ return function (self: Self)
         end
     end)
 
+
     local shadowsObserver = Fusion.Observer(scope, self.SwitcherVals.Game.GlobalShadows)
     shadowsObserver:onBind(function()
         local state = Fusion.peek(self.SwitcherVals.Game.GlobalShadows)
 
         Lighting.GlobalShadows = state
     end)
+
 
     --// track hide ui
     local hideUIObserver = Fusion.Observer(scope, self.SwitcherVals.Interface.HideUI)
@@ -289,6 +306,7 @@ return function (self: Self)
         workspace:SetAttribute("HideUIFactor", state)
     end)
 
+
     --// track rain
     local rainObserver = Fusion.Observer(scope, self.SwitcherVals.Game.RainEffect)
     rainObserver:onBind(function()
@@ -296,6 +314,7 @@ return function (self: Self)
 
         workspace:SetAttribute("RainEffectEnabled", state)
     end)
+
 
     --// track solo/public/party combat
     local combatObserver = Fusion.Observer(scope, self.DropdownVals.Game.CombatMode)

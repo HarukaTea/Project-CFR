@@ -12,24 +12,31 @@ local HintLabel = require(script.Parent.Components.HintLabel)
 local CenterHintLabel = require(script.Parent.Components.CenterHintLabel)
 local FullHintLabel = require(script.Parent.Components.FullHintLabel)
 
+
 export type Self = {
 	plr: Player,
 	char: Model,
 	scope: Fusion.Scope,
 
-	FSHintsQueue: HarukaLib.HarukaQueue,
-	CenterHintsQueue: HarukaLib.HarukaQueue,
+	fsHintsQueue: HarukaLib.HarukaQueue,
+	centerHintsQueue: HarukaLib.HarukaQueue,
 
 	UI: ScreenGui
 }
 
+
+
+
 return function (self: Self)
 	local scope = self.scope :: Fusion.Scope
 
-	self.FSHintsQueue = HarukaLib.Queue()
-	self.CenterHintsQueue = HarukaLib.Queue()
-	table.insert(scope, self.FSHintsQueue)
-	table.insert(scope, self.CenterHintsQueue)
+
+	self.fsHintsQueue = HarukaLib.Queue()
+	self.centerHintsQueue = HarukaLib.Queue()
+	table.insert(scope, self.fsHintsQueue)
+	table.insert(scope, self.centerHintsQueue)
+
+
 
 	--// receive hint requests
 	local order = 1
@@ -37,6 +44,7 @@ return function (self: Self)
 		if not self then return end
 		if not self.UI then return end
 		if not self.UI:FindFirstChild("Top") then return end
+
 
 		order += 1
 		if order > 999 then order = 1 end
@@ -50,9 +58,11 @@ return function (self: Self)
 		normalHint.Parent = self.UI.Top.Hints
 		Debris:AddItem(normalHint, 3.2)
 
+
 		Promise.delay(3.2):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
+
 
 		HarukaLib:UITransTween(normalHint, "In", { TweenTime = 0.5 })
 		HarukaLib:UITransTween(normalHint, "Out", { TweenTime = 0.5, DelayTime = 3 })
@@ -60,22 +70,25 @@ return function (self: Self)
 	table.insert(scope, Events.CreateNotify_S.On(_createHint))
 	table.insert(scope, Bindables.CreateNotify.Event:Connect(_createHint))
 
+
+
 	--// receive fs hint requests
 	local function _createFSHint(text: string, duration: number)
-		self.FSHintsQueue:Push({
+		self.fsHintsQueue:Push({
 			Text = text, Duration = duration
 		})
 	end
 	local function _onFSHintAdded()
-		if self.FSHintsQueue:IsLocked() then return end
-		if self.FSHintsQueue:IsEmpty() then return end
+		if self.fsHintsQueue:IsLocked() then return end
+		if self.fsHintsQueue:IsEmpty() then return end
 
-		local nextHint = self.FSHintsQueue:Pop() :: {
+		local nextHint = self.fsHintsQueue:Pop() :: {
 			Text: string, Duration: number
 		}
 		local newScope = Fusion.scoped()
 
-		self.FSHintsQueue:EnableMutex(nextHint.Duration)
+		self.fsHintsQueue:EnableMutex(nextHint.Duration)
+
 
 		local fullNotify = FullHintLabel(newScope, {
 			Text = nextHint.Text,
@@ -83,9 +96,11 @@ return function (self: Self)
 		fullNotify.Parent = self.UI
 		Debris:AddItem(fullNotify, nextHint.Duration + 1)
 
+
 		Promise.delay(nextHint.Duration + 1):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
+
 
 		HarukaLib:UITransTween(fullNotify, "In", {})
 		HarukaLib:UITransTween(fullNotify, "Out", { DelayTime = nextHint.Duration + 0.3 })
@@ -93,24 +108,27 @@ return function (self: Self)
 	table.insert(scope, Events.CreateFSNotify_S.On(_createFSHint))
 	table.insert(scope, Bindables.CreateFSNotify.Event:Connect(_createFSHint))
 
-	self.FSHintsQueue.OnPushed.Event:Connect(_onFSHintAdded)
+	self.fsHintsQueue.OnPushed.Event:Connect(_onFSHintAdded)
+
 
 	--// receive center hint requests
 	local function _createCenterNotify(text: string, showBar: boolean)
-		self.CenterHintsQueue:Push({
+		self.centerHintsQueue:Push({
 			Text = text, ShowBar = showBar
 		})
 	end
 	local function _onCenterHintAdded()
-		if self.CenterHintsQueue:IsLocked() then return end
-		if self.CenterHintsQueue:IsEmpty() then return end
+		if self.centerHintsQueue:IsLocked() then return end
+		if self.centerHintsQueue:IsEmpty() then return end
 
-		self.CenterHintsQueue:EnableMutex(1.5)
+		self.centerHintsQueue:EnableMutex(1.5)
 
-		local nextHint = self.CenterHintsQueue:Pop() :: {
+
+		local nextHint = self.centerHintsQueue:Pop() :: {
 			Text: string, ShowBar: boolean
 		}
 		local newScope = Fusion.scoped()
+
 
 		local notifyBar = CenterHintLabel(newScope, {
 			Text = nextHint.Text,
@@ -119,9 +137,11 @@ return function (self: Self)
 		notifyBar.Parent = self.UI
 		Debris:AddItem(notifyBar, 2)
 
+
 		Promise.delay(2):andThen(function()
 			Fusion.doCleanup(newScope)
 		end):catch(function() end)
+
 
 		HarukaLib:UITransTween(notifyBar, "In", { TweenTime = 0.5 })
 		HarukaLib:UITransTween(notifyBar, "Out", { TweenTime = 0.5, DelayTime = 0.9 })
@@ -129,5 +149,5 @@ return function (self: Self)
 	table.insert(scope, Events.CreateCenterNotify_S.On(_createCenterNotify))
 	table.insert(scope, Bindables.CreateCenterNotify.Event:Connect(_createCenterNotify))
 
-	self.CenterHintsQueue.OnPushed.Event:Connect(_onCenterHintAdded)
+	self.centerHintsQueue.OnPushed.Event:Connect(_onCenterHintAdded)
 end

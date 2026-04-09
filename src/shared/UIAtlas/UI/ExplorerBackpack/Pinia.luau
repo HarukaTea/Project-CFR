@@ -5,11 +5,13 @@ local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 
+
 export type Self = {
     plr: Player,
     char: Model,
     scope: Fusion.Scope,
     UI: ScreenGui,
+
 
     IsUIShown: Fusion.Value<boolean>,
     FilterViewShown: Fusion.Value<boolean>,
@@ -35,11 +37,13 @@ export type Self = {
     EquippingItems: Fusion.Value<{ StringValue }>,
 }
 
+
 return function (self: Self)
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(self.scope, val)
     end
     local scope = self.scope :: Fusion.Scope
+
 
     self.IsUIShown = Value(false)
 
@@ -60,6 +64,7 @@ return function (self: Self)
     end
     self.SortMethodList[1]:set(true)
 
+
     self.AvailableItems = Value(Vector2.zero)
 
     self.CurrentSelectedItem = Value("")
@@ -71,14 +76,19 @@ return function (self: Self)
         Astra = Value(0)
     }
 
+
     self.IsPurchasing = Value(false)
+
 
     self.ItemListAbsSize = Value(Vector2.zero)
 
     self.Items = Components.FusionComponents.useChildren(scope, self.plr.Items)
 
+
     local folder = Components.FusionComponents.useChildren(scope, self.plr.EquippingItems)
     self.EquippingItems = folder :: Fusion.Value<{ StringValue }>
+
+
 
     --// track currency
     table.insert(scope, HarukaLib:Hydrate(self.plr, {
@@ -99,6 +109,7 @@ return function (self: Self)
             self.IsUIShown:set(newPanel == "Backpack")
         end
     }))
+
 
     --// track ui blur
     local blur = Components.BlurFS(scope, {

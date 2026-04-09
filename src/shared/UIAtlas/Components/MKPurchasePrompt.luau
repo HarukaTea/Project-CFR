@@ -11,11 +11,14 @@ local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
 local ItemBook = require(RepS.HarukaShared.Library.ItemBook)
 
 local ExecuteButton = require(RepS.HarukaShared.UIAtlas.Components.ExecuteButton)
+local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
 local Children = Fusion.Children
 
+
 local CURRENCY_ICONS = AssetBook.CurrencyIcons
 local MAX_PURCHASE_AMOUNT = 999
+
 
 return function(scope: Fusion.Scope, props: {
     ProductId: string,
@@ -33,10 +36,12 @@ return function(scope: Fusion.Scope, props: {
     local info = ItemBook:GetItemInfo(props.ProductId)
     if info == nil then return nil end
 
+
     local function Value<T>(val: T) : Fusion.Value<T>
         return Fusion.Value(scope, val)
     end
     local itemAmount = Value(0)
+
 
     if props.Action == "Sell" then
         local itemSymbol: IntConstrainedValue = nil
@@ -65,7 +70,19 @@ return function(scope: Fusion.Scope, props: {
     end
     local absTextSize = Value(Vector2.zero)
 
-    local inputTextbox = Fusion.Hydrate(scope, Components:RefUI("AmountInput_EMarketP1_1", true))({})
+    local inputTextbox = Components.TextBox(scope, {
+        Name = "AmountInput",
+        BackgroundColor3 = Color3.new(),
+        BackgroundTransparency = 0,
+        Size = UDim2.fromScale(0.5, 1),
+        LayoutOrder = 2,
+        PlaceholderText = "1",
+
+        [Children] = {
+            Components.RoundUICorner(scope),
+            Components.UIPadding(scope, {})
+        }
+    })
     local amount = ClientLib:TrackInputTextbox({
         Scope = scope,
         TextBox = inputTextbox,
@@ -86,104 +103,276 @@ return function(scope: Fusion.Scope, props: {
         end
     })
 
+
     local function _commonClick()
         props.IsPurchasing:set(false)
         props.CurrentSelectedItem:set("")
         props.CurrentSelectedItemUniqueId:set("")
     end
 
-    return Fusion.Hydrate(scope, Components:RefUI("PurchasePrompt_EMarket1_1", false, true, {
-        "InnerFakeStroke"
-    }))({
+
+    return Components.Frame(scope, {
+        Name = "PurchasePrompt",
+        Size = UDim2.fromScale(0.5, 8),
+        BackgroundTransparency = 0,
+        ZIndex = 2,
+
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Div_EMPP1_1", false, true))({
+            Components.UICorner(scope, { CornerRadius = UDim.new(0.025, 0) }),
+
+            Components.ScaledUIStroke(scope, {
+                Color = Color3.fromRGB()
+            }),
+
+            Components.Frame(scope, {
+                Name = "InnerFakeStroke",
+                Size = UDim2.fromScale(0.95, 0.92),
+
                 [Children] = {
-                    Fusion.Hydrate(scope, Components:RefUI("Title_EMPPDiv1_1"))({
-                        Text = `<u>{string.upper(props.Action)}</u>`
+                    Components.UICorner(scope, { CornerRadius = UDim.new(0.025, 0) }),
+                    Components.ScaledUIStroke(scope, {
+                        Thickness = 0.01,
+                        Transparency = 0.7,
+                        Color = Color3.fromRGB(174, 159, 128)
+                    }),
+                }
+            }),
+
+
+            Components.Frame(scope, {
+                Name = "Div",
+                Size = UDim2.fromScale(0.9, 0.87),
+
+                [Children] = {
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.04, 0)
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("ItemIcon_EMPPDiv1_1", false, false, {
-                        "UICorner", "CFEmblemTexFrame"
-                    }))({
+                    Components.TextLabel(scope, {
+                        Name = "Title",
+                        Size = UDim2.fromScale(1, 0.09),
+                        RichText = true,
+                        LayoutOrder = 1,
+
+                        Text = `<u>{props.Action}</u>`
+                    }),
+
+                    Components.Frame(scope, {
+                        Name = "ItemIcon",
+                        BackgroundTransparency = 0,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        Size = UDim2.fromScale(1, 0.25),
+                        LayoutOrder = 2,
+
                         [Fusion.Out("AbsoluteSize")] = absTextSize,
 
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("UIGradient_EMPPDI1_1"))({
+                            Components.UICorner(scope, { CornerRadius = UDim.new(0.08, 0) }),
+
+                            Components.UIGradient(scope, {
                                 Color = ColorSequence.new(
                                     AssetBook.ItemTierColors[info.Tier]:Lerp(Color3.new(1, 1, 1), 0.6),
                                     AssetBook.ItemTierColors[info.Tier]
-                                )
+                                ),
+                                Rotation = 60,
+                                Transparency = NumberSequence.new({
+                                    NumberSequenceKeypoint.new(0, 0.75),
+                                    NumberSequenceKeypoint.new(1, 0.5)
+                                })
                             }),
 
-                            Fusion.Hydrate(scope, Components:RefUI("Icon_EMPPDI1_1", true))({
+                            Components.IconImageLabel(scope, {
+                                AnchorPoint = Vector2.new(0, 0.5),
+                                Size = UDim2.fromScale(0.7, 0.7),
+                                Position = UDim2.fromScale(0.037, 0.5),
+
                                 Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return use(info).Icon
                                 end)
                             }),
 
-                            Fusion.Hydrate(scope, Components:RefUI("ItemName_EMPPDI1_1"))({
+                            Components.TextLabel(scope, {
+                                Name = "ItemName",
+                                Position = UDim2.fromScale(0.16, 0.1),
+                                Size = UDim2.fromScale(0.81, 0.3),
+                                TextXAlignment = Enum.TextXAlignment.Left,
+
                                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return use(info).Name
                                 end)
                             }),
 
-                            Fusion.Hydrate(scope, Components:RefUI("ItemDesc_EMPPDI1_1"))({
+                            Components.TextLabel(scope, {
+                                Name = "ItemDesc",
+                                Position = UDim2.fromScale(0.16, 0.4),
+                                Size = UDim2.fromScale(0.81, 0.5),
+                                TextWrapped = true,
+                                TextScaled = false,
+                                TextXAlignment = Enum.TextXAlignment.Left,
+                                TextYAlignment = Enum.TextYAlignment.Top,
+                                TextTruncate = Enum.TextTruncate.AtEnd,
+                                TextTransparency = 0.4,
+
                                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return use(info).Desc
                                 end),
                                 TextSize = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                     return use(absTextSize).Y / (79 / 18)
                                 end)
+                            }),
+
+                            CFEmblemTex(scope, {
+                                Transparency = 0.91,
+                                Position = UDim2.fromScale(0.6, 0.5)
                             })
                         }
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("ItemPurchaseAmount_EMPPDiv1_1", false, false, {
-                        "Title"
-                    }))({
+                    Components.Frame(scope, {
+                        Name = "ItemPurchaseAmount",
+                        Size = UDim2.fromScale(1, 0.2),
+                        LayoutOrder = 3,
+
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("DraggerBar_EMPPDIPA1_1", false, true))({
+                            Components.TextLabel(scope, {
+                                Name = "Title",
+                                Size = UDim2.fromScale(1, 0.35),
+
+                                Text = `{props.Action} Amount`
+                            }),
+
+                            Components.Frame(scope, {
+                                Name = "DraggerBar",
+                                AnchorPoint = Vector2.zero,
+                                Size = UDim2.fromScale(1, 0.45),
+                                Position = UDim2.fromScale(0, 0.55),
+
                                 [Children] = {
-                                    Fusion.Hydrate(scope, Components:RefUI("DecreaseBtn_EMarketP1_1", true))({
+                                    Components.UIListLayout(scope, {
+                                        Padding = UDim.new(0.03, 0),
+                                        FillDirection = Enum.FillDirection.Horizontal,
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                                    }),
+
+                                    Components.TextButton(scope, {
+                                        Name = "DecreaseBtn",
+                                        AutoButtonColor = true,
+                                        BackgroundColor3 = Components.RED_COLOR,
+                                        TextColor3 = Components.BLACK_COLOR,
+                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                                        FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+                                        Text = "-",
+                                        LayoutOrder = 1,
+
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
                                             local curAmount = Fusion.peek(amount)
+
                                             local nextAmount = curAmount - 1
                                             nextAmount = math.clamp(nextAmount, 1, MAX_PURCHASE_AMOUNT)
 
                                             amount:set(nextAmount)
-                                        end
+                                        end,
+
+                                        [Children] = {
+                                            Components.RoundUICorner(scope)
+                                        }
                                     }),
 
                                     inputTextbox,
 
-                                    Fusion.Hydrate(scope, Components:RefUI("IncreaseBtn_EMarketP1_1", true))({
+                                    Components.TextButton(scope, {
+                                        Name = "IncreaseBtn",
+                                        AutoButtonColor = true,
+                                        BackgroundColor3 = Components.GREEN_COLOR,
+                                        TextColor3 = Components.BLACK_COLOR,
+                                        SizeConstraint = Enum.SizeConstraint.RelativeYY,
+                                        FontFace = Font.fromName("Montserrat", Enum.FontWeight.Bold),
+                                        Text = "+",
+                                        LayoutOrder = 3,
+
                                         [Fusion.OnEvent("MouseButton1Click")] = function()
                                             local curAmount = Fusion.peek(amount)
+
                                             local nextAmount = curAmount + 1
                                             nextAmount = math.clamp(nextAmount, 1, MAX_PURCHASE_AMOUNT)
 
                                             amount:set(nextAmount)
-                                        end
+                                        end,
+
+                                        [Children] = {
+                                            Components.RoundUICorner(scope)
+                                        }
                                     }),
+
                                 }
                             })
                         }
                     }),
 
-                    Fusion.Hydrate(scope, Components:RefUI("ItemPurchasePrice_EMPPDiv1_1"))({
+
+                    Components.Frame(scope, {
+                        Name = "ItemPurchasePrice",
+                        Size = UDim2.fromScale(1, 0.178),
+                        LayoutOrder = 4,
+
                         [Children] = {
-                            Fusion.Hydrate(scope, Components:RefUI("ItemTags_EMPPDIPP1_1", false, true))({
+                            Components.Frame(scope, {
+                                AnchorPoint = Vector2.zero,
+                                Position = UDim2.fromScale(0, 0),
+                                Name = "ItemTags",
+                                Size = UDim2.fromScale(1, 0.392),
+
                                 [Children] = {
-                                    Fusion.Hydrate(scope, Components:RefUI("YouOwned_EMPPDIPP2_1", true))({
+                                    Components.UIListLayout(scope, {
+                                        FillDirection = Enum.FillDirection.Horizontal,
+                                        Padding = UDim.new(0.02, 0),
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                                    }),
+
+                                    Components.TextLabel(scope, {
+                                        Name = "YouOwned",
+                                        AutomaticSize = Enum.AutomaticSize.X,
+                                        BackgroundTransparency = 0,
+                                        BackgroundColor3 = Components.WHITE_COLOR,
+                                        TextColor3 = Components.BLACK_COLOR,
+                                        Size = UDim2.fromScale(0, 1),
+
                                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             return `You Own: {use(itemAmount)}`
-                                        end)
+                                        end),
+
+                                        [Children] = {
+                                            Components.RoundUICorner(scope),
+                                            Components.UIPadding(scope, {
+                                                PaddingLeft = UDim.new(0, 15),
+                                                PaddingRight = UDim.new(0, 15)
+                                            })
+                                        }
                                     })
                                 }
                             }),
-                            Fusion.Hydrate(scope, Components:RefUI("ItemPrice_EMPPDIPP1_1", false, true))({
+                            Components.Frame(scope, {
+                                Name = "ItemPrice",
+                                AnchorPoint = Vector2.zero,
+                                Position = UDim2.fromScale(0, 0.55),
+                                Size = UDim2.fromScale(1, 0.5),
+
                                 [Children] = {
-                                    Fusion.Hydrate(scope, Components:RefUI("Title_EMarketEMPP1_1"))({
+                                    Components.UIListLayout(scope, {
+                                        FillDirection = Enum.FillDirection.Horizontal,
+                                        Padding = UDim.new(0.02, 0),
+                                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                                    }),
+
+                                    Components.TextLabel(scope, {
+                                        Name = "Title",
+                                        AutomaticSize = Enum.AutomaticSize.X,
+                                        Size = UDim2.fromScale(0, 0.8),
+                                        LayoutOrder = 1,
+                                        RichText = true,
+
                                         Text = Fusion.Computed(scope, function()
                                             if props.Action == "Purchase" or props.Action == "Craft" then
                                                 return `<u>Price</u>`
@@ -193,16 +382,23 @@ return function(scope: Fusion.Scope, props: {
                                         end),
                                     }),
 
-                                    Fusion.Hydrate(scope, Components:RefUI("Icon_EMarketEMPP1_1", true))({
+                                    Components.IconImageLabel(scope, {
                                         Image = CURRENCY_ICONS[props.CurrencyId],
+                                        LayoutOrder = 2
                                     }),
 
-                                    Fusion.Hydrate(scope, Components:RefUI("Price_EMarketEMPP1_1"))({
+                                    Components.TextLabel(scope, {
+                                        Name = "Price",
+                                        AutomaticSize = Enum.AutomaticSize.X,
+                                        Size = UDim2.fromScale(0, 0.8),
+                                        LayoutOrder = 3,
+
                                         Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                                             local typedAmount = use(amount) :: number
                                             typedAmount = math.clamp(typedAmount, 1, MAX_PURCHASE_AMOUNT)
 
                                             local priceType = if props.Action == "Sell" then "SellPrice" else "Price"
+
                                             return `{HarukaLib:AddCommaToNum(use(info)[priceType] * typedAmount)}`
                                         end),
                                     }),
@@ -213,8 +409,23 @@ return function(scope: Fusion.Scope, props: {
                 }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("BtnsFrame_EMPP1_1", false, true))({
+
+
+
+            Components.Frame(scope, {
+                Name = "BtnsFrame",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.825),
+                Size = UDim2.fromScale(0.9, 0.11),
+
+
                 [Children] = {
+                    Components.UIListLayout(scope, {
+                        Padding = UDim.new(0.025, 0),
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                    }),
+
                     Fusion.Computed(scope, function(_, scope: Fusion.Scope)
                         if props.Action == "Purchase" then
                             return ExecuteButton(scope, {

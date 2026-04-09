@@ -18,15 +18,40 @@ return function (scope: Fusion.Scope, props: {
         Name = "Marker",
 
         [Children] = {
-            Fusion.Hydrate(scope, Components:RefUI("Symbol_QInfo1_1", true))({
-                BackgroundColor3 = props.COLORS[props.QuestType]
+            Components.Frame(scope, {
+                Name = "Symbol",
+                BackgroundColor3 = props.COLORS[props.QuestType],
+                BackgroundTransparency = 0,
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0),
+                Size = UDim2.fromScale(0.3, 0.3),
+                SizeConstraint = Enum.SizeConstraint.RelativeYY,
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.ScaledUIStroke(scope, {
+                        Thickness = 0.2,
+                        Color = Components.BLACK_COLOR
+                    })
+                }
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Distance_QInfo1_1", true))({
+            Components.TextLabel(scope, {
+                Name = "Distance",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.4),
+                Size = UDim2.fromScale(1, 0.4),
+                AutoLocalize = false,
+
                 Text = Fusion.Computed(scope, function(use: Fusion.Use)
                     local distance = math.ceil((use(props.CharPoint) - props.WorldPoint).Magnitude)
+
                     return `{distance}M`
                 end),
+
+                [Children] = {
+                    Components.ScaledTextUIStroke(scope, {})
+                }
             })
         }
     })

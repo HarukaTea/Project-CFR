@@ -39,18 +39,27 @@ return function(scope: Fusion.Scope, props: {
         hasOwnedGamepass:set(hasOwned)
     end))
 
+
     local isSelecting = Fusion.Value(scope, false)
 
-    return Fusion.Hydrate(scope, Components:RefUI("Product_EDonate2_1", false, false, {
-        "UICorner", "Featured"
-    }))({
+    return Components.Frame(scope, {
         Name = "Product_"..props.AssetId,
+        BackgroundColor3 = Components.BLACK_COLOR,
+        BackgroundTransparency = 0,
 
         LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
-            return if use(hasOwnedGamepass) then 99999 else use(productInfo).PriceInRobux or 0
+            if use(hasOwnedGamepass) then
+                return 99999
+            else
+                return use(productInfo).PriceInRobux or 0
+            end
         end),
 
         [Children] = {
+            Components.UICorner(scope, {
+                CornerRadius = UDim.new(0.1, 0)
+            }),
+
             Components.ScaledUIStroke(scope, {
                 Thickness = 0.025,
                 Enabled = Fusion.Computed(scope, function(use: Fusion.Use, _)
@@ -58,24 +67,63 @@ return function(scope: Fusion.Scope, props: {
                 end)
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Icon_EDonate2_1", true))({
+            Components.IconImageLabel(scope, {
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.1),
+                Size = UDim2.fromScale(0.5, 0.5),
+
                 Image = Fusion.Computed(scope, function(use: Fusion.Use, _)
-                    return HarukaLib:CombineRbxId(use(productInfo).IconImageAssetId)
+                    return HarukaLib:CombineRbxId(use(productInfo).IconImageAssetId) or ""
                 end)
             }),
 
-            Fusion.Hydrate(scope, Components:RefUI("Price_EDonate2_1", true))({
+            Components.TextLabel(scope, {
+                Name = "Featured",
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.fromScale(0.5, 0.5),
+                Size = UDim2.fromScale(0.5, 0.15),
+                BackgroundTransparency = 0,
+                BackgroundColor3 = Components.WHITE_COLOR,
+                TextColor3 = Components.BLACK_COLOR,
+
+                Text = "Featured",
+
+                [Children] = {
+                    Components.RoundUICorner(scope)
+                }
+            }),
+
+            Components.TextLabel(scope, {
+                Name = "Price",
+                AnchorPoint = Vector2.new(0.5, 1),
+                Position = UDim2.fromScale(0.5, 1),
+                Size = UDim2.fromScale(1, 0.2),
+                BackgroundTransparency = 0,
+                BackgroundColor3 = Components.WHITE_COLOR,
+                TextColor3 = Components.BLACK_COLOR,
+
                 Text = Fusion.Computed(scope, function(use: Fusion.Use, _)
                     local productInfoState = use(productInfo)
                     if productInfoState.PriceInRobux then
                         return `Donate {utf8.char(0xE002)} {productInfoState.PriceInRobux}`
                     end
-                    return "???"
+
+                    return "Fetching Info..."
                 end),
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
+                }
             }),
 
             Components.HoverImageButton(scope, {
-                Components.ConnectSelectEvents(isSelecting),
+                [Fusion.OnEvent("MouseEnter")] = function()
+                    isSelecting:set(true)
+                end,
+                [Fusion.OnEvent("MouseLeave")] = function()
+                    isSelecting:set(false)
+                end,
 
                 [Fusion.OnEvent("MouseButton1Click")] = function()
                     if props.Type == "Gamepass" then
