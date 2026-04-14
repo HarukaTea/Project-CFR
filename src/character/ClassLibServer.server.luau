@@ -21,7 +21,7 @@ type ClassMechanicLibClass = {
     Destroy: (self: ClassMechanicLibClass) -> nil,
     Init: (self: ClassMechanicLibClass) -> nil,
 
-    _ListenClassTracker: (self: ClassMechanicLibClass) -> nil,
+    _TrackClass: (self: ClassMechanicLibClass) -> nil,
 
     [string]: (self: ClassMechanicLibClass) -> nil
 }
@@ -29,7 +29,7 @@ type ClassMechanicLibClass = {
 local ClassMechanicLib = {} :: ClassMechanicLibClass
 
 function ClassMechanicLib:Init()
-    ClassMechanicLib:_ListenClassTracker()
+    ClassMechanicLib:_TrackClass()
 
     ServerLib:TrackCharDiedEvent({
         Add = Add,
@@ -49,7 +49,7 @@ end
 
 --// Private Methods
 
-function ClassMechanicLib:_ListenClassTracker()
+function ClassMechanicLib:_TrackClass()
     local function _classHandler()
         ClassEmpty()
 

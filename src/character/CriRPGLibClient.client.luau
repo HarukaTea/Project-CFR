@@ -106,77 +106,7 @@ table.insert(CriRPGLib.Funcs, function()
     local function _checkCombatState(state: boolean)
         if state == nil then return end
 
-        if state then
-            if isInCombat then return end
-            isInCombat = true
-
-            pcall(_destroyCombatBorder)
-            Bindables.CreateCenterNotify:Fire("ENCOUNTER!", true)
-
-            local border = RepS.Packages.Unloads.CombatBorder:Clone() :: Model
-            local entityPos = char:GetAttribute("CombatLocation") :: CFrame
-
-            border:PivotTo(entityPos)
-            border.Parent = workspace.MapComponents
-
-            HarukaLib:SetCollisionGroup(border, "Hitbox")
-
-            local distance = plr:DistanceFromCharacter(entityPos.Position)
-            if distance >= 28 then
-                char:PivotTo(entityPos * CFrame.new(math.random(-8, 8), 5.99, math.random(-8, 8)))
-            end
-
-            local isBoss = false
-            local targetMusicId = "None"
-            Promise.new(function(resolve)
-                local targetingEnemy = char:FindFirstChild("TargetingEnemy") :: ObjectValue
-                if targetingEnemy then
-                    targetingEnemy = targetingEnemy.Value
-                    if ClientLib:IsCharValid(targetingEnemy) then
-                        if targetingEnemy:GetAttribute("IsBoss") then
-                            isBoss = true
-                            targetMusicId = targetingEnemy:GetAttribute("MusicId")
-                        end
-                    end
-                end
-                resolve()
-
-            end):catch(function() end):await()
-
-            pcall(function()
-                local function _playNormalCombatMusic()
-                    if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
-                        SoundService.Musics.Overworld:Pause()
-                        SoundService.Musics.Combat:Play()
-
-                        SoundService.Musics.Combat.TimePosition = SoundService.Musics.Combat:GetAttribute("TimePosition") or 0
-                    end
-                end
-                if isBoss then
-                    local targetSoundId = SoundService.Musics.Areas.Combat:FindFirstChild(targetMusicId) :: Sound
-                    if targetSoundId and targetSoundId.SoundId ~= SoundService.Musics.Overworld.SoundId then
-                        SoundService.Musics.Overworld:Pause()
-
-                        local bossCombatMusic = SoundService.Musics.BossCombat :: Sound
-                        bossCombatMusic.SoundId = targetSoundId.SoundId
-
-                        bossCombatMusic:Play()
-                        bossCombatMusic.PlaybackSpeed = targetSoundId.PlaybackSpeed
-                        bossCombatMusic.TimePosition = targetSoundId.TimePosition
-                        bossCombatMusic.Volume = targetSoundId.Volume
-                    else
-                        _playNormalCombatMusic()
-                    end
-                else
-                    _playNormalCombatMusic()
-                end
-            end)
-            SoundService.SFXs.CombatStart:Play()
-
-            task.delay(0.2, function()
-                SoundService.SFXs.MobPhase:Play()
-            end)
-        else
+        if not state then
             if not isInCombat then return end
 
             isInCombat = false
@@ -187,7 +117,80 @@ table.insert(CriRPGLib.Funcs, function()
             SoundService.Musics.Overworld:Resume()
 
             _destroyCombatBorder()
+            return
         end
+
+        --- if state then
+        if isInCombat then return end
+        isInCombat = true
+
+        pcall(_destroyCombatBorder)
+        Bindables.CreateCenterNotify:Fire("ENCOUNTER!", true)
+
+        local border = RepS.Packages.Unloads.CombatBorder:Clone() :: Model
+        local entityPos = char:GetAttribute("CombatLocation") :: CFrame
+
+        border:PivotTo(entityPos)
+        border.Parent = workspace.MapComponents
+
+        HarukaLib:SetCollisionGroup(border, "Hitbox")
+
+        local distance = plr:DistanceFromCharacter(entityPos.Position)
+        if distance >= 28 then
+            char:PivotTo(entityPos * CFrame.new(math.random(-8, 8), 5.99, math.random(-8, 8)))
+        end
+
+        local isBoss = false
+        local targetMusicId = "None"
+        Promise.new(function(resolve, reject)
+            local targetingEnemy = char:FindFirstChild("TargetingEnemy") :: ObjectValue
+            if not targetingEnemy then reject() return end
+
+            targetingEnemy = targetingEnemy.Value
+            if not ClientLib:IsModelValid(targetingEnemy) then reject() return end
+            if not targetingEnemy:GetAttribute("IsBoss") then reject() return end
+
+            isBoss = true
+            targetMusicId = targetingEnemy:GetAttribute("MusicId")
+            resolve()
+
+        end):catch(function() end):await()
+
+        pcall(function()
+            local function _playNormalCombatMusic()
+                if SoundService.Musics.Combat.SoundId ~= SoundService.Musics.Overworld.SoundId then
+                    SoundService.Musics.Overworld:Pause()
+                    SoundService.Musics.Combat:Play()
+
+                    SoundService.Musics.Combat.TimePosition = SoundService.Musics.Combat:GetAttribute("TimePosition") or 0
+                end
+            end
+            if not isBoss then
+                _playNormalCombatMusic()
+                return
+            end
+
+            --- if isBoss then
+            local targetSoundId = SoundService.Musics.Areas.Combat:FindFirstChild(targetMusicId) :: Sound
+            if targetSoundId and targetSoundId.SoundId ~= SoundService.Musics.Overworld.SoundId then
+                SoundService.Musics.Overworld:Pause()
+
+                local bossCombatMusic = SoundService.Musics.BossCombat :: Sound
+                bossCombatMusic.SoundId = targetSoundId.SoundId
+
+                bossCombatMusic:Play()
+                bossCombatMusic.PlaybackSpeed = targetSoundId.PlaybackSpeed
+                bossCombatMusic.TimePosition = targetSoundId.TimePosition
+                bossCombatMusic.Volume = targetSoundId.Volume
+            else
+                _playNormalCombatMusic()
+            end
+        end)
+        SoundService.SFXs.CombatStart:Play()
+
+        task.delay(0.2, function()
+            SoundService.SFXs.MobPhase:Play()
+        end)
     end
     Add(HarukaLib:Hydrate(char, {
         ["Attr-IsInCombat"] = _checkCombatState

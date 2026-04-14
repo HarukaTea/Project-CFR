@@ -6,7 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local HarukaLib = require(ReplicatedStorage.HarukaShared.Shared.HarukaLib)
 
-local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig", true) :: Configuration
 if not worldConfig then return end
 
 local mapConfig = worldConfig:GetAttribute("WinterMap") :: boolean

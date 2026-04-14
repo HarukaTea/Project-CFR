@@ -4,7 +4,7 @@ repeat task.wait() until workspace:GetAttribute("Haruka_ServerInited")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig", true) :: Configuration
 if not worldConfig then return end
 
 local mapConfig = worldConfig:GetAttribute("WinterMap") :: boolean

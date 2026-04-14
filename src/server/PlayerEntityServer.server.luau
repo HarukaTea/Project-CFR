@@ -53,7 +53,7 @@ PlayerLib.__index = PlayerLib
 
 local RankBook = require(ReplicatedStorage.HarukaShared.Library.RankBook)
 
-local DS_Version = require(ServerStorage.DS_VERSION)
+local DS_Version = require(ServerStorage.HarukaServerStorage.DS_VERSION)
 
 local profileStoreMain = HarukaDatastore.GetStore(
     DS_Version.Id,

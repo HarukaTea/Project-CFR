@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SS = game:GetService("ServerStorage")
 
-local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig", true) :: Configuration
 if not worldConfig then return end
 
 local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
@@ -53,24 +53,24 @@ local function _createFolder(name: string) : Folder
     return folder
 end
 
-local flowerAFKContainer = _createFolder("FlowerAFKContainer")
-local treeAFKContainer = _createFolder("TreeAFKContainer")
-local npcAFKContainer = _createFolder("NPCAFKContainer")
-local nonNPCAFKContainer = _createFolder("NonNPCAFKContainer")
-local mapModelAFKContainer = _createFolder("MapModelAFKContainer")
+local flowerCullContainer = _createFolder("FlowerCullContainer")
+local treeCullContainer = _createFolder("TreeCullContainer")
+local npcCullContainer = _createFolder("NPCCullContainer")
+local nonNPCCullContainer = _createFolder("NonNPCCullContainer")
+local mapModelCullContainer = _createFolder("MapModelCullContainer")
 
-local function _cullAFK(data: {
+local function _cull(data: {
     Tag: string,
     Container: Folder,
-    AFKContainer: Folder,
+    CullContainer: Folder,
     RenderDistance: number,
 })
     for _, entity: Model in CollectionService:GetTagged(data.Tag) do
         local distance = plr:DistanceFromCharacter(entity.WorldPivot.Position)
 
         if distance > data.RenderDistance and distance > 0 then
-            if entity.Parent ~= data.AFKContainer then
-                entity.Parent = data.AFKContainer
+            if entity.Parent ~= data.CullContainer then
+                entity.Parent = data.CullContainer
             end
         elseif distance <= data.RenderDistance and distance > 0 then
             if entity.Parent ~= data.Container then
@@ -81,53 +81,53 @@ local function _cullAFK(data: {
 end
 
 Add(HarukaLib.Clock(1.5, function()
-    _cullAFK({
+    _cull({
         Tag = "FlowerEntity",
         Container = flowerContainer,
-        AFKContainer = flowerAFKContainer,
+        CullContainer = flowerCullContainer,
         RenderDistance = flowerRenderDistance,
     })
-    _cullAFK({
+    _cull({
         Tag = "NPCEntity",
         Container = npcContainer,
-        AFKContainer = npcAFKContainer,
+        CullContainer = npcCullContainer,
         RenderDistance = npcRenderDistance,
     })
-    _cullAFK({
+    _cull({
         Tag = "NonNPCEntity",
         Container = nonNPCContainer,
-        AFKContainer = nonNPCAFKContainer,
+        CullContainer = nonNPCCullContainer,
         RenderDistance = npcRenderDistance,
     })
 end, true))
 Add(HarukaLib.Clock(3, function()
-    _cullAFK({
+    _cull({
         Tag = "TreeEntity",
         Container = treeContainer,
-        AFKContainer = treeAFKContainer,
+        CullContainer = treeCullContainer,
         RenderDistance = treeRenderDistance,
     })
 end, true))
 Add(HarukaLib.Clock(4.5, function()
-    _cullAFK({
+    _cull({
         Tag = "MapModelPartEntity",
         Container = mapModelContainer,
-        AFKContainer = mapModelAFKContainer,
+        CullContainer = mapModelCullContainer,
         RenderDistance = mapModelRenderDistance,
     })
 end, true))
 
 Add(Events.RefreshCullingAsync_S.On(function()
-    _cullAFK({
+    _cull({
         Tag = "MapModelPartEntity",
         Container = mapModelContainer,
-        AFKContainer = mapModelAFKContainer,
+        CullContainer = mapModelCullContainer,
         RenderDistance = mapModelRenderDistance,
     })
-    _cullAFK({
+    _cull({
         Tag = "TreeEntity",
         Container = treeContainer,
-        AFKContainer = treeAFKContainer,
+        CullContainer = treeCullContainer,
         RenderDistance = treeRenderDistance,
     })
 end))

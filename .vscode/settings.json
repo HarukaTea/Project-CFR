@@ -8,11 +8,7 @@
         "**/Thumbs.db": true,
         "sourcemap.json": true,
 
-        "src/RbxCharacterSounds.client.luau": true,
-        "src/shared/Library/LocationBook.luau": true,
-        "src/shared/Library/QuestBook.luau": true,
-        "src/DS_VERSION.luau": true,
-        "src/ABYSS_DS_VERSION.luau": true,
+        "src/RbxCharacterSounds.client.luau": true
     },
 
     "luau-lsp.ignoreGlobs": [

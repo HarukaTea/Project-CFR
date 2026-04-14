@@ -5,7 +5,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig", true) :: Configuration
 if not worldConfig then return end
 
 local swimConfig = worldConfig:GetAttribute("CanSwim") :: boolean

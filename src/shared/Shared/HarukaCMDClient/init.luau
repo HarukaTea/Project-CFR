@@ -140,8 +140,8 @@ function HarukaCMD:Init()
     end
 
     self:_InitUI()
-    self:_ListenUITracker()
-    self:_ListenInputTracker()
+    self:_TrackUI()
+    self:_TrackInput()
 end
 
 function HarukaCMD:Destroy()
@@ -168,7 +168,7 @@ function HarukaCMD:_InitUI()
     }, self)
 end
 
-function HarukaCMD:_ListenInputTracker()
+function HarukaCMD:_TrackInput()
     local function _handleOpen()
         if GuiService.MenuIsOpen then
             self.IsShown:set(false)
@@ -208,7 +208,7 @@ function HarukaCMD:_ListenInputTracker()
     self.Add(GuiService.MenuOpened:Connect(_handleOpen))
 end
 
-function HarukaCMD:_ListenUITracker()
+function HarukaCMD:_TrackUI()
     local cmdOpenObserver = Fusion.Observer(self.scope, self.IsShown)
     cmdOpenObserver:onBind(function()
         if Fusion.peek(self.IsShown) then

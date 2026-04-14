@@ -46,10 +46,10 @@ type EntityLibClass = {
     Destroy: (self: EntityLibClass) -> nil,
 
     PlayAnim: (self: EntityLibClass, animId: string) -> nil,
-    _ListenAttributeTracker: (self: EntityLibClass) -> nil,
+    _TrackAttr: (self: EntityLibClass) -> nil,
     _LoadAnims: (self: EntityLibClass) -> nil,
     _MakeModel: (self: EntityLibClass) -> nil,
-    _ListenMobWalkingTracker: (self: EntityLibClass) -> nil,
+    _TrackMobMovement: (self: EntityLibClass) -> nil,
     _SpawnHighlightIndicator: (self: EntityLibClass) -> nil,
     _DestroyModel: (self: EntityLibClass) -> nil,
 }
@@ -245,11 +245,11 @@ function EntityLib.new(enemy: Model)
 end
 
 function EntityLib:Init()
-    self:_ListenAttributeTracker()
+    self:_TrackAttr()
     self:_LoadAnims()
     self:_MakeModel()
 
-    self:_ListenMobWalkingTracker()
+    self:_TrackMobMovement()
     self:_SpawnHighlightIndicator()
 end
 
@@ -382,7 +382,7 @@ function EntityLib:_MakeModel()
     self:PlayAnim("Idle")
 end
 
-function EntityLib:_ListenAttributeTracker()
+function EntityLib:_TrackAttr()
     local entity = self.Entity :: Model
 
     local alreadyAttributeEnteringCombat = entity:GetAttribute("EnteringCombat") :: boolean
@@ -472,7 +472,7 @@ function EntityLib:_ListenAttributeTracker()
     }))
 end
 
-function EntityLib:_ListenMobWalkingTracker()
+function EntityLib:_TrackMobMovement()
     local entity = self.Entity :: Model
 
     if not ClientLib:IsCharValid(entity) then return end

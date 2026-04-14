@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig", true) :: Configuration
 if not worldConfig then return end
 
 local galleonConfig = worldConfig:GetAttribute("CanSkyGalleon") :: boolean

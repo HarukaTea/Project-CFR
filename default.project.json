@@ -42,11 +42,9 @@
             "$className": "ServerStorage",
             "$ignoreUnknownInstances": true,
 
-            "DS_VERSION": {
-                "$path": "src/DS_VERSION.luau"
-            },
-            "ABYSS_DS_VERSION": {
-                "$path": "src/ABYSS_DS_VERSION.luau"
+            "HarukaServerStorage": {
+                "$className": "Folder",
+                "$path": "src/storage"
             }
         },
         "StarterPlayer": {

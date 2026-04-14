@@ -34,7 +34,7 @@ donationRanksContainer.Parent = workspace.MapComponents
 local userNameCache = {}
 local userThumbnailCache = {}
 
-local abyssSpeedrunStore = ODSModule.new(require(ServerStorage.ABYSS_DS_VERSION), true)
+local abyssSpeedrunStore = ODSModule.new(require(ServerStorage.HarukaServerStorage.ABYSS_DS_VERSION), true)
 local donationStore = ODSModule.new("_Donation", true)
 
 local STORE_LIST = {

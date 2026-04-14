@@ -43,8 +43,8 @@ export type HarukaCMDClass = {
     Destroy: (self: HarukaCMDClass) -> nil,
 
     _InitUI: (self: HarukaCMDClass) -> nil,
-    _ListenUITracker: (self: HarukaCMDClass) -> nil,
-    _ListenInputTracker: (self: HarukaCMDClass) -> nil,
+    _TrackUI: (self: HarukaCMDClass) -> nil,
+    _TrackInput: (self: HarukaCMDClass) -> nil,
 
     scope: Fusion.Scope,
 

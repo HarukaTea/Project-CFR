@@ -65,7 +65,7 @@ if not abyssAirwall then
     return nil
 end
 
-local abyssSpeedrunDatastore = DSS:GetOrderedDataStore(require(ServerStorage.ABYSS_DS_VERSION))
+local abyssSpeedrunDatastore = DSS:GetOrderedDataStore(require(ServerStorage.HarukaServerStorage.ABYSS_DS_VERSION))
 
 --// helper functions
 

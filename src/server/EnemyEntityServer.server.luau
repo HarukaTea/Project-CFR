@@ -35,7 +35,7 @@ type EntityLibClass = {
     EntityDestroy: (self: EntityLibClass) -> nil,
 
     _SpawnModel: (self: EntityLibClass) -> nil,
-    _ListenStatsTracker: (self: EntityLibClass) -> nil,
+    _TrackEnemyStats: (self: EntityLibClass) -> nil,
     _RoamTask: (self: EntityLibClass) -> nil,
     _ErrorAndRespawn: (self: EntityLibClass, step: number) -> nil,
     _EnterCombat: (self: EntityLibClass, target: Model, combatMode: string?) -> nil,
@@ -294,7 +294,7 @@ end
 
 function EntityLib:EntityInit()
     self:_SpawnModel()
-    self:_ListenStatsTracker()
+    self:_TrackEnemyStats()
     self:_RoamTask()
 
     self.Add(HarukaLib.Clock(5, function()
@@ -473,7 +473,7 @@ function EntityLib:_SpawnModel()
     allEntityPool[uniqueId] = self
 end
 
-function EntityLib:_ListenStatsTracker()
+function EntityLib:_TrackEnemyStats()
     local entity = self.Entity :: Model
     local entityInfo = EntityBook[entity.Name]
 

@@ -5,7 +5,7 @@ local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SS = game:GetService("ServerStorage")
 
-local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig") :: Configuration
+local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig", true) :: Configuration
 if not worldConfig then return end
 
 local cullingConfig = worldConfig:GetAttribute("CanCulling") :: boolean
@@ -29,44 +29,44 @@ local function _createFolder(name: string) : Folder
     return folder
 end
 
-local flowerAFKContainer = _createFolder("FlowerAFKContainer")
-local treeAFKContainer = _createFolder("TreeAFKContainer")
-local npcAFKContainer = _createFolder("NPCAFKContainer")
-local nonNPCAFKContainer = _createFolder("NonNPCAFKContainer")
-local mapModelAFKContainer = _createFolder("MapModelAFKContainer")
+local flowerCullContainer = _createFolder("FlowerCullContainer")
+local treeCullContainer = _createFolder("TreeCullContainer")
+local npcCullContainer = _createFolder("NPCCullContainer")
+local nonNPCCullContainer = _createFolder("NonNPCCullContainer")
+local mapModelCullContainer = _createFolder("MapModelCullContainer")
 
-local function _cullAFK(data: {
+local function _cull(data: {
     Tag: string,
     Container: Folder,
-    AFKContainer: Folder,
+    CullContainer: Folder,
 })
     for _, entity: Model in CollectionService:GetTagged(data.Tag) do
         entity.Parent = data.Container
     end
 end
 
-_cullAFK({
+_cull({
     Tag = "FlowerEntity",
     Container = flowerContainer,
-    AFKContainer = flowerAFKContainer,
+    CullContainer = flowerCullContainer,
 })
-_cullAFK({
+_cull({
     Tag = "NPCEntity",
     Container = npcContainer,
-    AFKContainer = npcAFKContainer,
+    CullContainer = npcCullContainer,
 })
-_cullAFK({
+_cull({
     Tag = "NonNPCEntity",
     Container = nonNPCContainer,
-    AFKContainer = nonNPCAFKContainer,
+    CullContainer = nonNPCCullContainer,
 })
-_cullAFK({
+_cull({
     Tag = "TreeEntity",
     Container = treeContainer,
-    AFKContainer = treeAFKContainer,
+    CullContainer = treeCullContainer,
 })
-_cullAFK({
+_cull({
     Tag = "MapModelPartEntity",
     Container = mapModelContainer,
-    AFKContainer = mapModelAFKContainer,
+    CullContainer = mapModelCullContainer,
 })
