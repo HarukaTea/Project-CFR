@@ -1,6 +1,7 @@
 .DS_Store
 /Packages
 /sourcemap.json
+
 /*.lock
 /*.rbxl
 /*.rbxlx
@@ -8,3 +9,6 @@
 /*.rbxmx
 
 /spec
+
+.vscode/
+wally.toml

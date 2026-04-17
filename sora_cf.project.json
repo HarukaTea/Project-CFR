@@ -1,0 +1,54 @@
+{
+    "name": "Sora-Critical-Fantasy",
+    "servePort": 34872,
+    "tree": {
+        "$className": "DataModel",
+
+        "ReplicatedFirst": {
+            "$className": "ReplicatedFirst",
+            "$ignoreUnknownInstances": true,
+            "$path": "sora_src/ReplicatedFirst"
+        },
+
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "$ignoreUnknownInstances": true,
+            "$path": "sora_src/ReplicatedStorage",
+
+            "Packages": {
+                "$className": "Folder",
+                "$ignoreUnknownInstances": false,
+                "$path": "Packages"
+            }
+        },
+
+        "ServerStorage": {
+            "$className": "ServerStorage",
+            "$ignoreUnknownInstances": true,
+            "$path": "sora_src/ServerStorage"
+        },
+
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "$ignoreUnknownInstances": false,
+            "$path": "sora_src/ServerScriptService"
+        },
+
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "$ignoreUnknownInstances": false,
+
+            "StarterCharacterScripts": {
+                "$className": "StarterCharacterScripts",
+                "$ignoreUnknownInstances": false,
+                "$path": "sora_src/StarterPlayer/StarterCharacterScripts"
+            },
+            
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "$ignoreUnknownInstances": false,
+                "$path": "sora_src/StarterPlayer/PlayerCharacterScripts"
+            }
+        }
+    }
+}
