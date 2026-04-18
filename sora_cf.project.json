@@ -15,6 +15,11 @@
             "$ignoreUnknownInstances": true,
             "$path": "sora_src/ReplicatedStorage",
 
+            "Assets": {
+                "$className": "Folder",
+                "$ignoreUnknownInstances": true
+            },
+
             "Packages": {
                 "$className": "Folder",
                 "$ignoreUnknownInstances": false,
@@ -38,16 +43,20 @@
             "$className": "StarterPlayer",
             "$ignoreUnknownInstances": false,
 
+            "Client": {
+                "$path": "sora_src/StarterPlayer/Client.client.luau"
+            },
+
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "$ignoreUnknownInstances": false,
+                "$path": "sora_src/StarterPlayer/StarterPlayerScripts"
+            },
+
             "StarterCharacterScripts": {
                 "$className": "StarterCharacterScripts",
                 "$ignoreUnknownInstances": false,
                 "$path": "sora_src/StarterPlayer/StarterCharacterScripts"
-            },
-            
-            "StarterPlayerScripts": {
-                "$className": "StarterPlayerScripts",
-                "$ignoreUnknownInstances": false,
-                "$path": "sora_src/StarterPlayer/PlayerCharacterScripts"
             }
         }
     }

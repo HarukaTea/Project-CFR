@@ -1,0 +1,3 @@
+return {
+    serverInited = "ServerInited"
+}
