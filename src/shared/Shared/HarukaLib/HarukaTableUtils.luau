@@ -147,10 +147,10 @@ tableUtils.DeepCopy = function (t: Dict) : Dict
 	return copy
 end
 
--- **NOTE:** only string keys will be reconciled
+-- only string keys will be reconciled
 tableUtils.Reconcile = function (target: Dict, template: Dict)
 	for k, v in template do
-		if type(k) == "string" then -- Only string keys will be reconciled
+		if type(k) == "string" then
 			if target[k] == nil then
 				if type(v) == "table" then
 					target[k] = tableUtils.DeepCopy(v)

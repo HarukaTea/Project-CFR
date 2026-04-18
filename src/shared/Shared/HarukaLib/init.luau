@@ -134,7 +134,7 @@ function HarukaLib:IsInRegion(position: Vector3, regions: { BasePart }) : BasePa
 	return nil
 end
 
-local COLOR_LIST = {
+const COLOR_LIST = {
 	["<blue>"] = [[<font color="#80c0ff">]],
 	["<purple>"] = [[<font color="#ffacff">]],
 	["<red>"] = [[<font color="#ff5e41">]],
@@ -298,6 +298,12 @@ function HarukaLib.Bin()
 
 			elseif typeof(item.cancel) == "function" then
 				item:cancel()
+
+			elseif typeof(item.disconnect) == "function" then
+				item:disconnect()
+
+			elseif typeof(item.Disconnect) == "function" then
+				item:Disconnect()
 
 			--- cancel any exist promises
 			elseif getmetatable(item) then
