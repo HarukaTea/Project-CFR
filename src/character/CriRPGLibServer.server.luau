@@ -85,22 +85,33 @@ function CriRPGLib:_SpawnToLastLocation()
     lastLocation = lastLocation or "UnknownBase"
     local map = workspace.Maps:FindFirstChild(lastLocation, true) :: Folder
 
-    if map then
-        local spawnPoints = map:FindFirstChild("SpawnPoints") :: Configuration
-        if spawnPoints then
-            local spawnPointChildern = spawnPoints:GetChildren()
-            if #spawnPointChildern > 0 then
-                local rSpawnPoint = spawnPointChildern[math.random(1, #spawnPointChildern)]
+    local function _spawnChar()
+        local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
 
-                char:PivotTo(rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
-                Events.RefreshCullingAsync_S.Fire(plr)
-                return
-            end
-        end
+        char:PivotTo(baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
+        Events.RefreshCullingAsync_S.Fire(plr)
     end
-    local baseSpawn = workspace.Maps:FindFirstChildWhichIsA("SpawnLocation", true)
+    if not map then
+        _spawnChar()
+        return
+    end
 
-    char:PivotTo(baseSpawn.CFrame * CFrame.new(0, 5.99, 0))
+    local spawnPoints = map:FindFirstChild("SpawnPoints") :: Configuration
+    if not spawnPoints then
+        _spawnChar()
+        return
+    end
+
+    local spawnPointChildern = spawnPoints:GetChildren()
+    if #spawnPointChildern <= 0 then
+        _spawnChar()
+        return
+    end
+
+
+    local rSpawnPoint = spawnPointChildern[math.random(1, #spawnPointChildern)]
+
+    char:PivotTo(rSpawnPoint.CFrame * CFrame.new(0, 5.99, 0))
     Events.RefreshCullingAsync_S.Fire(plr)
 end
 
@@ -268,49 +279,50 @@ table.insert(CriRPGLib.Funcs, function()
 
             NeedCallback = false
         }
+        if not ServerLib:IsCharValid(enemy) then return end
+        if char.Humanoid.Health <= 0 then return end
 
-        if ServerLib:IsCharValid(enemy) and char.Humanoid.Health > 0 then
-            local orb = orbResContainer:FindFirstChild(orbName, true) :: Model
-            if not orb then
-                warn("Invalid Orb Id: "..orbName)
-                return
-            end
 
-            local orbUniqueId = HttpService:GenerateGUID(false)
-            local orbPos = extraProps.ForceLocation or ServerLib:GenerateOrbPos(char:GetAttribute("CombatLocation"))
-            local orbFadeTime = char:GetAttribute("OrbFadeTime") or 12 :: number
-
-            if extraProps.Offset then
-                orbPos *= CFrame.new(extraProps.Offset)
-            end
-
-            local orbUniStyle = HarukaLib:RollLoot({
-                ["Heal"] = 10,
-                ["ATK"] = 5,
-                ["Normal"] = 100 - 10 - 5
-            })
-
-            ServerTable.OrbSymbols[charUniqueId][orbUniqueId] = {
-                UniqueId = orbUniqueId,
-                OrbId = orb.Name,
-                OrbStyle = orb:GetAttribute("Style"),
-                OrbSubStyle = orb:GetAttribute("SubStyle"),
-                OrbUniStyle = orbUniStyle,
-                OrbDuration = orbFadeTime,
-                OrbLocation = orbPos,
-                Owner = char.Name,
-                CreatedTimeMS = DateTime.now().UnixTimestampMillis
-            }
-            ServerTable:AddItem(ServerTable.OrbSymbols[charUniqueId], orbUniqueId, orbFadeTime)
-
-            Events.PlaceOrb_S.Fire(plr, {
-                OrbId = orb.Name,
-                OrbUniqueId = orbUniqueId,
-                OrbDuration = orbFadeTime,
-                OrbLocationPos = orbPos.Position,
-                OrbUniStyle = orbUniStyle
-            })
+        local orb = orbResContainer:FindFirstChild(orbName, true) :: Model
+        if not orb then
+            warn("Invalid Orb Id: "..orbName)
+            return
         end
+
+        local orbUniqueId = HttpService:GenerateGUID(false)
+        local orbPos = extraProps.ForceLocation or ServerLib:GenerateOrbPos(char:GetAttribute("CombatLocation"))
+        local orbFadeTime = char:GetAttribute("OrbFadeTime") or 12 :: number
+
+        if extraProps.Offset then
+            orbPos *= CFrame.new(extraProps.Offset)
+        end
+
+        local orbUniStyle = HarukaLib:RollLoot({
+            ["Heal"] = 10,
+            ["ATK"] = 5,
+            ["Normal"] = 100 - 10 - 5
+        })
+
+        ServerTable.OrbSymbols[charUniqueId][orbUniqueId] = {
+            UniqueId = orbUniqueId,
+            OrbId = orb.Name,
+            OrbStyle = orb:GetAttribute("Style"),
+            OrbSubStyle = orb:GetAttribute("SubStyle"),
+            OrbUniStyle = orbUniStyle,
+            OrbDuration = orbFadeTime,
+            OrbLocation = orbPos,
+            Owner = char.Name,
+            CreatedTimeMS = DateTime.now().UnixTimestampMillis
+        }
+        ServerTable:AddItem(ServerTable.OrbSymbols[charUniqueId], orbUniqueId, orbFadeTime)
+
+        Events.PlaceOrb_S.Fire(plr, {
+            OrbId = orb.Name,
+            OrbUniqueId = orbUniqueId,
+            OrbDuration = orbFadeTime,
+            OrbLocationPos = orbPos.Position,
+            OrbUniStyle = orbUniStyle
+        })
     end
     local function _spawnOrb()
         local class = plr:GetAttribute("Class") or "Burst"
@@ -414,30 +426,31 @@ table.insert(CriRPGLib.Funcs, function()
             end
             RunService.Stepped:Wait()
         end
-        if totalLevelShouldGive > 0 then
-            if plr:GetAttribute(props.LevelAttr) + totalLevelShouldGive > props.MaxLevel then
-                totalLevelShouldGive = props.MaxLevel - plr:GetAttribute(props.LevelAttr)
-            end
-            if totalLevelShouldGive <= 0 then
-                plr:SetAttribute(props.EXPAttr, 0)
-                return
-            end
+        if totalLevelShouldGive <= 0 then return end
 
-            HarukaLib:AddAttr(plr, props.LevelAttr, totalLevelShouldGive)
-            HarukaLib:AddAttr(plr, props.EXPAttr, -math.ceil(maxEXPGained))
-            HarukaLib:AddAttr(plr, props.PerkPointAttr, FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
 
-            Events.PlaySound_S.Fire(plr, SoundService.SFXs.LevelUp)
-            ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
-
-            Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
-                StatusId = "LevelUp",
-                Character = char,
-            })
-
-            char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
-            char.Humanoid.Health = char.Humanoid.MaxHealth
+        if plr:GetAttribute(props.LevelAttr) + totalLevelShouldGive > props.MaxLevel then
+            totalLevelShouldGive = props.MaxLevel - plr:GetAttribute(props.LevelAttr)
         end
+        if totalLevelShouldGive <= 0 then
+            plr:SetAttribute(props.EXPAttr, 0)
+            return
+        end
+
+        HarukaLib:AddAttr(plr, props.LevelAttr, totalLevelShouldGive)
+        HarukaLib:AddAttr(plr, props.EXPAttr, -math.ceil(maxEXPGained))
+        HarukaLib:AddAttr(plr, props.PerkPointAttr, FormulaBook.PLAYER_POINT_PER_LEVEL * totalLevelShouldGive)
+
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.LevelUp)
+        ServerLib:ShowText(char, "LEVEL UP!", Color3.fromHex('#ffeaa7'))
+
+        Events.PlayVFXStatusToPlayer_S.FireList(ServerLib:GetNearbyPlayers(char.PrimaryPart.Position), {
+            StatusId = "LevelUp",
+            Character = char,
+        })
+
+        char:SetAttribute("Shield", char:GetAttribute("MaxShield"))
+        char.Humanoid.Health = char.Humanoid.MaxHealth
     end
     Add(HarukaLib:Hydrate(plr, {
         ["Attr-EXP"] = function(exp: number)

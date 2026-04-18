@@ -1,7 +1,6 @@
 
 local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -626,14 +625,6 @@ table.insert(ServerWorldLib.Funcs, function()
             prompt.Enabled = true
         end
     end):catch(function() end)
-end)
-
-table.insert(ServerWorldLib.Funcs, function()
-    if Lighting:FindFirstChild("_Archived") then
-        for _, sky: Sky in Lighting._Archived:GetChildren() do
-            sky.Parent = Lighting
-        end
-    end
 end)
 
 table.insert(ServerWorldLib.Funcs, function()

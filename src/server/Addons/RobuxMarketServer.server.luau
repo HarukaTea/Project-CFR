@@ -10,6 +10,7 @@ local AssetBook = require(ReplicatedStorage.HarukaShared.Library.AssetBook)
 local Events = require(ServerScriptService.HarukaServer.Library.ServerEvents)
 local HarukaDatastore = require(ServerScriptService.HarukaServer.Shared.HarukaDatastore)
 local PlayerProfileLib = require(ServerScriptService.HarukaServer.Services.PlayerProfileLib)
+local Promise = require(ReplicatedStorage.HarukaShared.Shared.Promise)
 
 local PlayerTemplate = require(ServerScriptService.HarukaServer.Library.PlayerTemplate)
 
@@ -38,30 +39,39 @@ local function processReceipt(receiptInfo: {[string]: any})
     local productId = receiptInfo.ProductId
 
     local player = Players:GetPlayerByUserId(userId)
-    if player then
+    if not player then
+        return Enum.ProductPurchaseDecision.NotProcessedYet
+    end
+
+    Promise.new(function(resolve)
         while player:GetAttribute("HarukaUniqueId") == nil and player.Parent == Players do
             wait()
         end
-        wait()
+        resolve()
+    end):catch(function() end):timeout(15):await()
 
-        if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
-            local profileObj = PlayerProfileLib:GetObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
-            if profileObj then
-                local profile = profileObj.Profile
-                if profile then
-                    local handler = productFunctions[tostring(productId)]
-                    local success, result = pcall(handler, receiptInfo, player, profile)
+    wait()
+    if player and player:GetAttribute("HarukaUniqueId") and player.Parent == Players then
+        local profileObj = PlayerProfileLib:GetObjByUniqueId(player:GetAttribute("HarukaUniqueId"))
+        if not profileObj then
+            return Enum.ProductPurchaseDecision.NotProcessedYet
+        end
 
-                    if success then
-                        Events.CreateNotify_S.Fire(player, "You have successfully purchased the product!")
-                        return Enum.ProductPurchaseDecision.PurchaseGranted
-                    else
-                        Events.CreateNotify_S.Fire(player, "Failed to process your purchase receipt!")
-                        Events.CreateNotify_S.Fire(player, "!!! PLEASE CONTACT DEVELOPERS IN THE COMMUNITY FOR SUPPORT !!!")
-                        warn(`Failed to process receipt: `, receiptInfo, result)
-                    end
-                end
-            end
+        local profile = profileObj.Profile
+        if not profile then
+            return Enum.ProductPurchaseDecision.NotProcessedYet
+        end
+
+        local handler = productFunctions[tostring(productId)]
+        local success, result = pcall(handler, receiptInfo, player, profile)
+
+        if success then
+            Events.CreateNotify_S.Fire(player, "You have successfully purchased the product!")
+            return Enum.ProductPurchaseDecision.PurchaseGranted
+        else
+            Events.CreateNotify_S.Fire(player, "Failed to process your purchase receipt!")
+            Events.CreateNotify_S.Fire(player, "!!! PLEASE CONTACT DEVELOPERS IN THE COMMUNITY FOR SUPPORT !!!")
+            warn(`Failed to process receipt: `, receiptInfo, result)
         end
     end
 

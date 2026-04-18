@@ -31,8 +31,6 @@ Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targetin
             Power = 1,
         })
         debuffObj:Activate()
-
-        
     end
 end))
 

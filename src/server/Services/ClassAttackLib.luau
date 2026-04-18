@@ -158,6 +158,59 @@ local function _restoreMana(char: Model)
     StatusLib:RestoreManaPercentage(char, 20)
 end
 
+local function _bossMiddler(targeting: Model, char: Model)
+    if targeting:HasTag("BossEnemyEntity")
+        and not targeting:GetAttribute("IsInRESBreakStage") then
+
+        local breakAmount = ClassAttackLib:CalRESBreak(char, 15)
+        HarukaLib:AddAttr(targeting, "BreakProgress", breakAmount)
+
+        local curProgress = targeting:GetAttribute("BreakProgress") or 0
+        local maxProgress = targeting:GetAttribute("TotalBreakProgress") or 100
+        if curProgress >= maxProgress then
+            targeting:SetAttribute("IsInRESBreakStage", true)
+
+            HarukaLib:AddAttr(targeting, "DMGTakenBonusExPower", 1)
+
+            local BREAK_DURATION = 6
+            Promise.new(function()
+                local numVal = Instance.new("NumberValue")
+                numVal.Value = targeting:GetAttribute("TotalBreakProgress") + 50
+                numVal.Parent = targeting
+
+                local tweenInfo = TweenInfo.new(BREAK_DURATION)
+
+                HarukaLib:CreateTween(numVal, tweenInfo, {
+                    Value = 0
+                }):Play()
+                HarukaLib:Hydrate(numVal, {
+                    ["Prop-Value"] = function(val: number)
+                        targeting:SetAttribute("BreakProgress", val)
+                    end
+                })
+
+            end):catch(function() end)
+
+            ServerLib:ShowText(targeting, "STUNNED!")
+
+            local symbol = Instance.new("BoolValue")
+            symbol.Name = "ShockingSymbol"
+            symbol.Value = true
+            symbol.Parent = targeting
+            Debris:AddItem(symbol, BREAK_DURATION)
+
+            Promise.delay(BREAK_DURATION):andThen(function()
+                targeting:SetAttribute("IsInRESBreakStage", false)
+                targeting:SetAttribute("BreakProgress", 0)
+                HarukaLib:AddAttr(targeting, "DMGTakenBonusExPower", -1)
+
+                if symbol then symbol:Destroy() end
+
+            end):catch(function() end)
+        end
+    end
+end
+
 --// Universal
 
 --// Class-specific
@@ -905,56 +958,7 @@ function ClassAttackLib:DealDamageToEnemy(char: Model, targeting: Model, dmgProp
     targetingHumanoid:TakeDamage(dmgProps.DMG)
 
     --- resistence bar
-    if targeting:HasTag("BossEnemyEntity")
-        and not targeting:GetAttribute("IsInRESBreakStage") then
-
-        local breakAmount = ClassAttackLib:CalRESBreak(char, 15)
-        HarukaLib:AddAttr(targeting, "BreakProgress", breakAmount)
-
-        local curProgress = targeting:GetAttribute("BreakProgress") or 0
-        local maxProgress = targeting:GetAttribute("TotalBreakProgress") or 100
-        if curProgress >= maxProgress then
-            targeting:SetAttribute("IsInRESBreakStage", true)
-
-            HarukaLib:AddAttr(targeting, "DMGTakenBonusExPower", 1)
-
-            local BREAK_DURATION = 6
-            Promise.new(function()
-                local numVal = Instance.new("NumberValue")
-                numVal.Value = targeting:GetAttribute("TotalBreakProgress") + 50
-                numVal.Parent = targeting
-
-                local tweenInfo = TweenInfo.new(BREAK_DURATION)
-
-                HarukaLib:CreateTween(numVal, tweenInfo, {
-                    Value = 0
-                }):Play()
-                HarukaLib:Hydrate(numVal, {
-                    ["Prop-Value"] = function(val: number)
-                        targeting:SetAttribute("BreakProgress", val)
-                    end
-                })
-
-            end):catch(function() end)
-
-            ServerLib:ShowText(targeting, "STUNNED!")
-
-            local symbol = Instance.new("BoolValue")
-            symbol.Name = "ShockingSymbol"
-            symbol.Value = true
-            symbol.Parent = targeting
-            Debris:AddItem(symbol, BREAK_DURATION)
-
-            Promise.delay(BREAK_DURATION):andThen(function()
-                targeting:SetAttribute("IsInRESBreakStage", false)
-                targeting:SetAttribute("BreakProgress", 0)
-                HarukaLib:AddAttr(targeting, "DMGTakenBonusExPower", -1)
-
-                if symbol then symbol:Destroy() end
-
-            end):catch(function() end)
-        end
-    end
+    _bossMiddler(targeting, char)
 
     Promise.try(function()
         local player = Players:GetPlayerFromCharacter(char)

@@ -32,7 +32,11 @@ end)
 --// Helper functions
 
 function ServerLib:WeldCATypeModel(part: BasePart, welded: Model)
-	local target = welded:FindFirstChild("Middle") or welded:FindFirstChild("Base") or welded:FindFirstChild("HumanoidRootPart") or welded:FindFirstChild("Handle")
+	local target = welded:FindFirstChild("Middle")
+		or welded:FindFirstChild("Base")
+		or welded:FindFirstChild("HumanoidRootPart")
+		or welded:FindFirstChild("Handle")
+
 	local C = welded:GetChildren()
 	if welded:FindFirstChild("Meshes") then
 		C = welded.Meshes:GetChildren()
