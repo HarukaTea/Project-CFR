@@ -41,7 +41,7 @@ local function _cull(data: {
     CullContainer: Folder,
 })
     for _, entity: Model in CollectionService:GetTagged(data.Tag) do
-        entity.Parent = data.Container
+        entity.Parent = data.CullContainer
     end
 end
 

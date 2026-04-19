@@ -4,7 +4,6 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local SSS = game:GetService("ServerScriptService")
 local RepS = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
 
 local ClassBook = require(RepS.HarukaShared.Library.ClassBook)
 local FormulaBook = require(RepS.HarukaShared.Library.FormulaBook)
@@ -367,50 +366,6 @@ local commands: CommandJSON = {
 
             char:PivotTo(spawnPoint:GetChildren()[1].CFrame)
             Events.RefreshCullingAsync_S.Fire(props.Executor)
-
-            props.ResolveObj()
-        end
-    },
-
-    {
-        Name = "LoadSecretMap",
-        Alias = "/load_secret_map_dev",
-
-        RankReq = 127,
-        Args = {
-            {
-                Name = "map_id",
-                Type = "enum",
-                EnumItems = { "Ihnmaica" }
-            },
-            {
-                Name = "action_id",
-                Type = "enum",
-                EnumItems = { "Load", "Unload" }
-            }
-        },
-
-        Callback = function(props: CallbackProps)
-            local action = props.Args[2] :: "Load" | "Unload"
-            local map = workspace.Maps:FindFirstChild(props.Args[1]) :: Folder
-
-            if action == "Load" and map then
-                Events.CreateNotify_S.Fire(props.Executor, "Map already loaded")
-                return
-            elseif action == "Unload" and not map then
-                Events.CreateNotify_S.Fire(props.Executor, "Map already unloaded")
-                return
-            end
-
-            if action == "Load" then
-                ServerStorage["__DevSecretMaps"][props.Args[1]].Parent = workspace.Maps
-
-                Events.CreateNotify_S.Fire(props.Executor, "Map loaded")
-            elseif action == "Unload" then
-                map.Parent = ServerStorage["__DevSecretMaps"]
-
-                Events.CreateNotify_S.Fire(props.Executor, "Map unloaded")
-            end
 
             props.ResolveObj()
         end

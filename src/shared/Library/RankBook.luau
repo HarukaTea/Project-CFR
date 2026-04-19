@@ -107,6 +107,7 @@ RankBook.PlayerTitles = {
     TitleAbyssT6 = "The Abyss",
     TitleSantaHelper = "Santa's Helper",
     TitleCapybara = "Capybara",
+    EasterTitle = "Bunny"
 }
 
 return RankBook

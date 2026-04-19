@@ -324,6 +324,25 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             PlayerProfileLib.CalDonationAndSave(profile, plr)
         end)
 
+        --// load in event
+        Promise.try(function()
+            local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig")
+            if not worldConfig then return end
+
+            local eventConfig = worldConfig:FindFirstChild("EventConfig")
+            local isEaster = eventConfig and eventConfig:GetAttribute("EasterEvent")
+
+            if isEaster and workspace.MapComponents:FindFirstChild("Easter") then
+                for egg: string, boolean: boolean in validatedData.EggsV1 do
+                    local entity = workspace.MapComponents.Easter:FindFirstChild(egg)
+                    if not entity then continue end
+
+                    entity:SetAttribute("Player_"..plr.UserId, true)
+                end
+            end
+
+        end):catch(function() end)
+
         Promise.try(function()
             self.ProfileObj:_CompensateData(self.Slot)
         end):await()
@@ -588,6 +607,24 @@ function PlayerLib:_SaveData()
             end
 
             profileAttrs.ChristmasGifts = giftsFound
+        end
+
+        local isEaster = eventConfig and eventConfig:GetAttribute("EasterEvent")
+        if isEaster and workspace.MapComponents:FindFirstChild("Easter") then
+            local eggsFound = profileAttrs.EggsV1 or {}
+            for _, egg: Model in CollectionService:GetTagged("EasterEggEntity") do
+                if egg:GetAttribute("Player_"..self.Player.UserId) then
+                    eggsFound[egg.Name] = true
+                end
+            end
+
+            profileAttrs.EggsV1 = eggsFound
+
+            local found = 0
+            for _, boolean in eggsFound do
+                if boolean then found += 1 end
+            end
+            profileAttrs.EggFoundV1 = found
         end
     end):catch(function() end)
 

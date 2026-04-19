@@ -153,13 +153,15 @@ return function (self: Self)
 		SoundService.SFXs.ChatNext:Play()
 
 		thatPrompt.Enabled = false
+
+		local blacklist = { "Gift", "Climb", "Egg" }
 		if thatPrompt.Name == "Chest" then
 			wait(1.5)
 			local chest = thatPrompt:FindFirstAncestorOfClass("Model")
 			if not chest then return end
 
 			if chest:GetAttribute("Receiver_"..self.plr.Name) then return end
-		elseif thatPrompt.Name == "Gift" or thatPrompt.Name == "Climb" then
+		elseif table.find(blacklist, thatPrompt.Name) then
 			--// do nothing
 			return
 		else

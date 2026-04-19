@@ -211,6 +211,9 @@ table.insert(GlobalCriRPGLib.Funcs, function()
         if prompt.Parent == nil then return end
         if prompt.Enabled == false then return end
 
+        local blacklist = { "Egg" }
+        if table.find(blacklist, prompt.Name) then return end
+
         local adornee = prompt.Parent :: BasePart
         local char = plr.Character
 

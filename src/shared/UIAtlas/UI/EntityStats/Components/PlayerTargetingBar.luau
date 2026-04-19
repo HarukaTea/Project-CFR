@@ -212,18 +212,12 @@ return function(scope: Fusion.Scope, props: {
         Visible = false,
 
         [Children] = {
-            Components.Frame(scope, {
-                Name = "EffectList",
-
-                [Children] = {
-                    Components.UIListLayout(scope, {
-                        Padding = UDim.new(0.01, 0),
-                        FillDirection = Enum.FillDirection.Horizontal,
-                        HorizontalAlignment = Enum.HorizontalAlignment.Right,
-                        VerticalAlignment = Enum.VerticalAlignment.Top,
-                    })
-                }
-            }),
+            Components.UIListLayout(scope, {
+                Padding = UDim.new(0.01, 0),
+                FillDirection = Enum.FillDirection.Horizontal,
+                HorizontalAlignment = Enum.HorizontalAlignment.Right,
+                VerticalAlignment = Enum.VerticalAlignment.Top,
+            })
         }
     })
 
@@ -232,8 +226,7 @@ return function(scope: Fusion.Scope, props: {
     ClientLib:TrackEffectListToUI({
         Target = targeting,
         Scope = scope,
-        GuiContainer = bar2,
-        EffectContainer = bar2.EffectList
+        GuiContainer = bar2
     })
 
 

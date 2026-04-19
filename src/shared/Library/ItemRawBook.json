@@ -1852,5 +1852,41 @@
         "ArtifactId": "",
         "Recipe": "",
         "ObtainMethod": ""
+    },
+    {
+        "ItemId": "EasterTitle",
+        "Name": "Title: Bunny",
+        "Type": "Title",
+        "Tier": "5",
+        "Level": "1",
+        "Desc": "A title, which shows your progress",
+        "Stat": "Completed 2026 Easter Event",
+        "StatInfo": "",
+        "ExtraStatInfo": "",
+        "Icon": "123153183547809",
+        "Price": "1001",
+        "SellPrice": "2",
+        "Tags": "Title,EventLimited",
+        "ArtifactId": "",
+        "Recipe": "",
+        "ObtainMethod": ""
+    },
+    {
+        "ItemId": "BunnySwordCosmetic",
+        "Name": "Bunny's Carrot",
+        "Type": "Cosmetic",
+        "Tier": "5",
+        "Level": "15",
+        "Desc": "That's truly a small carrot",
+        "Stat": "It's a cosmetic",
+        "StatInfo": "",
+        "ExtraStatInfo": "",
+        "Icon": "115173054431732",
+        "Price": "10000",
+        "SellPrice": "1",
+        "Tags": "EventLimited",
+        "ArtifactId": "",
+        "Recipe": "",
+        "ObtainMethod": ""
     }
 ]

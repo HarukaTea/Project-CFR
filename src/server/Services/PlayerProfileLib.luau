@@ -461,28 +461,13 @@ end
 
 function PlayerProfileLib:_CompensateData(slot: string)
     local data = self.Profile.Data[slot].Attrs :: PlayerTemplate.PlayerDataJSON
-
     local items = self.Player.Items :: Folder
-
-    local date = data.LastJoinedDateTime or DateTime.now():ToIsoDate()
-    local slotTimestamp = DateTime.fromIsoDate(date).UnixTimestamp
-
-    local v1compensationTime = 1767797590 + 300
 
     if data.QuestsV3.Main4 and data.QuestsV3.Main4.Completed then
         if not items:FindFirstChild("TitleAdventurer") then
             ServerLib:GiveItemDrop(self.Player, "TitleAdventurer", 1)
 
             Events.CreateNotify_S.Fire(self.Player, "You have received a Title: Adventurer!")
-        end
-    end
-    if not self.Player:GetAttribute("EXPFormulaV2Given") then
-        self.Player:SetAttribute("EXPFormulaV2Given", true)
-
-        if slotTimestamp < v1compensationTime then
-            HarukaLib:AddAttr(self.Player, "EXP", 400 * 1000)
-
-            Events.CreateNotify_S.Fire(self.Player, "You have received free 400k exp as compensation for the formula change!")
         end
     end
 end

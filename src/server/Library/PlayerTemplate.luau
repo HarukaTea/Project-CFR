@@ -72,6 +72,8 @@ export type PlayerDataJSON = {
     ClaimedHalloweenDonation: boolean,
     ChristmasGiftFound: number,
     ChristmasGifts: { [string]: boolean },
+    EggFoundV1: number,
+    EggsV1: { [string]: boolean },
 
     -- migration fields
     EXPFormulaV2Given: boolean?,
@@ -152,6 +154,8 @@ local playerStats = {
             ClaimedHalloweenDonation = false,
             ChristmasGiftFound = 0,
             ChristmasGifts = {},
+            EggFoundV1 = 0,
+            EggsV1 = {},
 
             --// migration fields
             EXPFormulaV2Given = false,
