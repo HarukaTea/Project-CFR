@@ -339,6 +339,10 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
                     entity:SetAttribute("Player_"..plr.UserId, true)
                 end
+
+                if validatedData.EggFoundV1 >= 19 then
+                    ServerLib:GiveBadge(934973080789246, plr)
+                end
             end
 
         end):catch(function() end)
