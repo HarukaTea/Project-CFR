@@ -98,6 +98,15 @@ return function (plr: Player)
                                     end
                                 }))
 
+                                local hasClaimed = Fusion.Value(scope, false)
+                                table.insert(scope, HarukaLib:Hydrate(plr, {
+                                    ["Attr-BADGECLAIM_"..badgeId] = function(state: boolean)
+                                        state = state or false
+
+                                        hasClaimed:set(state)
+                                    end
+                                }))
+
 
                                 local layoutOrder = 1
                                 local firstChar = string.sub(badge, 1, 1)
@@ -123,9 +132,56 @@ return function (plr: Player)
                                     BadgeInfo = badgeInfo,
                                     HasOwned = hasOwned,
                                     IsUnlocked = isUnlocked,
-                                    LayoutOrder = layoutOrder
+                                    LayoutOrder = layoutOrder,
+                                    HasClaimed = hasClaimed,
+                                    BadgeRblxId = badgeId
                                 })
-                            end)
+                            end),
+
+                            Fusion.New(scope, "Frame")({
+                                Name = "DivideLine",
+                                BackgroundTransparency = 0.8,
+                                Size = UDim2.fromScale(1, 0.01),
+                                LayoutOrder = 997,
+
+                                [Children] = {
+                                    Components.UIAspectRatioConstraint(scope, 204.49)
+                                }
+                            }),
+
+
+                            Fusion.ForPairs(scope, AssetBook.BadgeIdsLimited, function(_, scope: Fusion.Scope, badge: string, badgeId: number)
+
+                                local badgeInfo = Fusion.Value(scope, {})
+                                local hasOwned = Fusion.Value(scope, false)
+                                table.insert(scope, task.spawn(function()
+                                    local info
+                                    pcall(function()
+                                        info = BadgeService:GetBadgeInfoAsync(badgeId)
+                                    end)
+                                    info = info or {}
+                                    badgeInfo:set(info)
+                                end))
+                                table.insert(scope, task.spawn(function()
+                                    local state
+                                    pcall(function()
+                                        state = BadgeService:UserHasBadgeAsync(plr.UserId, badgeId)
+                                    end)
+                                    hasOwned:set(state)
+                                end))
+
+                                return badge, BadgeBar(scope, {
+                                    BadgeId = badge,
+                                    BadgeInfo = badgeInfo,
+                                    HasOwned = hasOwned,
+                                    IsUnlocked = hasOwned,
+                                    LayoutOrder = 233,
+
+                                    IsLimited = true,
+                                    HasClaimed = true,
+                                    BadgeRblxId = badgeId
+                                })
+                            end),
                         }
 
                     }, {

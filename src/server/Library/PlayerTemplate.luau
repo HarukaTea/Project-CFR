@@ -59,6 +59,9 @@ export type PlayerDataJSON = {
     ClassLevel: { [string]: number },
     ClassEXPV2: { [string]: number },
     ClassPerkPoints: { [string]: number },
+    BadgeClaimedV3: { [string]: boolean },
+    LastLoginTime: number,
+    LoginStreak: number,
 
     --// legacy fields
     Settings: {}?,
@@ -146,6 +149,9 @@ local playerStats = {
             AbyssDropPity = 0,
             FavActionDone = false,
             IsInGroup = false,
+            BadgeClaimedV3 = {},
+            LastLoginTime = 0,
+            LoginStreak = 0,
 
             --// event fields
             HalloweenCandy = 0,

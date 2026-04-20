@@ -27,8 +27,13 @@ return function(scope: Fusion.Scope, props: {
         AnchorPoint = Vector2.new(0, 0.5),
         Position = UDim2.fromScale(0.02, 1),
         Size = UDim2.fromScale(0.325, 7),
+        BackgroundTransparency = 0,
 
         [Children] = {
+            Components.UICorner(scope, {
+                CornerRadius = UDim.new(0.05, 0)
+            }),
+
             Components.Frame(scope, {
                 Name = "AwardIcon",
                 AnchorPoint = Vector2.new(0.5, 0),
@@ -116,7 +121,7 @@ return function(scope: Fusion.Scope, props: {
             Components.TextButton(scope, {
                 Name = "ClaimButton",
                 AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.fromScale(0.5, 0.9),
+                Position = UDim2.fromScale(0.5, 0.87),
                 Size = UDim2.fromScale(0.4, 0.08),
                 BackgroundTransparency = 0,
                 TextColor3 = Components.BLACK_COLOR,

@@ -7,9 +7,10 @@ export type EntityJSON = {
     EnvironmentBonus: number,
     Species: string,
     Drops: {[string]: number},
-    BadgeId: number?,
     IsBoss: boolean?,
     Tag: string?,
+
+    BadgeId: number?,
 }
 
 return {
@@ -306,6 +307,8 @@ return {
 
         BaseSpeed = 0,
         EnvironmentBonus = 2,
+
+        BadgeId = 956942082412177,
 
         IsBoss = true,
         Species = "RiskRain",

@@ -88,14 +88,14 @@ workspace:SetAttribute("Haruka_ServerInited", true)
 
 --// server runtime too long
 do
-    Promise.delay(60 * 60 * 6):andThen(function()
+    Promise.delay(60 * 60 * 8):andThen(function()
         warn("[Warn] Server has reached max runtime")
 
         workspace:SetAttribute("Haruka_ServerLocked", true)
 
         HarukaLib.Clock(5, function()
             for _, plr: Player in Players:GetPlayers() do
-                plr:Kick("[Error] The server has been running for over 6 hours, please rejoin a new one!")
+                plr:Kick("[Error] The server has been running for over 8 hours, please rejoin a new one!")
             end
         end)
 

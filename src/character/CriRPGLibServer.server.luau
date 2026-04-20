@@ -1040,9 +1040,12 @@ table.insert(CriRPGLib.Funcs, function()
 			if val >= 1000 then
 				_checkAndAward(AssetBook.BadgeIds.GoldGatherer)
 			end
-			if val >= 1000 * 100 then
+			if val >= 1000 * 10 then
 				_checkAndAward(AssetBook.BadgeIds.GoldCollector)
 			end
+            if val >= 1000 * 100 then
+                _checkAndAward(AssetBook.BadgeIds.GoldHunter)
+            end
 		end,
 		["Attr-CombatWonTimes"] = function(val: number)
 			val = val or 0
@@ -1050,6 +1053,9 @@ table.insert(CriRPGLib.Funcs, function()
 			if val >= 100 then
 				_checkAndAward(AssetBook.BadgeIds.Fighter)
 			end
+            if val >= 10 then
+                _checkAndAward(AssetBook.BadgeIds.FightBeginner)
+            end
 		end
 	}))
 	Add(AccessoryUniversal.RegisterEnemyOnHit(script, event, char, function(targeting: Model, attacker: Model, dmgProps: AccessoryUniversal.DMGPropsMetaData)
@@ -1058,6 +1064,9 @@ table.insert(CriRPGLib.Funcs, function()
 		if dmgProps.DMG >= 1000 then
 			_checkAndAward(AssetBook.BadgeIds.StoneBreaker)
 		end
+        if dmgProps.DMG >= 1000 * 10 then
+            _checkAndAward(AssetBook.BadgeIds.Explosion)
+        end
 	end))
 	AccessoryUniversal.RegisterPlayerDiedEmpty(script, char.PlayerDied, Empty)
 end)

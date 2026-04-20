@@ -4,6 +4,7 @@ local RepS = game:GetService("ReplicatedStorage")
 local Components = require(RepS.HarukaShared.UIAtlas.HarukaComponents)
 local Fusion = require(RepS.HarukaShared.Shared.Fusion)
 local HarukaLib = require(RepS.HarukaShared.Shared.HarukaLib)
+local Events = require(RepS.HarukaShared.Library.Events)
 
 local CFEmblemTex = require(RepS.HarukaShared.UIAtlas.Components.CFEmblemTex)
 
@@ -18,10 +19,14 @@ type Dict = { [string]: any }
 return function(scope: Fusion.Scope, props: {
     BadgeId: string,
     BadgeInfo: Dict,
+    BadgeRblxId: number,
 
     HasOwned: Fusion.Value<boolean>,
     IsUnlocked: Fusion.Value<boolean>,
-    LayoutOrder: number
+    HasClaimed: Fusion.Value<boolean>,
+    LayoutOrder: number,
+
+    IsLimited: boolean?,
 })
 
     local badge = props.BadgeId
@@ -37,6 +42,8 @@ return function(scope: Fusion.Scope, props: {
         BackgroundColor3 = Color3.fromHex('#cac4b9'),
 
         LayoutOrder = Fusion.Computed(scope, function(use: Fusion.Use, _)
+            if props.IsLimited then return 998 end
+
             local state = use(hasOwned)
             if state then
                 return layoutOrder + 233
@@ -66,7 +73,7 @@ return function(scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Title",
                 Position = UDim2.fromScale(0.13, 0.1),
-                Size = UDim2.fromScale(0.8, 0.35),
+                Size = UDim2.fromScale(0.7, 0.35),
                 TextColor3 = Components.BLACK_COLOR,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 RichText = true,
@@ -78,7 +85,7 @@ return function(scope: Fusion.Scope, props: {
             Components.TextLabel(scope, {
                 Name = "Desc",
                 Position = UDim2.fromScale(0.13, 0.53),
-                Size = UDim2.fromScale(0.8, 0.25),
+                Size = UDim2.fromScale(0.7, 0.25),
                 TextColor3 = Components.BLACK_COLOR,
                 TextXAlignment = Enum.TextXAlignment.Left,
 
@@ -101,6 +108,32 @@ return function(scope: Fusion.Scope, props: {
                     Components.UICorner(scope, {
                         CornerRadius = UDim.new(0.1, 0),
                     }),
+                }
+            }),
+
+
+            Components.TextButton(scope, {
+                Name = "ClaimButton",
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.fromScale(0.99, 0.5),
+                Size = UDim2.fromScale(0.15, 0.35),
+                BackgroundTransparency = 0,
+                TextColor3 = Components.BLACK_COLOR,
+                Text = "CLAIM",
+                BackgroundColor3 = Color3.fromRGB(255, 170, 127),
+
+                Visible = Fusion.Computed(scope, function(use: Fusion.Use, _)
+                    return use(props.IsUnlocked) and not props.IsLimited and not use(props.HasClaimed)
+                end),
+
+                [Fusion.OnEvent("MouseButton1Click")] = function()
+                    Events.ClaimBadgeGoldReward_C.Fire(tostring(props.BadgeRblxId))
+                end,
+
+
+                [Children] = {
+                    Components.RoundUICorner(scope),
+                    Components.UIPadding(scope, {})
                 }
             }),
 

@@ -298,6 +298,12 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         --// load in player badges
         ServerBindables.RToCheckPlayerBadges:Fire(plr)
+        Promise.try(function()
+            for badgeId: string, isClaimed: boolean in validatedData.BadgeClaimedV3 do
+                plr:SetAttribute("BADGECLAIM_"..badgeId, isClaimed)
+            end
+
+        end):catch(function() end)
 
         --// load in player gamepass and dev products
         Promise.try(function()
@@ -324,6 +330,43 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
             PlayerProfileLib.CalDonationAndSave(profile, plr)
         end)
 
+        --// daily login
+        Promise.try(function()
+            local function _giveReward(streak: number)
+                local gold = 250 * streak
+                HarukaLib:AddAttr(plr, "Gold", gold)
+
+                Events.CreateNotify_S.Fire(plr, "You've gotten "..gold.." Gold for logging in today!")
+                Events.CreateNotify_S.Fire(plr, "Get more with higher streaks!")
+            end
+            local currentDay = math.floor(os.time() / 86400)
+            local lastDay = validatedData.LastLoginTime or 0
+
+            plr:SetAttribute("_HasLoginToday", false)
+            plr:SetAttribute("LastLoginTime", currentDay)
+
+            if lastDay <= 0 then
+                plr:SetAttribute("LoginStreak", 1)
+                _giveReward(1)
+                return
+            end
+            if currentDay > lastDay then
+                if currentDay == lastDay + 1 then
+                    plr:SetAttribute("LoginStreak", validatedData.LoginStreak + 1)
+                    _giveReward(validatedData.LoginStreak + 1)
+                    return
+                else
+                    plr:SetAttribute("LoginStreak", 1)
+                    _giveReward(1)
+                    return
+                end
+            end
+
+            plr:SetAttribute("_HasLoginToday", true)
+            plr:SetAttribute("LoginStreak", validatedData.Streak)
+
+        end):catch(function() end)
+
         --// load in event
         Promise.try(function()
             local worldConfig = ReplicatedStorage:FindFirstChild("WorldConfig")
@@ -342,6 +385,13 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
                 if validatedData.EggFoundV1 >= 19 then
                     ServerLib:GiveBadge(934973080789246, plr)
+
+                    if not itemFolder:FindFirstChild("EasterTitle") then
+                        ServerLib:GiveItemDrop(plr, "EasterTitle", 1)
+                    end
+                    if not itemFolder:FindFirstChild("BunnySwordCosmetic") then
+                        ServerLib:GiveItemDrop(plr, "BunnySwordCosmetic", 1)
+                    end
                 end
             end
 
@@ -353,6 +403,7 @@ Events.Titlescreen_SlotActions_C.On(function(plr: Player, netData)
 
         --// Alpha Player badge
         ServerLib:GiveBadge(3358503633424175, plr)
+        ServerLib:GiveBadge(4040326627207080, plr)
 
         --// done
         totalPlayersJoined += 1
@@ -593,6 +644,14 @@ function PlayerLib:_SaveData()
         profileAttrs.ClassEXPV2[class] = self.Player:GetAttribute("ClassEXP_"..class) or 0
         profileAttrs.ClassPerkPoints[class] = self.Player:GetAttribute("ClassPerkPoint_"..class) or 2
     end
+
+    Promise.try(function()
+        for attr: string, val: any in nowAttrs do
+            if string.find(attr, "BADGECLAIM_") and val then
+                profileAttrs.BadgeClaimedV3[string.sub(attr, 12)] = true
+            end
+        end
+    end)
 
     --// event only
     Promise.try(function()

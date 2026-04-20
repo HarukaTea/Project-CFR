@@ -1610,4 +1610,20 @@ table.insert(GlobalCriRPGLib.Funcs, function()
     end)
 end)
 
+table.insert(GlobalCriRPGLib.Funcs, function()
+    Events.ClaimBadgeGoldReward_C.SetCallback(function(plr: Player, badgeId: string)
+        if not badgeId then return end
+
+        if plr:GetAttribute("BADGECLAIM_"..badgeId) then
+            Events.CreateNotify_S.Fire(plr, "You've already claimed this reward")
+            return
+        end
+        plr:SetAttribute("BADGECLAIM_"..badgeId, true)
+
+        HarukaLib:AddAttr(plr, "Gold", 1000)
+        Events.CreateNotify_S.Fire(plr, "You've received 1K Gold for claiming the badge")
+        Events.PlaySound_S.Fire(plr, SoundService.SFXs.Buy)
+    end)
+end)
+
 return GlobalCriRPGLib
