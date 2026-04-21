@@ -837,21 +837,21 @@ function Promise.is(object: any)
 
 	local objectMetatable = getmetatable(object)
 
-	local rawT1 = rawget(objectMetatable, "__index")
-	local rawT2 = rawget(rawT1, "andThen")
 	if objectMetatable == Promise then
 		-- The Promise came from this library.
 		return true
 	elseif objectMetatable == nil then
 		-- No metatable, but we should still chain onto tables with andThen methods
 		return isCallable(object.andThen)
-	elseif
-		type(objectMetatable) == "table"
-		and type(rawget(objectMetatable, "__index")) == "table"
-		and isCallable(rawT2)
-	then
-		-- Maybe this came from a different or older Promise library.
-		return true
+	elseif type(objectMetatable) == "table" then
+		local rawT1 = rawget(objectMetatable, "__index")
+		if type(rawT1) == "table" then
+			local rawT2 = rawget(rawT1, "andThen")
+			if isCallable(rawT2) then
+				-- Maybe this came from a different or older Promise library.
+				return true
+			end
+		end
 	end
 
 	return false

@@ -1,3 +1,3 @@
-return {
+return table.freeze({
     serverInited = "ServerInited"
-}
+})

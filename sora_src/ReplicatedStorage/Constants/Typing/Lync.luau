@@ -1,12 +1,14 @@
 -- Type definitions for axp3cter/lync@2.1.2
 
--- Opaque handle representing any codec value.
-export type Codec = { _lyncCodec: "Codec" }
+-- Opaque handle representing a codec for values of type T.
+-- The phantom field `_phantom` is never present at runtime but lets Luau
+-- track and infer the encoded/decoded value type through generic functions.
+export type Codec<T> = { _lyncCodec: "Codec", _phantom: T? }
 
 -- Codecs that double as a callable for quantized/capped variants.
-export type StringCodec = Codec & ((maxLength: number) -> Codec)
-export type VecCodec    = Codec & ((min: number, max: number, precision: number) -> Codec)
-export type CFrameCodec = Codec & (() -> Codec)
+export type StringCodec = Codec<string> & ((maxLength: number) -> Codec<string>)
+export type VecCodec<T> = Codec<T> & ((min: number, max: number, precision: number) -> Codec<T>)
+export type CFrameCodec = Codec<CFrame> & (() -> Codec<CFrame>)
 
 -- Returned by packet:on(), query:handle(), and middleware registration.
 export type Connection = {
@@ -123,8 +125,8 @@ export type LyncLib = {
     flushRate: (hz: number) -> (),
 
     -- Definitions -----------------------------------------------------
-    packet: <T>(name: string, codec: Codec, options: PacketOptions?) -> Packet<T>,
-    query:  <TReq, TRes>(name: string, requestCodec: Codec, responseCodec: Codec, options: QueryOptions?) -> Query<TReq, TRes>,
+    packet: <T>(name: string, codec: Codec<T>, options: PacketOptions?) -> Packet<T>,
+    query:  <TReq, TRes>(name: string, requestCodec: Codec<TReq>, responseCodec: Codec<TRes>, options: QueryOptions?) -> Query<TReq, TRes>,
     group:  (name: string) -> Group,
     scope:  () -> Scope,
 
@@ -151,55 +153,55 @@ export type LyncLib = {
     },
 
     -- Primitive codecs ------------------------------------------------
-    int:    (min: number, max: number) -> Codec,
-    float:  (min: number, max: number, precision: number) -> Codec,
-    f16:    Codec,
-    f32:    Codec,
-    f64:    Codec,
-    bool:   Codec,
+    int:    (min: number, max: number) -> Codec<number>,
+    float:  (min: number, max: number, precision: number) -> Codec<number>,
+    f16:    Codec<number>,
+    f32:    Codec<number>,
+    f64:    Codec<number>,
+    bool:   Codec<boolean>,
     string: StringCodec,
-    buff:   Codec,
+    buff:   Codec<buffer>,
 
     -- Roblox type codecs ----------------------------------------------
-    vec2:           VecCodec,
-    vec3:           VecCodec,
+    vec2:           VecCodec<Vector2>,
+    vec3:           VecCodec<Vector3>,
     cframe:         CFrameCodec,
-    color3:         Codec,
-    inst:           Codec,
-    udim:           Codec,
-    udim2:          Codec,
-    numberRange:    Codec,
-    rect:           Codec,
-    ray:            Codec,
-    vec2int16:      Codec,
-    vec3int16:      Codec,
-    region3:        Codec,
-    region3int16:   Codec,
-    numberSequence: Codec,
-    colorSequence:  Codec,
+    color3:         Codec<Color3>,
+    inst:           Codec<Instance>,
+    udim:           Codec<UDim>,
+    udim2:          Codec<UDim2>,
+    numberRange:    Codec<NumberRange>,
+    rect:           Codec<Rect>,
+    ray:            Codec<Ray>,
+    vec2int16:      Codec<Vector2int16>,
+    vec3int16:      Codec<Vector3int16>,
+    region3:        Codec<Region3>,
+    region3int16:   Codec<Region3int16>,
+    numberSequence: Codec<NumberSequence>,
+    colorSequence:  Codec<ColorSequence>,
 
     -- Composite codecs ------------------------------------------------
-    struct:      (schema: { [string]: Codec }) -> Codec,
-    deltaStruct: (schema: { [string]: Codec }) -> Codec,
-    array:       (codec: Codec, maxCount: number?) -> Codec,
-    deltaArray:  (codec: Codec, maxCount: number?) -> Codec,
-    map:         (keyCodec: Codec, valueCodec: Codec, maxCount: number?) -> Codec,
-    deltaMap:    (keyCodec: Codec, valueCodec: Codec, maxCount: number?) -> Codec,
-    optional:    (codec: Codec) -> Codec,
-    tuple:       (...Codec) -> Codec,
-    tagged:      (tagField: string, variants: { [string]: Codec }) -> Codec,
+    struct:      <T>(schema: { [string]: Codec<any> }) -> Codec<T>,
+    deltaStruct: <T>(schema: { [string]: Codec<any> }) -> Codec<T>,
+    array:       <T>(codec: Codec<T>, maxCount: number?) -> Codec<{ T }>,
+    deltaArray:  <T>(codec: Codec<T>, maxCount: number?) -> Codec<{ T }>,
+    map:         <K, V>(keyCodec: Codec<K>, valueCodec: Codec<V>, maxCount: number?) -> Codec<{ [K]: V }>,
+    deltaMap:    <K, V>(keyCodec: Codec<K>, valueCodec: Codec<V>, maxCount: number?) -> Codec<{ [K]: V }>,
+    optional:    <T>(codec: Codec<T>) -> Codec<T?>,
+    tuple:       (...Codec<any>) -> Codec<any>,
+    tagged:      <T>(tagField: string, variants: { [string]: Codec<any> }) -> Codec<T>,
 
     -- Meta codecs -----------------------------------------------------
-    enum:     (...string) -> Codec,
-    bitfield: (schema: { [string]: number }) -> Codec,
+    enum:     (...string) -> Codec<string>,
+    bitfield: (schema: { [string]: number }) -> Codec<{ [string]: number }>,
     custom:   (
         size:  number,
         write: (b: buffer, offset: number, value: any) -> (),
         read:  (b: buffer, offset: number) -> any
-    ) -> Codec,
-    nothing: Codec,
-    unknown: Codec,
-    auto:    Codec,
+    ) -> Codec<any>,
+    nothing: Codec<nil>,
+    unknown: Codec<unknown>,
+    auto:    Codec<any>,
 }
 
 return {}

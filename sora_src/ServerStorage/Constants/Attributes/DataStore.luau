@@ -3,7 +3,7 @@ local Attributes = ReplicatedStorage.Constants.Attributes
 
 local places = require(Attributes.Places)
 
-return {
+return table.freeze({
     legacy = {
         [places.mainPlace] = "_CF_RLEASE_DATA",
         [places.testPlace] = "_CF_TEST_DATA",
@@ -13,4 +13,4 @@ return {
         [places.testPlace] = "CF_Tester",
         [places.devPlace] = "CF_Dev",
     },
-}
+})

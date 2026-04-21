@@ -82,4 +82,13 @@ function Table.random<T>(t: {T}): T
     return t[math.random(1, #t)]
 end
 
+--- Append all elements of src into dst (mutates dst)
+function Table.appendAll<T>(dst: {T}, src: {T}): {T}
+    local offset = #dst
+    for i, v in src do
+        dst[offset + i] = v
+    end
+    return dst
+end
+
 return table.freeze(Table)
