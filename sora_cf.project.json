@@ -47,6 +47,10 @@
                 "$path": "sora_src/StarterPlayer/Client.client.luau"
             },
 
+            "Signals": {
+                "$path": "sora_src/StarterPlayer/Signals"
+            },
+
             "StarterPlayerScripts": {
                 "$className": "StarterPlayerScripts",
                 "$ignoreUnknownInstances": false,
