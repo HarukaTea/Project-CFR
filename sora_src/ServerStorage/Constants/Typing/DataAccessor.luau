@@ -5,7 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local Promise = require(ReplicatedStorage.Utils.Promise)
-local Typing = require(ServerStorage.Constants.Typing.PlayerData)
+local Typing = require(ReplicatedStorage.Constants.Typing.PlayerData)
 
 type TransformSaveslotFunc = (data: Typing.SaveSlot) -> boolean
 type PlayerData = Typing.PlayerData

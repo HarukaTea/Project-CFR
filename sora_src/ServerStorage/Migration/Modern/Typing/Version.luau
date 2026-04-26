@@ -1,5 +1,5 @@
-local ServerStorage = game:GetService("ServerStorage")
-local Typing = require(ServerStorage.Constants.Typing.PlayerData)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Typing = require(ReplicatedStorage.Constants.Typing.PlayerData)
 
 type PlayerData = Typing.PlayerData
 

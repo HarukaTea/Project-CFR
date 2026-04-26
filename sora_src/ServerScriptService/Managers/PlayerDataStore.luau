@@ -3,11 +3,17 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Initializer = require(ReplicatedStorage.Constants.Typing.Initializer)
-local DataStoreAPI = require(ServerScriptService.API.PlayerDataStore)
+local DataStoreAPI = require(ServerScriptService.API.PlayerData)
 
 local function onPlayerAdded(player: Player)
-    DataStoreAPI.loadPlayerData(player)
+    DataStoreAPI.loadData(player)
     :andThen(function()
+        -- Test only.
+        if DataStoreAPI.getDataStoreName() == "CF_Dev" then
+            print(`Player '{player.Name}' is currently in dev place, resetting data.`)
+            DataStoreAPI.resetData(player)
+        end
+
         print(`Successfully loaded {player.Name}'s data. Here's their data.`)
         print(DataStoreAPI.getWholeData(player))
     end)
@@ -21,7 +27,7 @@ local function onPlayerRemoving(player: Player)
         return
     end
 
-    DataStoreAPI.unloadPlayerData(player)
+    DataStoreAPI.unloadData(player)
     :andThen(function()
         if player:IsDescendantOf(Players) then
             player:Kick("Your data has been released from the server, kicking you out.")
@@ -31,7 +37,7 @@ local function onPlayerRemoving(player: Player)
     end)        
 end
 
-local content = {}
+local content = {} :: Initializer.Module
 
 function content.start()
     Players.PlayerAdded:Connect(onPlayerAdded)
@@ -43,7 +49,7 @@ function content.start()
 
     return {
         isSuccess = true
-    } :: Initializer.Module
+    }
 end
 
 return table.freeze(content)

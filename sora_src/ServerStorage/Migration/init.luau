@@ -2,7 +2,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local TouchInputService = game:GetService("TouchInputService")
 
-local DataTyping = require(ServerStorage.Constants.Typing.PlayerData)
+local DataTyping = require(ReplicatedStorage.Constants.Typing.PlayerData)
 local Typing = require(script.Modern.Typing.Version)
 
 local t = require(ReplicatedStorage.Packages.t)

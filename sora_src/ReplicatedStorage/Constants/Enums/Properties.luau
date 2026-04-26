@@ -1,11 +1,11 @@
-local attributes = {}
+local enum = {}
 
-attributes.orb = {
+enum.orb = {
     "orbSpawnRate",
     "orbSpawnCount",
 }
 
-attributes.health = {
+enum.health = {
     "maxHealthPercent",
     "maxHealthFlat",
     "healthRegenInterval",
@@ -14,23 +14,23 @@ attributes.health = {
     "healthRegenCooldown",
 }
 
-attributes.damage = {
+enum.damage = {
     "meleeDamage",
     "rangedDamage",
     "magicDamage",
 }
 
-attributes.crit = {
+enum.crit = {
     "critChance",
     "critMulti",
 }
 
-attributes.defense = {
+enum.defense = {
     "defenseFlatValue",
     "defensePercentValue",
 }
 
-attributes.shield = {
+enum.shield = {
     "maxShield",
     "shieldRegenInterval",
     "shieldRegenFlat",
@@ -38,10 +38,10 @@ attributes.shield = {
     "shieldRegenCooldown",
 }
 
-attributes.mana = {
+enum.mana = {
     "maxMana",
     "manaRegenFlatPerOrb",
     "manaRegenPercentPerOrb",
 }
 
-return table.freeze(attributes)
+return table.freeze(enum)

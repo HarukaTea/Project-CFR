@@ -1,5 +1,5 @@
-return {
+return table.freeze({
     [1] = 1, -- vX.0.0
     [2] = 0, -- v0.X.0
     [3] = 0, -- v0.0.X
-}
+})

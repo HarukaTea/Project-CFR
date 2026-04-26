@@ -3,17 +3,19 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
 local Packages = ReplicatedStorage.Packages
+local Typings = ServerStorage.Constants.Typing
 
 local Template = require(ServerStorage.Constants.Templates.PlayerData)
-local Typing = require(ServerStorage.Constants.Typing.PlayerData)
-local DataStores = require(ServerStorage.Constants.Enums.DataStore)
+local PlayerDataTyping = require(Typings.PlayerData)
+local DataStoreTyping = require(Typings.DataStore)
+local DataStore = require(ServerStorage.Constants.Enums.DataStore)
 -- will be used later when network is implemented.
 -- Remind Sora to work on this.
 local Network = require(ReplicatedStorage.Network.PlayerData)
 local Places = require(ReplicatedStorage.Constants.Enums.Places)
 local Version = require(ReplicatedStorage.Constants.Enums.Version)
 
-local DataAccessorTyping = require(ServerStorage.Constants.Typing.DataAccessor)
+local DataAccessorTyping = require(Typings.DataAccessor)
 
 local Migration = require(ServerStorage.Migration)
 local Lyra = require(Packages.lyra)
@@ -22,9 +24,10 @@ local Table = require(ReplicatedStorage.Utils.Table)
 
 local DebuggingNetwork = require(ReplicatedStorage.Network.Debugging)
 
-type TransformSaveslotFunc = (data: Typing.SaveSlot) -> boolean
-type PlayerData = Typing.PlayerData
-type SaveSlot = Typing.SaveSlot
+type TransformSaveslotFunc = (data: PlayerDataTyping.SaveSlot) -> boolean
+type PlayerData = PlayerDataTyping.PlayerData
+type SaveSlot = PlayerDataTyping.SaveSlot
+type ModernDataStoreNames = DataStoreTyping.ModernDataStoreNames
 
 local api = {}
 --- Caching player data so `store:get()` doesn't get used too much.
@@ -32,16 +35,16 @@ local profiles = {} :: {[Player]: PlayerData}
 local dataAccessor = {} :: DataAccessorTyping.API
 
 --- Returns the datastore based on the placeId.
-function api.getDataStoreName(): string
+function api.getDataStoreName(): ModernDataStoreNames
     local currentPlaceId = game.PlaceId
-    return DataStores.modern[currentPlaceId]
-        or DataStores.modern[Places.devPlace]
+    return DataStore.modern[currentPlaceId]
+        or DataStore.modern[Places.devPlace]
 end
 
 local store = Lyra.createPlayerStore({
     name = api.getDataStoreName(),
     template = Template.basePlayerData,
-    schema = Typing.schema,
+    schema = PlayerDataTyping.schema,
 })
 
 local function getSaveSlots(allSaveSlots: {SaveSlot}, isArchived: boolean): {SaveSlot}
@@ -228,7 +231,7 @@ end
 
 --- Updates a save slot by index, or the currently selected save slot if no index is provided.
 function api.updateSaveSlot(player: Player, transformFunc: TransformSaveslotFunc, index: number?)
-    return store:update(player, function(data: Typing.PlayerData): boolean
+    return store:update(player, function(data: PlayerDataTyping.PlayerData): boolean
         local activeSaveSlots = getSaveSlots(data.saveSlots, false)
         local resolvedIndex = index or data.selectedSaveSlot
         local result = transformFunc(activeSaveSlots[resolvedIndex])

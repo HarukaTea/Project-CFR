@@ -1,6 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
-local PlayerData = require(ServerStorage.Constants.Typing.PlayerData)
+local PlayerData = require(ReplicatedStorage.Constants.Typing.PlayerData)
 local Version = require(ReplicatedStorage.Constants.Enums.Version)
 
 local template = {}
