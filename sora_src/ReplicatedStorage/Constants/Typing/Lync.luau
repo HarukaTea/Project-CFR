@@ -1,3 +1,5 @@
+-- Typing wasn't implemented in Lync, so I had to ask the AI about it.
+
 -- Type definitions for axp3cter/lync@2.1.2
 
 -- Opaque handle representing a codec for values of type T.
