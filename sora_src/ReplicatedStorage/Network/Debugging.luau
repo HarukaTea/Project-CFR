@@ -9,32 +9,20 @@ local Lync = require(ReplicatedStorage.Packages.Lync) :: Typing.LyncLib
 
 local debuggingNetwork = {}
 
-type ErrorPayload = {
-    header: string,
-    errorMessage: string,
-    info: string?,
-}
-
-type WarningPayload = {
-    header: string,
-    warnMessage: string,
-    info: string,
-}
-
-type InfoPayload = {
+type LogPayload = {
+    level: "error" | "warning" | "info",
     header: string,
     message: string,
+    sender: string, -- Name of the server script
+    info: string?, -- Additional info
 }
 
-debuggingNetwork.errorOccurred = Lync.packet("errorOccurred", Lync.deltaStruct({
-    header = Lync.string,
-    errorMessage = Lync.string,
-    info = Lync.optional(Lync.string)
-})) :: Typing.Packet<ErrorPayload>
-
-debuggingNetwork.infoOccurred = Lync.packet("infoOccurred", Lync.deltaStruct({
+debuggingNetwork.logOccurred = Lync.packet("logOccurred", Lync.deltaStruct({
+    level = Lync.enum("error", "warning", "info"),
     header = Lync.string,
     message = Lync.string,
-})) :: Typing.Packet<InfoPayload>
+    sender = Lync.string,
+    info = Lync.optional(Lync.string),
+})) :: Typing.Packet<LogPayload>
 
 return debuggingNetwork

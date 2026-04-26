@@ -1,5 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Attributes = ReplicatedStorage.Constants.Attributes
+local Attributes = ReplicatedStorage.Constants.Enums
 
 local places = require(Attributes.Places)
 

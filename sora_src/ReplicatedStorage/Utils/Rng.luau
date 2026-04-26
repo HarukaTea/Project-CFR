@@ -1,17 +1,17 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local t = require(ReplicatedStorage.Packages.t)
 
-type _Cache = { -- Shorten the lookup
+type _PoolCache = { -- Shorten the lookup
     totalRarityWeight: number, -- Sum of all group rarities, used for weighted group pick in roll()
-    groupRarities: {
+    entryRarities: {
         [string]: number, -- Keys: group name, values: their rarity
     },
-    valueRarities: { -- Keys: group name
-        [string]: RngValues
-    },
-    totalValueWeight: {
-        [string]: number -- Keys: group name, values: the total weight of values in it
-    }
+    entryNames: { string },
+}
+
+type _EntryCache = {
+    totalWeight: number,
+    keys: { string },
 }
 
 export type RngValues = {
@@ -21,10 +21,17 @@ export type RngValues = {
 export type RngEntries = {
     __index: RngEntries,
     _class: RngPool<RngEntries>?,
+    _cache: _EntryCache,
+    _dirty: boolean,
     name: string,
     rarity: number,
+    --- Immutable values, change via `:setValue()` or `:appendValue()`.
     values: RngValues,
 
+    --- Refreshes the internal cache. Called automatically before roll() if dirty.
+    _refreshCache: (self: RngEntries) -> nil,
+    --- Validates the cache and refreshes it if dirty.
+    _validateCache: (self: RngEntries) -> nil,
     --- Returns true if the key exists in this group's values.
     hasKey: (self: RngEntries, key: string) -> boolean,
     --- Returns the raw weight of a key. Returns 0 if the key doesn't exist.
@@ -43,12 +50,14 @@ export type RngEntries = {
 
 export type RngPool<T> = {
     __index: RngPool<T>,
-    _cache: _Cache,
+    _cache: _PoolCache,
     _dirty: boolean,
     groups: { [string]: T },
 
     --- Rebuilds the internal cache. Called automatically before roll() if dirty.
     _refreshCache: (self: RngPool<T>) -> nil,
+    --- Validates the cache and refreshes it if dirty.
+    _validateCache: (self: RngPool<T>) -> nil,
     --- Adds a group. Marks the cache dirty. Returns false if a group with that name already exists.
     addGroup: (self: RngPool<T>, rngGroup: T) -> boolean,
     --- Removes and returns a group by name. Returns nil if not found.
@@ -59,6 +68,8 @@ export type RngPool<T> = {
     getGroup: (self: RngPool<T>, entryName: string) -> T?,
     --- Returns all group names currently registered.
     getGroupNames: (self: RngPool<T>) -> { string },
+    --- Returns the sum of all group rarities.
+    getTotalRarityWeight: (self: RngPool<T>) -> number,
     --- Rolls a group by rarity, then a value within that group by weight.
     --- Returns the rolled group name and value key.
     roll: (self: RngPool<T>) -> (string, string),
@@ -66,8 +77,32 @@ export type RngPool<T> = {
 
 local ERR_INVALID_KEY: string = "Cannot find %s as it doesn't exist in the rarity %s."
 
-local group = {} :: RngEntries
+local group = {
+    _cache = {},
+    _dirty = false,
+} :: RngEntries
 group.__index = {}
+
+function group:_refreshCache()
+    local cache = self._cache
+    local totalWeight: number = 0
+    local keys: { string } = {}
+
+    for key, value in self.values do
+        totalWeight += value
+        table.insert(keys, key)
+    end
+
+    cache.totalWeight = totalWeight
+    cache.keys = keys
+end
+
+function group:_validateCache()
+    if self._dirty then
+        self:_refreshCache()
+        self._dirty = false
+    end
+end
 
 function group:getKeyValue(key: string)
     return self.values[key]
@@ -84,6 +119,7 @@ function group:setValue(key: string, value: number)
     end
 
     self.values[key] = value
+    self._dirty = true
     return true
 end
 
@@ -93,31 +129,24 @@ function group:appendValue(key: string, delta: number)
     end
 
     self.values[key] += delta
+    self._dirty = true
     return true
 end
 
 function group:getKeys()
-    local keys: { string } = {}
-
-    for key, _ in self.values do
-        table.insert(keys, key)
-    end
-
-    return keys
+    self:_validateCache()
+    return self._cache.keys
 end
 
 function group:getTotalWeight()
-    local totalWeight: number = 0
-
-    for _, value in self.values do
-        totalWeight += value
-    end
-
-    return totalWeight
+    self:_validateCache()
+    return self._cache.totalWeight
 end
 
 function group:roll()
-    local roll: number = math.random() * self:getTotalWeight()
+    self:_validateCache()
+
+    local roll: number = math.random() * self._cache.totalWeight
 
     for key, value in self.values do
         roll -= value
@@ -137,19 +166,24 @@ class.__index = class
 function class:_refreshCache()
     local cache = self._cache
     cache.totalRarityWeight = 0
-    cache.groupRarities = {}
-    cache.valueRarities = {}
-    cache.totalValueWeight = {}
+    cache.entryRarities = {}
+    cache.entryNames = {}
 
     --- O(n) process
     for _, group in self.groups do
         local entryName: string = group.name
         local groupRarity: number = group.rarity
 
-        cache.groupRarities[entryName] = groupRarity
+        cache.entryRarities[entryName] = groupRarity
         cache.totalRarityWeight += groupRarity
-        cache.valueRarities[entryName] = group.values
-        cache.totalValueWeight[entryName] = group:getTotalWeight()
+        table.insert(cache.entryNames, entryName)
+    end
+end
+
+function class:_validateCache()
+    if self._dirty then
+        self:_refreshCache()
+        self._dirty = false
     end
 end
 
@@ -159,7 +193,7 @@ function class:addGroup(rngGroup: RngEntries)
         return false
     end
 
-    table.insert(self.groups, rngGroup)
+    self.groups[rngGroup.name] = rngGroup
     self._dirty = true
     return true
 end
@@ -176,6 +210,16 @@ function class:deleteEntry(entryName: string)
     return group
 end
 
+function class:getTotalRarityWeight()
+    self:_validateCache()
+    return self._cache.totalRarityWeight
+end
+
+function class:getGroupNames()
+    self:_validateCache()
+    return self._cache.entryNames
+end
+
 function class:hasGroup(entryName: string)
     return self:getGroup(entryName) ~= nil
 end
@@ -185,18 +229,15 @@ function class:getGroup(entryName: string)
 end
 
 function class:roll()
-    if self._dirty then
-        self:_refreshCache()
-        self._dirty = false
-    end
+    self:_validateCache()
 
     local cache = self._cache
     local roll: number = math.random() * cache.totalRarityWeight
 
-    for entryName, rarity in cache.groupRarities do
+    for entryName, rarity in cache.entryRarities do
         roll -= rarity
         if roll <= 0 then
-            return table.pack(entryName, self.groups[entryName]:roll())
+            return entryName, self.groups[entryName]:roll()
         end
     end
 end

@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local PlayerData = require(ServerStorage.Constants.Typing.PlayerData)
-local Version = require(ReplicatedStorage.Constants.Attributes.Version)
+local Version = require(ReplicatedStorage.Constants.Enums.Version)
 
 local template = {}
 
@@ -40,7 +40,7 @@ template.baseSaveSlot = {
     playTime = 0,
     isArchived = false,
     archiveDate = 0,
-    dataVersion = Version ,
+    dataVersion = Version,
 } :: PlayerData.SaveSlot
 
 template.basePlayerData = {

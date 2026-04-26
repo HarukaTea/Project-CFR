@@ -3,7 +3,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Workspace = game:GetService("Workspace")
 
 local Managers = ServerScriptService.Managers
-local Attributes = ReplicatedStorage.Constants.Attributes
+local Attributes = ReplicatedStorage.Constants.Enums
 
 local Initializer = require(ReplicatedStorage.Shared.API.Initializer)
 local LoadingAttributes = require(Attributes.Loading)

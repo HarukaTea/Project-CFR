@@ -1,10 +1,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Typing = ReplicatedStorage.Constants.Typing
 
-local ItemTyping = require(Typing.Item)
+local Properties = require(Typing.Properties)
 local SettingTyping = require(Typing.PlayerSettings)
 
-type ItemProperties = ItemTyping.ItemProperties
+type AllProperties = Properties.AllProperties
 type SettingName = SettingTyping.SettingName
 
 export type StatType = "str" | "agi" | "int" | "vit" | "dex"
@@ -45,7 +45,7 @@ export type ClassData = {
 --- 1 is the maximum value.
 --- It can go below 0 or above 1 for testing purposes.
 export type InventoryData = {
-    [string]: { [ItemProperties]: number },
+    [string]: { [AllProperties]: number },
 }
 
 export type SaveSlot = {
