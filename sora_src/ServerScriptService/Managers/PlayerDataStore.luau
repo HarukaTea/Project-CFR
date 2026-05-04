@@ -4,6 +4,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Initializer = require(ReplicatedStorage.Constants.Typing.Initializer)
 local DataStoreAPI = require(ServerScriptService.API.PlayerData)
+local ServerNetwork = require(ReplicatedStorage.Network.ServerInit)
+local ClientNetwork = require(ReplicatedStorage.Network.ClientInit)
+local PlayerDataNetwork = require(ReplicatedStorage.Network.PlayerData)
 
 local function onPlayerAdded(player: Player)
     DataStoreAPI.loadData(player)
@@ -34,7 +37,11 @@ local function onPlayerRemoving(player: Player)
         end
         
         print(`Successfully unloaded {player.Name}'s data.`)
-    end)        
+    end)
+end
+
+local function onPlayerLoaded(data: nil, sender: Player, timestamp: number)
+    print(`{sender.Name} has requested data.`)
 end
 
 local content = {} :: Initializer.Module
@@ -42,6 +49,7 @@ local content = {} :: Initializer.Module
 function content.start()
     Players.PlayerAdded:Connect(onPlayerAdded)
     Players.PlayerRemoving:Connect(onPlayerRemoving)
+    PlayerDataNetwork.requestData:on(onPlayerLoaded)
 
     for _, player in Players:GetPlayers() do
         onPlayerAdded(player)

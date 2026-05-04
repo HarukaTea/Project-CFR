@@ -3,11 +3,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
 local Packages = ReplicatedStorage.Packages
-local Typings = ServerStorage.Constants.Typing
+local ReplicatedTypings = ReplicatedStorage.Constants.Typing
+local ServerTypings = ServerStorage.Constants.Typing
 
 local Template = require(ServerStorage.Constants.Templates.PlayerData)
-local PlayerDataTyping = require(Typings.PlayerData)
-local DataStoreTyping = require(Typings.DataStore)
+local PlayerDataTyping = require(ReplicatedTypings.PlayerData)
+local DataStoreTyping = require(ServerTypings.DataStore)
 local DataStore = require(ServerStorage.Constants.Enums.DataStore)
 -- will be used later when network is implemented.
 -- Remind Sora to work on this.
@@ -15,7 +16,7 @@ local Network = require(ReplicatedStorage.Network.PlayerData)
 local Places = require(ReplicatedStorage.Constants.Enums.Places)
 local Version = require(ReplicatedStorage.Constants.Enums.Version)
 
-local DataAccessorTyping = require(Typings.DataAccessor)
+local DataAccessorTyping = require(ServerTypings.DataAccessor)
 
 local Migration = require(ServerStorage.Migration)
 local Lyra = require(Packages.lyra)
@@ -43,7 +44,7 @@ end
 
 local store = Lyra.createPlayerStore({
     name = api.getDataStoreName(),
-    template = Template.basePlayerData,
+    template = Template.playerData,
     schema = PlayerDataTyping.schema,
 })
 
@@ -123,7 +124,7 @@ end
 --- Resets the player data based on the latest version.
 function api.resetData(player: Player)
     return store:updateImmutable(player, function(_data: PlayerData): PlayerData | false
-        return Table.deepCopy(Template.basePlayerData)
+        return Table.deepCopy(Template.playerData)
     end)
     :andThen(function()
         local newData = store:getAsync(player)
@@ -147,7 +148,7 @@ function api.reconcileData(player: Player)
                 end
             end
         end
-        reconcile(data :: any, Template.basePlayerData :: any)
+        reconcile(data :: any, Template.playerData :: any)
         cachePlayerData(player, data)
         return true
     end):catch(function(errorMsg)
@@ -214,6 +215,10 @@ function api.setSelectedSaveSlot(player: Player, index: number)
     :catch(function(errorMsg: string)
         broadcastError("setSelectedSaveSlot", errorMsg)
     end)
+end
+
+function api.createNewSlot(player: Player)
+    return 
 end
 
 --- Sugar for `store:update()`. Usually handled by other APIs.

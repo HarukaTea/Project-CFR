@@ -4,25 +4,25 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Typing = require(ReplicatedStorage.Constants.Typing.Lync)
-local Lync = require(ReplicatedStorage.Packages.Lync) :: Typing.LyncLib
+local LyncTyping = require(ReplicatedStorage.Constants.Typing.Lync)
+local Lync = require(ReplicatedStorage.Packages.Lync) :: LyncTyping.LyncLib
 
-local debuggingNetwork = {}
+local remoteSignals = {}
 
-type LogPayload = {
+export type LogPayload = {
     level: "error" | "warning" | "info",
     header: string,
     message: string,
     sender: string, -- Name of the server script
-    info: string?, -- Additional info
+    footer: string?, -- Additional info
 }
 
-debuggingNetwork.logOccurred = Lync.packet("logOccurred", Lync.deltaStruct({
+remoteSignals.logOccurred = Lync.packet("logOccurred", Lync.deltaStruct({
     level = Lync.enum("error", "warning", "info"),
     header = Lync.string,
     message = Lync.string,
     sender = Lync.string,
-    info = Lync.optional(Lync.string),
-})) :: Typing.Packet<LogPayload>
+    footer = Lync.optional(Lync.string),
+})) :: LyncTyping.Packet<LogPayload>
 
-return debuggingNetwork
+return remoteSignals

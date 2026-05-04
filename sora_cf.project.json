@@ -43,10 +43,6 @@
             "$className": "StarterPlayer",
             "$ignoreUnknownInstances": false,
 
-            "Client": {
-                "$path": "sora_src/StarterPlayer/Client.client.luau"
-            },
-
             "Signals": {
                 "$path": "sora_src/StarterPlayer/Signals"
             },

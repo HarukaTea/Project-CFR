@@ -7,28 +7,48 @@ local template = {}
 template.maxSaveSlots = 3 :: number
 template.statPointsPerLevel = 2 :: number
 
-template.baseStatPoints = {
+template.globalCurrencies = {
+    astral = 0,
+} :: { [PlayerData.GlobalCurrency]: number }
+
+template.statPoints = {
     str = 0,
     agi = 0,
     int = 0,
     vit = 0,
     dex = 0,
-}
+} :: { [PlayerData.StatType]: number }
 
-template.baseSaveSlot = {
+template.inventoryKeys = {
+    weapons = {},
+    accessories = {},
+    armors = {},
+} :: { [PlayerData.InventoryType]: {} }
+
+template.classTypes = {
+    base = {},
+    dev = {},
+    unique = {},
+    variant = {},
+} :: { [string]: {} }
+
+template.classData = {
+    expPoints = 0,
+    perks = {},
+    quests = {},
+} :: PlayerData.ClassData
+
+template.saveSlot = {
     name = "Unnamed Save Slot",
     currencies = {
         gold = 0,
     },
+    materials = {},
     expPoints = 0,
-    inventory = {
-        weapons = {},
-        accessories = {},
-        armors = {},
-        materials = {},
-    },
-    classes = {},
-    statPoints = template.baseStatPoints,
+    selectedItems = template.inventoryKeys,
+    inventory = template.inventoryKeys,
+    classes = template.classTypes,
+    statPoints = template.statPoints,
     questRecurrences = {
         daily = {},
         weekly = {},
@@ -42,8 +62,9 @@ template.baseSaveSlot = {
     dataVersion = Version,
 } :: PlayerData.SaveSlot
 
-template.basePlayerData = {
+template.playerData = {
     selectedSaveSlot = 0,
+    globalCurrencies = template.globalCurrencies,
     cosmetics = {
         armors = {},
         titles = {},
@@ -57,6 +78,10 @@ template.basePlayerData = {
     settings = {},
     joinDate = 0,
     dataVersion = Version,
+    internal = {
+        automatedLogs = {},
+        itemsGained = 0,
+    },
 } :: PlayerData.PlayerData
 
 return table.freeze(template)
