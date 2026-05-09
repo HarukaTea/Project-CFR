@@ -4,6 +4,12 @@
     "tree": {
         "$className": "DataModel",
 
+        "Workspace": {
+            "$className": "Workspace",
+            "$ignoreUnknownInstances": true,
+            "$path": "sora_src/Workspace"
+        },
+
         "ReplicatedFirst": {
             "$className": "ReplicatedFirst",
             "$ignoreUnknownInstances": true,
@@ -42,10 +48,6 @@
         "StarterPlayer": {
             "$className": "StarterPlayer",
             "$ignoreUnknownInstances": false,
-
-            "Signals": {
-                "$path": "sora_src/StarterPlayer/Signals"
-            },
 
             "StarterPlayerScripts": {
                 "$className": "StarterPlayerScripts",

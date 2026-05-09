@@ -1,22 +1,30 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Typing = ReplicatedStorage.Constants.Typing
 
-local Properties = require(Typing.Properties)
+local Typing = ReplicatedStorage.Constants.Typing
+local Enums = ReplicatedStorage.Constants.Enums
+
+local PropertiesTyping = require(Typing.Properties)
 local SettingTyping = require(Typing.PlayerSettings)
-local t = require(ReplicatedStorage.Packages.t)
+local TraitsTyping = require(Typing.Traits)
 local LyncTyping = require(ReplicatedStorage.Constants.Typing.Lync)
+
+local PropertiesEnums = require(Enums.Properties)
+local PerksEnums = require(Enums.Perks)
+
+local t = require(ReplicatedStorage.Packages.t)
 local Lync = require(ReplicatedStorage.Packages.Lync) :: LyncTyping.LyncLib
 
-type AllProperties = Properties.AllProperties
+local BitsEnums = require(Enums.Bits)
+
+type AllProperties = PropertiesTyping.AllProperties
 type SettingName = SettingTyping.SettingName
 
 export type StatType = "str" | "agi" | "int" | "vit" | "dex"
-export type CosmeticType = "armors" | "titles" | "weapons"
 export type InventoryType = "weapons" | "accessories" | "armors"
-export type BaseCurrencyType = "gold"
+export type SlotCurrency = "gold"
 export type QuestRecurrenceType = "daily" | "weekly" | "monthly"
 export type PurchaseType = "devProducts" | "gamePasses"
-export type GlobalCurrency = "astral"
+export type SpecialCurrency = "astral"
 
 export type QuestData = {
     [string]: number,
@@ -49,6 +57,7 @@ export type ClassData = {
 --- It can go below 0 or above 1 for testing purposes.
 export type ItemData = {
     type: "test" | "release",
+    --- Based on Internal.itemsGained
     id: number,
     properties: { [AllProperties]: number },
     obtainedAt: number, -- UNIX time
@@ -59,13 +68,57 @@ export type InventoryData = {
     [string]: { ItemData }
 }
 
+export type StatisticsDamageData = {
+    totalPhysical: number,
+    meleePhysical: number,
+    rangePhysical: number,
+    magical: number,
+    poison: number,
+    burn: number
+}
+
+export type StatisticsHealData = {
+    normal: number,
+    overTime: number,
+    --- Self heal from orbs
+    regen: number,
+}
+
+type DamageStats<T> = {
+    done: T,
+    taken: T,
+    absorbed: T,
+    blocked: T,
+    nullified: T,
+}
+
+type HealStats<T> = {
+    done: T,
+    taken: T,
+}
+
+export type StatisticsData = {
+    itemsGained: number,
+    kills: {
+        --- Enemy name
+        [string]: {
+            [TraitsTyping.Traits]: number
+        },
+    },
+    damages: DamageStats<StatisticsDamageData>,
+    heals: HealStats<StatisticsHealData>,
+}
+
 export type SaveSlot = {
     name: string,
-    currencies: { [BaseCurrencyType]: number },
+    currencies: { [SlotCurrency]: number },
     materials: { [string]: number },
     expPoints: number,
-    selectedItems: { [InventoryType]: { number } },
-    inventory: { [InventoryType]: InventoryData },
+    selectedItems: {
+        normal: { number },
+        cosmetic: { number },
+    },
+    inventory: InventoryData,
     classes: { [string]: ClassData },
     statPoints: { [StatType]: number },
     questRecurrences: { [QuestRecurrenceType]: QuestData },
@@ -75,6 +128,7 @@ export type SaveSlot = {
     isArchived: boolean,
     archiveDate: number, -- formatted in UNIX time
     dataVersion: DataVersion,
+    statistics: StatisticsData,
 }
 
 export type AutomatedLogData = {
@@ -94,8 +148,8 @@ export type InternalData = {
 
 export type PlayerData = {
     selectedSaveSlot: number, -- 0 if the player is new
-    globalCurrencies: { [GlobalCurrency]: number },
-    cosmetics: { [CosmeticType]: { string } },
+    specialCurrencies: { [SpecialCurrency]: number },
+    cosmetics: { [string]: boolean },
     robuxPurchases: { [PurchaseType]: { RobuxTransaction } },
     settings: { [SettingName]: number },
     saveSlots: { SaveSlot },
@@ -133,7 +187,10 @@ typing.questRecurrencesT = t.strictInterface({
     monthly = typing.questDataT,
 })
 
-typing.selectedItemsT = t.map(t.string, t.array(t.number))
+typing.selectedItemsT = t.strictInterface({
+    normal = t.array(t.number),
+    cosmetic = t.array(t.number),
+})
 
 typing.itemDataT = t.strictInterface({
     type = t.union(t.literal("test"), t.literal("release")),
@@ -141,12 +198,42 @@ typing.itemDataT = t.strictInterface({
     properties = t.map(t.string, t.number),
     obtainedAt = t.number,
 })
-typing.inventoryDataT = t.map(t.string, t.array(typing.itemDataT))
-typing.inventoryT = t.map(t.string, typing.inventoryDataT)
+typing.inventoryT = t.map(t.string, t.array(typing.itemDataT))
 
 typing.dataVersionT = t.map(t.number, t.number)
 
-typing.dataSlotT = t.strictInterface({
+typing.statisticsDamageDataT = t.strictInterface({
+    totalPhysical = t.number,
+    meleePhysical = t.number,
+    rangePhysical = t.number,
+    magical = t.number,
+    poison = t.number,
+    burn = t.number,
+})
+
+typing.statisticsHealDataT = t.strictInterface({
+    normal = t.number,
+    overTime = t.number,
+    regen = t.number,
+})
+
+typing.statisticsDataT = t.strictInterface({
+    itemsGained = t.number,
+    kills = t.map(t.string, t.map(t.string, t.number)),
+    damages = t.strictInterface({
+        done = typing.statisticsDamageDataT,
+        taken = typing.statisticsDamageDataT,
+        absorbed = typing.statisticsDamageDataT,
+        blocked = typing.statisticsDamageDataT,
+        nullified = typing.statisticsDamageDataT,
+    }),
+    heals = t.strictInterface({
+        done = typing.statisticsHealDataT,
+        taken = typing.statisticsHealDataT,
+    }),
+})
+
+typing.saveSlotT = t.strictInterface({
     name = t.string,
     currencies = typing.currenciesDataT,
     materials = t.map(t.string, t.number),
@@ -161,7 +248,8 @@ typing.dataSlotT = t.strictInterface({
     playTime = t.number,
     isArchived = t.boolean,
     archiveDate = t.number,
-    dataVersion = typing.dataVersionT
+    dataVersion = typing.dataVersionT,
+    statistics = typing.statisticsDataT,
 })
 
 typing.robuxTransactionT = t.strictInterface({
@@ -184,9 +272,9 @@ typing.internalDataT = t.strictInterface({
 
 typing.schema = t.strictInterface({
     selectedSaveSlot = t.number,
-    globalCurrencies = t.map(t.string, t.number),
-    cosmetics = t.map(t.string, t.array(t.string)),
-    saveSlots = t.array(typing.dataSlotT),
+    specialCurrencies = t.map(t.string, t.number),
+    cosmetics = t.map(t.string, t.boolean),
+    saveSlots = t.array(typing.saveSlotT),
     robuxPurchases = t.strictInterface({
         devProducts = t.array(typing.robuxTransactionT),
         gamePasses = t.array(typing.robuxTransactionT),
@@ -205,7 +293,7 @@ local PRECISION: number = 0.1
 typing.questDataLync = Lync.map(Lync.string, Lync.int(0, 10000))
 
 typing.perksDataLync = Lync.struct({
-    quantity = Lync.int(0, 20),
+    quantity = Lync.int(0, PerksEnums.maxPerkValue),
 })
 
 typing.classDataLync = Lync.struct({
@@ -229,22 +317,58 @@ typing.questRecurrencesLync = Lync.struct({
     monthly = typing.questDataLync,
 })
 
-typing.selectedItemsLync = Lync.map(Lync.string, Lync.array(Lync.int(0, 1000)))
+typing.selectedItemsLync = Lync.struct({
+    normal = Lync.array(Lync.int(0, 2^24)),
+    cosmetic = Lync.array(Lync.int(0, 2^24)),
+})
 
 typing.itemDataLync = Lync.struct({
     type = Lync.enum("test", "release"),
-    id = Lync.int(0, 2^24),
-    properties = Lync.map(Lync.string, Lync.float(0, 1, 0.001)),
+    id = BitsEnums.ui32Lync,
+    properties = Lync.map(Lync.string, Lync.float(
+        PropertiesEnums.maxRangePercentages.min,
+        PropertiesEnums.maxRangePercentages.max,
+        0.001
+    )),
     obtainedAt = Lync.float(0, MAX_FLOAT, PRECISION),
 })
 
-typing.inventoryDataLync = Lync.map(Lync.string, Lync.array(typing.itemDataLync))
+typing.inventoryLync = Lync.map(Lync.string, Lync.array(typing.itemDataLync))
 
-typing.inventoryLync = Lync.map(Lync.string, typing.inventoryDataLync)
+typing.dataVersionLync = Lync.map(Lync.int(1, 3), Lync.int(0, 1000))
 
-typing.dataVersionLync = Lync.map(Lync.int(0, 1000), Lync.int(0, 1000))
+typing.statisticsDamageDataLync = Lync.struct({
+    totalPhysical = Lync.float(0, MAX_FLOAT, 1),
+    meleePhysical = Lync.float(0, MAX_FLOAT, 1),
+    rangePhysical = Lync.float(0, MAX_FLOAT, 1),
+    magical = Lync.float(0, MAX_FLOAT, 1),
+    poison = Lync.float(0, MAX_FLOAT, 1),
+    burn = Lync.float(0, MAX_FLOAT, 1),
+})
 
-typing.dataSlotLync = Lync.struct({
+typing.statisticsHealDataLync = Lync.struct({
+    normal = Lync.float(0, MAX_FLOAT, 1),
+    overTime = Lync.float(0, MAX_FLOAT, 1),
+    regen = Lync.float(0, MAX_FLOAT, 1),
+})
+
+typing.statisticsDataLync = Lync.struct({
+    itemsGained = Lync.int(0, 2^24),
+    kills = Lync.map(Lync.string, Lync.map(Lync.string, Lync.int(0, 1000000))),
+    damages = Lync.struct({
+        done = typing.statisticsDamageDataLync,
+        taken = typing.statisticsDamageDataLync,
+        absorbed = typing.statisticsDamageDataLync,
+        blocked = typing.statisticsDamageDataLync,
+        nullified = typing.statisticsDamageDataLync,
+    }),
+    heals = Lync.struct({
+        done = typing.statisticsHealDataLync,
+        taken = typing.statisticsHealDataLync,
+    }),
+})
+
+typing.saveSlotLync = Lync.struct({
     name = Lync.string(50),
     currencies = typing.currenciesDataLync,
     materials = Lync.map(Lync.string, Lync.int(0, 1000000)),
@@ -260,6 +384,7 @@ typing.dataSlotLync = Lync.struct({
     isArchived = Lync.bool,
     archiveDate = Lync.float(0, MAX_FLOAT, PRECISION),
     dataVersion = typing.dataVersionLync,
+    statistics = typing.statisticsDataLync,
 })
 
 typing.robuxTransactionLync = Lync.struct({
@@ -282,9 +407,9 @@ typing.internalDataLync = Lync.struct({
 
 typing.schemaLync = Lync.struct({
     selectedSaveSlot = Lync.int(0, 10),
-    globalCurrencies = Lync.map(Lync.string, Lync.float(0, MAX_FLOAT, 1)),
-    cosmetics = Lync.map(Lync.string, Lync.array(Lync.string)),
-    saveSlots = Lync.array(typing.dataSlotLync),
+    specialCurrencies = Lync.map(Lync.string, Lync.float(0, MAX_FLOAT, 1)),
+    cosmetics = Lync.map(Lync.string, Lync.bool),
+    saveSlots = Lync.array(typing.saveSlotLync),
     robuxPurchases = Lync.struct({
         devProducts = Lync.array(typing.robuxTransactionLync),
         gamePasses = Lync.array(typing.robuxTransactionLync),

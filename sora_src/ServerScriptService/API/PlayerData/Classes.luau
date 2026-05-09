@@ -28,7 +28,7 @@ function api.getClassDetails(player: Player, className: string): PlayerDataTypin
     if not classDetails then
         dataAccessor.updateSaveSlot(player, function(data): boolean
             local newClassTable = Table.deepCopy(PlayerDataTemplates.classData)
-            -- data.classes[]
+            data.classes[className] = newClassTable
             return true
         end)
     end

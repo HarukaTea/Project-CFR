@@ -13,6 +13,10 @@ type SaveSlot = Typing.SaveSlot
 export type API = {
     --- Returns the full player data.
     get: (player: Player) -> PlayerData,
+    --- Checks if the player has an active slot index.
+    --- Sugar for `api.getSaveSlot(player, index) ~= nil`.
+    --- If the index is not provided, then the selected index will be used as a substitute.
+    hasActiveSlot: (player: Player, index: number?) -> boolean,
     --- Transforms the full player data. Returns a promise resolving to whether the update succeeded.
     update: (player: Player, transformFunc: (data: PlayerData) -> boolean) -> Promise.TypedPromise<boolean>,
     --- Returns the save slot at `index`, or the currently selected save slot if `index` is nil.

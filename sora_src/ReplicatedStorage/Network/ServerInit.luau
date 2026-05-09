@@ -1,8 +1,7 @@
 -- Server to client only.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Typing = require(ReplicatedStorage.Constants.Typing.Lync)
-local Lync = require(ReplicatedStorage.Packages.Lync) :: Typing.LyncLib
+local Lync = require(ReplicatedStorage.Packages.Lync)
 
 
 local remoteSignals = {}

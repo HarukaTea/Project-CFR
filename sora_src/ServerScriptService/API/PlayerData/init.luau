@@ -77,7 +77,14 @@ end
 
 --- Loads player's data, making it accessible via `api.get(player)`.
 function api.loadData(player: Player)
-    return store:load(player):catch(function(errorMsg)
+    return store:load(player):andThen(function()
+        local data = store:getAsync(player)
+
+        if data then
+            cachePlayerData(player, data)
+        end
+    end)
+    :catch(function(errorMsg)
         broadcastError("loadData", errorMsg)
     end)
 end
@@ -109,6 +116,12 @@ function api.hasActiveData(player: Player)
     return false
 end
 
+--- Checks if the player has an active slot index.
+--- Sugar for `api.getSaveSlot(player, index) ~= nil`.
+function api.hasActiveSlot(player: Player, index: number?): boolean
+    return api.getSaveSlot(player, index) ~= nil
+end
+
 --- Retrieves player's data.
 --- The player's data needs to be loaded first via `api.loadData(player)`
 function api.getWholeData(player: Player)
@@ -117,7 +130,9 @@ function api.getWholeData(player: Player)
         return profileData
     end
     local retrievedData = store:getAsync(player)
-    cachePlayerData(player, retrievedData)
+    if retrievedData then
+        cachePlayerData(player, retrievedData)
+    end
     return retrievedData
 end
 
@@ -239,7 +254,13 @@ function api.updateSaveSlot(player: Player, transformFunc: TransformSaveslotFunc
     return store:update(player, function(data: PlayerDataTyping.PlayerData): boolean
         local activeSaveSlots = getSaveSlots(data.saveSlots, false)
         local resolvedIndex = index or data.selectedSaveSlot
-        local result = transformFunc(activeSaveSlots[resolvedIndex])
+        local targetSlot = activeSaveSlots[resolvedIndex]
+
+        if not targetSlot then
+            return false
+        end
+
+        local result = transformFunc(targetSlot)
 
         if result then
             cachePlayerData(player, data)
@@ -252,24 +273,10 @@ function api.updateSaveSlot(player: Player, transformFunc: TransformSaveslotFunc
     end)
 end
 
---- Returns a string formatted version of player data.
---- Example: `V1.0.0`.
-function api.getMainStringVersion(player: Player)
-    local saveSlot = api.getWholeData(player)
-    return Migration.versionToString(saveSlot.dataVersion)
-end
-
---- Returns the string version of the index's active save slot.
---- Example: `V1.0.0`.
-function api.getClassStringVersion(player: Player, index: number)
-    local saveSlot = api.getSaveSlot(player, index)
-    local versionToFormat = saveSlot.dataVersion or Version
-    return Migration.versionToString(versionToFormat)
-end
-
 --[[ Initialisation ]]
 
 dataAccessor.get = api.getWholeData
+dataAccessor.hasActiveSlot = api.hasActiveSlot
 dataAccessor.update = api.updateData
 dataAccessor.getSaveSlot = api.getSaveSlot
 dataAccessor.updateSaveSlot = api.updateSaveSlot

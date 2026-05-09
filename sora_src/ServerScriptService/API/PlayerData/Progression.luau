@@ -29,32 +29,49 @@ function api.init(accessor: DataAccessor.API)
     inited = true
 end
 
-function api.getExp(player: Player, index: number?): Promise.TypedPromise<number>
+function api.getExp(player: Player, index: number?)
     local data = dataAccessor.getSaveSlot(player, index)
 
     return Promise.new(function(resolve, reject, onCancel)
         if not data then
-            return reject(ERR_SAVE_SLOT_NOT_FOUND.format(player.Name, "get their data."))
+            return reject(ERR_SAVE_SLOT_NOT_FOUND:format(player.Name, "get their data."))
         end
 
         return resolve(data.expPoints)
-    end)
+    end):await()
 end
 
 --- Adds the amount to the save slot's current exp.
 function api.addExp(player: Player, amount: number, index: number?)
-    return api.setExp(player, api.getExp(player, index) + amount, index)
+    local _, currentExp = api.getExp(player, index)
+    return api.setExp(player, currentExp + amount, index)
 end
 
 function api.setExp(player: Player, amount: number, index: number?)
     return dataAccessor.updateSaveSlot(player, function(data): boolean
         data.expPoints = amount
         return true
-    end)
+    end, index)
 end
 
 function api.setToLevel(player: Player, level: number, index: number?)
-    
+    return dataAccessor.updateSaveSlot(player, function(data): boolean
+        if not dataAccessor.hasActiveSlot(player, index) then
+            return false
+        end
+
+        data.expPoints = levelCalculator:levelToExp(level)
+        return true
+    end, index)
+end
+
+function api.getLevel(player: Player, index: number?): number
+    if not dataAccessor.hasActiveSlot(player, index) then
+        return 0
+    end
+
+    local _, expPoints = api.getExp(player, index)
+    return levelCalculator:expToLevel(expPoints)
 end
 
 return table.freeze(api)

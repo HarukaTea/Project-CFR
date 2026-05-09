@@ -7,7 +7,7 @@ export type Promise = {
 	andThen: (
 		self: Promise,
 		successHandler: (...any) -> ...any,
-		failureHandler: ((...any) -> ...any)?
+		failureHandler: (...any) -> ...any?
 	) -> Promise,
 	andThenCall: <TArgs...>(self: Promise, callback: (TArgs...) -> ...any, TArgs...) -> any,
 	andThenReturn: (self: Promise, ...any) -> Promise,
@@ -30,7 +30,11 @@ export type Promise = {
 }
 
 export type TypedPromise<T...> = {
-	andThen: (self: Promise, successHandler: (T...) -> ...any, failureHandler: ((...any) -> ...any)?) -> Promise,
+	andThen: (
+		self: Promise,
+		successHandler: (T...) -> ...any,
+		failureHandler: (...any) -> ...any?
+	) -> Promise,
 	andThenCall: <TArgs...>(self: Promise, callback: (TArgs...) -> ...any, TArgs...) -> Promise,
 	andThenReturn: (self: Promise, ...any) -> Promise,
 
@@ -66,7 +70,7 @@ export type Error = {
 	new: () -> Error,
 	is: (anything: any) -> boolean,
 	isKind: (anything: any, kind: string) -> boolean,
-	extend: (options: { error: string?, trace: string?, context: string?, kind: string? }) -> Error,
+	extend: (options: {error: string?, trace: string?, context: string?, kind: string? }) -> Error,
 	getErrorChain: () -> { Error },
 	__tostring: () -> string,
 

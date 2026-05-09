@@ -1,5 +1,10 @@
 local enum = {}
 
+enum.maxRangePercentages = {
+    min = -100, -- -10,000%
+    max = 100, -- +10,000%
+}
+
 enum.orb = {
     "orbSpawnRate",
     "orbSpawnCount",
