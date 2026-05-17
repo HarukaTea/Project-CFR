@@ -1,38 +1,40 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Typing = ReplicatedStorage.Constants.Typing
 local Enums = ReplicatedStorage.Constants.Enums
+
+local LyncTyping = require(Typing.Lync)
 
 local BitsEnums = require(Enums.Bits)
 
 local Lync = require(ReplicatedStorage.Packages.Lync)
 
-type QuestDetails = {
-    class: string,
+export type QuestUpdatedPayload = {
     questName: string,
+    oldValue: number,
+    newValue: number,
 }
 
-export type QuestUpdatedPayload = {
-    newValue: number,
-} & QuestDetails
-
-export type QuestFinishedPayload = QuestDetails
+export type QuestFinishedPayload = {
+    questName: string,
+}
 
 local remoteSignals = {}
 
 --- Client selects a quest with the quest name (must follow camelCase naming convention).
-remoteSignals.selectQuest = Lync.packet("selectQuest", Lync.string)
+remoteSignals.requestQuest = Lync.packet("selectQuest", Lync.string) :: LyncTyping.Packet<string>
 
-remoteSignals.questObtained = Lync.packet("questObtained", Lync.string)
+remoteSignals.questsUpdated = Lync.packet("questsUpdated", Lync)
 
 remoteSignals.questUpdated = Lync.packet("questUpdated", Lync.struct({
     questName = Lync.string,
-    newValue = BitsEnums.i32Lync,
-}))
+    oldValue = BitsEnums.u16Lync,
+    newValue = BitsEnums.u16Lync,
+})) :: LyncTyping.Packet<QuestUpdatedPayload>
+
 
 remoteSignals.questFinished = Lync.packet("questFinished", Lync.struct({
     questName = Lync.string,
-}))
-
-remoteSignals.requestQuest = Lync.packet("requestQuest", Lync.string)
+})) :: LyncTyping.Packet<QuestFinishedPayload>
 
 return table.freeze(remoteSignals)

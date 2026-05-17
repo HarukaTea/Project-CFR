@@ -1,10 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Typing = ReplicatedStorage.Constants.Typing
-
-local LyncTyping = require(Typing.Lync)
-
-local Lync = require(ReplicatedStorage.Packages.Lync) :: LyncTyping.LyncLib
+local Lync = require(ReplicatedStorage.Packages.Lync)
 
 local enums = {}
 

@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerData = require(ReplicatedStorage.Constants.Typing.PlayerData)
 local Version = require(ReplicatedStorage.Constants.Enums.Version)
-local Table = require(ReplicatedStorage.Utils.Table)
+local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
 
 local template = {}
 
@@ -38,15 +38,15 @@ template.statisticsData = {
     itemsGained = 0,
     kills = {},
     damages = {
-        done = Table.deepCopy(template.statisticsDamageData),
-        taken = Table.deepCopy(template.statisticsDamageData),
-        absorbed = Table.deepCopy(template.statisticsDamageData),
-        blocked = Table.deepCopy(template.statisticsDamageData),
-        nullified = Table.deepCopy(template.statisticsDamageData),
+        done = TableUtil.Copy(template.statisticsDamageData, true),
+        taken = TableUtil.Copy(template.statisticsDamageData, true),
+        absorbed = TableUtil.Copy(template.statisticsDamageData, true),
+        blocked = TableUtil.Copy(template.statisticsDamageData, true),
+        nullified = TableUtil.Copy(template.statisticsDamageData, true),
     },
     heals = {
-        done = Table.deepCopy(template.statisticsHealData),
-        taken = Table.deepCopy(template.statisticsHealData),
+        done = TableUtil.Copy(template.statisticsHealData, true),
+        taken = TableUtil.Copy(template.statisticsHealData, true),
     },
 } :: PlayerData.StatisticsData
 

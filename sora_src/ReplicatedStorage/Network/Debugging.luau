@@ -4,6 +4,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local LyncTyping = require(ReplicatedStorage.Constants.Typing.Lync)
 local Lync = require(ReplicatedStorage.Packages.Lync)
 
 local remoteSignals = {}
@@ -22,6 +23,6 @@ remoteSignals.logOccurred = Lync.packet("logOccurred", Lync.deltaStruct({
     message = Lync.string,
     sender = Lync.string,
     footer = Lync.optional(Lync.string),
-}))
+})) :: LyncTyping.Packet<LogPayload>
 
 return table.freeze(remoteSignals)

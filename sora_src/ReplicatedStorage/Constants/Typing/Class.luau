@@ -1,7 +1,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local Typings = ReplicatedStorage.Constants.Typing
+
 local PlayerDataTyping = require(Typings.PlayerData)
 local QuestTyping = require(Typings.Quest)
+
 local t = require(ReplicatedStorage.Packages.t)
 
 type PlayerData = PlayerDataTyping.PlayerData

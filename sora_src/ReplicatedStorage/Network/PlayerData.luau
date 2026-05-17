@@ -1,16 +1,20 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Enums = ReplicatedStorage.Constants.Enums
+local Typing = ReplicatedStorage.Constants.Typing
 
-local SaveSlotsEnums = require(Enums.SaveSlots)
+local LyncTyping = require(Typing.Lync)
+
 local Lync = require(ReplicatedStorage.Packages.Lync)
 
 local remoteSignals = {}
 
 --- Client requests data from the server.
-remoteSignals.requestData = Lync.packet("requestData", Lync.nothing)
+remoteSignals.requestData = Lync.packet("requestData", Lync.nothing) :: LyncTyping.Packet<nil>
 
---- Server alerts all sub-components that a save slot has been selected and is ready.
-remoteSignals.saveSlotSelected = Lync.packet("saveSlotSelected", Lync.int(1, SaveSlotsEnums.maxSaveSlots))
+--- Server sends an event that the player has their data reconciled.
+remoteSignals.dataReconciled = Lync.packet("dataReconciled", Lync.nothing) :: LyncTyping.Packet<nil>
+
+--- Server sends an event that the player's data has been reset.
+remoteSignals.dataReset = Lync.packet("dataReset", Lync.nothing)
 
 return table.freeze(remoteSignals)

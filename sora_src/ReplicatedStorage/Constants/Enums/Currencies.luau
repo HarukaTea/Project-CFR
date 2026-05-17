@@ -5,7 +5,7 @@ return table.freeze({
     specialCurrencies = {
         "astral"
     },
-    normalCurrencies = {
+    slotCurrencies = {
         "gold"
     },
     eventCurrencies = {

@@ -1,7 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local InitTyping = require(ReplicatedStorage.Constants.Typing.Initializer)
-local Table = require(ReplicatedStorage.Utils.Table)
 local Promise = require(ReplicatedStorage.Utils.Promise)
 local t = require(ReplicatedStorage.Packages.t)
 
@@ -26,13 +25,12 @@ function api.initComponents(children: {Instance})
             end
 
             local module: Module = require(value)
+            local isCallback, message = t.callback(module.start)
 
-            if not Table.includesKey(module, "start") then
+            if not isCallback then
                 print(`Rejecting module '{instanceName}.'`)
                 return reject(
-                    string.format(`Failed to initialise module '{instanceName}': {
-                        "Module does not have a callable called 'start'"
-                    }`)
+                    string.format(`Failed to initialise module '{instanceName}': {message}`)
                 )
             end
 

@@ -6,15 +6,14 @@ local Enums = ReplicatedStorage.Constants.Enums
 local PropertiesTyping = require(Typing.Properties)
 local SettingTyping = require(Typing.PlayerSettings)
 local TraitsTyping = require(Typing.Traits)
-local LyncTyping = require(ReplicatedStorage.Constants.Typing.Lync)
 
-local PropertiesEnums = require(Enums.Properties)
-local PerksEnums = require(Enums.Perks)
+local PropertiesEnum = require(Enums.Properties)
+local PerksEnum = require(Enums.Perks)
+local BitsEnum = require(Enums.Bits)
+local CurrenciesEnum = require(Enums.Currencies)
 
 local t = require(ReplicatedStorage.Packages.t)
-local Lync = require(ReplicatedStorage.Packages.Lync) :: LyncTyping.LyncLib
-
-local BitsEnums = require(Enums.Bits)
+local Lync = require(ReplicatedStorage.Packages.Lync)
 
 type AllProperties = PropertiesTyping.AllProperties
 type SettingName = SettingTyping.SettingName
@@ -116,7 +115,7 @@ export type SaveSlot = {
     expPoints: number,
     selectedItems: {
         normal: { number },
-        cosmetic: { number },
+        cosmetic: { string },
     },
     inventory: InventoryData,
     classes: { [string]: ClassData },
@@ -149,7 +148,7 @@ export type InternalData = {
 export type PlayerData = {
     selectedSaveSlot: number, -- 0 if the player is new
     specialCurrencies: { [SpecialCurrency]: number },
-    cosmetics: { [string]: boolean },
+    cosmetics: { string },
     robuxPurchases: { [PurchaseType]: { RobuxTransaction } },
     settings: { [SettingName]: number },
     saveSlots: { SaveSlot },
@@ -189,7 +188,7 @@ typing.questRecurrencesT = t.strictInterface({
 
 typing.selectedItemsT = t.strictInterface({
     normal = t.array(t.number),
-    cosmetic = t.array(t.number),
+    cosmetic = t.array(t.string),
 })
 
 typing.itemDataT = t.strictInterface({
@@ -273,7 +272,7 @@ typing.internalDataT = t.strictInterface({
 typing.schema = t.strictInterface({
     selectedSaveSlot = t.number,
     specialCurrencies = t.map(t.string, t.number),
-    cosmetics = t.map(t.string, t.boolean),
+    cosmetics = t.array(t.string),
     saveSlots = t.array(typing.saveSlotT),
     robuxPurchases = t.strictInterface({
         devProducts = t.array(typing.robuxTransactionT),
@@ -286,28 +285,24 @@ typing.schema = t.strictInterface({
     internal = t.optional(typing.internalDataT),
 })
 
--- Lync codecs
-local MAX_FLOAT: number = 2 ^ 64
-local PRECISION: number = 0.1
-
-typing.questDataLync = Lync.map(Lync.string, Lync.int(0, 10000))
+typing.questDataLync = Lync.map(Lync.string, BitsEnum.u16Lync)
 
 typing.perksDataLync = Lync.struct({
-    quantity = Lync.int(0, PerksEnums.maxPerkValue),
+    quantity = Lync.int(0, PerksEnum.maxPerkValue),
 })
 
 typing.classDataLync = Lync.struct({
-    expPoints = Lync.float(0, MAX_FLOAT, 1),
+    expPoints = BitsEnum.f64Lync,
     perks = Lync.map(Lync.string, typing.perksDataLync),
     quests = typing.questDataLync,
 })
 
 typing.currenciesDataLync = Lync.struct({
-    gold = Lync.float(0, MAX_FLOAT, 1),
+    gold = BitsEnum.f64Lync,
 })
 
 typing.eventDataLync = Lync.struct({
-    currencyPoints = Lync.optional(Lync.float(0, MAX_FLOAT, 1)),
+    currencyPoints = Lync.optional(BitsEnum.f64Lync),
     quests = typing.questDataLync,
 })
 
@@ -318,19 +313,19 @@ typing.questRecurrencesLync = Lync.struct({
 })
 
 typing.selectedItemsLync = Lync.struct({
-    normal = Lync.array(Lync.int(0, 2^24)),
-    cosmetic = Lync.array(Lync.int(0, 2^24)),
+    normal = Lync.array(BitsEnum.u32Lync),
+    cosmetic = Lync.array(Lync.string),
 })
 
 typing.itemDataLync = Lync.struct({
     type = Lync.enum("test", "release"),
-    id = BitsEnums.ui32Lync,
+    id = BitsEnum.u32Lync,
     properties = Lync.map(Lync.string, Lync.float(
-        PropertiesEnums.maxRangePercentages.min,
-        PropertiesEnums.maxRangePercentages.max,
+        PropertiesEnum.maxRangePercentages.min,
+        PropertiesEnum.maxRangePercentages.max,
         0.001
     )),
-    obtainedAt = Lync.float(0, MAX_FLOAT, PRECISION),
+    obtainedAt = BitsEnum.f64Lync,
 })
 
 typing.inventoryLync = Lync.map(Lync.string, Lync.array(typing.itemDataLync))
@@ -338,23 +333,23 @@ typing.inventoryLync = Lync.map(Lync.string, Lync.array(typing.itemDataLync))
 typing.dataVersionLync = Lync.map(Lync.int(1, 3), Lync.int(0, 1000))
 
 typing.statisticsDamageDataLync = Lync.struct({
-    totalPhysical = Lync.float(0, MAX_FLOAT, 1),
-    meleePhysical = Lync.float(0, MAX_FLOAT, 1),
-    rangePhysical = Lync.float(0, MAX_FLOAT, 1),
-    magical = Lync.float(0, MAX_FLOAT, 1),
-    poison = Lync.float(0, MAX_FLOAT, 1),
-    burn = Lync.float(0, MAX_FLOAT, 1),
+    totalPhysical = BitsEnum.f64Lync,
+    meleePhysical = BitsEnum.f64Lync,
+    rangePhysical = BitsEnum.f64Lync,
+    magical = BitsEnum.f64Lync,
+    poison = BitsEnum.f64Lync,
+    burn = BitsEnum.f64Lync,
 })
 
 typing.statisticsHealDataLync = Lync.struct({
-    normal = Lync.float(0, MAX_FLOAT, 1),
-    overTime = Lync.float(0, MAX_FLOAT, 1),
-    regen = Lync.float(0, MAX_FLOAT, 1),
+    normal = BitsEnum.f64Lync,
+    overTime = BitsEnum.f64Lync,
+    regen = BitsEnum.f64Lync,
 })
 
 typing.statisticsDataLync = Lync.struct({
-    itemsGained = Lync.int(0, 2^24),
-    kills = Lync.map(Lync.string, Lync.map(Lync.string, Lync.int(0, 1000000))),
+    itemsGained = BitsEnum.u32Lync,
+    kills = Lync.map(Lync.string, Lync.map(Lync.string, BitsEnum.u32Lync)),
     damages = Lync.struct({
         done = typing.statisticsDamageDataLync,
         taken = typing.statisticsDamageDataLync,
@@ -368,36 +363,38 @@ typing.statisticsDataLync = Lync.struct({
     }),
 })
 
+typing.statTypeLync = Lync.enum("str", "agi", "int", "vit", "dex")
+
 typing.saveSlotLync = Lync.struct({
     name = Lync.string(50),
     currencies = typing.currenciesDataLync,
-    materials = Lync.map(Lync.string, Lync.int(0, 1000000)),
-    expPoints = Lync.float(0, MAX_FLOAT, 1),
+    materials = Lync.map(Lync.string, BitsEnum.u32Lync),
+    expPoints = BitsEnum.f64Lync,
     selectedItems = typing.selectedItemsLync,
     inventory = typing.inventoryLync,
     classes = Lync.map(Lync.string, typing.classDataLync),
-    statPoints = Lync.map(Lync.string, Lync.int(0, 1000)),
+    statPoints = Lync.map(typing.statTypeLync, BitsEnum.i16Lync),
     questRecurrences = typing.questRecurrencesLync,
     events = Lync.map(Lync.string, typing.eventDataLync),
-    creationDate = Lync.float(0, MAX_FLOAT, PRECISION),
-    playTime = Lync.float(0, MAX_FLOAT, PRECISION),
+    creationDate = BitsEnum.f64Lync,
+    playTime = BitsEnum.f64Lync,
     isArchived = Lync.bool,
-    archiveDate = Lync.float(0, MAX_FLOAT, PRECISION),
+    archiveDate = BitsEnum.f64Lync,
     dataVersion = typing.dataVersionLync,
     statistics = typing.statisticsDataLync,
 })
 
 typing.robuxTransactionLync = Lync.struct({
     productName = Lync.string(200),
-    purchaseDate = Lync.float(0, MAX_FLOAT, PRECISION),
-    priceAmount = Lync.int(0, 1000000),
+    purchaseDate = BitsEnum.f64Lync,
+    priceAmount = Lync.int(0, 1_000_000),
 })
 
 typing.automatedLogDataLync = Lync.struct({
     severity = Lync.int(0, 10),
     description = Lync.string(500),
-    dateStarted = Lync.float(0, MAX_FLOAT, PRECISION),
-    duration = Lync.float(0, MAX_FLOAT, PRECISION),
+    dateStarted = BitsEnum.f64Lync,
+    duration = BitsEnum.f64Lync,
 })
 
 typing.internalDataLync = Lync.struct({
@@ -407,15 +404,15 @@ typing.internalDataLync = Lync.struct({
 
 typing.schemaLync = Lync.struct({
     selectedSaveSlot = Lync.int(0, 10),
-    specialCurrencies = Lync.map(Lync.string, Lync.float(0, MAX_FLOAT, 1)),
-    cosmetics = Lync.map(Lync.string, Lync.bool),
+    specialCurrencies = Lync.map(Lync.enum(unpack(CurrenciesEnum.specialCurrencies)), BitsEnum.f64Lync),
+    cosmetics = Lync.array(Lync.string),
     saveSlots = Lync.array(typing.saveSlotLync),
     robuxPurchases = Lync.struct({
         devProducts = Lync.array(typing.robuxTransactionLync),
         gamePasses = Lync.array(typing.robuxTransactionLync),
     }),
-    settings = Lync.map(Lync.string, Lync.float(0, 10, 0.01)),
-    joinDate = Lync.float(0, MAX_FLOAT, PRECISION),
+    settings = Lync.map(Lync.string, BitsEnum.f16Lync),
+    joinDate = BitsEnum.f64Lync,
     dataVersion = typing.dataVersionLync,
     --- Must be hidden from non-mods
     internal = Lync.optional(typing.internalDataLync),
