@@ -4,7 +4,7 @@ local Typing = ReplicatedStorage.Constants.Typing
 local Enums = ReplicatedStorage.Constants.Enums
 
 local LyncTyping = require(Typing.Lync)
-local PlayerDataTyping = require(Typing.PlayerData)
+local ItemTyping = require(Typing.PlayerData.Item)
 
 local BitsEnums = require(Enums.Bits)
 
@@ -16,7 +16,7 @@ export type ItemsUpdatedPayload = {
 
 local remoteSignals = {}
 
-remoteSignals.itemsUpdated = Lync.packet("itemsUpdated", PlayerDataTyping.inventoryLync) :: LyncTyping.Packet<ItemsUpdatedPayload>
+remoteSignals.itemsUpdated = Lync.packet("itemsUpdated", ItemTyping.inventoryLync) :: LyncTyping.Packet<ItemsUpdatedPayload>
 
 remoteSignals.equippedItemsUpdated = Lync.packet("equippedItemsUpdated", Lync.deltaArray(BitsEnums.u32Lync))
 

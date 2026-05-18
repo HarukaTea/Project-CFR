@@ -79,7 +79,7 @@ template.saveSlot = {
 } :: PlayerData.SaveSlot
 
 template.playerData = {
-    selectedSaveSlot = 0,
+    selectedSaveSlot = 1,
     specialCurrencies = {},
     cosmetics = {},
     saveSlots = {},

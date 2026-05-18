@@ -5,9 +5,10 @@ export type MaterialDetails = {
     icon: string,
 }
 
-return table.freeze({
-    maxQuantity = 1_000_000,
-    materials = {
+local enum = {}
 
-    } :: { [string]: MaterialDetails }
-})
+enum.maxQuantity = 1_000_000
+
+enum.materials = {} :: { [string]: MaterialDetails }
+
+return table.freeze(enum)

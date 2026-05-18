@@ -49,7 +49,7 @@ local content = {} :: Initializer.Module
 function content.start()
     Players.PlayerAdded:Connect(onPlayerAdded)
     Players.PlayerRemoving:Connect(onPlayerRemoving)
-    PlayerDataNetwork.requestData:on(onPlayerLoaded)
+    PlayerDataNetwork.requestPreviewData:on(onPlayerLoaded)
 
     for _, player in Players:GetPlayers() do
         onPlayerAdded(player)

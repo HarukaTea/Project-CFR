@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
+local TextService = game:GetService("TextService")
 
 local Packages = ReplicatedStorage.Packages
 local ReplicatedEnums = ReplicatedStorage.Constants.Enums
@@ -304,6 +305,20 @@ function api.updateSaveSlot(player: Player, transformFunc: TransformSaveslotFunc
         cachePlayerData(player, newData)
         return true
     end)
+end
+
+function api.renameSaveSlot(player: Player, newName: string, index: number): PromiseData
+    if not api.hasActiveSlot(player, index) then
+        return Promise.resolve(false, `Player '{player.Name}' does not have active slot #{index}.`)
+    end
+
+    local filterResult = TextService:FilterStringAsync(newName, player.UserId)
+    local finalName = filterResult:GetNonChatStringForBroadcastAsync()
+
+    return api.updateSaveSlot(player, function(data)
+        data.name = finalName
+        return true
+    end, index)
 end
 
 function api.getSelectedSaveSlotIndex(player: Player): number

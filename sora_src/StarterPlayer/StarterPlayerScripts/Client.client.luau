@@ -4,14 +4,16 @@ local Workspace = game:GetService("Workspace")
 
 local player: Player = game:GetService("Players").LocalPlayer
 local PlayerScripts: StarterPlayerScripts = player.PlayerScripts
+
 local Network = ReplicatedStorage:WaitForChild("Network")
-local Typing = ReplicatedStorage.Constants:WaitForChild("Typing") 
 local Managers: Folder = PlayerScripts:WaitForChild("Managers")
 
 local LoadingEnum = require(ReplicatedStorage.Constants.Enums.Loading)
+
 local Initializer = require(ReplicatedStorage.Shared.API.Initializer)
-local LyncTyping = require(Typing.Lync)
-local Lync = require(ReplicatedStorage.Packages.Lync) :: LyncTyping.LyncLib
+
+local Lync = require(ReplicatedStorage.Packages.Lync)
+
 local Promise = require(ReplicatedStorage.Utils.Promise)
 local DebugNetwork = require(Network.Debugging)
 
@@ -46,12 +48,15 @@ Promise.new(function(resolve, reject, onCancel)
     Lync.start()
     return Initializer.initComponents(Managers:GetChildren())
 end)
+
 :andThen(function(...)
     DebugNetwork.logOccurred:on(serverDebugReceived)
 end)
+
 :finally(function(status: "Cancelled" | "Rejected" | "Resolved" | "Started")
 
 end)
+
 :catch(function(...)
     error(`You have received a client error. {...}`)
 end)

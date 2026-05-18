@@ -4,6 +4,7 @@ local Typing = ReplicatedStorage.Constants.Typing
 
 local LyncTyping = require(Typing.Lync)
 local PlayerDataTyping = require(Typing.PlayerData)
+local ClassTyping = require(Typing.PlayerData.Class)
 
 local Lync = require(ReplicatedStorage.Packages.Lync)
 
@@ -18,7 +19,7 @@ export type PerksPayload = {
 
 local remoteSignals = {}
 
-remoteSignals.classesUpdated = Lync.packet("classesUpdated", Lync.deltaMap(Lync.string, PlayerDataTyping.classDataLync)) :: LyncTyping.Packet<ClassesUpdatedPayload>
+remoteSignals.classesUpdated = Lync.packet("classesUpdated", Lync.deltaMap(Lync.string, ClassTyping.playerClassDataLync)) :: LyncTyping.Packet<ClassesUpdatedPayload>
 
 remoteSignals.classUnlocked = Lync.packet("classUnlocked", Lync.string) :: LyncTyping.Packet<string>
 

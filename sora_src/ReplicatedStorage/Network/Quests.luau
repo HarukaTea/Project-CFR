@@ -4,6 +4,7 @@ local Typing = ReplicatedStorage.Constants.Typing
 local Enums = ReplicatedStorage.Constants.Enums
 
 local LyncTyping = require(Typing.Lync)
+local QuestTyping = require(Typing.PlayerData.Quest)
 
 local BitsEnums = require(Enums.Bits)
 
@@ -24,7 +25,7 @@ local remoteSignals = {}
 --- Client selects a quest with the quest name (must follow camelCase naming convention).
 remoteSignals.requestQuest = Lync.packet("selectQuest", Lync.string) :: LyncTyping.Packet<string>
 
-remoteSignals.questsUpdated = Lync.packet("questsUpdated", Lync)
+remoteSignals.questsUpdated = Lync.packet("questsUpdated", Lync.deltaMap(Lync.string, QuestTyping.questEntryLync))
 
 remoteSignals.questUpdated = Lync.packet("questUpdated", Lync.struct({
     questName = Lync.string,

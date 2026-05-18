@@ -1,5 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local t = require(ReplicatedStorage.Packages.t)
+
 local Attributes = require(ReplicatedStorage.Constants.Enums.Properties)
 
 export type OrbProperty = "orbSpawnRate" | "orbSpawnCount"
